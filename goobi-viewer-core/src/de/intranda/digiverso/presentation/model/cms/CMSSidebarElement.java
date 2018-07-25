@@ -43,6 +43,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
+
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.misc.GeoLocation;
@@ -112,7 +114,7 @@ public class CMSSidebarElement {
 
     @Column(name = "widget_title")
     private String widgetTitle = null;
-    
+
     @Transient
     private final int sortingId = ID_COUNTER.next();
 
@@ -123,6 +125,49 @@ public class CMSSidebarElement {
 
     public CMSSidebarElement() {
         // the emptiness inside
+    }
+
+    /**
+     * Creates a copy of the original CMSSidebarElement. Handles cases where the original is of a class inheriting from this class
+     * 
+     * @param sidebarElement
+     * @param ownerPage May be null, if the sidebarelement is not (yet) associated with a CMSPage. Otherwise it should be the actual owning page, not
+     *            the owner of the original (unless that is acutally desired)
+     */
+    public static CMSSidebarElement copy(CMSSidebarElement original, CMSPage ownerPage) {
+        CMSSidebarElement copy;
+        if (!original.getClass().equals(CMSSidebarElement.class)) {
+            if (CMSSidebarElementWithQuery.class.equals(original.getClass())) {
+                copy = new CMSSidebarElementWithQuery((CMSSidebarElementWithQuery)original, ownerPage);
+            } else if (CMSSidebarElementWithSearch.class.equals(original.getClass())) {
+                copy = new CMSSidebarElementWithSearch((CMSSidebarElementWithSearch)original, ownerPage);
+            } else {
+                throw new IllegalArgumentException(
+                        "Cannot create copy of " + original.getClass() + ": copy constructor for that class not implemented");
+            }
+        } else {
+            copy = new CMSSidebarElement(original, ownerPage);
+        }
+        return copy;
+    }
+        
+    public CMSSidebarElement(CMSSidebarElement original, CMSPage owner) {
+        if(original.id != null) {            
+            this.id = new Long(original.id);
+        }
+        this.ownerPage = owner;
+        this.type = original.type;
+        this.value = original.value;
+        this.order = original.order;
+        this.html = original.html;
+        this.cssClass = original.cssClass;
+        this.widgetMode = original.widgetMode;
+        this.linkedPagesString = original.linkedPagesString;
+        this.geoLocationsString = original.geoLocationsString;
+        this.widgetType = original.widgetType;
+        this.widgetTitle = original.widgetTitle;
+        deSerialize();
+ 
     }
 
     public int compareTo(Object o) {
@@ -158,8 +203,9 @@ public class CMSSidebarElement {
 
     @Override
     public boolean equals(Object o) {
-        return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType()) && bothNullOrEqual(
-                getHtml(), ((CMSSidebarElement) o).getHtml()) && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
+        return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
+                && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
+                && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
                 && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
     }
 
@@ -320,7 +366,7 @@ public class CMSSidebarElement {
     public boolean isValid() {
         if (hasHtml()) {
             Matcher m = patternHtmlTag.matcher(html);
-//            Set<String> allowedTags = CMSSidebarManager.getInstance().getAllowedHtmlTags();
+            //            Set<String> allowedTags = CMSSidebarManager.getInstance().getAllowedHtmlTags();
             Set<String> disallowedTags = CMSSidebarManager.getInstance().getDisallowedHtmlTags();
             while (m.find()) {
                 String tag = m.group();
@@ -446,7 +492,7 @@ public class CMSSidebarElement {
      * 
      */
     public void initGeolocations(GeoLocationInfo info) {
-        if(info.getLocationList().isEmpty()) {
+        if (info.getLocationList().isEmpty()) {
             info.getLocationList().add(new GeoLocation());
         }
         this.geoLocations = info;
@@ -462,9 +508,9 @@ public class CMSSidebarElement {
     }
 
     public void removeGeoLocation() {
-        if(geoLocations != null) {            
-            this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size()-1);
-            if(this.geoLocations.getLocationList().isEmpty()) {
+        if (geoLocations != null) {
+            this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size() - 1);
+            if (this.geoLocations.getLocationList().isEmpty()) {
                 this.geoLocations.getLocationList().add(new GeoLocation());
             }
         }
@@ -479,20 +525,20 @@ public class CMSSidebarElement {
         try {
             JSONObject json = new JSONObject(string);
             GeoLocationInfo info = new GeoLocationInfo(json);
-//            if(locations != null) {                
-//                for (int i = 0; i < locations.length(); i++) {
-//                    JSONObject obj = locations.getJSONObject(i);
-//                    list.add(new GeoLocation(obj));
-//                }
-//            }
+            //            if(locations != null) {                
+            //                for (int i = 0; i < locations.length(); i++) {
+            //                    JSONObject obj = locations.getJSONObject(i);
+            //                    list.add(new GeoLocation(obj));
+            //                }
+            //            }
             return info;
         } catch (ParseException e) {
             logger.error("Failed to create geolocation list from string \n" + string, e);
         }
         return new GeoLocationInfo();
-//        if(list.isEmpty()) {
-//            list.add(new GeoLocation());
-//        }
+        //        if(list.isEmpty()) {
+        //            list.add(new GeoLocation());
+        //        }
     }
 
     /**
@@ -503,14 +549,14 @@ public class CMSSidebarElement {
 
         JSONObject json = info.getAsJson();
 
-//        JSONArray locations = new JSONArray();
-//        list.stream()
-//        .filter(loc -> !loc.isEmpty())
-//        .map(loc -> loc.getAsJson())
-//        .forEach(loc -> locations.put(loc));
-//        
-//        JSONObject json = new JSONObject();
-//        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
+        //        JSONArray locations = new JSONArray();
+        //        list.stream()
+        //        .filter(loc -> !loc.isEmpty())
+        //        .map(loc -> loc.getAsJson())
+        //        .forEach(loc -> locations.put(loc));
+        //        
+        //        JSONObject json = new JSONObject();
+        //        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
 
         return json.toString();
     }
@@ -518,24 +564,25 @@ public class CMSSidebarElement {
     public String getGeoLocationsString() {
         return this.geoLocationsString;
     }
+
     /**
      * @return the widgetTitle
      */
     public String getWidgetTitle() {
         return widgetTitle;
     }
-    
+
     /**
      * @param widgetTitle the widgetTitle to set
      */
     public void setWidgetTitle(String widgetTitle) {
         this.widgetTitle = widgetTitle;
     }
-    
+
     public boolean isHasWidgetTitle() {
         return StringUtils.isNotBlank(getWidgetTitle());
     }
-    
+
     public boolean isHasLinkedPages() {
         return this.linkedPages != null && !this.linkedPages.isEmpty();
     }

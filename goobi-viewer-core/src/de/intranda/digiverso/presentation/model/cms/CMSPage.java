@@ -147,6 +147,51 @@ public class CMSPage {
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
+    
+    public CMSPage() {
+    }
+    
+    /**
+     * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
+     * 
+     * @param original
+     */
+    public CMSPage(CMSPage original) {
+        if(original.id != null) {            
+            this.id = new Long(original.id);
+        }
+        this.templateId = original.templateId;
+        this.dateCreated = new Date(original.dateCreated.getTime());
+        this.dateUpdated = new Date(original.dateUpdated.getTime());
+        this.published = original.published;
+        if(original.pageSorting != null) {
+            this.pageSorting = new Long(original.pageSorting);
+        }
+        this.useDefaultSidebar = original.useDefaultSidebar;
+        this.persistentUrl = original.persistentUrl;
+        this.relatedPI = original.relatedPI;
+        this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
+        this.classifications = new ArrayList<>(original.classifications);
+        this.parentPageId = original.parentPageId;
+        
+        if(original.sidebarElements != null) {            
+            this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
+            for(CMSSidebarElement sidebarElement : original.sidebarElements) {
+                CMSSidebarElement copy = CMSSidebarElement.copy(sidebarElement, this);
+                this.sidebarElements.add(copy);
+            }
+        }
+        
+        if(original.languageVersions != null) {            
+            this.languageVersions = new ArrayList<>(original.languageVersions.size());
+            for(CMSPageLanguageVersion language : original.languageVersions) {
+                CMSPageLanguageVersion copy = new CMSPageLanguageVersion(language, this);
+                this.languageVersions.add(copy);
+            }
+        }
+        
+    }
+    
     public boolean saveSidebarElements() {
         logger.trace("selected elements:{}\n", sidebarElementString);
         if (sidebarElementString != null) {

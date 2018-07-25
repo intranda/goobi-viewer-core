@@ -2271,19 +2271,22 @@ public class JPADAO implements IDAO {
      */
     @Override
     public CMSPage getCMSPageForEditing(long id) throws DAOException {
-        logger.trace("getCMSPageForEditing: {}", id);
-        preQuery();
-        EntityManager em = factory.createEntityManager();
-        try {
-            CMSPage o = em.find(CMSPage.class, id);
-            return o;
-        } catch (EntityNotFoundException e) {
-            return null;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+        CMSPage original = getCMSPage(id);
+        CMSPage copy = new CMSPage(original);
+        return copy;
+//        logger.trace("getCMSPageForEditing: {}", id);
+//        preQuery();
+//        EntityManager em = factory.createEntityManager();
+//        try {
+//            CMSPage o = em.find(CMSPage.class, id);
+//            return o;
+//        } catch (EntityNotFoundException e) {
+//            return null;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+//        }
     }
 
     @Override
