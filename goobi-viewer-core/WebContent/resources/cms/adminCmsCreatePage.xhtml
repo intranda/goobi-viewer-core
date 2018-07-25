@@ -173,6 +173,44 @@
 																</script>
 															</div>
                                                             
+                                                            <!-- MAY CONTAIN ADDITIONAL URL PARAMETERS -->
+                                                            <div class="edit-content-page__url-parameters">
+                                                                <div class="form-group">
+                                                                    <label class="col-sm-3 control-label">
+                                                                        #{msg.cms_page_url_parameters}:
+                                                                        <button type="button" class="btn-clean">
+                                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </label>
+                                                                    <div class="col-sm-9">
+                                                                        <h:selectBooleanCheckbox id="checkboxUrlParameters" value="#{cmsBean.selectedPage.mayContainUrlParameters}" onclick="cmsJS.createPage.disablePreview();">
+                                                                        </h:selectBooleanCheckbox>
+                                                                    </div>
+                                                                    <script type="text/javascript">
+                                                                    $( ".edit-content-page__url-parameters button" ).popover( {
+                                                                        html: true,
+                                                                        title: "#{msg.cms_page_url_parameters}",
+                                                                        content: "#{msg.cms_page_url_parameters_help}",
+                                                                        placement: "top",
+                                                                        trigger: "hover",
+                                                                        container: "body"
+                                                                    } );
+                                                                </script>
+                                                                </div>
+                                                                
+                                                                <script type="text/javascript">
+                                                                    $( ".edit-content-page__pretty-url button" ).popover( {
+                                                                        html: true,
+                                                                        title: "#{msg.cms_page_pretty_url}",
+                                                                        content: "#{msg.cms_page_pretty_url_help}",
+                                                                        placement: "top",
+                                                                        trigger: "hover",
+                                                                        container: "body"
+                                                                    } );
+                                                                </script>
+                                                            </div>
+                                                            
+                                                            
                                                             <!-- RELATED PI -->
                                                             <div class="edit-content-page__related_pi">
                                                                 <div class="form-group">

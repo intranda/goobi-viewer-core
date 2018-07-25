@@ -130,6 +130,16 @@ public class CMSPage {
      */
     @Column(name = "parent_page")
     private String parentPageId = null;
+    
+    /**
+     * whether the url to this page may contain additional path parameters at its end while still pointing to this page
+     * Should be true if this is a search page, because search parameters are introduced to the url for an actual search
+     * Should not be true if this overrides a default page, but should only do so if no parameters are present (for example
+     * if parameters indicate a search on the default search page)
+     * 
+     */
+    @Column(name = "may_contain_url_parameters")
+    private boolean mayContainUrlParameters = false;
 
     @Transient
     private String sidebarElementString = null;
@@ -173,6 +183,7 @@ public class CMSPage {
         this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
         this.classifications = new ArrayList<>(original.classifications);
         this.parentPageId = original.parentPageId;
+        this.mayContainUrlParameters = original.mayContainUrlParameters;
         
         if(original.sidebarElements != null) {            
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
@@ -984,21 +995,35 @@ public class CMSPage {
     public void setValidityStatus(PageValidityStatus validityStatus) {
         this.validityStatus = validityStatus;
     }
-
+    
     /**
-     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+     * @return the mayContainUrlParameters
      */
-    public boolean mayContainURLParameters() {
-        try {
-            if (getTemplate() != null) {
-                return getTemplate().isAppliesToExpandedUrl();
-            }
-            return false;
-        } catch (IllegalStateException e) {
-            logger.warn("Unable to acquire template", e);
-            return false;
-        }
+    public boolean isMayContainUrlParameters() {
+        return mayContainUrlParameters;
     }
+    
+    /**
+     * @param mayContainUrlParameters the mayContainUrlParameters to set
+     */
+    public void setMayContainUrlParameters(boolean mayContainUrlParameters) {
+        this.mayContainUrlParameters = mayContainUrlParameters;
+    }
+
+//    /**
+//     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+//     */
+//    public boolean mayContainURLParameters() {
+//        try {
+//            if (getTemplate() != null) {
+//                return getTemplate().isAppliesToExpandedUrl();
+//            }
+//            return false;
+//        } catch (IllegalStateException e) {
+//            logger.warn("Unable to acquire template", e);
+//            return false;
+//        }
+//    }
 
     /**
      * @return the relatedPI

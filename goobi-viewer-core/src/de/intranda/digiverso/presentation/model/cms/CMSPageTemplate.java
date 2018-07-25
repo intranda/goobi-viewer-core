@@ -178,6 +178,7 @@ public class CMSPageTemplate {
         CMSPage page = new CMSPage();
         page.setTemplateId(id);
         page.setPublished(false);
+        page.setMayContainUrlParameters(this.isAppliesToExpandedUrl());
         for (Locale locale : locales) {
             CMSPageLanguageVersion langVersion = createNewLanguageVersion(page, locale.getLanguage());
             page.getLanguageVersions().add(langVersion);

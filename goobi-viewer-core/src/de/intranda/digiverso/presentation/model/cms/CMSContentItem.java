@@ -290,6 +290,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.tocPI = blueprint.tocPI;
         this.collectionDisplayParents = blueprint.collectionDisplayParents;
         this.ownerPageLanguageVersion = owner;
+        this.solrQuery = blueprint.solrQuery;
+        this.solrSortFields = blueprint.solrSortFields;
+        
         
     }
 
