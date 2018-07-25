@@ -19,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import com.ocpsoft.pretty.PrettyContext;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
@@ -150,12 +153,21 @@ public class ViewerPathBuilder {
      * @throws DAOException 
      */
     public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
-        return DataManager.getInstance().getDao().getAllCMSPages().stream()
-                .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
-//                .peek(page -> System.out.println("Found page " + page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
-                .filter(page -> startsWith(servicePath, page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
-                .sorted((page1, page2) -> Integer.compare(page2.getPersistentUrl().length(), page1.getPersistentUrl().length()))
-                .findFirst();
+        
+        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
+        //check pages with longer persistent url first because they have a narrower match and should be preferred
+        Collections.sort(cmsPages, (p1, p2) -> Integer.compare(StringTools.getLength(p2.getPersistentUrl()), StringTools.getLength(p1.getPersistentUrl())));
+        for (CMSPage cmsPage : cmsPages) {
+            String pagePath = cmsPage.getPersistentUrl();
+            if(StringUtils.isNotBlank(pagePath)) {
+                pagePath = pagePath.replaceAll("^\\/|\\/$", "").trim();
+                if(startsWith(servicePath, pagePath)) {
+                    return Optional.of(cmsPage);
+                }
+            }
+        }
+        return Optional.empty();
+
     }
     
     /**

@@ -439,13 +439,15 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        return DataManager.getInstance().getDao().getAllCMSPages().stream().peek(page -> {
+        List<CMSPage> pages =  DataManager.getInstance().getDao().getAllCMSPages();
+        pages.forEach(page -> {
             PageValidityStatus validityStatus = isPageValid(page);
             page.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
                 page.getSidebarElements().forEach(element -> element.deSerialize());
             }
-        }).collect(Collectors.toList());
+        });
+        return pages;
     }
 
     /**
@@ -1156,14 +1158,14 @@ public class CmsBean implements Serializable {
     private List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
-        if (staticPages == null || staticPages.isEmpty()) {
-            //resore from old schema
-            staticPages = getAllCMSPages().stream()
-                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
-                    .map(cmsPage -> new CMSStaticPage(cmsPage))
-                    .distinct()
-                    .collect(Collectors.toList());
-        }
+//        if (staticPages == null || staticPages.isEmpty()) {
+//            //resore from old schema
+//            staticPages = getAllCMSPages().stream()
+//                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
+//                    .map(cmsPage -> new CMSStaticPage(cmsPage))
+//                    .distinct()
+//                    .collect(Collectors.toList());
+//        }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.name());

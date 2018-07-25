@@ -133,4 +133,17 @@ public class StringTools {
 
         return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
     }
+    
+    /**
+     *  Return the length of the given string, or 0 if the string is null
+     * @param s
+     * @return  the length of the string if it exists, 0 otherwise
+     */
+    public static int getLength(String s) {
+        if(StringUtils.isEmpty(s)) {
+            return 0;
+        } else {
+            return s.length();
+        }
+    }
 }
