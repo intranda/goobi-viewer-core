@@ -157,7 +157,7 @@ var viewerJS = ( function( viewer ) {
                     } );
                     
                     // show thumbs after they´ve been loaded
-                    $( '.timematrix-thumb img' ).load( function() {
+                    $( '.timematrix-thumb img' ).on("load", function() {
                         $( this ).css( {
                             visibility: 'visible'
                         } );
@@ -184,7 +184,7 @@ var viewerJS = ( function( viewer ) {
                         } );
                         
                         // check if image is loaded and reset loader
-                        $( '.timematrix-popover-body img' ).load( function() {
+                        $( '.timematrix-popover-body img' ).on("load", function() {
                             $( '.timematrix-popover-imageloader' ).hide();
                         } );
                     } );

@@ -146,7 +146,7 @@ var viewerJS = ( function( viewer ) {
                         $( '.rcg-lightbox-overlay' ).fadeIn( 'slow' );
                         
                         // first load image, then center it and show it up
-                        $( '.rcg-lightbox-image img' ).load( function() {
+                        $( '.rcg-lightbox-image img' ).on("load", function() {
                             viewer.responsiveColumnGallery.centerLightbox( $( '.rcg-lightbox-body' ) );
                             $( '.rcg-lightbox-body' ).show();
                         } );
