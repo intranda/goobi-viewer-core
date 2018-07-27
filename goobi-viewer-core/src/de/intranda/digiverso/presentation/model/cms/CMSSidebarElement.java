@@ -16,8 +16,6 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,12 +36,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.messages.Messages;
