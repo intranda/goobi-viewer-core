@@ -1306,11 +1306,11 @@ public final class SearchHelper {
         StringBuilder sbQuery = new StringBuilder();
         // Only search via the sorting field if not doing a wildcard search
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
-            sbQuery.append(bmfc.getSortField()).append(':');
+            sbQuery.append(bmfc.getSortField());
         } else {
-            sbQuery.append(bmfc.getField()).append(':');
+            sbQuery.append(bmfc.getField());
         }
-        sbQuery.append("[* TO *]");
+        sbQuery.append(":[* TO *]");
 
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
@@ -1451,9 +1451,9 @@ public final class SearchHelper {
                 continue;
             }
             String compareTerm = term;
-            //            if (StringUtils.isNotEmpty(sortTerm)) {
-            //                compareTerm = sortTerm;
-            //            }
+            if (StringUtils.isNotEmpty(sortTerm)) {
+                compareTerm = sortTerm;
+            }
             //            if (logger.isTraceEnabled() && StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
             //                logger.trace("compareTerm '{}' starts with '{}'", compareTerm, startsWith);
             //            }
