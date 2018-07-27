@@ -1946,4 +1946,19 @@ public class SearchBean implements Serializable {
         StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
         return struct;
     }
+
+    /**
+     * @return Parameter string for pretty:search5 URLs.
+     */
+    public String getCurrentSearchUrlPart() {
+        return new StringBuilder().append("/-/")
+                .append(getExactSearchString())
+                .append('/')
+                .append(getCurrentPage())
+                .append('/')
+                .append(getSortString())
+                .append('/')
+                .append(facets.getCurrentFacetString())
+                .toString();
+    }
 }
