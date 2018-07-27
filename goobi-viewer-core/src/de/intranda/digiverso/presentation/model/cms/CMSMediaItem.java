@@ -99,6 +99,37 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Column(name = "display_order", nullable = true)
     private int displayOrder = 0;
 
+    /**
+     * default constructor
+     */
+    public CMSMediaItem() {
+    }
+
+    /**
+     * copy constructor
+     * 
+     * @param currentMediaItem
+     */
+    public CMSMediaItem(CMSMediaItem orig) {
+        if(orig.id != null) {            
+            this.id = new Long(orig.id);
+        }
+        this.fileName = orig.fileName;
+        this.link = orig.link;
+        this.priority = orig.priority;
+        this.collection = new Boolean(orig.collection);
+        this.collectionField = orig.collectionField;
+        this.collectionName = orig.collectionName;
+        this.displayOrder = orig.displayOrder;
+        this.displaySize = orig.displaySize;
+        this.tags = new ArrayList<>(orig.tags);
+
+        for (CMSMediaItemMetadata origMetadata : orig.metadata) {
+            CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
+            this.metadata.add(copy);
+        }
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -178,7 +209,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
             }
         }
 
-        return null;
+        CMSMediaItemMetadata md = new CMSMediaItemMetadata();
+        md.setLanguage(language);
+        this.metadata.add(md);
+        return md;
     }
 
     /**

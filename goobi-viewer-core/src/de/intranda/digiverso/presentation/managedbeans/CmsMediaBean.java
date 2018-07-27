@@ -35,6 +35,7 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dbunit.util.concurrent.SynchronousChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,7 @@ public class CmsMediaBean implements Serializable {
     private ImageFileUploadThread uploadThread;
     private int uploadProgress;
     private String selectedTag;
+    private Locale selectedLocale = CmsBean.getCurrentLocale();
     //    private List<CMSMediaItem> mediaItems;
 
     public String uploadMedia() {
@@ -202,10 +204,11 @@ public class CmsMediaBean implements Serializable {
     }
 
     public void setCurrentMediaItem(CMSMediaItem currentMediaItem) {
-        this.currentMediaItem = currentMediaItem;
+        this.currentMediaItem = new CMSMediaItem(currentMediaItem);
         mediaFile = null;
         filePart = null;
         resetUploadThread();
+
     }
 
     public File getMediaFile() {
@@ -270,10 +273,10 @@ public class CmsMediaBean implements Serializable {
         if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
             DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
-            setCurrentMediaItem(null);
+//            setCurrentMediaItem(null);
         } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
             DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
-            setCurrentMediaItem(null);
+//            setCurrentMediaItem(null);
         }
     }
 
@@ -465,6 +468,20 @@ public class CmsMediaBean implements Serializable {
     public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
         Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
         return sizes;
+    }
+    
+    /**
+     * @return the selectedLanguage
+     */
+    public Locale getSelectedLocale() {
+        return selectedLocale;
+    }
+    
+    /**
+     * @param selectedLanguage the selectedLanguage to set
+     */
+    public void setSelectedLocale(Locale selectedLocale) {
+        this.selectedLocale = selectedLocale;
     }
 
 }

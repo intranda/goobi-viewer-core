@@ -30,6 +30,23 @@ public class CMSMediaItemMetadata {
     @Column(name = "description")
     private String description;
 
+    /**
+     * default constructor
+     */
+    public CMSMediaItemMetadata() {
+        
+    }
+    
+    /**
+     * copy constructor
+     * @param origMetadata
+     */
+    public CMSMediaItemMetadata(CMSMediaItemMetadata orig) {
+        this.language = orig.language;
+        this.name = orig.name;
+        this.description = orig.description;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */

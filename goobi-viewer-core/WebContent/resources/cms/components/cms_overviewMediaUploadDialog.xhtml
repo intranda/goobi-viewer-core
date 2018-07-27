@@ -29,6 +29,7 @@
                                 <h4 class="modal-title" id="myModalLabel">#{msg.cms_media_editFile}</h4>
                             </h:panelGroup>
                         </div>
+                        <h:panelGroup id="modalData">
                         <div class="modal-body">
                             <!-- UPLOAD NEW FILE -->
                             <h:panelGroup rendered="#{cmsMediaBean.newMedia}">
@@ -60,6 +61,9 @@
                                         <ul class="nav nav-tabs" role="tablist">
                                             <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                 <li role="presentation" class="#{cmsBean.defaultLocale == locale ? 'active':''}">
+<!--                                                 <h:commandLink value="#{locale.language}" action="#{cmsMediaBean.setSelectedLocale(locale)}"> -->
+<!--                                                     <f:ajax execute="modalData" render="modalData" /> -->
+<!--                                                 </h:commandLink> -->
                                                     <a href="##{locale.language}" aria-controls="##{locale.language}" role="tab" data-toggle="tab">#{locale}</a>
                                                 </li>
                                             </c:forEach>
@@ -222,6 +226,7 @@
 								</div>
                             </div>
                         </div>
+                        </h:panelGroup>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-confirm" data-dismiss="modal" onclick="cmsJS.tagList.close()">#{msg.cancel}</button>
 

@@ -2391,6 +2391,25 @@ public class JPADAO implements IDAO {
             return false;
         }
     }
+    
+    private boolean updateFromDatabase(Long id, Class clazz) {
+        Object o = null;
+        try {
+            o = this.em.getReference(clazz, id);
+            this.em.refresh(o);
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
+            return false;
+        } catch (EntityNotFoundException e) {
+            logger.debug("CMSPage with ID '{}' not found in database.", id);
+            //remove from em as well
+            if (o != null) {
+                em.remove(o);
+            }
+            return false;
+        }
+    }
 
     /**
      * @throws DAOException
@@ -2491,7 +2510,7 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(item);
             em.getTransaction().commit();
-            return true;
+            return updateFromDatabase(item.getId(), item.getClass());
         } finally {
             em.close();
         }
