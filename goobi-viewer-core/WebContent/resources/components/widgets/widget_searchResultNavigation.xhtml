@@ -48,7 +48,7 @@
 				</div>
 
 				<div class="search-result-navigation-back-to-collection">
-					<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" value="#{navigationHelper.applicationUrl}searchList">
+					<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" value="#{navigationHelper.applicationUrl}search/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
 						<img 
 							src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/backToHitlist.png"
 							title="#{msg.returnToHitlist}"
