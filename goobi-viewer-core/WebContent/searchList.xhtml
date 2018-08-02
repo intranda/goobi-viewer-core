@@ -168,12 +168,12 @@
                                             <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
                                             <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                                 <option
-                                                    value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
+                                                    value="#{searchBean.currentSearchUrlRoot}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
                                                     data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
                                                     <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
                                                 </option>
                                                 <option
-                                                    value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
+                                                    value="#{searchBean.currentSearchUrlRoot}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
                                                     data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
                                                     <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
                                                 </option>

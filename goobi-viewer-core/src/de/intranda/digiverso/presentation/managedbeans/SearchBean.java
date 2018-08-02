@@ -1948,6 +1948,20 @@ public class SearchBean implements Serializable {
     }
 
     /**
+     * 
+     * @return "search" or "searchadvanced", depending on the activeSearchType value
+     */
+    public String getCurrentSearchUrlRoot() {
+        switch (activeSearchType) {
+            case 1:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/searchadvanced";
+            default:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search";
+        }
+
+    }
+
+    /**
      * @return Parameter string for pretty:search5 URLs.
      */
     public String getCurrentSearchUrlPart() {
