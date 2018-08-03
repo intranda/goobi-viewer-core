@@ -49,7 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
 /**
- * Resource for delivering content documents such as ALTO and plain full-text.
+ * Resource for delivering norm data.
  */
 @Path("/normdata")
 @ViewerRestServiceBinding
