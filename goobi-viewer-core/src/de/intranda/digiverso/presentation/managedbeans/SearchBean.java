@@ -670,6 +670,24 @@ public class SearchBean implements Serializable {
     }
 
     /**
+     * Getter for the invisible (empty) search string. Used for the search field widget for when no search input display is desired.
+     * 
+     * @return empty string
+     */
+    public String getInvisibleSearchString() {
+        return "";
+    }
+
+    /**
+     * The setter for the invisible search string. Performs all regular settings.
+     * 
+     * @param invisibleSearchString
+     */
+    public void setInvisibleSearchString(String invisibleSearchString) {
+        setSearchString(invisibleSearchString);
+    }
+
+    /**
      * @return the searchString
      */
     public String getSearchString() {
