@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.model.metadata;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,7 +153,30 @@ public class MetadataValue implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @param key
+     * @return Not URL-encoded norm data URL
+     */
     public String getNormDataUrl(String key) {
+        return getNormDataUrl(key, false);
+    }
+
+    /**
+     * 
+     * @param key
+     * @param urlEncode
+     * @return if urlEncode=true, then URL-encoded norm data URL; otherwise not encoded norm data URL
+     */
+    public String getNormDataUrl(String key, boolean urlEncode) {
+        if (urlEncode) {
+            try {
+                return URLEncoder.encode(normDataUrls.get(key), Helper.DEFAULT_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
         return normDataUrls.get(key);
     }
 
@@ -178,7 +203,7 @@ public class MetadataValue implements Serializable {
         if (StringUtils.isEmpty(masterValue)) {
             return "{0}";
         }
-        
+
         return masterValue;
     }
 

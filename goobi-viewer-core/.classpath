@@ -119,7 +119,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mods_3-5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/nekohtml-1.9.14.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/noggit-0.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/normdataimporter.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/normdataimporter.jar" sourcepath="/NormDataImporter"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.apache.oltu.oauth2.client-1.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.apache.oltu.oauth2.common-1.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.apache.oltu.oauth2.httpclient4-1.0.1.jar"/>

@@ -5065,8 +5065,9 @@ var viewerJS = ( function( viewer ) {
                     if ( v.url ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;
-                        html += '/api?action=normdata&amp;url=';
-                        html += v.url;
+                        html += '/rest/normdata/get/';
+                        html += encodeURIComponent(v.url);
+                        html += '/de/'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
                         html += '<i class="fa fa-list-ul" aria-hidden="true"></i>';
                         html += '<div class="normdata-preloader"></div>';
@@ -5209,7 +5210,7 @@ var viewerJS = ( function( viewer ) {
         
         var data = $.ajax( {
             url: decodeURI( url ),
-            type: "POST",
+            type: "GET",
             dataType: "JSON",
             async: false,
             success: function() {

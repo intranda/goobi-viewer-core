@@ -20,11 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -42,12 +40,8 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.normdataimporter.NormDataImporter;
-import de.intranda.digiverso.normdataimporter.model.NormData;
-import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -357,79 +351,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                         return;
-                    }
-                }
-                    break;
-                case "normdata": {
-                    String[] urlParameter = request.getParameterMap().get("url");
-                    if (urlParameter == null || urlParameter.length == 0 || StringUtils.isEmpty(urlParameter[0])) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "url missing.");
-                        return;
-                    }
-                    String url = urlParameter[0];
-
-                    Locale locale = Locale.getDefault();
-                    String[] langParameter = request.getParameterMap().get("lang");
-                    if (langParameter != null && langParameter.length != 0 && StringUtils.isNotEmpty(langParameter[0])) {
-                        String lang = langParameter[0];
-                        switch (lang) {
-                            case "de":
-                                locale = Locale.GERMAN;
-                                break;
-                            case "en":
-                                locale = Locale.ENGLISH;
-                                break;
-                            default:
-                                locale = new Locale(lang);
-                                break;
-                        }
-                    }
-                    //                logger.debug("norm data locale: " + locale.toString());
-
-                    Map<String, List<NormData>> normDataMap = NormDataImporter.importNormData(url);
-                    if (normDataMap != null) {
-                        JSONArray jsonArray = new JSONArray();
-                        for (String key : normDataMap.keySet()) {
-                            JSONObject jsonObj = new JSONObject();
-                            for (NormData normData : normDataMap.get(key)) {
-                                if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey())) {
-                                    continue;
-                                }
-                                String translation = Helper.getTranslation(normData.getKey(), locale);
-                                String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
-                                for (NormDataValue value : normData.getValues()) {
-                                    List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
-                                    if (jsonObj.get(translatedKey) == null) {
-                                        valueList = new ArrayList<>();
-                                        jsonObj.put(translatedKey, valueList);
-                                    }
-                                    Map<String, String> valueMap = new HashMap<>();
-                                    if (value.getText() != null) {
-                                        if (value.getText().startsWith("<div ")) {
-                                            // Hack to discriminate pre-build HTML page
-                                            valueMap.put("html", value.getText());
-                                        } else {
-                                            valueMap.put("text", value.getText());
-                                        }
-                                    }
-                                    if (value.getIdentifier() != null) {
-                                        valueMap.put("identifier", value.getIdentifier());
-                                    }
-                                    if (value.getUrl() != null) {
-                                        valueMap.put("url", value.getUrl());
-                                    }
-                                    valueList.add(valueMap);
-                                    // If no text found, use the identifier
-                                    if (valueMap.get("text") == null) {
-                                        valueMap.put("text", valueMap.get("identifier"));
-                                    }
-                                    //                                logger.debug(jsonObj.toJSONString());
-                                }
-                            }
-                            jsonArray.add(jsonObj);
-                            break; // break after first
-                        }
-                        ret.append(jsonArray.toJSONString());
                     }
                 }
                     break;
