@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
 import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
@@ -47,7 +46,7 @@ public final class DataManager {
 
     private Configuration configuration;
 
-    private LanguageHelper languageHelper;    
+    private LanguageHelper languageHelper;
 
     private SolrSearchIndex searchIndex;
 
@@ -159,7 +158,7 @@ public final class DataManager {
     }
 
     /**
-     * @return the searchIndex
+     * @return the configuration
      */
     public Configuration getConfiguration() {
         if (configuration == null) {
