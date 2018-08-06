@@ -277,10 +277,6 @@ public class ConfigurationBean implements Serializable {
         return isCmsEnabledStatic() && DataManager.getInstance().getConfiguration().useCustomNavBar();
     }
 
-    public boolean isMenuBrowsingVisibleInSearchList() {
-        return !DataManager.getInstance().getConfiguration().isDisableMenuBrowsingOnSearchList();
-    }
-
     public boolean useOpenSeadragon() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useOpenSeadragon();
     }

@@ -978,15 +978,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isDisableMenuBrowsingOnSearchList()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisableMenuBrowsingOnSearchList_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisableMenuBrowsingOnSearchList());
-    }
-
-    /**
      * @see Configuration#isDisplaySearchResultNavigation()
      * @verifies return correct value
      */

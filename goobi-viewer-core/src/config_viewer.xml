@@ -373,7 +373,6 @@
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
 				<field>MD_SHELFMARK</field>
-				+
 			</searchFields>
 		</advanced>
 		<timeline>
@@ -1173,11 +1172,6 @@
 		<!-- displayMetadataPageLinkBlock: if false, the links on the bottom of 
 			the metadata view are hidden -->
 		<displayMetadataPageLinkBlock>true</displayMetadataPageLinkBlock>
-
-		<!-- disableMenuBrowsingOnSearchList: do not display the term browsing 
-			menu when displaying search results (default is false) -->
-		<disableMenuBrowsingOnSearchList>false
-		</disableMenuBrowsingOnSearchList>
 
 		<!-- displayStatistics: if false, statistics link is hidden (default is 
 			true) -->
