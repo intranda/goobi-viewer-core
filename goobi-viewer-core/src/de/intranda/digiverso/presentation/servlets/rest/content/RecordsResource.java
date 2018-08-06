@@ -16,8 +16,10 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,11 +83,11 @@ public class RecordsResource {
     }
 
     /**
-     * Retrieves JSON representation of norm data fetched via the given URL.
+     * Returns a JSON array containing time matrix content data for the given Solr query and size.
      * 
-     * @param query
-     * @param count
-     * @return
+     * @param query Solr query
+     * @param count Max number of records
+     * @return JOSN array
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -100,8 +102,9 @@ public class RecordsResource {
     @GET
     @Path("/timematrix/q/{query}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getTimeMatrix(@PathParam("query") String query, @PathParam("count") int count) throws MalformedURLException, ContentNotFoundException,
-            ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public String getTimeMatrix(@PathParam("query") String query, @PathParam("count") int count) throws MalformedURLException,
+            ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        logger.trace("getTimeMatrix({}, {})", query, count);
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -144,14 +147,27 @@ public class RecordsResource {
         return jsonArray.toJSONString();
     }
 
+    /**
+     * Returns a JSON array containing time matrix content data for the given date range and size.
+     * 
+     * @param startDate Lower date limit
+     * @param endDate Upper date limit
+     * @param count Max number of records
+     * @return JSON array
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
+     */
     @GET
     @Path("/timematrix/range/{startDate}/{endDate}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getTimeMatrix(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("count") int count)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException,
             ViewerConfigurationException {
-        logger.trace("getTimeMatrix");
-        // Example ?action=timeline&startDate=1900&endDate=1950&count=10
+        logger.trace("getTimeMatrix({}, {}, {})", startDate, endDate, count);
         if (StringUtils.isEmpty(startDate)) {
             throw new ContentNotFoundException("startDate required");
         }
@@ -171,5 +187,109 @@ public class RecordsResource {
                 .toString();
 
         return getTimeMatrix(query, count);
+    }
+
+    /**
+     * 
+     * @param query Solr query
+     * @param sortFieldArray
+     * @param sortOrder
+     * @param jsonFormat
+     * @param count Max number of records
+     * @param randomize If true, the result will contain random records within the given search parameters
+     * @return JSON array
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
+    @GET
+    @Path("/q/{query}/{sortFields}/{sortOrder}/{jsonFormat}/{count}/{randomize}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getRecordsForQuery(@PathParam("query") String query, @PathParam("sortFields") String sortFields,
+            @PathParam("sortOrder") String sortOrder, @PathParam("jsonFormat") String jsonFormat, @PathParam("count") int count,
+            @PathParam("randomize") boolean randomize) throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException,
+            IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
+        if (StringUtils.isEmpty(query)) {
+            throw new ContentNotFoundException("query required");
+        }
+
+        // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
+        query = new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        logger.trace("query: {}", query);
+
+        if (count <= 0) {
+            count = SolrSearchIndex.MAX_HITS;
+        }
+
+        List<StringPair> sortFieldList = new ArrayList<>();
+        if (!"-".equals(sortFields)) {
+            String[] sortFieldArray = sortFields.split(";");
+            for (String sortField : sortFieldArray) {
+                if (StringUtils.isNotEmpty(sortField)) {
+                    sortFieldList.add(new StringPair(sortField, sortOrder));
+                }
+            }
+            logger.trace("sortFields: {}", sortFields.toString());
+        }
+        logger.trace("count: {}", count);
+        logger.trace("sortOrder: {}", sortOrder);
+        logger.trace("randomize: {}", randomize);
+        logger.trace("jsonFormat: {}", jsonFormat);
+
+        if (randomize) {
+            sortFieldList.clear();
+            // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
+            Random random = new Random();
+            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), (!"-".equals(sortOrder)) ? sortOrder : "asc"));
+            logger.trace("sortFields: {}", sortFields);
+        }
+
+        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFieldList, null, null).getResults();
+        JSONArray jsonArray = null;
+        switch (jsonFormat) {
+            case "datecentric":
+                jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+                break;
+            default:
+                jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+                break;
+        }
+        if (jsonArray == null) {
+            jsonArray = new JSONArray();
+        }
+
+        return jsonArray.toJSONString();
+    }
+
+    /**
+     * Returns the hit count for the given query in a JSON object.
+     * 
+     * @param query
+     * @return JSON object containing the count
+     * @throws ContentNotFoundException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @SuppressWarnings("unchecked")
+    @GET
+    @Path("/count/{query}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getCount(@PathParam("query") String query) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
+        if (StringUtils.isEmpty(query)) {
+            throw new ContentNotFoundException("query required");
+        }
+        // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
+        query = new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        logger.debug("q: {}", query);
+
+        long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("count", count);
+
+        return jsonObject.toJSONString();
     }
 }

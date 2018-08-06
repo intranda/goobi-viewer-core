@@ -50,7 +50,10 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * Web API servlet.
+ * 
+ * @deprecated Use the corresponding REST services at /rest/records/*.
  */
+@Deprecated
 public class WebApiServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -311,18 +314,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         return;
                     }
                     logger.debug("q: {}", query);
-
-                    String[] sortOrder = request.getParameterMap().get("sortOrder");
-                    if (sortOrder != null && "desc".equals(sortOrder[0])) {
-                    }
-
-                    String jsonFormat = "";
-                    String[] jsonFormatParameter = request.getParameterMap().get("jsonFormat");
-                    if (jsonFormatParameter != null && StringUtils.isNotEmpty(jsonFormatParameter[0])) {
-                        jsonFormat = String.valueOf(jsonFormatParameter[0]);
-                        logger.trace("jsonFormat: {}", jsonFormat);
-                    }
-
                     try {
                         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
 
@@ -353,7 +344,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
             response.getWriter().write(ret.toString());
         }
     }
-
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
