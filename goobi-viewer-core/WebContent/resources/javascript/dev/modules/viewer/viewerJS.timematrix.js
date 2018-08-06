@@ -31,14 +31,14 @@ var viewerJS = ( function( viewer ) {
     var _apiData = null;
     var _defaults = {
         contextPath: null,
-        apiQuery: 'api?action=timeline',
-        startDateQuery: '&startDate=',
+        apiQuery: 'rest/records/timematrix/range',
+        startDateQuery: '/',
         rangeInput1: null,
         startDate: null,
-        endDateQuery: '&endDate=',
+        endDateQuery: '/',
         rangeInput2: null,
         endDate: null,
-        countQuery: '&count=',
+        countQuery: '/',
         count: null,
         $tmCanvas: null,
         $tmCanvasPos: null,
@@ -143,6 +143,7 @@ var viewerJS = ( function( viewer ) {
                 apiTarget += _defaults.endDate;
                 apiTarget += _defaults.countQuery;
                 apiTarget += _defaults.count;
+                apiTarget += '/';
                 
                 // get data from api
                 _promise = viewer.helper.getRemoteData( apiTarget );

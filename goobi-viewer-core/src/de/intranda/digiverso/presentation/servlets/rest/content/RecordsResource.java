@@ -150,6 +150,7 @@ public class RecordsResource {
     public String getTimeMatrix(@PathParam("startDate") String startDate, @PathParam("endDate") String endDate, @PathParam("count") int count)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException,
             ViewerConfigurationException {
+        logger.trace("getTimeMatrix");
         // Example ?action=timeline&startDate=1900&endDate=1950&count=10
         if (StringUtils.isEmpty(startDate)) {
             throw new ContentNotFoundException("startDate required");
