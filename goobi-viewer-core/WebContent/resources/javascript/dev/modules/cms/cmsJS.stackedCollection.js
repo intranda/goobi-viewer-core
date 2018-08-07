@@ -26,7 +26,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _toggleAttr = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
@@ -94,33 +94,42 @@ var cmsJS = ( function( cms ) {
         var panelBody = null;
         
         // create members
-        data.collections.forEach( function( member ) {
-            console.log("creationg collection ", member);
+        data.members.forEach( function( member ) {
+            if(_debug) {                
+                console.log("creationg collection ", member);
+            }
             // increase counter
             counter++;
             // create panels
             panel = $( '<div />' ).addClass( 'panel' );
+
             // create panel title
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
-            panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getMetadataValue( member, 'volumes') + ')' );
+            panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getContainedWorks( member) + ')' );
             // check if subcollections exist
-            if ( _getMetadataValue( member, 'subCollections') > 0 ) {
+            if ( _getChildCollections( member) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
             }
             else {
-                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
+                var viewerLink = _getRendering(member, "goobi viewer");
+                if(viewerLink) {                    
+                    panelTitleLink.attr( 'href', viewerLink[ '@id' ] );
+                }
             }
             panelTitle.append( panelTitleLink );
             // create RSS link
-            panelRSS = $( '<div />' ).addClass( 'panel-rss' );
-            panelRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
-            panelRSS.append( panelRSSLink );
+            var rss = _getRelated(member, "Rss feed");
+            if(rss) {                
+                panelRSS = $( '<div />' ).addClass( 'panel-rss' );
+                panelRSSLink = $( '<a />' ).attr( 'href', rss[ '@id' ] ).attr( 'target', '_blank' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+                panelRSS.append( panelRSSLink );
+            }
             // create panel thumbnail if exist
             panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
-                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
+                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail['@id'] ).addClass( 'img-responsive' );
                 panelThumbnail.append( panelThumbnailImage );
             }
             else {
@@ -143,6 +152,84 @@ var cmsJS = ( function( cms ) {
             $( _defaults.collectionsSelector ).append( panelGroup );
         } );
     }
+    
+    /**
+     * Returns the collection's rendering element with the given label
+     * 
+     * @param collection
+     * @param label
+     * @returns
+     */
+    function _getRendering(collection, label) {
+        if(collection.rendering) {
+            if(Array.isArray(collection.rendering)) {                
+                for(var index in collection.rendering) {
+                    var rendering = collection.rendering[index];
+                    if(rendering.label == label) {
+                        return rendering;
+                    }
+                }
+            } else {
+                return collection.rendering;
+            }
+        }
+    }
+    
+    /**
+     * Returns the collection's related element with the given label
+     * 
+     * @param collection
+     * @param label
+     * @returns
+     */
+    function _getRelated(collection, label) {
+        if(collection.related) {
+            if(Array.isArray(collection.related)) {                
+                for(var index in collection.related) {
+                    var related = collection.related[index];
+                    if(related.label == label) {
+                        return related;
+                    }
+                }
+            } else {
+                return collection.related;
+            }
+        }
+    }
+    
+    /**
+     * Returns the number of subcollections of a given iiif collection json element
+     * The number is based in the service defined by '<rest-url>/api/collections/extent/context.json'
+     * If no matching service is available, 0 is returned
+     * 
+     * @param collection
+     * @returns
+     */
+    function _getChildCollections(collection) {
+        if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
+             return collection.service.children;
+        } else {
+            return 0;
+        }
+    }
+    
+    /**
+     * Returns the number of contained works of a given iiif collection json element
+     * The number is based in the service defined by '<rest-url>/api/collections/extent/context.json'
+     * If no matching service is available, 0 is returned
+     *
+     * @param collection
+     * @returns
+     */
+    function _getContainedWorks(collection) {
+        if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
+            return collection.service.containedWorks;
+        } else {
+            return 0;
+        }
+    }
+    
+    
     
     /**
      * parses the given element to return the appropriate String value for the given language.
@@ -208,6 +295,16 @@ var cmsJS = ( function( cms ) {
         return value;
     }
     
+    function _isCollection(element) {
+        var type = element['@type'];
+        var viewingHint = element.viewingHint;
+        if(type == 'sc:Collection' && viewingHint != 'multi-part') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Method which renders the subcollections.
      * 
@@ -235,12 +332,23 @@ var cmsJS = ( function( cms ) {
         } ).then( function( data ) {
             subCollectionItem = $( '<li />' );
             
-            if ( !$.isEmptyObject( data.collections ) ) {
+            
+            var members = [];
+            if(data.members) {                
+                for ( var index in data.members ) {
+                    var member = data.members[index];
+                    if(_isCollection(member)) {
+                        members.push(member);
+                    }
+                }
+            }
+            
+            if ( !$.isEmptyObject( members ) ) {
                 // add subcollection items
-                data.collections.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( _getValue(member.label, _defaults.displayLanguage) + ' ('
-                            + _getMetadataValue( member, 'volumes') + ')' );
-                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
+                members.forEach( function( member ) {
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', _getRendering(member, "goobi viewer")[ '@id' ] ).addClass( 'panel-body__collection' ).text( _getValue(member.label, _defaults.displayLanguage) + ' ('
+                            + _getContainedWorks( member) + ')' );
+                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', _getRelated(member, "Rss feed")[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
                             .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item
                     subCollectionItem.append( subCollectionItemLink ).append( subCollectionItemRSSLink );
@@ -248,8 +356,9 @@ var cmsJS = ( function( cms ) {
                 } );
             }
             else {
+//                console.log("rendering ", _getRendering(data, "goobi viewer"));
                 // create empty item link
-                subCollectionItemLink = $( '<a />' ).attr( 'href', data.rendering[ '@id' ] ).text( _defaults.msg.noSubCollectionText + '.' );
+                subCollectionItemLink = $( '<a />' ).attr( 'href', _getRendering(data, "goobi viewer")[ '@id' ] ).text( _defaults.msg.noSubCollectionText + '.' );
                 // build empty item
                 subCollectionItem.append( subCollectionItemLink );
                 subCollections.append( subCollectionItem );

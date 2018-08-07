@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import de.intranda.digiverso.presentation.model.iiif.presentation.CollectionExtent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
+import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
@@ -81,6 +82,24 @@ public class ContentLinkSerializer extends JsonSerializer<List<IPresentationMode
             generator.writeObjectField("service", element.getService(CollectionExtent.class));
         }
         
+        if (element.getRendering() != null && !element.getRendering().isEmpty()) {
+            generator.writeFieldName("rendering");
+            generator.writeStartArray();
+            for (LinkingContent renderLink : element.getRendering()) {
+                generator.writeObject(renderLink);
+            }
+            generator.writeEndArray();
+        }
+        
+        if (element.getRelated() != null && !element.getRelated().isEmpty()) {
+            generator.writeFieldName("related");
+            generator.writeStartArray();
+            for (LinkingContent renderLink : element.getRelated()) {
+                generator.writeObject(renderLink);
+            }
+            generator.writeEndArray();
+        }
+         
         if (element instanceof Range) {
             if(((Range) element).getStartCanvas() != null) {       
                 generator.writeObjectField("startCanvas", ((Range) element).getStartCanvas().getId());

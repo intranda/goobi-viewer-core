@@ -569,7 +569,7 @@
 				</metadata>
 				<metadata label="MD_COMPOSER" value="MASTERVALUE_WIKINORM"
 					group="true">
-					<param type="field" key="MD_DISPLAYFORM" />
+					<param type="field" key="einMD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
 					<param type="field" key="NORM_URI" />
 					<param type="field" key="NORM_URIGND" />

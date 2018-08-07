@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Comparator;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -26,6 +28,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * Collection tree element.
@@ -244,6 +247,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getRssUrl() {
         StringBuilder sb = new StringBuilder();
         sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=(DC:").append(name)
+                .append(" OR DC:").append(name).append(".*) AND (ISWORK:true OR ISANCHOR:true)");
+
+        return sb.toString();
+    }
+    
+    public String getRssUrl(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ServletUtils.getServletPathWithHostAsUrlFromRequest(request)).append('/').append(NavigationHelper.URL_RSS).append("?q=(DC:").append(name)
                 .append(" OR DC:").append(name).append(".*) AND (ISWORK:true OR ISANCHOR:true)");
 
         return sb.toString();

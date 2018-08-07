@@ -101,8 +101,11 @@ public abstract class AbstractBuilder {
     }
 
     protected URI absolutize(URI uri) throws URISyntaxException {
-
-        return getServletURI().resolve(uri);
+        if(uri != null && !uri.isAbsolute()) {     
+            return new URI(getServletURI().toString() + uri.toString());
+        } else {
+            return uri;
+        }
     }
 
     /**

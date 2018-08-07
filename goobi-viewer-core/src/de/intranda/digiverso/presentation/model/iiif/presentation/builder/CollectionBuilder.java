@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.CollectionExtent;
@@ -46,8 +47,10 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
+import de.intranda.digiverso.presentation.model.viewer.SimpleBrowseElementInfo;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 
 /**
@@ -229,7 +232,14 @@ public class CollectionBuilder extends AbstractBuilder {
 
             if (baseElement != null) {
                 
-                collection.setLabel(baseElement.getInfo().getTranslationsForName());
+                BrowseElementInfo info = baseElement.getInfo();
+                if(info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {                    
+                    collection.setLabel(info.getTranslationsForName());
+                } else {
+                    collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
+                }
+
+                
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if(thumbURI != null) {                    
@@ -241,12 +251,18 @@ public class CollectionBuilder extends AbstractBuilder {
                 int subCollections = baseElement.getChildren().size();
                 collection.addService(new CollectionExtent(subCollections, (int)volumes));
                 
-                LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
+                LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
-                LinkingContent viewer =
-                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
-                collection.addRendering(viewer);
+//              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
+              LinkingContent viewerPage = new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)));
+              viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+              collection.addRendering(viewerPage);
+//          }
+                
+//                LinkingContent viewer =
+//                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
+//                collection.addRendering(viewer);
 
             } else {
                 collection.setViewingHint(ViewingHint.top);

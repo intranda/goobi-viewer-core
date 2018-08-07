@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -319,14 +320,15 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public URI getLinkURI(HttpServletRequest request) {
 
         if (StringUtils.isNotBlank(getLink())) {
+            String link = StringTools.decodeUrl(getLink());
             try {
-                URI uri = new URI(getLink());
+                URI uri = new URI(link);
                 if (!uri.isAbsolute()) {
                     String viewerURL = "/";
                     if (request != null) {
                         viewerURL = request.getContextPath();
                     }
-                    String urlString = (viewerURL + getLink()).replace("//", "/");
+                    String urlString = (viewerURL + link).replace("//", "/");
                     uri = new URI(urlString);
                 }
                 return uri;
