@@ -406,18 +406,18 @@
             if(source && !element.src) { 
                 var accessDenied = currentPath + _defaults.accessDeniedImage;
                 var notFound = currentPath + _defaults.notFoundImage;
-                Q($.ajax({
+                $.ajax({
                     url: source,
                     cache: true,
                     xhrFields: {
                         responseType: 'blob'
-                    }
-                }))
-                .then(function(blob) {
+                    },
+                })
+                .done(function(blob) {
                     var url = window.URL || window.webkitURL;
                     element.src = url.createObjectURL(blob);
                 })
-                .catch(function(error) {
+                .fail(function(error) {
                     var status = error.status;
                         switch(status) {
                             case 403:
@@ -427,6 +427,7 @@
                                 element.src = notFound;
                                 break;
                             default:
+                                element.src = source;
                         }
                     });                    
             }
