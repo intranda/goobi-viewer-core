@@ -2187,15 +2187,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isDisableMenuBrowsingOnSearchList() {
-        return getLocalBoolean("webGuiDisplay.disableMenuBrowsingOnSearchList", false);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
     public int getSearchHitMetadataValueNumber() {
         return getLocalInt("metadata.searchHitMetadataList.valueNumber", 1);
     }

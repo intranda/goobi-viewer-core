@@ -922,11 +922,6 @@
 			the metadata view are hidden -->
 		<displayMetadataPageLinkBlock>false</displayMetadataPageLinkBlock>
 
-		<!-- disableMenuBrowsingOnSearchList: do not display the term browsing 
-			menu when displaying search results (default is false) -->
-		<disableMenuBrowsingOnSearchList>true
-		</disableMenuBrowsingOnSearchList>
-
 		<!-- displayStatistics: if false, statistics link is hidden (default is 
 			true) -->
 		<displayStatistics>false</displayStatistics>

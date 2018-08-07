@@ -160,10 +160,11 @@ public class SearchHit implements Comparable<SearchHit> {
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
-        if (searchTerms != null) {
-            addLabelHighlighting();
-        }
         if (browseElement != null) {
+            if (searchTerms != null) {
+                //                addLabelHighlighting();
+                browseElement.setLabelShort(browseElement.getLabel());
+            }
             this.url = browseElement.getUrl();
         } else {
             this.url = null;
@@ -267,15 +268,19 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
         String labelShort = browseElement.getLabel();
+
         if (searchTerms.get(SolrConstants.DEFAULT) != null) {
             labelShort = SearchHelper.applyHighlightingToPhrase(labelShort, searchTerms.get(SolrConstants.DEFAULT));
         } else if (searchTerms.get("MD_TITLE") != null) {
             labelShort = SearchHelper.applyHighlightingToPhrase(labelShort, searchTerms.get("MD_TITLE"));
         }
+
         // Escape HTML tags
         labelShort = StringEscapeUtils.escapeHtml(labelShort);
+
         // Then replace highlighting placeholders with HTML tags
         labelShort = SearchHelper.replaceHighlightingPlaceholders(labelShort);
+
         browseElement.setLabelShort(labelShort);
     }
 
