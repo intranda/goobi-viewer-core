@@ -43,7 +43,7 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 @SessionScoped
 public class ContentBean implements Serializable {
 
-    private static final long serialVersionUID = -2656584301309913161L;
+    private static final long serialVersionUID = 3811544515374503924L;
 
     private static final Logger logger = LoggerFactory.getLogger(ContentBean.class);
 
