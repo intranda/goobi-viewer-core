@@ -34,7 +34,6 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
-import de.intranda.digiverso.presentation.model.crowdsourcing.UserGeneratedContent;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 
 /**
