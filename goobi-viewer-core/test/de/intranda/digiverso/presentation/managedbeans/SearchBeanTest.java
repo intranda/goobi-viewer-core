@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -352,5 +354,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
         SearchBean sb = new SearchBean();
         Assert.assertNull(sb.getSearchUrl());
+    }
+    
+    @Test
+    public void testGetHierarchicalFacets() {
+        String facetString = "DC:sonstiges.ocr.antiqua;;DOCSTRCT:monograph;;MD_TOPICS_UNTOKENIZED:schulbuch";
+        List<String> hierarchicalFacetFields = Arrays.asList(new String[]{"A", "MD_TOPICS","B", "DC", "C"});
+        
+        List<String> facets = SearchBean.getHierarchicalFacets(facetString, hierarchicalFacetFields);
+        Assert.assertEquals(2, facets.size());
+        Assert.assertEquals("sonstiges.ocr.antiqua", facets.get(1));
+        Assert.assertEquals("schulbuch", facets.get(0));
     }
 }
