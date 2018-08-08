@@ -342,10 +342,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks();
     }
 
-    @Deprecated
-    public boolean isTocTreeView() {
-        return false;
-    }
 
     public boolean showThumbnailsInToc() {
         return DataManager.getInstance().getConfiguration().showThumbnailsInToc();
@@ -434,9 +430,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSidebarTocPageNumbersVisible();
     }
 
-    public boolean isSidebarTocTreeView() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
-    }
 
     /**
      * @return
@@ -513,6 +506,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isTocTreeView(String docStructType) {
         return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
+    
+    public boolean isSidebarTocTreeView() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
+    }
+
 
     public int getSidebarTocLengthBeforeCut() {
         return DataManager.getInstance().getConfiguration().getSidebarTocLengthBeforeCut();
