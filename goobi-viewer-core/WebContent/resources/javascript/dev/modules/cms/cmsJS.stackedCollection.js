@@ -158,7 +158,7 @@ var cmsJS = ( function( cms ) {
      * 
      * @param collection
      * @param label
-     * @returns
+     * @returns the collection's rendering element with the given label
      */
     function _getRendering(collection, label) {
         if(collection.rendering) {
@@ -180,7 +180,7 @@ var cmsJS = ( function( cms ) {
      * 
      * @param collection
      * @param label
-     * @returns
+     * @returns the collection's related element with the given label
      */
     function _getRelated(collection, label) {
         if(collection.related) {
@@ -203,7 +203,7 @@ var cmsJS = ( function( cms ) {
      * If no matching service is available, 0 is returned
      * 
      * @param collection
-     * @returns
+     * @returns the number of subcollections of a given iiif collection json element
      */
     function _getChildCollections(collection) {
         if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
@@ -219,7 +219,7 @@ var cmsJS = ( function( cms ) {
      * If no matching service is available, 0 is returned
      *
      * @param collection
-     * @returns
+     * @returns the number of contained works of a given iiif collection json element
      */
     function _getContainedWorks(collection) {
         if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
