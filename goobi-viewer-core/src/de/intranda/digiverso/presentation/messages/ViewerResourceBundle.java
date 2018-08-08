@@ -117,7 +117,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                     if (defaultLocale == null) {
                         logger.error("Default locale not found. Is faces-config.xml missing in the theme?");
                     }
-                    logger.trace(defaultLocale.getLanguage());
+                    // logger.trace(defaultLocale.getLanguage());
                 } else {
                     defaultLocale = Locale.ENGLISH;
                 }
