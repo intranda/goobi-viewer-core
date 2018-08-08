@@ -73,6 +73,7 @@ public class LabeledLink implements Serializable {
         this.weight = weight;
     }
 
+
     @Override
     public String toString() {
         return name + " : " + url + " : " + weight;

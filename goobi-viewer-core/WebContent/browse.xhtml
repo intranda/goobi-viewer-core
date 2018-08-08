@@ -8,7 +8,7 @@
                 template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageBrowse}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageBrowse(browseBean.dcCollection)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetActiveSearchType}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
             <f:event type="preRenderView" listener="#{searchBean.facets.resetSliderRange}" />

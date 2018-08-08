@@ -43,11 +43,16 @@
 												<div class="row">
                                                     <div class="col-xs-12">
 														<!-- TITLE -->
-														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
-															<h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
-															<h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" />
-															<f:ajax render="@form" />
-														</h:outputLink>
+<!-- 														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}"> -->
+<!-- 															<h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" /> -->
+<!-- 															<h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" /> -->
+<!-- 															<f:ajax render="@form" /> -->
+<!-- 														</h:outputLink> -->
+                                                        <h:commandLink action="#{collection.loadCollection(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
+                                                            <h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
+                                                            <h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" />
+                                                            <f:ajax render="@form" />
+                                                        </h:commandLink>
 													</div>
 												</div>
 										</div>
