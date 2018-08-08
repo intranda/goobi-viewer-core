@@ -20,43 +20,10 @@
 		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
 		<Logger name="de.unigoettingen" level="DEBUG" additivity="true" />
 		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager"
+			name="de.unigoettingen.sub.commons.contentlib.imagelib"
 			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.ImageManipulator"
+		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib"
 			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.JpegImageInterpreter"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.JpegTwoThousandImageInterpreter"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.PngImageInterpreter"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.TIFFLZWImageInterpreter"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.TiffImageInterpreter"
-			level="INFO" additivity="true" />
-		<Logger name="de.unigoettingen.sub.commons.contentlib.imagelib.Watermark"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkBox"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkImage"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkText"
-			level="ERROR" additivity="true" />
-		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFCreator"
-			level="INFO" additivity="true" />
-		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFManager"
-			level="INFO" additivity="true" />
-		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFTitlePage"
-			level="ERROR" additivity="true" />
 		<Logger
 			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer"
 			level="ERROR" additivity="true" />
