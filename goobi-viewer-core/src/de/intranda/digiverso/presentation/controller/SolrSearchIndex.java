@@ -56,6 +56,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -1173,4 +1174,43 @@ public final class SolrSearchIndex {
         return map;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @return contents for the given page
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
+            throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(":")
+                .append(page)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.UGC.name())
+                .toString();
+
+        SolrDocumentList hits = search(query);
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DisplayUserGeneratedContent> ret = new ArrayList<>(hits.size());
+        for (SolrDocument doc : hits) {
+            DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
+            if (ugc != null) {
+                ret.add(ugc);
+                logger.trace("Loaded UGC: {}", ugc.getLabel());
+            }
+        }
+
+        return ret;
+    }
 }

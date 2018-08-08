@@ -107,6 +107,9 @@
                 </h:panelGroup>
 
 				<!-- USER GENERATED CONTENT -->
+				<ui:include src="/resources/components/viewObjectUserGeneratedContent.xhtml" />
+				
+				<!-- MODULE CONTRIBUTIONS -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
                     <c:forEach var="contribution" items="#{module.getWidgets('viewImage')}">
                         <ui:include src="/#{contribution}" />
