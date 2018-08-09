@@ -222,7 +222,7 @@ public class SearchHit implements Comparable<SearchHit> {
         if (docType == null) {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
-        logger.trace("docType: {}", docType);
+        // logger.trace("docType: {}", docType);
         HitType hitType = overrideType;
         if (hitType == null) {
             hitType = HitType.getByName(docType);

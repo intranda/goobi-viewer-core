@@ -50,7 +50,7 @@
                                         <div class="clearfix"></div>
     
                                         <!-- FILTER -->
-                                        <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_email')}"/>    
+                                        <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/>    
                                     </th>
 <!--                             		<h:panelGroup rendered="#{configurationBean.crowdsourcingEnabled}"> -->
 <!--     	                        		<th> -->
@@ -95,6 +95,8 @@
                         				<td>
 			                                <h:outputText value="#{user.name}" />
 			                                <br />
+			                                <h:outputText value="#{user.nickName}" />
+                                            <br />
 			                                <h:outputText value="#{user.email}" />
                         				</td>
 <!--                         				<h:panelGroup rendered="#{configurationBean.crowdsourcingEnabled}"> -->

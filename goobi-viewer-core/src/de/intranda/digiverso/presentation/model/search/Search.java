@@ -633,7 +633,13 @@ public class Search implements Serializable {
         return answer;
     }
 
-    public void toggleNotifications() {
+    /**
+     * Toggles the status of newHitsNotification and persists this search.
+     * 
+     * @throws DAOException
+     */
+    public void toggleNotifications() throws DAOException {
         this.newHitsNotification = !this.newHitsNotification;
+        DataManager.getInstance().getDao().updateSearch(this);
     }
 }

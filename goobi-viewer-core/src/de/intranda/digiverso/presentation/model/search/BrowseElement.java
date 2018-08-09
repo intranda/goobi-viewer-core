@@ -917,6 +917,10 @@ public class BrowseElement implements Serializable {
                 default:
                     PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
                             hasImages || hasMedia, useOverviewPage, false);
+                    // Hack for linking TEI full-text hits to the full-text page
+                    if ("TEI".equals(label)) {
+                        pageType = PageType.viewFulltext;
+                    }
                     sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
                     // Hack for viewers that need a language parameter instead of LOGID
                     String theme = DataManager.getInstance().getConfiguration().getTheme();
@@ -938,6 +942,9 @@ public class BrowseElement implements Serializable {
                     useOverviewPage, false);
             if (DocType.UGC.equals(docType)) {
                 pageType = PageType.viewObject;
+            } else if ("TEI".equals(label)) {
+                // Hack for linking TEI full-text hits to the full-text page
+                pageType = PageType.viewFulltext;
             }
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
             // Hack for viewers that need a language parameter instead of LOGID
@@ -957,6 +964,7 @@ public class BrowseElement implements Serializable {
 
         // logger.trace("generateUrl: {}", sb.toString());
         return sb.toString();
+
     }
 
     /**
