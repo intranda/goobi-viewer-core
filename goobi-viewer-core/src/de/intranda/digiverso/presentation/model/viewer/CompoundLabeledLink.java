@@ -15,14 +15,18 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Florian Alpers
  *
  */
-public abstract class CompoundLabeledLink extends LabeledLink {
+public class CompoundLabeledLink extends LabeledLink {
 
+    private final List<String> subItems;
+    
     /**
      * 
      */
@@ -35,8 +39,21 @@ public abstract class CompoundLabeledLink extends LabeledLink {
      */
     public CompoundLabeledLink(String name, String url, int weight) {
         super(name, url, weight);
+        this.subItems = Collections.EMPTY_LIST;
+    }
+    
+    public CompoundLabeledLink(String name, String url, List<String> subItems, int weight) {
+        super(name, url, weight);
+        this.subItems = subItems;
     }
 
-    public abstract List<LabeledLink> getSubLinks();
+    public  List<LabeledLink> getSubLinks() {
+        List<LabeledLink> links = new ArrayList<>();
+        for (String string : subItems) {
+            LabeledLink link = new LabeledLink(string, getUrl(), 0);
+            links.add(link);
+        }
+        return links;
+    }
 
 }

@@ -86,6 +86,8 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
+import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -1430,8 +1432,31 @@ public class SearchBean implements Serializable {
         String facetString = facets.getCurrentFacetString();
         facetString = StringTools.decodeUrl(facetString);
         List<String> facets = getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
-        updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        if(facets.size() > 0) {
+            String facet = facets.get(0);
+            facets = splitHierarchicalFacet(facet);
+            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", facets, NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        } else {
+            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        }
         //        }
+    }
+
+    /**
+     * @param facet
+     * @return
+     */
+    public static List<String> splitHierarchicalFacet(String facet) {
+        List<String> facets = new ArrayList<>();
+        while(facet.contains(".")) {
+            facets.add(facet);
+            facet = facet.substring(0, facet.lastIndexOf("."));
+        }
+        if(StringUtils.isNotBlank(facet)) {
+            facets.add(facet);
+        }
+        Collections.reverse(facets);
+        return facets;
     }
 
     /**
@@ -1468,7 +1493,25 @@ public class SearchBean implements Serializable {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
         }
-    }
+    }  
+    
+    /**
+     * Adds a new breadcrumb for the current Pretty URL.
+     *
+     * @param name Breadcrumb name.
+     * @param weight The weight of the link.
+     */
+    private void updateBreadcrumbsWithCurrentUrl(String name, List<String> subItems, int weight) {
+        if (navigationHelper != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+//            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
+            navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection", 
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", subItems, 
+                    weight));
+        }
+    }  
+    
 
     @Deprecated
     public String getCurrentQuery() {
