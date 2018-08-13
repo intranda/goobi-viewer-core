@@ -128,7 +128,7 @@ var viewerJS = ( function( viewer ) {
             
             _searchListStyle = localStorage.getItem( 'searchListStyle' );
             
-            //load thumbnails before appying search list style
+            // load thumbnails before appying search list style
             switch ( _searchListStyle ) {
                 case 'default':
                     $( '.search-list__views button' ).removeClass( 'active' );
@@ -145,12 +145,10 @@ var viewerJS = ( function( viewer ) {
                     
                     // hide thumbnail and set src to header background
                     $( '.search-list__hit-thumbnail img' ).each( function() {
-//                        var imgUrl = $( this ).attr( 'src' );
-                        $(this).on("load", function(event) {
-                            var imgUrl = $(event.currentTarget).attr( 'src' );
-                            $(event.currentTarget).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
-                        })
-//                        $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                        $( this ).on( 'load', function( event ) {
+                            var imgUrl = $( event.currentTarget ).attr( 'src' );
+                            $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                        });
                     } );
                     
                     $( '.search-list__hits' ).fadeIn( 'fast' );
@@ -341,10 +339,10 @@ var viewerJS = ( function( viewer ) {
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
         if ( data.labelShort === 'TEI' ) {
-        	hitSetTitleLink = $( '<span />' ).text( data.labelShort );
+        	hitSetTitleLink = $( '<span />' ).html( data.labelShort );
         }
         else {
-        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).text( data.labelShort );        	
+        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).html( data.labelShort );        	
         }
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );

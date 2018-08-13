@@ -5849,7 +5849,7 @@ var viewerJS = ( function( viewer ) {
             
             _searchListStyle = localStorage.getItem( 'searchListStyle' );
             
-            //load thumbnails before appying search list style
+            // load thumbnails before appying search list style
             switch ( _searchListStyle ) {
                 case 'default':
                     $( '.search-list__views button' ).removeClass( 'active' );
@@ -5866,12 +5866,10 @@ var viewerJS = ( function( viewer ) {
                     
                     // hide thumbnail and set src to header background
                     $( '.search-list__hit-thumbnail img' ).each( function() {
-//                        var imgUrl = $( this ).attr( 'src' );
-                        $(this).on("load", function(event) {
-                            var imgUrl = $(event.currentTarget).attr( 'src' );
-                            $(event.currentTarget).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
-                        })
-//                        $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                        $( this ).on( 'load', function( event ) {
+                            var imgUrl = $( event.currentTarget ).attr( 'src' );
+                            $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                        });
                     } );
                     
                     $( '.search-list__hits' ).fadeIn( 'fast' );
@@ -6062,10 +6060,10 @@ var viewerJS = ( function( viewer ) {
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
         if ( data.labelShort === 'TEI' ) {
-        	hitSetTitleLink = $( '<span />' ).text( data.labelShort );
+        	hitSetTitleLink = $( '<span />' ).html( data.labelShort );
         }
         else {
-        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).text( data.labelShort );        	
+        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).html( data.labelShort );        	
         }
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );
@@ -8433,7 +8431,7 @@ var cmsJS = ( function( cms ) {
      * 
      * @param collection
      * @param label
-     * @returns
+     * @returns the collection's rendering element with the given label
      */
     function _getRendering(collection, label) {
         if(collection.rendering) {
@@ -8455,7 +8453,7 @@ var cmsJS = ( function( cms ) {
      * 
      * @param collection
      * @param label
-     * @returns
+     * @returns the collection's related element with the given label
      */
     function _getRelated(collection, label) {
         if(collection.related) {
@@ -8478,7 +8476,7 @@ var cmsJS = ( function( cms ) {
      * If no matching service is available, 0 is returned
      * 
      * @param collection
-     * @returns
+     * @returns the number of subcollections of a given iiif collection json element
      */
     function _getChildCollections(collection) {
         if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
@@ -8494,7 +8492,7 @@ var cmsJS = ( function( cms ) {
      * If no matching service is available, 0 is returned
      *
      * @param collection
-     * @returns
+     * @returns the number of contained works of a given iiif collection json element
      */
     function _getContainedWorks(collection) {
         if(collection.service && collection.service['@context'].endsWith('api/collections/extent/context.json')) {
