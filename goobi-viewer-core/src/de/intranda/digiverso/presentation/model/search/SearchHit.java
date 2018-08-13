@@ -162,8 +162,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.locale = locale;
         if (browseElement != null) {
             if (searchTerms != null) {
-                //                addLabelHighlighting();
-                browseElement.setLabelShort(browseElement.getLabel());
+                addLabelHighlighting();
+                //                browseElement.setLabelShort(browseElement.getLabel());
             }
             this.url = browseElement.getUrl();
         } else {
