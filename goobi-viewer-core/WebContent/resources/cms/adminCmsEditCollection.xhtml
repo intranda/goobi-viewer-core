@@ -180,7 +180,7 @@
                                 <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                     <img
                                         data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
-                                        class="img-responsive thumbnail"
+                                        class="img-responsive viewer-thumbnail"
                                         alt="" />
                                 </ui:fragment>
                             </div>
@@ -243,7 +243,7 @@
                                                     <span class="#{cmsCollectionsBean.isSelectedMediaItem(null) ? 'selected' : ''}">
                                                         <img
                                                             data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
-                                                            class="img-responsive thumbnail"
+                                                            class="img-responsive viewer-thumbnail"
                                                             alt="" />
                                                         <figcaption>#{msg.cms_collections_noImage}</figcaption>
                                                     </span>
@@ -261,7 +261,7 @@
                                                         <span class="#{cmsCollectionsBean.isSelectedMediaItem(mediaItem) ? 'selected' : ''}">
                                                             <img
                                                                 data-src="#{imageDelivery.thumbs.getSquareThumbnailUrl(mediaItem, 150)}"
-                                                                class="img-responsive thumbnail"
+                                                                class="img-responsive viewer-thumbnail"
                                                                 alt="" />
                                                             <figcaption>#{mediaItem.name}</figcaption>
                                                         </span>

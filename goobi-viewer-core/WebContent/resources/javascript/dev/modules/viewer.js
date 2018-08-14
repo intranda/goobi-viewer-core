@@ -400,7 +400,7 @@
     
     // load images with error handling
     viewer.loadThumbnails = function() {
-        $('.thumbnail').each(function() {
+        $('.viewer-thumbnail').each(function() {
             var element = this;
             var source = element.dataset.src; 
             if(source && !element.src) { 

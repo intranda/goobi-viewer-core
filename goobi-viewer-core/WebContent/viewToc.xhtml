@@ -89,7 +89,7 @@
                                                         <div class="toc__mv-element-img text-center">
                                                             
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive thumbnail" alt="#{tocElement.label}" />
+                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{tocElement.label}" />
                                                             </h:outputLink>
                                                         </div>
                                                     </div>
@@ -132,7 +132,7 @@
     													<!-- MV IMAGE -->
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive thumbnail" alt="#{tocElement.label}" />
+    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{tocElement.label}" />
     														</h:outputLink>
     													</div>
     												</div>
