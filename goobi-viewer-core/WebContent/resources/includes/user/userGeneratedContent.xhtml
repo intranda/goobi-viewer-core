@@ -1,0 +1,105 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<!-- USER GENERATED CONTENT -->
+	<h:panelGroup rendered="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage) != null}">
+		<div id="view_image_user_generated_content">
+			<h3>#{msgcs.crowdsourcing_userGeneratedContent}</h3>
+
+			<nav id="user_generated_content_nav">
+				<ul>
+					<ui:repeat var="content" value="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.currentPage)}">
+						<h:panelGroup rendered="#{content.label == ''?'false':'true'}">
+							<h:panelGroup rendered="#{content.type == 'COMMENT'}">
+								<li id="words-#{content.id}">
+									<dl class="dl-horizontal">
+										<dt>
+											<i class="fa fa-comment" aria-hidden="true"></i>
+										</dt>
+										<dd>#{contentBean.cleanUpValue(content.label)}</dd>
+									</dl>
+								</li>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{content.type == 'ADDRESS'}">
+								<li id="words-#{content.id}">
+									<dl class="dl-horizontal">
+										<dt>
+											<i class="fa fa-envelope" aria-hidden="true"></i>
+										</dt>
+										<dd>#{contentBean.cleanUpValue(content.label)}</dd>
+									</dl>
+								</li>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{content.type == 'PERSON'}">
+								<li id="words-#{content.id}">
+									<dl class="dl-horizontal">
+										<dt>
+											<i class="fa fa-user" aria-hidden="true"></i>
+										</dt>
+										<dd>#{contentBean.cleanUpValue(content.label)}</dd>
+									</dl>
+								</li>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{content.type == 'CORPORATION'}">
+								<li id="words-#{content.id}">
+									<dl class="dl-horizontal">
+										<dt>
+											<i class="fa fa-home" aria-hidden="true"></i>
+										</dt>
+										<dd>#{contentBean.cleanUpValue(content.label)}</dd>
+									</dl>
+								</li>
+							</h:panelGroup>
+						</h:panelGroup>
+						
+						<script type="text/javascript">
+							$("#words-#{content.id}").on('click', function(e) {
+								e.preventDefault();
+								viewImage.overlays.focusBox("ugc", "#{content.id}");
+								highlightCurrentSelection($(this));
+							});
+						</script>
+					</ui:repeat>
+					
+					<script type="text/javascript">
+						//<![CDATA[
+                            var highlightCurrentSelection = function( $Obj ) {
+                            	// reset styles for all li elements
+                            	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
+                            	
+                            	// highlight clicked li element
+                            	$Obj.addClass( 'ugc-highlight' );
+                            };
+                            
+                            var coordinates = {
+                            	name: 'ugc',
+                            	displayTooltip: true,
+                            	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
+                            };
+                           
+                            // console.log("crowdsourcing coordinates: ", coordinates);
+                            if(configViewer.image && coordinates) {
+                            	if(!configViewer.image.highlightCoords) {
+                            		configViewer.image.highlightCoords = [];
+                            	}
+                            	configViewer.image.highlightCoords.push(coordinates);
+                            }
+                    	//]]>	
+                    </script>
+				</ul>
+			</nav>
+		</div>
+	</h:panelGroup>
+</ui:composition>
