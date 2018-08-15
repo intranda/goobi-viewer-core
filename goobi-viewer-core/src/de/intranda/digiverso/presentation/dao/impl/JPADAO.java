@@ -2391,7 +2391,7 @@ public class JPADAO implements IDAO {
             return false;
         }
     }
-    
+
     private boolean updateFromDatabase(Long id, Class clazz) {
         Object o = null;
         try {
@@ -2569,11 +2569,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        List<CMSNavigationItem> list = q.getResultList();
-        Collections.sort(list);
-        return list;
+        synchronized (em) {
+            Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
+            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            List<CMSNavigationItem> list = q.getResultList();
+            Collections.sort(list);
+            return list;
+        }
     }
 
     /**
@@ -2584,12 +2586,14 @@ public class JPADAO implements IDAO {
     @Override
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException {
         preQuery();
-        try {
-            CMSNavigationItem o = em.find(CMSNavigationItem.class, id);
-            em.refresh(o);
-            return o;
-        } catch (EntityNotFoundException e) {
-            return null;
+        synchronized (em) {
+            try {
+                CMSNavigationItem o = em.find(CMSNavigationItem.class, id);
+                em.refresh(o);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            }
         }
     }
 
