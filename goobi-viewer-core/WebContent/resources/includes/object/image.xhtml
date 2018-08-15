@@ -60,7 +60,7 @@
 		                name: "ugc",
 		                coordinates: (function(coords){
 		                    	return coords ? coords: [];
-		                	})(#{crowdsourcingBean.currentUGCCoords}),
+		                	})(#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}),
 		                displayTooltip: true
 		            }
         		]
