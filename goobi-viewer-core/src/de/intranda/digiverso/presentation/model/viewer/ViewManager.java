@@ -2067,4 +2067,12 @@ public class ViewManager implements Serializable {
         }
         return sb.toString();
     }
+
+    /**
+     * @param pageLoader2
+     */
+    public void setPageLoader(IPageLoader loader) {
+       this.pageLoader = loader;
+        
+    }
 }
