@@ -835,18 +835,18 @@ public class NavigationHelper implements Serializable {
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
         CMSPage currentPage = cmsPage;
-        
-        
+
         //If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
         try {
-            if(cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
-                LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(), cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
+            if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
+                LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
+                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
                 tempBreadcrumbs.add(0, link);
             }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.toString(), e);
         }
-        
+
         while (currentPage != null) {
             if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
@@ -877,7 +877,6 @@ public class NavigationHelper implements Serializable {
                 currentPage = null;
             }
 
-            
         }
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
@@ -1174,4 +1173,21 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param s
+     * @return
+     */
+    public String urlEncode(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        try {
+            return URLEncoder.encode(s, Helper.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
+            return s;
+        }
+    }
 }
