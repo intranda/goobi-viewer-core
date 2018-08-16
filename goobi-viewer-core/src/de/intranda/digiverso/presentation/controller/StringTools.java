@@ -36,9 +36,9 @@ public class StringTools {
     public static String encodeUrl(String string) {
         try {
             //            return BeanUtils.escapeCriticalUrlChracters(string);
-            return URLEncoder.encode(string, "utf-8");
+            return URLEncoder.encode(string, Helper.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to encode '" + string + "' with utf-8");
+            logger.error("Unable to encode '{}' with {}", string, Helper.DEFAULT_ENCODING);
             return string;
         }
     }
@@ -133,14 +133,15 @@ public class StringTools {
 
         return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
     }
-    
+
     /**
-     *  Return the length of the given string, or 0 if the string is null
+     * Return the length of the given string, or 0 if the string is null
+     * 
      * @param s
-     * @return  the length of the string if it exists, 0 otherwise
+     * @return the length of the string if it exists, 0 otherwise
      */
     public static int getLength(String s) {
-        if(StringUtils.isEmpty(s)) {
+        if (StringUtils.isEmpty(s)) {
             return 0;
         } else {
             return s.length();

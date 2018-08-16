@@ -16,8 +16,6 @@
 package de.intranda.digiverso.presentation.model.metadata;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -170,11 +169,7 @@ public class MetadataValue implements Serializable {
      */
     public String getNormDataUrl(String key, boolean urlEncode) {
         if (urlEncode) {
-            try {
-                return URLEncoder.encode(normDataUrls.get(key), Helper.DEFAULT_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage());
-            }
+            return BeanUtils.escapeCriticalUrlChracters(normDataUrls.get(key));
         }
 
         return normDataUrls.get(key);

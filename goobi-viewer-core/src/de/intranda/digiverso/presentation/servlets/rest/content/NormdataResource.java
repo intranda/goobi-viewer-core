@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -93,7 +94,8 @@ public class NormdataResource {
     @GET
     @Path("/get/{url}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getContentDocument(@PathParam("url") String url, @PathParam("lang") String lang) throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+    public String getContentDocument(@PathParam("url") String url, @PathParam("lang") String lang)
+            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -115,7 +117,7 @@ public class NormdataResource {
         }
         //                logger.debug("norm data locale: {}", locale.toString());
 
-        Map<String, List<NormData>> normDataMap = NormDataImporter.importNormData(url);
+        Map<String, List<NormData>> normDataMap = NormDataImporter.importNormData(BeanUtils.unescapeCriticalUrlChracters(url));
         if (normDataMap != null) {
             JSONArray jsonArray = new JSONArray();
             for (String key : normDataMap.keySet()) {

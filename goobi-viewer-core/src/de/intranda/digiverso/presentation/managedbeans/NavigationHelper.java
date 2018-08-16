@@ -52,6 +52,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -1179,15 +1180,15 @@ public class NavigationHelper implements Serializable {
      * @return
      */
     public String urlEncode(String s) {
-        if (s == null) {
-            return null;
-        }
+        return StringTools.encodeUrl(s);
+    }
 
-        try {
-            return URLEncoder.encode(s, Helper.DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-            return s;
-        }
+    /**
+     * 
+     * @param s
+     * @return
+     */
+    public String urlEncodeUnicode(String s) {
+        return BeanUtils.escapeCriticalUrlChracters(s);
     }
 }
