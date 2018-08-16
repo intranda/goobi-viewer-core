@@ -181,6 +181,13 @@ public class MetadataTools {
                 result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
             }
         }
+        
+        
+        // description (non-highwire)
+        if (structElement.getMetadataValue("MD_INFORMATION") != null) {
+            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_INFORMATION"));
+            result.append("\r\n<meta name=\"description\" content=\"").append(value).append("\">");
+        }
 
         return result.toString();
     }
