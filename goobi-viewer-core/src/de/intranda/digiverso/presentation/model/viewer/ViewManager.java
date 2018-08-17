@@ -43,7 +43,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -71,7 +70,6 @@ import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -1672,6 +1670,9 @@ public class ViewManager implements Serializable {
             logger.error(e.getMessage(), e);
             return "";
         } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            return "";
+        } catch (PresentationException e) {
             logger.error(e.getMessage(), e);
             return "";
         }

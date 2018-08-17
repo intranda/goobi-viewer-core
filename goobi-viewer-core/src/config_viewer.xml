@@ -299,7 +299,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference"
+		<theme subTheme="false" mainTheme="orka"
 			discriminatorField="" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
@@ -934,7 +934,7 @@
 		</browsingMenu>
 
 		<!-- addDublinCoreMetaTags: render dc metadata to html head -->
-		<addDublinCoreMetaTags>false</addDublinCoreMetaTags>
+		<addDublinCoreMetaTags>true</addDublinCoreMetaTags>
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>

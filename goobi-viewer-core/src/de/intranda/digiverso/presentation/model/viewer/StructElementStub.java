@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.h2.expression.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

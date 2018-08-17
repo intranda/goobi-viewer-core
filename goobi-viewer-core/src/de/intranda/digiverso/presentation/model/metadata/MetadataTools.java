@@ -22,8 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -54,9 +57,13 @@ public class MetadataTools {
         String identifier = null;
         String rights = null;
 
+        // schema
+        result.append("\r\n<link rel=\"schema.DCTERMS\" href=\"http://purl.org/dc/terms/\" />");
+        result.append("\r\n<link rel=\"schema.DC\" href=\"http://purl.org/dc/elements/1.1/\" />");
+
         if (structElement.getMetadataValue("MD_TITLE") != null) {
             title = structElement.getMetadataValues("MD_TITLE").iterator().next();
-            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\">");
+            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\" />");
         }
 
         if (structElement.getMetadataValue("MD_CREATOR") != null) {
@@ -68,22 +75,42 @@ public class MetadataTools {
                     creators = new StringBuilder(creators).append(", ").append(value).toString();
                 }
             }
-            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\">");
+            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\" />");
         }
 
         if (structElement.getMetadataValue("MD_PUBLISHER") != null) {
             publisher = structElement.getMetadataValue("MD_PUBLISHER");
-            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\">");
+            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\" />");
         }
 
         if (structElement.getMetadataValue("MD_YEARPUBLISH") != null) {
             date = structElement.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\">");
+            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\" />");
+        }
+
+        // DC.language
+        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
+            String value = structElement.getMetadataValue("MD_LANGUAGE");
+            String isoValue = convertLanguageToIso2(value);
+            if (value.length() != 2) {
+                // non-iso2
+                result.append("\r\n<meta name=\"DC.language\" content=\"").append(value).append('"');
+                if (isoValue.length() == 2) {
+                    result.append(" xml:lang=\"").append(isoValue).append('"');
+                }
+                result.append(" />");
+            }
+            if (isoValue.length() == 2) {
+                // iso2
+                result.append("\r\n<meta name=\"DC.language\" content=\"").append(isoValue).append("\" xml:lang=\"").append(isoValue).append(
+                        "\" scheme=\"DCTERMS.RFC1766\" />");
+            }
+
         }
 
         if (structElement.getMetadataValue(SolrConstants.URN) != null) {
             identifier = structElement.getMetadataValue(SolrConstants.URN);
-            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\">");
+            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" />");
         }
 
         String sourceString = new StringBuilder(creators).append(": ")
@@ -116,9 +143,10 @@ public class MetadataTools {
      * @return String containing meta tags
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws PresentationException
      */
     public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
-            throws IndexUnreachableException, ViewerConfigurationException {
+            throws IndexUnreachableException, ViewerConfigurationException, PresentationException {
         if (structElement == null) {
             return "";
         }
@@ -134,13 +162,13 @@ public class MetadataTools {
         if (structElement.getMetadataValue("MD_TITLE") != null) {
             title += StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_TITLE"));
         }
-        result.append("\r\n<meta name=\"citation_title\" content=\"").append(title).append("\">");
+        result.append("\r\n<meta name=\"citation_title\" content=\"").append(title).append("\" />");
 
         // citation_author
         if (structElement.getMetadataValue("MD_CREATOR") != null) {
             for (Object fieldValue : structElement.getMetadataValues("MD_CREATOR")) {
                 String value = StringEscapeUtils.escapeHtml((String) fieldValue);
-                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\">");
+                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\" />");
             }
         }
         // citation_publication_date
@@ -150,7 +178,7 @@ public class MetadataTools {
             if (normalizedValues != null && !normalizedValues.isEmpty()) {
                 for (String normalizedValue : normalizedValues) {
                     if (value.contains(normalizedValue)) {
-                        result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(normalizedValue).append("\">");
+                        result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(normalizedValue).append("\" />");
                         break;
                     }
                 }
@@ -159,17 +187,23 @@ public class MetadataTools {
         // citation_isbn
         if (structElement.getMetadataValue("MD_ISBN") != null) {
             String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_ISBN"));
-            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\">");
+            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\" />");
         }
         // citation_issn
         if (structElement.getMetadataValue("MD_ISSN") != null) {
             String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_ISSN"));
-            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\">");
+            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\" />");
         }
         // citation_volume
         if (structElement.getMetadataValue(SolrConstants.CURRENTNO) != null) {
             String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue(SolrConstants.CURRENTNO));
-            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\">");
+            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\" /");
+        }
+        // citation_language
+        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
+            String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_LANGUAGE"));
+            value = convertLanguageToIso2(value);
+            result.append("\r\n<meta name=\"citation_language\" content=\"").append(value).append("\" />");
         }
         //  citation_pdf_url
         if (pages != null && !pages.isEmpty()) {
@@ -178,17 +212,56 @@ public class MetadataTools {
                     continue;
                 }
                 String value = StringEscapeUtils.escapeHtml(page.getUrl());
-                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
+                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\" />");
             }
         }
-        
-        
-        // description (non-highwire)
+
+        // abstract 
         if (structElement.getMetadataValue("MD_INFORMATION") != null) {
+            // citation_abstract_html_url
+            result.append("\r\n<meta name=\"citation_abstract_html_url\" content=\"").append(structElement.getMetadataUrl()).append("\" />");
+
+            // description (non-highwire)
             String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue("MD_INFORMATION"));
-            result.append("\r\n<meta name=\"description\" content=\"").append(value).append("\">");
+            result.append("\r\n<meta name=\"description\" content=\"").append(value).append("\" />");
         }
 
         return result.toString();
+    }
+
+    /**
+     * Converts given language name or ISO-3 code to ISO-2, if possible.
+     * 
+     * @param language
+     * @return ISO-2 representation; original string if none found
+     */
+    public static String convertLanguageToIso2(String language) {
+        if (language == null) {
+            return null;
+        }
+
+        if (language.length() == 3) {
+            Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+            if (lang != null) {
+                return lang.getIsoCodeOld();
+            }
+        }
+
+        // dirty ISO-2 conversion
+        switch (language.toLowerCase()) {
+            case "english":
+                return "en";
+            case "deutsch":
+            case "deu":
+            case "ger":
+                return "de";
+            case "französisch":
+            case "franz.":
+            case "fra":
+            case "fre":
+                return "fr";
+        }
+
+        return language;
     }
 }
