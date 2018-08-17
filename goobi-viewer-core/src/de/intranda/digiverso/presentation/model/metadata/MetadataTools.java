@@ -56,14 +56,26 @@ public class MetadataTools {
         String date = null;
         String identifier = null;
         String rights = null;
+        String language = null;
+        String isoLanguage = null;
 
         // schema
         result.append("\r\n<link rel=\"schema.DCTERMS\" href=\"http://purl.org/dc/terms/\" />");
         result.append("\r\n<link rel=\"schema.DC\" href=\"http://purl.org/dc/elements/1.1/\" />");
 
+        // Determine langauge and ISO-2 language code
+        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
+            language = structElement.getMetadataValue("MD_LANGUAGE");
+            isoLanguage = convertLanguageToIso2(language);
+        }
+
         if (structElement.getMetadataValue("MD_TITLE") != null) {
             title = structElement.getMetadataValues("MD_TITLE").iterator().next();
-            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\" />");
+            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\"");
+            if (isoLanguage != null && isoLanguage.length() == 2) {
+                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+            }
+            result.append(" />");
         }
 
         if (structElement.getMetadataValue("MD_CREATOR") != null) {
@@ -75,42 +87,60 @@ public class MetadataTools {
                     creators = new StringBuilder(creators).append(", ").append(value).toString();
                 }
             }
-            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\" />");
+            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\"");
+            if (isoLanguage != null && isoLanguage.length() == 2) {
+                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+            }
+            result.append(" />");
         }
-
+        // DC.publisher
         if (structElement.getMetadataValue("MD_PUBLISHER") != null) {
             publisher = structElement.getMetadataValue("MD_PUBLISHER");
-            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\" />");
+            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\"");
+            if (isoLanguage != null && isoLanguage.length() == 2) {
+                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+            }
+            result.append(" />");
         }
-
+        // DC.date
         if (structElement.getMetadataValue("MD_YEARPUBLISH") != null) {
             date = structElement.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\" />");
+            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\"");
+            if (isoLanguage != null && isoLanguage.length() == 2) {
+                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+            }
+            result.append(" scheme=\"W3CTF\" />");
         }
-
         // DC.language
-        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
-            String value = structElement.getMetadataValue("MD_LANGUAGE");
-            String isoValue = convertLanguageToIso2(value);
-            if (value.length() != 2) {
+        if (language != null) {
+            if (language.length() != 2) {
                 // non-iso2
-                result.append("\r\n<meta name=\"DC.language\" content=\"").append(value).append('"');
-                if (isoValue.length() == 2) {
-                    result.append(" xml:lang=\"").append(isoValue).append('"');
+                result.append("\r\n<meta name=\"DC.language\" content=\"").append(language).append("\"");
+                if (isoLanguage != null && isoLanguage.length() == 2) {
+                    result.append(" xml:lang=\"").append(isoLanguage).append('"');
                 }
                 result.append(" />");
             }
-            if (isoValue.length() == 2) {
+            if (isoLanguage != null && isoLanguage.length() == 2) {
                 // iso2
-                result.append("\r\n<meta name=\"DC.language\" content=\"").append(isoValue).append("\" xml:lang=\"").append(isoValue).append(
+                result.append("\r\n<meta name=\"DC.language\" content=\"").append(isoLanguage).append("\" xml:lang=\"").append(isoLanguage).append(
                         "\" scheme=\"DCTERMS.RFC1766\" />");
             }
 
         }
-
+        // DC.identifier
         if (structElement.getMetadataValue(SolrConstants.URN) != null) {
             identifier = structElement.getMetadataValue(SolrConstants.URN);
-            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" />");
+            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" scheme=\"DCTERMS.URI\" />");
+        }
+        // DCTERMS.abstract
+        if (structElement.getMetadataValue("MD_INFORMATION") != null) {
+            String value = structElement.getMetadataValue("MD_INFORMATION");
+            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(value).append("\"");
+            if (isoLanguage != null && isoLanguage.length() == 2) {
+                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+            }
+            result.append(" />");
         }
 
         String sourceString = new StringBuilder(creators).append(": ")
@@ -215,7 +245,6 @@ public class MetadataTools {
                 result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\" />");
             }
         }
-
         // abstract 
         if (structElement.getMetadataValue("MD_INFORMATION") != null) {
             // citation_abstract_html_url
