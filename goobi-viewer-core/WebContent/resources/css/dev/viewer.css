@@ -4773,6 +4773,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__metadata-info td {
   vertical-align: top;
+  word-break: break-all;
 }
 .search-list__metadata-info td:first-child {
   padding-right: 5px;
