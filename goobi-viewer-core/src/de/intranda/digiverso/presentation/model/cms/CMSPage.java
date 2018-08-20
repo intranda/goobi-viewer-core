@@ -139,7 +139,7 @@ public class CMSPage {
      * 
      */
     @Column(name = "may_contain_url_parameters")
-    private boolean mayContainUrlParameters = false;
+    private boolean mayContainUrlParameters = true;
 
     @Transient
     private String sidebarElementString = null;
