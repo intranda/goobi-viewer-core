@@ -57,7 +57,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-net-3.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool-1.6.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dbunit-2.5.3.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/eclipselink.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ehcache-core-2.6.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/fop.jar"/>
