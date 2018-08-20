@@ -21,14 +21,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.restlet.resource.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,30 +66,24 @@ public class SitemapResource {
     }
 
     /**
-     * @param firstPageOnly
-     * @param params
-     * @return Short summary of files created
-     */
-    @Post
-    @Path("/update/{firstPageOnly}")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("dataRepository") boolean firstPageOnly, SitemapRequestParameters params) {
-        return updateSitemap(null, firstPageOnly, params);
-    }
-
-    /**
      * @param outputPath Output path for sitemap files
      * @param firstPageOnly
      * @param params
      * @return Short summary of files created
      */
     @POST
-    @Path("/update/{outputPath}/{firstPageOnly}")
+    @Path("/update")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("outputPath") String outputPath, @PathParam("firstPageOnly") boolean firstPageOnly,
-            SitemapRequestParameters params) {
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public String updateSitemap(SitemapRequestParameters params) {
         if (servletRequest == null) {
             return "Servlet request not found";
+        }
+        if (params == null) {
+            try {
+                servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JSON object missing");
+            } catch (IOException e) {
+            }
         }
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -99,12 +92,14 @@ public class SitemapResource {
         StringBuilder sb = new StringBuilder();
 
         Sitemap sitemap = new Sitemap();
+        String outputPath = params.getOutputPath();
         if (outputPath == null) {
             outputPath = servletRequest.getServletContext().getRealPath("/");
         }
         List<File> sitemapFiles = null;
         try {
-            sitemapFiles = sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath, firstPageOnly);
+            sitemapFiles =
+                    sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath, params.isFirstPageOnly());
 
             if (sitemapFiles != null) {
                 sb.append("Sitemap files created:\n");

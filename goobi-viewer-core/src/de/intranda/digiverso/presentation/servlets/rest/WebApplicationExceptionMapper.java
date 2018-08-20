@@ -43,26 +43,27 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
-    
-    @Context HttpServletResponse response;
-    @Context HttpServletRequest request;
-    
+
+    @Context
+    HttpServletResponse response;
+    @Context
+    HttpServletRequest request;
+
     @Override
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = Status.INTERNAL_SERVER_ERROR;
         Throwable e = eParent.getCause();
-        if(e == null && eParent instanceof NotFoundException) {
+        if (e == null && eParent instanceof NotFoundException) {
             e = eParent;
             status = Status.NOT_FOUND;
         }
         if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
-        } else {
-            logger.error("Error on request {}", request.getRequestURL(), e);
-            String mediaType = MediaType.APPLICATION_JSON;
-            return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
-
         }
-   }
+
+        logger.error("Error on request {} ({})", request.getRequestURL(), (e != null ? e.getMessage() : eParent.getMessage()));
+        String mediaType = MediaType.APPLICATION_JSON;
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
+    }
 
 }
