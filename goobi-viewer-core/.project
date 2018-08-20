@@ -55,6 +55,7 @@
 		<project>goobi-viewer-theme-dlam</project>
 		<project>goobi-viewer-theme-playground</project>
 		<project>goobi-viewer-theme-hu-archiv</project>
+		<project>goobi-viewer-theme-dipf</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -229,11 +229,16 @@
         <dependent-module archiveName="goobi-viewer-theme-dlam.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dlam/goobi-viewer-theme-dlam">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- PLAYGROUND -->
         <dependent-module archiveName="goobi-viewer-theme-playground.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-playground/goobi-viewer-theme-playground">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- HUB ARCHIVE -->
         <dependent-module archiveName="goobi-viewer-theme-hu-archiv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hu-archiv/goobi-viewer-theme-hu-archiv">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- DIPF -->
+        <dependent-module archiveName="goobi-viewer-theme-dipf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf/goobi-viewer-theme-dipf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
