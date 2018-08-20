@@ -21,13 +21,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.restlet.resource.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,24 +68,27 @@ public class SitemapResource {
 
     /**
      * @param firstPageOnly
+     * @param params
      * @return Short summary of files created
      */
-    @GET
+    @Post
     @Path("/update/{firstPageOnly}")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("dataRepository") boolean firstPageOnly) {
-        return updateSitemap(null, firstPageOnly);
+    public String updateSitemap(@PathParam("dataRepository") boolean firstPageOnly, SitemapRequestParameters params) {
+        return updateSitemap(null, firstPageOnly, params);
     }
 
     /**
      * @param outputPath Output path for sitemap files
      * @param firstPageOnly
+     * @param params
      * @return Short summary of files created
      */
-    @GET
+    @POST
     @Path("/update/{outputPath}/{firstPageOnly}")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("outputPath") String outputPath, @PathParam("dataRepository") boolean firstPageOnly) {
+    public String updateSitemap(@PathParam("outputPath") String outputPath, @PathParam("firstPageOnly") boolean firstPageOnly,
+            SitemapRequestParameters params) {
         if (servletRequest == null) {
             return "Servlet request not found";
         }
