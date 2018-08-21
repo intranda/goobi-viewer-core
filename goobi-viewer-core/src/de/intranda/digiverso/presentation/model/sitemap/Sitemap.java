@@ -22,8 +22,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -186,21 +188,34 @@ public class Sitemap {
                 //                logger.trace("Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                         Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
-                logger.debug("Found {} pages for '{}'.", qrPages.getResults().size(), pi);
-                for (SolrDocument solrPageDoc : qrPages.getResults()) {
-                    int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
-                    {
-                        // Page object URL
-                        currentDocSitemap.getRootElement()
-                                .addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                        increment(timestampModified);
+                if (!qrPages.getResults().isEmpty()) {
+                    // Check which pages actually have full-texts
+                    Set<Integer> pagesWithFulltext = new HashSet<>(qrPages.getResults().size());
+                    QueryResponse qrPagesWithFulltext = DataManager.getInstance().getSearchIndex().search(
+                            sbPagesQuery.toString() + " AND " + SolrConstants.FULLTEXT + ":*", 0, SolrSearchIndex.MAX_HITS,
+                            Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
+                    if (!qrPagesWithFulltext.getResults().isEmpty()) {
+                        for (SolrDocument solrPageDoc : qrPages.getResults()) {
+                            pagesWithFulltext.add((Integer) solrPageDoc.get(SolrConstants.ORDER));
+                        }
+                        logger.debug("{} pages of {} have full-text.", pagesWithFulltext.size(), pi);
                     }
-                    if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null
-                            && (Boolean) solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)) {
-                        // Page full-text URL
-                        currentDocSitemap.getRootElement()
-                                .addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
-                        increment(timestampModified);
+
+                    logger.debug("Found {} pages for '{}'.", qrPages.getResults().size(), pi);
+                    for (SolrDocument solrPageDoc : qrPages.getResults()) {
+                        int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
+                        {
+                            // Page object URL
+                            currentDocSitemap.getRootElement()
+                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
+                            increment(timestampModified);
+                        }
+                        if (pagesWithFulltext.contains(order)) {
+                            // Page full-text URL (only pages with full-text)
+                            currentDocSitemap.getRootElement()
+                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
+                            increment(timestampModified);
+                        }
                     }
                 }
             }
