@@ -1064,7 +1064,7 @@
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.url" value="https://goobi-viewer.univie.ac.at/viewer/" />
-		<property name="solr.url" value="https://localhost:8080/solr/collection1" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fgoobi-viewer.univie.ac.at%2Fviewer%2Foai" />
 		<property name="theme" value="ubwien" />
 		<property name="ehcache.dirname" value="cache" />
