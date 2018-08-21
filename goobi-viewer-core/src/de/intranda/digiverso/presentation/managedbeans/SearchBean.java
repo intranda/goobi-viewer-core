@@ -1991,6 +1991,7 @@ public class SearchBean implements Serializable {
                 .append(getSortString())
                 .append('/')
                 .append(facets.getCurrentFacetString())
+                .append('/')
                 .toString();
     }
 }
