@@ -346,10 +346,10 @@
 
 		<!-- TODO DOCUMENTATION-->
 		<drillDown>
-			<hierarchicalField initialElementNumber="4">FACET_DC</hierarchicalField>
-			<field initialElementNumber="3">FACET_DOCSTRCT</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_CREATOR</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_PLACEPUBLISH</field>
+			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
+			<field initialElementNumber="3">DOCSTRCT</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
 			<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
 		</drillDown>
 
@@ -933,11 +933,11 @@
 			<!-- <luceneField recordsAndAnchorsOnly="true" >MD_SHELFMARK</luceneField> -->
 		</browsingMenu>
 
-        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
-        <addDublinCoreMetaTags>false</addDublinCoreMetaTags>
-        
-        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
-        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+	        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
+	        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+
+	        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
+	        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
 	</metadata>
 
 
