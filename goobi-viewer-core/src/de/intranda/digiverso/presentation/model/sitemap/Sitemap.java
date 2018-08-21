@@ -41,8 +41,10 @@ import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -69,6 +71,7 @@ public class Sitemap {
      * @throws IOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws DAOException
      * @should generate sitemap element for each sitemap in index file
      * @should set correct lastmod date for each sitemap in index file
      * @should generate sitemap files correctly
@@ -78,10 +81,28 @@ public class Sitemap {
      * @should throw IOException if outputPath invalid
      */
     public List<File> generate(String viewerRootUrl, String outputPath, boolean firstPageOnly)
-            throws IOException, PresentationException, IndexUnreachableException {
+            throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
+
+        index = -1;
+        long timestampModified = 0;
+        if (index == -1) {
+            increment(timestampModified);
+        }
+
+        // CMS pages
+        List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
+        if (!pages.isEmpty()) {
+            for (CMSPage page : pages) {
+                String url = viewerRootUrl + page.getPageUrl();
+                String dateUpdated = getDateString(page.getDateUpdated().getTime());
+                currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
+                increment(timestampModified);
+                logger.debug("Added CMS page: {}", page.getTitle());
+            }
+        }
 
         // Create query that filters out blacklisted collections and any records that do not allow listing by default (ignore any individual agent's privileges for the sitemap).
         StringBuilder sbQuery = new StringBuilder();
@@ -95,14 +116,9 @@ public class Sitemap {
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                 Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null, null);
         logger.debug("Found {} records.", qr.getResults().size());
-        index = -1;
+
         long latestTimestampModified = 0;
         for (SolrDocument solrDoc : qr.getResults()) {
-            long timestampModified = 0;
-            if (index == -1) {
-                increment(timestampModified);
-            }
-
             String pi = (String) solrDoc.getFieldValue(SolrConstants.PI);
             String dateModified = null;
             Collection<Object> dateUpdatedValues = solrDoc.getFieldValues(SolrConstants.DATEUPDATED);
@@ -265,8 +281,8 @@ public class Sitemap {
 
     /**
      *
-     * @param pi
-     * @param order Page number.
+     * @param pi Record identifier
+     * @param order Page number
      * @param dateModified
      * @param type
      * @param changefreq
@@ -278,12 +294,23 @@ public class Sitemap {
      * @should create priority element correctly
      */
     protected Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
+        return createUrlElement(viewerRootUrl + '/' + type + '/' + pi + '/' + order + '/', dateModified, changefreq, priority);
+    }
+
+    /**
+     * 
+     * @param url Final URL
+     * @param dateModified
+     * @param changefreq
+     * @param priority
+     * @return
+     */
+    private Element createUrlElement(String url, String dateModified, String changefreq, String priority) {
         Element eleUrl = new Element("url", nsSitemap);
 
         // loc
         Element eleLoc = new Element("loc", nsSitemap);
         eleUrl.addContent(eleLoc);
-        String url = viewerRootUrl + '/' + type + '/' + pi + '/' + order + '/';
         eleLoc.setText(url);
 
         // lastmod
@@ -347,7 +374,7 @@ public class Sitemap {
         return ret;
     }
 
-    public static void main(String[] args) throws IOException, PresentationException, IndexUnreachableException {
+    public static void main(String[] args) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         Sitemap sitemap = new Sitemap();
         sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents", false);
     }

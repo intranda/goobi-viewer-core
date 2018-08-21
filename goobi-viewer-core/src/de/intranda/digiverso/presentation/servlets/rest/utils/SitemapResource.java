@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.sitemap.Sitemap;
@@ -40,7 +41,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
- * Resource for outputting the current session info.
+ * Resource for sitemap generation.
  */
 @Path(SitemapResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
@@ -119,6 +120,10 @@ public class SitemapResource {
             ret.put("message", e.getMessage());
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ret.put("message", e.getMessage());
+        } catch (DAOException e) {
+            logger.debug("DAOException thrown here: {}", e.getMessage());
             ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             ret.put("message", e.getMessage());
         } catch (IOException e) {
