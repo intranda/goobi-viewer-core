@@ -176,7 +176,7 @@ public class AccessConditionUtils {
      */
     protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
+        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
         if (StringUtils.isNotEmpty(identifier)) {
             String[] query = generateAccessCheckQuery(identifier, fileName);
             logger.trace("query: {}", query[0]);
@@ -536,11 +536,10 @@ public class AccessConditionUtils {
         // logger.debug("Permissions found, " + permissions.size() + " items.");
         // new pi -> create an new empty map in the session
         if (request != null && !pi.equals(request.getSession().getAttribute("currentPi"))) {
-            // logger.trace("new PI: {}", pi);
             request.getSession().setAttribute("currentPi", pi);
             request.getSession().removeAttribute(attributeName);
             permissions = new HashMap<>();
-            logger.trace("PI has changed, permissions map reset.");
+            // logger.trace("PI has changed, permissions map reset.");
         }
 
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
@@ -591,7 +590,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
             User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
+        // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
         // If OPENACCESS is the only condition, allow immediately
         if (requiredAccessConditions.isEmpty()) {
             logger.debug("No required access conditions given, access granted.");
