@@ -28,6 +28,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,25 +73,23 @@ public class SitemapResource {
      * @param params
      * @return Short summary of files created
      */
+    @SuppressWarnings("unchecked")
     @POST
     @Path("/update")
-    @Produces({ MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public String updateSitemap(SitemapRequestParameters params) {
-        if (servletRequest == null) {
-            return "Servlet request not found";
-        }
-        if (params == null) {
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "JSON object missing");
-            } catch (IOException e) {
-            }
-        }
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         }
 
-        StringBuilder sb = new StringBuilder();
+        JSONObject ret = new JSONObject();
+
+        if (params == null) {
+            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            ret.put("message", "Invalid JSON request object");
+            return ret.toJSONString();
+        }
 
         Sitemap sitemap = new Sitemap();
         String outputPath = params.getOutputPath();
@@ -100,35 +100,33 @@ public class SitemapResource {
         try {
             sitemapFiles =
                     sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath, params.isFirstPageOnly());
-
             if (sitemapFiles != null) {
-                sb.append("Sitemap files created:\n");
+                ret.put("status", HttpServletResponse.SC_OK);
+                ret.put("message", sitemapFiles.size() + " sitemap files created");
+                JSONArray fileArray = new JSONArray();
                 for (File file : sitemapFiles) {
-                    sb.append("- " + file.getName() + "\n");
+                    JSONObject fileObj = new JSONObject();
+                    fileObj.put("filename", file.getName());
+                    fileArray.add(fileObj);
                 }
+                ret.put("files", fileArray);
             } else {
                 servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-            }
+            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ret.put("message", e.getMessage());
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-            }
+            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ret.put("message", e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-            }
+            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ret.put("message", e.getMessage());
         }
 
-        return sb.toString();
+        return ret.toJSONString();
     }
 }
