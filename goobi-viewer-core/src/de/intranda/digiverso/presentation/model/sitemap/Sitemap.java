@@ -53,8 +53,9 @@ public class Sitemap {
 
     private static final Logger logger = LoggerFactory.getLogger(Sitemap.class);
 
+    static Namespace nsSitemap = Namespace.getNamespace(null, "http://www.sitemaps.org/schemas/sitemap/0.9");
+
     private String viewerRootUrl = "http://localhost:8080/viewer";
-    private Namespace nsSitemap = Namespace.getNamespace(null, "http://www.sitemaps.org/schemas/sitemap/0.9");
     private Document docIndex = new Document();
     private List<Document> docListSitemap = new ArrayList<>();
 
@@ -287,13 +288,8 @@ public class Sitemap {
      * @param type
      * @param changefreq
      * @param priority
-     * @should create url element correctly
-     * @should create loc element correctly
-     * @should create lastmod element correctly
-     * @should create changefreq element correctly
-     * @should create priority element correctly
      */
-    protected Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
+    private Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
         return createUrlElement(viewerRootUrl + '/' + type + '/' + pi + '/' + order + '/', dateModified, changefreq, priority);
     }
 
@@ -303,9 +299,11 @@ public class Sitemap {
      * @param dateModified
      * @param changefreq
      * @param priority
+     * @should create loc element correctly
+     * @should create lastmod element correctly
      * @return
      */
-    private Element createUrlElement(String url, String dateModified, String changefreq, String priority) {
+    Element createUrlElement(String url, String dateModified, String changefreq, String priority) {
         Element eleUrl = new Element("url", nsSitemap);
 
         // loc
@@ -321,14 +319,14 @@ public class Sitemap {
         }
 
         // changefreq
-        Element eleChangefreq = new Element("changefreq", nsSitemap);
-        eleUrl.addContent(eleChangefreq);
-        eleChangefreq.setText(changefreq);
+        //        Element eleChangefreq = new Element("changefreq", nsSitemap);
+        //        eleUrl.addContent(eleChangefreq);
+        //        eleChangefreq.setText(changefreq);
 
         // priority
-        Element elePriority = new Element("priority", nsSitemap);
-        eleUrl.addContent(elePriority);
-        elePriority.setText(priority);
+        //        Element elePriority = new Element("priority", nsSitemap);
+        //        eleUrl.addContent(elePriority);
+        //        elePriority.setText(priority);
 
         return eleUrl;
     }
