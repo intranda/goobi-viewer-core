@@ -192,7 +192,7 @@ var ImageView = ( function() {
                          bottom: this.config.global.footerHeight
                      }
                  }
-             console.log("osconfig ", osConfig);
+             // console.log("osconfig ", osConfig);
              
              this.viewer = new OpenSeadragon( osConfig );
              var result = Q.defer();
