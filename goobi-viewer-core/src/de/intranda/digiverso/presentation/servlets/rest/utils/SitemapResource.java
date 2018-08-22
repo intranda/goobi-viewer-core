@@ -99,8 +99,7 @@ public class SitemapResource {
         }
         List<File> sitemapFiles = null;
         try {
-            sitemapFiles =
-                    sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath, params.isFirstPageOnly());
+            sitemapFiles = sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath);
             if (sitemapFiles != null) {
                 ret.put("status", HttpServletResponse.SC_OK);
                 ret.put("message", sitemapFiles.size() + " sitemap files created");

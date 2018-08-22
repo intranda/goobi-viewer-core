@@ -67,7 +67,6 @@ public class Sitemap {
      *
      * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
-     * @param firstPageOnly
      * @return
      * @throws IOException
      * @throws IndexUnreachableException
@@ -81,7 +80,7 @@ public class Sitemap {
      * @should only create full-text entries if full-text available
      * @should throw IOException if outputPath invalid
      */
-    public List<File> generate(String viewerRootUrl, String outputPath, boolean firstPageOnly)
+    public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
@@ -146,32 +145,6 @@ public class Sitemap {
                 currentDocSitemap.getRootElement()
                         .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
-            } else if (firstPageOnly) {
-                // First page only
-                {
-                    // Object URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null
-                        && (Boolean) solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)) {
-                    //  Full-text URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                {
-                    // Metadata URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                {
-                    // TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
             } else {
                 // All pages
                 {
@@ -374,6 +347,6 @@ public class Sitemap {
 
     public static void main(String[] args) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         Sitemap sitemap = new Sitemap();
-        sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents", false);
+        sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents");
     }
 }
