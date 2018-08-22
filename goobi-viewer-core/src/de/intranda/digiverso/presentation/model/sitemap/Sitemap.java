@@ -146,7 +146,7 @@ public class Sitemap {
                         .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
             } else {
-                // All pages
+                // Record
                 {
                     //  Record object URL (representative page)
                     int order = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
@@ -166,7 +166,7 @@ public class Sitemap {
                     increment(timestampModified);
                 }
 
-                // All pages
+                // Pages
                 StringBuilder sbPagesQuery = new StringBuilder();
                 sbPagesQuery.append(SolrConstants.PI_TOPSTRUCT)
                         .append(':')
@@ -174,38 +174,21 @@ public class Sitemap {
                         .append(" AND ")
                         .append(SolrConstants.DOCTYPE)
                         .append(':')
-                        .append(SolrConstants.DocType.PAGE);
+                        .append(SolrConstants.DocType.PAGE)
+                        .append(" AND ")
+                        .append(SolrConstants.FULLTEXT)
+                        .append(":*");
                 //                logger.trace("Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                         Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
                 if (!qrPages.getResults().isEmpty()) {
-                    // Check which pages actually have full-texts
-                    Set<Integer> pagesWithFulltext = new HashSet<>(qrPages.getResults().size());
-                    QueryResponse qrPagesWithFulltext = DataManager.getInstance().getSearchIndex().search(
-                            sbPagesQuery.toString() + " AND " + SolrConstants.FULLTEXT + ":*", 0, SolrSearchIndex.MAX_HITS,
-                            Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
-                    if (!qrPagesWithFulltext.getResults().isEmpty()) {
-                        for (SolrDocument solrPageDoc : qrPages.getResults()) {
-                            pagesWithFulltext.add((Integer) solrPageDoc.get(SolrConstants.ORDER));
-                        }
-                        logger.debug("{} pages of {} have full-text.", pagesWithFulltext.size(), pi);
-                    }
-
-                    logger.debug("Found {} pages for '{}'.", qrPages.getResults().size(), pi);
+                    logger.debug("Found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
                     for (SolrDocument solrPageDoc : qrPages.getResults()) {
                         int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
-                        {
-                            // Page object URL
-                            currentDocSitemap.getRootElement()
-                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                            increment(timestampModified);
-                        }
-                        if (pagesWithFulltext.contains(order)) {
-                            // Page full-text URL (only pages with full-text)
-                            currentDocSitemap.getRootElement()
-                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
-                            increment(timestampModified);
-                        }
+                        // Page full-text URL 
+                        currentDocSitemap.getRootElement()
+                                .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
+                        increment(timestampModified);
                     }
                 }
             }
