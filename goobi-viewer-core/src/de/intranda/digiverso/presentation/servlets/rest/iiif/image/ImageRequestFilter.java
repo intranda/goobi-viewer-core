@@ -68,17 +68,23 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             String imageName = pathSegments.get(1);
             imageName = StringTools.decodeUrl(imageName);
             String size;
+            String region;
+            String rotation;
             if (pathSegments.size() > 4) {
-                pathSegments.get(2);
+                region = pathSegments.get(2);
                 size = pathSegments.get(3);
-                pathSegments.get(4);
+                rotation = pathSegments.get(4);
             } else {
-                size = "full";
+                size = "max";
+                region = "full";
+                rotation = "0";
             }
+            boolean isThumb = getIsThumbnail(request, size, region);
             if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                filterForAccessConditions(request, pi, imageName, size);
+                filterForAccessConditions(request, pi, imageName, isThumb);
                 filterForImageSize(requestPath, size);
+                setRequestParameter(request, isThumb);
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
@@ -95,24 +101,28 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
+     * @param request
+     * @param isThumb
+     */
+    private void setRequestParameter(ContainerRequestContext request, boolean isThumb) {
+        if(isThumb) {
+            Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
+            request.setProperty("param:compression", compression.toString());
+        }
+
+    }
+
+    /**
      * @param requestPath
      * @param pathSegments
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName, String sizeSegment)
+    private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName, boolean isThumb)
             throws ServiceNotAllowedException {
         logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
 
-        int imageWidth = Integer.MAX_VALUE;
-        try {
-            Scale scale = Scale.getScaleMethod(sizeSegment);
-            imageWidth = Integer.parseInt(scale.getWidth());
-        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
-            //no image width, assume large image
-        }
 
-        boolean isThumb = imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
         boolean access = false;
         try {
             if (isThumb) {
@@ -128,9 +138,33 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         }
 
-        if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+//        if (!access) {
+//            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+//        }
+    }
+
+    /**
+     * @param request
+     * @param size
+     * @param region
+     * @return
+     */
+    public boolean getIsThumbnail(ContainerRequestContext request, String size, String region) {
+        int imageWidth = Integer.MAX_VALUE;
+        try {
+            Scale scale = Scale.getScaleMethod(size);
+            imageWidth = Integer.parseInt(scale.getWidth());
+        } catch (NumberFormatException | IllegalRequestException | NullPointerException e) {
+            //no image width, assume large image
         }
+
+        boolean isThumb = "full".equalsIgnoreCase(region) && imageWidth <= DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth();
+        //add compression if thumbnail image
+        if(isThumb) {
+            Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
+            request.setProperty("param:compression", compression.toString());
+        }
+        return isThumb;
     }
 
     private static void filterForImageSize(String requestPath, String sizeSegment) throws ServiceNotAllowedException {

@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +75,7 @@ public class IIIFUrlHandler {
      * @throws ViewerConfigurationException
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
-            String format, int thumbCompression) {
+            String format, /*deprecated*/int compression) {
         try {
             if (ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
@@ -99,7 +100,7 @@ public class IIIFUrlHandler {
                     sb.append(size).append("/");
                     sb.append(rotation).append("/");
                     sb.append("default.").append(format);
-                    //                sb.append("?compression=").append(thumbCompression);
+//                  thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                     return sb.toString();
                 } else {
                     //assume its a iiif id
@@ -120,7 +121,7 @@ public class IIIFUrlHandler {
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
                 sb.append("default.").append(format);
-                //            sb.append("?compression=").append(thumbCompression);
+//                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                 return sb.toString();
             }
         } catch (ViewerConfigurationException e) {
