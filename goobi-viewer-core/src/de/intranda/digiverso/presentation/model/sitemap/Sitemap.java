@@ -22,10 +22,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -49,6 +47,9 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
+/**
+ * Sitemap generation.
+ */
 public class Sitemap {
 
     private static final Logger logger = LoggerFactory.getLogger(Sitemap.class);
@@ -64,10 +65,11 @@ public class Sitemap {
     private Element eleCurrectIndexSitemap = null;
 
     /**
-     *
+     * Generates sitemap files and writes them to the given outputPath (or web root).
+     * 
      * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
-     * @return
+     * @return File list
      * @throws IOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -198,6 +200,11 @@ public class Sitemap {
         return writeFiles(outputPath, docIndex, docListSitemap);
     }
 
+    /**
+     * Index counter for items per XML file.
+     * 
+     * @param timestamp
+     */
     private void increment(long timestamp) {
         index++;
         if (index == 0 || index == 50000) {
@@ -232,16 +239,23 @@ public class Sitemap {
         }
     }
 
+    /**
+     * Extracts date string from the given timestamp.
+     * 
+     * @param timestamp
+     * @return ISO date string
+     */
     private static String getDateString(long timestamp) {
         return DateTools.formatterISO8601Date.print(timestamp);
     }
 
     /**
-     *
+     * Creates an XML element containing a sitemap item.
+     * 
      * @param pi Record identifier
      * @param order Page number
      * @param dateModified
-     * @param type
+     * @param type Target page type
      * @param changefreq
      * @param priority
      */
@@ -250,6 +264,7 @@ public class Sitemap {
     }
 
     /**
+     * Creates an XML element containing a sitemap item.
      * 
      * @param url Final URL
      * @param dateModified
@@ -288,7 +303,8 @@ public class Sitemap {
     }
 
     /**
-     *
+     * Writes givent sitemap XML documents into the file system.
+     * 
      * @param outputDirPath
      * @param docIndex
      * @param docListSitemap
