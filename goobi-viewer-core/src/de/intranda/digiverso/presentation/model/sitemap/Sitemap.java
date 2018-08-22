@@ -99,7 +99,12 @@ public class Sitemap {
         if (!pages.isEmpty()) {
             for (CMSPage page : pages) {
                 String url = viewerRootUrl + page.getPageUrl();
-                String dateUpdated = getDateString(page.getDateUpdated().getTime());
+                String dateUpdated = "";
+                if (page.getDateUpdated() != null) {
+                    dateUpdated = getDateString(page.getDateUpdated().getTime());
+                } else if (page.getDateCreated() != null) {
+                    dateUpdated = getDateString(page.getDateCreated().getTime());
+                }
                 currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                 increment(timestampModified);
                 logger.debug("Added CMS page: {}", page.getTitle());
