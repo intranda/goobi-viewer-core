@@ -51,6 +51,8 @@ public class SitemapResource {
 
     public static final String RESOURCE_PATH = "/sitemap";
 
+    private static Thread workerThread = null;
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -97,38 +99,59 @@ public class SitemapResource {
         if (outputPath == null) {
             outputPath = servletRequest.getServletContext().getRealPath("/");
         }
-        List<File> sitemapFiles = null;
-        try {
-            sitemapFiles = sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath);
-            if (sitemapFiles != null) {
-                ret.put("status", HttpServletResponse.SC_OK);
-                ret.put("message", sitemapFiles.size() + " sitemap files created");
-                JSONArray fileArray = new JSONArray();
-                for (File file : sitemapFiles) {
-                    JSONObject fileObj = new JSONObject();
-                    fileObj.put("filename", file.getName());
-                    fileArray.add(fileObj);
+        final String passOutputPath = outputPath;
+
+        if (workerThread == null || !workerThread.isAlive()) {
+            workerThread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        List<File> sitemapFiles =
+                                sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), passOutputPath);
+                        if (sitemapFiles != null) {
+                            ret.put("status", HttpServletResponse.SC_OK);
+                            ret.put("message", sitemapFiles.size() + " sitemap files created");
+                            JSONArray fileArray = new JSONArray();
+                            for (File file : sitemapFiles) {
+                                JSONObject fileObj = new JSONObject();
+                                fileObj.put("filename", file.getName());
+                                fileArray.add(fileObj);
+                            }
+                            ret.put("files", fileArray);
+                        } else {
+                            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            ret.put("message", "Could not generate sitemap, please check logs");
+                        }
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (DAOException e) {
+                        logger.debug("DAOException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    }
                 }
-                ret.put("files", fileArray);
-            } else {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            });
+
+            workerThread.start();
+            try {
+                workerThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
             }
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
-            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ret.put("message", e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ret.put("message", e.getMessage());
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ret.put("message", e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ret.put("message", e.getMessage());
+        } else {
+            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+            ret.put("message", "Sitemap generation currently in progress");
         }
 
         return ret.toJSONString();

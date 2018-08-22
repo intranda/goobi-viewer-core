@@ -98,7 +98,7 @@ public class Sitemap {
         List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
         if (!pages.isEmpty()) {
             for (CMSPage page : pages) {
-                String url = viewerRootUrl + page.getPageUrl();
+                String url = viewerRootUrl + page.getUrl();
                 String dateUpdated = "";
                 if (page.getDateUpdated() != null) {
                     dateUpdated = getDateString(page.getDateUpdated().getTime());
@@ -126,6 +126,10 @@ public class Sitemap {
 
         long latestTimestampModified = 0;
         for (SolrDocument solrDoc : qr.getResults()) {
+            if (!Thread.interrupted()) {
+                break;
+            }
+
             String pi = (String) solrDoc.getFieldValue(SolrConstants.PI);
             String dateModified = null;
             Collection<Object> dateUpdatedValues = solrDoc.getFieldValues(SolrConstants.DATEUPDATED);
