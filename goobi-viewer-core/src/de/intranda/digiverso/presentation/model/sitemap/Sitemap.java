@@ -107,7 +107,7 @@ public class Sitemap {
                 }
                 currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                 increment(timestampModified);
-                logger.debug("Added CMS page: {}", page.getTitle());
+                logger.debug("Sitemap - added CMS page: {}", page.getTitle());
             }
         }
 
@@ -115,14 +115,14 @@ public class Sitemap {
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(SolrConstants.PI).append(":* AND NOT(").append(SolrConstants.DATEDELETED).append(":*)").append(
                 SearchHelper.getAllSuffixes(false));
-        logger.debug("Sitemap query: {}", sbQuery.toString());
+        logger.debug("Sitemap - Sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };
         String[] pageFields = { SolrConstants.ORDER };
 
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                 Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null, null);
-        logger.debug("Found {} records.", qr.getResults().size());
+        logger.debug("Sitemap - Found {} records.", qr.getResults().size());
 
         long latestTimestampModified = 0;
         for (SolrDocument solrDoc : qr.getResults()) {
@@ -144,7 +144,7 @@ public class Sitemap {
                 if (timestampModified > latestTimestampModified) {
                     latestTimestampModified = timestampModified;
                     eleCurrectIndexSitemap.getChild("lastmod", nsSitemap).setText(dateModified);
-                    //                        logger.debug("Set latest modified date: " + dateModified);
+                    //                        logger.debug("Sitemap - Set latest modified date: " + dateModified);
                 }
             }
             if (solrDoc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) solrDoc.getFieldValue(SolrConstants.ISANCHOR)) {
@@ -189,7 +189,7 @@ public class Sitemap {
                         .append(" AND ")
                         .append(SolrConstants.FULLTEXT)
                         .append(":*");
-                // logger.trace("Pages query: {}", sbPagesQuery.toString());
+                // logger.trace("Sitemap - Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                         Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
                 if (!qrPages.getResults().isEmpty()) {
