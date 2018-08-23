@@ -402,36 +402,53 @@
     viewer.loadThumbnails = function() {
         $('.viewer-thumbnail').each(function() {
             var element = this;
-            var source = element.dataset.src; 
-            if(source && !element.src) { 
-                var accessDenied = currentPath + _defaults.accessDeniedImage;
-                var notFound = currentPath + _defaults.notFoundImage;
-                $.ajax({
-                    url: source,
-                    cache: true,
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                })
-                .done(function(blob) {
-                    var url = window.URL || window.webkitURL;
-                    element.src = url.createObjectURL(blob);
-                })
-                .fail(function(error) {
-                    var status = error.status;
-                        switch(status) {
-                            case 403:
-                                element.src = accessDenied;
-                                break;
-                            case 404:
-                                element.src = notFound;
-                                break;
-                            default:
-                                element.src = source;
-                        }
-                    });                    
+            var source = element.src
+            var dataSource = element.dataset.src; 
+            if(dataSource && !source) { 
+                 _loadImage(element, dataSource);                
+            }else if (source) {                   
+                   var onErrorCallback = function() {
+                       _loadImage(element, element.src)
+                   }
+                   //reload image if error event occurs
+                   $(element).one("error", onErrorCallback)
+                   //if image is already loaded but has not width, assume error and also reload
+                   if(element.complete && element.naturalWidth === 0) {
+                       $(element).off("error", onErrorCallback);
+                       _loadImage(element, element.src)
+                   }
             }
         });
+    }
+    
+    function _loadImage(element, source) {
+//        console.log("loading image from ", source);
+        var accessDenied = currentPath + _defaults.accessDeniedImage;
+        var notFound = currentPath + _defaults.notFoundImage;
+        $.ajax({
+            url: source,
+            cache: true,
+            xhrFields: {
+                responseType: 'blob'
+            },
+        })
+        .done(function(blob) {
+            var url = window.URL || window.webkitURL;
+            element.src = url.createObjectURL(blob);
+        })
+        .fail(function(error) {
+            var status = error.status;
+                switch(status) {
+                    case 403:
+                        element.src = accessDenied;
+                        break;
+                    case 404:
+                        element.src = notFound;
+                        break;
+                    default:
+                        element.src = source;
+                }
+            });  
     }
     
     // global object for tinymce config
