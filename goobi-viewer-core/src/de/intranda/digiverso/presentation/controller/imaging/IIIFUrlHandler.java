@@ -76,6 +76,7 @@ public class IIIFUrlHandler {
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format, /*deprecated*/int compression) {
+
         try {
             if (ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
@@ -115,6 +116,14 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
+                
+                //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
+                int separatorIndex = fileUrl.indexOf("/");
+                if(separatorIndex > 0) {
+                    docStructIdentifier = fileUrl.substring(0, separatorIndex);
+                    fileUrl = fileUrl.substring(separatorIndex+1);
+                }
+                
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
                 sb.append("image/").append(docStructIdentifier).append("/").append(fileUrl).append("/");
                 sb.append(region).append("/");

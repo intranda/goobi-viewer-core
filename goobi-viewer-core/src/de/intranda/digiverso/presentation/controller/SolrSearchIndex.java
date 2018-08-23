@@ -318,17 +318,23 @@ public final class SolrSearchIndex {
     }
 
     /**
-     *
-     * @param query
-     * @param fieldList
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @should return correct doc
-     */
-    public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+    *
+    * @param query
+    * @param fieldList
+    * @param sortFields 
+    * @return
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    * @should return correct doc
+    */
+   public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+       return getFirstDoc(query, fieldList, null);
+   }
+    
+
+    public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields) throws PresentationException, IndexUnreachableException {
         logger.trace("getFirstDoc: {}", query);
-        SolrDocumentList hits = search(query, 0, 1, null, null, fieldList).getResults();
+        SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
             return hits.get(0);
         }

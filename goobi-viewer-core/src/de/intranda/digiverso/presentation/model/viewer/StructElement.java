@@ -636,6 +636,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return null;
     }
+    
 
     /**
      *
@@ -649,8 +650,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
 
         if (anchor) {
+            List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
+
             SolrDocument docVolume = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields);
+                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
@@ -706,4 +709,5 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         // TODO why does this always return true?
         return true;
     }
+
 }

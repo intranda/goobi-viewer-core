@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -531,8 +533,9 @@ public class ThumbnailHandler {
             if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
             } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
-                try {
-                    thumbnailUrl = getImagePath(doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS)));
+                try {                    
+                    StructElement volume = doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS));
+                    thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
                 } catch (PresentationException | IndexUnreachableException e) {
                     logger.error("Unable to retrieve first volume of " + doc + "from index", e);
                 }
