@@ -126,7 +126,7 @@ public class Sitemap {
 
         long latestTimestampModified = 0;
         for (SolrDocument solrDoc : qr.getResults()) {
-            if (!Thread.interrupted()) {
+            if (Thread.interrupted()) {
                 break;
             }
 
@@ -189,7 +189,7 @@ public class Sitemap {
                         .append(" AND ")
                         .append(SolrConstants.FULLTEXT)
                         .append(":*");
-                //                logger.trace("Pages query: {}", sbPagesQuery.toString());
+                // logger.trace("Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                         Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
                 if (!qrPages.getResults().isEmpty()) {
@@ -351,10 +351,5 @@ public class Sitemap {
         }
 
         return ret;
-    }
-
-    public static void main(String[] args) throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        Sitemap sitemap = new Sitemap();
-        sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents");
     }
 }
