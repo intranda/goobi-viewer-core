@@ -138,9 +138,9 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         }
 
-//        if (!access) {
-//            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
-//        }
+        if (!access) {
+            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+        }
     }
 
     /**
