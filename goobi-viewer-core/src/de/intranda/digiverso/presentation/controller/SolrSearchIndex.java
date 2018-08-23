@@ -318,11 +318,12 @@ public final class SolrSearchIndex {
     }
 
     /**
+    *  Retrieves the first document found by the given query
     *
     * @param query
     * @param fieldList
     * @param sortFields 
-    * @return
+    * @return The first hit returned by the query
     * @throws PresentationException
     * @throws IndexUnreachableException
     * @should return correct doc
@@ -332,6 +333,17 @@ public final class SolrSearchIndex {
    }
     
 
+   /**
+    * 
+    * Retrieves the first document found by the given query
+    * 
+    * @param query      The query to search
+    * @param fieldList  The fields retrieved
+    * @param sortFields Sorting - the first volume according to this sorting is returned
+    * @return   The first hit returned by the query
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    */
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields) throws PresentationException, IndexUnreachableException {
         logger.trace("getFirstDoc: {}", query);
         SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();

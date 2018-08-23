@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.util.List;
+
 import org.apache.solr.common.SolrDocument;
 import org.junit.After;
 import org.junit.Assert;
@@ -29,6 +31,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroup
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
@@ -105,6 +108,38 @@ public class ThumbnailHandlerTest {
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
+    }
+    
+    /**
+     * TODO: Calling the thumbnailUrl for the anchor should yield an url with the pi of the first child
+     * This is implemented, but I don't know how to set up the test data 
+     * ({@link de.intranda.digiverso.presentation.controller.SolrSearchIndex#getFirstDoc(String, List, List) SolrSearchIndex#getFirstDoc} is used)
+     */
+//    @Test
+    public void testAnchorLocal() throws IndexUnreachableException, ViewerConfigurationException {
+
+        SolrDocument solrDoc = new SolrDocument();
+        solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "periodical");
+        solrDoc.setField(SolrConstants.ISANCHOR, true);
+        solrDoc.setField(SolrConstants.PI, "1234");
+        solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
+        
+        SolrDocument solrDocVolume = new SolrDocument();
+        solrDocVolume.setField(SolrConstants.MIMETYPE, "image/tiff");
+        solrDocVolume.setField(SolrConstants.THUMBNAIL, "00000001.tif");
+        solrDocVolume.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDocVolume.setField(SolrConstants.DOCSTRCT, "periodical_volume");
+        solrDocVolume.setField(SolrConstants.PI, "1234_1");
+        solrDocVolume.setField(SolrConstants.PI_TOPSTRUCT, "1234");
+        solrDocVolume.setField(SolrConstants.PI_ANCHOR, "1234");
+        solrDocVolume.setField(SolrConstants.PI_PARENT, "1234");
+        
+        StructElement doc = new StructElement(1, solrDoc);
+
+        String url = handler.getThumbnailUrl(doc, 200, 300);
+        System.out.println(url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234_1/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
     @Test
