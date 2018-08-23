@@ -461,6 +461,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setHtmlFragment(String htmlFragment) {
         this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
+        //replace unicode character u2028 (line separator) with java line break, because u2028 breaks mysql 
+        this.htmlFragment = this.htmlFragment.replace("" + '\u2028', "\n");
     }
 
     /**
