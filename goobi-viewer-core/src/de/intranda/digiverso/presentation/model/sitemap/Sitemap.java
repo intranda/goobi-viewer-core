@@ -22,10 +22,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -49,6 +47,9 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
+/**
+ * Sitemap generation.
+ */
 public class Sitemap {
 
     private static final Logger logger = LoggerFactory.getLogger(Sitemap.class);
@@ -64,11 +65,11 @@ public class Sitemap {
     private Element eleCurrectIndexSitemap = null;
 
     /**
-     *
+     * Generates sitemap files and writes them to the given outputPath (or web root).
+     * 
      * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
-     * @param firstPageOnly
-     * @return
+     * @return File list
      * @throws IOException
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -81,7 +82,7 @@ public class Sitemap {
      * @should only create full-text entries if full-text available
      * @should throw IOException if outputPath invalid
      */
-    public List<File> generate(String viewerRootUrl, String outputPath, boolean firstPageOnly)
+    public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
         this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
@@ -97,8 +98,13 @@ public class Sitemap {
         List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
         if (!pages.isEmpty()) {
             for (CMSPage page : pages) {
-                String url = viewerRootUrl + page.getPageUrl();
-                String dateUpdated = getDateString(page.getDateUpdated().getTime());
+                String url = viewerRootUrl + page.getUrl();
+                String dateUpdated = "";
+                if (page.getDateUpdated() != null) {
+                    dateUpdated = getDateString(page.getDateUpdated().getTime());
+                } else if (page.getDateCreated() != null) {
+                    dateUpdated = getDateString(page.getDateCreated().getTime());
+                }
                 currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                 increment(timestampModified);
                 logger.debug("Added CMS page: {}", page.getTitle());
@@ -120,6 +126,10 @@ public class Sitemap {
 
         long latestTimestampModified = 0;
         for (SolrDocument solrDoc : qr.getResults()) {
+            if (!Thread.interrupted()) {
+                break;
+            }
+
             String pi = (String) solrDoc.getFieldValue(SolrConstants.PI);
             String dateModified = null;
             Collection<Object> dateUpdatedValues = solrDoc.getFieldValues(SolrConstants.DATEUPDATED);
@@ -146,34 +156,8 @@ public class Sitemap {
                 currentDocSitemap.getRootElement()
                         .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
-            } else if (firstPageOnly) {
-                // First page only
-                {
-                    // Object URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null
-                        && (Boolean) solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)) {
-                    //  Full-text URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                {
-                    // Metadata URL
-                    currentDocSitemap.getRootElement()
-                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
-                {
-                    // TOC URL
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
-                    increment(timestampModified);
-                }
             } else {
-                // All pages
+                // Record
                 {
                     //  Record object URL (representative page)
                     int order = solrDoc.containsKey(SolrConstants.THUMBPAGENO) ? (int) solrDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
@@ -193,7 +177,7 @@ public class Sitemap {
                     increment(timestampModified);
                 }
 
-                // All pages
+                // Pages
                 StringBuilder sbPagesQuery = new StringBuilder();
                 sbPagesQuery.append(SolrConstants.PI_TOPSTRUCT)
                         .append(':')
@@ -201,38 +185,21 @@ public class Sitemap {
                         .append(" AND ")
                         .append(SolrConstants.DOCTYPE)
                         .append(':')
-                        .append(SolrConstants.DocType.PAGE);
+                        .append(SolrConstants.DocType.PAGE)
+                        .append(" AND ")
+                        .append(SolrConstants.FULLTEXT)
+                        .append(":*");
                 //                logger.trace("Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                         Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
                 if (!qrPages.getResults().isEmpty()) {
-                    // Check which pages actually have full-texts
-                    Set<Integer> pagesWithFulltext = new HashSet<>(qrPages.getResults().size());
-                    QueryResponse qrPagesWithFulltext = DataManager.getInstance().getSearchIndex().search(
-                            sbPagesQuery.toString() + " AND " + SolrConstants.FULLTEXT + ":*", 0, SolrSearchIndex.MAX_HITS,
-                            Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
-                    if (!qrPagesWithFulltext.getResults().isEmpty()) {
-                        for (SolrDocument solrPageDoc : qrPages.getResults()) {
-                            pagesWithFulltext.add((Integer) solrPageDoc.get(SolrConstants.ORDER));
-                        }
-                        logger.debug("{} pages of {} have full-text.", pagesWithFulltext.size(), pi);
-                    }
-
-                    logger.debug("Found {} pages for '{}'.", qrPages.getResults().size(), pi);
+                    logger.debug("Found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
                     for (SolrDocument solrPageDoc : qrPages.getResults()) {
                         int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
-                        {
-                            // Page object URL
-                            currentDocSitemap.getRootElement()
-                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewObject.getName(), "weekly", "0.5"));
-                            increment(timestampModified);
-                        }
-                        if (pagesWithFulltext.contains(order)) {
-                            // Page full-text URL (only pages with full-text)
-                            currentDocSitemap.getRootElement()
-                                    .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
-                            increment(timestampModified);
-                        }
+                        // Page full-text URL 
+                        currentDocSitemap.getRootElement()
+                                .addContent(createUrlElement(pi, order, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
+                        increment(timestampModified);
                     }
                 }
             }
@@ -242,6 +209,11 @@ public class Sitemap {
         return writeFiles(outputPath, docIndex, docListSitemap);
     }
 
+    /**
+     * Index counter for items per XML file.
+     * 
+     * @param timestamp
+     */
     private void increment(long timestamp) {
         index++;
         if (index == 0 || index == 50000) {
@@ -276,16 +248,23 @@ public class Sitemap {
         }
     }
 
+    /**
+     * Extracts date string from the given timestamp.
+     * 
+     * @param timestamp
+     * @return ISO date string
+     */
     private static String getDateString(long timestamp) {
         return DateTools.formatterISO8601Date.print(timestamp);
     }
 
     /**
-     *
+     * Creates an XML element containing a sitemap item.
+     * 
      * @param pi Record identifier
      * @param order Page number
      * @param dateModified
-     * @param type
+     * @param type Target page type
      * @param changefreq
      * @param priority
      */
@@ -294,6 +273,7 @@ public class Sitemap {
     }
 
     /**
+     * Creates an XML element containing a sitemap item.
      * 
      * @param url Final URL
      * @param dateModified
@@ -332,7 +312,8 @@ public class Sitemap {
     }
 
     /**
-     *
+     * Writes givent sitemap XML documents into the file system.
+     * 
      * @param outputDirPath
      * @param docIndex
      * @param docListSitemap
@@ -374,6 +355,6 @@ public class Sitemap {
 
     public static void main(String[] args) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         Sitemap sitemap = new Sitemap();
-        sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents", false);
+        sitemap.generate("http://localhost:8080/viewer", "C:\\Users\\andrey\\Documents");
     }
 }
