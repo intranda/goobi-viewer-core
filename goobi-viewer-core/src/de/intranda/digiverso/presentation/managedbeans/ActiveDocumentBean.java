@@ -1291,4 +1291,32 @@ public class ActiveDocumentBean implements Serializable {
 
         return sbQuery.toString();
     }
+
+    /**
+     * 
+     * @return string containing previous and/or next url <link> elements
+     * @throws IndexUnreachableException
+     */
+    public String getRelativeUrlTags() throws IndexUnreachableException {
+        if (!isRecordLoaded()) {
+            return "";
+        }
+        logger.trace("current view: " + navigationHelper.getCurrentView());
+        if (PageType.viewOverview.getRawName().equals(navigationHelper.getCurrentView())
+                || PageType.viewMetadata.getRawName().equals(navigationHelper.getCurrentView())) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        String currentUrl = getPageUrl(imageToShow);
+        String prevUrl = getPreviousPageUrl();
+        String nextUrl = getNextPageUrl();
+        if (StringUtils.isNotEmpty(nextUrl) && !nextUrl.equals(currentUrl)) {
+            sb.append("\n<link rel=\"next\" href=").append(nextUrl).append("\" />");
+        }
+        if (StringUtils.isNotEmpty(prevUrl) && !prevUrl.equals(currentUrl)) {
+            sb.append("\n<link rel=\"prev\" href=").append(prevUrl).append("\" />");
+        }
+
+        return sb.toString();
+    }
 }

@@ -169,6 +169,10 @@ public enum PageType {
         return PageType.other;
     }
 
+    public String getRawName() {
+        return name;
+    }
+
     public String getName() {
         String configName = DataManager.getInstance().getConfiguration().getPageType(this);
         if (configName != null) {
@@ -275,6 +279,7 @@ public enum PageType {
         if (pagePath == null || StringUtils.isBlank(pagePath.toString())) {
             return false;
         }
-        return ViewerPathBuilder.startsWith(pagePath,this.name()) || ViewerPathBuilder.startsWith(pagePath, this.name) || ViewerPathBuilder.startsWith(pagePath, getName());
+        return ViewerPathBuilder.startsWith(pagePath, this.name()) || ViewerPathBuilder.startsWith(pagePath, this.name)
+                || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 }
