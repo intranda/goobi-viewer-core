@@ -1293,7 +1293,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     * Returns a string that contains previous and/or next url <link> elements
+     *
      * @return string containing previous and/or next url <link> elements
      * @throws IndexUnreachableException
      */
@@ -1311,10 +1312,10 @@ public class ActiveDocumentBean implements Serializable {
         String prevUrl = getPreviousPageUrl();
         String nextUrl = getNextPageUrl();
         if (StringUtils.isNotEmpty(nextUrl) && !nextUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"next\" href=").append(nextUrl).append("\" />");
+            sb.append("\n<link rel=\"next\" href=\"").append(nextUrl).append("\" />");
         }
         if (StringUtils.isNotEmpty(prevUrl) && !prevUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"prev\" href=").append(prevUrl).append("\" />");
+            sb.append("\n<link rel=\"prev\" href=\"").append(prevUrl).append("\" />");
         }
 
         return sb.toString();
