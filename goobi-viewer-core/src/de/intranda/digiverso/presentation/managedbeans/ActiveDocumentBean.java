@@ -270,8 +270,8 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getPi(), topDocumentIddoc);
                     topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topDocument.getPi());
                     if (topDocumentIddoc == 0) {
-                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                viewManager.getPi());
+                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?", viewManager
+                                .getPi());
                         reset();
                         throw new RecordNotFoundException(lastReceivedIdentifier);
                     }
@@ -296,12 +296,12 @@ public class ActiveDocumentBean implements Serializable {
 
                 int numPages = topDocument.getNumPages();
                 if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
-                    viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
+                    viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid, topDocument
+                            .getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 } else {
                     logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
-                    viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
+                    viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid, topDocument
+                            .getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
                 overviewPage = OverviewPage.loadOverviewPage(topDocument, BeanUtils.getLocale());
@@ -318,15 +318,15 @@ public class ActiveDocumentBean implements Serializable {
                 StringBuilder sbQuery = new StringBuilder();
                 sbQuery.append(SolrConstants.LOGID).append(':').append(logid).append(" AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(
                         viewManager.getPi());
-                SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
-                        Collections.singletonList(SolrConstants.IDDOC));
+                SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Collections.singletonList(
+                        SolrConstants.IDDOC));
                 long subElementIddoc = 0;
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
-                    viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMainMimeType(), imageDelivery);
+                    viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
+                            .getMainMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
@@ -371,8 +371,8 @@ public class ActiveDocumentBean implements Serializable {
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow,
-                                DataManager.getInstance().getConfiguration().isAggregateHits());
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow, DataManager.getInstance().getConfiguration()
+                                .isAggregateHits());
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
                         searchBean.increaseCurrentHitIndex();
@@ -415,8 +415,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    public String open()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public String open() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException,
+            ViewerConfigurationException {
         synchronized (this) {
             logger.trace("open");
             try {
@@ -426,9 +426,8 @@ public class ActiveDocumentBean implements Serializable {
                     HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                     URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
                     if (name != null && name.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                        name = new StringBuilder(name.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                                .append("...")
-                                .toString();
+                        name = new StringBuilder(name.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping())).append(
+                                "...").toString();
                     }
                     // TODO move breadcrumb to HTML?
                     if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
@@ -446,8 +445,8 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    public String openFulltext()
-            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public String openFulltext() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException,
+            ViewerConfigurationException {
         open();
         return "viewFulltext";
     }
@@ -606,8 +605,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      * @should determine currentElementIddoc correctly
      */
-    public void setPersistentIdentifier(String persistentIdentifier)
-            throws PresentationException, RecordNotFoundException, IndexUnreachableException {
+    public void setPersistentIdentifier(String persistentIdentifier) throws PresentationException, RecordNotFoundException,
+            IndexUnreachableException {
         synchronized (this) {
             logger.trace("setPersistentIdentifier: {}", persistentIdentifier);
             lastReceivedIdentifier = persistentIdentifier;
@@ -655,10 +654,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getThumbPart() throws IndexUnreachableException {
         if (viewManager != null) {
-            return new StringBuilder("/").append(getPersistentIdentifier())
-                    .append('/')
-                    .append(viewManager.getCurrentThumbnailPage())
-                    .append('/')
+            return new StringBuilder("/").append(getPersistentIdentifier()).append('/').append(viewManager.getCurrentThumbnailPage()).append('/')
                     .toString();
         }
 
@@ -671,12 +667,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getLogPart() throws IndexUnreachableException {
-        return new StringBuilder("/").append(getPersistentIdentifier())
-                .append('/')
-                .append(imageToShow)
-                .append('/')
-                .append(getLogid())
-                .append('/')
+        return new StringBuilder("/").append(getPersistentIdentifier()).append('/').append(imageToShow).append('/').append(getLogid()).append('/')
                 .toString();
     }
 
@@ -706,14 +697,8 @@ public class ActiveDocumentBean implements Serializable {
             page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
             page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                .append('/')
-                .append(PageType.getByName(pageType).getName())
-                .append('/')
-                .append(getPersistentIdentifier())
-                .append('/')
-                .append(page)
-                .append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
         return sbUrl.toString();
     }
@@ -740,12 +725,8 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getPageUrl(String pageType) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                .append('/')
-                .append(PageType.getByName(pageType).getName())
-                .append('/')
-                .append(getPersistentIdentifier())
-                .append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/');
 
         return sbUrl.toString();
     }
@@ -898,8 +879,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    public void setTocCurrentPage(int tocCurrentPage)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public void setTocCurrentPage(int tocCurrentPage) throws PresentationException, IndexUnreachableException, DAOException,
+            ViewerConfigurationException {
         synchronized (this) {
             this.tocCurrentPage = tocCurrentPage;
             if (this.tocCurrentPage < 1) {
@@ -1197,14 +1178,14 @@ public class ActiveDocumentBean implements Serializable {
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:
-                    return pdf ? DataManager.getInstance().getConfiguration().isTocPdfEnabled()
-                            : DataManager.getInstance().getConfiguration().isTocEpubEnabled();
+                    return pdf ? DataManager.getInstance().getConfiguration().isTocPdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isTocEpubEnabled();
                 case viewMetadata:
-                    return pdf ? DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
-                            : DataManager.getInstance().getConfiguration().isMetadataEpubEnabled();
+                    return pdf ? DataManager.getInstance().getConfiguration().isMetadataPdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isMetadataEpubEnabled();
                 default:
-                    return pdf ? DataManager.getInstance().getConfiguration().isTitlePdfEnabled()
-                            : DataManager.getInstance().getConfiguration().isTitleEpubEnabled();
+                    return pdf ? DataManager.getInstance().getConfiguration().isTitlePdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isTitleEpubEnabled();
             }
         }
 
@@ -1243,8 +1224,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      */
-    public List<SearchHit> getRelatedItems(String identifierField)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public List<SearchHit> getRelatedItems(String identifierField) throws PresentationException, IndexUnreachableException, DAOException,
+            ViewerConfigurationException {
         logger.trace("getRelatedItems: {}", identifierField);
         if (identifierField == null) {
             return null;
@@ -1258,8 +1239,8 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
-        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
-                navigationHelper.getLocale(), BeanUtils.getRequest());
+        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, navigationHelper
+                .getLocale(), BeanUtils.getRequest());
 
         logger.trace("{} related items found", ret.size());
         return ret;
@@ -1303,8 +1284,8 @@ public class ActiveDocumentBean implements Serializable {
             return "";
         }
         logger.trace("current view: " + navigationHelper.getCurrentView());
-        if (PageType.viewOverview.getRawName().equals(navigationHelper.getCurrentView())
-                || PageType.viewMetadata.getRawName().equals(navigationHelper.getCurrentView())) {
+        if (PageType.viewOverview.getRawName().equals(navigationHelper.getCurrentView()) || PageType.viewMetadata.getRawName().equals(navigationHelper
+                .getCurrentView()) || PageType.viewToc.getRawName().equals(navigationHelper.getCurrentView())) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
