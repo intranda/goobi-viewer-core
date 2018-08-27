@@ -51,6 +51,7 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**
  * Provides methods for creation all urls for media delivery (images and other) Examples:
@@ -454,8 +455,8 @@ public class ImageDeliveryBean implements Serializable {
         URI uri;
         try {
             url = StringTools.decodeUrl(url);
-            uri = ImageHandler.toURI(url);
-            Path path = ImageHandler.getPath(uri);
+            uri = PathConverter.toURI(url);
+            Path path = PathConverter.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
                 return path.startsWith(getCmsMediaPath());

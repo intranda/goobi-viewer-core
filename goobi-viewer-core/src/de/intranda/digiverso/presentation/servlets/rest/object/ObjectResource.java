@@ -174,6 +174,15 @@ public class ObjectResource {
     }
     
     @GET
+    @Path("/{pi}/{subfolder}//{filename}")
+    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
+            @PathParam("pi") String pi, @PathParam("subfolder") String subfolder,
+            @PathParam("filename") final String filename) throws IOException, InterruptedException {
+        return getObjectResource(request, response, pi, subfolder, filename);      
+    }
+    
+    @GET
     @Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -191,6 +200,15 @@ public class ObjectResource {
         }
     }
 
+    @GET
+    @Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
+    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
+            @PathParam("pi") String pi, @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2,
+            @PathParam("filename") String filename) throws IOException, InterruptedException {
+        return getObjectResource(request, response, pi, subfolder1, subfolder2, filename);
+    }
+    
     public static class ObjectStreamingOutput implements StreamingOutput {
 
         private java.nio.file.Path filePath;

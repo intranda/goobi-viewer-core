@@ -33,6 +33,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**
  * @author Florian Alpers
@@ -78,9 +79,9 @@ public class IIIFUrlHandler {
             String format, /*deprecated*/int compression) {
 
         try {
-            if (ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
+            if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
-                    URI uri = ImageHandler.toURI(fileUrl);
+                    URI uri = PathConverter.toURI(fileUrl);
                     if (StringUtils.isBlank(uri.getScheme())) {
                         uri = new URI("file", fileUrl, null);
                     }
@@ -135,6 +136,9 @@ public class IIIFUrlHandler {
             }
         } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage());
+            return "";
+        } catch (URISyntaxException e) {
+            logger.error("Not a valid url: " + fileUrl,e.getMessage());
             return "";
         }
     }
