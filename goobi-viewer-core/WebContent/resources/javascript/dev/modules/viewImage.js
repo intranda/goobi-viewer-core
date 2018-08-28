@@ -47,7 +47,8 @@ var ImageView = ( function() {
                 rememberZoom: false,
                 rememberRotation: false,
                 panHomeOnZoomOut: true,
-                showControls: false
+                showControls: false,
+                useTiles: true
             },
             image: {
                 initialRotation: 0,
@@ -1035,7 +1036,7 @@ var ImageView = ( function() {
                      _setImageSizes(imageInfo, config.global.imageSizes);       
                      _setTileSizes(imageInfo, config.global.tileSizes);                
                      var tileSource;
-                     if(imageInfo.tiles && imageInfo.tiles.length > 0) {
+                     if(config.global.useTiles && imageInfo.tiles && imageInfo.tiles.length > 0) {
                          tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
                      } else {                
                          tileSource  = _createPyramid(imageInfo, config);                    
