@@ -69,7 +69,7 @@ public class SearchResultResource {
             for (SearchHit searchHit : searchHits) {
                 if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
                     if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), locale, servletRequest);
+                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), searchHit.getHitsPopulated(), locale, servletRequest);
                     }
                     Collections.sort(searchHit.getChildren());
                     SearchHitChildList searchHitChildren = new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit

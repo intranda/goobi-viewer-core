@@ -428,20 +428,35 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public void populateChildren(int number, Locale locale, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        populateChildren(number, 0, locale, request);
+    }
+        
+        /**
+         * 
+         * @param number
+         * @param locale
+         * @param request
+         * @throws PresentationException
+         * @throws IndexUnreachableException
+         * @throws DAOException
+         * @throws ViewerConfigurationException
+         */
+   public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
+                throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
         // Create child hits
         String pi = browseElement.getPi();
         if (pi != null && childDocs != null) {
             logger.trace("{} child hits found for {}", childDocs.size(), pi);
-            if (number > childDocs.size()) {
-                number = childDocs.size();
+            if (number+skip > childDocs.size()) {
+                number = childDocs.size()-skip;
             }
             Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
             Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
             List<SolrDocument> ugcDocs = null;
             for (int i = 0; i < number; ++i) {
-                SolrDocument childDoc = childDocs.get(i);
+                SolrDocument childDoc = childDocs.get(i+skip);
                 String fulltext = null;
                 DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                 if (docType == null) {
@@ -732,7 +747,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return
      */
     public boolean isHasMoreChildren() {
-        return childDocs != null && !childDocs.isEmpty();
+        return childDocs != null && !childDocs.isEmpty() && getHitsPopulated() < childDocs.size();
     }
 
     /**
