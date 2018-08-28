@@ -313,14 +313,31 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return getLinkURI(BeanUtils.getRequest());
     }
 
+    public static void main(String[] args) {
+        
+        String uriString = "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
+        try {
+            URI uri = new URI(uriString);
+            System.out.println(uri);
+            
+            CMSMediaItem item = new CMSMediaItem();
+            item.setLink(uriString);
+            URI linkURI = item.getLinkURI(null);
+            System.out.println(linkURI);
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
+    
     /**
      * @return the URI to this media item
      */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
-
-        if (StringUtils.isNotBlank(getLink())) {
-            String link = StringTools.decodeUrl(getLink());
+        String link = getLink();
+        if (StringUtils.isNotBlank(link)) {
             try {
                 URI uri = new URI(link);
                 if (!uri.isAbsolute()) {
@@ -328,6 +345,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
                     if (request != null) {
                         viewerURL = request.getContextPath();
                     }
+                    link = StringTools.decodeUrl(link);
                     String urlString = (viewerURL + link).replace("//", "/");
                     uri = new URI(urlString);
                 }
