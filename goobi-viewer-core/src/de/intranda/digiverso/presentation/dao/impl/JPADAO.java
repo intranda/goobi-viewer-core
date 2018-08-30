@@ -76,6 +76,7 @@ public class JPADAO implements IDAO {
     private final EntityManagerFactory factory;
     private EntityManager em;
     private Object cmsRequestLock = new Object();
+    private Object overviewPageRequestLock = new Object();
 
     public JPADAO() throws DAOException {
         this(null);
@@ -1731,26 +1732,28 @@ public class JPADAO implements IDAO {
             sbQuery.append(')');
         }
         //        logger.trace(sbQuery.toString());
-        Query q = em.createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        try {
-            OverviewPage o = (OverviewPage) q.getSingleResult();
-            if (o != null) {
-                em.refresh(o);
+        synchronized (overviewPageRequestLock) {            
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            if (fromDate != null) {
+                q.setParameter("fromDate", fromDate);
             }
-            return o;
-        } catch (NoResultException e) {
-            return null;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return null;
+            if (toDate != null) {
+                q.setParameter("toDate", toDate);
+            }
+            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            try {
+                OverviewPage o = (OverviewPage) q.getSingleResult();
+                if (o != null) {
+                    em.refresh(o);
+                }
+                return o;
+            } catch (NoResultException e) {
+                return null;
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                return null;
+            }
         }
     }
 
