@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,5 +147,18 @@ public class StringTools {
         } else {
             return s.length();
         }
+    }
+
+    /**
+     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} 
+     * and additionally converts all linebreaks (\r\n, \r, \n) to html linebraks ({@code <br/>})
+     * 
+     * @param text  the text to escape
+     * @return  the escaped string
+     */
+    public static String escapeHtml(String text) {
+        text = StringEscapeUtils.escapeHtml4(text);
+        text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
+        return text;
     }
 }

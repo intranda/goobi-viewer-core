@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -391,7 +392,7 @@ public class DisplayUserGeneratedContent {
                     return sb.toString();
                 }
                 case "COMMENT":
-                    return se.getMetadataValue("MD_TEXT");
+                    return StringTools.escapeHtml(se.getMetadataValue("MD_TEXT"));
                 default:
                     return se.getMetadataValue(SolrConstants.LABEL);
             }
