@@ -28,8 +28,6 @@ import org.junit.Test;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.monitoring.timer.TimeAnalysis;
-import de.intranda.monitoring.timer.TimingStatistics;
 
 public class SitemapTest {
 
@@ -63,11 +61,6 @@ public class SitemapTest {
         int timeout = 20; //minutes
         
         Sitemap sitemap = new Sitemap();
-        TimeAnalysis times = sitemap.getTimer();
-        times.addItem("XML");
-        times.addItem("RECORD");
-        times.addItem("INCREMENT");
-        times.addItem("QUERY");
         
         
         Path path = Paths.get("sitemap_temp");
@@ -94,11 +87,7 @@ public class SitemapTest {
         long end = System.nanoTime();
         System.out.println("Generating sitemap took " + toSeconds(end-start) + "s" );
         System.out.println("Written sitemap files to " + path.toAbsolutePath());
-        
-        
-        for (TimingStatistics stat : times.geStatistics()) {
-            System.out.println(stat);
-        }
+
     }
 
     /**
