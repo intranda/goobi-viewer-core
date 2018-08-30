@@ -114,8 +114,8 @@ public class ContentBean implements Serializable {
             for (DisplayUserGeneratedContent content : currentContent) {
                 if (content.hasArea()) {
                     String rect = content.getAreaString();
-                    rect += (",'" + content.getLabel() + "'");
-                    rect += (",'" + content.getId() + "'");
+                    rect += (",\"" + content.getLabel() + "\"");
+                    rect += (",\"" + content.getId() + "\"");
                     coords.add(Arrays.asList(rect.split(",")));
                 }
             }
