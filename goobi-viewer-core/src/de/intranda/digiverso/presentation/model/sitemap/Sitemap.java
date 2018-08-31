@@ -108,11 +108,11 @@ public class Sitemap {
                     }
                     currentDocSitemap.getRootElement().addContent(createUrlElement(url, dateUpdated, "weekly", "0.5"));
                     increment(timestampModified);
-                    logger.debug("Sitemap - added CMS page: {}", page.getTitle());
+                    logger.debug("Sitemap: added CMS page: {}", page.getTitle());
                 }
             }
         } catch (DAOException e) {
-            logger.warn("Unable to read DAO, cannot include cms pages in sitemap", e);
+            logger.warn("Sitemap: unable to read DAO, cannot include cms pages in sitemap", e);
         }
 
         // Create query that filters out blacklisted collections and any records that do not allow listing by default (ignore any individual agent's privileges for the sitemap).
@@ -122,14 +122,14 @@ public class Sitemap {
                 .append(SolrConstants.DATEDELETED)
                 .append(":*)")
                 .append(SearchHelper.getAllSuffixes(false));
-        logger.debug("Sitemap - Sitemap query: {}", sbQuery.toString());
+        logger.debug("Sitemap: sitemap query: {}", sbQuery.toString());
         String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
                 SolrConstants.ISANCHOR, SolrConstants.THUMBPAGENO };
         String[] pageFields = { SolrConstants.ORDER };
 
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
                 Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null, null);
-        logger.debug("Sitemap - Found {} records.", qr.getResults().size());
+        logger.debug("Sitemap: found {} records.", qr.getResults().size());
 
         long latestTimestampModified = 0;
         int recordIndex = 0;
@@ -152,7 +152,7 @@ public class Sitemap {
                     if (timestampModified > latestTimestampModified) {
                         latestTimestampModified = timestampModified;
                             eleCurrectIndexSitemap.getChild("lastmod", nsSitemap).setText(dateModified);
-                            //                        logger.debug("Sitemap - Set latest modified date: " + dateModified);
+                            //                        logger.debug("Sitemap: set latest modified date: " + dateModified);
                     }
                 }
                 if (solrDoc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) solrDoc.getFieldValue(SolrConstants.ISANCHOR)) {
@@ -204,12 +204,12 @@ public class Sitemap {
                                 .append(" AND ")
                                 .append(SolrConstants.FULLTEXTAVAILABLE)
                                 .append(":true");
-                        // logger.trace("Sitemap - Pages query: {}", sbPagesQuery.toString());
+                        // logger.trace("Sitemap: pages query: {}", sbPagesQuery.toString());
                         qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0,
                                 SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null,
                                 Arrays.asList(pageFields), null, null);
                     if (!qrPages.getResults().isEmpty()) {
-                        logger.debug("Found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
+                        logger.debug("Sitemap: found {} pages with full-text for '{}'.", qrPages.getResults().size(), pi);
                         for (SolrDocument solrPageDoc : qrPages.getResults()) {
                             int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
                             // Page full-text URL 
@@ -221,14 +221,14 @@ public class Sitemap {
                 }
                 recordIndex++;
                 if (recordIndex % 50 == 0) {
-                    logger.debug("Parsed record " + recordIndex);
+                    logger.debug("Sitemap: parsed record " + recordIndex);
                     long end = System.nanoTime();
-                    logger.debug("Parsing 50 records took " + ((end - start) / 1e9) + " seconds");
+                    logger.debug("Sitemap: parsing 50 records took " + ((end - start) / 1e9) + " seconds");
                     start = end;
                 }
             }
 
-        logger.info("Writing sitemap to '{}'...", outputPath);
+        logger.info("Sitemap: writing sitemap to '{}'...", outputPath);
         return writeFiles(outputPath, docIndex, docListSitemap);
     }
 
@@ -364,7 +364,7 @@ public class Sitemap {
                     File gzipFile = new File(outputDirPath, "sitemap" + index + ".xml.gz");
                     FileTools.compressGzipFile(file, gzipFile);
                     ret.add(gzipFile);
-                    logger.info("Sitemap file {} written to '{}'", index, gzipFile.getAbsolutePath());
+                    logger.info("Sitemap: file {} written to '{}'", index, gzipFile.getAbsolutePath());
                     FileUtils.deleteQuietly(file);
                 }
             }
