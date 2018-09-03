@@ -5887,6 +5887,11 @@ var viewerJS = ( function( viewer ) {
                             var imgUrl = $( event.currentTarget ).attr( 'src' );
                             $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
                         });
+                        
+                        if ( this.complete ) {
+                        	var imgUrl = $( event.currentTarget ).attr( 'src' );
+                            $( event.currentTarget ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                        }
                     } );
                     
                     $( '.search-list__hits' ).fadeIn( 'fast' );
