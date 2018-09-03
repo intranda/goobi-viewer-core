@@ -109,6 +109,7 @@ var ImageView = ( function() {
              //create image source array
              var sources = this.config.image.tileSource;
              if(typeof sources === 'string' && sources.startsWith("[")) {
+                 if(_debug)console.log("Sources = ", sources);
                  sources = JSON.parse(sources);
              } else if(!$.isArray(sources)) {
                  sources = [sources];
@@ -207,7 +208,7 @@ var ImageView = ( function() {
                          bottom: this.config.global.footerHeight
                      }
                  }
-             // console.log("osconfig ", osConfig);
+             if(_debug)console.log("osconfig ", osConfig);
              
              this.viewer = new OpenSeadragon( osConfig );
              var result = Q.defer();
@@ -1034,7 +1035,10 @@ var ImageView = ( function() {
                          console.log("IIIF image info ", imageInfo);                        
                      }               
                      _setImageSizes(imageInfo, config.global.imageSizes);       
-                     _setTileSizes(imageInfo, config.global.tileSizes);                
+                     _setTileSizes(imageInfo, config.global.tileSizes);      
+                     if(_debug) {                
+                         console.log("adapted IIIF image info ", imageInfo);                        
+                     } 
                      var tileSource;
                      if(config.global.useTiles && imageInfo.tiles && imageInfo.tiles.length > 0) {
                          tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
@@ -1143,12 +1147,14 @@ var ImageView = ( function() {
              }
              var iiifSizes = [];
              sizes.forEach(function(size) {
-                 iiifSizes.push({"width": parseInt(size), "height": parseInt(size)});
+                 if(size.width || size.height) {
+                     iiifSizes.push(size);
+                 } else {                     
+                     iiifSizes.push({"width": parseInt(size), "height": parseInt(size)});
+                 }
              });
              if(iiifSizes.length > 0) {              
                  imageInfo.sizes = iiifSizes;
-             } else {
-                 delete imageInfo.sizes;
              }
          }
      }
@@ -1164,13 +1170,17 @@ var ImageView = ( function() {
                  tiles = JSON.parse(tileString);
              }
              var iiifTiles = [];
-             
-             Object.keys(tiles).forEach(function(size) {
-                 var scaleFactors = tiles[size];
-                 iiifTiles.push({"width": parseInt(size), "height": parseInt(size), "scaleFactors": scaleFactors})
-             });
-             
-             imageInfo.tiles = iiifTiles;
+             if(Array.isArray(tiles)) {
+                 iiifTiles = tiles;
+             } else {                 
+                 Object.keys(tiles).forEach(function(size) {
+                     var scaleFactors = tiles[size];
+                     iiifTiles.push({"width": parseInt(size), "height": parseInt(size), "scaleFactors": scaleFactors})
+                 });
+             }
+             if(iiifTiles.length > 0) {                 
+                 imageInfo.tiles = iiifTiles;
+             }
          }
      }
      
