@@ -1258,7 +1258,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
-        return getFacetValues(query, facetFieldName, null, facetMinCount);
+        return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount);
     }
 
     /**

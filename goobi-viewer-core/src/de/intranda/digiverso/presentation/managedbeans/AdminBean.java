@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -41,12 +42,16 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.License;
 import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.Role;
@@ -1054,4 +1059,19 @@ public class AdminBean implements Serializable {
 
         return "";
     }
+    
+    /**
+     * Querys solr for a list of all values of the set ACCESSCONDITION
+     * 
+     * @return A list of all indexed ACCESSCONDITIONs
+     * @throws IndexUnreachableException
+     * @throws PresentationException 
+     */
+    public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
+        
+        List<String> accessConditions = SearchHelper.getFacetValues(SolrConstants.ACCESSCONDITION + ":[* TO *]", SolrConstants.ACCESSCONDITION, 0);
+        Collections.sort(accessConditions);
+        return accessConditions;
+    }
+
 }
