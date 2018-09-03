@@ -112,8 +112,9 @@ public class MetsResolver extends HttpServlet {
                 }
 
                 String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                String dataRepository = ((String) doc.getFieldValue(SolrConstants.DATAREPOSITORY)).replace("file://", "");
+                String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
+                    dataRepository = dataRepository.replace("file://", ""); //turn url to path if neccessary
                     String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
                     if (StringUtils.isNotEmpty(dataRepositoriesHome) && !Paths.get(dataRepositoriesHome).isAbsolute()) {
                         sbPath.append(dataRepositoriesHome).append('/');
