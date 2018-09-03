@@ -32,7 +32,13 @@
                             <div class="form-group">
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
-                                    <h:inputText value="#{adminBean.currentLicenseType.name}" id="name" required="true" styleClass="form-control" />
+                                <div class="form-control__select">
+                                        <h:selectOneMenu styleClass="form-control" value="#{adminBean.currentLicenseType.name}">
+                                            <f:selectItems value="#{adminBean.possibleAccessConditions}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
+                                            <f:ajax render="@none" />
+                                        </h:selectOneMenu>
+                                    </div>
+<!--                                     <h:inputText value="#{adminBean.currentLicenseType.name}" id="name" required="true" styleClass="form-control" /> -->
                                 </div>
                             </div>
                             <div class="form-group">
