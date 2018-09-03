@@ -3090,4 +3090,9 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("collections.collection[@field]", Collections.emptyList());
 
     }
+    
+    public String getWebApiToken() {
+        String token = getLocalString("webapi.authorization.token", "");
+        return token;
+    }
 }
