@@ -71,7 +71,10 @@
                                                             alt="Flag Icon" />
                                                  </td>
                                             </c:forEach>
-                                            <td class="column_title"><h:outputText value="#{page.menuTitle}" /></td>
+                                            <td class="column_title">
+                                            <span class="column_title__main_title">#{page.title}</span>
+                                            <span class="column_title__menu_title">#{page.menuTitle}</span>
+                                            </td>
                                             <td class="column_classification">
                                                 <ul>
                                                     <ui:repeat value="#{page.classifications}" var="classification">

@@ -9753,6 +9753,12 @@ div[id*="-Modal"] .email-form .form-group {
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td .cms-overview-flag-icon.lang-complete {
   opacity: 1;
 }
+#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td .column_title__main_title {
+  display: block;
+}
+#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td .column_title__menu_title {
+  font-size: 12px;
+}
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable_paginate {
   text-align: right;
 }
