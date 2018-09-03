@@ -2315,4 +2315,10 @@ public class ConfigurationTest {
     public void isFullAccessForLocalhost_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
     }
+    
+    @Test
+    public void testGetWebapiToken() {
+        Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());
+
+    }
 }

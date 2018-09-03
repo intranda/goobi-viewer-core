@@ -1323,5 +1323,8 @@
 				If no logo is configured, the image footer will be used -->
 			<!-- <logo>dfgviewer_intranda.jpg</logo> -->
 		</iiif>
+        <authorization>
+            <token>test</token>
+        </authorization>
 	</webapi>
 </config>

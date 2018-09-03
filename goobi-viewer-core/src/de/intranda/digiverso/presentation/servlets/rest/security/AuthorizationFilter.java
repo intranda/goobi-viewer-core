@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.servlets.rest.search.SearchHitsNotificationResource;
 import de.intranda.digiverso.presentation.servlets.rest.utils.SitemapResource;
@@ -74,8 +75,10 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             if (token == null) {
                 logger.trace("No token");
                 return false;
+            } else {
+                return token.equals(DataManager.getInstance().getConfiguration().getWebApiToken());
             }
-            // TODO check for correct token
+            
         }
 
         return true;
