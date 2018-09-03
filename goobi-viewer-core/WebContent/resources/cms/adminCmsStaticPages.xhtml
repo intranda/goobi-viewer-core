@@ -49,27 +49,11 @@
                                                 </td>
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <td class="cms-static-pages__page-language">
-                                                        <h:panelGroup rendered="#{locale == 'de'}">
-															<img 
-																src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" 
-	                                                			class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
-	                                                			title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
-	                                                			alt="Flag Icon" />
-														</h:panelGroup>
-	                                                	<h:panelGroup rendered="#{locale == 'en'}">
-															<img 
-																src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" 
-	                                                			class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
-	                                                			title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
-	                                                			alt="Flag Icon" />
-														</h:panelGroup>
-	                                                	<h:panelGroup rendered="#{locale == 'es'}">
-															<img 
-																src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_es.gif" 
-	                                                			class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
-	                                                			title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
-	                                                			alt="Flag Icon" />
-														</h:panelGroup>
+                                                        <img 
+                                                                src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif" 
+                                                                class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
+                                                                title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
+                                                                alt="Flag Icon" />
                                                     </td>
                                                 </c:forEach>
                                                 <td class="cms-static-pages__page-select">
