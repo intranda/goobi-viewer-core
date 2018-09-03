@@ -7128,7 +7128,6 @@ div[id*="-Modal"] .email-form .form-group {
 .toc__mv-element {
   padding: 15px 0;
   border-bottom: 1px solid #ccc;
-  transition: all 0.3s linear;
 }
 .toc__mv-element:hover {
   background-color: #eee;
