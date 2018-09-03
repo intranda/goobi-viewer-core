@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -54,6 +57,12 @@ public class MetsResolver extends HttpServlet {
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
 
+    public static void main(String[] args) {
+        String s = "/opt/digiverso/data/";
+        URI p = URI.create(s);
+        System.out.println(p + " is absolute: " + p.isAbsolute());
+    }
+    
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      * @should return METS file correctly via pi
@@ -103,10 +112,10 @@ public class MetsResolver extends HttpServlet {
                 }
 
                 String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+                String dataRepository = ((String) doc.getFieldValue(SolrConstants.DATAREPOSITORY)).replace("file://", "");
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                    if (StringUtils.isNotEmpty(dataRepositoriesHome) && !Paths.get(dataRepositoriesHome).isAbsolute()) {
                         sbPath.append(dataRepositoriesHome).append('/');
                     }
                     if (format != null) {
