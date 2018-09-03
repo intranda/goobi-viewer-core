@@ -151,7 +151,7 @@ var viewerJS = ( function( viewer ) {
                         });
                         
                         if ( this.complete ) {
-                        	var imgUrl = $( event.currentTarget ).attr( 'src' );
+                        	var imgUrl = $( this ).attr( 'src' );
                             $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
                         }
                     } );
