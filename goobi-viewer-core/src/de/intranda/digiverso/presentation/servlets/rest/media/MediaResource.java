@@ -70,10 +70,13 @@ public class MediaResource {
         String dataRepository = getDataRepository(identifier);
 
         checkAccess(type, identifier, filename);
+        
 
         File file;
         if (StringUtils.isNotEmpty(dataRepository)) {
-            file = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + mediaFilePath);
+            java.nio.file.Path dataRepositoryPath = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).resolve(dataRepository.replace("file://", ""));
+            file = dataRepositoryPath.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(mediaFilePath).toFile();
+            //            file = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + mediaFilePath);
         } else {
             // Backwards compatibility with old indexes
             file = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance()
