@@ -42,9 +42,12 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -1383,6 +1386,12 @@ public class CmsBean implements Serializable {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
         }
         throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
+    }
+    
+    public List<String> getPossibleSortFields() throws PresentationException, IndexUnreachableException, SolrServerException, IOException {
+        List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+//        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
+        return sortFields;
     }
 
 }

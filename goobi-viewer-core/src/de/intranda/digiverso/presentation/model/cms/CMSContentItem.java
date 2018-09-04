@@ -863,6 +863,5 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
         return g;
     }
-    
 
 }

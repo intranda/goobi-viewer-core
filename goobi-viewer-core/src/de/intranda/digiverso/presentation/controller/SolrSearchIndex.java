@@ -1137,6 +1137,23 @@ public final class SolrSearchIndex {
 
         return list;
     }
+    
+    public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
+        LukeRequest lukeRequest = new LukeRequest();
+        lukeRequest.setNumTerms(0);
+        LukeResponse lukeResponse = lukeRequest.process(server);
+        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+
+        List<String> list = new ArrayList<>();
+        for (String name : fieldInfoMap.keySet()) {
+            FieldInfo info = fieldInfoMap.get(name);
+            if (name.startsWith("SORT_")) {
+                list.add(name);
+            }
+        }
+
+        return list;
+    }
 
     /**
      * @param doc The document containing the metadata
