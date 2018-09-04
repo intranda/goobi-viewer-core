@@ -37,13 +37,35 @@
                             <table id="cmsOverviewTable" class="table table-striped table-bordered admin-table">
                                 <thead>
                                     <tr>
-                                        <th class="{sorter: false} column_template">#{msg.cms_templateType}</th>
+                                        <th class="{sorter: false} column_template">#{msg.cms_templateType}
+                                        </th>
                                         <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                             <th class="{sorter: false} column_language">#{locale.language}</th>
                                         </c:forEach>
-                                        <th class="column_title">#{msg.cms_pageName}</th>
-                                        <th class="column_classification">#{msg.cms_pageClassifications}</th>
-                                        <th class="column_date_updated">#{msg.cms_pageMetadata_lastEdited}</th>
+                                        <th class="column_title">#{msg.cms_pageName}
+                                            <!-- FILTER -->
+                                            <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}"/>    
+                                        </th>
+                                        <th class="column_classification">#{msg.cms_pageClassifications}
+                                            <!-- FILTER -->
+                                            <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('classifications', 'classification')}"/>    
+                                        </th>
+                                        <th class="column_date_updated">#{msg.cms_pageMetadata_lastEdited}
+                                             <!-- SORTING -->
+                                        <div class="sorting-wrapper">
+                                            <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
+                                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                            <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
+                                                <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                        </div>
+                                        
+                                        <div class="clearfix"></div>
+                                        
+                                        </th>
                                         <th class="{sorter: false} column_actions">#{msg.cms_pageActions}</th>
                                     </tr>
                                 </thead>

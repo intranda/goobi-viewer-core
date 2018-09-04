@@ -15,13 +15,22 @@
  */
 package de.intranda.digiverso.presentation.managedbeans.tabledata;
 
+import java.util.Optional;
+
 public class TableDataFilter {
     
+    private String joinTable = null;
     private String column;
     private String value;
     
     public TableDataFilter(String column, String value) {
         super();
+        this.column = column;
+        this.value = value;
+    }
+    public TableDataFilter(String joinTable, String column, String value) {
+        super();
+        this.joinTable = joinTable;
         this.column = column;
         this.value = value;
     }
@@ -37,7 +46,17 @@ public class TableDataFilter {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
+    /**
+     * @param joinTable the joinTable to set
+     */
+    public void setJoinTable(String joinTable) {
+        this.joinTable = joinTable;
+    }
+    /**
+     * @return the joinTable
+     */
+    public Optional<String> getJoinTable() {
+        return Optional.ofNullable(joinTable);
+    }
 
 }
