@@ -677,6 +677,13 @@
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
+    <url-mapping id="cmsOpenPage6">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+	</url-mapping>
 	<url-mapping id="cmsOpenPageWithCollection">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
