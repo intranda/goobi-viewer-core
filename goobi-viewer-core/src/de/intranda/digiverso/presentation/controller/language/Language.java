@@ -17,38 +17,90 @@ package de.intranda.digiverso.presentation.controller.language;
 
 public class Language {
 
-    private String isoCode;
-    private String isoCodeOld;
+    /**
+     * language code according to iso 639-2/B (based on English names)
+     */
+    private String isoCode_639_2_B;
+    /**
+     * language code according to iso 639-2/T (based on native names)
+     */
+    private String isoCode_639_2_T;
+    /**
+     * language code according to iso 639_1
+     */
+    private String isoCode_639_1;
     private String englishName;
     private String frenchName;
     private String germanName;
 
     /**
+     * @return the language code according to iso 639-1
+     */
+    public String getIsoCode639_1() {
+        return isoCode_639_1;
+    }
+    
+    /**
+     * @return the language code according to iso 639-2/B
+     */
+    public String getIsoCode639_2B() {
+        return isoCode_639_2_B;
+    }
+    
+    /**
+     * @return the language code according to iso 639-2/T
+     */
+    public String getIsoCode639_2T() {
+        return isoCode_639_2_T;
+    }
+    
+    /**
+     * @param isoCode_639_1 the isoCode_639_1 to set
+     */
+    public void setIsoCode_639_1(String isoCode_639_1) {
+        this.isoCode_639_1 = isoCode_639_1;
+    }
+    
+    /**
+     * @param isoCode_639_2_B the isoCode_639_2_B to set
+     */
+    public void setIsoCode_639_2B(String isoCode_639_2_B) {
+        this.isoCode_639_2_B = isoCode_639_2_B;
+    }
+    
+    /**
+     * @param isoCode_639_2_T the isoCode_639_2_T to set
+     */
+    public void setIsoCode_639_2T(String isoCode_639_2_T) {
+        this.isoCode_639_2_T = isoCode_639_2_T;
+    }
+    
+    /**
      * @return the language code according to iso 639-2/B
      */
     public String getIsoCode() {
-        return isoCode;
+        return isoCode_639_2_B;
     }
 
     /**
      * @param the language code according to iso 639-2/B
      */
     public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
+        this.isoCode_639_2_B = isoCode;
     }
 
     /**
      * @return the language code according to iso 639-1
      */
     public String getIsoCodeOld() {
-        return isoCodeOld;
+        return isoCode_639_1;
     }
 
     /**
      * @param the language code according to iso 639-1
      */
     public void setIsoCodeOld(String isoCodeOld) {
-        this.isoCodeOld = isoCodeOld;
+        this.isoCode_639_1 = isoCodeOld;
     }
 
     /**

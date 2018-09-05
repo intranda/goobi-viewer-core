@@ -15,15 +15,16 @@
  */
 package de.intranda.digiverso.presentation.controller.language;
 
+import java.util.List;
+
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.intranda.digiverso.presentation.controller.Configuration;
 
 public class LanguageHelper {
 
@@ -53,8 +54,14 @@ public class LanguageHelper {
         SubnodeConfiguration languageConfig = null;
         try {
             if (isoCode.length() == 3) {
-                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]")
-                        .get(0);
+                List<HierarchicalConfiguration> nodes =  config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]");
+                if(nodes.isEmpty()) {
+                    nodes =  config.configurationsAt("language[iso_639-2T=\"" + isoCode + "\"]");
+                }
+                if(nodes.isEmpty()) {
+                    nodes =  config.configurationsAt("language[iso_639-2B=\"" + isoCode + "\"]");
+                }
+                languageConfig = (SubnodeConfiguration) nodes.get(0);
             } else if (isoCode.length() == 2) {
                 languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-1=\"" + isoCode + "\"]")
                         .get(0);
@@ -68,8 +75,9 @@ public class LanguageHelper {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
         }
         Language language = new Language();
-        language.setIsoCode(languageConfig.getString("iso_639-2"));
-        language.setIsoCodeOld(languageConfig.getString("iso_639-1"));
+        language.setIsoCode_639_2B(languageConfig.getString("iso_639-2", languageConfig.getString("iso_639-2B")));
+        language.setIsoCode_639_2T(languageConfig.getString("iso_639-2T"));
+        language.setIsoCode_639_1(languageConfig.getString("iso_639-1"));
         language.setEnglishName(languageConfig.getString("eng"));
         language.setGermanName(languageConfig.getString("ger"));
         language.setFrenchName(languageConfig.getString("fre"));

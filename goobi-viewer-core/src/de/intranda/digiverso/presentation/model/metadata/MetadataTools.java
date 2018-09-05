@@ -270,7 +270,12 @@ public class MetadataTools {
         }
 
         if (language.length() == 3) {
-            Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+            Language lang = null;
+            try {                
+                lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+            } catch(IllegalArgumentException e) {
+                logger.warn("No language found for " + lang);
+            }
             if (lang != null) {
                 return lang.getIsoCodeOld();
             }
