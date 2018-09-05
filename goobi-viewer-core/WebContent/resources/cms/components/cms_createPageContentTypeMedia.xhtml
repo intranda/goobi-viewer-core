@@ -53,22 +53,22 @@
 													<h:panelGroup rendered="#{contentItem.visible}">
 														<c:forEach var="media" items="#{cmsMediaBean.getAllMedia()}">
 															<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">														
-																<div class="edit-content-page-media-gallery-item #{media == cmsBean.selectedMediaItem ? 'active-media-item' : ''}">
-																	<div class="edit-content-page-media-gallery-item-image">
-																		<img src="#{cmsMediaBean.getMediaPreviewUrl(media)}" class="img-responsive" alt="Media Item" />
-																	</div>
-																	<div class="edit-content-page-media-gallery-item-title">
-																		<h:outputText 
-																			value="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}"
-																			title="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}" />
-																	</div>
-																	<div class="edit-content-page-media-gallery-item-action">
-																		<h:commandLink action="#{cmsBean.setSelectedMediaItem(media)}" value="#{msg.cms_selectMedia}"
-																		onclick="setSelected($(this).parent().parent())">
-																			<f:ajax render="@none" />
-																		</h:commandLink>
-																	</div>
-																</div>
+                                                                <div class="edit-content-page-media-gallery-item #{media == cmsBean.selectedMediaItem ? 'active-media-item' : ''}">
+																    <h:commandLink action="#{cmsBean.setSelectedMediaItem(media)}"
+                                                                        onclick="setSelected($(this).parent())">
+    																	<div class="edit-content-page-media-gallery-item-image">
+    																		<img src="#{cmsMediaBean.getMediaPreviewUrl(media)}" class="img-responsive" alt="Media Item" />
+    																	</div>
+    																	<div class="edit-content-page-media-gallery-item-title">
+    																		<h:outputText 
+    																			value="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}"
+    																			title="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}" />
+    																	</div>
+<!--     																	<div class="edit-content-page-media-gallery-item-action"> -->
+<!--     																	</div> -->
+                                                                        <f:ajax render="@none" />
+                                                                    </h:commandLink>
+    													        </div>
 																<div class="clearfix"></div>
 															</div>
 														</c:forEach>
