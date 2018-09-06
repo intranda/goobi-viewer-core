@@ -419,18 +419,19 @@ public class CmsBean implements Serializable {
     }
 
     public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
-        String classification = item.getPageClassification();
         int size = item.getElementsPerPage();
         int offset = item.getListOffset();
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        if (!StringUtils.isEmpty(classification)) {
-            for (CMSPage cmsPage : cmsPages) {
-                if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
-                    counter++;
-                    if (counter > offset && counter <= size + offset) {
-                        nestedPages.add(cmsPage);
+        for (String  classification : item.getPageClassification()) {            
+            if (!StringUtils.isEmpty(classification)) {
+                for (CMSPage cmsPage : cmsPages) {
+                    if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
+                        counter++;
+                        if (counter > offset && counter <= size + offset) {
+                            nestedPages.add(cmsPage);
+                        }
                     }
                 }
             }
@@ -598,7 +599,7 @@ public class CmsBean implements Serializable {
                             }
                             break;
                         case PAGELIST:
-                            if (StringUtils.isBlank(item.getPageClassification())) {
+                            if (item.getPageClassification().length == 0) {
                                 languageIncomplete = true;
                             }
                             break;

@@ -74,7 +74,9 @@
 																<div class="form-group">
 																	<label class="col-sm-3 control-label">#{msg.cms_pageSortingField}:</label>
 																	<div class="col-sm-9">
-																		<h:inputText value="#{cmsBean.selectedPage.pageSorting}" styleClass="form-control content-input" />
+																		<h:inputText  value="#{cmsBean.selectedPage.pageSorting}" styleClass="form-control content-input">
+                                                                            <f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
+                                                                        </h:inputText>
 																	</div>
 																</div>
 															</h:panelGroup>

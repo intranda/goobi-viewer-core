@@ -97,9 +97,12 @@ public class CMSPage {
     @Column(name = "use_default_sidebar", nullable = false)
     private boolean useDefaultSidebar = false;
 
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @PrivateOwned
-    private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
+    @OneToMany(
+            cascade = CascadeType.ALL, 
+            orphanRemoval = true
+        )
+    @JoinColumn(name = "owner_page_id")
+    private List<CMSProperty> properties = new ArrayList<>();
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
@@ -123,6 +126,9 @@ public class CMSPage {
     @Column(name = "classification")
     @PrivateOwned
     private List<String> classifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
 
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
@@ -182,6 +188,14 @@ public class CMSPage {
         this.classifications = new ArrayList<>(original.classifications);
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
+        
+        if (original.properties != null) {
+            this.properties = new ArrayList<>(original.properties.size());
+            for (CMSProperty property : original.properties) {
+                CMSProperty copy = new CMSProperty(property);
+                this.properties.add(copy);
+            }
+        }
 
         if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
@@ -1043,6 +1057,24 @@ public class CMSPage {
 
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         return BeanUtils.getCmsBean().getCollection(this);
+    }
+
+    
+    /**
+     * Returns the property with the given key or else creates a new one with that key and returns it
+     * 
+     * @param key
+     * @throws ClassCastException if the returned property has the wrong generic type
+     * @return the property with the given key or else creates a new one with that key and returns it
+     */
+    public CMSProperty getProperty(String key) throws ClassCastException {
+        CMSProperty property =  this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
+            CMSProperty prop = new CMSProperty(key);
+            this.properties.add(prop);
+            return prop;
+        });
+        System.out.println("properties = " + StringUtils.join(properties, ", "));
+        return property;
     }
 
 }

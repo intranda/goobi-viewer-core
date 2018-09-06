@@ -4,6 +4,9 @@
     <description>...</description>
     <icon>cms_template_22_faqSingle.png</icon>
     <html>cms_template_22_faqSingle.xhtml</html>
+    <options>
+        <useSorterField>true</useSorterField>
+    </options>
     <content>
         <item id="heading" type="TEXT" label="Überschrift" mandatory="true" />
         <item id="text" type="HTML" label="Text" mandatory="true" />

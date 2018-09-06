@@ -15,12 +15,9 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label">#{msg.cms_itemClassification}#{contentItem.mandatory?'*':''}:</label>
 						<div class="col-sm-9">
-							<div class="form-control__select">
-								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.pageClassification}">
+								<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.pageClassification}">
 									<f:selectItems value="#{cmsBean.classifications}" var="field" itemValue="#{field}" itemLabel="#{field}" />
-									<f:ajax render="@none" />
-								</h:selectOneMenu>
-							</div>
+								</h:selectManyListbox>
 						</div>
 					</div>
 					<div class="form-group">
@@ -29,6 +26,15 @@
 							<h:inputText value="#{contentItem.elementsPerPage}" styleClass="form-control content-input" />
 						</div>
 					</div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">#{msg.cms_displayTagsAsHeaders}:</label>
+                        <div class="col-sm-9">
+                        	<h:selectBooleanCheckbox id="checkboxTagsAsHeaders" 
+                            value="#{cmsBean.selectedPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').value}" 
+                            onclick="cmsJS.createPage.disablePreview();">
+                            </h:selectBooleanCheckbox>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</h:panelGroup>

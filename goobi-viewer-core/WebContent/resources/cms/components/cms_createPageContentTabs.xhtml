@@ -13,7 +13,6 @@
 	<composite:implementation>
 		<c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
 			<div role="tabpanel" class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
-
 				<!-- page content -->
 				<div class="edit-content-page edit-content-page-content">
 					<div class="form-horizontal">
