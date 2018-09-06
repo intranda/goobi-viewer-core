@@ -162,6 +162,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                         if (localBundle != null) {
                             localBundles.put(locale, localBundle);
                         } else {
+                            localBundles.put(locale, defaultBundles.get(locale));
                             logger.warn("Could not load local resource bundle.");
                         }
                     } finally {
