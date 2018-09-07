@@ -30,6 +30,45 @@
     	color: @white;
     	background-color: @gray;
     }
+    .search-list {
+    	/* OPTIONS */
+	    &__options {
+	    	margin-bottom: 15px;
+	        a, button {
+	            &:hover,
+	            &:focus,
+	            &:active,
+	            &.active {}
+	        }
+	        form {}
+	    }
+	    &__hitcount,
+	    &__rss,
+	    &__save-search,
+	    &__excel-export,
+	    &__views {}
+	    &__hitcount {
+	    	.mx-hidden;
+	    }
+	    &__rss {
+	    	border: none;
+	    }
+	    &__save-search {
+	    	.mx-hidden;
+	    }
+	    &__excel-export {
+	        a {}
+	        .excel-export-loader {
+	            img {}
+	        }
+	    }
+	    &__views {
+	    	button {}
+	    	[data-view="search-list-default"] {}
+	    	[data-view="search-list-grid"] {}
+	    	[data-view="search-list-list"] {}
+	    }
+    }
 }
 
 /* MODIFICATION */

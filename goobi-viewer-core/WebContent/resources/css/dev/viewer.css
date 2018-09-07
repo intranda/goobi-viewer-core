@@ -8745,6 +8745,23 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   background-color: #6f6f6f;
 }
+.tpl-single-collection .search-list {
+  /* OPTIONS */
+}
+.tpl-single-collection .search-list__options {
+  margin-bottom: 15px;
+}
+.tpl-single-collection .search-list__hitcount {
+  display: none !important;
+  visibility: hidden !important;
+}
+.tpl-single-collection .search-list__rss {
+  border: none;
+}
+.tpl-single-collection .search-list__save-search {
+  display: none !important;
+  visibility: hidden !important;
+}
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
