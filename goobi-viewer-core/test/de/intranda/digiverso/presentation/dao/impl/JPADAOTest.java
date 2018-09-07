@@ -1580,8 +1580,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersion("de").setTitle("Deutscher Titel");
         page.getLanguageVersion("en").setTitle("English title");
         page.getLanguageVersion("fr").setTitle("Titre français");
-        //        page.getLanguageVersions().remove(0);
+        page.getLanguageVersions().remove(0);
         page.getClassifications().add("new class");
+        page.getProperty("TEST_PROPERTY").setValue("true");
+        
         Date now = new Date();
         page.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
@@ -1589,11 +1591,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(1);
         Assert.assertNotNull(page2);
         Assert.assertEquals(page.getDateUpdated(), page2.getDateUpdated());
-        Assert.assertEquals("Deutscher Titel", page2.getLanguageVersion("de").getTitle());
         Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
         Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
+        Assert.assertEquals(2, page2.getLanguageVersions().size());
         Assert.assertEquals(3, page2.getClassifications().size());
         Assert.assertEquals(now, page2.getDateUpdated());
+        Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
 
         page.getLanguageVersion("fr").setTitle("");
         page.removeClassification("new class");
