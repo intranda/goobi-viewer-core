@@ -12,45 +12,44 @@
 
 	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
-<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" /> -->
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-		</f:metadata>
-	</ui:define>
+    <!-- METADATA -->
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+        </f:metadata>
+    </ui:define>
 
+    <!-- BREADCRUMBS -->
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
-
+    <!-- CONTENT -->
     <ui:define name="content">
-
-		<f:param name="currentPage" value="#{cmsBean.random}" />
-		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateSingleCollection" class="tpl-single-collection">
+        <f:param name="currentPage" value="#{cmsBean.random}" />
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="templateSingleCollection" class="tpl-single-collection">
                 <!-- HEADER -->
-				<h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
-					<!-- IMAGE -->
-					<div class="tpl-single-collection__image faded">
-						<h2>#{cmsPage.title}</h2>
-						<img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
-					</div>
+                <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
+                    <!-- IMAGE -->
+                    <div class="tpl-single-collection__image faded">
+                        <h2>#{cmsPage.title}</h2>
+                        <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
+                    </div>
 
-					<!-- DESCRIPTION -->
-					<div class="tpl-single-collection__description">
-						<ui:include src="#{cmsPage.getContent('A2')}" />
-					</div>
-				</h:panelGroup>
-
-				<!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
-                        #{msg.cms_pagePreviewNotPublished}
+                    <!-- DESCRIPTION -->
+                    <div class="tpl-single-collection__description">
+                        <ui:include src="#{cmsPage.getContent('A2')}" />
                     </div>
                 </h:panelGroup>
-                
+
+                <!-- PAGE UNPUBLISHED -->
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
+                </h:panelGroup>
+
                 <!-- SEARCH LIST -->
                 <div class="search-list">
                     <!-- SEARCH LIST OPTIONS -->
@@ -60,14 +59,11 @@
                     <viewerComponent:searchHitList />
                 </div>
 
-				<!-- PAGINATOR -->
-                <viewerComponent:simplePaginator 
-                    itemCount="#{searchBean.lastPage}" 
-                    itemActive="#{searchBean.currentPage}"
-                    urlPrefix="#{cmsPage.pageUrl}-/"
+                <!-- PAGINATOR -->
+                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cmsPage.pageUrl}-/"
                     urlSuffix="#{searchBean.facets.currentFacetString}/#{searchBean.facets.currentFacetString}/" />
-			</div>
-			
+            </div>
+
             <script type="text/javascript">                
                 $( document ).ready( function() {
                     var searchSortingDropdownConfig = {};
@@ -88,10 +84,11 @@
                     viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
                 });
             </script>
-		</f:view>
-	</ui:define>
+        </f:view>
+    </ui:define>
 
-	<ui:define name="sidebar">
+    <!-- SIDEBAR -->
+    <ui:define name="sidebar">
 		<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
 			<widgetComponent:widget_custom widget="#{element}" />
 			<widgetComponent:widget_customDrillDown widget="#{element}" />
