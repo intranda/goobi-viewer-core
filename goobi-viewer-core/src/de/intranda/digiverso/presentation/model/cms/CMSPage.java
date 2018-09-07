@@ -102,7 +102,6 @@ public class CMSPage {
             orphanRemoval = true
         )
     @JoinColumn(name = "owner_page_id")
-    @PrivateOwned
     private List<CMSProperty> properties = new ArrayList<>();
 
     @Column(name = "persistent_url", nullable = true)
