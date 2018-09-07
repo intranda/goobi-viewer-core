@@ -128,7 +128,6 @@ public class CMSPage {
     private List<String> classifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
 
     /**
