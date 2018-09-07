@@ -148,6 +148,8 @@
     <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000"
         published="true" use_default_sidebar="true"/>
         
+    <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  
+        
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>
     

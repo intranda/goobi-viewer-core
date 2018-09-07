@@ -1593,8 +1593,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(page.getDateUpdated(), page2.getDateUpdated());
         Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
         Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
-//        Assert.assertEquals("", page2.getLanguageVersion("de").getTitle());
-        //        Assert.assertEquals(2, page2.getLanguageVersions().size());
+        Assert.assertEquals(2, page2.getLanguageVersions().size());
         Assert.assertEquals(3, page2.getClassifications().size());
         Assert.assertEquals(now, page2.getDateUpdated());
         Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
