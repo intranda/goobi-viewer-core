@@ -102,7 +102,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 List<ImageTile> tileSizes;
                 tileSizes = getTileSizesFromConfig();
                 setTileSizes((ImageInformation) responseObject, tileSizes);
-                setMaxImageSizes((ImageInformation) responseObject);
+                setMaxImageSizes((ImageInformation) responseObject);         
                 //This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
                 //				setWatermark((ImageInformation) responseObject);
             } catch (ViewerConfigurationException e) {

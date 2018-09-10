@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1247,5 +1248,31 @@ public final class SolrSearchIndex {
         }
 
         return ret;
+    }
+
+    /**
+     * Catches the filename of the page with the given order under the given ip
+     * 
+     * @param pi        The topstruct pi
+     * @param order     The page order (1-based
+     * @return  An optíonal containing the filename of the page with the given order under the given ip.
+     *          Or an empty optional if no matching page was found.
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public Optional<String> getFilename(String pi, int order) throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append(SolrConstants.DOCTYPE).append(":").append("PAGE")
+        .append(" AND ")
+        .append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi)
+        .append(" AND ")
+        .append(SolrConstants.ORDER).append(":").append(order);
+        
+        SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
+        if (hits.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable((String)(hits.get(0).getFirstValue(SolrConstants.FILENAME)));
+        }
     }
 }
