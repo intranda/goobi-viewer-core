@@ -1078,5 +1078,13 @@ public class CMSPage {
         System.out.println("properties = " + StringUtils.join(properties, ", "));
         return property;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getBestLanguage(Locale.GERMAN).getTitle();
+    }
 
 }

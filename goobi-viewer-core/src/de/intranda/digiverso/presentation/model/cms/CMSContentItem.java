@@ -539,6 +539,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         .sorted()
                         .findFirst()
                         .orElse(Long.MAX_VALUE);
+                while(sortMap.containsKey(order)) {
+                    order++;
+                }
                 sortMap.put(order, classification);
             }
             return new ArrayList<>(sortMap.values());
@@ -589,9 +592,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (nestedPages == null) {
             return loadNestedPages();
         }
-        return nestedPages.stream()
+        List<CMSPage> pages =  nestedPages.stream()
                 .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
                 .collect(Collectors.toList());
+        return pages;
     }
 
     public void resetData() {
