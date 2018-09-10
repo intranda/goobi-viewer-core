@@ -545,6 +545,10 @@ public class CmsBean implements Serializable {
         }
 
     }
+    
+    public void invalidate() {
+        collections = new HashMap<>();
+    }
 
     public static boolean validateSidebarElement(CMSSidebarElement element) {
         if (element != null && !element.isValid()) {

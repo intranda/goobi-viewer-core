@@ -204,6 +204,9 @@ public class UserBean implements Serializable {
                     request = BeanUtils.getRequest();
                     request.getSession(false).setAttribute("user", user);
                     SearchHelper.updateFilterQuerySuffix(request);
+
+
+//                    BeanUtils.getCmsBean().resetCollections(); 
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
 
                     if (StringUtils.isNotEmpty(redirectUrl)) {
@@ -370,6 +373,8 @@ public class UserBean implements Serializable {
                 logger.trace("Removed session attribute: {}", attribute);
             }
         }
+        
+        BeanUtils.getCmsBean().invalidate();
 
         // Update filter query suffix
         SearchHelper.updateFilterQuerySuffix(request);
