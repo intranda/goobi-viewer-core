@@ -1075,7 +1075,6 @@ public class CMSPage {
             this.properties.add(prop);
             return prop;
         });
-        System.out.println("properties = " + StringUtils.join(properties, ", "));
         return property;
     }
     
