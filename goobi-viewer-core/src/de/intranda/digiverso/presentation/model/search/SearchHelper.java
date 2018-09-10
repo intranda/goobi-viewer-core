@@ -1330,12 +1330,15 @@ public final class SearchHelper {
             //            sbQuery.append(" AND (");
             StringBuilder sbDocstructFilter = new StringBuilder();
             for (String docstruct : bmfc.getDocstructFilters()) {
-                //                sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
-                sbDocstructFilter.append(docstruct).append(" OR ");
+                sbDocstructFilter.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
+//                sbDocstructFilter.append(docstruct).append(" OR ");
             }
             //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
             //            sbQuery.append(')');
-            sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
+            if(sbDocstructFilter.length() > 4) {                
+                sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
+            }
+            filterQueries.add(sbDocstructFilter.toString());
         }
         if (bmfc.isRecordsAndAnchorsOnly()) {
             filterQueries.add(
