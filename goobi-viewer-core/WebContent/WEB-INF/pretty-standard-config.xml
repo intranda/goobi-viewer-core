@@ -651,7 +651,7 @@
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
     <url-mapping id="cmsOpenPage3">
         <pattern

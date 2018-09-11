@@ -48,6 +48,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
@@ -113,6 +114,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
          */
         public Functionality createFunctionality(CMSContentItem item) {
             switch (this) {
+                case SOLRQUERY:
+                    return new QueryListFunctionality();
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:

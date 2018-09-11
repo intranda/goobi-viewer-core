@@ -891,7 +891,7 @@ public class CmsBean implements Serializable {
         if (searchBean != null) {
             Search search = searchBean.getCurrentSearch();
             if (search != null) {
-                return searchBean.getCurrentSearch().getHits();
+                return search.getHits();
             }
         }
 

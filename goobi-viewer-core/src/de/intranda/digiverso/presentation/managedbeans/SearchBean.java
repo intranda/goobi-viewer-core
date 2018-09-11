@@ -230,7 +230,6 @@ public class SearchBean implements Serializable {
             facets.resetCurrentFacetString();
         }
         generateSimpleSearchString(guiSearchString);
-
         return "pretty:newSearch5";
     }
 
