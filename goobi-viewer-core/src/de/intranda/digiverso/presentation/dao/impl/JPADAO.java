@@ -2203,91 +2203,19 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
             preQuery();
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
-
-            List<String> filterKeys = new ArrayList<>();
-            Map<String, String> params = new HashMap<>();
-
-            StringBuilder join = new StringBuilder();
-            StringBuilder where = new StringBuilder();
             StringBuilder order = new StringBuilder();
 
-            if (filters != null && !filters.isEmpty()) {
-                AlphabetIterator abc = new AlphabetIterator();
-                String pageKey = abc.next();
-                filterKeys.addAll(filters.keySet());
-                Collections.sort(filterKeys);
-                int count = 0;
-                for (String key : filterKeys) {
-                    String tableKey = pageKey;
-                    String value = filters.get(key);
-                    if (StringUtils.isNotBlank(value)) {
-                        //separate join table statement from key
-                        String joinTable = "";
-                        if (key.contains("::")) {
-                            joinTable = key.substring(0, key.indexOf("::"));
-                            key = key.substring(key.indexOf("::") + 2);
-                            tableKey = abc.next();
-                        }
-                        if (count > 0) {
-                            where.append(" AND (");
-                        } else {
-                            where.append(" WHERE ");
-                        }
-                        String[] keyParts = key.split(MULTIKEY_SEPARATOR);
-                        int keyPartCount = 0;
-                        where.append(" ( ");
-                        for (String keyPart : keyParts) {
-                            if (keyPartCount > 0) {
-                                where.append(" OR ");
-                            }
-                            if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                                where.append("UPPER(" + tableKey + ".")
-                                        .append(keyPart)
-                                        .append(") LIKE :")
-                                        .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                            } else if ("classifications".equals(joinTable)) {
-                                where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+            Map<String, String> params = new HashMap<>();
 
-                            }
-                            keyPartCount++;
-                        }
-                        where.append(" ) ");
-                        count++;
-
-                        //apply join table if neccessary
-                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                            join.append(" JOIN ")
-                                    .append(joinTable)
-                                    .append(" ")
-                                    .append(tableKey)
-                                    .append(" ON")
-                                    .append(" (")
-                                    .append(pageKey)
-                                    .append(".id = ")
-                                    .append(tableKey)
-                                    .append(".ownerPage.id)");
-                            //                            if(joinTable.equalsIgnoreCase("CMSPageLanguageVersion")) {                                
-                            //                                join.append(" AND ")
-                            //                                .append(" (").append(tableKey).append(".language = :lang) ");
-                            //                            }
-                        } else if ("classifications".equals(joinTable)) {
-                            join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
-                            //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
-                        }
-                        params.put(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + value.toUpperCase() + "%");
-                    }
-                    if (count > 1) {
-                        where.append(" )");
-                    }
-                }
-            }
+            String filterString = createFilterQuery(filters, params);
+            
             if (StringUtils.isNotEmpty(sortField)) {
                 order.append(" ORDER BY a.").append(sortField);
                 if (descending) {
                     order.append(" DESC");
                 }
             }
-            sbQuery.append(join).append(where).append(order);
+            sbQuery.append(filterString).append(order);
 
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
@@ -2299,6 +2227,97 @@ public class JPADAO implements IDAO {
             List<CMSPage> list = q.getResultList();
             return list;
         }
+    }
+
+    /**
+     * Builds a query string to filter a query across several tables
+     * 
+     * @param filters   The filters to use
+     * @param params    Empty map which will be filled with the used query parameters. These to be added to the query
+     * @return  A string consisting of a WHERE and possibly JOIN clause of a query
+     */
+    public String createFilterQuery(Map<String, String> filters, Map<String, String> params) {
+        StringBuilder join = new StringBuilder();
+
+        List<String> filterKeys = new ArrayList<>();
+        StringBuilder where = new StringBuilder();
+        if (filters != null && !filters.isEmpty()) {
+            AlphabetIterator abc = new AlphabetIterator();
+            String pageKey = abc.next();
+            filterKeys.addAll(filters.keySet());
+            Collections.sort(filterKeys);
+            int count = 0;
+            for (String key : filterKeys) {
+                String tableKey = pageKey;
+                String value = filters.get(key);
+                if (StringUtils.isNotBlank(value)) {
+                    //separate join table statement from key
+                    String joinTable = "";
+                    if (key.contains("::")) {
+                        joinTable = key.substring(0, key.indexOf("::"));
+                        key = key.substring(key.indexOf("::") + 2);
+                        tableKey = abc.next();
+                    }
+                    if (count > 0) {
+                        where.append(" AND (");
+                    } else {
+                        where.append(" WHERE ");
+                    }
+                    String[] keyParts = key.split(MULTIKEY_SEPARATOR);
+                    int keyPartCount = 0;
+                    where.append(" ( ");
+                    for (String keyPart : keyParts) {
+                        if (keyPartCount > 0) {
+                            where.append(" OR ");
+                        }
+                        if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
+                            where.append("UPPER(" + tableKey + ".")
+                                    .append(keyPart)
+                                    .append(") LIKE :")
+                                    .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                        } else if ("classifications".equals(joinTable)) {
+                            where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+
+                        } else {
+                            where.append("UPPER(" + tableKey + ".")
+                            .append(keyPart)
+                            .append(") LIKE :")
+                            .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                        }
+                        keyPartCount++;
+                    }
+                    where.append(" ) ");
+                    count++;
+
+                    //apply join table if neccessary
+                    if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
+                        join.append(" JOIN ")
+                                .append(joinTable)
+                                .append(" ")
+                                .append(tableKey)
+                                .append(" ON")
+                                .append(" (")
+                                .append(pageKey)
+                                .append(".id = ")
+                                .append(tableKey)
+                                .append(".ownerPage.id)");
+                        //                            if(joinTable.equalsIgnoreCase("CMSPageLanguageVersion")) {                                
+                        //                                join.append(" AND ")
+                        //                                .append(" (").append(tableKey).append(".language = :lang) ");
+                        //                            }
+                    } else if ("classifications".equals(joinTable)) {
+                        join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
+                        //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
+                    }
+                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + value.toUpperCase() + "%");
+                }
+                if (count > 1) {
+                    where.append(" )");
+                }
+            }
+        }
+        String filterString = join.append(where).toString();
+        return filterString;
     }
 
     /**
@@ -2934,34 +2953,37 @@ public class JPADAO implements IDAO {
      */
     private long getRowCount(String className, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(o) FROM ").append(className).append(" o");
-        StringBuilder sbFilterQuery = null;
-        if (filters != null && !filters.isEmpty()) {
-            sbFilterQuery = new StringBuilder();
-            for (String key : filters.keySet()) {
-                if (StringUtils.isEmpty(filters.get(key))) {
-                    continue;
-                } else if (sbFilterQuery.length() == 0) {
-                    sbFilterQuery.append(" WHERE ");
-                } else {
-                    sbFilterQuery.append(" AND ");
-                }
-
-                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
-                int keyPartCount = 0;
-                sbFilterQuery.append(" ( ");
-                for (String keyPart : keyParts) {
-                    if (keyPartCount > 0) {
-                        sbFilterQuery.append(" OR ");
-                    }
-                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
-                    keyPartCount++;
-                }
-                sbFilterQuery.append(" ) ");
-            }
-            sbQuery.append(sbFilterQuery.toString());
-        }
-        Query q = em.createQuery(sbQuery.toString());
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
+        Map<String, String> params = new HashMap<>();
+        String filterQuery = createFilterQuery(filters, params);
+//        StringBuilder sbFilterQuery = null;
+//        if (filters != null && !filters.isEmpty()) {
+//            sbFilterQuery = new StringBuilder();
+//            for (String key : filters.keySet()) {
+//                if (StringUtils.isEmpty(filters.get(key))) {
+//                    continue;
+//                } else if (sbFilterQuery.length() == 0) {
+//                    sbFilterQuery.append(" WHERE ");
+//                } else {
+//                    sbFilterQuery.append(" AND ");
+//                }
+//                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
+//                int keyPartCount = 0;
+//                sbFilterQuery.append(" ( ");
+//                for (String keyPart : keyParts) {
+//                    if (keyPartCount > 0) {
+//                        sbFilterQuery.append(" OR ");
+//                    }
+//
+//                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
+//                    keyPartCount++;
+//                }
+//                sbFilterQuery.append(" ) ");
+//            }
+//            sbQuery.append(sbFilterQuery.toString());
+//        }
+        Query q = em.createQuery(sbQuery.append(filterQuery).toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
     }

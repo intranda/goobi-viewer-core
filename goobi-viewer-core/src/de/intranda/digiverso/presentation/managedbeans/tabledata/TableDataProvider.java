@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class TableDataProvider<T> {
     private String sortField = "";
     private SortOrder sortOrder = SortOrder.ASCENDING;
     private List<TableDataFilter> filters = new ArrayList<>();
+    String lastFilterString = "";
 
     public static enum SortOrder {
         ASCENDING,
@@ -63,8 +65,25 @@ public class TableDataProvider<T> {
      * 
      */
     protected Optional<List<T>> loadList() {
+        String filterString = getFilterString(filters);
+        if(!filterString.equals(this.lastFilterString)) {
+            this.source.resetTotalNumberOfRecords();
+            this.lastFilterString = filterString;
+        }
         return Optional
                 .ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
+    }
+
+    /**
+     * @param filters2
+     * @return
+     */
+    private String getFilterString(List<TableDataFilter> filters) {
+        if(filters == null || filters.isEmpty()) {
+            return "";
+        } else {
+            return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
+        }
     }
 
     public Map<String, String> getFiltersAsMap() {
