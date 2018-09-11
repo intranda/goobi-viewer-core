@@ -7401,10 +7401,8 @@ var cmsJS = ( function( cms ) {
             
             cmsJS.createPage.initSortables( _defaults );
             
-            // set preview button status
-            _previewStatus = localStorage.getItem( 'previewStatus' );
-            
-            if ( _previewStatus === 'false' ) {
+            // check preview status and open new tab
+            if ( localStorage.getItem( 'previewStatus' ) === 'false' ) {
                 _defaults.prevBtn.attr( 'disabled', true );
                 _defaults.prevDescription.show();
             }
@@ -7412,9 +7410,9 @@ var cmsJS = ( function( cms ) {
                 _defaults.prevBtn.attr( 'disabled', false );
                 _defaults.prevDescription.hide();
                 
-                _defaults.prevBtn.on( 'click', function() {
-                    var url = $( this ).attr( 'data-previewUrl' );
-                    window.open( url, '_blank' );
+                _defaults.prevBtn.on( 'click', function( event ) {
+                	var url = $( this ).attr( 'data-previewUrl' );
+                    window.open( url, url );
                 } );
             }
         },
