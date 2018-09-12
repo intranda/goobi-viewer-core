@@ -7,13 +7,12 @@
  */
 describe( 'ViewerJS Paginator Tests', function() {
     
-    var config;
-    var currentPage = 5;
+	var config;
+	var currentPage = 5;
     
+
         beforeEach(function() {
-//            jasmine.getFixtures().load("paginatorTest.html");
-            $(document.body).remove('#paginatorForm');
-            $('<form id="paginatorForm"><nav>         <ul>             <li class="navigate_prev">                 <a onclick="setPage(currentPage-1)">&lt;&lt;</a>             </li>              <li class="navigate_first">                 <a onclick="setPage(1)">1</a>             </li>              <li>                 <a onclick="setPage(2)">2</a>             </li>              <li>                 <a onclick="setPage(3)">3</a>             </li>              <li>                 <a onclick="setPage(4)">4</a>             </li>              <li>                 <a onclick="setPage(5)">5</a>             </li>              <li>                 <a onclick="setPage(6)">6</a>             </li>              <li>                 <a onclick="setPage(7)">7</a>             </li>              <li>                 <a onclick="setPage(8)">8</a>             </li>              <li>                 <a onclick="setPage(9)">9</a>             </li>              <li class="navigate_last">                 <a onclick="setPage(10)">10</a>             </li>               <li class="navigate_next">                 <a onclick="setPage(currentPage+1)">&gt;&gt;</a>             </li>         </ul>     </nav> </form').appendTo('body');
+            $('<form id="paginatorForm"><nav><ul><li class="navigate_prev"><a onclick="setPage(currentPage-1)">&lt;&lt;</a></li><li class="navigate_first"><a onclick="setPage(1)">1</a></li><li><a onclick="setPage(2)">2</a></li><li><a onclick="setPage(3)">3</a></li><li><a onclick="setPage(4)">4</a></li><li><a onclick="setPage(5)">5</a></li><li><a onclick="setPage(6)">6</a></li><li><a onclick="setPage(7)">7</a></li><li><a onclick="setPage(8)">8</a></li><li><a onclick="setPage(9)">9</a></li><li class="navigate_last"><a onclick="setPage(10)">10</a></li><li class="navigate_next"><a onclick="setPage(currentPage+1)">&gt;&gt;</a></li></ul></nav> </form').appendTo('body');
             
             config = {
                     previous: ".navigate_prev a",
@@ -23,7 +22,6 @@ describe( 'ViewerJS Paginator Tests', function() {
             }
             currentPage = 5;
             setPage(5);
-
             
             viewerJS.paginator.init(config);
             
@@ -49,7 +47,7 @@ describe( 'ViewerJS Paginator Tests', function() {
         
         afterEach(function() {
             viewerJS.paginator.close();
-            $(document.body).remove('#paginatorForm');
+            $('#paginatorForm').remove()
         })
         
         it( 'should start with 12 elements with only the 6th element active', function() {
@@ -70,7 +68,7 @@ describe( 'ViewerJS Paginator Tests', function() {
                 expect("#paginatorForm li:eq(5)").not.toHaveClass(activeClass);
                 expect("#paginatorForm li:eq(4)").toHaveClass(activeClass);
                 done();
-            }, 0);
+            }, 500);
         } );
         
         it( 'should should move one right on right arrow key press', function(done) {
@@ -83,7 +81,7 @@ describe( 'ViewerJS Paginator Tests', function() {
                 expect("#paginatorForm li:eq(5)").not.toHaveClass(activeClass);
                 expect("#paginatorForm li:eq(6)").toHaveClass(activeClass);
                 done();
-            }, 0);
+            }, 500);
         } );
         
         it( 'should should move to first element on double left key press', function(done) {
@@ -97,7 +95,7 @@ describe( 'ViewerJS Paginator Tests', function() {
                 expect("#paginatorForm li:eq(5)").not.toHaveClass(activeClass);
                 expect("#paginatorForm li:eq(1)").toHaveClass(activeClass);
                 done();
-            }, 0);
+            }, 500);
         } );
         
         it( 'should should move to last element on double right key press', function(done) {
@@ -111,7 +109,7 @@ describe( 'ViewerJS Paginator Tests', function() {
                 expect("#paginatorForm li:eq(5)").not.toHaveClass(activeClass);
                 expect("#paginatorForm li:eq(10)").toHaveClass(activeClass);
                 done();
-            }, 0);
+            }, 500);
         } );
 
 
@@ -134,5 +132,5 @@ function keyPress(key) {
     press.key = key;
     press.keyCode = key;
     $("body").trigger(press);
-  }
+}
 
