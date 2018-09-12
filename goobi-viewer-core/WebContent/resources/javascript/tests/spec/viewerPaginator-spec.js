@@ -44,7 +44,7 @@ describe( 'ViewerJS Paginator Tests', function() {
             viewerJS.paginator.close();
         })
         
-        fit( 'should start with 12 elements with only the 6th element active', function() {
+        it( 'should start with 12 elements with only the 6th element active', function() {
             expect($("#paginatorForm li").length).toBe(12);
             expect("#paginatorForm li:eq(5)").toHaveClass(activeClass);
             expect("#paginatorForm li:lt(5)").not.toHaveClass(activeClass);
@@ -52,7 +52,7 @@ describe( 'ViewerJS Paginator Tests', function() {
 
         } );
     
-        fit( 'should should move one left on left arrow key press', function(done) {
+        it( 'should should move one left on left arrow key press', function(done) {
             expect("#paginatorForm li:eq(5)").toHaveClass(activeClass);
             expect("#paginatorForm li:eq(4)").not.toHaveClass(activeClass);
             
@@ -65,7 +65,7 @@ describe( 'ViewerJS Paginator Tests', function() {
             }, 0);
         } );
         
-        fit( 'should should move one right on right arrow key press', function(done) {
+        it( 'should should move one right on right arrow key press', function(done) {
             expect("#paginatorForm li:eq(5)").toHaveClass(activeClass);
             expect("#paginatorForm li:eq(6)").not.toHaveClass(activeClass);
             
@@ -78,7 +78,7 @@ describe( 'ViewerJS Paginator Tests', function() {
             }, 0);
         } );
         
-        fit( 'should should move to first element on double left key press', function(done) {
+        it( 'should should move to first element on double left key press', function(done) {
             expect("#paginatorForm li:eq(5)").toHaveClass(activeClass);
             expect("#paginatorForm li:eq(1)").not.toHaveClass(activeClass);
             
@@ -92,7 +92,7 @@ describe( 'ViewerJS Paginator Tests', function() {
             }, 0);
         } );
         
-        fit( 'should should move to last element on double right key press', function(done) {
+        it( 'should should move to last element on double right key press', function(done) {
             expect("#paginatorForm li:eq(5)").toHaveClass(activeClass);
             expect("#paginatorForm li:eq(10)").not.toHaveClass(activeClass);
             
@@ -109,7 +109,6 @@ describe( 'ViewerJS Paginator Tests', function() {
 
         
         function keyPress(key) {
-            console.log("press key " + key);
             var press = jQuery.Event("keyup");
             press.key = key;
             press.keyCode = key;
