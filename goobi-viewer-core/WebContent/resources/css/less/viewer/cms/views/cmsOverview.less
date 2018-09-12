@@ -29,8 +29,7 @@
                         }
                         &.column_title {
                         }
-                        &.column_classification {
-                        }
+                        &.column_classification {}
                         &.column_date_updated {
                         }
                         &.column_actions {
@@ -48,6 +47,9 @@
 	                }
                     td {
                         vertical-align: top;
+                        &:nth-child(7) {
+                            word-break: break-all;
+                        }
                         &:nth-child(8) {
                             text-align: right;
                         }
