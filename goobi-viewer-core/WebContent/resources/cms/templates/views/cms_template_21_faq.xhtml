@@ -47,82 +47,82 @@
                 <!-- FAQ LIST -->
 				<div class="tpl-faq__list">
 					<ui:fragment rendered="#{!cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
-                    <div class="panel-group" id="faqAccordion" role="tablist" aria-multiselectable="true">
-						<!-- FAQ ITEMS -->
-						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
-                            <div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="heading-#{faqItem.id}">
-									<h4 class="panel-title">
-										<a 
-                                            href="#collapse-#{faqItem.id}"
-                                            role="button" 
-                                            class="#{status.count eq 1 ? '' : 'collapsed'}" 
-                                            data-toggle="collapse" 
-                                            data-parent="#faqAccordion" 
-                                            aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
-                                            aria-controls="collapseOne">
-											<i class="fa fa-chevron-down" aria-hidden="true"></i>
-											<i class="fa fa-chevron-up" aria-hidden="true"></i>
-											#{faqItem.getContent('heading')}
-										</a>
-									</h4>
-								</div>
-								<div 
-                                    role="tabpanel" 
-                                    id="collapse-#{faqItem.id}" 
-                                    class="panel-collapse collapse #{status.count eq 1 ? 'in' : ''}" 
-                                    aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
-                                    aria-labelledby="heading-#{faqItem.id}">
-									<div class="panel-body">
-										<ui:include src="#{faqItem.getContent('text')}" />
-									</div>
-								</div>
-							</div>
-						</c:forEach>						
-					</div>
+                        <div class="panel-group" id="faqAccordion" role="tablist" aria-multiselectable="true">
+    						<!-- FAQ ITEMS -->
+    						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
+                                <div class="panel panel-default">
+    								<div class="panel-heading" role="tab" id="heading-#{faqItem.id}">
+    									<h4 class="panel-title">
+    										<a 
+                                                href="#collapse-#{faqItem.id}"
+                                                role="button" 
+                                                class="#{status.count eq 1 ? '' : 'collapsed'}" 
+                                                data-toggle="collapse" 
+                                                data-parent="#faqAccordion" 
+                                                aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
+                                                aria-controls="collapseOne">
+    											<i class="fa fa-chevron-down" aria-hidden="true"></i>
+    											<i class="fa fa-chevron-up" aria-hidden="true"></i>
+    											#{faqItem.getContent('heading')}
+    										</a>
+    									</h4>
+    								</div>
+    								<div 
+                                        role="tabpanel" 
+                                        id="collapse-#{faqItem.id}" 
+                                        class="panel-collapse collapse #{status.count eq 1 ? 'in' : ''}" 
+                                        aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
+                                        aria-labelledby="heading-#{faqItem.id}">
+    									<div class="panel-body">
+    										<ui:include src="#{faqItem.getContent('text')}" />
+    									</div>
+    								</div>
+    							</div>
+    						</c:forEach>						
+    					</div>
 					</ui:fragment>
-                    
+
                     <ui:fragment rendered="#{cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
-                    <div class="panel-group" id="faqAccordion" role="tablist" aria-multiselectable="true">
-                        <!-- classifications -->
-                        <c:forEach var="pageClassification" items="#{cmsPage.getContentItem('faqList').sortedPageClassifications}" varStatus="classification_status">
-                        <h3 class="faq-subheader">#{msg[pageClassification]}</h3>
-                        <!-- FAQ ITEMS -->
-                        <c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').getNestedPages(pageClassification)}" varStatus="status">
-                            <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="heading-#{faqItem.id}-#{pageClassification}">
-                                    <h4 class="panel-title">
-                                        <a 
-                                            href="#collapse-#{faqItem.id}-#{pageClassification}"
-                                            role="button" 
-                                            class="#{status.count eq 1 ? '' : 'collapsed'}" 
-                                            data-toggle="collapse" 
-                                            data-parent="#faqAccordion" 
-                                            aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
-                                            aria-controls="collapseOne">
-                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                            #{faqItem.getContent('heading')}
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div 
-                                    role="tabpanel" 
-                                    id="collapse-#{faqItem.id}-#{pageClassification}" 
-                                    class="panel-collapse collapse #{status.count eq 1 ? 'in' : ''}" 
-                                    aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
-                                    aria-labelledby="heading-#{faqItem.id}-#{pageClassification}">
-                                    <div class="panel-body">
-                                        <ui:include src="#{faqItem.getContent('text')}" />
+                        <div class="panel-group" id="faqAccordion" role="tablist" aria-multiselectable="true">
+                            <!-- CLASSIFICATIONS -->
+                            <c:forEach var="pageClassification" items="#{cmsPage.getContentItem('faqList').sortedPageClassifications}" varStatus="classification_status">
+                                <h3 class="tpl-faq__subheader">#{msg[pageClassification]}</h3>
+                                
+                                <!-- FAQ ITEMS -->
+                                <c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').getNestedPages(pageClassification)}" varStatus="status">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="heading-#{faqItem.id}-#{pageClassification}">
+                                            <h4 class="panel-title">
+                                                <a 
+                                                    href="#collapse-#{faqItem.id}-#{pageClassification}" 
+                                                    role="button" class="#{(classification_status.count eq 1) and (status.count eq 1) ? '' : 'collapsed'}"
+                                                    data-toggle="collapse" 
+                                                    data-parent="#faqAccordion" 
+                                                    aria-expanded="#{(classification_status.count eq 1) and (status.count eq 1) ? 'true' : 'false'}"
+                                                    aria-controls="collapseOne">
+                                                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                                    #{faqItem.getContent('heading')}
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div 
+                                            role="tabpanel" 
+                                            id="collapse-#{faqItem.id}-#{pageClassification}" 
+                                            class="panel-collapse collapse #{(classification_status.count eq 1) and (status.count eq 1) ? 'in' : ''}"
+                                            aria-expanded="#{(classification_status.count eq 1) and (status.count eq 1) ? 'true' : 'false'}" 
+                                            aria-labelledby="heading-#{faqItem.id}-#{pageClassification}">
+                                            <div class="panel-body">
+                                                <ui:include src="#{faqItem.getContent('text')}" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </c:forEach>      
-                        </c:forEach>                  
-                    </div>
+                                </c:forEach>
+                            </c:forEach>
+                        </div>
                     </ui:fragment>
-                    
-					<!-- PAGINATOR -->
+
+                    <!-- PAGINATOR -->
 					<viewerComponent:simplePaginator 
 						itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
 						itemActive="#{cmsPage.listPage}"

@@ -9118,6 +9118,9 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-faq__list .panel-title a.collapsed .fa-chevron-up {
   display: none;
 }
+.tpl-faq__subheader {
+  margin: 20px 0;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -9370,6 +9373,21 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li {
   margin-bottom: 4px;
+}
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:before,
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
+  content: " ";
+  display: table;
+}
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
+  clear: both;
+}
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li span {
+  display: inline-block;
+  float: left;
+  max-width: 85%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li a {
   float: right;
@@ -9745,6 +9763,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td {
   vertical-align: top;
+}
+#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td:nth-child(7) {
+  word-break: break-all;
 }
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td:nth-child(8) {
   text-align: right;
