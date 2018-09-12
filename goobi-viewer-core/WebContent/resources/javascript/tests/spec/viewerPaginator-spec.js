@@ -49,6 +49,7 @@ describe( 'ViewerJS Paginator Tests', function() {
         
         afterEach(function() {
             viewerJS.paginator.close();
+            $(document.body).remove('#paginatorForm');
         })
         
         it( 'should start with 12 elements with only the 6th element active', function() {
