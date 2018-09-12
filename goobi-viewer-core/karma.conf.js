@@ -26,6 +26,7 @@ module.exports = function(config) {
 
 	      'dev/modules/statistics/statistics.js',
 	      'dev/modules/viewer/viewerJS.helper.js',
+	      'dev/modules/viewer/viewerJS.paginator.js',
 	      'dev/modules/imageView/imageView.image.js',
 	      'dev/modules/imageView/imageView.controls.js',
 	      'dev/modules/imageView/imageView.controls.persistence.js',
@@ -40,6 +41,7 @@ module.exports = function(config) {
 	      'dev/modules/cms/cmsJS.tagList.js',
 	      'dev/modules/cms/cmsJS.stackedCollection.js',
 
+	      'tests/spec/viewerPaginator-spec.js',
 	      'tests/spec/cms.tagList-spec.js',
 	      'tests/spec/cms.stackedCollection-spec.js',
 	      'tests/spec/openseadragon-specs.js',
@@ -48,7 +50,9 @@ module.exports = function(config) {
 	      'tests/spec/viewImage-spec.js',
 	      'tests/spec/viewImage.controls-spec.js',
 	      'tests/spec/viewImage.controls.persistence-spec.js',
-	      'tests/spec/viewImage.tileSourceResolver-spec.js'
+	      'tests/spec/viewImage.tileSourceResolver-spec.js',
+
+	      'tests/spec/javascripts/fixtures/paginatorTest.html',
       ],
 
       // list of files to exclude
