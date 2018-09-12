@@ -653,9 +653,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer/" />
+		<property name="server.url" value="https://haab-digital.klassik-stiftung.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
 		<property name="theme" value="haab" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
