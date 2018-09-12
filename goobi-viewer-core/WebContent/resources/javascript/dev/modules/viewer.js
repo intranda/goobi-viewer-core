@@ -5298,6 +5298,78 @@ var viewerJS = ( function( viewer ) {
 
 var viewerJS = ( function( viewer ) {
     'use strict';
+        
+    var _debug = true;
+
+    var _defaults = {
+            maxDoubleClickDelay: 250    //ms
+    }
+    
+    viewer.paginator = {
+        lastKeypress : 0,
+        lastkeycode : 0,
+        /**
+         * Initializes keyboard bindings for paginator
+         * 
+         * @method init
+         * @param {String} obj The selector of the jQuery object.
+         * @param {String} anchor The name of the anchor to scroll to.
+         */
+        init: function( config ) {
+            this.config = jQuery.extend(true, {}, _defaults);   //copy defaults
+            jQuery.extend(true, this.config, config);           //merge config
+            if(_debug) {
+                console.log("Init paginator with config ", viewer.paginator.config);
+            }
+
+            $(document.body).on("keypress", viewer.paginator.keypressHandler);
+            
+        },    
+        keypressHandler: function(event) {
+            var keyCode = event.originalEvent.keyCode;
+            var now = Date.now();
+            
+            //this is a double key press if the last entered keycode is the same as the current one and the last key press is less than maxDoubleClickDelay ago
+            var doubleKeypress = (viewer.paginator.lastKeycode == keyCode && now-viewer.paginator.lastKeyPress <= viewer.paginator.config.maxDoubleClickDelay);
+            viewer.paginator.lastKeycode = keyCode;
+            viewer.paginator.lastKeyPress = now;
+            
+            if(_debug) {                
+                console.log("key pressed ", keyCode);
+                if(doubleKeypress) {
+                    console.log("double key press");
+                }
+            }
+            switch(keyCode) {
+                case 37:
+                    if(doubleKeypress && viewer.paginator.config.first && $(viewer.paginator.config.first).length) {
+                            $(viewer.paginator.config.first).get(0).click();
+                    } else if(viewer.paginator.config.previous && $(viewer.paginator.config.previous).length) {
+                            $(viewer.paginator.config.previous).get(0).click();
+                    }
+                    break;
+                case 39:
+                    if(doubleKeypress && viewer.paginator.config.last && $(viewer.paginator.config.last).length) {
+                        $(viewer.paginator.config.last).get(0).click();
+                    } else if(viewer.paginator.config.next && $(viewer.paginator.config.next).length) {
+                        $(viewer.paginator.config.next).get(0).click();
+                    }
+                    break;
+            }
+        },
+        close: function() {
+            $(document.body).off("keypress", viewer.paginator.keypressHandler);
+        }
+
+    };
+
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+
+var viewerJS = ( function( viewer ) {
+    'use strict';
     
     // default variables
     var _debug = false;
