@@ -56,6 +56,16 @@ var viewerJS = ( function( viewer ) {
             if(event.originalEvent) {
                 event = event.originalEvent;
             }
+            
+            if(_debug) {                
+                console.log("event from ", event.target.tagName.toLowerCase());
+            }
+            //don't handle if the actual target is an input field
+            if("input" === event.target.tagName.toLowerCase()) {
+                return true;
+            }
+            
+            
             var keyCode = event.keyCode;
             var now = Date.now();
                         
