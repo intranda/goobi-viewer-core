@@ -12,7 +12,7 @@ describe( 'ViewerJS Paginator Tests', function() {
     
         beforeEach(function() {
 //            jasmine.getFixtures().load("paginatorTest.html");
-            
+            $(document.body).remove('#paginatorForm');
             $('<form id="paginatorForm"><nav>         <ul>             <li class="navigate_prev">                 <a onclick="setPage(currentPage-1)">&lt;&lt;</a>             </li>              <li class="navigate_first">                 <a onclick="setPage(1)">1</a>             </li>              <li>                 <a onclick="setPage(2)">2</a>             </li>              <li>                 <a onclick="setPage(3)">3</a>             </li>              <li>                 <a onclick="setPage(4)">4</a>             </li>              <li>                 <a onclick="setPage(5)">5</a>             </li>              <li>                 <a onclick="setPage(6)">6</a>             </li>              <li>                 <a onclick="setPage(7)">7</a>             </li>              <li>                 <a onclick="setPage(8)">8</a>             </li>              <li>                 <a onclick="setPage(9)">9</a>             </li>              <li class="navigate_last">                 <a onclick="setPage(10)">10</a>             </li>               <li class="navigate_next">                 <a onclick="setPage(currentPage+1)">&gt;&gt;</a>             </li>         </ul>     </nav> </form').appendTo('body');
             
             config = {
