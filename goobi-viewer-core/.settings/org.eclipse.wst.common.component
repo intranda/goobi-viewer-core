@@ -238,7 +238,12 @@
         <dependent-module archiveName="goobi-viewer-theme-dipf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf/goobi-viewer-theme-dipf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- LMH -->
         <dependent-module archiveName="goobi-viewer-theme-lamuhalle.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lamuhalle/goobi-viewer-theme-lamuhalle">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- AK WIEN -->
+        <dependent-module archiveName="goobi-viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
