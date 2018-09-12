@@ -1,32 +1,6 @@
 
 <form id="paginatorForm">
-
-    <style>
-        ul {
-            list-style: none;
-            text-align: center;
-            
-        }
-        ul li {
-            display: inline;
-            margin: 2px;
-            border: 1px solid black;
-            padding: 3px;
-        }
-        ul li a {
-           
-        }
-        .numeric-paginator__active {
-            background-color: black;
-            color: white;
-        }
-        
-    </style>
-
-    <nav
-        id="numericPaginator"
-        class="numeric-paginator"
-        role="navigation">
+    <nav>
         <ul>
             <!-- PREV -->
             <li class="navigate_prev">
@@ -80,18 +54,7 @@
             </li>
         </ul>
     </nav>
-    <script type="text/javascript">
-                    var currentPage = 5;
-                    var activeClass = "numeric-paginator__active";
-                    setPage(currentPage);
-                    
-                    
-                    function setPage(no) {
-                        currentPage = Math.max(Math.min(10,no),1);
-                        $("#paginatorForm li").removeClass(activeClass);
-                        $("#paginatorForm li:eq("+currentPage+")").addClass(activeClass);
-                    }
-                </script>
+
 
 </form>
 
