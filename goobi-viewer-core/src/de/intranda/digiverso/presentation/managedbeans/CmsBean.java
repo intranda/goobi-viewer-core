@@ -95,7 +95,7 @@ public class CmsBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
 
-    private static final int DEFAULT_ROWS_PER_PAGE = 15;
+    private static final int DEFAULT_ROWS_PER_PAGE = 5;
 
     @Inject
     private NavigationHelper navigationHelper;

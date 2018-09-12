@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
         
-    var _debug = true;
+    var _debug = false;
 
     var _defaults = {
             maxDoubleClickDelay: 250    //ms
@@ -49,7 +49,7 @@ var viewerJS = ( function( viewer ) {
                 console.log("Init paginator with config ", viewer.paginator.config);
             }
 
-            $(document.body).on("keypress", viewer.paginator.keypressHandler);
+            $(document.body).on("keyup", viewer.paginator.keypressHandler);
             
         },    
         keypressHandler: function(event) {
@@ -88,7 +88,7 @@ var viewerJS = ( function( viewer ) {
             }
         },
         close: function() {
-            $(document.body).off("keypress", viewer.paginator.keypressHandler);
+            $(document.body).off("keyup", viewer.paginator.keypressHandler);
         }
 
     };

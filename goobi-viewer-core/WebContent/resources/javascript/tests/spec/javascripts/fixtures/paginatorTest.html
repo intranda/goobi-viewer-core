@@ -1,0 +1,98 @@
+
+<form id="paginatorForm">
+
+    <style>
+        ul {
+            list-style: none;
+            text-align: center;
+            
+        }
+        ul li {
+            display: inline;
+            margin: 2px;
+            border: 1px solid black;
+            padding: 3px;
+        }
+        ul li a {
+           
+        }
+        .numeric-paginator__active {
+            background-color: black;
+            color: white;
+        }
+        
+    </style>
+
+    <nav
+        id="numericPaginator"
+        class="numeric-paginator"
+        role="navigation">
+        <ul>
+            <!-- PREV -->
+            <li class="navigate_prev">
+                <a onclick="setPage(currentPage-1)">&lt;&lt;</a>
+            </li>
+
+            <li class="navigate_first">
+                <a onclick="setPage(1)">1</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(2)">2</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(3)">3</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(4)">4</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(5)">5</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(6)">6</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(7)">7</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(8)">8</a>
+            </li>
+
+            <li>
+                <a onclick="setPage(9)">9</a>
+            </li>
+
+            <li class="navigate_last">
+                <a onclick="setPage(10)">10</a>
+            </li>
+
+
+            <!-- NEXT -->
+            <li class="navigate_next">
+                <a onclick="setPage(currentPage+1)">&gt;&gt;</a>
+            </li>
+        </ul>
+    </nav>
+    <script type="text/javascript">
+                    var currentPage = 5;
+                    var activeClass = "numeric-paginator__active";
+                    setPage(currentPage);
+                    
+                    
+                    function setPage(no) {
+                        currentPage = Math.max(Math.min(10,no),1);
+                        console.log("set page " + currentPage);
+                        $("#paginatorForm li").removeClass(activeClass);
+                        $("#paginatorForm li:eq("+currentPage+")").addClass(activeClass);
+                    }
+                </script>
+
+</form>
+
