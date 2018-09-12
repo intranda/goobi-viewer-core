@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
                 console.log("event from ", event.target.tagName.toLowerCase());
             }
             //don't handle if the actual target is an input field
-            if("input" === event.target.tagName.toLowerCase()) {
+            if(event.target.tagName.toLowerCase().match(/input|textarea/)) {
                 return true;
             }
             
