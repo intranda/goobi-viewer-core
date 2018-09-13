@@ -70,10 +70,10 @@ public class BookshelfItem implements Serializable {
     @JoinColumn(name = "bookshelf_id", nullable = false)
     private Bookshelf bookshelf;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "pi")
