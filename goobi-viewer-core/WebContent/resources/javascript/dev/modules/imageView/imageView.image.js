@@ -19,6 +19,12 @@ var ImageView = ( function() {
                         styleClass: "ugcBox",
                         interactive: true
                     
+                    },
+                    {
+                        name: "annotations",
+                        styleClass: "image-fragment",
+                        interactive: false
+                    
                     }],
                 zoomSpeed: 1.25,
                 maxZoomLevel: 2,
@@ -39,27 +45,7 @@ var ImageView = ( function() {
             image: {
                 initialRotation: 0,
                 mimeType: "image/jpeg"
-            },
-            getOverlayGroup: function( name ) {
-                var allGroups = this.global.overlayGroups;
-                for ( var int = 0; int < allGroups.length; int++ ) {
-                    var group = allGroups[ int ];
-                    if ( group.name === name ) {
-                        return group;
-                    }
-                }
-            },
-            getCoordinates: function( name ) {
-                var coodinatesArray = this.image.highlightCoords;
-                if ( coodinatesArray ) {
-                    for ( var int = 0; int < coodinatesArray.length; int++ ) {
-                        var coords = coodinatesArray[ int ];
-                        if ( coords.name === name ) {
-                            return coords;
-                        }
-                    }
-                }
-            },
+            }
         };
     
      var imageView =  {};
@@ -296,17 +282,33 @@ var ImageView = ( function() {
              };
          }
      }
+
+     
      /**
       * gets the overlay group with the given name from the config
       */
      imageView.Image.prototype.getOverlayGroup = function( name ) {
-         return this.config.getOverlayGroup( name );
+         var allGroups = this.config.global.overlayGroups;
+         for ( var int = 0; int < allGroups.length; int++ ) {
+             var group = allGroups[ int ];
+             if ( group.name === name ) {
+                 return group;
+             }
+         }
      }
      /**
       * gets the highlighting coordinates from the config
       */
      imageView.Image.prototype.getHighlightCoordinates = function( name ) {
-         return this.config.getCoordinates( name );
+         var coodinatesArray = this.config.image.highlightCoords;
+         if ( coodinatesArray ) {
+             for ( var int = 0; int < coodinatesArray.length; int++ ) {
+                 var coords = coodinatesArray[ int ];
+                 if ( coords.name === name ) {
+                     return coords;
+                 }
+             }
+         }
      }
      /**
       * return the sizes associated with this view
@@ -495,6 +497,10 @@ var ImageView = ( function() {
          var rectInCanvas = this.scaleToOpenSeadragonCoordinates(rect);
          var rectInOS = ImageView.convertRectFromRotatedImageToImage(rectInCanvas, this.viewer);
          return rectInOS;
+     }
+     
+     imageView.Image.prototype.getOriginalImageSize = function() {
+         return new OpenSeadragon.Point(this.config.image.originalImageWidth, this.config.image.originalImageHeight);
      }
      
      

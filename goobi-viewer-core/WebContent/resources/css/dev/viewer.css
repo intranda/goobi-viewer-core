@@ -5871,6 +5871,10 @@ div[id*="-Modal"] .email-form .form-group {
 #fullscreenImageContainer #fullscreenMap .ugcBox.drawing {
   border: 2px solid blue;
 }
+#fullscreenImageContainer #fullscreenMap .image-fragment {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: solid #507ebf 3px;
+}
 /* LOGOS */
 #intrandaLogo,
 #customerLogo {
@@ -6414,6 +6418,10 @@ div[id*="-Modal"] .email-form .form-group {
 .view-object__image-map .ugcBox.drawing {
   border: 2px solid blue;
 }
+.view-object__image-map .image-fragment {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: solid #507ebf 3px;
+}
 .view-object__access-denied {
   text-align: center;
   overflow: hidden;
@@ -6587,6 +6595,10 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #readingModeImage {
   position: relative;
+}
+#readingModeImage .image-fragment {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: solid #507ebf 3px;
 }
 /* BLOCK */
 .reading-mode {

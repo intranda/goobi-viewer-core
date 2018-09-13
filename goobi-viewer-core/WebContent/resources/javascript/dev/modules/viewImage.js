@@ -33,6 +33,12 @@ var ImageView = ( function() {
                         styleClass: "ugcBox",
                         interactive: true
                     
+                    },
+                    {
+                        name: "annotations",
+                        styleClass: "image-fragment",
+                        interactive: false
+                    
                     }],
                 zoomSpeed: 1.25,
                 maxZoomLevel: 2,
@@ -53,27 +59,7 @@ var ImageView = ( function() {
             image: {
                 initialRotation: 0,
                 mimeType: "image/jpeg"
-            },
-            getOverlayGroup: function( name ) {
-                var allGroups = this.global.overlayGroups;
-                for ( var int = 0; int < allGroups.length; int++ ) {
-                    var group = allGroups[ int ];
-                    if ( group.name === name ) {
-                        return group;
-                    }
-                }
-            },
-            getCoordinates: function( name ) {
-                var coodinatesArray = this.image.highlightCoords;
-                if ( coodinatesArray ) {
-                    for ( var int = 0; int < coodinatesArray.length; int++ ) {
-                        var coords = coodinatesArray[ int ];
-                        if ( coords.name === name ) {
-                            return coords;
-                        }
-                    }
-                }
-            },
+            }
         };
     
      var imageView =  {};
@@ -310,17 +296,33 @@ var ImageView = ( function() {
              };
          }
      }
+
+     
      /**
       * gets the overlay group with the given name from the config
       */
      imageView.Image.prototype.getOverlayGroup = function( name ) {
-         return this.config.getOverlayGroup( name );
+         var allGroups = this.config.global.overlayGroups;
+         for ( var int = 0; int < allGroups.length; int++ ) {
+             var group = allGroups[ int ];
+             if ( group.name === name ) {
+                 return group;
+             }
+         }
      }
      /**
       * gets the highlighting coordinates from the config
       */
      imageView.Image.prototype.getHighlightCoordinates = function( name ) {
-         return this.config.getCoordinates( name );
+         var coodinatesArray = this.config.image.highlightCoords;
+         if ( coodinatesArray ) {
+             for ( var int = 0; int < coodinatesArray.length; int++ ) {
+                 var coords = coodinatesArray[ int ];
+                 if ( coords.name === name ) {
+                     return coords;
+                 }
+             }
+         }
      }
      /**
       * return the sizes associated with this view
@@ -509,6 +511,10 @@ var ImageView = ( function() {
          var rectInCanvas = this.scaleToOpenSeadragonCoordinates(rect);
          var rectInOS = ImageView.convertRectFromRotatedImageToImage(rectInCanvas, this.viewer);
          return rectInOS;
+     }
+     
+     imageView.Image.prototype.getOriginalImageSize = function() {
+         return new OpenSeadragon.Point(this.config.image.originalImageWidth, this.config.image.originalImageHeight);
      }
      
      
@@ -2990,8 +2996,12 @@ var ImageView = ( function( imageView ) {
                 console.log( 'osViewer.overlays.draw: imageIndex - ' + imageIndex );
             }
             
-            var coordList = this.config.getCoordinates( group );
+            var coordList = this.image.getHighlightCoordinates( group );
             if ( coordList ) {
+                if(typeof coordList.coordinates == 'string') {
+                    if(_debug) console.log("convert " + coordList + " to coordinate list");
+                    coordList.coordinates = _getCoordinatesFromUrlFragment(coordList.coordinates, this.image.getOriginalImageSize());
+                }
                 for ( var index=0; index<coordList.coordinates.length; index++ ) {
                     var coords = coordList.coordinates[ index ];
                     var title = displayTitle && coords.length > 4 ? coords[ 4 ] : '';
@@ -3207,7 +3217,7 @@ var ImageView = ( function( imageView ) {
                 id: id,
                 title: title
             };
-            var overlayStyle = this.config.getOverlayGroup( overlay.group );
+            var overlayStyle = this.getOverlayGroup( overlay.group );
             if ( !overlayStyle.hidden ) {
                 _drawOverlay( overlay, this );
             }
@@ -3247,8 +3257,8 @@ var ImageView = ( function( imageView ) {
                         id: id,
                         title: title
                 };
-                var overlayStyle = this.config.getOverlayGroup( overlay.group );
-                if ( !overlayStyle.hidden ) {
+                var overlayStyle = this.image.getOverlayGroup( overlay.group );
+                if (overlayStyle && !overlayStyle.hidden ) {
                     _drawOverlay( overlay, this);
                 }
                 this.overlays.push( overlay );
@@ -3270,7 +3280,7 @@ var ImageView = ( function( imageView ) {
         }
         var element = document.createElement( "div" );
         $(element).attr("id", "overlay_" + overlay.id)
-        var overlayStyle = overlays.image.config.getOverlayGroup( overlay.group );
+        var overlayStyle = overlays.image.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
 // element.title = overlay.title;
@@ -3413,6 +3423,32 @@ var ImageView = ( function( imageView ) {
         }
         else {
             return 90;
+        }
+    }
+    
+    
+    function _getCoordinatesFromUrlFragment(fragment, imageSize) {
+        var coordsRegex = /xywh=(percent:)?([\d\.]+,[\d\.]+,[\d\.]+,[\d\.]+)/;
+        if(fragment) {
+            var match = fragment.match(coordsRegex);
+            var percent = match[1] != undefined;
+            var coords = match[2];
+            coords = coords.split(",");
+            var x,y,w,h;
+            if(percent) {
+                x = parseInt(coords[0])*imageSize.x/100.0;
+                y = parseInt(coords[1])*imageSize.y/100.0;
+                w = parseInt(coords[2])*imageSize.x/100.0;
+                h = parseInt(coords[3])*imageSize.y/100.0;
+            } else {                
+                x = parseInt(coords[0]);
+                y = parseInt(coords[1]);
+                w = parseInt(coords[2]);
+                h = parseInt(coords[3]);
+            }
+            return [[x,y,x+w,y+h, "", ""]];
+        } else {
+            return [];
         }
     }
     
