@@ -104,7 +104,10 @@ public class SequenceBuilder extends AbstractBuilder {
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
-
+        
+        sequence.addWithin(manifest);
+        
+        
         IPageLoader pageLoader = new EagerPageLoader(doc);
 
         String dataRepository = ContentResource.getDataRepository(doc.getPi());
@@ -191,8 +194,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return
      * @throws URISyntaxException
      * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException 
      */
-    public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
+    public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException {
         if (doc == null || page == null) {
             return null;
         }
@@ -200,7 +204,14 @@ public class SequenceBuilder extends AbstractBuilder {
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
         canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page)), false));
-
+        
+        Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
+        canvas.addWithin(parent);
+        
+        LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
+        viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+        canvas.addRendering(viewerPage);
+        
         Dimension size = getSize(page);
         if (size.getWidth() * size.getHeight() > 0) {
             canvas.setWidth(size.width);

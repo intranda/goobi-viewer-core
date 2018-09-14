@@ -45,6 +45,8 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -147,6 +149,19 @@ public abstract class AbstractBuilder {
             return getServletURI() + "/metsresolver?id=" + ele.getPi();
         } catch (Exception e) {
             logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/metsresolver?id=" + 0;
+    }
+    
+    /**
+     * @return viewer image view url for the given page
+     */
+    public String getViewImageUrl(PhysicalElement ele) {
+        try {
+            return getServletURI() + "/" + PageType.viewImage.getName() + ele.getPurlPart();
+        } catch (Exception e) {
+            logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
             Messages.error("errGetCurrUrl");
         }
         return getServletURI() + "/metsresolver?id=" + 0;

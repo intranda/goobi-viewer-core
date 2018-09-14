@@ -3428,7 +3428,7 @@ var ImageView = ( function( imageView ) {
     
     
     function _getCoordinatesFromUrlFragment(fragment, imageSize) {
-        var coordsRegex = /xywh=(percent:)?([\d\.]+,[\d\.]+,[\d\.]+,[\d\.]+)/;
+        var coordsRegex = /xywh=(percent:)?([\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+)/;
         if(fragment) {
             var match = fragment.match(coordsRegex);
             var percent = match[1] != undefined;
@@ -3446,6 +3446,11 @@ var ImageView = ( function( imageView ) {
                 w = parseInt(coords[2]);
                 h = parseInt(coords[3]);
             }
+            //don't exceed image bounds
+            x = Math.max(Math.min(imageSize.x, x), 0);
+            y = Math.max(Math.min(imageSize.y, y), 0);
+            w = Math.max(Math.min(imageSize.x-x, w), 0);
+            h = Math.max(Math.min(imageSize.y-y, h), 0);
             return [[x,y,x+w,y+h, "", ""]];
         } else {
             return [];
