@@ -438,8 +438,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
             }
 
         }
-
-        return !permissionMap.containsValue(false);
+        //It should be sufficient if the user can satisfy one required licence
+          return permissionMap.isEmpty() ||  permissionMap.containsValue(true);
+//        return !permissionMap.containsValue(false);
     }
 
     @Override

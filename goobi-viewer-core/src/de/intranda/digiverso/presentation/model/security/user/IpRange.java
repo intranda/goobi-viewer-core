@@ -196,7 +196,8 @@ public class IpRange implements ILicensee {
             }
         }
 
-        return !permissionMap.containsValue(false);
+        return permissionMap.isEmpty() || permissionMap.containsValue(true);
+//        return !permissionMap.containsValue(false);
     }
 
     @Override

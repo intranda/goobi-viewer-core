@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.user;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,7 +50,8 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfIpRangeHasLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assert.assertNotNull(ipRange);
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 3 name")),
+        List<String> licences = Arrays.asList(new String[]{"license type 3 name", "license type 1 name"});
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences),
                 IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
