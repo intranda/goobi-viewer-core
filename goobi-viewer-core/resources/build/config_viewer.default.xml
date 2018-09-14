@@ -119,10 +119,10 @@
 
 
 	<accessConditions>
-        <!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
-        <unconditionalImageAccessMaxWidth>400</unconditionalImageAccessMaxWidth>
-        <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
-        <fullAccessForLocalhost>true</fullAccessForLocalhost>
+		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
+		<unconditionalImageAccessMaxWidth>400</unconditionalImageAccessMaxWidth>
+		<!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+		<fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
 
 
@@ -389,9 +389,10 @@
 				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
 			<startyear>1500</startyear>
 			<endyear>2013</endyear>
-	        <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
+
+			<!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
 		        maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
-	        <hits>108</hits>
+			<hits>108</hits>
 		</timeline>
 
 		<calendar>
@@ -442,15 +443,15 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix></staticQuerySuffix>
 
-        <!-- versioning -->
-        <versioning>
-            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
-            <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
-            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
-            <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
-            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
-            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
-        </versioning>
+	        <!-- versioning -->
+	        <versioning>
+	        	<!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
+	        	<previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
+	        	<!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
+	        	<nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
+	        	<!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+	        	<versionLabelField>MD_VERSIONLABEL</versionLabelField>
+	        </versioning>
 
 		<!-- Search export settings -->
 		<export>
@@ -685,9 +686,9 @@
 				<metadata label="MD_SIZESOURCEPRINT" value="">
 					<param type="field" key="MD_SIZESOURCEPRINT" />
 				</metadata>
-                <metadata label="MD_FORMATSOURCEPRINT" value="">
-                    <param type="field" key="MD_FORMATSOURCEPRINT" />
-                </metadata>
+                		<metadata label="MD_FORMATSOURCEPRINT" value="">
+                			<param type="field" key="MD_FORMATSOURCEPRINT" />
+                		</metadata>
 				<metadata label="MD_SCALE" value="">
 					<param type="field" key="MD_SCALE" />
 				</metadata>
@@ -1249,12 +1250,12 @@
 		<siteID>1</siteID>
 	</piwik>
 	
-    <sitemap>
-       <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
-       <sitelinksField>YEAR</sitelinksField>
-       <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
-       <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-    </sitemap>
+	<sitemap>
+		<!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
+		<sitelinksField>YEAR</sitelinksField>
+		<!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
+		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+	</sitemap>
 	
 	<!-- Web API configuration -->
 	<webapi>
@@ -1270,8 +1271,9 @@
 			<!-- A list of all metadata fields which should be included within 
 			     the IIIF Presentation response for manifests and ranges representing structural elements -->
 			<metadataFields>
-                <field>MD_TITLE</field>
-                <field>MD_CREATOR</field>
+                		<field>MD_TITLE</field>
+				<field>MD_CREATOR</field>
+				<!--field>MD_*</field-->
 			</metadataFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
@@ -1288,8 +1290,9 @@
 			     If no logo is configured, the image footer will be used-->
 			<logo>dfgviewer_intranda.jpg</logo>
 		</iiif>
-        <authorization>
-            <token>test</token>
-        </authorization>
+
+        	<authorization>
+        		<token>test</token>
+        	</authorization>
 	</webapi>
 </config>
