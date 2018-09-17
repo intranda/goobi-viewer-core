@@ -410,7 +410,6 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
 
-            //          FacesContext.getCurrentInstance().getApplication().getSupportedLocales()
             checkAndLoadDefaultResourceBundles();
             Set<Locale> locales = new HashSet<Locale>();
             locales.addAll(defaultBundles.keySet());
@@ -418,11 +417,10 @@ public class ViewerResourceBundle extends ResourceBundle {
             allLocales = new ArrayList<>(locales);
 
             //deprecated?
-            if (allLocales.isEmpty()) {
                 Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
                 try (Stream<Path> messageFiles =
                         Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-                    allLocales = messageFiles.map(path -> StringTools
+                    allLocales.addAll(messageFiles.map(path -> StringTools
                             .findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
                             .filter(lang -> lang != null)
                             .sorted((l1, l2) -> {
@@ -444,11 +442,10 @@ public class ViewerResourceBundle extends ResourceBundle {
                                 return l1.compareTo(l2);
                             })
                             .map(language -> Locale.forLanguageTag(language))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList()));
                 } catch (IOException e) {
                     logger.error("Error reading config directory " + configPath);
                 }
-            }
         }
 
         return allLocales;

@@ -113,7 +113,7 @@ public class IdentifierResolver extends HttpServlet {
             // fieldValue = fieldValue.toLowerCase();
         }
 
-        StringBuilder sbQuery = new StringBuilder(fieldName);
+        StringBuilder sbQuery = new StringBuilder(fieldName.toUpperCase());
         try {
             sbQuery.append(':').append('"').append(ClientUtils.escapeQueryChars(fieldValue)).append('"').append(SearchHelper.getAllSuffixes(request,
                     true, false));
