@@ -56,6 +56,7 @@
 		<project>goobi-viewer-theme-hu-archiv</project>
 		<project>goobi-viewer-theme-dipf</project>
 		<project>goobi-viewer-theme-lamuhalle</project>
+		<project>goobi-viewer-theme-ubweimar</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
