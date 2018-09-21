@@ -39,6 +39,7 @@
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+        		maxZoomLevel: 5,
         		controls : {
         		    rotateLeft: '.image-rotate_left',
         		    rotateRight: '.image-rotate_right',
@@ -47,7 +48,7 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
-        		tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+	       		tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
