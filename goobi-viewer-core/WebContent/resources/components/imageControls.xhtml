@@ -61,7 +61,6 @@
                     <script type="text/javascript">
                         var clipboard = new ClipboardJS( '[data-copy="img-url"]' );
                         clipboard.on("success", function(e) {
-                           console.log("Copied text", e.text, "from", e.trigger, e);
                            var $trigger = $(e.trigger);
                            var tooltipText = "#{msg.iiif_CopyUrlDone}";
                            if(!$trigger.attr('data-original-original-title')) {
