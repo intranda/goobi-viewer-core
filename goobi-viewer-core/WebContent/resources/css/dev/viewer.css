@@ -2223,7 +2223,7 @@ html.is-IE .support-overlay {
 .image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
   display: inline-block;
 }
-.image-controls__option.iiif a {
+.image-controls__option.iiif button {
   background-image: url("../../images/icons/icon-iiif-logo.svg");
   background-repeat: no-repeat;
   background-position: center center;
@@ -2336,6 +2336,17 @@ html.is-IE .support-overlay {
 }
 .image-controls .labeltext {
   padding: 0;
+  display: none;
+}
+.tooltip_clipboard {
+  position: absolute;
+  z-index: 10000;
+  background-color: #444444;
+  color: #f1f2f3;
+  padding: 3px;
+  vertical-align: middle;
+  border-radius: 10px;
+  font-size: 12px;
   display: none;
 }
 /* FIREFOX CORRECTION */
