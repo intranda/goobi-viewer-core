@@ -1,0 +1,130 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.intranda.digiverso.presentation.model.security.authentication;
+
+import java.util.Date;
+import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
+
+import de.intranda.digiverso.presentation.controller.BCrypt;
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.security.user.User;
+
+/**
+ * An authentication provider using the local login provided by the viewer database
+ * 
+ * @author Florian Alpers
+ *
+ */
+public class LocalAuthenticationProvider implements IAuthenticationProvider {
+
+    boolean userActive = false;
+    boolean userSuspended = false;
+    boolean userBlocked = false;
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login()
+     */
+    @Override
+    public Optional<User> login(String email, String password) throws AuthenticationProviderException {
+        if (StringUtils.isNotEmpty(email)) {
+            try {
+                User user = DataManager.getInstance().getDao().getUserByEmail(email);
+                if (user == null || !user.isActive()) {
+                    userActive = false;
+                } else if (user.isSuspended()) {
+                    userActive = true;
+                    userSuspended = true;
+                } else if (StringUtils.isBlank(password) || (user.getPasswordHash() == null || !BCrypt.checkpw(password, user.getPasswordHash()))) {
+                    userActive = true;
+                    userSuspended = false;
+                    userBlocked = true;
+                } else {
+                    return Optional.of(user);
+                }
+            } catch (DAOException e) {
+                throw new AuthenticationProviderException(e);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#logout()
+     */
+    @Override
+    public void logout() throws AuthenticationProviderException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isSuspended()
+     */
+    @Override
+    public boolean isSuspended() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isRefused()
+     */
+    @Override
+    public boolean isRefused() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getUserGroup()
+     */
+    @Override
+    public Optional<String> getUserGroup() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
+     */
+    @Override
+    public boolean allowsPasswordChange() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getProviderName()
+     */
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+}

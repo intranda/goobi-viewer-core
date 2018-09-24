@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.servlets.openid;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,6 +54,8 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -66,6 +69,11 @@ public class OAuthServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
 
     public static final String URL = "oauth";
+    
+    /**
+     * Authentication providers waiting to be authenticated
+     */
+    private static ConcurrentHashMap<OpenIdProvider, Boolean> authenticationProviders = new ConcurrentHashMap<>(5, 0.75f, 6);
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)

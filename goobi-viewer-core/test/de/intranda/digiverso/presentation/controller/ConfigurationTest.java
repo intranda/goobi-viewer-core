@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
-import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
@@ -445,12 +445,12 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getOpenIdConnectProviders()
+     * @see Configuration#getAuthenticationProviders()
      * @verifies return all properly configured elements
      */
     @Test
     public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
-        List<OpenIdProvider> providers = DataManager.getInstance().getConfiguration().getOpenIdConnectProviders();
+        List<OpenIdProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         Assert.assertEquals(2, providers.size());
         Assert.assertEquals("Google", providers.get(0).getName());
         Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", providers.get(0).getUrl());

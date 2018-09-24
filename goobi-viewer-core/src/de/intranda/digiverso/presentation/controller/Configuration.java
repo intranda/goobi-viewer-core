@@ -51,7 +51,9 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.DcSortingList;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -1197,14 +1199,14 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return all properly configured elements
      */
-    public List<OpenIdProvider> getOpenIdConnectProviders() {
+    public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
         // User local config, if available
         if (configLocal.getString("user.openIdConnect[@show]") != null) {
             myConfigToUse = configLocal;
         }
 
-        List<OpenIdProvider> providers = new ArrayList<>();
+        List<IAuthenticationProvider> providers = new ArrayList<>();
         int max = myConfigToUse.getMaxIndex("user.openIdConnect.provider");
         for (int i = 0; i <= max; i++) {
             String name = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@name]");
@@ -1215,6 +1217,8 @@ public final class Configuration extends AbstractConfiguration {
             String clientSecret = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@clientSecret]", null);
             if (StringUtils.isNotEmpty(clientId) && StringUtils.isNotEmpty(clientId)) {
                 providers.add(new OpenIdProvider(name, endpoint, image, useTextField, clientId, clientSecret));
+            } else if(StringUtils.isNotBlank(endpoint) && "vufind".equalsIgnoreCase(name)) {
+                providers.add(new VuFindProvider(name, endpoint, image));
             } else {
                 logger.warn("OpenID Connect provider config incomplete: {}", name);
             }
