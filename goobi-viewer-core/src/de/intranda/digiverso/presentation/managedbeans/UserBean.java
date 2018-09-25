@@ -38,10 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.common.OAuthProviderType;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
-import de.intranda.digiverso.presentation.exceptions.AuthenticationException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -63,10 +58,9 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
-import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
-import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
 
 @Named
 @SessionScoped
@@ -86,8 +80,7 @@ public class UserBean implements Serializable {
     private String activationKey;
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
-    private String oAuthState = null;
-    private String oAuthAccessToken = null;
+
     // Passwords for creating an new local user account
     private String passwordOne = "";
     private String passwordTwo = "";
@@ -194,13 +187,18 @@ public class UserBean implements Serializable {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
         logger.trace("login");
-        String ret = "pretty:user";
+        String ret = null;
         if(getAuthenticationProvider() != null) {
                 Optional<User> user = getAuthenticationProvider().login(email, password).filter(u -> u.isActive() && !u.isSuspended());
                 if(user.isPresent()) {  //login successful
                     try {
-                        ret = setupUser(user.get());
-                    } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                        ret = setupUser(user.get(), BeanUtils.getRequest());
+                      if(StringUtils.isNotBlank(ret) && !"pretty:user".equals(ret)) {      
+                          HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                          response.sendRedirect(ret);
+                          return null;
+                      } 
+                    } catch (DAOException | IndexUnreachableException | PresentationException | IOException e) {
                         //user may login, but setting up viewer account failed
                         getAuthenticationProvider().logout();
                         throw new AuthenticationProviderException(e);
@@ -223,10 +221,10 @@ public class UserBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @return  The url mapping to navigate to, or null if url redirect is handled internally
+     * @return The url mapping to navigate to, or null if url redirect is handled internally
      */
-    public String setupUser(User user) throws DAOException, IndexUnreachableException, PresentationException {
-        HttpServletRequest request = BeanUtils.getRequest();
+    public String setupUser(User user, HttpServletRequest request)
+            throws DAOException, IndexUnreachableException, PresentationException {
         DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
         wipeSession(request);
         // Update last login
@@ -235,12 +233,10 @@ public class UserBean implements Serializable {
             logger.error("Could not update user in DB.");
         }
         setUser(user);
-        request = BeanUtils.getRequest();
         request.getSession(false).setAttribute("user", user);
         SearchHelper.updateFilterQuerySuffix(request);
 
-
-//                    BeanUtils.getCmsBean().resetCollections(); 
+        //                    BeanUtils.getCmsBean().resetCollections(); 
         // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
@@ -251,74 +247,9 @@ public class UserBean implements Serializable {
             logger.trace("Redirecting to {}", redirectUrl);
             String redirectUrl = this.redirectUrl;
             this.redirectUrl = "";
-            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            try {
-                response.sendRedirect(redirectUrl);
-                return null;
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
+            return redirectUrl;
         }
         return "pretty:user";
-    }
-
-    /**
-     * Login action method for OpenID accounts.
-     * 
-     * @return
-     */
-    public String loginOpenIdConnectAction() {
-        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-
-        // Apache Oltu
-        try {
-            oAuthState = new StringBuilder(String.valueOf(System.currentTimeMillis())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                    .toString();
-            OAuthClientRequest request = null;
-            switch (authenticationProvider.getName().toLowerCase()) {
-                case "google":
-                    OpenIdProvider openIdProvider = (OpenIdProvider)authenticationProvider;
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("openid email")
-                            .buildQueryMessage();
-                    break;
-                case "facebook":
-                    openIdProvider = (OpenIdProvider)authenticationProvider;
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-                default:
-                    // Other providers
-                    openIdProvider = (OpenIdProvider)authenticationProvider;
-                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-            }
-            if (request != null) {
-                response.sendRedirect(request.getLocationUri());
-            }
-        } catch (OAuthSystemException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error("errLogin");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error("errLogin");
-        }
-
-        return "user";
     }
 
     /**
@@ -334,12 +265,10 @@ public class UserBean implements Serializable {
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
-        if(getAuthenticationProvider() != null) {            
+        if (getAuthenticationProvider() != null) {
             getAuthenticationProvider().logout();
         }
         setAuthenticationProvider(null);
-        setoAuthState(null);
-        setoAuthAccessToken(null);
 
         HttpServletRequest request = BeanUtils.getRequest();
         try {
@@ -407,7 +336,7 @@ public class UserBean implements Serializable {
                 logger.trace("Removed session attribute: {}", attribute);
             }
         }
-        
+
         BeanUtils.getCmsBean().invalidate();
 
         // Update filter query suffix
@@ -808,7 +737,13 @@ public class UserBean implements Serializable {
     }
 
     public List<IAuthenticationProvider> getAuthenticationProviders() {
-        return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        //        providers.add(new LocalAuthenticationProvider("local"));
+        return providers;
+    }
+
+    public IAuthenticationProvider getLocalAuthenticationProvider() {
+        return new LocalAuthenticationProvider("local");
     }
 
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
@@ -817,34 +752,6 @@ public class UserBean implements Serializable {
 
     public IAuthenticationProvider getAuthenticationProvider() {
         return authenticationProvider;
-    }
-
-    /**
-     * @return the oAuthState
-     */
-    public String getoAuthState() {
-        return oAuthState;
-    }
-
-    /**
-     * @param oAuthState the oAuthState to set
-     */
-    public void setoAuthState(String oAuthState) {
-        this.oAuthState = oAuthState;
-    }
-
-    /**
-     * @return the oAuthAccessToken
-     */
-    public String getoAuthAccessToken() {
-        return oAuthAccessToken;
-    }
-
-    /**
-     * @param oAuthAccessToken the oAuthAccessToken to set
-     */
-    public void setoAuthAccessToken(String oAuthAccessToken) {
-        this.oAuthAccessToken = oAuthAccessToken;
     }
 
     public String loginTest() {

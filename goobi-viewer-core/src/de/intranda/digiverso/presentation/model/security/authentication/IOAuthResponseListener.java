@@ -15,56 +15,33 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.util.Set;
+
 /**
+ * Communication class between objects issuing oauth requests and any services listening to responses from the server
+ * 
  * @author Florian Alpers
  *
  */
-public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
+public interface IOAuthResponseListener {
 
-    private final String name;
-    private final String url;
-    private final String image;
-    private final long timeoutMillis;
     /**
-     * @param name
-     * @param url
-     * @param image
+     * Make an OAuth provider issuing an authentication request eligible for receiving a response
+     * 
+     * @param provider  The provider issuing the request
      */
-    public HttpAuthenticationProvider(String name, String url, String image, long timeoutMillis) {
-        super();
-        this.name = name;
-        this.url = url;
-        this.image = image;
-        this.timeoutMillis = timeoutMillis;
-    }
-    
+    public void register(OpenIdProvider provider);
     /**
-     * @return the timeoutMillis
+     * Removing a provider from the list of issuers waiting for a response. To be called either after a request has been answered or if an
+     * answer is no longer expected
+     * 
+     * @param provider  The provider to remove
      */
-    public long getTimeoutMillis() {
-        return timeoutMillis;
-    }
-    
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getName()
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-    
+    public void unregister(OpenIdProvider provider);
     /**
-     * @return the url
+     * Gets a list of all registered providers
+     * 
+     * @return  The registered providers
      */
-    public String getUrl() {
-        return url;
-    }
-    
-    /**
-     * @return the image
-     */
-    public String getImage() {
-        return image;
-    }
-    
+    public Set<OpenIdProvider> getProviders();
 }

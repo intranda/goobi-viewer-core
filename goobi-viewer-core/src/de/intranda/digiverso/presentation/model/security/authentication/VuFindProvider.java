@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.util.Optional;
 
+import de.intranda.digiverso.presentation.model.security.user.User;
+
 /**
  * @author Florian Alpers
  *
@@ -28,8 +30,8 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      * @param url
      * @param image
      */
-    public VuFindProvider(String name, String url, String image) {
-        super(name, url, image);
+    public VuFindProvider(String name, String url, String image, long timeoutMillis) {
+        super(name, url, image, timeoutMillis);
     }
 
     /* (non-Javadoc)
@@ -41,14 +43,6 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login()
-     */
-    @Override
-    public boolean login() throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#logout()
@@ -60,12 +54,12 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isLoggedIn()
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean isLoggedIn() throws AuthenticationProviderException {
+    public Optional<User> login(String loginName, String password) throws AuthenticationProviderException {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 
     /* (non-Javadoc)
@@ -113,22 +107,6 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getUserName()
-     */
-    @Override
-    public Optional<String> getUserName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getUserEmail()
-     */
-    @Override
-    public Optional<String> getUserEmail() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }

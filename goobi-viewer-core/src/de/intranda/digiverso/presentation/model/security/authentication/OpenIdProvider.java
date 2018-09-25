@@ -15,47 +15,51 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
+import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.apache.oltu.oauth2.common.OAuthProviderType;
+import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.apache.oltu.oauth2.common.message.types.ResponseType;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
 
 public class OpenIdProvider extends HttpAuthenticationProvider {
-    private String name;
-    private String url;
-    private String image;
+
+    private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
+
     private boolean useTextField;
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
     private String clientSecret;
 
-    public OpenIdProvider(String name, String url, String image, boolean useTextField, String clientId, String clientSecret) {
-        super(name, url, image);
+    private String oAuthState = null;
+    private String oAuthAccessToken = null;
+    private JSONObject jsonResponse = null;
+
+    public OpenIdProvider(String name, String url, String image, long timeoutMillis, boolean useTextField, String clientId, String clientSecret) {
+        super(name, url, image, timeoutMillis);
         this.useTextField = useTextField;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-    }
-
-    /**
-     * @return the name
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @return the image
-     */
-    public String getImage() {
-        return image;
     }
 
     /**
@@ -79,14 +83,146 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return clientSecret;
     }
 
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
     @Override
     public Optional<User> login(String loginName, String password) throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-        return null;
+        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+
+        // Apache Oltu
+        try {
+            oAuthState =
+                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
+            OAuthClientRequest request = null;
+            switch (getName().toLowerCase()) {
+                case "google":
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
+                            .setResponseType(ResponseType.CODE.name().toLowerCase())
+                            .setClientId(getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("openid email")
+                            .buildQueryMessage();
+                    break;
+                case "facebook":
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
+                            .setClientId(getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
+                            .buildQueryMessage();
+                    break;
+                default:
+                    // Other providers
+                    request = OAuthClientRequest.authorizationLocation(getUrl())
+                            .setResponseType(ResponseType.CODE.name().toLowerCase())
+                            .setClientId(getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
+                            .buildQueryMessage();
+                    break;
+            }
+
+            DataManager.getInstance().getOAuthResponseListener().register(this);
+            if (request != null) {
+                response.sendRedirect(request.getLocationUri());
+            }
+            return Optional.empty();
+
+        } catch (OAuthSystemException e) {
+            throw new AuthenticationProviderException(e);
+        } catch (IOException e) {
+            throw new AuthenticationProviderException(e);
+        }
+    }
+
+    public Optional<User> completeLogin() throws AuthenticationProviderException {
+        JSONObject json = null;
+        try {
+            json = getJsonResponse().orElseThrow(() -> new AuthenticationProviderException("No Json object received as response from server"));
+
+            String email = null;
+            String sub = null;
+            switch (getName().toLowerCase()) {
+                case "google":
+                    // Validate id_token
+                    String iss = (String) json.get("iss");
+                    if (!"accounts.google.com".equals(iss)) {
+                        logger.error("Google id_token validation failed - 'iss' value: " + iss);
+                        break;
+                    }
+                    String aud = (String) json.get("aud");
+                    if (!getClientId().equals(aud)) {
+                        logger.error("Google id_token validation failed - 'aud' value: " + aud);
+                        break;
+                    }
+                    email = (String) json.get("email");
+                    sub = (String) json.get("sub");
+                    break;
+                case "facebook":
+                    email = (String) json.get("email");
+                    sub = (String) json.get("id");
+                    break;
+                default:
+                    email = (String) json.get("email");
+                    sub = (String) json.get("sub");
+                    break;
+            }
+            User user = null;
+            if (email != null) {
+                String comboSub = getName().toLowerCase() + ":" + sub;
+                // Retrieve user by sub
+                if (sub != null) {
+                    user = DataManager.getInstance().getDao().getUserByOpenId(comboSub);
+                    if (user != null) {
+                        logger.debug("Found user {} via OAuth sub '{}'.", user.getId(), comboSub);
+                    }
+                }
+                // If not found, try email
+                if (user == null) {
+                    user = DataManager.getInstance().getDao().getUserByEmail(email);
+                    if (user != null && sub != null) {
+                        user.getOpenIdAccounts().add(comboSub);
+                        logger.info("Updated user {} - added OAuth sub '{}'.", user.getId(), comboSub);
+                    }
+                }
+                // If still not found, create a new user
+                if (user == null) {
+                    user = new User();
+                    user.setActive(true);
+                    user.setEmail(email);
+                    if (sub != null) {
+                        user.getOpenIdAccounts().add(sub);
+                    }
+                    logger.debug("Created new user.");
+                }
+                // Add to bean and persist
+                if (user.getId() == null) {
+                    if (!DataManager.getInstance().getDao().addUser(user)) {
+                        logger.error("Could not add user to DB.");
+                    }
+                } else {
+                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                        logger.error("Could not update user in DB.");
+                    }
+                }
+            }
+            return Optional.ofNullable(user);
+        } catch (DAOException e) {
+            throw new AuthenticationProviderException(e);
+        }
+    }
+
+    /**
+     * Set the response from the server as json object. This calls {@link Object#notify()} on this object in order to complete a
+     * {@link #login(String, String)} call
+     * 
+     * @param jsonResponse
+     */
+    public void setJsonResponse(JSONObject jsonResponse) {
+        this.jsonResponse = jsonResponse;
     }
 
     /* (non-Javadoc)
@@ -94,8 +230,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public void logout() throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-        
+        //noop
     }
 
     /* (non-Javadoc)
@@ -103,8 +238,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isActive() {
-        // TODO Auto-generated method stub
-        return false;
+        return getJsonResponse().isPresent();
     }
 
     /* (non-Javadoc)
@@ -112,8 +246,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isSuspended() {
-        // TODO Auto-generated method stub
-        return false;
+        return !getJsonResponse().isPresent();
     }
 
     /* (non-Javadoc)
@@ -121,8 +254,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isRefused() {
-        // TODO Auto-generated method stub
-        return false;
+        return !getJsonResponse().isPresent();
     }
 
     /* (non-Javadoc)
@@ -130,8 +262,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public Optional<String> getUserGroup() {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.empty();
     }
 
     /* (non-Javadoc)
@@ -139,8 +270,42 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean allowsPasswordChange() {
-        // TODO Auto-generated method stub
         return false;
+    }
+
+    /**
+     * @return the oAuthState
+     */
+    public String getoAuthState() {
+        return oAuthState;
+    }
+
+    /**
+     * @param oAuthState the oAuthState to set
+     */
+    public void setoAuthState(String oAuthState) {
+        this.oAuthState = oAuthState;
+    }
+
+    /**
+     * @return the oAuthAccessToken
+     */
+    public String getoAuthAccessToken() {
+        return oAuthAccessToken;
+    }
+
+    /**
+     * @param oAuthAccessToken the oAuthAccessToken to set
+     */
+    public void setoAuthAccessToken(String oAuthAccessToken) {
+        this.oAuthAccessToken = oAuthAccessToken;
+    }
+
+    /**
+     * @return the jsonResponse
+     */
+    public Optional<JSONObject> getJsonResponse() {
+        return Optional.ofNullable(jsonResponse);
     }
 
 }

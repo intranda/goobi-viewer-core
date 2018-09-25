@@ -54,7 +54,9 @@
 									</div>
 									
 									<div class="user__action text-right">
-										<h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}" />
+										<h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}">
+                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
+                                        </h:commandButton>
 									</div>
 								</h:form>
 
@@ -84,11 +86,11 @@
 									<h:form id="userLoginOpenIdForm" prependId="false">
 										<nav>
 											<ul>
-												<ui:repeat var="provider" value="#{userBean.openIdConnectProviders}">
+												<ui:repeat var="provider" value="#{userBean.authenticationProviders}">
 													<li>
-														<h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.loginOpenIdConnectAction}">
+														<h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.login}">
 															<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
-															<f:setPropertyActionListener target="#{userBean.openIdProvider}" value="#{provider}" />
+															<f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
 														</h:commandLink>
 													</li>
 												</ui:repeat>

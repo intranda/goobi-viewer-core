@@ -1215,10 +1215,11 @@ public final class Configuration extends AbstractConfiguration {
             boolean useTextField = myConfigToUse.getBoolean("user.openIdConnect.provider(" + i + ")[@useTextField]", false);
             String clientId = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@clientSecret]", null);
+            long timeoutMillis = myConfigToUse.getLong("user.openIdConnect.provider(" + i + ")[@timeout]", 10000);
             if (StringUtils.isNotEmpty(clientId) && StringUtils.isNotEmpty(clientId)) {
-                providers.add(new OpenIdProvider(name, endpoint, image, useTextField, clientId, clientSecret));
+                providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, useTextField, clientId, clientSecret));
             } else if(StringUtils.isNotBlank(endpoint) && "vufind".equalsIgnoreCase(name)) {
-                providers.add(new VuFindProvider(name, endpoint, image));
+                providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
             } else {
                 logger.warn("OpenID Connect provider config incomplete: {}", name);
             }

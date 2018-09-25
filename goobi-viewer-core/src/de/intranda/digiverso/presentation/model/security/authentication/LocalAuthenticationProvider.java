@@ -36,7 +36,12 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     boolean userActive = false;
     boolean userSuspended = false;
     boolean userBlocked = false;
+    private final String name;
 
+    public LocalAuthenticationProvider(String name) {
+        this.name = name;
+    }
+    
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login()
      */
@@ -69,8 +74,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public void logout() throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-
+        //noop
     }
 
     /* (non-Javadoc)
@@ -78,8 +82,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public boolean isActive() {
-        // TODO Auto-generated method stub
-        return false;
+        return userActive;
     }
 
     /* (non-Javadoc)
@@ -87,8 +90,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public boolean isSuspended() {
-        // TODO Auto-generated method stub
-        return false;
+        return userSuspended;
     }
 
     /* (non-Javadoc)
@@ -96,8 +98,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public boolean isRefused() {
-        // TODO Auto-generated method stub
-        return false;
+        return userBlocked;
     }
 
     /* (non-Javadoc)
@@ -105,8 +106,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public Optional<String> getUserGroup() {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.empty();
     }
 
     /* (non-Javadoc)
@@ -114,8 +114,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public boolean allowsPasswordChange() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -123,8 +122,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      */
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return name;
     }
 
 }
