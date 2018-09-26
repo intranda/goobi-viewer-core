@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -66,6 +68,10 @@ public class OAuthServlet extends HttpServlet {
 
     public static final String URL = "oauth";
 
+    /**
+     * This future gets fulfulled once the {@link UserBean} has finished setting up the sessin and redirecting the request.
+     * Completing the request should wait after the redirect, otherwise it will not have any effect
+     */
     Future<Boolean> redirected = null;
     
     /**
@@ -131,9 +137,13 @@ public class OAuthServlet extends HttpServlet {
 
         if(this.redirected != null) {
             try {
-                this.redirected.get();
-            } catch (InterruptedException | ExecutionException e) {
+                this.redirected.get(1, TimeUnit.MINUTES);  //redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+            } catch (InterruptedException e) {
                 logger.warn("Waiting for redirect after login unterrupted unexpectedly");
+            } catch (TimeoutException e) {
+                logger.error("Waiting for redirect after login took longer than a minute. This should not happen. Redirect will not take place");
+            } catch (ExecutionException e) {
+                logger.error("Unexpected error while waiting for redirect", e);
             }
         }
     }
@@ -142,12 +152,8 @@ public class OAuthServlet extends HttpServlet {
             throws DAOException, OAuthProblemException, OAuthSystemException, ParseException, AuthenticationProviderException {
         if (provider.getoAuthState() == null || !oar.getState().equals(provider.getoAuthState())) {
             return false;
-//            return Optional.empty();
-            //            logger.error("Received invalid state token.");
-            //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Received invalid state token.");
         }
 
-        // Send access token request (Google)
         OAuthClientRequest oAuthTokenRequest = null;
         switch (provider.getName().toLowerCase()) {
             case "google":
