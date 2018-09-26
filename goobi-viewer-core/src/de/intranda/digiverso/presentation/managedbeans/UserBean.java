@@ -26,6 +26,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -59,8 +62,11 @@ import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 @Named
 @SessionScoped
@@ -88,6 +94,8 @@ public class UserBean implements Serializable {
     private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
+
+    private CompletableFuture<Optional<User>> loginFuture = null;
 
     /** Empty constructor. */
     public UserBean() {
@@ -177,79 +185,76 @@ public class UserBean implements Serializable {
     /**
      * Login action method for local accounts.
      *
-     * @throws AuthenticationProviderException  If an error occured while logging in
-     * @throws IllegalStateException    If a user is already logged in
+     * @throws AuthenticationProviderException If an error occured while logging in
+     * @throws IllegalStateException If a user is already logged in
      * @return the url mapping to navigate to
+     * @throws ExecutionException
+     * @throws InterruptedException
      *
      */
-    public String login() throws AuthenticationProviderException, IllegalStateException {
-        if(getUser() != null) {
+    public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+        if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
-        logger.trace("login");
-        String ret = null;
-        if(getAuthenticationProvider() != null) {
-                Optional<User> user = getAuthenticationProvider().login(email, password).filter(u -> u.isActive() && !u.isSuspended());
-                if(user.isPresent()) {  //login successful
-                    try {
-                        ret = setupUser(user.get(), BeanUtils.getRequest());
-                      if(StringUtils.isNotBlank(ret) && !"pretty:user".equals(ret)) {      
-                          HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-                          response.sendRedirect(ret);
-                          return null;
-                      } 
-                    } catch (DAOException | IndexUnreachableException | PresentationException | IOException e) {
-                        //user may login, but setting up viewer account failed
-                        getAuthenticationProvider().logout();
-                        throw new AuthenticationProviderException(e);
-                    }
-                } else if(!getAuthenticationProvider().isActive()) {
-                    Messages.error("errLoginWrong"); // maybe a different error msg?
-                } else if(getAuthenticationProvider().isSuspended()) {
-                    Messages.error("errLoginWrong"); // maybe a different error msg?
-                } else if(getAuthenticationProvider().isRefused()) {
-                    Messages.error("errLoginWrong");
-                }
+        HttpServletRequest request = BeanUtils.getRequest();
+        if("#".equals(this.redirectUrl)) {
+            this.redirectUrl = ViewHistory.getCurrentView(request).map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl()).orElse("");
         }
-        return ret;
+        logger.trace("login");
+        if (getAuthenticationProvider() != null) {
+            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result, request));
+        }
+        return null;
     }
 
-    /**
-     * Comletes setting up a user after successful login
-     * 
-     * @param user
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @return The url mapping to navigate to, or null if url redirect is handled internally
-     */
-    public String setupUser(User user, HttpServletRequest request)
-            throws DAOException, IndexUnreachableException, PresentationException {
-        DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
-        wipeSession(request);
-        // Update last login
-        user.setLastLogin(new Date());
-        if (!DataManager.getInstance().getDao().updateUser(user)) {
-            logger.error("Could not update user in DB.");
-        }
-        setUser(user);
-        request.getSession(false).setAttribute("user", user);
-        SearchHelper.updateFilterQuerySuffix(request);
-
-        //                    BeanUtils.getCmsBean().resetCollections(); 
-        // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
-
-        if (StringUtils.isNotEmpty(redirectUrl)) {
-            if ("#".equals(redirectUrl)) {
-                logger.trace("Stay on current page");
-                return "";
+    private void completeLogin(LoginResult result, HttpServletRequest request) {
+        try {
+            Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
+            HttpServletResponse response = result.getResponse();
+            request = result.getRequest();//BeanUtils.getRequest();
+            if (oUser.isPresent()) { //login successful
+                try {
+                    User user = oUser.get();
+                    wipeSession(request);
+                    DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
+                    // Update last login
+                    user.setLastLogin(new Date());
+                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                        logger.error("Could not update user in DB.");
+                    }
+                    setUser(user);
+                    if (request.getSession(false) != null) {
+                        request.getSession(false).setAttribute("user", user);
+                    }
+                    if (StringUtils.isNotEmpty(redirectUrl)) {
+                        logger.trace("Redirecting to {}", redirectUrl);
+                        String redirectUrl = this.redirectUrl;
+                        this.redirectUrl = "";
+                        response.sendRedirect(redirectUrl);
+                    } else {
+                        logger.trace("Redirecting to user page");
+                        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                    }
+                } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                    //user may login, but setting up viewer account failed
+                    getAuthenticationProvider().logout();
+                    throw new AuthenticationProviderException(e);
+                }
+            } else if (!getAuthenticationProvider().isActive()) {
+                Messages.error("errLoginInactive");
+            } else if (getAuthenticationProvider().isSuspended()) {
+                Messages.error("errLoginSuspended");
+            } else if (getAuthenticationProvider().isRefused()) {
+                Messages.error("errLoginWrong");
+            } else {
+                Messages.error("errLoginInactive");
             }
-            logger.trace("Redirecting to {}", redirectUrl);
-            String redirectUrl = this.redirectUrl;
-            this.redirectUrl = "";
-            return redirectUrl;
+        } catch (AuthenticationProviderException e) {
+            logger.error("Error logging in ", e);
+            Messages.error("errLoginError");
+        } finally {
+            result.setRedirected();
         }
-        return "pretty:user";
     }
 
     /**
@@ -319,8 +324,8 @@ public class UserBean implements Serializable {
             return;
         }
         session.removeAttribute("user");
-
-        // Remove priv maps
+//
+//        // Remove priv maps
         Enumeration<String> attributeNames = session.getAttributeNames();
         Set<String> attributesToRemove = new HashSet<>();
         while (attributeNames.hasMoreElements()) {
@@ -336,10 +341,13 @@ public class UserBean implements Serializable {
                 logger.trace("Removed session attribute: {}", attribute);
             }
         }
-
-        BeanUtils.getCmsBean().invalidate();
-
-        // Update filter query suffix
+//
+        try {            
+            BeanUtils.getCmsBean().invalidate();
+        } catch(Throwable e) {
+        }
+//
+//        // Update filter query suffix
         SearchHelper.updateFilterQuerySuffix(request);
     }
 

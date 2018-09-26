@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import de.intranda.digiverso.presentation.model.security.user.User;
 
@@ -34,8 +36,9 @@ public interface IAuthenticationProvider {
     public String getName();
     
     /**
-     * Returns an optional containing the viewer user if the login succeeded, or an empty optional if the login was rejected
-     * If an error occurs and the request can not be processed, an {@link AUthenticationException} must be thrown.
+     * Returns a future containing the login result upon completion. The result optionally contains the logged in {@link User} 
+     * as well as the {@link HttpServletRequest} and {@link HttpServletResponse} to be used to complete the login and possible request forwarding
+     * If an error occurs and the request can not be processed, an {@link AuthenticationException} must be thrown.
      * If a login has been refused, the exact reasons can be determined using the methods 
      * {@link isActive}, {@link isSuspended} and {@link isRefused}
      *
@@ -43,11 +46,11 @@ public interface IAuthenticationProvider {
      * If the provider does not require such a string, this can be left empty or null
      * @param password  A string to be used as a password or similar for login.
      * If the provider does not require such a string, this can be left empty or null
-     * @return  The user if login was successful, an empty optional if login was refused. 
+     * @return  A {@link CompletableFuture} which is resolved once login is completed and contains a {@link LoginResult}
      * @throws AuthenticationProviderException  If an error occurred during login evaluation 
      * or if the request could not be processed
      */
-    public Optional<User> login(String loginName, String password) throws AuthenticationProviderException;
+    public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException;
     
     /**
      * Logs the user out

@@ -15,14 +15,18 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
-import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
@@ -46,7 +50,9 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login()
      */
     @Override
-    public Optional<User> login(String email, String password) throws AuthenticationProviderException {
+    public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
+        HttpServletRequest request = BeanUtils.getRequest();
+        HttpServletResponse response = BeanUtils.getResponse();
         if (StringUtils.isNotEmpty(email)) {
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
@@ -60,13 +66,13 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
                     userSuspended = false;
                     userBlocked = true;
                 } else {
-                    return Optional.of(user);
+                    return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user)));
                 }
             } catch (DAOException e) {
                 throw new AuthenticationProviderException(e);
             }
         }
-        return Optional.empty();
+        return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty()));
     }
 
     /* (non-Javadoc)

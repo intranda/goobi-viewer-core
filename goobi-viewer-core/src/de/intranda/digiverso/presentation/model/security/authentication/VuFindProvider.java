@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import de.intranda.digiverso.presentation.model.security.user.User;
 
@@ -57,7 +59,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
     @Override
-    public Optional<User> login(String loginName, String password) throws AuthenticationProviderException {
+    public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         // TODO Auto-generated method stub
         return null;
     }

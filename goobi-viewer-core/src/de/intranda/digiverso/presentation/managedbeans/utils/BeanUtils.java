@@ -26,6 +26,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -322,5 +323,13 @@ public class BeanUtils {
                 .replace(BACKSLASH_REPLACEMENT, "\\")
                 .replace(QUESTION_MARK_REPLACEMENT, "?")
                 .replace(PERCENT_REPLACEMENT, "%");
+    }
+
+    /**
+     * @return
+     */
+    public static HttpServletResponse getResponse() {
+        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+        return response;
     }
 }

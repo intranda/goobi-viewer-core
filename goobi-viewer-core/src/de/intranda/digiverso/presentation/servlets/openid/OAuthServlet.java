@@ -17,9 +17,9 @@ package de.intranda.digiverso.presentation.servlets.openid;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -39,7 +38,6 @@ import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.client.validator.TokenValidator;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
-import org.apache.oltu.oauth2.common.error.OAuthError;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
@@ -49,17 +47,9 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.xml.internal.ws.util.HandlerAnnotationProcessor;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.UserBean;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
-import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.IOAuthResponseListener;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.user.User;
@@ -76,6 +66,8 @@ public class OAuthServlet extends HttpServlet {
 
     public static final String URL = "oauth";
 
+    Future<Boolean> redirected = null;
+    
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
@@ -98,8 +90,8 @@ public class OAuthServlet extends HttpServlet {
             IOAuthResponseListener listener = DataManager.getInstance().getOAuthResponseListener();
             for (OpenIdProvider provider : listener.getProviders()) {
                 try {
-                    user = handleResponse(oar, provider, request, response);
-                    if (user.isPresent()) {
+                    boolean found = handleResponse(oar, provider, request, response);
+                    if (found) {
                         listener.unregister(provider);
                         break;
                     }
@@ -112,16 +104,19 @@ public class OAuthServlet extends HttpServlet {
                     listener.unregister(provider);
                 } catch (OAuthSystemException | ParseException e) {
                     logger.error(e.getMessage(), e);
+                    this.redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                     //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OpenID Connect login failed");
                 } catch (DAOException e) {
                     logger.debug("DAOException thrown here: {}", e.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database offline");
+                    this.redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                     return;
                 } catch (AuthenticationProviderException e) {
                     logger.debug("AuthenticationProviderException thrown here: {}", e.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    this.redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                     return;
                 }
@@ -134,42 +129,20 @@ public class OAuthServlet extends HttpServlet {
             }
         }
 
-        // If a redirect URL is set, redirect there
-//        UserBean ub = BeanUtils.getUserBean();
-//        if (ub != null) {
-//            if (StringUtils.isNotEmpty(ub.getRedirectUrl())) {
-//                logger.debug("Redirecting to " + ub.getRedirectUrl());
-//                try {
-//                    response.sendRedirect(ub.getRedirectUrl());
-//                    return;
-//                } finally {
-//                    ub.setRedirectUrl(null);
-//                }
-//            }
-//            if (user.isPresent()) {
-//                try {
-//                    String redirect = ub.setupUser(user.get(), request);
-//                    if(redirect == null) {
-//                        return;
-//                    } else if(!"pretty:user".equals(redirect)) {      
-//                        response.sendRedirect(redirect);
-//                        return;
-//                    } 
-//                } catch (DAOException | IndexUnreachableException | PresentationException e) {
-//                    logger.debug("Exception thrown here: {}", e.getMessage());
-//                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-//                    return;
-//                }
-//            }
-//        }
-
-//        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+        if(this.redirected != null) {
+            try {
+                this.redirected.get();
+            } catch (InterruptedException | ExecutionException e) {
+                logger.warn("Waiting for redirect after login unterrupted unexpectedly");
+            }
+        }
     }
 
-    private Optional<User> handleResponse(OAuthAuthzResponse oar, OpenIdProvider provider, HttpServletRequest request, HttpServletResponse response)
+    private boolean handleResponse(OAuthAuthzResponse oar, OpenIdProvider provider, HttpServletRequest request, HttpServletResponse response)
             throws DAOException, OAuthProblemException, OAuthSystemException, ParseException, AuthenticationProviderException {
         if (provider.getoAuthState() == null || !oar.getState().equals(provider.getoAuthState())) {
-            return Optional.empty();
+            return false;
+//            return Optional.empty();
             //            logger.error("Received invalid state token.");
             //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Received invalid state token.");
         }
@@ -201,8 +174,9 @@ public class OAuthServlet extends HttpServlet {
                     String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), Charset.forName("UTF-8"));
                     // String signature = idTokenEncodedSplit[2];
                     JSONObject jsonPayload = (JSONObject) new JSONParser().parse(payload);
-                    provider.setJsonResponse(jsonPayload);
-                    return provider.completeLogin();
+                    this.redirected = provider.completeLogin(jsonPayload, request, response);
+                    return true;
+//                    return provider.completeLogin();
                 }
             }
 
@@ -230,8 +204,9 @@ public class OAuthServlet extends HttpServlet {
                     if (resourceResponse != null) {
                         // logger.debug(resourceResponse.getBody());
                         JSONObject jsonProfile = (JSONObject) new JSONParser().parse(resourceResponse.getBody());
-                        provider.setJsonResponse(jsonProfile);
-                        return provider.completeLogin();
+                        this.redirected = provider.completeLogin(jsonProfile, request, response);
+                        return true;
+//                        return provider.completeLogin();
                     }
                 }
             }
@@ -249,7 +224,7 @@ public class OAuthServlet extends HttpServlet {
                 oAuthClient.accessToken(oAuthTokenRequest);
             }
         }
-        return Optional.empty();
+        return false;// Optional.empty();
     }
 
 }

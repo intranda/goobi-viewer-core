@@ -16,15 +16,14 @@
 package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
-import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
@@ -34,9 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
@@ -45,6 +42,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
 
+    
     private boolean useTextField;
     /** OAuth client ID. */
     private String clientId;
@@ -54,6 +52,11 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String oAuthState = null;
     private String oAuthAccessToken = null;
     private JSONObject jsonResponse = null;
+    private volatile LoginResult loginResult = null;
+    /**
+     * Lock to be opened once login is completed
+     */
+    private Object responseLock = new Object();
 
     public OpenIdProvider(String name, String url, String image, long timeoutMillis, boolean useTextField, String clientId, String clientSecret) {
         super(name, url, image, timeoutMillis);
@@ -87,8 +90,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
     @Override
-    public Optional<User> login(String loginName, String password) throws AuthenticationProviderException {
-        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+    public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
 
         // Apache Oltu
         try {
@@ -127,9 +129,18 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
             DataManager.getInstance().getOAuthResponseListener().register(this);
             if (request != null) {
-                response.sendRedirect(request.getLocationUri());
+                BeanUtils.getResponse().sendRedirect(request.getLocationUri());
             }
-            return Optional.empty();
+                return CompletableFuture.supplyAsync(() -> {
+                            synchronized (responseLock) {
+                                try {
+                                    responseLock.wait(getTimeoutMillis());
+                                    return this.loginResult;
+                                } catch (InterruptedException e) {
+                                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+                                }
+                            }
+                });
 
         } catch (OAuthSystemException e) {
             throw new AuthenticationProviderException(e);
@@ -138,11 +149,23 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         }
     }
 
-    public Optional<User> completeLogin() throws AuthenticationProviderException {
-        JSONObject json = null;
+    /**
+     * Tries to find or create a valid {@link User} based on the given json object. Generates a {@link LoginResult}
+     * containing the given request and response and either an optional containing the user or nothing if no user was found, or a {@link AuthenticationProviderException} 
+     * if an internal error occured during login
+     * If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)}, 
+     * a loginResponse is created containing an appropriate exception.
+     * In any case, the future returned by {@link #login(String, String)} is resolved
+     * 
+     * @param json  The server response as json object. If null, the login request is resolved as failure
+     * @param request
+     * @param response
+     */
+    public Future<Boolean> completeLogin(JSONObject json, HttpServletRequest request, HttpServletResponse response) {
         try {
-            json = getJsonResponse().orElseThrow(() -> new AuthenticationProviderException("No Json object received as response from server"));
-
+            if(json == null) {
+                throw new AuthenticationProviderException("received no json object");
+            }
             String email = null;
             String sub = null;
             switch (getName().toLowerCase()) {
@@ -209,20 +232,17 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     }
                 }
             }
-            return Optional.ofNullable(user);
+            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user));
         } catch (DAOException e) {
-            throw new AuthenticationProviderException(e);
+            this.loginResult = new LoginResult(request, response, new AuthenticationProviderException(e));
+        } catch (AuthenticationProviderException e) {
+            this.loginResult = new LoginResult(request, response, e);
+        } finally {
+            synchronized (responseLock) {
+                responseLock.notifyAll();
+            }
         }
-    }
-
-    /**
-     * Set the response from the server as json object. This calls {@link Object#notify()} on this object in order to complete a
-     * {@link #login(String, String)} call
-     * 
-     * @param jsonResponse
-     */
-    public void setJsonResponse(JSONObject jsonResponse) {
-        this.jsonResponse = jsonResponse;
+        return this.loginResult.isRedirected(getTimeoutMillis());
     }
 
     /* (non-Javadoc)
@@ -304,7 +324,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /**
      * @return the jsonResponse
      */
-    public Optional<JSONObject> getJsonResponse() {
+    private Optional<JSONObject> getJsonResponse() {
         return Optional.ofNullable(jsonResponse);
     }
 

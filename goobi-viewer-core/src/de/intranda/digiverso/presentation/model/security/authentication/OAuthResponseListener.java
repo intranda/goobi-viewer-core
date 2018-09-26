@@ -43,9 +43,6 @@ public class OAuthResponseListener implements IOAuthResponseListener {
     @Override
     public void unregister(OpenIdProvider provider) {
         authenticationProviders.remove(provider);        
-        synchronized (provider.getJsonResponse()) {
-            provider.notify();
-        }
     }
     
     /* (non-Javadoc)
