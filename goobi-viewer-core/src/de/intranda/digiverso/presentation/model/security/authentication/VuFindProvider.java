@@ -47,7 +47,10 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 public class VuFindProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
-
+    private static final String DEFAULT_EMAIL = "{username}@nomail.com";
+    public static final String TYPE_USER_PASSWORD = "userPassword";
+    private static final String USER_GROUP_ROLE_MEMBER = "member";
+    
     private VuAuthenticationResponse authenticationResponse;
 
     /**
@@ -56,7 +59,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      * @param image
      */
     public VuFindProvider(String name, String url, String image, long timeoutMillis) {
-        super(name, url, image, timeoutMillis);
+        super(name, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
     /* (non-Javadoc)
@@ -114,7 +117,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isRefused() {
-        if (authenticationResponse != null) {
+        if (authenticationResponse != null && authenticationResponse.getBlocks() != null) {
             return Boolean.TRUE.equals(authenticationResponse.getBlocks().getIsBlocked());
         } else {
             return false;
@@ -180,18 +183,10 @@ public class VuFindProvider extends HttpAuthenticationProvider {
             user = new User();
             user.setActive(true);
             user.setNickName(request.getUsername());
+            user.setEmail(DEFAULT_EMAIL.replace("{username}",request.getUsername()));
             logger.debug("Created new user with nickname " + request.getUsername());
         }
-        
-        //add to user group
-        if(StringUtils.isNotBlank(authenticationResponse.getUser().getGroup())) {
-            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup());
-            if(userGroup != null && !userGroup.getMembers().contains(user)) {
-                userGroup.addMember(user, new Role());
-                DataManager.getInstance().getDao().updateUserGroup(userGroup);
-            }
-        }
-        
+
         // Add to bean and persist
         if (user.getId() == null) {
             if (!DataManager.getInstance().getDao().addUser(user)) {
@@ -202,6 +197,19 @@ public class VuFindProvider extends HttpAuthenticationProvider {
                 throw new AuthenticationProviderException("Could not update user in DB.");
             }
         }
+        
+        //add to user group
+        if(StringUtils.isNotBlank(authenticationResponse.getUser().getGroup())) {
+            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup());
+            if(userGroup != null && !userGroup.getMembers().contains(user)) {
+//                DataManager.getInstance().getDao().updateUserGroup(userGroup);
+                Role role = DataManager.getInstance().getDao().getRole(USER_GROUP_ROLE_MEMBER);
+                if(role != null) {                    
+                    userGroup.addMember(user, role);
+                }
+            }
+        }
+        
         } catch(DAOException | PresentationException e) {
             throw new AuthenticationProviderException(e);
         }

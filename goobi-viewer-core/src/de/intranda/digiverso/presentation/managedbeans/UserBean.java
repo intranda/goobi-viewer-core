@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.JDOMException;
+import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +88,7 @@ public class UserBean implements Serializable {
     private String activationKey;
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
+    private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
     private String passwordOne = "";
@@ -317,14 +320,14 @@ public class UserBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
-    public static void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
+    public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("wipeSession");
         HttpSession session = request.getSession(false);
         if (session == null) {
             return;
         }
         session.removeAttribute("user");
-//
+
 //        // Remove priv maps
         Enumeration<String> attributeNames = session.getAttributeNames();
         Set<String> attributesToRemove = new HashSet<>();
@@ -341,13 +344,15 @@ public class UserBean implements Serializable {
                 logger.trace("Removed session attribute: {}", attribute);
             }
         }
-//
+
         try {            
             BeanUtils.getCmsBean().invalidate();
         } catch(Throwable e) {
         }
-//
-//        // Update filter query suffix
+        
+        this.authenticationProviders = null;
+
+        // Update filter query suffix
         SearchHelper.updateFilterQuerySuffix(request);
     }
 
@@ -744,14 +749,15 @@ public class UserBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
 
-    public List<IAuthenticationProvider> getAuthenticationProviders() {
-        List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        //        providers.add(new LocalAuthenticationProvider("local"));
-        return providers;
+    public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
+        if(this.authenticationProviders == null) {            
+            this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        }
+        return this.authenticationProviders;
     }
 
     public IAuthenticationProvider getLocalAuthenticationProvider() {
-        return new LocalAuthenticationProvider("local");
+        return getProvidersOfType("local").stream().findFirst().orElse(null);
     }
 
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
@@ -863,5 +869,25 @@ public class UserBean implements Serializable {
 
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
+    }
+    
+    public boolean hasProvidersOfType(String type) {
+        if(type != null) {            
+            return getAuthenticationProviders().stream().anyMatch(provider -> type.equalsIgnoreCase(provider.getType()));
+        } else {
+            return false;
+        }
+    }
+    
+    public List<IAuthenticationProvider> getProvidersOfType(String type) {
+        if(type != null) {            
+            return getAuthenticationProviders().stream().filter(provider -> type.equalsIgnoreCase(provider.getType())).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    public int getNumberOfProviderTypes() {
+        return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
     }
 }

@@ -52,6 +52,7 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.Metad
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
@@ -1202,26 +1203,41 @@ public final class Configuration extends AbstractConfiguration {
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
         // User local config, if available
-        if (configLocal.getString("user.openIdConnect[@show]") != null) {
+        if (configLocal.configurationAt("user.authenticationProviders") != null) {
             myConfigToUse = configLocal;
         }
 
         List<IAuthenticationProvider> providers = new ArrayList<>();
-        int max = myConfigToUse.getMaxIndex("user.openIdConnect.provider");
+        int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
         for (int i = 0; i <= max; i++) {
-            String name = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@name]");
-            String endpoint = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@endpoint]", null);
-            String image = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@image]", null);
-            boolean useTextField = myConfigToUse.getBoolean("user.openIdConnect.provider(" + i + ")[@useTextField]", false);
-            String clientId = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@clientId]", null);
-            String clientSecret = myConfigToUse.getString("user.openIdConnect.provider(" + i + ")[@clientSecret]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.openIdConnect.provider(" + i + ")[@timeout]", 10000);
-            if (StringUtils.isNotEmpty(clientId) && StringUtils.isNotEmpty(clientId)) {
-                providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, useTextField, clientId, clientSecret));
-            } else if(StringUtils.isNotBlank(endpoint) && "vufind".equalsIgnoreCase(name)) {
-                providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
-            } else {
-                logger.warn("OpenID Connect provider config incomplete: {}", name);
+            String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
+            String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
+            String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
+            String type = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@type]", "");
+            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@show]", true);
+            String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
+            String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
+            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
+            
+            if(visible) {
+                switch(type.toLowerCase()) {
+                    case "openid":
+                        providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
+                        break;
+                    case "userpassword":
+                        switch(name.toLowerCase()) {
+                            case "vufind":
+                                providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
+                                break;
+                            default:
+                                logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
+                        }
+                    case "local":
+                        providers.add(new LocalAuthenticationProvider(name));
+                        break;
+                    default:
+                        logger.error("Cannot add authentification provider with name {} and type {}. No implementation found", name, type);
+                }
             }
         }
         return providers;

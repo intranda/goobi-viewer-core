@@ -103,6 +103,13 @@
 		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element 
 			defines an authentication provider. Required attributes: name, endpoint (auth 
 			URL), clientId, clientSecret, image. -->
+        <authenticationProviders>
+            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
+            	clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth"
+                clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
+            <provider type="local" name="Goobi viewer"/>
+        </authenticationProviders>
 		<openIdConnect show="true">
 			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
 				clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />

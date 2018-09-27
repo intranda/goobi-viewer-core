@@ -17,8 +17,11 @@ package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import de.intranda.digiverso.presentation.exceptions.AuthenticationException;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
@@ -97,5 +100,11 @@ public interface IAuthenticationProvider {
      */
     public boolean allowsPasswordChange();
     
-    
+    /**
+     * The provider type. This should either be "local", "userpassword" or "openId".
+     * This value is used to determine where this provider is displayed. Providers with the same type are displayed together
+     * 
+     * @return  The type of the provider
+     */
+    public String getType();
 }

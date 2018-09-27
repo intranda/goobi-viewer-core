@@ -42,8 +42,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
 
+    public static final String TYPE_OPENID = "OpenId";
     
-    private boolean useTextField;
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
@@ -58,19 +58,12 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     private Object responseLock = new Object();
 
-    public OpenIdProvider(String name, String url, String image, long timeoutMillis, boolean useTextField, String clientId, String clientSecret) {
-        super(name, url, image, timeoutMillis);
-        this.useTextField = useTextField;
+    public OpenIdProvider(String name, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
+        super(name, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
-    /**
-     * @return the useTextField
-     */
-    public boolean isUseTextField() {
-        return useTextField;
-    }
 
     /**
      * @return the clientId

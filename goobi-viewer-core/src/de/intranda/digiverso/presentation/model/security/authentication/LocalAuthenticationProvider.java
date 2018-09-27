@@ -37,9 +37,10 @@ import de.intranda.digiverso.presentation.model.security.user.User;
  */
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
-    boolean userActive = false;
-    boolean userSuspended = false;
-    boolean userBlocked = false;
+    public static final String TYPE_LOCAL = "local";
+    private boolean userActive = false;
+    private boolean userSuspended = false;
+    private boolean userBlocked = false;
     private final String name;
 
     public LocalAuthenticationProvider(String name) {
@@ -129,6 +130,15 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     @Override
     public String getName() {
         return name;
+    }
+
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getType()
+     */
+    @Override
+    public String getType() {
+        return TYPE_LOCAL;
     }
 
 }

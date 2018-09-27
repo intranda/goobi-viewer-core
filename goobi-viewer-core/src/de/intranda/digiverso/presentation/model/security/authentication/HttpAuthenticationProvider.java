@@ -22,6 +22,7 @@ package de.intranda.digiverso.presentation.model.security.authentication;
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
 
     private final String name;
+    private final String type;
     private final String url;
     private final String image;
     private final long timeoutMillis;
@@ -30,11 +31,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param url
      * @param image
      */
-    public HttpAuthenticationProvider(String name, String url, String image, long timeoutMillis) {
+    public HttpAuthenticationProvider(String name, String type, String url, String image, long timeoutMillis) {
         super();
         this.name = name;
         this.url = url;
         this.image = image;
+        this.type = type;
         this.timeoutMillis = timeoutMillis;
     }
     
@@ -65,6 +67,13 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      */
     public String getImage() {
         return image;
+    }
+    
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
     }
     
 }
