@@ -452,7 +452,7 @@ public class ConfigurationTest {
     @Test
     public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        Assert.assertEquals(2, providers.size());
+        Assert.assertEquals(3, providers.size());
         Assert.assertEquals("Google", providers.get(0).getName());
         Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider)providers.get(0)).getUrl());
         Assert.assertEquals("id_google", ((OpenIdProvider)providers.get(0)).getClientId());

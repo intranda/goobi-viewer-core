@@ -1203,7 +1203,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
         // User local config, if available
-        if (configLocal.configurationAt("user.authenticationProviders") != null) {
+        if (!configLocal.configurationsAt("user.authenticationProviders").isEmpty()) {
             myConfigToUse = configLocal;
         }
 

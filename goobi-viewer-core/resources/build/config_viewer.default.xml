@@ -92,10 +92,11 @@
 
 		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element defines an authentication provider.
 		     Required attributes: name, endpoint (auth URL), clientId, clientSecret, image. -->
-		<openIdConnect show="true">
-			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-			<provider name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
-		</openIdConnect>
+        <authenticationProviders>
+            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
+            <provider type="local" name="Goobi viewer"/>
+        </authenticationProviders>
 
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress')
 		     and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory and have no default value. -->
