@@ -15,17 +15,40 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.authentication.model.VuAuthenticationRequest;
+import de.intranda.digiverso.presentation.model.security.authentication.model.VuAuthenticationResponse;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
 /**
  * @author Florian Alpers
  *
  */
 public class VuFindProvider extends HttpAuthenticationProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
+
+    private VuAuthenticationResponse authenticationResponse;
 
     /**
      * @param name
@@ -37,22 +60,11 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getName()
-     */
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#logout()
      */
     @Override
     public void logout() throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-
+        //noop
     }
 
     /* (non-Javadoc)
@@ -60,8 +72,16 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            VuAuthenticationRequest request = new VuAuthenticationRequest(loginName, password);
+            this.authenticationResponse = post(new URI(getUrl()), request);
+
+            Optional<User> user = getUser(request);
+            LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user);
+            return CompletableFuture.completedFuture(result);
+        } catch (URISyntaxException e) {
+            throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
+        }
     }
 
     /* (non-Javadoc)
@@ -69,8 +89,11 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isActive() {
-        // TODO Auto-generated method stub
-        return false;
+        if (authenticationResponse != null) {
+            return Boolean.TRUE.equals(authenticationResponse.getUser().getExists());
+        } else {
+            return false;
+        }
     }
 
     /* (non-Javadoc)
@@ -78,8 +101,12 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isSuspended() {
-        // TODO Auto-generated method stub
-        return false;
+        if (authenticationResponse != null) {
+            return !Boolean.TRUE.equals(authenticationResponse.getUser().getIsValid())
+                    || Boolean.TRUE.equals(authenticationResponse.getExpired().getIsExpired());
+        } else {
+            return true;
+        }
     }
 
     /* (non-Javadoc)
@@ -87,8 +114,11 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean isRefused() {
-        // TODO Auto-generated method stub
-        return false;
+        if (authenticationResponse != null) {
+            return Boolean.TRUE.equals(authenticationResponse.getBlocks().getIsBlocked());
+        } else {
+            return false;
+        }
     }
 
     /* (non-Javadoc)
@@ -96,8 +126,11 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public Optional<String> getUserGroup() {
-        // TODO Auto-generated method stub
-        return null;
+        if (authenticationResponse != null) {
+            return Optional.ofNullable(authenticationResponse.getUser().getGroup());
+        } else {
+            return Optional.empty();
+        }
     }
 
     /* (non-Javadoc)
@@ -105,10 +138,74 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     @Override
     public boolean allowsPasswordChange() {
-        // TODO Auto-generated method stub
         return false;
     }
 
+    private VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) {
+        Client client = ClientBuilder.newClient();
+        WebTarget vuFindAuthenticationApi = client.target(url);
 
+        Entity<VuAuthenticationRequest> ent = Entity.entity(request, MediaType.APPLICATION_JSON);
+        VuAuthenticationResponse response = vuFindAuthenticationApi.request().post(ent, VuAuthenticationResponse.class);
+        return response;
+    }
+
+    /**
+     * @param request
+     * @param response
+     * @return
+     * @throws AuthenticationProviderException
+     */
+    private Optional<User> getUser(VuAuthenticationRequest request) throws AuthenticationProviderException {
+
+        if (request == null || !isActive() || isSuspended() || isRefused()) {
+            return Optional.empty();
+        }
+
+        User user = null;
+        try {
+        user = DataManager.getInstance().getDao().getUserByNickname(request.getUsername());
+        if (user != null) {
+            logger.debug("Found user {} via vuFind username '{}'.", user.getId(), request.getUsername());
+        }
+        // If not found, try email
+        if (user == null) {
+            user = DataManager.getInstance().getDao().getUserByEmail(request.getUsername());
+            if (user != null) {
+                logger.debug("Found user {} via vuFind username '{}'.", user.getId(), request.getUsername());
+            }
+        }
+        // If still not found, create a new user
+        if (user == null) {
+            user = new User();
+            user.setActive(true);
+            user.setNickName(request.getUsername());
+            logger.debug("Created new user with nickname " + request.getUsername());
+        }
+        
+        //add to user group
+        if(StringUtils.isNotBlank(authenticationResponse.getUser().getGroup())) {
+            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup());
+            if(userGroup != null && !userGroup.getMembers().contains(user)) {
+                userGroup.addMember(user, new Role());
+                DataManager.getInstance().getDao().updateUserGroup(userGroup);
+            }
+        }
+        
+        // Add to bean and persist
+        if (user.getId() == null) {
+            if (!DataManager.getInstance().getDao().addUser(user)) {
+                throw new AuthenticationProviderException("Could not add user to DB.");
+            }
+        } else {
+            if (!DataManager.getInstance().getDao().updateUser(user)) {
+                throw new AuthenticationProviderException("Could not update user in DB.");
+            }
+        }
+        } catch(DAOException | PresentationException e) {
+            throw new AuthenticationProviderException(e);
+        }
+        return Optional.ofNullable(user);
+    }
 
 }
