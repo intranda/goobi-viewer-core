@@ -35,14 +35,14 @@
             <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
         </h:panelGroup>
 
-        <!-- TITLE -->
-        <ui:include src="/resources/includes/title.xhtml">
-            <ui:param name="structure" value="false" />
-            <ui:param name="purl" value="true" />
-        </ui:include>
-
         <!-- VIEW THUMBS -->
         <div id="viewThumbs" class="view-thumbs">
+            <!-- TITLE -->
+            <ui:include src="/resources/includes/title.xhtml">
+                <ui:param name="structure" value="false" />
+                <ui:param name="purl" value="true" />
+            </ui:include>
+
             <div class="view-thumbs__thumbnails">
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">
                     <!-- THUMBNAIL -->

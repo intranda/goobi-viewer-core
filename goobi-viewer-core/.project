@@ -57,6 +57,7 @@
 		<project>goobi-viewer-theme-dipf</project>
 		<project>goobi-viewer-theme-lamuhalle</project>
 		<project>goobi-viewer-theme-ubweimar</project>
+		<project>goobi-viewer-theme-hub-evifa</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
