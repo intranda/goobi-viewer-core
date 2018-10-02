@@ -397,6 +397,9 @@ span[class*=" image-"] {
 .popover-content {
   color: #1a1a1a;
 }
+.table > tbody > tr > td {
+  word-break: break-word;
+}
 /* BS GRID RESETS */
 .row.no-margin {
   margin: 0;
