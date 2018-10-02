@@ -2667,12 +2667,8 @@ html.is-IE .support-overlay {
   transform: rotate(-45deg);
 }
 .e-pub__item-order-label {
-  position: absolute;
-  display: inline-block;
-  top: -5px;
-  right: -5px;
-  min-width: 10px;
-  min-height: 10px;
+  display: block;
+  margin-top: 3px;
   padding: 1px 3px;
   color: #fff;
   font-size: 0.75rem;
