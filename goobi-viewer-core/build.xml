@@ -566,7 +566,7 @@
 		<property name="server.url" value="http://digitalesammlungen.uni-weimar.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalesammlungen.uni-weimar.de%2Fviewer%2Foai" />
-		<property name="theme" value="buw" />
+		<property name="theme" value="ubweimar" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="114" />
 		<property name="contentserver.color.green" value="0" />
