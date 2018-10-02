@@ -40,7 +40,7 @@
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{cc.attrs.itemActive gt 1}">
-                    <li class="numeric-paginator__navigate navigate_first">
+                    <li class="navigate_first">
                         <a href="#{cc.attrs.urlPrefix}1/#{cc.attrs.urlSuffix}">1</a>
                     </li>
 
@@ -105,7 +105,7 @@
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 1}">
-                        <li class="numeric-paginator__navigate navigate_last">
+                        <li class="navigate_last">
                             <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemCount}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemCount}</a>
                         </li>
                     </h:panelGroup>
