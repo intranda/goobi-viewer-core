@@ -5956,6 +5956,9 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
   background-color: #eee;
 }
+.view-fulltext__box pre > br:first-child {
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
