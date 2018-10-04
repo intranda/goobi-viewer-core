@@ -9949,6 +9949,7 @@ img.cms-static-pages__page-language--complete {
   margin-bottom: 15px;
 }
 .cms-collections__selection-control {
+  position: relative;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
@@ -9956,6 +9957,9 @@ img.cms-static-pages__page-language--complete {
 }
 .cms-collections__selection-control .custom-control--select {
   margin-right: 24px;
+}
+.cms-collections__selection-control .ui-autocomplete {
+  top: 100%;
 }
 .cms-collections__selection-control .ui-widget {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";

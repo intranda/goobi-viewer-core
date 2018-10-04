@@ -17,11 +17,15 @@
 		label {}
 	}
 	&__selection-control {
+		position: relative;
 		display: flex;
     	align-items: center;
 		.custom-control--select {
 			margin-right: 24px;
 			select {}
+		}
+		.ui-autocomplete {
+			top: 100%;
 		}
 		.ui-widget {
 			font-family: @fontFamily;
