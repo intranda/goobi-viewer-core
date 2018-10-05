@@ -194,6 +194,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- WIENER LIBRARY NOVEMBERPOGROM -->
+        <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-novemberpogrom.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-novemberpogrom/goobi-viewer-theme-wienerlibrary-novemberpogrom">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <!-- TWL TESTIFYING TO THE TRUTH -->
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-testifyingtothetruth.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-testifyingtothetruth/goobi-viewer-theme-wienerlibrary-testifyingtothetruth">
             <dependency-type>uses</dependency-type>
