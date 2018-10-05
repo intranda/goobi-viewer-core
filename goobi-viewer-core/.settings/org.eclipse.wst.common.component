@@ -261,6 +261,10 @@
         <dependent-module archiveName="goobi-viewer-theme-albertina.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-albertina/goobi-viewer-theme-albertina">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- HAENDEL -->
+        <dependent-module archiveName="goobi-viewer-theme-haendel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haendel/goobi-viewer-theme-haendel">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
