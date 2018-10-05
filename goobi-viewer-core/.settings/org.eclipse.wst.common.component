@@ -254,6 +254,10 @@
         <dependent-module archiveName="goobi-viewer-theme-hub-evifa.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub-evifa/goobi-viewer-theme-hub-evifa">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- ALBERTINA -->
+        <dependent-module archiveName="goobi-viewer-theme-albertina.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-albertina/goobi-viewer-theme-albertina">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
