@@ -8138,6 +8138,12 @@ var cmsJS = ( function( cms ) {
             	$( this ).toggleClass( 'in' );
             	$( this ).parent().next( '.cms-menu__visible-item-edit-wrapper' ).slideToggle( 'fast' );
             } );
+
+            // toggle edit available item
+            $( '[data-toggle="edit-available-item"]' ).on( 'click', function() {
+            	$( this ).toggleClass( 'in' );
+            	$( this ).parent().next( '.cms-menu__available-item-edit-wrapper' ).slideToggle( 'fast' );
+            } );
             
             // fix menu save on scroll
             _fixMenuSave();
