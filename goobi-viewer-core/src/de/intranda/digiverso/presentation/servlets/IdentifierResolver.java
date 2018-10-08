@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -115,8 +116,8 @@ public class IdentifierResolver extends HttpServlet {
 
         StringBuilder sbQuery = new StringBuilder(fieldName.toUpperCase());
         try {
-            sbQuery.append(':').append('"').append(ClientUtils.escapeQueryChars(fieldValue)).append('"').append(SearchHelper.getAllSuffixes(request,
-                    true, false));
+            sbQuery.append(':').append('"').append(ClientUtils.escapeQueryChars(fieldValue)).append('"').append(
+                    SearchHelper.getAllSuffixes(request, true, false));
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -165,8 +166,8 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             // If this is not the top level docstruct, retrieve the correct page number
-            if ((targetDoc.getFieldValue(SolrConstants.ISWORK) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISWORK))) && (targetDoc
-                    .getFieldValue(SolrConstants.ISANCHOR) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR)))) {
+            if ((targetDoc.getFieldValue(SolrConstants.ISWORK) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISWORK)))
+                    && (targetDoc.getFieldValue(SolrConstants.ISANCHOR) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR)))) {
                 if (pi == null && targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT) != null) {
                     pi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 }
@@ -358,6 +359,7 @@ public class IdentifierResolver extends HttpServlet {
      * @return
      * @should construct url correctly
      * @should construct anchor url correctly
+     * @should construct group url correctly
      * @should construct page url correctly
      * @should construct overview page url correctly
      * @should construct preferred view url correctly
@@ -368,9 +370,10 @@ public class IdentifierResolver extends HttpServlet {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-        boolean anchor = targetDoc.containsKey(SolrConstants.ISANCHOR) && (Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR);
-        boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL) && !StringUtils.isEmpty(
-                (String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
+        boolean anchorOrGroup = (targetDoc.containsKey(SolrConstants.ISANCHOR) && (Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR))
+                || DocType.GROUP.toString().equals(targetDoc.getFieldValue(SolrConstants.DOCTYPE));
+        boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
+                && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
         boolean overviewPageFound = false;
         if (!pageResolverUrl && allowOverviewPage) {
             OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(topstructPi, null, null);
@@ -379,7 +382,7 @@ public class IdentifierResolver extends HttpServlet {
             }
         }
 
-        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, overviewPageFound, pageResolverUrl);
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, overviewPageFound, pageResolverUrl);
         sb.append(pageType.getName()).append('/').append(topstructPi).append('/');
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO) && (Integer) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO) > 1) {
             sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO))).append('/');
