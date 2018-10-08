@@ -232,7 +232,7 @@ public class CmsNavigationBean implements Serializable {
      */
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if(selectableThemes == null) {            
-            selectableThemes = BeanUtils.getCmsBean().getSubThemeDiscriminatorValues();
+            selectableThemes = new ArrayList<>(BeanUtils.getCmsBean().getSubThemeDiscriminatorValues());
             selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
         }
         return selectableThemes;

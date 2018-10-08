@@ -30,32 +30,30 @@
                         <h2>#{msg.cms_menuItems}</h2>
                         
                         <!-- SELECT THEME -->
-                        <div class="cms-menu__select-theme">
-                            <!-- OPTION GROUP -->
-                            <div class="cms-module__option-group">
-                                <div class="cms-module__option-label">
-                                    <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_item_subtheme}:</label>
-                                </div>
-                                <div class="cms-module__option-control">
-                                    <div class="custom-control custom-control--select">
-                                        <select name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
-                                            <option value="">Main Theme</option>
-                                            <option value="">Subtheme 1</option>
-                                            <option value="">Subtheme 2</option>
-                                        </select>
-                                        <!--                                                 <h:selectOneMenu id="" value="" valueChangeListener=""> -->
-                                        <!--                                                     <f:selectItems value="" var="" itemValue="" itemLabel="" /> -->
-                                        <!--                                                 </h:selectOneMenu> -->
+                        <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
+                            <div class="cms-menu__select-theme">
+                                <!-- OPTION GROUP -->
+                                <div class="cms-module__option-group">
+                                    <div class="cms-module__option-label">
+                                        <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_item_subtheme}:</label>
                                     </div>
-                                    <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemSubthemeInfo}</span>
-                                </div>
-                                <div class="cms-module__option-help">
-                                    <button type="button" class="btn-clean" data-toggle="helptext">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
+                                    <div class="cms-module__option-control">
+                                        <div class="custom-control custom-control--select">
+                                            <h:selectOneMenu value="#{cmsNavigationBean.selectedTheme}" name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
+                                                <f:selectItems value="#{cmsNavigationBean.selectableThemes}" var="theme" itemValue="#{theme}" itemLabel="#{msg[theme]}"/>
+                                                <f:ajax event="change" render="@all"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemSubthemeInfo}</span>
+                                    </div>
+                                    <div class="cms-module__option-help">
+                                        <button type="button" class="btn-clean" data-toggle="helptext">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </ui:fragment>
 
                         <!-- ADD MENU ITEM -->
                         <div class="cms-menu__add-item">
