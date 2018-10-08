@@ -9791,12 +9791,13 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__save {
   padding: 15px;
   text-align: right;
+  border: 1px solid transparent;
   background-color: #fff;
 }
 .cms-menu__save.fixed {
   position: fixed;
   top: 0;
-  border: 1px solid #ccc;
+  border-color: #ccc;
   z-index: 999;
 }
 .cms-menu__editor {
@@ -9808,6 +9809,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__visible-items {
   padding-left: 15px;
+}
+.cms-menu__visible-items .cms-menu__available-item-level {
+  visibility: visible;
+  -ms-flex-preferred-size: 20%;
+      flex-basis: 20%;
+  padding: 10px;
 }
 .cms-menu__visible-items-list,
 .cms-menu__available-items-list {
@@ -9834,7 +9841,8 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid red;
   opacity: 0.5;
 }
-.cms-menu__visible-item-level {
+.cms-menu__visible-item-level,
+.cms-menu__available-item-level {
   -ms-flex-preferred-size: 20%;
       flex-basis: 20%;
   padding: 10px;
@@ -9868,7 +9876,8 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-item-edit button.in .fa {
   transform: rotate(180deg);
 }
-.cms-menu__visible-item-edit-wrapper {
+.cms-menu__visible-item-edit-wrapper,
+.cms-menu__available-item-edit-wrapper {
   display: none;
   -ms-flex-preferred-size: 100%;
       flex-basis: 100%;
@@ -9876,20 +9885,24 @@ div[id*="-Modal"] .email-form .form-group {
   border: none;
   border-top: 1px solid #ccc;
 }
-.cms-menu__visible-item-edit-wrapper .cms-module__option-label {
+.cms-menu__visible-item-edit-wrapper .cms-module__option-label,
+.cms-menu__available-item-edit-wrapper .cms-module__option-label {
   -ms-flex-preferred-size: 30%;
       flex-basis: 30%;
 }
-.cms-menu__visible-item-edit-wrapper .cms-module__option-control {
+.cms-menu__visible-item-edit-wrapper .cms-module__option-control,
+.cms-menu__available-item-edit-wrapper .cms-module__option-control {
   -ms-flex-preferred-size: 65%;
       flex-basis: 65%;
 }
 .cms-menu__available-items {
   padding-right: 15px;
 }
-.cms-menu__available-item-label {
-  -ms-flex-preferred-size: 90%;
-      flex-basis: 90%;
+.cms-menu__available-item-level {
+  visibility: hidden;
+  -ms-flex-preferred-size: 0;
+      flex-basis: 0;
+  padding: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

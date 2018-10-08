@@ -30,11 +30,12 @@
 	&__save {
 		padding: 15px;
 		text-align: right;
+		border: 1px solid transparent;
 		background-color: @white;
 		&.fixed {
 			position: fixed;
 			top: 0;
-			border: 1px solid @middlegray;
+			border-color: @middlegray;
 			z-index: 999;
 		}
 	}
@@ -48,6 +49,11 @@
 	&__visible-items {
 		padding-left: 15px;
 		h4 {}
+		.cms-menu__available-item-level {
+			visibility: visible;
+			flex-basis: 20%;
+			padding: 10px;
+		}
 	}
 	&__visible-items-list,
 	&__available-items-list {
@@ -68,7 +74,8 @@
 	        opacity: 0.5;
 	    }
 	}
-	&__visible-item-level {
+	&__visible-item-level,
+	&__available-item-level {
 		flex-basis: 20%;
 		padding: 10px;
 		padding-right: 0;
@@ -98,7 +105,8 @@
 			}
 		}
 	}
-	&__visible-item-edit-wrapper {
+	&__visible-item-edit-wrapper,
+	&__available-item-edit-wrapper {
 		display: none;
 		flex-basis: 100%;
 		margin: 0;
@@ -116,9 +124,12 @@
 		padding-right: 15px;
 		h4 {}
 	}
-	&__available-item-label {
-		flex-basis: 90%;
+	&__available-item-level {
+		visibility: hidden;
+		flex-basis: 0;
+		padding: 0;
 	}
+	&__available-item-label {}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
