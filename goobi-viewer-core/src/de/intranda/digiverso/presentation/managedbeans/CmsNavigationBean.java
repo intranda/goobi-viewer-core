@@ -19,15 +19,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationManager;
@@ -44,6 +50,8 @@ public class CmsNavigationBean implements Serializable {
     private CMSNavigationItem selectedNavigationItem = null;
     private CMSNavigationManager itemManager;
     private boolean editMode = false;
+    private List<String> selectableThemes = null;
+    private String selectedTheme = DataManager.getInstance().getConfiguration().getTheme();
 
     @PostConstruct
     public void init() {
@@ -75,6 +83,7 @@ public class CmsNavigationBean implements Serializable {
             int level = Integer.parseInt(id.substring(id.indexOf('?') + 1));
             id = id.substring(0, id.indexOf('?'));
             CMSNavigationItem item = new CMSNavigationItem(getItemManager().getItem(id));
+            item.setAssociatedTheme(getSelectedTheme());
             if (level == 0 || previousItem == null) {
                 item.setOrder(selectedItems.size());
                 selectedItems.add(item);
@@ -126,11 +135,55 @@ public class CmsNavigationBean implements Serializable {
     public List<CMSNavigationItem> getAvailableMenuItems() {
         return getItemManager().getAvailableItems();
     }
+    
+    /**
+     * 
+     * @param theme
+     * @return the list from {@link #getAvailableMenuItems()} filtered for items associated with the given theme or without associated theme.
+     *  If the given theme is blank, all items are returned
+     */
+    public List<CMSNavigationItem> getAvailableMenuItems(String theme) {
+        if(StringUtils.isNotBlank(theme)) {            
+            return getAvailableMenuItems().stream().filter(item -> {
+                String itemTheme = item.getAssociatedTheme();
+                if(itemTheme == null) {
+                    //always include items without theme
+                    return true;
+                } else {
+                    return itemTheme.equalsIgnoreCase(theme);
+                }
+            }).collect(Collectors.toList());
+        } else {
+            return getAvailableMenuItems();
+        }
+    }
 
     public List<CMSNavigationItem> getVisibleMenuItems() {
         List<CMSNavigationItem> items = getItemManager().getVisibleItems();
         return items;
-
+    }
+    
+    /**
+     * 
+     * @param theme
+     * @return the list from {@link #getVisibleMenuItems()} filtered for items associated with the given theme.
+     *  Items without theme are associated with the main theme
+     *  If the given theme is blank, all items are returned
+     */
+    public List<CMSNavigationItem> getVisibleMenuItems(String theme) {
+        String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
+        if(StringUtils.isNotBlank(theme)) {            
+            return getVisibleMenuItems().stream().filter(item -> {
+                String itemTheme = item.getAssociatedTheme();
+                if(itemTheme == null) {
+                    return mainTheme.equalsIgnoreCase(theme);
+                } else {
+                    return itemTheme.equalsIgnoreCase(theme);
+                }
+            }).collect(Collectors.toList());
+        } else {
+            return getVisibleMenuItems();
+        }
     }
 
     public void saveNavigationItem() {
@@ -169,6 +222,34 @@ public class CmsNavigationBean implements Serializable {
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
+    }
+    
+    /**
+     * 
+     * @return a list of all configured themes for which we may create menus
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
+        if(selectableThemes == null) {            
+            selectableThemes = BeanUtils.getCmsBean().getSubThemeDiscriminatorValues();
+            selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
+        }
+        return selectableThemes;
+    }
+    
+    /**
+     * @return the selectedTheme
+     */
+    public String getSelectedTheme() {
+        return selectedTheme;
+    }
+    
+    /**
+     * @param selectedTheme the selectedTheme to set
+     */
+    public void setSelectedTheme(String selectedTheme) {
+        this.selectedTheme = selectedTheme;
     }
 
 }
