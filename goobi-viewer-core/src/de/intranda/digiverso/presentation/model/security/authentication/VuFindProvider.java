@@ -20,6 +20,12 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -27,6 +33,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,12 +85,13 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         try {
             VuAuthenticationRequest request = new VuAuthenticationRequest(loginName, password);
             this.authenticationResponse = post(new URI(getUrl()), request);
-
             Optional<User> user = getUser(request);
             LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user);
             return CompletableFuture.completedFuture(result);
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
+        } catch(WebApplicationException e) {
+            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
         }
     }
 
@@ -144,13 +152,32 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         return false;
     }
 
-    private VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) {
+    private VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) throws WebApplicationException{
         Client client = ClientBuilder.newClient();
-        WebTarget vuFindAuthenticationApi = client.target(url);
-
-        Entity<VuAuthenticationRequest> ent = Entity.entity(request, MediaType.APPLICATION_JSON);
-        VuAuthenticationResponse response = vuFindAuthenticationApi.request().post(ent, VuAuthenticationResponse.class);
-        return response;
+        try {            
+            client.property(ClientProperties.CONNECT_TIMEOUT, (int)getTimeoutMillis());
+            client.property(ClientProperties.READ_TIMEOUT, (int)getTimeoutMillis());
+            WebTarget vuFindAuthenticationApi = client.target(url);
+            Entity<VuAuthenticationRequest> ent = Entity.entity(request, MediaType.APPLICATION_JSON);
+            VuAuthenticationResponse response = vuFindAuthenticationApi.request().post(ent, VuAuthenticationResponse.class);
+            return response;
+        } catch(ClientErrorException e) {
+            VuAuthenticationResponse.User user = new VuAuthenticationResponse.User();
+            VuAuthenticationResponse response = new VuAuthenticationResponse();
+            response.setUser(user);
+            if(e instanceof ForbiddenException || e instanceof NotAllowedException || e instanceof NotAuthorizedException) {
+                user.setExists(null);
+                user.setIsValid(false);
+            } else if(e instanceof NotFoundException) {
+                user.setExists(false);
+                user.setIsValid(false);
+            } else {
+                throw e;
+            }
+            return response;
+        } finally {
+            client.close();
+        }
     }
 
     /**
