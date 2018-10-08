@@ -568,7 +568,8 @@ public class BrowseElement implements Serializable {
                             case CORPORATION:
                             case LOCATION:
                             case SUBJECT:
-                            case PUBLISHER:
+                            case ORIGININFO:
+                            case OTHER:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
@@ -896,7 +897,8 @@ public class BrowseElement implements Serializable {
                 case CORPORATION:
                 case LOCATION:
                 case SUBJECT:
-                case PUBLISHER:
+                case ORIGININFO:
+                case OTHER:
                     // Person metadata search hit ==> execute search for that person
                     // TODO not for aggregated hits?
                     try {
