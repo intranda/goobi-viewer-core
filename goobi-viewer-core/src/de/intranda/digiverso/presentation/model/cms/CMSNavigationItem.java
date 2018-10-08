@@ -97,6 +97,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      */
     @Column(name = "associated_theme")
     private String associatedTheme = null;
+    
+    @Column(name = "open_in_new_window")
+    private boolean openInNewWindow = false;
 
     @Transient
     private Long availableItemId;
@@ -427,6 +430,24 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
                 .orElse(getAssociatedTheme());
     }
 
+    /**
+     * @param openInNewWindow if the link should open in a new tab/window
+     */
+    public void setOpenInNewWindow(boolean openInNewWindow) {
+        this.openInNewWindow = openInNewWindow;
+    }
+    
+    /**
+     * @return if the link should open in a new tab/window
+     */
+    public boolean isOpenInNewWindow() {
+        if(StringUtils.isBlank(getPageUrl()) || "#".equals(getPageUrl())) {
+            return false;
+        } else {            
+            return openInNewWindow;
+        }
+    }
+    
     public static enum DisplayRule {
         ALWAYS,
         NOT_LOGGED_IN,
