@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -89,6 +90,16 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
 
     @Column(name = "display_rule")
     private DisplayRule displayRule = DisplayRule.ALWAYS;
+
+    /**
+     * If not blank, this item is only displayed in the theme/subtheme of this name Only used if {@link #cmsPage} is null. Otherwise
+     * {@link CMSPage#getSubThemeDiscriminatorValue()} is used instead
+     */
+    @Column(name = "associated_theme")
+    private String associatedTheme = null;
+    
+    @Column(name = "open_in_new_window")
+    private boolean openInNewWindow = false;
 
     @Transient
     private Long availableItemId;
@@ -340,8 +351,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
                 || (getParentItem() != null && getParentItem().equals(((CMSNavigationItem) other).getParentItem())))) {
             if (getCmsPage() != null && getCmsPage().equals(((CMSNavigationItem) other).getCmsPage())) {
                 return true;
-            } else if (getPageUrl().equals(((CMSNavigationItem) other).getPageUrl()) && getItemLabel().equals(((CMSNavigationItem) other)
-                    .getItemLabel())) {
+            } else if (getPageUrl().equals(((CMSNavigationItem) other).getPageUrl())
+                    && getItemLabel().equals(((CMSNavigationItem) other).getItemLabel())) {
                 return true;
             }
         }
@@ -400,6 +411,43 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return displayRule.equals(DisplayRule.ADMIN);
     }
 
+    /**
+     * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank
+     * 
+     * @param associatedTheme the associatedTheme to set
+     */
+    public void setAssociatedTheme(String associatedTheme) {
+        this.associatedTheme = StringUtils.isBlank(associatedTheme) ? null : associatedTheme;
+    }
+
+    /**
+     * @return the associatedTheme; null if no associated theme exists
+     */
+    public String getAssociatedTheme() {
+        return Optional.ofNullable(cmsPage)
+                .map(page -> page.getSubThemeDiscriminatorValue())
+                .map(value -> StringUtils.isBlank(value) ? null : value)
+                .orElse(getAssociatedTheme());
+    }
+
+    /**
+     * @param openInNewWindow if the link should open in a new tab/window
+     */
+    public void setOpenInNewWindow(boolean openInNewWindow) {
+        this.openInNewWindow = openInNewWindow;
+    }
+    
+    /**
+     * @return if the link should open in a new tab/window
+     */
+    public boolean isOpenInNewWindow() {
+        if(StringUtils.isBlank(getPageUrl()) || "#".equals(getPageUrl())) {
+            return false;
+        } else {            
+            return openInNewWindow;
+        }
+    }
+    
     public static enum DisplayRule {
         ALWAYS,
         NOT_LOGGED_IN,
