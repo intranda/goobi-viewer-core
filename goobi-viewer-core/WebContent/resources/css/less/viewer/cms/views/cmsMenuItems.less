@@ -47,7 +47,6 @@
 	}
 	/* VISIBLE/AVAILABLE ITEMS */
 	&__visible-items {
-		padding-left: 15px;
 		h4 {}
 		.cms-menu__available-item-level {
 			visibility: visible;
@@ -55,12 +54,10 @@
 			padding: 10px;
 		}
 	}
-	&__visible-items-list,
-	&__available-items-list {
+	&__visible-items-list {
 		.mx-list-reset;
 	}
-	&__visible-item,
-	&__available-item {
+	&__visible-item {
 		display: flex;
 		flex-wrap: wrap;
 	    margin-bottom: 5px;
@@ -74,20 +71,17 @@
 	        opacity: 0.5;
 	    }
 	}
-	&__visible-item-level,
-	&__available-item-level {
+	&__visible-item-level {
 		flex-basis: 20%;
 		padding: 10px;
 		padding-right: 0;
 	}
-	&__visible-item-label,
-	&__available-item-label {
+	&__visible-item-label {
 		flex-basis: 70%;
 		padding: 10px;
 		word-break: break-word;
 	}
-	&__visible-item-edit,
-	&__available-item-edit {
+	&__visible-item-edit {
 		flex-basis: 10%;
 		padding: 10px;
 		padding-left: 0;
@@ -105,8 +99,7 @@
 			}
 		}
 	}
-	&__visible-item-edit-wrapper,
-	&__available-item-edit-wrapper {
+	&__visible-item-edit-wrapper {
 		display: none;
 		flex-basis: 100%;
 		margin: 0;
@@ -121,15 +114,47 @@
 	}
 	/* AVAILABLE ITEMS */
 	&__available-items {
-		padding-right: 15px;
 		h4 {}
 	}
-	&__available-item-level {
-		visibility: hidden;
-		flex-basis: 0;
-		padding: 0;
+	&__available-items-list {
+		ul {
+			.mx-list-reset;
+		}
+		li {
+			border: 1px solid @middlegray;
+			background-color: @lightgray;
+		}
+		h5 {
+			margin: 0;
+			padding: 10px;
+			border-bottom: 1px solid @middlegray;			
+		}
 	}
-	&__available-item-label {}
+	&__available-items {
+		max-height: 400px;
+		overflow-y: auto;
+	}
+	&__available-item {
+		display: flex;
+		margin: 0;
+		padding: 5px 10px;
+		background-color: @white;
+		cursor: pointer;
+	}
+	&__available-item-checkbox {
+		input[type="checkbox"] {
+			margin: 0;
+		}
+	}
+	&__available-item-label {
+		padding-left: 10px;
+	}
+	&__available-item-add {
+		padding: 10px;
+		text-align: right;
+		border-top: 1px solid @middlegray;
+		background-color: @white;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
