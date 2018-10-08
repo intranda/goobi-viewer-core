@@ -1232,6 +1232,7 @@ public final class Configuration extends AbstractConfiguration {
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
+                        break;
                     case "local":
                         providers.add(new LocalAuthenticationProvider(name));
                         break;

@@ -564,7 +564,7 @@ public class BCrypt {
      * @param hashed the previously-hashed password
      * @return true if the passwords match, false otherwise
      */
-    public static boolean checkpw(String plaintext, String hashed) {
+    public boolean checkpw(String plaintext, String hashed) {
         return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
     }
 }

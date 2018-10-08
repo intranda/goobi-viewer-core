@@ -66,7 +66,7 @@ public class VuAuthenticationResource {
             vuUser.setIsValid(false);
         } else if(user.isSuspended()) {
             vuUser.setIsValid(false);
-        } else if(!BCrypt.checkpw(request.getPassword(), user.getPasswordHash())) {
+        } else if(!new BCrypt().checkpw(request.getPassword(), user.getPasswordHash())) {
             blocks.setIsBlocked(false);
             VuAuthenticationResponse.Reason reason = new VuAuthenticationResponse.Reason();
             reason.setCode("07");

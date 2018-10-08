@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
+import de.intranda.digiverso.presentation.model.security.authentication.HttpAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -452,12 +453,24 @@ public class ConfigurationTest {
     @Test
     public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        Assert.assertEquals(3, providers.size());
+        Assert.assertEquals(4, providers.size());
+        
+        //google openid
         Assert.assertEquals("Google", providers.get(0).getName());
+        Assert.assertEquals("openid", providers.get(0).getType().toLowerCase());
         Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider)providers.get(0)).getUrl());
         Assert.assertEquals("id_google", ((OpenIdProvider)providers.get(0)).getClientId());
         Assert.assertEquals("secret_google", ((OpenIdProvider)providers.get(0)).getClientSecret());
         Assert.assertEquals("google.png", ((OpenIdProvider)providers.get(0)).getImage());
+        
+        //vuFind
+        Assert.assertEquals("VuFind", providers.get(2).getName());
+        Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
+        Assert.assertEquals(7000l, ((HttpAuthenticationProvider)providers.get(2)).getTimeoutMillis());
+        
+        //local
+        Assert.assertEquals("Goobi viewer", providers.get(3).getName());
+        Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
     }
 
     /**

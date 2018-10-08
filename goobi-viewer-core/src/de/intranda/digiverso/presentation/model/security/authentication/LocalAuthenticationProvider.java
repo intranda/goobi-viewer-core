@@ -42,6 +42,8 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     private boolean userSuspended = false;
     private boolean userBlocked = false;
     private final String name;
+    
+    private BCrypt bcrypt = new BCrypt();
 
     public LocalAuthenticationProvider(String name) {
         this.name = name;
@@ -62,7 +64,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
                 } else if (user.isSuspended()) {
                     userActive = true;
                     userSuspended = true;
-                } else if (StringUtils.isBlank(password) || (user.getPasswordHash() == null || !BCrypt.checkpw(password, user.getPasswordHash()))) {
+                } else if (StringUtils.isBlank(password) || (user.getPasswordHash() == null || !bcrypt.checkpw(password, user.getPasswordHash()))) {
                     userActive = true;
                     userSuspended = false;
                     userBlocked = true;
@@ -141,4 +143,10 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         return TYPE_LOCAL;
     }
 
+    /**
+     * @param bcrypt the bcrypt to set
+     */
+    protected void setBcrypt(BCrypt bcrypt) {
+        this.bcrypt = bcrypt;
+    }
 }

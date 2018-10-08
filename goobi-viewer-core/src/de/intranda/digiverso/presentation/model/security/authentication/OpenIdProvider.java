@@ -42,7 +42,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
 
-    public static final String TYPE_OPENID = "OpenId";
+    public static final String TYPE_OPENID = "openId";
     
     /** OAuth client ID. */
     private String clientId;
