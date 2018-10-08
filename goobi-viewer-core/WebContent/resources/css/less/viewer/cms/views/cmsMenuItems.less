@@ -2,115 +2,123 @@
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml
    ==============================================================*/
-#cmsMenuItems {
-    h2 {}
-    #addMenuItemWrapper {
-        text-align: right;
-        margin-bottom: 1.3125rem;
-        .btn {}
-    }
-    #menuEditor {
-        h3 {
-            font-size: 0.9rem;
-            font-weight: normal;
-    	}
-        .menu-editor-left, .menu-editor-right {
-            .ui-sortable {
-                list-style: none;
-                min-height: 100px;
-                margin: 0;
-                padding: 0;
-            }
-        }
-        .menu-editor-left {
-            h4 {}
-        }
-        .menu-editor-right {
-            h4 {}
-        }
-    }
-    #saveMenuItemsWrapper {
-        .btn {
-            float: right;
-        }
-    }
-    #addMenuItemModal {
-        .modal-header {
-            text-align: left;
-        }
-        .tooltip {
-            .tooltip-inner {
-                font-weight: normal;
-            }
-        }
-    }
-}
-
-.menu-item {
-    margin-bottom: 4px;
-    padding: 10px;
-    color: @black;
-    border: 1px solid @middlegray;
-    background-color: @lightgray;
-    &__level, 
-    &__text, 
-    &__edit {
-        float: left;
-    }
-    &__level {
-        width: 15%;
-    }
-    &__text {
-        width: 70%;
-        padding: 0 10px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    &__edit {
-        width: 15%;
-        a {
-            font-size: 1.1rem;
-            color: @black;
-            &:hover, 
-            &:focus, 
-            &:active {
-                color: @black;
-            }
-        }
-    }
-    &.unpublished {
-        opacity: 0.5;
-        span {}
-    }
-    &.deleted {
-        border: 1px solid #ff0000;
-        opacity: 0.5;
-        span {}
-    }
-}
-
-#edit_navigationitem_wrapper {
-    display: none;
-    margin: 10px;
-    padding: 5px;
-    border-style: double;
-    border-width: medium;
-    dl {
-        margin-bottom: 5px;
-        dt {
-            clear: left;
-            float: left;
-            width: 120px;
-            margin: 0;
-            padding: 5px;
-        }
-        dd {
-            width: 500px;
-            margin: 0;
-            margin-left: 200px;
-            padding: 5px;
-        }
-    }
+/* CMS MENU */
+.cms-menu {
+	h2 {}
+	/* SELECT THEME */
+	&__select-theme {
+		margin-bottom: 15px;
+	}
+	/* ADD ITEM */
+	&__add-item {
+		[data-toggle="add-menu-item"] {
+			padding-bottom: 15px;
+			.fa {
+				transition: all 0.2s linear;				
+			}
+			&.in {
+				.fa {
+					transform: rotate(-45deg);				
+				}	
+			}
+		}
+	}
+	&__add-item-options {
+		display: none;
+	}
+	/* SAVE */
+	&__save {
+		padding: 15px;
+		text-align: right;
+		background-color: @white;
+		&.fixed {
+			position: fixed;
+			top: 0;
+			border: 1px solid @middlegray;
+			z-index: 999;
+		}
+	}
+	/* MENU EDITOR */
+	&__editor {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-gap: 15px;
+	}
+	/* VISIBLE/AVAILABLE ITEMS */
+	&__visible-items {
+		padding-left: 15px;
+		h4 {}
+	}
+	&__visible-items-list,
+	&__available-items-list {
+		.mx-list-reset;
+	}
+	&__visible-item,
+	&__available-item {
+		display: flex;
+		flex-wrap: wrap;
+	    margin-bottom: 5px;
+	    border: 1px solid @middlegray;
+	    background-color: @lightgray;
+	    &.unpublished {
+	        opacity: 0.5;
+	    }
+	    &.deleted {
+	        border: 1px solid red;
+	        opacity: 0.5;
+	    }
+	}
+	&__visible-item-level {
+		flex-basis: 20%;
+		padding: 10px;
+		padding-right: 0;
+	}
+	&__visible-item-label,
+	&__available-item-label {
+		flex-basis: 70%;
+		padding: 10px;
+		word-break: break-word;
+	}
+	&__visible-item-edit,
+	&__available-item-edit {
+		flex-basis: 10%;
+		padding: 10px;
+		padding-left: 0;
+		button {
+			display: block;
+			width: 100%;
+		    text-align: right;
+		    .fa {
+				transition: all 0.2s linear;				
+			}
+			&.in {
+				.fa {
+					transform: rotate(180deg);				
+				}	
+			}
+		}
+	}
+	&__visible-item-edit-wrapper {
+		display: none;
+		flex-basis: 100%;
+		margin: 0;
+		border: none;
+		border-top: 1px solid @middlegray;
+		.cms-module__option-label {
+			flex-basis: 30%;
+		}
+		.cms-module__option-control {
+			flex-basis: 65%;
+		}
+	}
+	/* AVAILABLE ITEMS */
+	&__available-items {
+		padding-right: 15px;
+		h4 {}
+	}
+	&__available-item-label {
+		flex-basis: 90%;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

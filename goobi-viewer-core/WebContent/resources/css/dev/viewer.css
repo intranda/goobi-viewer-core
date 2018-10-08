@@ -1017,6 +1017,9 @@ input.btn .ui-button-text,
   cursor: default;
   opacity: 0.4;
 }
+.btn-hidden {
+  display: none !important;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -8287,6 +8290,91 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* CMS MODULES */
+/* ==============================================================
+   CMS Module Options
+   ==============================================================*/
+/* OPTIONS */
+.cms-module {
+  /* OPTION GROUP */
+}
+.cms-module__option {
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.cms-module__option-group {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cms-module__option-group:last-child {
+  margin: 0;
+}
+.cms-module__option-label {
+  -ms-flex-preferred-size: 20%;
+      flex-basis: 20%;
+  padding-top: 7px;
+  word-break: break-word;
+}
+.cms-module__option-control {
+  -ms-flex-preferred-size: 75%;
+      flex-basis: 75%;
+  padding-left: 10px;
+}
+.cms-module__option-control.in input,
+.cms-module__option-control.in .custom-control--select,
+.cms-module__option-control.in .cms-module__option-control-checkbox {
+  border-color: green !important;
+}
+.cms-module__option-control.in .cms-module__option-control-checkbox {
+  padding: 7px;
+}
+.cms-module__option-control-checkbox {
+  display: inline-block;
+  padding: 7px 0;
+  border: 1px solid transparent;
+}
+.cms-module__option-control-helptext {
+  display: none;
+  color: green;
+}
+.cms-module__option-control-helptext.in {
+  display: inline;
+}
+.cms-module__option-help {
+  -ms-flex-preferred-size: 5%;
+      flex-basis: 5%;
+}
+.cms-module__option-help button {
+  display: block;
+  width: 100%;
+  padding: 7px 0;
+  text-align: right;
+}
+.cms-module__option-action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .cms-module__option-control {
+    -ms-flex-preferred-size: 70%;
+        flex-basis: 70%;
+  }
+  .cms-module__option-help {
+    -ms-flex-preferred-size: 10%;
+        flex-basis: 10%;
+  }
+  .cms-module__option-action {
+    padding-right: 10%;
+  }
+}
 /* CMS COMPONENTS */
 /* ==============================================================
    CMS Component "Collection Tiled"
@@ -9676,92 +9764,132 @@ div[id*="-Modal"] .email-form .form-group {
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml
    ==============================================================*/
-#cmsMenuItems #addMenuItemWrapper {
+/* CMS MENU */
+.cms-menu {
+  /* SELECT THEME */
+  /* ADD ITEM */
+  /* SAVE */
+  /* MENU EDITOR */
+  /* VISIBLE/AVAILABLE ITEMS */
+  /* AVAILABLE ITEMS */
+}
+.cms-menu__select-theme {
+  margin-bottom: 15px;
+}
+.cms-menu__add-item [data-toggle="add-menu-item"] {
+  padding-bottom: 15px;
+}
+.cms-menu__add-item [data-toggle="add-menu-item"] .fa {
+  transition: all 0.2s linear;
+}
+.cms-menu__add-item [data-toggle="add-menu-item"].in .fa {
+  transform: rotate(-45deg);
+}
+.cms-menu__add-item-options {
+  display: none;
+}
+.cms-menu__save {
+  padding: 15px;
   text-align: right;
-  margin-bottom: 1.3125rem;
+  background-color: #fff;
 }
-#cmsMenuItems #menuEditor h3 {
-  font-size: 0.9rem;
-  font-weight: normal;
+.cms-menu__save.fixed {
+  position: fixed;
+  top: 0;
+  border: 1px solid #ccc;
+  z-index: 999;
 }
-#cmsMenuItems #menuEditor .menu-editor-left .ui-sortable,
-#cmsMenuItems #menuEditor .menu-editor-right .ui-sortable {
-  list-style: none;
-  min-height: 100px;
+.cms-menu__editor {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+  grid-gap: 15px;
+}
+.cms-menu__visible-items {
+  padding-left: 15px;
+}
+.cms-menu__visible-items-list,
+.cms-menu__available-items-list {
   margin: 0;
   padding: 0;
+  list-style: none;
 }
-#cmsMenuItems #saveMenuItemsWrapper .btn {
-  float: right;
-}
-#cmsMenuItems #addMenuItemModal .modal-header {
-  text-align: left;
-}
-#cmsMenuItems #addMenuItemModal .tooltip .tooltip-inner {
-  font-weight: normal;
-}
-.menu-item {
-  margin-bottom: 4px;
-  padding: 10px;
-  color: #1a1a1a;
+.cms-menu__visible-item,
+.cms-menu__available-item {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin-bottom: 5px;
   border: 1px solid #ccc;
   background-color: #eee;
 }
-.menu-item__level,
-.menu-item__text,
-.menu-item__edit {
-  float: left;
-}
-.menu-item__level {
-  width: 15%;
-}
-.menu-item__text {
-  width: 70%;
-  padding: 0 10px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.menu-item__edit {
-  width: 15%;
-}
-.menu-item__edit a {
-  font-size: 1.1rem;
-  color: #1a1a1a;
-}
-.menu-item__edit a:hover,
-.menu-item__edit a:focus,
-.menu-item__edit a:active {
-  color: #1a1a1a;
-}
-.menu-item.unpublished {
+.cms-menu__visible-item.unpublished,
+.cms-menu__available-item.unpublished {
   opacity: 0.5;
 }
-.menu-item.deleted {
-  border: 1px solid #ff0000;
+.cms-menu__visible-item.deleted,
+.cms-menu__available-item.deleted {
+  border: 1px solid red;
   opacity: 0.5;
 }
-#edit_navigationitem_wrapper {
+.cms-menu__visible-item-level {
+  -ms-flex-preferred-size: 20%;
+      flex-basis: 20%;
+  padding: 10px;
+  padding-right: 0;
+}
+.cms-menu__visible-item-label,
+.cms-menu__available-item-label {
+  -ms-flex-preferred-size: 70%;
+      flex-basis: 70%;
+  padding: 10px;
+  word-break: break-word;
+}
+.cms-menu__visible-item-edit,
+.cms-menu__available-item-edit {
+  -ms-flex-preferred-size: 10%;
+      flex-basis: 10%;
+  padding: 10px;
+  padding-left: 0;
+}
+.cms-menu__visible-item-edit button,
+.cms-menu__available-item-edit button {
+  display: block;
+  width: 100%;
+  text-align: right;
+}
+.cms-menu__visible-item-edit button .fa,
+.cms-menu__available-item-edit button .fa {
+  transition: all 0.2s linear;
+}
+.cms-menu__visible-item-edit button.in .fa,
+.cms-menu__available-item-edit button.in .fa {
+  transform: rotate(180deg);
+}
+.cms-menu__visible-item-edit-wrapper {
   display: none;
-  margin: 10px;
-  padding: 5px;
-  border-style: double;
-  border-width: medium;
-}
-#edit_navigationitem_wrapper dl {
-  margin-bottom: 5px;
-}
-#edit_navigationitem_wrapper dl dt {
-  clear: left;
-  float: left;
-  width: 120px;
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
   margin: 0;
-  padding: 5px;
+  border: none;
+  border-top: 1px solid #ccc;
 }
-#edit_navigationitem_wrapper dl dd {
-  width: 500px;
-  margin: 0;
-  margin-left: 200px;
-  padding: 5px;
+.cms-menu__visible-item-edit-wrapper .cms-module__option-label {
+  -ms-flex-preferred-size: 30%;
+      flex-basis: 30%;
+}
+.cms-menu__visible-item-edit-wrapper .cms-module__option-control {
+  -ms-flex-preferred-size: 65%;
+      flex-basis: 65%;
+}
+.cms-menu__available-items {
+  padding-right: 15px;
+}
+.cms-menu__available-item-label {
+  -ms-flex-preferred-size: 90%;
+      flex-basis: 90%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

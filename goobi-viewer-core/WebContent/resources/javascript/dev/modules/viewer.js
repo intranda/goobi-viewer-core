@@ -7914,6 +7914,43 @@ var cmsJS = ( function( cms ) {
 var cmsJS = ( function( cms ) {
     'use strict';
     
+    var _debug = false;
+    
+    cms.modules = {
+        /**
+         * Method which initializes the CMS sortable list items and sets events.
+         * 
+         * @method init
+         */
+        init: function() {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cmsJS.modules.init' );
+                console.log( '##############################' );
+            }
+            
+            // toggle input helptext
+            $( '[data-toggle="helptext"]' ).on( 'click', function() {
+            	$( this ).parent().prev().toggleClass( 'in' );
+            	$( this ).parent().prev().find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
+            } );
+            
+            // toggle add new item
+            $( '[data-toggle="add-menu-item"]' ).on( 'click', function() {
+            	$( this ).toggleClass( 'in' );
+            	$( this ).parent().find( '.cms-menu__add-item-options' ).slideToggle( 'fast' );
+            	$( '#cmsMenuAddItemTrigger' ).click();
+            } );
+        }
+    };
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+
+var cmsJS = ( function( cms ) {
+    'use strict';
+    
     // variables
     var _debug = false;
     var _defaults = {
@@ -8095,6 +8132,15 @@ var cmsJS = ( function( cms ) {
             $( "#visibleItemList" ).on( "sortbeforestop", _handleBeforeDropFromVisible );
             $( "#availableItemList" ).on( "sortstop", _handleDrop );
             $( "#visibleItemList" ).on( "sortstop", _handleDrop );
+            
+            // toggle edit visible item
+            $( '[data-toggle="edit-visible-item"]' ).on( 'click', function() {
+            	$( this ).toggleClass( 'in' );
+            	$( this ).parent().next( '.cms-menu__visible-item-edit-wrapper' ).slideToggle( 'fast' );
+            } );
+            
+            // fix menu save on scroll
+            _fixMenuSave();
         },
         
         /**
@@ -8395,6 +8441,32 @@ var cmsJS = ( function( cms ) {
             // postData = $("#itemOrderInput").val();
         }
     }
+    
+    /**
+     * Method which sets menu save button to position fixed on scroll.
+     * 
+     * @method _fixMenuSave
+     * */
+    function _fixMenuSave() {
+    	if ( _debug ) {
+            console.log( 'cmsJS.sortableList _fixMenuSave' );
+        }
+    	
+    	var menuSaveOffsetTop = $( '.cms-menu__save' ).offset().top;
+    	var menuEditorWidth = $( '.cms-menu__editor' ).width();
+    	var menuEditorOffsetRight = $( '.cms-menu__editor' ).offset().left + menuEditorWidth;
+    	var menuSavePositionRight = $( window ).width() - menuEditorOffsetRight;
+    	
+    	$( window ).on( 'scroll', function() {
+    		if ( window.pageYOffset > menuSaveOffsetTop ) {
+    			$( '.cms-menu__save' ).addClass( 'fixed' ).css( 'right', menuSavePositionRight + 'px' );
+    		}
+    		else {
+    			$( '.cms-menu__save' ).removeClass( 'fixed' );
+    		}
+    	} );
+    }
+    
     
     return cms;
     

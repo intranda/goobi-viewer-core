@@ -1,0 +1,101 @@
+body {
+    background-color: #eee;
+}
+
+.cms-backend {
+    position: relative;
+}
+
+/* WRAPPER */
+.cms-backend__wrapper {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 1920px;
+}
+
+/* LAYOUT */
+.cms-backend__layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 15px
+}
+
+/* TABS */
+.cms-backend__tabs {
+    margin-bottom: 15px;
+}
+
+.cms-backend__tabs .tab-pane {
+    background-color: #fff;
+}
+
+/* OPTIONS */
+.cms-backend__option {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+/* OPTION GROUP */
+.cms-backend__option-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cms-backend__option-label {
+    width: 20%;
+}
+
+.cms-backend__option-control {
+    width: 75%;
+}
+
+.cms-backend__option-help button {
+    padding: 7px 0 7px 14px;
+}
+
+/* OPTION GROUP VERTICAL */
+.cms-backend__option-group--vertical {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5px;
+}
+
+.cms-backend__option-group--vertical .cms-backend__option-label,
+.cms-backend__option-group--vertical .cms-backend__option-control,
+.cms-backend__option-group--vertical .cms-backend__option-help {
+    width: 100%;
+}
+
+.cms-backend__option-group--vertical .cms-backend__option-control {
+    grid-column: 1 / span 2;
+    order: 1;
+}
+
+.cms-backend__option-group--vertical .cms-backend__option-help {
+    text-align: right;
+}
+
+.cms-backend__option-group--vertical .cms-backend__option-help button {
+    padding: 0;
+    padding-left: 14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
