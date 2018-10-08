@@ -427,7 +427,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return Optional.ofNullable(cmsPage)
                 .map(page -> page.getSubThemeDiscriminatorValue())
                 .map(value -> StringUtils.isBlank(value) ? null : value)
-                .orElse(getAssociatedTheme());
+                .orElse(this.associatedTheme);
     }
 
     /**

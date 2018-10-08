@@ -30,32 +30,30 @@
                         <h2>#{msg.cms_menuItems}</h2>
                         
                         <!-- SELECT THEME -->
-                        <div class="cms-menu__select-theme">
-                            <!-- OPTION GROUP -->
-                            <div class="cms-module__option-group">
-                                <div class="cms-module__option-label">
-                                    <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_item_subtheme}:</label>
-                                </div>
-                                <div class="cms-module__option-control">
-                                    <div class="custom-control custom-control--select">
-                                        <select name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
-                                            <option value="">Main Theme</option>
-                                            <option value="">Subtheme 1</option>
-                                            <option value="">Subtheme 2</option>
-                                        </select>
-                                        <!--                                                 <h:selectOneMenu id="" value="" valueChangeListener=""> -->
-                                        <!--                                                     <f:selectItems value="" var="" itemValue="" itemLabel="" /> -->
-                                        <!--                                                 </h:selectOneMenu> -->
+                        <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
+                            <div class="cms-menu__select-theme">
+                                <!-- OPTION GROUP -->
+                                <div class="cms-module__option-group">
+                                    <div class="cms-module__option-label">
+                                        <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_item_subtheme}:</label>
                                     </div>
-                                    <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemSubthemeInfo}</span>
-                                </div>
-                                <div class="cms-module__option-help">
-                                    <button type="button" class="btn-clean" data-toggle="helptext">
-                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                    </button>
+                                    <div class="cms-module__option-control">
+                                        <div class="custom-control custom-control--select">
+                                            <h:selectOneMenu value="#{cmsNavigationBean.selectedTheme}" name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
+                                                <f:selectItems value="#{cmsNavigationBean.selectableThemes}" var="theme" itemValue="#{theme}" itemLabel="#{msg[theme]}"/>
+                                                <f:ajax event="change" render="@all"/>
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemSubthemeInfo}</span>
+                                    </div>
+                                    <div class="cms-module__option-help">
+                                        <button type="button" class="btn-clean" data-toggle="helptext">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </ui:fragment>
 
                         <!-- ADD MENU ITEM -->
                         <div class="cms-menu__add-item">
@@ -144,7 +142,7 @@
                                 </h4>
 
                                 <ul id="visibleItemList" class="cms-menu__visible-items-list">
-                                    <ui:repeat var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
+                                    <ui:repeat var="visibleItem" value="#{cmsNavigationBean.getVisibleMenuItems(cmsNavigationBean.selectedTheme)}">
                                         <li sortPosition="item_#{visibleItem.availableItemId}?#{visibleItem.level}"
                                             class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
                                             <div class="cms-menu__visible-item-level">
@@ -161,8 +159,6 @@
 
                                             <ui:fragment rendered="#{visibleItem.absoluteLink}">
                                                 <div class="cms-menu__visible-item-edit">
-<!--                                                     <h:commandLink action="#{cmsNavigationBean.selectVisibleNavigationItem(visibleItem.availableItemId)}"> -->
-<!--                                                     </h:commandLink> -->
                                                     <button type="button" class="btn-clean" data-toggle="edit-visible-item">
                                                         <i class="fa fa-caret-down" aria-hidden="true"></i>                                                        
                                                     </button>
@@ -176,7 +172,7 @@
                                                             <label for="cmsMenuAddItemLabel">#{msg.cms_menu_item_label}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
+                                                            <h:inputText id="cmsMenuAddItemLabel" value="#{visibleItem.itemLabel}" styleClass="form-control" />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemNameInfo}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
@@ -192,7 +188,7 @@
                                                             <label for="cmsMenuAddItemUrl">#{msg.cms_menu_item_url}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
+                                                            <h:inputText id="cmsMenuAddItemUrl" value="#{visibleItem.pageUrl}" styleClass="form-control" />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemUrlInfo}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
@@ -232,7 +228,7 @@
                                 <h4>#{msg.cms_menu_availableComponents}</h4>
 
                                 <ul id="availableItemList" class="cms-menu__available-items-list">
-                                    <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
+                                    <ui:repeat var="availableItem" value="#{cmsNavigationBean.getAvailableMenuItems(cmsNavigationBean.selectedTheme)}">
                                         <li sortPosition="item_#{availableItem.availableItemId}?0"
                                             class="cms-menu__available-item #{availableItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{availableItem.hasDeletedCmsPage() ? 'deleted':''}">
                                             <div class="cms-menu__available-item-label">#{msg[availableItem.itemLabel]}</div>
