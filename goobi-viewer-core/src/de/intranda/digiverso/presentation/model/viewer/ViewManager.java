@@ -190,7 +190,7 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if(getCurrentPage().getMimeType().startsWith("image")) {            
+        if (getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
         } else {
             return "{}";
@@ -288,7 +288,7 @@ public class ViewManager implements Serializable {
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage);
     }
-    
+
     public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
@@ -1214,7 +1214,8 @@ public class ViewManager implements Serializable {
                 // Prefer configured target page type for the docstruct type
                 PageType pageType = null;
                 if (topDocument != null) {
-                    pageType = PageType.getPageTypeForDocStructType(topDocument.getDocStructType());
+                    boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+                    pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
                 }
                 if (pageType == null) {
                     if (isHasPages()) {
@@ -2073,7 +2074,7 @@ public class ViewManager implements Serializable {
      * @param pageLoader2
      */
     public void setPageLoader(IPageLoader loader) {
-       this.pageLoader = loader;
-        
+        this.pageLoader = loader;
+
     }
 }
