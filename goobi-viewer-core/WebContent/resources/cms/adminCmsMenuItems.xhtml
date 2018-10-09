@@ -27,7 +27,7 @@
             <div id="cmsMenuItems" class="cms-menu">
                 <h:form id="editMenuForm" prependId="false">
                     <h:panelGroup rendered="#{userBean.admin}">
-                        <h2>#{msg.cms_menuItems}</h2>
+                        <h2>#{msg.cms_menu_heading}</h2>
                         
                         <!-- SELECT THEME -->
                         <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
@@ -35,7 +35,7 @@
                                 <!-- OPTION GROUP -->
                                 <div class="cms-module__option-group">
                                     <div class="cms-module__option-label">
-                                        <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_item_subtheme}:</label>
+                                        <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_select_theme}:</label>
                                     </div>
                                     <div class="cms-module__option-control">
                                         <div class="custom-control custom-control--select">
@@ -44,7 +44,7 @@
                                                 <f:ajax event="change" render="@all"/>
                                             </h:selectOneMenu>
                                         </div>
-                                        <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemSubthemeInfo}</span>
+                                        <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_select_theme}</span>
                                     </div>
                                     <div class="cms-module__option-help">
                                         <button type="button" class="btn-clean" data-toggle="helptext">
@@ -58,9 +58,10 @@
                         <!-- ADD MENU ITEM -->
                         <div class="cms-menu__add-item">
                             <button type="button" class="btn-clean" data-toggle="add-menu-item">
-                                <i class="fa fa-plus-circle" aria-hidden="true"></i> #{msg.cms_menu_createItem}
+                                <i class="fa fa-plus-circle" aria-hidden="true"></i> #{msg.cms_menu_create_item}
                             </button>
                             <h:commandButton id="cmsMenuAddItemTrigger" styleClass="btn-hidden" action="#{cmsNavigationBean.createNavigationItem()}">
+                                <f:passThroughAttribute name="aria-hidden" value="true" />
                                 <f:ajax render="addItemOptions"></f:ajax>
                             </h:commandButton>
 
@@ -70,11 +71,11 @@
                                     <!-- OPTION GROUP -->
                                     <div class="cms-module__option-group">
                                         <div class="cms-module__option-label">
-                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_item_label}:</label>
+                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                         </div>
                                         <div class="cms-module__option-control">
                                             <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
-                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemNameInfo}</span>
+                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                         </div>
                                         <div class="cms-module__option-help">
                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -86,11 +87,11 @@
                                     <!-- OPTION GROUP -->
                                     <div class="cms-module__option-group">
                                         <div class="cms-module__option-label">
-                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_item_url}:</label>
+                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
                                         </div>
                                         <div class="cms-module__option-control">
                                             <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
-                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemUrlInfo}</span>
+                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
                                         </div>
                                         <div class="cms-module__option-help">
                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -102,14 +103,14 @@
                                     <!-- OPTION GROUP -->
                                     <div class="cms-module__option-group">
                                         <div class="cms-module__option-label">
-                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_item_newTab}:</label>
+                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
                                         </div>
                                         <div class="cms-module__option-control">
                                             <span class="cms-module__option-control-checkbox">
                                                 <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
                                             </span>
                                             <br />
-                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemNewTabInfo}</span>
+                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
                                         </div>
                                         <div class="cms-module__option-help">
                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -120,7 +121,7 @@
                                     
                                     <!-- ACTION -->
                                     <div class="cms-module__option-action">
-                                        <h:commandButton value="#{msg.cms_menu_addItem}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn" />
+                                        <h:commandButton value="#{msg.cms_menu_create_item_add}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn" />
                                     </div>
                                 </div>                                
                             </h:panelGroup>
@@ -137,7 +138,7 @@
                             <!-- VISIBLE ITEMS -->
                             <div class="cms-menu__visible-items">
                                 <h4>
-                                    #{msg.cms_menu_mainMenu}
+                                    #{msg.cms_menu_main_menu}
                                 </h4>
 
                                 <ul id="visibleItemList" class="cms-menu__visible-items-list">
@@ -146,11 +147,11 @@
                                             class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
                                             <!-- ITEM LEVEL -->
                                             <div class="cms-menu__visible-item-level">
-                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decreaseMenuItem}"
+                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decrease_menu_item_level}"
                                                     onclick="cmsJS.sortableList.decreaseLevel(this, true);">
                                                     <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                                 </button>
-                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increaseMenuItem}"
+                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increase_menu_item_level}"
                                                     onclick="cmsJS.sortableList.increaseLevel(this, true);">
                                                     <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                                 </button>
@@ -172,11 +173,11 @@
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
                                                         <div class="cms-module__option-label">
-                                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_item_label}:</label>
+                                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
                                                             <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemNameInfo}</span>
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
                                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -188,11 +189,11 @@
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
                                                         <div class="cms-module__option-label">
-                                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_item_url}:</label>
+                                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
                                                             <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemUrlInfo}</span>
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
                                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -204,14 +205,14 @@
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
                                                         <div class="cms-module__option-label">
-                                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_item_newTab}:</label>
+                                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
                                                         </div>
                                                         <div class="cms-module__option-control">
                                                             <span class="cms-module__option-control-checkbox">
                                                                 <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
                                                             </span>
                                                             <br />
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_addMenuItemNewTabInfo}</span>
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
                                                             <button type="button" class="btn-clean" data-toggle="helptext">
@@ -228,12 +229,12 @@
 
                             <!-- AVAILABLE ITEMS -->
                             <div class="cms-menu__editor-menu-available-items">
-                                <h4>#{msg.cms_menu_availableComponents}</h4>
+                                <h4>#{msg.cms_menu_available_items}</h4>
                                 
                                 <div class="cms-menu__available-items-list">
                                     <ul>
                                         <li>
-                                            <h5>Seiten</h5>
+                                            <h5>#{msg.cms_menu_pages}</h5>
                                             
                                             <div class="cms-menu__available-items">
                                                 <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
@@ -248,7 +249,7 @@
                                             
                                             <div class="cms-menu__available-item-add">
                                                 <button type="button" class="btn">
-                                                    Zum Menü hinzufügen
+                                                    #{msg.cms_menu_add_to_menu}
                                                 </button>
                                             </div>
                                         </li>
