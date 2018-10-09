@@ -160,18 +160,23 @@
                                             </div>
                                             
                                             <!-- ITEM LABEL -->
-                                            <div class="cms-menu__visible-item-label">#{msg[visibleItem.itemLabel]}</div>
+                                            <div class="cms-menu__visible-item-label">
+                                                #{msg[visibleItem.itemLabel]}
+                                                <ui:fragment rendered="#{visibleItem.absoluteLink}">
+                                                    <small>(#{msg.cms_menu_custom_menu_item})</small>
+                                                </ui:fragment>
+                                            </div>
 
                                             <!-- ITEM EDIT -->
-                                            <ui:fragment rendered="#{visibleItem.absoluteLink}">
-                                                <div class="cms-menu__visible-item-edit">
-                                                    <button type="button" class="btn-clean" data-toggle="edit-visible-item">
-                                                        <i class="fa fa-caret-down" aria-hidden="true"></i>                                                        
-                                                    </button>
-                                                </div>
-                                                
-                                                <!-- OPTION -->
-                                                <div class="cms-menu__visible-item-edit-wrapper cms-module__option">
+                                            <div class="cms-menu__visible-item-edit">
+                                                <button type="button" class="btn-clean" data-toggle="edit-visible-item">
+                                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- OPTION -->
+                                            <div class="cms-menu__visible-item-edit-wrapper cms-module__option">
+                                                <ui:fragment rendered="#{visibleItem.absoluteLink}">
                                                     <!-- OPTION GROUP -->
                                                     <div class="cms-module__option-group">
                                                         <div class="cms-module__option-label">
@@ -222,8 +227,13 @@
                                                             </button>
                                                         </div>
                                                     </div>
+                                                </ui:fragment>
+                                                
+                                                <!-- ITEM ACTIONS -->
+                                                <div class="cms-module__option-action">
+                                                    <button type="button" class="btn-clean btn--link">#{msg.cms_menu_remove_item}</button>
                                                 </div>
-                                            </ui:fragment>
+                                            </div>
                                         </li>
                                     </ui:repeat>
                                 </ul>
