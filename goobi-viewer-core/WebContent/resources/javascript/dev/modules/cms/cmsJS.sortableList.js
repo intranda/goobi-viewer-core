@@ -31,6 +31,7 @@ var cmsJS = ( function( cms ) {
     var _allowMultipleOccurances = false;
     var _inputField = null;
     var _sortingAttribute = 'sortposition';
+    var _config = {};
     
     cms.sortableList = {
         /**
@@ -54,6 +55,7 @@ var cmsJS = ( function( cms ) {
             _levelIndent = indent;
             _allowMultipleOccurances = allowMultiple;
             _inputField = config.sortablesConfig.componentListInput;
+            _config = config;
             
             // validation
             if ( _inputField === null ) {
@@ -62,32 +64,34 @@ var cmsJS = ( function( cms ) {
             if ( config.sortablesConfig.visibleItemList.length === 0 ) {
                 console.error( "No container for active items found. Cannot initialize sortable" );
             }
-            if ( config.sortablesConfig.availableItemList.length === 0 ) {
-                console.error( "No container for available items found. Cannot initialize sortable" );
-            }
+//            if ( config.sortablesConfig.availableItemList.length === 0 ) {
+//                console.error( "No container for available items found. Cannot initialize sortable" );
+//            }
             
             _updateAllSortIcons();
             
-            if ( _debug )
+            if ( _debug ) {                
                 console.log( "Make sortable ", config.sortablesConfig.visibleItemList );
-            config.sortablesConfig.visibleItemList.sortable( {
+            }
+            $(config.sortablesConfig.visibleItemList).sortable( {
                 update: _serializeVisibleItems,
-                connectWith: "#availableItemList"
+                connectWith: config.sortablesConfig.availableItemList
             } );
             
-            if ( _debug )
+            if ( _debug ) {                
                 console.log( "Make sortable ", config.sortablesConfig.availableItemList );
-            config.sortablesConfig.availableItemList.sortable( {
+            }
+            $(config.sortablesConfig.availableItemList).sortable( {
                 update: _serializeVisibleItems,
-                connectWith: "#visibleItemList",
+                connectWith: config.sortablesConfig.visibleItemList,
                 helper: "clone"
             } );
             
             _serializeVisibleItems();
-            $( "#availableItemList" ).on( "sortbeforestop", _handleBeforeDropFromAvailable );
-            $( "#visibleItemList" ).on( "sortbeforestop", _handleBeforeDropFromVisible );
-            $( "#availableItemList" ).on( "sortstop", _handleDrop );
-            $( "#visibleItemList" ).on( "sortstop", _handleDrop );
+            $( config.sortablesConfig.availableItemList ).on( "sortbeforestop", _handleBeforeDropFromAvailable );
+            $( config.sortablesConfig.visibleItemList ).on( "sortbeforestop", _handleBeforeDropFromVisible );
+            $( config.sortablesConfig.availableItemList ).on( "sortstop", _handleDrop );
+            $( config.sortablesConfig.visibleItemList ).on( "sortstop", _handleDrop );
             
             // toggle edit visible item
             $( '[data-toggle="edit-visible-item"]' ).on( 'click', function() {
@@ -102,11 +106,13 @@ var cmsJS = ( function( cms ) {
             } );
             
             // fix menu save on scroll
-            _fixMenuSave();
+            if($( '.cms-menu__save' ).length > 0) {                
+                _fixMenuSave();
+                $( window ).on( 'resize, orientationchange', function() {
+                    _fixMenuSave();
+                } );
+            }
             
-            $( window ).on( 'resize, orientationchange', function() {
-            	_fixMenuSave();
-            } );
         },
         
         /**
@@ -209,7 +215,7 @@ var cmsJS = ( function( cms ) {
         	}
         })
         if ( _allowMultipleOccurances && $item.parent().attr( "id" ) === "visibleItemList" ) {
-            $item.clone().appendTo( $( "#availableItemList" ) );
+            $item.clone().appendTo( $( _config.sortablesConfig.availableItemList ) );
         }
         
     }
@@ -228,7 +234,7 @@ var cmsJS = ( function( cms ) {
         }
         
         var item = $( ui.item );
-        if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "availableItemList" ) {
+        if ( _allowMultipleOccurances && item.parent().attr( "id" ) === $( _config.sortablesConfig.availableItemList ).attr( "id" ) ) {
             ui.item.remove();
         }
     }
@@ -255,14 +261,14 @@ var cmsJS = ( function( cms ) {
             console.log( 'cmsJS.sortableList _updateAllSortIcons' );
         }
         
-        var childrenVL = $( "#visibleItemList" ).children( "li" );
+        var childrenVL = $( _config.sortablesConfig.visibleItemList ).children( "li" );
         childrenVL.each( function() {
             if ( $( this ).attr( _sortingAttribute ) != null ) {
                 _updateSortIcons( $( this ) );
             }
         } );
         
-        var childrenAL = $( "#availableItemList" ).children( "li" );
+        var childrenAL = $( _config.sortablesConfig.availableItemList ).children( "li" );
         childrenAL.each( function() {
             if ( $( this ).attr( _sortingAttribute ) != null ) {
                 _updateSortIcons( $( this ) );
@@ -283,7 +289,7 @@ var cmsJS = ( function( cms ) {
         
         var parent = item.parent();
         
-        if ( parent.attr( "id" ) === "visibleItemList" ) {
+        if ( parent.attr( "id" ) === $(_config.sortablesConfig.visibleItemList).attr( "id" ) ) {
             item.children( '.menu-item__level' ).show();
             if ( _getLevel( item.prev() ) === -1 ) {
                 while ( _getLevel( item ) > 0 ) {
@@ -293,21 +299,21 @@ var cmsJS = ( function( cms ) {
             
             if ( _getLevel( item ) === 0 ) {
                 item.find( '.left' ).css( "visibility", "hidden" );
-                item.find( '.right' ).css( "visibility", "hidden" );
+//                item.find( '.right' ).css( "visibility", "hidden" );
                 item.css( "margin-left", "0px" );
             }
             else {
                 item.find( '.left' ).css( "visibility", "visible" );
-                item.find( '.right' ).css( "visibility", "visible" );
+//                item.find( '.right' ).css( "visibility", "visible" );
                 item.css( "margin-left", _getLevel( item ) * _levelIndent + "px" );
             }
             
-            if ( _getLevel( item ) > _getLevel( item.prev() ) ) {
-                item.find( '.left' ).css( "visibility", "visible" );
+            if ( _getLevel( item ) > _getLevel( item.prev() )) {
+//                item.find( '.left' ).css( "visibility", "visible" );
                 item.find( '.right' ).css( "visibility", "hidden" );
             }
             else {
-                item.find( '.left' ).css( "visibility", "visible" );
+//                item.find( '.left' ).css( "visibility", "visible" );
                 item.find( '.right' ).css( "visibility", "visible" );
             }
         }
@@ -397,7 +403,7 @@ var cmsJS = ( function( cms ) {
             console.log( 'cmsJS.sortableList _serializeVisibleItems' );
         }
         
-        var postData = $( "#visibleItemList" ).sortable( "serialize", {
+        var postData = $( _config.sortablesConfig.visibleItemList ).sortable( "serialize", {
             key: "item",
             attribute: _sortingAttribute
         } );
