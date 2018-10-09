@@ -27,7 +27,15 @@
             <div id="cmsMenuItems" class="cms-menu">
                 <h:form id="editMenuForm" prependId="false">
                     <h:panelGroup rendered="#{userBean.admin}">
-                        <h2>#{msg.cms_menu_heading}</h2>
+                        <header class="cms-menu__header">
+                            <h2>#{msg.cms_menu_heading}</h2>
+
+                            <!-- SAVE MENU -->
+                            <div class="cms-menu__save">
+                                <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
+                                <h:commandButton value="#{msg.cms_menu_save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn" />
+                            </div>
+                        </header>    
                         
                         <!-- SELECT THEME -->
                         <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
@@ -121,16 +129,10 @@
                                     
                                     <!-- ACTION -->
                                     <div class="cms-module__option-action">
-                                        <h:commandButton value="#{msg.cms_menu_create_item_add}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn" />
+                                        <h:commandButton value="#{msg.cms_menu_create_item_add}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn-clean btn--link" />
                                     </div>
                                 </div>                                
                             </h:panelGroup>
-                        </div>
-                        
-                        <!-- SAVE MENU -->
-                        <div class="cms-menu__save">
-                            <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
-                            <h:commandButton value="#{msg.cms_menu_save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn" />
                         </div>
 
                         <!-- MENU EDITOR -->
@@ -228,7 +230,7 @@
                             </div>
 
                             <!-- AVAILABLE ITEMS -->
-                            <div class="cms-menu__editor-menu-available-items">
+                            <div class="cms-menu__available-items">
                                 <h4>#{msg.cms_menu_available_items}</h4>
                                 
                                 <div class="cms-menu__available-items-list">
@@ -236,19 +238,19 @@
                                         <li>
                                             <h5>#{msg.cms_menu_pages}</h5>
                                             
-                                            <div class="cms-menu__available-items">
+                                            <div class="cms-menu__available-items-list-pages">
                                                 <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
-                                                    <label class="cms-menu__available-item">
-                                                        <div class="cms-menu__available-item-checkbox">
+                                                    <label class="cms-menu__available-item-page">
+                                                        <div class="cms-menu__available-item-page-checkbox">
                                                             <h:selectBooleanCheckbox />
                                                         </div>
-                                                        <div class="cms-menu__available-item-label">#{msg[availableItem.itemLabel]}</div>
+                                                        <div class="cms-menu__available-item-page-label">#{msg[availableItem.itemLabel]}</div>
                                                     </label>
                                                 </ui:repeat>
                                             </div>
                                             
-                                            <div class="cms-menu__available-item-add">
-                                                <button type="button" class="btn">
+                                            <div class="cms-menu__available-item-page-add">
+                                                <button type="button" class="btn-clean btn--link">
                                                     #{msg.cms_menu_add_to_menu}
                                                 </button>
                                             </div>

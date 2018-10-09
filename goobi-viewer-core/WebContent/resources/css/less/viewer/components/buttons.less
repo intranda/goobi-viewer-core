@@ -68,6 +68,16 @@ input.btn,
 	display: none !important;
 }
 
+.btn--link {
+	color: @blue;
+	&:hover,
+	&:active,
+	&:focus {
+		color: @black;
+		text-decoration: underline;
+	}
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

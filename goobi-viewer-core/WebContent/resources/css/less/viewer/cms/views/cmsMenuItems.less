@@ -5,6 +5,22 @@
 /* CMS MENU */
 .cms-menu {
 	h2 {}
+	/* HEADER */
+	&__header {
+		display: flex;
+		justify-content: space-between;
+	}
+	/* SAVE */
+	&__save {
+		text-align: right;
+		padding-right: 15px;
+		&.fixed {
+			position: fixed;
+			top: 0;
+			padding: 15px;
+			z-index: 999;
+		}
+	}
 	/* SELECT THEME */
 	&__select-theme {
 		margin-bottom: 15px;
@@ -26,28 +42,19 @@
 	&__add-item-options {
 		display: none;
 	}
-	/* SAVE */
-	&__save {
-		padding: 15px;
-		text-align: right;
-		border: 1px solid transparent;
-		background-color: @white;
-		&.fixed {
-			position: fixed;
-			top: 0;
-			border-color: @middlegray;
-			z-index: 999;
-		}
-	}
 	/* MENU EDITOR */
 	&__editor {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		grid-gap: 15px;
+		margin-top: 15px;
 	}
 	/* VISIBLE/AVAILABLE ITEMS */
-	&__visible-items {
-		h4 {}
+	&__visible-items,
+	&__available-items {
+		h4 {
+			margin-bottom: 10px;
+		}
 		.cms-menu__available-item-level {
 			visibility: visible;
 			flex-basis: 20%;
@@ -126,30 +133,30 @@
 		}
 		h5 {
 			margin: 0;
-			padding: 10px;
+			padding: 12px;
 			border-bottom: 1px solid @middlegray;			
 		}
 	}
-	&__available-items {
+	&__available-items-list-pages {
 		max-height: 400px;
 		overflow-y: auto;
 	}
-	&__available-item {
+	&__available-item-page {
 		display: flex;
 		margin: 0;
 		padding: 5px 10px;
 		background-color: @white;
 		cursor: pointer;
 	}
-	&__available-item-checkbox {
+	&__available-item-page-checkbox {
 		input[type="checkbox"] {
 			margin: 0;
 		}
 	}
-	&__available-item-label {
+	&__available-item-page-label {
 		padding-left: 10px;
 	}
-	&__available-item-add {
+	&__available-item-page-add {
 		padding: 10px;
 		text-align: right;
 		border-top: 1px solid @middlegray;
