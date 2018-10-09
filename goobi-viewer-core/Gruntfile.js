@@ -71,8 +71,7 @@ module.exports = function(grunt) {
 				banner : banner,
 				separator : '\n',
 				stripBanners : true,
-				sourceMap : true,
-				outputSourceFiles: true,
+				sourceMap : false
 			},
 			distViewer : {
 				src : [
