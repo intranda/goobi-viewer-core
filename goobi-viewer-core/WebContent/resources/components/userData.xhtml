@@ -118,7 +118,7 @@
 									</div>
 								</div>
 							</div>
-							<h:panelGroup rendered="#{!userBean.user.openIdUser}">
+							<h:panelGroup rendered="#{userBean.allowPasswordChange}">
 								<div class="form-group">
 									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-xs-12 col-sm-5 control-label" />
 									<div class="col-xs-12 col-sm-7">

@@ -443,7 +443,7 @@ public class ConfigurationTest {
      */
     @Test
     public void isShowOpenIdConnect_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isShowOpenIdConnect());
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowOpenIdConnect());
     }
 
     /**

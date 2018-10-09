@@ -897,4 +897,8 @@ public class UserBean implements Serializable {
     public int getNumberOfProviderTypes() {
         return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
     }
+    
+    public boolean isAllowPasswordChange() {
+        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
+    }
 }

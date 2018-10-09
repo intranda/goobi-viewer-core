@@ -1192,7 +1192,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isShowOpenIdConnect() {
-        return getLocalBoolean("user.openIdConnect[@show]", true);
+        return getAuthenticationProviders().stream().anyMatch(provider ->  OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
     }
 
     /**
