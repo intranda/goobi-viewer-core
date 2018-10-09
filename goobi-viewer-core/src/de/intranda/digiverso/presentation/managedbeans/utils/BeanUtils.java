@@ -329,7 +329,12 @@ public class BeanUtils {
      * @return
      */
     public static HttpServletResponse getResponse() {
-        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-        return response;
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context != null && context.getExternalContext() != null) {            
+            HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+            return response;
+        } else {
+            return null;
+        }
     }
 }

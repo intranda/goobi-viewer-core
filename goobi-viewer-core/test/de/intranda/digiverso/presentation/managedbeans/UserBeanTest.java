@@ -15,15 +15,24 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
-import static org.junit.Assert.*;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.BCrypt;
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
  * @author Florian Alpers
@@ -32,7 +41,6 @@ import de.intranda.digiverso.presentation.controller.BCrypt;
 public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     UserBean bean = new UserBean();
-    BCrypt bcrypt;
     
     String userActive_nickname = "nick 1";
     String userActive_email = "1@users.org";
@@ -43,16 +51,47 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     String userSuspended_pwHash = "abcdef3";
     
     @Before
-    public void setup() {
-        this.bcrypt = Mockito.mock(BCrypt.class);
-        Mockito.when(this.bcrypt.checkpw(plaintext, hashed)).
-    }
-    
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
     public void setUp() throws Exception {
+        super.setUp();
+
+        bean.setAuthenticationProvider(new IAuthenticationProvider() {
+            
+            private User user = null;
+            
+            @Override
+            public void logout() throws AuthenticationProviderException {}
+            
+            @Override
+            public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
+                LoginResult result;
+                try {
+                    user = DataManager.getInstance().getDao().getUserByEmail(loginName);
+                    if(user != null && user.getPasswordHash().equals(password)) {
+                        result = new LoginResult(null, null, Optional.ofNullable(user), false);
+                    } else {
+                        result = new LoginResult(null, null, Optional.empty(), true);
+                    }
+                } catch (DAOException e) {
+                    throw new AuthenticationProviderException(e);
+                }
+                return CompletableFuture.completedFuture(result);
+            }
+            
+            @Override
+            public String getType() {
+                return "test";
+            }
+            
+            @Override
+            public String getName() {
+                return "test";
+            }
+            
+            @Override
+            public boolean allowsPasswordChange() {
+                return false;
+            }
+        });
     }
 
     /**
@@ -63,12 +102,49 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testLogin_local() {
+    public void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
         
         bean.setEmail(userActive_email);
-        bean.setPassword(userActive_pwHash);
-        
-        
+        bean.setPassword(userActive_pwHash); 
+        Assert.assertNull(bean.getUser());
+        bean.login();
+        Assert.assertNotNull(bean.getUser());
+        Assert.assertTrue(bean.getUser().isActive());
+        Assert.assertFalse(bean.getUser().isSuspended());
     }
+    
+    @Test
+    public void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+
+        bean.setEmail(userActive_email);
+        bean.setPassword(userSuspended_pwHash); 
+        Assert.assertNull(bean.getUser());
+        bean.login();
+        Assert.assertNull(bean.getUser());
+    }
+    
+    @Test
+    public void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+
+        bean.setEmail(userActive_email + "test");
+        bean.setPassword(userActive_pwHash); 
+        Assert.assertNull(bean.getUser());
+        bean.login();
+        Assert.assertNull(bean.getUser());
+    }
+    
+    @Test
+    public void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
+
+        bean.setEmail(userSuspended_email);
+        bean.setPassword(userSuspended_pwHash); 
+        Assert.assertNull(bean.getUser());
+        bean.login();
+        Assert.assertNull(bean.getUser());
+//        Assert.assertTrue(bean.getUser().isActive());
+//        Assert.assertTrue(bean.getUser().isSuspended());
+    }
+
+
 
 }

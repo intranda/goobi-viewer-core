@@ -63,37 +63,6 @@ public interface IAuthenticationProvider {
     public void logout() throws AuthenticationProviderException;
     
     /**
-     * Checks whether the user exists as an active account
-     * 
-     * @return  true if the user exists and has an active account
-     */
-    public boolean isActive();
-
-    /**
-     * Checks whether an active user is suspended, i.e. disallowed to log in
-     * 
-     * @return  true if the user exists but is suspended
-     */
-    public boolean isSuspended();
-    
-    /**
-     * Checks whether an existing and not suspended user was blocked from logging in, usually because of
-     * invalid login data (password, or ip range etc.)
-     * 
-     * @return  true if the user exists and is not suspended, but was blocked from logging in, usually because of
-     * invalid login data (password, or ip range etc.)
-     */
-    public boolean isRefused();
-    
-    /**
-     * If the authentication service provides a user group for the user, it is returned as an optional. 
-     * Otherwise, an empty optional is returned
-     * 
-     * @return  An optional containing a possible user group provided by the authentication service
-     */
-    public Optional<String> getUserGroup();
-    
-    /**
      * Check whether this authentication service allows user to edit their password or to reset it
      * 
      * @return true if the authentication service provides means to change or reset the user password

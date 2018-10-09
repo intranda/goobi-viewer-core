@@ -225,7 +225,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     }
                 }
             }
-            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user));
+            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user), false);
         } catch (DAOException e) {
             this.loginResult = new LoginResult(request, response, new AuthenticationProviderException(e));
         } catch (AuthenticationProviderException e) {
@@ -244,38 +244,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        return getJsonResponse().isPresent();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isSuspended()
-     */
-    @Override
-    public boolean isSuspended() {
-        return !getJsonResponse().isPresent();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isRefused()
-     */
-    @Override
-    public boolean isRefused() {
-        return !getJsonResponse().isPresent();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getUserGroup()
-     */
-    @Override
-    public Optional<String> getUserGroup() {
-        return Optional.empty();
     }
 
     /* (non-Javadoc)

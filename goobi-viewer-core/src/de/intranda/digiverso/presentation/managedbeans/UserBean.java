@@ -199,62 +199,67 @@ public class UserBean implements Serializable {
         if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
-        HttpServletRequest request = BeanUtils.getRequest();
-        if("#".equals(this.redirectUrl)) {
-            this.redirectUrl = ViewHistory.getCurrentView(request).map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl()).orElse("");
+        if ("#".equals(this.redirectUrl)) {
+            HttpServletRequest request = BeanUtils.getRequest();
+            this.redirectUrl = ViewHistory.getCurrentView(request)
+                    .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
+                    .orElse("");
         }
         logger.trace("login");
         if (getAuthenticationProvider() != null) {
-            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result, request));
+            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result));
         }
         return null;
     }
 
-    private void completeLogin(LoginResult result, HttpServletRequest request) {
-        try {
-            Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
+    private void completeLogin(LoginResult result) {
             HttpServletResponse response = result.getResponse();
-            request = result.getRequest();//BeanUtils.getRequest();
-            if (oUser.isPresent()) { //login successful
-                try {
-                    User user = oUser.get();
-                    wipeSession(request);
-                    DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
-                    // Update last login
-                    user.setLastLogin(new Date());
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
-                        logger.error("Could not update user in DB.");
+            HttpServletRequest request = result.getRequest();
+            try {
+
+                Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
+
+                if (result.isRefused()) {
+                    Messages.error("errLoginWrong");
+                } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
+                    Messages.error("errLoginInactive");
+                } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+                    Messages.error("errLoginSuspended");
+                } else if (oUser.isPresent()) { //login successful
+                    try {
+                        User user = oUser.get();
+                        wipeSession(request);
+                        DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
+                        // Update last login
+                        user.setLastLogin(new Date());
+                        if (!DataManager.getInstance().getDao().updateUser(user)) {
+                            logger.error("Could not update user in DB.");
+                        }
+                        setUser(user);
+                        if (request != null && request.getSession(false) != null) {
+                            request.getSession(false).setAttribute("user", user);
+                        }
+                        if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
+                            logger.trace("Redirecting to {}", redirectUrl);
+                            String redirectUrl = this.redirectUrl;
+                            this.redirectUrl = "";
+                            response.sendRedirect(redirectUrl);
+                        } else if (response != null) {
+                            logger.trace("Redirecting to user page");
+                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                        }
+                        return;
+                    } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                        //user may login, but setting up viewer account failed
+                        getAuthenticationProvider().logout();
+                        throw new AuthenticationProviderException(e);
                     }
-                    setUser(user);
-                    if (request.getSession(false) != null) {
-                        request.getSession(false).setAttribute("user", user);
-                    }
-                    if (StringUtils.isNotEmpty(redirectUrl)) {
-                        logger.trace("Redirecting to {}", redirectUrl);
-                        String redirectUrl = this.redirectUrl;
-                        this.redirectUrl = "";
-                        response.sendRedirect(redirectUrl);
-                    } else {
-                        logger.trace("Redirecting to user page");
-                        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
-                    }
-                } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
-                    //user may login, but setting up viewer account failed
-                    getAuthenticationProvider().logout();
-                    throw new AuthenticationProviderException(e);
+                } else {
+                    Messages.error("errLoginInactive");
                 }
-            } else if (!getAuthenticationProvider().isActive()) {
-                Messages.error("errLoginInactive");
-            } else if (getAuthenticationProvider().isSuspended()) {
-                Messages.error("errLoginSuspended");
-            } else if (getAuthenticationProvider().isRefused()) {
-                Messages.error("errLoginWrong");
-            } else {
-                Messages.error("errLoginInactive");
-            }
-        } catch (AuthenticationProviderException e) {
-            logger.error("Error logging in ", e);
-            Messages.error("errLoginError");
+            } catch (AuthenticationProviderException e) {
+                logger.error("Error logging in ", e);
+                Messages.error("errLoginError");
         } finally {
             result.setRedirected();
         }
@@ -322,38 +327,40 @@ public class UserBean implements Serializable {
      */
     public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("wipeSession");
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return;
-        }
-        session.removeAttribute("user");
-
-//        // Remove priv maps
-        Enumeration<String> attributeNames = session.getAttributeNames();
-        Set<String> attributesToRemove = new HashSet<>();
-        while (attributeNames.hasMoreElements()) {
-            String attribute = attributeNames.nextElement();
-            if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
-                attributesToRemove.add(attribute);
-
+        if (request != null) {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                return;
             }
-        }
-        if (!attributesToRemove.isEmpty()) {
-            for (String attribute : attributesToRemove) {
-                session.removeAttribute(attribute);
-                logger.trace("Removed session attribute: {}", attribute);
+            session.removeAttribute("user");
+
+            //        // Remove priv maps
+            Enumeration<String> attributeNames = session.getAttributeNames();
+            Set<String> attributesToRemove = new HashSet<>();
+            while (attributeNames.hasMoreElements()) {
+                String attribute = attributeNames.nextElement();
+                if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
+                    attributesToRemove.add(attribute);
+
+                }
             }
-        }
+            if (!attributesToRemove.isEmpty()) {
+                for (String attribute : attributesToRemove) {
+                    session.removeAttribute(attribute);
+                    logger.trace("Removed session attribute: {}", attribute);
+                }
+            }
 
-        try {            
-            BeanUtils.getCmsBean().invalidate();
-        } catch(Throwable e) {
-        }
-        
-        this.authenticationProviders = null;
+            try {
+                BeanUtils.getCmsBean().invalidate();
+            } catch (Throwable e) {
+            }
 
-        // Update filter query suffix
-        SearchHelper.updateFilterQuerySuffix(request);
+            this.authenticationProviders = null;
+
+            // Update filter query suffix
+            SearchHelper.updateFilterQuerySuffix(request);
+        }
     }
 
     /**
@@ -750,7 +757,7 @@ public class UserBean implements Serializable {
     }
 
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
-        if(this.authenticationProviders == null) {            
+        if (this.authenticationProviders == null) {
             this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         }
         return this.authenticationProviders;
@@ -870,23 +877,23 @@ public class UserBean implements Serializable {
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
     }
-    
+
     public boolean hasProvidersOfType(String type) {
-        if(type != null) {            
+        if (type != null) {
             return getAuthenticationProviders().stream().anyMatch(provider -> type.equalsIgnoreCase(provider.getType()));
         } else {
             return false;
         }
     }
-    
+
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
-        if(type != null) {            
+        if (type != null) {
             return getAuthenticationProviders().stream().filter(provider -> type.equalsIgnoreCase(provider.getType())).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
     }
-    
+
     public int getNumberOfProviderTypes() {
         return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
     }

@@ -38,9 +38,6 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
     public static final String TYPE_LOCAL = "local";
-    private boolean userActive = false;
-    private boolean userSuspended = false;
-    private boolean userBlocked = false;
     private final String name;
     
     private BCrypt bcrypt = new BCrypt();
@@ -59,23 +56,16 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         if (StringUtils.isNotEmpty(email)) {
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
-                if (user == null || !user.isActive()) {
-                    userActive = false;
-                } else if (user.isSuspended()) {
-                    userActive = true;
-                    userSuspended = true;
-                } else if (StringUtils.isBlank(password) || (user.getPasswordHash() == null || !bcrypt.checkpw(password, user.getPasswordHash()))) {
-                    userActive = true;
-                    userSuspended = false;
-                    userBlocked = true;
-                } else {
-                    return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user)));
-                }
+                boolean refused = true;
+                if ( user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null && bcrypt.checkpw(password, user.getPasswordHash())) {
+                    refused = false;
+                } 
+                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user), refused));
             } catch (DAOException e) {
                 throw new AuthenticationProviderException(e);
             }
         }
-        return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty()));
+        return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true));
     }
 
     /* (non-Javadoc)
@@ -86,37 +76,6 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        return userActive;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isSuspended()
-     */
-    @Override
-    public boolean isSuspended() {
-        return userSuspended;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#isRefused()
-     */
-    @Override
-    public boolean isRefused() {
-        return userBlocked;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getUserGroup()
-     */
-    @Override
-    public Optional<String> getUserGroup() {
-        return Optional.empty();
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
@@ -144,6 +103,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     }
 
     /**
+     * Set custom bcrypt for testing
      * @param bcrypt the bcrypt to set
      */
     protected void setBcrypt(BCrypt bcrypt) {

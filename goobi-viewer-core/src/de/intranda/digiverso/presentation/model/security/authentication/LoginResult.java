@@ -34,6 +34,7 @@ public class LoginResult {
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final Optional<User> user;
+    private final boolean refused;
     private final AuthenticationProviderException exception;
     private Object redirectLock = new Object();
 
@@ -41,13 +42,15 @@ public class LoginResult {
      * @param request
      * @param response
      * @param user
+     * @param loginRefused  true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
-    public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user) {
+    public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
         super();
         this.request = request;
         this.response = response;
         this.user = user;
         this.exception = null;
+        this.refused = loginRefused;
     }
 
     /**
@@ -61,6 +64,7 @@ public class LoginResult {
         this.response = response;
         this.user = Optional.empty();
         this.exception = exception;
+        this.refused = true;
     }
 
     /**
@@ -105,5 +109,11 @@ public class LoginResult {
             redirectLock.notifyAll();
         }
     }
-
+    
+    /**
+     * @return the refused
+     */
+    public boolean isRefused() {
+        return refused;
+    }
 }
