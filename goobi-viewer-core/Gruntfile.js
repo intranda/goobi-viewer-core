@@ -81,7 +81,7 @@ module.exports = function(grunt) {
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js'
 				],
-				dest : '<%=src.jsDevFolderModules %>viewer.js'
+				dest : '<%=src.jsDistFolder%>viewer.min.js'
 			},
 			distViewImage : {
 				src : [
@@ -90,32 +90,15 @@ module.exports = function(grunt) {
 					'<%=src.jsDevFolderModules %>imageView/imageView.overlay.js',
 					'<%=src.jsDevFolderModules %>imageView/imageView.*.js'
 				],
-				dest : '<%=src.jsDevFolderModules %>viewImage.js'
+				dest : '<%=src.jsDistFolder%>viewImage.min.js'
 			},
 			distViewObject : {
                 src : [
                     '<%=src.jsDevFolderModules %>objectView/*Loader.js',
                     '<%=src.jsDevFolderModules %>objectView/WorldGenerator.js',
                 ],
-                dest : '<%=src.jsDevFolderModules %>objectView.js'
+                dest : '<%=src.jsDistFolder%>objectView.min.js'
             },
-		},
-		uglify : {
-			options : {
-				banner : banner,
-				mangle : true,
-				compress : true,
-				beautify : false,
-				sourceMap : true,
-				outputSourceFiles: true,
-			},
-			uglifyViewer : {
-				files : {
-					'<%=src.jsDistFolder%>viewer.min.js' : [ '<%=src.jsDevFolderModules%>viewer.js' ],
-					'<%=src.jsDistFolder%>viewImage.min.js' : [ '<%=src.jsDevFolderModules%>viewImage.js' ],
-					'<%=src.jsDistFolder%>objectView.min.js' : [ '<%=src.jsDevFolderModules%>objectView.js' ],
-				},
-			}
 		},
 		watch : {
 			configFiles : {
@@ -135,7 +118,7 @@ module.exports = function(grunt) {
 				files : [
 					'<%=src.jsDevFolderModules%>**/*.js',
 				],
-				tasks : [ 'concat', 'uglify' ],
+				tasks : [ 'concat' ],
 				options : {
 					spawn : false,
 				}

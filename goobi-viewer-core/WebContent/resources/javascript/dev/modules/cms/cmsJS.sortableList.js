@@ -103,6 +103,10 @@ var cmsJS = ( function( cms ) {
             
             // fix menu save on scroll
             _fixMenuSave();
+            
+            $( window ).on( 'resize, orientationchange', function() {
+            	_fixMenuSave();
+            } );
         },
         
         /**
