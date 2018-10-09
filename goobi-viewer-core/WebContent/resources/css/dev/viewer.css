@@ -9914,6 +9914,10 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 10px;
   word-break: break-word;
 }
+.cms-menu__visible-item-label small {
+  font-size: 0.75rem;
+  font-style: italic;
+}
 .cms-menu__visible-item-edit {
   -ms-flex-preferred-size: 10%;
       flex-basis: 10%;
@@ -9946,6 +9950,9 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__visible-item-edit-wrapper .cms-module__option-control {
   -ms-flex-preferred-size: 65%;
       flex-basis: 65%;
+}
+.cms-menu__visible-item-edit-wrapper .cms-module__option-action .btn--link {
+  color: #c7254e;
 }
 .cms-menu__available-items-list ul {
   margin: 0;
