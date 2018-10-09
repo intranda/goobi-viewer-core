@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.managedbeans.utils;
 
 import java.util.Locale;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -56,8 +57,6 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     public static final String PERCENT_REPLACEMENT = "U0025";
 
-
-    
     /**
      * Gets the current Request from the faces context
      * 
@@ -70,8 +69,7 @@ public class BeanUtils {
 
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext()
-                    .getRequest();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
             return request;
         }
 
@@ -85,9 +83,7 @@ public class BeanUtils {
      */
     public static String getServletPathWithHostAsUrlFromJsfContext() {
         if (FacesContext.getCurrentInstance() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getRequest();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             if (request != null) {
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
             }
@@ -95,19 +91,18 @@ public class BeanUtils {
 
         return "";
     }
-    
+
     public static boolean hasJsfContext() {
         return FacesContext.getCurrentInstance() != null;
     }
 
-    
     public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
         StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-        if(!sb.toString().endsWith("/")) {
+        if (!sb.toString().endsWith("/")) {
             sb.append("/");
         }
         sb.append("resources").append("/");
-        if(StringUtils.isNotBlank(theme)) {
+        if (StringUtils.isNotBlank(theme)) {
             sb.append("themes").append("/").append(theme).append("/");
         }
         sb.append("images").append("/");
@@ -121,8 +116,7 @@ public class BeanUtils {
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null && context.getExternalContext() != null) {
-            return (ServletContext) context.getExternalContext()
-                    .getContext();
+            return (ServletContext) context.getExternalContext().getContext();
         }
 
         return null;
@@ -146,20 +140,16 @@ public class BeanUtils {
 
         // Via CDI
         try {
-            ret = CDI.current()
-                    .getBeanManager();
+            ret = CDI.current().getBeanManager();
             if (ret != null) {
                 return ret;
             }
         } catch (IllegalStateException e) {
         }
         // Via FacesContext
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getContext() != null) {
-            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getContext()).getAttribute("javax.enterprise.inject.spi.BeanManager");
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
+            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext())
+                    .getAttribute("javax.enterprise.inject.spi.BeanManager");
             if (ret != null) {
                 return ret;
             }
@@ -177,12 +167,8 @@ public class BeanUtils {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
-        if (bm != null && bm.getBeans(name)
-                .iterator()
-                .hasNext()) {
-            Bean bean = bm.getBeans(name)
-                    .iterator()
-                    .next();
+        if (bm != null && bm.getBeans(name).iterator().hasNext()) {
+            Bean bean = bm.getBeans(name).iterator().next();
             CreationalContext ctx = bm.createCreationalContext(bean);
             return bm.getReference(bean, clazz, ctx);
         }
@@ -195,8 +181,17 @@ public class BeanUtils {
      * @return
      */
     public static NavigationHelper getNavigationHelper() {
-        return (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
+        NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
+        if (navigationHelper != null) {
+            try {
+                navigationHelper.getCurrentPage();
+            } catch (ContextNotActiveException e) {
+                navigationHelper = new NavigationHelper();
+            }
+        }
+        return navigationHelper;
     }
+
 
     /**
      * 
@@ -213,7 +208,7 @@ public class BeanUtils {
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
-    
+
     public static CmsCollectionsBean getCMSCollectionsBean() {
         return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
     }
@@ -241,11 +236,17 @@ public class BeanUtils {
     public static UserBean getUserBean() {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
-    
+
     public static ImageDeliveryBean getImageDeliveryBean() {
-        ImageDeliveryBean bean =  (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
-        if(bean == null) {
+        ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
+        if (bean == null) {
             bean = new ImageDeliveryBean();
+        } else {
+            try {
+                bean.getThumbs();
+            } catch (ContextNotActiveException e) {
+                bean = new ImageDeliveryBean();
+            }
         }
         return bean;
     }
@@ -264,8 +265,7 @@ public class BeanUtils {
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null) {
-            return (UserBean) request.getSession()
-                    .getAttribute("userBean");
+            return (UserBean) request.getSession().getAttribute("userBean");
         }
 
         return null;
@@ -287,7 +287,7 @@ public class BeanUtils {
     public static String escapeCriticalUrlChracters(String value) {
         return escapeCriticalUrlChracters(value, false);
     }
-    
+
     /**
      *
      * @param value
@@ -299,10 +299,8 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        value = value.replace("/", SLASH_REPLACEMENT)
-                .replace("\\", BACKSLASH_REPLACEMENT)
-                .replace("?", QUESTION_MARK_REPLACEMENT);
-        if(escapePercentCharacters) {
+        value = value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
+        if (escapePercentCharacters) {
             value = value.replace("%", PERCENT_REPLACEMENT);
         }
         return value;

@@ -48,9 +48,12 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.Absolute
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 @Provider
-@ContentServerBinding
+@ContentServerImageBinding
+@ContentServerImageInfoBinding
 public class ImageRequestFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageRequestFilter.class);

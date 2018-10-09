@@ -397,6 +397,9 @@ span[class*=" image-"] {
 .popover-content {
   color: #1a1a1a;
 }
+.table > tbody > tr > td {
+  word-break: break-word;
+}
 /* BS GRID RESETS */
 .row.no-margin {
   margin: 0;
@@ -2664,12 +2667,8 @@ html.is-IE .support-overlay {
   transform: rotate(-45deg);
 }
 .e-pub__item-order-label {
-  position: absolute;
-  display: inline-block;
-  top: -5px;
-  right: -5px;
-  min-width: 10px;
-  min-height: 10px;
+  display: block;
+  margin-top: 3px;
   padding: 1px 3px;
   color: #fff;
   font-size: 0.75rem;
@@ -5956,6 +5955,9 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   border-radius: 0;
   background-color: #eee;
+}
+.view-fulltext__box pre > br:first-child {
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -9947,6 +9949,7 @@ img.cms-static-pages__page-language--complete {
   margin-bottom: 15px;
 }
 .cms-collections__selection-control {
+  position: relative;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
@@ -9954,6 +9957,9 @@ img.cms-static-pages__page-language--complete {
 }
 .cms-collections__selection-control .custom-control--select {
   margin-right: 24px;
+}
+.cms-collections__selection-control .ui-autocomplete {
+  top: 100%;
 }
 .cms-collections__selection-control .ui-widget {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
