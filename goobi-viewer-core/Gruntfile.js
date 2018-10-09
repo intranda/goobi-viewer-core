@@ -128,7 +128,6 @@ module.exports = function(grunt) {
 	// ---------- LOAD TASKS ----------
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// ---------- REGISTER DEVELOPMENT TASKS ----------
