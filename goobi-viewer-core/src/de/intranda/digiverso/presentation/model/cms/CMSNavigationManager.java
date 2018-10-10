@@ -16,29 +16,37 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.faces.validators.CMSTitleValidator;
 
 public class CMSNavigationManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSNavigationManager.class);
-    private static volatile long availableItemIdCounter;
+    private AtomicInteger visibleItemIdCounter = new AtomicInteger(0);
 
-    private List<CMSNavigationItem> availableItems;
+    private final String associatedTheme;
+    private List<SelectableNavigationItem> availableItems;
     private List<CMSNavigationItem> visibleItems;
 
     //    public static CMSNavigationManager getInstance() {
     //        return instance;
     //    }
 
-    public CMSNavigationManager() {
+    public CMSNavigationManager(String associatedTheme) {
+        this.associatedTheme = associatedTheme;
         try {
             loadItems();
         } catch (DAOException e) {
@@ -46,29 +54,28 @@ public class CMSNavigationManager {
         }
     }
 
-    public final List<CMSNavigationItem> loadItems() throws DAOException {
+    public final void loadItems() throws DAOException {
         logger.trace("Loading available navigation items");
         availableItems = new ArrayList<>();
-        availableItemIdCounter = 0;
-        CMSNavigationItem start = new CMSNavigationItem("index", "home");
+        SelectableNavigationItem start = new SelectableNavigationItem("index", "home");
         addAvailableItem(start);
-        CMSNavigationItem search = new CMSNavigationItem("search", "search");
+        SelectableNavigationItem search = new SelectableNavigationItem("search", "search");
         addAvailableItem(search);
-        CMSNavigationItem searchadvanced = new CMSNavigationItem("searchadvanced", "searchAdvanced");
+        SelectableNavigationItem searchadvanced = new SelectableNavigationItem("searchadvanced", "searchAdvanced");
         addAvailableItem(searchadvanced);
-        CMSNavigationItem searchtimeline = new CMSNavigationItem("searchtimeline", "searchTimeline");
+        SelectableNavigationItem searchtimeline = new SelectableNavigationItem("searchtimeline", "searchTimeline");
         addAvailableItem(searchtimeline);
-        CMSNavigationItem searchcalendar = new CMSNavigationItem("searchcalendar", "searchCalendar");
+        SelectableNavigationItem searchcalendar = new SelectableNavigationItem("searchcalendar", "searchCalendar");
         addAvailableItem(searchcalendar);
-        CMSNavigationItem browse = new CMSNavigationItem("browse", "browse");
+        SelectableNavigationItem browse = new SelectableNavigationItem("browse", "browse");
         addAvailableItem(browse);
-        CMSNavigationItem timematrix = new CMSNavigationItem("timematrix", "timematrix");
+        SelectableNavigationItem timematrix = new SelectableNavigationItem("timematrix", "timematrix");
         addAvailableItem(timematrix);
-        CMSNavigationItem statistics = new CMSNavigationItem("statistics", "statistics");
+        SelectableNavigationItem statistics = new SelectableNavigationItem("statistics", "statistics");
         addAvailableItem(statistics);
-        CMSNavigationItem tags = new CMSNavigationItem("tags", "tagclouds");
+        SelectableNavigationItem tags = new SelectableNavigationItem("tags", "tagclouds");
         addAvailableItem(tags);
-        CMSNavigationItem user = new CMSNavigationItem("user", "user");
+        SelectableNavigationItem user = new SelectableNavigationItem("user", "user");
         user.setDisplayForUsersOnly(true);
         addAvailableItem(user);
 
@@ -76,7 +83,6 @@ public class CMSNavigationManager {
         addCMSPageItems();
 
         visibleItems = loadVisibleItems();
-        return availableItems;
     }
 
     /**
@@ -86,7 +92,7 @@ public class CMSNavigationManager {
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
             if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus())) {
-                CMSNavigationItem item = new CMSNavigationItem(cmsPage);
+                SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
                 addAvailableItem(item);
             }
         }
@@ -100,20 +106,29 @@ public class CMSNavigationManager {
                 .getModules()
                 .stream()
                 .flatMap(module -> module.getCmsMenuContributions().entrySet().stream())
-                .map(entry -> new CMSNavigationItem(entry.getValue(), entry.getKey()))
+                .map(entry -> new SelectableNavigationItem(entry.getValue(), entry.getKey()))
                 .forEach(item -> addAvailableItem(item));
 
     }
 
-    public void addAvailableItem(CMSNavigationItem item) {
+    public void addAvailableItem(SelectableNavigationItem item) {
         if (!availableItems.contains(item)) {
-            item.setAvailableItemId(++availableItemIdCounter);
             availableItems.add(item);
         }
     }
 
-    public List<CMSNavigationItem> getAvailableItems() {
+    public List<SelectableNavigationItem> getAvailableItems() {
         return availableItems;
+    }
+
+    /**
+     * Add all items from {@link #availableItems} to {@link #visibleItems} for which {@link SelectableNavigationItem#isSelected()} is true. Afterwards
+     * sets {@link SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
+     */
+    public void addSelectedItemsToMenu() {
+        getAvailableItems().stream().filter(SelectableNavigationItem::isSelected).map(selectedItem -> new CMSNavigationItem(selectedItem)).forEach(
+                visibleItem -> addVisibleItem(visibleItem));
+        getAvailableItems().forEach(item -> item.setSelected(false));
     }
 
     /**
@@ -121,21 +136,45 @@ public class CMSNavigationManager {
      * @throws DAOException
      */
     public final List<CMSNavigationItem> loadVisibleItems() throws DAOException {
-           List<CMSNavigationItem> daoList = DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+        List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().collect(Collectors.toList());
+        daoList = cloneItemHierarchy(daoList);
         setVisibleItems(daoList);
         return visibleItems;
     }
 
-    public List<CMSNavigationItem> getVisibleItems() {
-        return visibleItems;
+    /**
+     * @param daoList
+     * @return
+     */
+    private List<CMSNavigationItem> cloneItemHierarchy(List<CMSNavigationItem> items) {
+        List<CMSNavigationItem> clones = new ArrayList<>();
+        for (CMSNavigationItem item : items) {
+            CMSNavigationItem clone = new CMSNavigationItem(item);
+            clones.add(clone);
+            if(item.getChildItems() != null) {                
+                    List<CMSNavigationItem> childClones = cloneItemHierarchy(item.getChildItems());
+                    childClones.forEach(cc -> cc.setParentItem(clone));
+            }
+        }
+        return clones;
     }
 
-    private void addToList(List<CMSNavigationItem> list, CMSNavigationItem daoItem) {
-        list.add(getAvailableItem(daoItem));
-        for (CMSNavigationItem child : daoItem.getChildItems()) {
-            addToList(list, child);
-        }
+    /**
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
+        List<CMSNavigationItem> daoList = DataManager.getInstance()
+                .getDao()
+                .getAllTopCMSNavigationItems()
+                .stream()
+                .filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(getAssociatedTheme()))
+                .collect(Collectors.toList());
+        return daoList;
+    }
 
+    public List<CMSNavigationItem> getVisibleItems() {
+        return visibleItems;
     }
 
     /**
@@ -144,11 +183,8 @@ public class CMSNavigationManager {
      * @param items
      */
     public void setVisibleItems(List<CMSNavigationItem> items) {
-        List<CMSNavigationItem> visibleList = new ArrayList<>(items.size());
-        for (CMSNavigationItem item : items) {
-            addToList(visibleList, item);
-        }
-        this.visibleItems = visibleList;
+        this.visibleItems = new ArrayList<>();
+        items.stream().map(CMSNavigationItem::getMeWithDescendants).flatMap(l -> l.stream()).forEach(item -> addVisibleItem(item));
     }
 
     /**
@@ -157,11 +193,13 @@ public class CMSNavigationManager {
      * @param selectedItems
      * @throws DAOException
      */
-    public void saveVisibleItems() throws DAOException {
-        List<CMSNavigationItem> oldItems = DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+    public void saveVisibleItems(String theme) throws DAOException {
+
+        List<CMSNavigationItem> oldItems = loadItemsFromDatabase();
         for (CMSNavigationItem oldItem : oldItems) {
             deleteItem(oldItem);
         }
+
         for (CMSNavigationItem item : getVisibleItems()) {
             if (item.getLevel() == 0) {
                 addItem(item);
@@ -202,43 +240,14 @@ public class CMSNavigationManager {
                 throw e;
             }
         }
-        DataManager.getInstance().getDao().deleteCMSNavigationItem(oldItem);
-
-    }
-
-    public CMSNavigationItem getVisibleItem(String id) {
-        for (CMSNavigationItem availableItem : getVisibleItems()) {
-            if (availableItem.getAvailableItemId().equals(Long.parseLong(id))) {
-                return availableItem;
+        if(oldItem.getId() != null) {     
+            try {                
+                DataManager.getInstance().getDao().deleteCMSNavigationItem(oldItem);
+            } catch(EntityNotFoundException e) {
+                //no need to delete
             }
         }
-        return null;
-    }
 
-    public CMSNavigationItem getAvailableItem(String id) {
-        for (CMSNavigationItem availableItem : getAvailableItems()) {
-            if (availableItem.getAvailableItemId().equals(Long.parseLong(id))) {
-                return availableItem;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * supplies the item with the availableItemId of the matching available item. If no such item exists, one is created
-     *
-     * @param item
-     * @return the item itself
-     */
-    public CMSNavigationItem getAvailableItem(CMSNavigationItem item) {
-        for (CMSNavigationItem availableItem : getAvailableItems()) {
-            if (item.getItemLabel().equals(availableItem.getItemLabel()) && item.getPageUrl().equals(availableItem.getPageUrl())) {
-                item.setAvailableItemId(availableItem.getAvailableItemId());
-                return item;
-            }
-        }
-        addAvailableItem(item);
-        return item;
     }
 
     /**
@@ -248,8 +257,10 @@ public class CMSNavigationManager {
         if (navigationItem.getItemLabel() == null || navigationItem.getPageUrl() == null) {
             logger.error("Missing fields of navigation item: Cannot save");
         } else {
-            visibleItems.add(0, navigationItem);
-            addAvailableItem(navigationItem);
+            if (navigationItem.getSortingListId() == null) {
+                navigationItem.setSortingListId(visibleItemIdCounter.getAndIncrement());
+            }
+            visibleItems.add(navigationItem);
         }
     }
 
@@ -258,32 +269,21 @@ public class CMSNavigationManager {
      *
      */
     public void reload() throws DAOException {
-        loadItems();
+        loadVisibleItems();
     }
 
     /**
-     * Apply changes made to the given item to the available items of the same id
+     * @param id the item's {@link CMSNavigationItem#getSortingListId()}
+     * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
      */
-    public void synchronizeItem(CMSNavigationItem visibleItem) {
-        if (visibleItem != null) {
-            CMSNavigationItem availableItem = getAvailableItem(visibleItem.getAvailableItemId().toString());
-            if (availableItem != null) {
-                availableItem.setItemLabel(visibleItem.getItemLabel());
-                availableItem.setPageUrl(visibleItem.getPageUrl());
-            }
-        }
-
+    public Optional<CMSNavigationItem> getItem(String id) {
+        return getVisibleItems().stream().filter(item -> item.getSortingListId().toString().equals(id)).findFirst();
     }
 
     /**
-     * @param id
-     * @return  The first matching item from all visible items, or - failing that - the first matching item of all available items
+     * @return the associatedTheme
      */
-    public CMSNavigationItem getItem(String id) {
-        CMSNavigationItem item = getVisibleItem(id);
-        if(item == null) {
-            item = getAvailableItem(id);
-        }
-        return item;
+    public String getAssociatedTheme() {
+        return associatedTheme;
     }
 }

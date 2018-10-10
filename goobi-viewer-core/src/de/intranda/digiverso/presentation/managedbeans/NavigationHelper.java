@@ -635,7 +635,6 @@ public class NavigationHelper implements Serializable {
 
     public void changeTheme() throws IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().isSubthemesEnabled()) {
-            String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             String discriminatorValue = getSubThemeDiscriminatorValue();
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 logger.trace("Using discriminator value: {}", discriminatorValue);
@@ -654,6 +653,7 @@ public class NavigationHelper implements Serializable {
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
         }
+        setCmsPage(false);
     }
 
     public void setTheme(String theme) {
@@ -1190,5 +1190,21 @@ public class NavigationHelper implements Serializable {
      */
     public String urlEncodeUnicode(String s) {
         return BeanUtils.escapeCriticalUrlChracters(s);
+    }
+
+    /**
+     * @return
+     */
+    public String getThemeOrSubtheme() {
+        String currentTheme = getTheme();
+        try {                
+            String discriminatorValue =  getSubThemeDiscriminatorValue();
+            if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
+                currentTheme = discriminatorValue;
+            }
+        } catch(IndexUnreachableException e) {
+            logger.error("Cannot read current subtheme", e);
+        }
+        return currentTheme;
     }
 }

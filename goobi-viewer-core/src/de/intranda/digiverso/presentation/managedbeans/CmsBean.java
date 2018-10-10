@@ -73,6 +73,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
+import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.glossary.Glossary;
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
@@ -527,7 +528,7 @@ public class CmsBean implements Serializable {
             resetCollectionsForPage(selectedPage.getId().toString());
             if (cmsNavigationBean != null) {
                 logger.trace("add navigation item");
-                cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
+                cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
             }
         }
         logger.trace("Done saving page");
@@ -662,7 +663,8 @@ public class CmsBean implements Serializable {
 
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
-            return DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+            String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+            return DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> item.getAssociatedTheme() == null || item.getAssociatedTheme().equalsIgnoreCase(currentTheme)).collect(Collectors.toList());
         } catch (DAOException e) {
             return Collections.emptyList();
         }

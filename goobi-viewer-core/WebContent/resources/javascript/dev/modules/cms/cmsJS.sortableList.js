@@ -115,6 +115,16 @@ var cmsJS = ( function( cms ) {
             
         },
         
+        remove: function(element) {
+            if ( _debug ) {
+                console.log( 'cmsJS.sortableList.remove: element - ', element );
+            }
+            var item = _getJQueryItem( element );
+            item.remove();
+            _updateAllSortIcons();
+            _serializeVisibleItems();
+        },
+        
         /**
          * Method which
          * 

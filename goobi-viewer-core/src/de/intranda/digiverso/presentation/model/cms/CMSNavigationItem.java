@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -101,8 +102,11 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     @Column(name = "open_in_new_window")
     private boolean openInNewWindow = false;
 
+    /**
+     * A temporary id given to an item when adding it to the menu. Used to identify the item in the navigation menu's hierarchy
+     */
     @Transient
-    private Long availableItemId;
+    private Integer sortingListId = null;
 
     /** Empty constructor. */
     public CMSNavigationItem() {
@@ -120,6 +124,8 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         setCmsPage(original.getCmsPage());
         setAbsoluteLink(original.isAbsoluteLink());
         setDisplayRule(original.getDisplayRule());
+        setOrder(original.getOrder());
+        setAssociatedTheme(original.getAssociatedTheme());
     }
 
     public CMSNavigationItem(String targetUrl, String label) {
@@ -141,7 +147,13 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         if (this == o) {
             return 0;
         }
-        return (order - o.getOrder());
+        else if(getOrder() != null && o.getOrder() != null) {            
+            return (getOrder() - o.getOrder());
+        } else if(getOrder() != null) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     public Long getId() {
@@ -189,7 +201,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      */
     public void setParentItem(CMSNavigationItem parentItem) {
         this.parentItem = parentItem;
-        parentItem.addChildItem(this);
+        if(parentItem != null) {            
+            parentItem.addChildItem(this);
+        }
     }
 
     public List<CMSNavigationItem> getChildItems() {
@@ -337,12 +351,18 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return level;
     }
 
-    public Long getAvailableItemId() {
-        return availableItemId;
+    /**
+     * @return the sortingListId
+     */
+    public Integer getSortingListId() {
+        return sortingListId;
     }
-
-    public void setAvailableItemId(Long availableItemId) {
-        this.availableItemId = availableItemId;
+    
+    /**
+     * @param sortingListId the sortingListId to set
+     */
+    public void setSortingListId(Integer sortingListId) {
+        this.sortingListId = sortingListId;
     }
 
     @Override
@@ -453,6 +473,15 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         NOT_LOGGED_IN,
         LOGGED_IN,
         ADMIN;
+    }
+    
+    public List<CMSNavigationItem> getMeWithDescendants() {
+        List<CMSNavigationItem> items = new ArrayList<>();
+        items.add(this);
+        if(getChildItems() != null && !getChildItems().isEmpty()) {      
+            items.addAll(getChildItems().stream().flatMap(child -> child.getMeWithDescendants().stream()).collect(Collectors.toList()));
+        }
+        return items;
     }
 
 }
