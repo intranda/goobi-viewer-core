@@ -70,7 +70,7 @@
 									<h:inputText id="currentSearchInput" class="form-control" value="#{searchBean.searchString}" />
 
 									<div class="input-group-addon search">
-										<h:commandButton type="submit" id="slCurrentSearchTrigger" styleClass="btn-clean" action="#{cc.attrs.search.searchSimple()}">
+										<h:commandButton type="submit" id="slCurrentSearchTrigger" styleClass="btn-clean" action="#{cc.attrs.search.searchSimple(true, false)}">
 											<f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 										</h:commandButton>
 									</div>
