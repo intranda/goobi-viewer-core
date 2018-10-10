@@ -48,9 +48,9 @@ var cmsJS = ( function( cms ) {
             } );
             
             // toggle add new item
-            $( '[data-toggle="add-menu-item"]' ).on( 'click', function() {
+            $( '[data-toggle="available-items"]' ).on( 'click', function() {
             	$( this ).toggleClass( 'in' );
-            	$( this ).parent().find( '.cms-menu__add-item-options' ).slideToggle( 'fast' );
+            	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast' );
             	$( '#cmsMenuAddItemTrigger' ).click();
             } );
         }

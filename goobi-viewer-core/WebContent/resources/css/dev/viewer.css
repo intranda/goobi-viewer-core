@@ -9826,10 +9826,11 @@ div[id*="-Modal"] .email-form .form-group {
   /* HEADER */
   /* SAVE */
   /* SELECT THEME */
-  /* ADD ITEM */
   /* MENU EDITOR */
   /* VISIBLE/AVAILABLE ITEMS */
   /* AVAILABLE ITEMS */
+  /* PAGES */
+  /* ITEMS */
 }
 .cms-menu__header {
   display: -ms-flexbox;
@@ -9849,18 +9850,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__select-theme {
   margin-bottom: 15px;
-}
-.cms-menu__add-item [data-toggle="add-menu-item"] {
-  padding-bottom: 15px;
-}
-.cms-menu__add-item [data-toggle="add-menu-item"] .fa {
-  transition: all 0.2s linear;
-}
-.cms-menu__add-item [data-toggle="add-menu-item"].in .fa {
-  transform: rotate(-45deg);
-}
-.cms-menu__add-item-options {
-  display: none;
 }
 .cms-menu__editor {
   display: -ms-grid;
@@ -9961,12 +9950,24 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__available-items-list li {
   border: 1px solid #ccc;
+  border-bottom: none;
   background-color: #eee;
 }
 .cms-menu__available-items-list h5 {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
   margin: 0;
   padding: 12px;
   border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+.cms-menu__available-items-list h5 .fa {
+  transition: all 0.2s linear;
+}
+.cms-menu__available-items-list h5.in .fa {
+  transform: rotate(180deg);
 }
 .cms-menu__available-items-list-pages {
   max-height: 400px;
@@ -9991,6 +9992,33 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
   border-top: 1px solid #ccc;
   background-color: #fff;
+}
+.cms-menu__available-items-list-add-item {
+  display: none;
+}
+.cms-menu__available-items-list-add-item-options .cms-module__option {
+  margin: 0;
+  padding-bottom: 10px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+}
+.cms-menu__available-items-list-add-item-options .cms-module__option-group:last-child {
+  margin: 0;
+}
+.cms-menu__available-items-list-add-item-options .cms-module__option-label {
+  -ms-flex-preferred-size: 30%;
+      flex-basis: 30%;
+}
+.cms-menu__available-items-list-add-item-options .cms-module__option-control {
+  -ms-flex-preferred-size: 65%;
+      flex-basis: 65%;
+}
+.cms-menu__available-items-list-add-item-options .cms-module__option-action {
+  margin-right: -15px;
+  margin-left: -15px;
+  padding: 10px;
+  padding-bottom: 0;
+  border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

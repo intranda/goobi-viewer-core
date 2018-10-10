@@ -25,23 +25,6 @@
 	&__select-theme {
 		margin-bottom: 15px;
 	}
-	/* ADD ITEM */
-	&__add-item {
-		[data-toggle="add-menu-item"] {
-			padding-bottom: 15px;
-			.fa {
-				transition: all 0.2s linear;				
-			}
-			&.in {
-				.fa {
-					transform: rotate(-45deg);				
-				}	
-			}
-		}
-	}
-	&__add-item-options {
-		display: none;
-	}
 	/* MENU EDITOR */
 	&__editor {
 		display: grid;
@@ -138,14 +121,27 @@
 		}
 		li {
 			border: 1px solid @middlegray;
+			border-bottom: none;
 			background-color: @lightgray;
 		}
 		h5 {
+			display: flex;
+			justify-content: space-between;
 			margin: 0;
 			padding: 12px;
-			border-bottom: 1px solid @middlegray;			
+			border-bottom: 1px solid @middlegray;
+			cursor: pointer;
+			.fa {
+				transition: all 0.2s linear;				
+			}
+			&.in {
+				.fa {
+					transform: rotate(180deg);				
+				}	
+			}
 		}
 	}
+	/* PAGES */
 	&__available-items-list-pages {
 		max-height: 400px;
 		overflow-y: auto;
@@ -170,6 +166,38 @@
 		text-align: right;
 		border-top: 1px solid @middlegray;
 		background-color: @white;
+	}
+	/* ITEMS */
+	&__available-items-list-add-item {
+		display: none;		
+	}
+	&__available-items-list-add-item-options {
+		.cms-module {
+			&__option {
+				margin: 0;
+				padding-bottom: 10px;
+				border: none;
+				border-bottom: 1px solid @middlegray;
+			}
+			&__option-group {
+				&:last-child {
+					margin: 0;
+				}
+			}
+			&__option-label {
+				flex-basis: 30%;
+			}	
+			&__option-control {
+				flex-basis: 65%;
+			}
+			&__option-action {
+				margin-right: -15px;
+				margin-left: -15px;
+				padding: 10px;
+				padding-bottom: 0;
+				border-top: 1px solid @middlegray;
+			}
+		}
 	}
 }
 
