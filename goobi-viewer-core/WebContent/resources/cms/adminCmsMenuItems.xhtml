@@ -204,74 +204,65 @@
                                                 </button>
                                             </h5>
 
-                                            <!-- HIDDEN BUTTON -->
-                                            <h:commandButton id="cmsMenuAddItemTrigger" styleClass="btn-hidden" action="#{cmsNavigationBean.createNavigationItem()}">
-                                                <f:passThroughAttribute name="aria-hidden" value="true" />
-                                                <f:ajax render="@none"></f:ajax>
-                                            </h:commandButton>
-
                                             <div class="cms-menu__available-items-toggle cms-menu__available-items-list-add-item">
-                                                <h:panelGroup id="availableItemsListAddItemOptions" styleClass="cms-menu__available-items-list-add-item-options" layout="block">
-                                                    <!-- OPTION -->
-                                                    <div class="cms-module__option">
-                                                        <!-- OPTION GROUP -->
-                                                        <div class="cms-module__option-group">
-                                                            <div class="cms-module__option-label">
-                                                                <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
-                                                            </div>
-                                                            <div class="cms-module__option-control">
-                                                                <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}"
-                                                                    styleClass="form-control" />
-                                                                <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
-                                                            </div>
-                                                            <div class="cms-module__option-help">
-                                                                <button type="button" class="btn-clean" data-toggle="helptext">
-                                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                </button>
-                                                            </div>
+                                                <!-- OPTION -->
+                                                <div class="cms-module__option">
+                                                    <!-- OPTION GROUP -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
                                                         </div>
-
-                                                        <!-- OPTION GROUP -->
-                                                        <div class="cms-module__option-group">
-                                                            <div class="cms-module__option-label">
-                                                                <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
-                                                            </div>
-                                                            <div class="cms-module__option-control">
-                                                                <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
-                                                                <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
-                                                            </div>
-                                                            <div class="cms-module__option-help">
-                                                                <button type="button" class="btn-clean" data-toggle="helptext">
-                                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                </button>
-                                                            </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
-
-                                                        <!-- OPTION GROUP -->
-                                                        <div class="cms-module__option-group">
-                                                            <div class="cms-module__option-label">
-                                                                <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
-                                                            </div>
-                                                            <div class="cms-module__option-control">
-                                                                <span class="cms-module__option-control-checkbox">
-                                                                    <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
-                                                                </span>
-                                                                <br />
-                                                                <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
-                                                            </div>
-                                                            <div class="cms-module__option-help">
-                                                                <button type="button" class="btn-clean" data-toggle="helptext">
-                                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- ACTION -->
-                                                        <div class="cms-module__option-action">
-                                                            <h:commandButton value="#{msg.cms_menu_create_item_add}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn-clean btn--link" />
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                </h:panelGroup>
+
+                                                    <!-- OPTION GROUP -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- OPTION GROUP -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <span class="cms-module__option-control-checkbox">
+                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
+                                                            </span>
+                                                            <br />
+                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- ACTION -->
+                                                    <div class="cms-module__option-action">
+                                                        <h:commandButton value="#{msg.cms_menu_create_item_add}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn-clean btn--link" />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </li>
                                     </ul>
