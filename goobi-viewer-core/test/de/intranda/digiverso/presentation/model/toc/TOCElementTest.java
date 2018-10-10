@@ -24,11 +24,9 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
-
 public class TOCElementTest {
 
-
-     /**
+    /**
      * @throws java.lang.Exception
      */
     @Before
@@ -36,14 +34,14 @@ public class TOCElementTest {
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
 
-
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)
      * @verifies add logId to url
      */
     @Test
     public void TOCElement_shouldAddLogIdToUrl() throws Exception {
-        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, "image", null, null);
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, true,
+                "image", null, null);
         Assert.assertEquals("LOG_0001", tef.getLogId());
         Assert.assertTrue(tef.getUrl().endsWith("/LOG_0001/"));
         Assert.assertTrue(tef.getFullscreenUrl().endsWith("/LOG_0001/"));
@@ -55,7 +53,8 @@ public class TOCElementTest {
      */
     @Test
     public void TOCElement_shouldSetCorrectViewUrlForGivenDocStructType() throws Exception {
-        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, "image", "Catalogue", null);
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, true, false, true,
+                "image", "Catalogue", null);
         Assert.assertEquals("LOG_0001", tef.getLogId());
         Assert.assertTrue(tef.getUrl().contains("/" + PageType.viewToc.getName() + "/"));
 
@@ -67,7 +66,8 @@ public class TOCElementTest {
      */
     @Test
     public void getUrl_shouldConstructFullScreenUrlCorrectly() throws Exception {
-        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, "image", null, null);
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
+                "image", null, null);
         Assert.assertEquals('/' + PageType.viewReadingMode.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewReadingMode.getName()));
     }
 
@@ -77,7 +77,8 @@ public class TOCElementTest {
      */
     @Test
     public void getUrl_shouldConstructReadingModeUrlCorrectly() throws Exception {
-        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, "image", null, null);
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
+                "image", null, null);
         Assert.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
     }
 }
