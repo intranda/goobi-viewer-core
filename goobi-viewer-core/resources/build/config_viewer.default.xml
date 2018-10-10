@@ -90,13 +90,14 @@
 		<!-- userRegistrationEnabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<userRegistrationEnabled>true</userRegistrationEnabled>
 
-		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element defines an authentication provider.
-		     Required attributes: name, endpoint (auth URL), clientId, clientSecret, image. -->
-        <authenticationProviders>
-            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
-            <provider type="local" name="Goobi viewer"/>
-        </authenticationProviders>
+		<!-- List of authentication providers. Each <provider> element defines an authentication provider. 
+		     Possible attributes for providers are: type, show, name, endpoint (auth URL), clientId, clientSecret, image, timeout. -->
+	        <authenticationProviders>
+	            <provider type="local" show="true" name="Goobi viewer"/>
+	            <provider type="openId" show="true" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+		    <provider type="openId" show="false" ame="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
+		    <provider type="userPassword" show="false" name="VuFind" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000"/>
+	        </authenticationProviders>
 
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress')
 		     and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory and have no default value. -->
