@@ -2070,7 +2070,15 @@ public final class Configuration extends AbstractConfiguration {
         //        defaultList.add("600");
         //        defaultList.add("900");
         //        defaultList.add("1500");
-        return Arrays.asList(getZoomImageViewConfig(view, image).getStringArray("scale"));
+        
+        SubnodeConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
+        if(zoomImageViewConfig != null) {
+            String[] scales = zoomImageViewConfig.getStringArray("scale");
+            if(scales != null) {
+                return Arrays.asList(scales);
+            }
+        }
+        return defaultList;
     }
 
     /**
