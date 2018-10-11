@@ -1011,6 +1011,13 @@
         <ger>Französisch</ger>
     </language>
     <language>
+        <iso_639-2>fre</iso_639-2>
+        <iso_639-1>fr</iso_639-1>
+        <eng>French</eng>
+        <fre>français</fre>
+        <ger>Französisch</ger>
+    </language>
+    <language>
         <iso_639-2>frm</iso_639-2>
         <iso_639-1> </iso_639-1>
         <eng>French, Middle (ca.1400-1600)</eng>
