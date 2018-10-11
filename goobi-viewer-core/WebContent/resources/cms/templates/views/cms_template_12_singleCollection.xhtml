@@ -15,7 +15,7 @@
     <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
             <f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>

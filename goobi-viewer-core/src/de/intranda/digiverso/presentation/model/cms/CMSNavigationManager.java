@@ -92,7 +92,7 @@ public class CMSNavigationManager {
     public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
-            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus())) {
+            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus()) && StringUtils.isNotBlank(cmsPage.getMenuTitle())) {
                 SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
                 addAvailableItem(item);
             }

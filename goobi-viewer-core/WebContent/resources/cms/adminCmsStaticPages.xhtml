@@ -61,7 +61,7 @@
                                                         <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
                                                             <f:selectItem itemValue="" itemLabel="#{msg.select}" itemDisabled="true" />
                                                             <f:selectItem itemValue="" itemLabel="#{msg.none}" />
-                                                            <f:selectItems value="#{cmsBean.getAvailableCmsPages(page)}" var="availablePage" itemValue="#{availablePage}" itemLabel="#{availablePage.menuTitle}" />
+                                                            <f:selectItems value="#{cmsBean.getAvailableCmsPages(page)}" var="availablePage" itemValue="#{availablePage}" itemLabel="#{availablePage.title}" />
                                                             <f:ajax event="change" render="@form" />
                                                         </h:selectOneMenu>
                                                     </div>

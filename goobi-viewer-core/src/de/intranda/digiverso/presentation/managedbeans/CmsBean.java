@@ -387,7 +387,7 @@ public class CmsBean implements Serializable {
                 logger.warn("Could not parse page number: {}", e.getMessage());
             }
             if (page != null) {
-                logger.trace("Found cmsPage " + page.getMenuTitle());
+                logger.trace("Found cmsPage " + page.getTitle());
                 // DataManager.getInstance().getDao().updateCMSPage(page);
             }
         }
@@ -577,7 +577,7 @@ public class CmsBean implements Serializable {
 
         for (CMSPageLanguageVersion languageVersion : page.getLanguageVersions()) {
             boolean languageIncomplete = false;
-            if (StringUtils.isBlank(languageVersion.getTitle()) || StringUtils.isBlank(languageVersion.getMenuTitle())) {
+            if (StringUtils.isBlank(languageVersion.getTitle())) {
                 // Messages.warn("cmsValidationErrorTitle");
                 languageIncomplete = true;
             }
@@ -740,7 +740,7 @@ public class CmsBean implements Serializable {
         if (currentPage != null) {
             this.currentPage.setListPage(1);
             navigationHelper.setCmsPage(true);
-            logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
+            logger.trace("Set current cms page to " + this.currentPage.getTitle());
         }
     }
 
@@ -1197,7 +1197,7 @@ public class CmsBean implements Serializable {
         Locale currentLocale = BeanUtils.getLocale();
         return getAllCMSPages().stream()
                 .filter(p -> !p.equals(page))
-                .sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2.getMenuTitle(currentLocale).toLowerCase()))
+                .sorted((p1, p2) -> p1.getTitle(currentLocale).toLowerCase().compareTo(p2.getTitle(currentLocale).toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -1254,9 +1254,14 @@ public class CmsBean implements Serializable {
         Messages.info("cms_staticPagesSaved");
     }
 
+    /**
+     * 
+     * @return all cmsPages which are valid and have a menu title
+     * @throws DAOException
+     */
     public List<CMSPage> getValidCMSPages() throws DAOException {
         return getAllCMSPages().stream()
-                .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID))
+                .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID) && StringUtils.isNotBlank(page.getMenuTitle()))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }

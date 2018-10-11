@@ -951,8 +951,7 @@ public class ActiveDocumentBean implements Serializable {
         } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {
-                String pageName = navigationHelper.getCurrentPage();
-                String cmsPageName = cmsPage.getMenuTitle();
+                String cmsPageName = StringUtils.isNotBlank(cmsPage.getMenuTitle()) ? cmsPage.getMenuTitle() : cmsPage.getTitle();
                 if (StringUtils.isNotBlank(cmsPageName)) {
                     return cmsPageName;
                 }

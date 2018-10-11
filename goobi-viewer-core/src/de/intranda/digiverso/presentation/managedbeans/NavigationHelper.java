@@ -864,7 +864,7 @@ public class NavigationHelper implements Serializable {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
-            LabeledLink pageLink = new LabeledLink(currentPage.getMenuTitle(), currentPage.getPageUrl(), 0);
+            LabeledLink pageLink = new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(), currentPage.getPageUrl(), 0);
             tempBreadcrumbs.add(0, pageLink);
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
