@@ -6,7 +6,6 @@
 .btn.ui-button,
 a.btn,
 input.btn,
-.btn.ui-button,
 .btn-search,
 .btn-clean,
 .btn-inactive {
@@ -17,11 +16,14 @@ input.btn,
 }
 
 .btn,
-.btn.ui-button {
+.btn.ui-button,
+a.btn,
+input.btn {
     position: relative;
     display: inline-block;
     padding: 6px 12px;
     font-weight: bold;
+    text-decoration: none;
     text-align: center;
     color: @black;
     border: none;
@@ -31,10 +33,7 @@ input.btn,
     background-position: center center;
     cursor: pointer;
     &:hover {}
-}
-
-a.btn {
-    text-decoration: none;
+    
 }
 
 input.btn,
@@ -68,7 +67,10 @@ input.btn,
 	display: none !important;
 }
 
-.btn--link {
+.btn--link,
+.btn--link.ui-button,
+a.btn--link,
+input.btn--link {
 	color: @blue;
 	&:hover,
 	&:active,
@@ -78,7 +80,22 @@ input.btn,
 	}
 }
 
-/* BREAKPOINT FOR LARGE DESKTOPS */
+.btn--default,
+.btn--default.ui-button,
+a.btn--default,
+input.btn--default {
+	color: @lowerblack;
+	font-weight: 100;
+	border: 1px solid @middlegray;
+	background-color: @lightgray2;
+	&:hover,
+	&:active,
+	&:focus {
+		color: @lowerblack;
+		background-color: @neutralgray;
+	}
+}
+
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOP */

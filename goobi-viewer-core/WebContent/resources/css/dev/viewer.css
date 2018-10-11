@@ -349,6 +349,124 @@ span[class*=" image-"] {
   content: "\e913";
 }
 /* ==============================================================
+   CSS Grid Classes
+   ==============================================================*/
+/* CSS GRID */
+.grid {
+  display: -ms-grid;
+  display: grid;
+  grid-gap: 15px;
+  /* COLS */
+  /* MODIFICATION */
+}
+.grid__col-2 {
+  -ms-grid-column-span: 2;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 2;
+}
+.grid__col-3 {
+  -ms-grid-column-span: 3;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 3;
+}
+.grid__col-4 {
+  -ms-grid-column-span: 4;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 4;
+}
+.grid__col-5 {
+  -ms-grid-column-span: 5;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 5;
+}
+.grid__col-6 {
+  -ms-grid-column-span: 6;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 6;
+}
+.grid__col-7 {
+  -ms-grid-column-span: 7;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 7;
+}
+.grid__col-8 {
+  -ms-grid-column-span: 8;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 8;
+}
+.grid__col-9 {
+  -ms-grid-column-span: 9;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 9;
+}
+.grid__col-10 {
+  -ms-grid-column-span: 10;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 10;
+}
+.grid__col-11 {
+  -ms-grid-column-span: 11;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 11;
+}
+.grid__col-12 {
+  -ms-grid-column-span: 12;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 12;
+}
+.grid--1 {
+  -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr;
+}
+.grid--2 {
+  -ms-grid-columns: (1fr)[2];
+      grid-template-columns: repeat(2, 1fr);
+}
+.grid--3 {
+  -ms-grid-columns: (1fr)[3];
+      grid-template-columns: repeat(3, 1fr);
+}
+.grid--4 {
+  -ms-grid-columns: (1fr)[4];
+      grid-template-columns: repeat(4, 1fr);
+}
+.grid--5 {
+  -ms-grid-columns: (1fr)[5];
+      grid-template-columns: repeat(5, 1fr);
+}
+.grid--6 {
+  -ms-grid-columns: (1fr)[6];
+      grid-template-columns: repeat(6, 1fr);
+}
+.grid--7 {
+  -ms-grid-columns: (1fr)[7];
+      grid-template-columns: repeat(7, 1fr);
+}
+.grid--8 {
+  -ms-grid-columns: (1fr)[8];
+      grid-template-columns: repeat(8, 1fr);
+}
+.grid--9 {
+  -ms-grid-columns: (1fr)[9];
+      grid-template-columns: repeat(9, 1fr);
+}
+.grid--10 {
+  -ms-grid-columns: (1fr)[10];
+      grid-template-columns: repeat(10, 1fr);
+}
+.grid--11 {
+  -ms-grid-columns: (1fr)[11];
+      grid-template-columns: repeat(11, 1fr);
+}
+.grid--12 {
+  -ms-grid-columns: (1fr)[12];
+      grid-template-columns: repeat(12, 1fr);
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Resets for CSS Libs
    ==============================================================*/
 /* BOOTSTRAP */
@@ -970,7 +1088,6 @@ button {
 .btn.ui-button:focus,
 a.btn:focus,
 input.btn:focus,
-.btn.ui-button:focus,
 .btn-search:focus,
 .btn-clean:focus,
 .btn-inactive:focus,
@@ -978,18 +1095,20 @@ input.btn:focus,
 .btn.ui-button:active,
 a.btn:active,
 input.btn:active,
-.btn.ui-button:active,
 .btn-search:active,
 .btn-clean:active,
 .btn-inactive:active {
   outline: none;
 }
 .btn,
-.btn.ui-button {
+.btn.ui-button,
+a.btn,
+input.btn {
   position: relative;
   display: inline-block;
   padding: 6px 12px;
   font-weight: bold;
+  text-decoration: none;
   text-align: center;
   color: #1a1a1a;
   border: none;
@@ -998,9 +1117,6 @@ input.btn:active,
   background-repeat: no-repeat;
   background-position: center center;
   cursor: pointer;
-}
-a.btn {
-  text-decoration: none;
 }
 input.btn .ui-button-text,
 .btn.ui-button .ui-button-text {
@@ -1023,16 +1139,51 @@ input.btn .ui-button-text,
 .btn-hidden {
   display: none !important;
 }
-.btn--link {
+.btn--link,
+.btn--link.ui-button,
+a.btn--link,
+input.btn--link {
   color: #507ebf;
 }
 .btn--link:hover,
+.btn--link.ui-button:hover,
+a.btn--link:hover,
+input.btn--link:hover,
 .btn--link:active,
-.btn--link:focus {
+.btn--link.ui-button:active,
+a.btn--link:active,
+input.btn--link:active,
+.btn--link:focus,
+.btn--link.ui-button:focus,
+a.btn--link:focus,
+input.btn--link:focus {
   color: #1a1a1a;
   text-decoration: underline;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
+.btn--default,
+.btn--default.ui-button,
+a.btn--default,
+input.btn--default {
+  color: #555;
+  font-weight: 100;
+  border: 1px solid #ccc;
+  background-color: #f7f7f7;
+}
+.btn--default:hover,
+.btn--default.ui-button:hover,
+a.btn--default:hover,
+input.btn--default:hover,
+.btn--default:active,
+.btn--default.ui-button:active,
+a.btn--default:active,
+input.btn--default:active,
+.btn--default:focus,
+.btn--default.ui-button:focus,
+a.btn--default:focus,
+input.btn--default:focus {
+  color: #555;
+  background-color: #f2f3f4;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -4126,6 +4277,7 @@ div[id*="-Modal"] .email-form .form-group {
 .styles__fonts,
 .styles__headings,
 .styles__typo,
+.styles__buttons,
 .styles__helper,
 .styles__mixins {
   margin-bottom: 15px;
@@ -5375,13 +5527,33 @@ div[id*="-Modal"] .email-form .form-group {
    User
    style declarations for user.xhtml
    ==============================================================*/
-/* USER */
+/* USER LOGIN */
 /* BLOCK */
-.user {
-  /* ELEMENT */
+.user-login {
+  /* LOCAL */
+  /* EXTERNAL */
+  /* OPEN ID */
+  /* ELMENTS */
 }
-.user__action .btn {
+.user-login__external .user-login__options li {
+  text-align: right;
+}
+.user-login__action .btn {
   margin: 0;
+}
+/* USER LOGIN CARD */
+.user-login__card {
+  height: 100%;
+  border: 1px solid #ccc;
+}
+.user-login__card h3 {
+  margin: 0;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+}
+.user-login__card-body {
+  padding: 15px;
 }
 /* MODALS */
 #createAccountModal p {
@@ -5394,11 +5566,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .user__options {
-    margin-top: 10px;
-  }
-}
 /* ==============================================================
    User Account Create
    style declarations for userAccountCreate.xhtml
@@ -9855,12 +10022,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__save {
   text-align: right;
+  padding-right: 11px;
 }
 .cms-menu__save.fixed {
   position: fixed;
   top: 0;
-  padding: 15px;
-  padding-right: 0;
+  padding: 15px 11px;
   z-index: 999;
 }
 .cms-menu__select-theme {
@@ -9897,7 +10064,7 @@ div[id*="-Modal"] .email-form .form-group {
       flex-wrap: wrap;
   margin-bottom: 5px;
   border: 1px solid #ccc;
-  background-color: #eee;
+  background-color: #f2f3f4;
 }
 .cms-menu__visible-item.unpublished {
   opacity: 0.5;
@@ -9967,7 +10134,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   border-top: none;
   border-bottom: none;
-  background-color: #eee;
+  background-color: #f2f3f4;
 }
 .cms-menu__available-items-list li:first-child {
   border-top: 1px solid #ccc;
@@ -10017,7 +10184,6 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-item-page-add {
   padding: 10px;
   text-align: right;
-  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   background-color: #fff;
 }
@@ -10033,9 +10199,7 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-items-list-add-item .cms-module__option-action {
   margin-right: -15px;
   margin-left: -15px;
-  padding: 10px;
-  padding-bottom: 0;
-  border-top: 1px solid #ccc;
+  padding: 0 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

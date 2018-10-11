@@ -1,0 +1,46 @@
+/* ==============================================================
+   CSS Grid Classes
+   ==============================================================*/
+/* CSS GRID */
+.grid {
+	display: grid;
+	grid-gap: 15px;
+	/* COLS */
+	&__col {}
+	&__col-2 { grid-column: 1 / span 2; }
+	&__col-3 { grid-column: 1 / span 3; }
+	&__col-4 { grid-column: 1 / span 4; }
+	&__col-5 { grid-column: 1 / span 5; }
+	&__col-6 { grid-column: 1 / span 6; }
+	&__col-7 { grid-column: 1 / span 7; }
+	&__col-8 { grid-column: 1 / span 8; }
+	&__col-9 { grid-column: 1 / span 9; }
+	&__col-10 { grid-column: 1 / span 10; }
+	&__col-11 { grid-column: 1 / span 11; }
+	&__col-12 { grid-column: 1 / span 12; }
+	/* MODIFICATION */
+	&--1 { grid-template-columns: 1fr; }
+	&--2 { grid-template-columns: repeat(2, 1fr); }
+	&--3 { grid-template-columns: repeat(3, 1fr); }
+	&--4 { grid-template-columns: repeat(4, 1fr); }
+	&--5 { grid-template-columns: repeat(5, 1fr); }
+	&--6 { grid-template-columns: repeat(6, 1fr); }
+	&--7 { grid-template-columns: repeat(7, 1fr); }
+	&--8 { grid-template-columns: repeat(8, 1fr); }
+	&--9 { grid-template-columns: repeat(9, 1fr); }
+	&--10 { grid-template-columns: repeat(10, 1fr); }
+	&--11 { grid-template-columns: repeat(11, 1fr); }
+	&--12 { grid-template-columns: repeat(12, 1fr); }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
