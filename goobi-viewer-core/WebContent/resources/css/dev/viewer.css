@@ -9965,8 +9965,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__available-items-list li {
   border: 1px solid #ccc;
+  border-top: none;
   border-bottom: none;
   background-color: #eee;
+}
+.cms-menu__available-items-list li:first-child {
+  border-top: 1px solid #ccc;
 }
 .cms-menu__available-items-list h5 {
   display: -ms-flexbox;
@@ -9988,6 +9992,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__available-items-toggle {
   display: none;
+}
+.cms-menu__available-items-toggle.in {
+  display: block;
 }
 .cms-menu__available-items-list-pages {
   max-height: 400px;
@@ -10011,6 +10018,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 10px;
   text-align: right;
   border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   background-color: #fff;
 }
 .cms-menu__available-items-list-add-item .cms-module__option {

@@ -46,12 +46,31 @@ var cmsJS = ( function( cms ) {
             	$( this ).toggleClass( 'in' );
             	$( this ).parent().prev().toggleClass( 'in' );
             	$( this ).parent().prev().find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
+            	// focus input
+            	$( this ).parent().prev().find( '.form-control' ).focus();
             } );
             
-            // toggle add new item
+            // toggle add new item accordeon
             $( '[data-toggle="available-items"]' ).on( 'click', function() {
-            	$( this ).toggleClass( 'in' );
-            	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast' );
+            	if ( $( this ).hasClass( 'in' ) ) {
+            		$( this ).toggleClass( 'in' );
+                	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast', function() {
+                		// focus first input if available
+                		$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
+                	} );
+            	}
+            	else {
+            		$( '[data-toggle="available-items"], .cms-menu__available-items-toggle' ).each( function() {
+            			$( '[data-toggle="available-items"]' ).removeClass( 'in' );
+            			$( '.cms-menu__available-items-toggle' ).slideUp( 'fast' );
+            		} );
+            		
+            		$( this ).toggleClass( 'in' );
+            		$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast', function() {
+            			// focus first input if available
+            			$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
+            		} );            		
+            	}
             } );
         }
     };

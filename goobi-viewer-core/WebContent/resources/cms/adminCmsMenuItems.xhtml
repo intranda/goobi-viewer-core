@@ -175,23 +175,27 @@
                                     <ul>
                                         <!-- PAGES -->
                                         <li>
-                                            <h5>#{msg.cms_menu_pages}</h5>
+                                            <h5 data-toggle="available-items" class="in">
+                                                #{msg.cms_menu_pages} <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                            </h5>
                                             
-                                            <div class="cms-menu__available-items-list-pages">
-                                                <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
-                                                    <label class="cms-menu__available-item-page">
-                                                        <div class="cms-menu__available-item-page-checkbox">
-                                                            <h:selectBooleanCheckbox value="#{availableItem.selected}"/>
-                                                        </div>
-                                                        <div class="cms-menu__available-item-page-label">#{msg[availableItem.itemLabel]}</div>
-                                                    </label>
-                                                </ui:repeat>
-                                            </div>
-                                            
-                                            <div class="cms-menu__available-item-page-add">
-                                                <h:commandLink class="btn-clean btn--link" action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
-                                                    #{msg.cms_menu_add_to_menu}
-                                                </h:commandLink>
+                                            <div class="cms-menu__available-items-toggle in">
+                                                <div class="cms-menu__available-items-list-pages">
+                                                    <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
+                                                        <label class="cms-menu__available-item-page">
+                                                            <div class="cms-menu__available-item-page-checkbox">
+                                                                <h:selectBooleanCheckbox value="#{availableItem.selected}"/>
+                                                            </div>
+                                                            <div class="cms-menu__available-item-page-label">#{msg[availableItem.itemLabel]}</div>
+                                                        </label>
+                                                    </ui:repeat>
+                                                </div>
+                                                
+                                                <div class="cms-menu__available-item-page-add">
+                                                    <h:commandLink class="btn-clean btn--link" action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
+                                                        #{msg.cms_menu_add_to_menu}
+                                                    </h:commandLink>
+                                                </div>
                                             </div>
                                         </li>
                                         

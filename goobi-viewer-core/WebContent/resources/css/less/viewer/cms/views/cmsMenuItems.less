@@ -121,8 +121,12 @@
 		}
 		li {
 			border: 1px solid @middlegray;
+			border-top: none;
 			border-bottom: none;
 			background-color: @lightgray;
+			&:first-child {
+				border-top: 1px solid @middlegray;
+			}
 		}
 		h5 {
 			display: flex;
@@ -144,6 +148,9 @@
 	}
 	&__available-items-toggle {
 		display: none;
+		&.in {
+			display: block;
+		}
 	}
 	/* PAGES */
 	&__available-items-list-pages {
@@ -169,6 +176,7 @@
 		padding: 10px;
 		text-align: right;
 		border-top: 1px solid @middlegray;
+		border-bottom: 1px solid @middlegray;
 		background-color: @white;
 	}
 	/* ITEMS */
