@@ -170,7 +170,7 @@ public class CMSNavigationManager {
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
-                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme())) || item.getAssociatedTheme().equalsIgnoreCase(getAssociatedTheme()))
+                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme())) || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
                 .collect(Collectors.toList());
         return daoList;
     }
