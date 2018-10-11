@@ -4277,6 +4277,7 @@ div[id*="-Modal"] .email-form .form-group {
 .styles__fonts,
 .styles__headings,
 .styles__typo,
+.styles__buttons,
 .styles__helper,
 .styles__mixins {
   margin-bottom: 15px;
@@ -10021,12 +10022,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__save {
   text-align: right;
+  padding-right: 11px;
 }
 .cms-menu__save.fixed {
   position: fixed;
   top: 0;
-  padding: 15px;
-  padding-right: 0;
+  padding: 15px 11px;
   z-index: 999;
 }
 .cms-menu__select-theme {
