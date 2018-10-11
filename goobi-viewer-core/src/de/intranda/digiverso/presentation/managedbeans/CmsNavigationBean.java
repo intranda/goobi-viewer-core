@@ -69,9 +69,9 @@ public class CmsNavigationBean implements Serializable {
 
     /**
      * Creates the visible items hiearchy from the string argument
-     *
+     * @return true if the items could be serialized. False if the item ids don't match any items
      */
-    public void deserializeMenuItems(String itemString) {
+    public boolean deserializeMenuItems(String itemString) {
         logger.trace("menu items:\n" + itemString);
         List<CMSNavigationItem> selectedItems = new ArrayList<>();
         String[] ids = itemString.split("\\&?item=");
@@ -108,16 +108,20 @@ public class CmsNavigationBean implements Serializable {
                 }
                 previousLevel = level;
                 previousItem = item;
+            } else {
+                return false;
             }
         }
         getItemManager().setVisibleItems(selectedItems);
+        return true;
     }
 
     public void saveMenuItems() throws DAOException {
         try {
-            deserializeMenuItems(getMenuItemList());
-            getItemManager().saveVisibleItems(getSelectedTheme());
-            getItemManager().reload();
+            if(deserializeMenuItems(getMenuItemList())) {                
+                getItemManager().saveVisibleItems(getSelectedTheme());
+                getItemManager().reload();
+            }
         } catch (ConcurrentModificationException e) {
             logger.error(e.getMessage(), e);
             Messages.error("An error occured: " + e.getClass() + ":\n\t" + e.getMessage());
@@ -153,13 +157,12 @@ public class CmsNavigationBean implements Serializable {
     }
 
     public void saveNavigationItem() {
-        //	DataManager.getInstance().getDao().addCMSNavigationItem(getNavigationItem());
-        deserializeMenuItems(getMenuItemList());
-        //        getItemManager().synchronizeItem(getNavigationItem());
-        if (getNavigationItem().getSortingListId() == null) {
-            getNavigationItem().setAssociatedTheme(getSelectedTheme());
-            getItemManager().addVisibleItem(getNavigationItem());
-            selectedNavigationItem = null;
+        if(deserializeMenuItems(getMenuItemList())) {            
+            if (getNavigationItem().getSortingListId() == null) {
+                getNavigationItem().setAssociatedTheme(getSelectedTheme());
+                getItemManager().addVisibleItem(getNavigationItem());
+                selectedNavigationItem = null;
+            }
         }
     }
 

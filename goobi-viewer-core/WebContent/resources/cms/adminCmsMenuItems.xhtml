@@ -32,6 +32,7 @@
 
                             <!-- SAVE MENU -->
                             <div class="cms-menu__save">
+                            List sort string: #{cmsNavigationBean.menuItemList}
                                 <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
                                 <h:commandButton value="#{msg.cms_menu_save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn" />
                             </div>
