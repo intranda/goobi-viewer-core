@@ -1088,7 +1088,6 @@ button {
 .btn.ui-button:focus,
 a.btn:focus,
 input.btn:focus,
-.btn.ui-button:focus,
 .btn-search:focus,
 .btn-clean:focus,
 .btn-inactive:focus,
@@ -1096,18 +1095,20 @@ input.btn:focus,
 .btn.ui-button:active,
 a.btn:active,
 input.btn:active,
-.btn.ui-button:active,
 .btn-search:active,
 .btn-clean:active,
 .btn-inactive:active {
   outline: none;
 }
 .btn,
-.btn.ui-button {
+.btn.ui-button,
+a.btn,
+input.btn {
   position: relative;
   display: inline-block;
   padding: 6px 12px;
   font-weight: bold;
+  text-decoration: none;
   text-align: center;
   color: #1a1a1a;
   border: none;
@@ -1116,9 +1117,6 @@ input.btn:active,
   background-repeat: no-repeat;
   background-position: center center;
   cursor: pointer;
-}
-a.btn {
-  text-decoration: none;
 }
 input.btn .ui-button-text,
 .btn.ui-button .ui-button-text {
@@ -1141,16 +1139,51 @@ input.btn .ui-button-text,
 .btn-hidden {
   display: none !important;
 }
-.btn--link {
+.btn--link,
+.btn--link.ui-button,
+a.btn--link,
+input.btn--link {
   color: #507ebf;
 }
 .btn--link:hover,
+.btn--link.ui-button:hover,
+a.btn--link:hover,
+input.btn--link:hover,
 .btn--link:active,
-.btn--link:focus {
+.btn--link.ui-button:active,
+a.btn--link:active,
+input.btn--link:active,
+.btn--link:focus,
+.btn--link.ui-button:focus,
+a.btn--link:focus,
+input.btn--link:focus {
   color: #1a1a1a;
   text-decoration: underline;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
+.btn--default,
+.btn--default.ui-button,
+a.btn--default,
+input.btn--default {
+  color: #555;
+  font-weight: 100;
+  border: 1px solid #ccc;
+  background-color: #f7f7f7;
+}
+.btn--default:hover,
+.btn--default.ui-button:hover,
+a.btn--default:hover,
+input.btn--default:hover,
+.btn--default:active,
+.btn--default.ui-button:active,
+a.btn--default:active,
+input.btn--default:active,
+.btn--default:focus,
+.btn--default.ui-button:focus,
+a.btn--default:focus,
+input.btn--default:focus {
+  color: #555;
+  background-color: #f2f3f4;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -10030,7 +10063,7 @@ div[id*="-Modal"] .email-form .form-group {
       flex-wrap: wrap;
   margin-bottom: 5px;
   border: 1px solid #ccc;
-  background-color: #eee;
+  background-color: #f2f3f4;
 }
 .cms-menu__visible-item.unpublished {
   opacity: 0.5;
@@ -10100,7 +10133,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   border-top: none;
   border-bottom: none;
-  background-color: #eee;
+  background-color: #f2f3f4;
 }
 .cms-menu__available-items-list li:first-child {
   border-top: 1px solid #ccc;
@@ -10150,7 +10183,6 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-item-page-add {
   padding: 10px;
   text-align: right;
-  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   background-color: #fff;
 }
@@ -10166,9 +10198,7 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-items-list-add-item .cms-module__option-action {
   margin-right: -15px;
   margin-left: -15px;
-  padding: 10px;
-  padding-bottom: 0;
-  border-top: 1px solid #ccc;
+  padding: 0 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
