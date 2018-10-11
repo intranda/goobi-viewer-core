@@ -746,6 +746,7 @@
 		<pattern value="/adminCmsMenuItems/" />
 		<view-id value="/resources/cms/adminCmsMenuItems.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsNavigationBean.init()}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsStaticPages">
 		<pattern value="/adminCmsStaticPages/" />
