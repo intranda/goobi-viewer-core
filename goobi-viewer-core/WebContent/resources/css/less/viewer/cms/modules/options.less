@@ -13,6 +13,7 @@
 	/* OPTION GROUP */
 	&__option-group {
 	    display: flex;
+	    flex-wrap: wrap;
 	    justify-content: space-between;
 	    margin-bottom: 10px;
 	    &:last-child {
@@ -23,6 +24,13 @@
 		flex-basis: 20%;
 	    padding-top: 7px;
 	    word-break: break-word;
+	    &--fullwidth {
+	    	flex-basis: 100%;
+	    	& + .cms-module__option-control {
+	    		flex-basis: 95%;
+	    		padding-left: 0;
+	    	}
+	    }
 	}	
 	&__option-control {
 		flex-basis: 75%;
@@ -31,7 +39,7 @@
 	    	input,
 	    	.custom-control--select,
 	    	.cms-module__option-control-checkbox {
-	    		border-color: green !important;
+	    		border-color: @green !important;
 	    	}
 	    	.cms-module__option-control-checkbox {
 	    		padding: 7px;
@@ -45,7 +53,7 @@
 	}
 	&__option-control-helptext {
 	    display: none;
-	    color: green;
+	    color: @green;
 	    &.in {
 	    	display: inline;
 	    }
@@ -56,7 +64,10 @@
 			display: block;
 			width: 100%;
 		    padding: 7px 0;
-		    text-align: right;			
+		    text-align: right;
+		    &.in {
+		    	color: @green;
+		    }
 		}
 	}
 	&__option-action {

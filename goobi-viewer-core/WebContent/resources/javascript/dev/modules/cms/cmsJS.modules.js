@@ -43,6 +43,7 @@ var cmsJS = ( function( cms ) {
             
             // toggle input helptext
             $( '[data-toggle="helptext"]' ).on( 'click', function() {
+            	$( this ).toggleClass( 'in' );
             	$( this ).parent().prev().toggleClass( 'in' );
             	$( this ).parent().prev().find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
             } );

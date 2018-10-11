@@ -126,6 +126,7 @@
 		}
 		h5 {
 			display: flex;
+			align-items: center;
 			justify-content: space-between;
 			margin: 0;
 			padding: 12px;
@@ -140,6 +141,9 @@
 				}	
 			}
 		}
+	}
+	&__available-items-toggle {
+		display: none;
 	}
 	/* PAGES */
 	&__available-items-list-pages {
@@ -168,8 +172,7 @@
 		background-color: @white;
 	}
 	/* ITEMS */
-	&__available-items-list-add-item {
-		display: none;		
+	&__available-items-list-add-item {		
 		.cms-module {
 			&__option {
 				margin: 0;
@@ -181,12 +184,6 @@
 				&:last-child {
 					margin: 0;
 				}
-			}
-			&__option-label {
-				flex-basis: 30%;
-			}	
-			&__option-control {
-				flex-basis: 65%;
 			}
 			&__option-action {
 				margin-right: -15px;

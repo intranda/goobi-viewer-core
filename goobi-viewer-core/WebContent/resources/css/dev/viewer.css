@@ -8364,6 +8364,8 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-group {
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
   -ms-flex-pack: justify;
       justify-content: space-between;
   margin-bottom: 10px;
@@ -8377,6 +8379,15 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 7px;
   word-break: break-word;
 }
+.cms-module__option-label--fullwidth {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+}
+.cms-module__option-label--fullwidth + .cms-module__option-control {
+  -ms-flex-preferred-size: 95%;
+      flex-basis: 95%;
+  padding-left: 0;
+}
 .cms-module__option-control {
   -ms-flex-preferred-size: 75%;
       flex-basis: 75%;
@@ -8385,7 +8396,7 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control.in input,
 .cms-module__option-control.in .custom-control--select,
 .cms-module__option-control.in .cms-module__option-control-checkbox {
-  border-color: green !important;
+  border-color: #468847 !important;
 }
 .cms-module__option-control.in .cms-module__option-control-checkbox {
   padding: 7px;
@@ -8397,7 +8408,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-control-helptext {
   display: none;
-  color: green;
+  color: #468847;
 }
 .cms-module__option-control-helptext.in {
   display: inline;
@@ -8411,6 +8422,9 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
   padding: 7px 0;
   text-align: right;
+}
+.cms-module__option-help button.in {
+  color: #468847;
 }
 .cms-module__option-action {
   text-align: right;
@@ -9956,6 +9970,8 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-menu__available-items-list h5 {
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-align: center;
+      align-items: center;
   -ms-flex-pack: justify;
       justify-content: space-between;
   margin: 0;
@@ -9968,6 +9984,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__available-items-list h5.in .fa {
   transform: rotate(180deg);
+}
+.cms-menu__available-items-toggle {
+  display: none;
 }
 .cms-menu__available-items-list-pages {
   max-height: 400px;
@@ -9993,9 +10012,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
   background-color: #fff;
 }
-.cms-menu__available-items-list-add-item {
-  display: none;
-}
 .cms-menu__available-items-list-add-item .cms-module__option {
   margin: 0;
   padding-bottom: 10px;
@@ -10004,14 +10020,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__available-items-list-add-item .cms-module__option-group:last-child {
   margin: 0;
-}
-.cms-menu__available-items-list-add-item .cms-module__option-label {
-  -ms-flex-preferred-size: 30%;
-      flex-basis: 30%;
-}
-.cms-menu__available-items-list-add-item .cms-module__option-control {
-  -ms-flex-preferred-size: 65%;
-      flex-basis: 65%;
 }
 .cms-menu__available-items-list-add-item .cms-module__option-action {
   margin-right: -15px;
