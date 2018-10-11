@@ -124,6 +124,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         setCmsPage(original.getCmsPage());
         setAbsoluteLink(original.isAbsoluteLink());
         setDisplayRule(original.getDisplayRule());
+        setOpenInNewWindow(original.isOpenInNewWindow());
         setOrder(original.getOrder());
         setAssociatedTheme(original.getAssociatedTheme());
     }
@@ -270,6 +271,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     public void setPageUrl(String pageUrl) {
+        if(StringUtils.isNotBlank(pageUrl) && pageUrl.toLowerCase().startsWith("www.")) {
+            pageUrl = "http://" + pageUrl;
+        }
         this.pageUrl = pageUrl;
     }
 

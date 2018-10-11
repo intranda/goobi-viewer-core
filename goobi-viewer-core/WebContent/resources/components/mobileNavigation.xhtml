@@ -26,11 +26,8 @@
                             value="#{cmsBean.navigationMenuItems}">
                             <h:panelGroup rendered="#{navItem.valid}">
                                 <li>
-                                    <h:outputLink
-                                        value="#{navItem.navigationUrl}"
-                                        class="#{navigationHelper.currentPage == navItem.itemLabel?'mainnav-active':''}">
-                                        <h:outputText value="#{msg[navItem.itemLabel]}" />
-                                    </h:outputLink>
+                                    <component:navigationLink class="#{navigationHelper.currentPage == navItem.itemLabel?'mainnav-active':''}" 
+                                        navItem="#{navItem}"/>
                                     <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
                                         <ui:include src="templateSubNavigationItem.xhtml">
                                             <ui:param

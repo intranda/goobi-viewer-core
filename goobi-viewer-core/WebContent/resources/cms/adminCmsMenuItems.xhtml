@@ -144,7 +144,7 @@
                                                         </div>
                                                         <div class="cms-module__option-control">
                                                             <span class="cms-module__option-control-checkbox">
-                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
+                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" value="#{visibleItem.openInNewWindow}"/>
                                                             </span>
                                                             <br />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
@@ -243,7 +243,7 @@
                                                         </div>
                                                         <div class="cms-module__option-control">
                                                             <span class="cms-module__option-control-checkbox">
-                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" />
+                                                                <h:selectBooleanCheckbox id="cmsMenuAddItemNewTab" value="#{cmsNavigationBean.navigationItem.openInNewWindow}"/>
                                                             </span>
                                                             <br />
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
