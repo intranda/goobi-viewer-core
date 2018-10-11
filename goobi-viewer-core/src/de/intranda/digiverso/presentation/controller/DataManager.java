@@ -33,6 +33,8 @@ import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfM
 import de.intranda.digiverso.presentation.model.security.authentication.IOAuthResponseListener;
 import de.intranda.digiverso.presentation.model.security.authentication.OAuthResponseListener;
 import de.intranda.digiverso.presentation.modules.IModule;
+import de.intranda.digiverso.presentation.modules.interfaces.DefaultURLBuilder;
+import de.intranda.digiverso.presentation.modules.interfaces.IURLBuilder;
 
 public final class DataManager {
 
@@ -55,8 +57,10 @@ public final class DataManager {
     private IDAO dao;
 
     private SessionStoreBookshelfManager bookshelfManager;
-    
+
     private IOAuthResponseListener oAuthResponseListener;
+
+    private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -82,6 +86,18 @@ public final class DataManager {
      */
     public List<IModule> getModules() {
         return modules;
+    }
+
+    /**
+     * @return the urlBuilder
+     */
+    public IURLBuilder getUrlBuilder() {
+        return getModules().stream()
+                .map(module -> module.getURLBuilder())
+                .filter(optional -> optional.isPresent())
+                .map(optional -> optional.get())
+                .findFirst()
+                .orElse(defaultUrlBuilder);
     }
 
     /**
@@ -257,13 +273,13 @@ public final class DataManager {
     public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
         this.bookshelfManager = bookshelfManager;
     }
-    
+
     public void injectOAuthResponseListener(IOAuthResponseListener listener) {
-        if(listener != null) {
+        if (listener != null) {
             this.oAuthResponseListener = listener;
         }
     }
-    
+
     public IOAuthResponseListener getOAuthResponseListener() {
         if (oAuthResponseListener == null) {
             synchronized (lock) {

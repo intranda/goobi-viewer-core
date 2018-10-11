@@ -165,11 +165,12 @@ public class CMSNavigationManager {
      * @throws DAOException
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
+        String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
         List<CMSNavigationItem> daoList = DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
-                .filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(getAssociatedTheme()))
+                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme())) || item.getAssociatedTheme().equalsIgnoreCase(getAssociatedTheme()))
                 .collect(Collectors.toList());
         return daoList;
     }

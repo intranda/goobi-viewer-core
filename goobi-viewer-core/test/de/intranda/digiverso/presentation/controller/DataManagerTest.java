@@ -17,12 +17,14 @@ package de.intranda.digiverso.presentation.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.modules.IModule;
+import de.intranda.digiverso.presentation.modules.interfaces.IURLBuilder;
 
 public class DataManagerTest {
 
@@ -129,6 +131,14 @@ public class DataManagerTest {
             @Override
             public boolean augmentResetRecord() {
                 return false;
+            }
+
+            /* (non-Javadoc)
+             * @see de.intranda.digiverso.presentation.modules.IModule#getURLBuilder()
+             */
+            @Override
+            public Optional<IURLBuilder> getURLBuilder() {
+                return Optional.empty();
             }
 
         }

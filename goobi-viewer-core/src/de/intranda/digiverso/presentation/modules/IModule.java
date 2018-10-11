@@ -17,10 +17,12 @@ package de.intranda.digiverso.presentation.modules;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.digiverso.presentation.controller.AbstractConfiguration;
+import de.intranda.digiverso.presentation.modules.interfaces.IURLBuilder;
 
 public interface IModule {
 
@@ -97,4 +99,12 @@ public interface IModule {
      * @return true if successful; false otherwise
      */
     public boolean augmentResetRecord();
+    
+    /**
+     * 
+     * @return the {@link IURLBuilder} for this module, if any. If this module should not alter url building, an empty optional should be returned
+     */
+    default Optional<IURLBuilder> getURLBuilder() {
+        return Optional.empty();
+    }
 }

@@ -889,84 +889,7 @@ public class BrowseElement implements Serializable {
      * @return
      */
     private String generateUrl() {
-        // For aggregated person search hits, start another search (label contains the person's name in this case)
-        StringBuilder sb = new StringBuilder();
-        if (metadataGroupType != null) {
-            switch (metadataGroupType) {
-                case PERSON:
-                case CORPORATION:
-                case LOCATION:
-                case SUBJECT:
-                case ORIGININFO:
-                case OTHER:
-                    // Person metadata search hit ==> execute search for that person
-                    // TODO not for aggregated hits?
-                    try {
-                        sb.append(PageType.search.getName())
-                                .append("/-/")
-                                .append(originalFieldName)
-                                .append(":\"")
-                                .append(URLEncoder.encode(label, SearchBean.URL_ENCODING))
-                                .append("\"/1/-/-/");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error("{}: {}", e.getMessage(), label);
-                        sb = new StringBuilder();
-                        sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
-                                "\"/1/-/-/");
-                    }
-
-                    break;
-                default:
-                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
-                            hasImages || hasMedia, useOverviewPage, false);
-                    // Hack for linking TEI full-text hits to the full-text page
-                    if ("TEI".equals(label)) {
-                        pageType = PageType.viewFulltext;
-                    }
-                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-                    // Hack for viewers that need a language parameter instead of LOGID
-                    String theme = DataManager.getInstance().getConfiguration().getTheme();
-                    if (theme != null) {
-                        switch (theme) {
-                            case "geiwv":
-                            case "wienerlibrary-novemberpogrom":
-                                sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                                        .append("/");
-                                break;
-                            default:
-                                sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-                        }
-                    }
-                    break;
-            }
-        } else {
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
-                    useOverviewPage, false);
-            if (DocType.UGC.equals(docType)) {
-                pageType = PageType.viewObject;
-            } else if ("TEI".equals(label)) {
-                // Hack for linking TEI full-text hits to the full-text page
-                pageType = PageType.viewFulltext;
-            }
-            sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-            // Hack for viewers that need a language parameter instead of LOGID
-            String theme = DataManager.getInstance().getConfiguration().getTheme();
-            if (theme != null) {
-                switch (theme) {
-                    case "geiwv":
-                    case "wienerlibrary-novemberpogrom":
-                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                                .append("/");
-                        break;
-                    default:
-                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-                }
-            }
-        }
-
-        // logger.trace("generateUrl: {}", sb.toString());
-        return sb.toString();
-
+        return DataManager.getInstance().getUrlBuilder().generateURL(this);
     }
 
     /**
@@ -1164,6 +1087,32 @@ public class BrowseElement implements Serializable {
      */
     public boolean isHasMedia() {
         return hasMedia;
+    }
+    
+    /**
+     * @return the originalFieldName
+     */
+    public String getOriginalFieldName() {
+        return originalFieldName;
+    }
+    
+    public PageType determinePageType() {
+       return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
+                hasImages || hasMedia, useOverviewPage, false);
+    }
+    
+    /**
+     * @return the logId
+     */
+    public String getLogId() {
+        return logId;
+    }
+    
+    /**
+     * @return the docType
+     */
+    public DocType getDocType() {
+        return docType;
     }
 
 }
