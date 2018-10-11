@@ -75,7 +75,8 @@ public class TocWriterTest {
         String label = LOREM.substring(startIndex, endIndex).trim();
         String pageNo = Integer.toString(random.nextInt(9000) + 1);
 
-        return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, "", null, null);
+        return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, true, "", null,
+                null);
     }
 
 }

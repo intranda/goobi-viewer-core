@@ -158,7 +158,7 @@ public class TocMaker {
                 //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String docstruct = "_GROUPS";
                 ret.get(TOC.DEFAULT_GROUP).add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level,
-                        structElement.getPi(), null, sourceFormatPdfAllowed, true, mimeType, docstruct, footerId));
+                        structElement.getPi(), null, sourceFormatPdfAllowed, true, false, mimeType, docstruct, footerId));
                 ++level;
                 buildGroupToc(ret.get(TOC.DEFAULT_GROUP), structElement.getGroupIdField(), structElement.getPi(), sourceFormatPdfAllowed, mimeType);
             } else if (structElement.isAnchor()) {
@@ -324,8 +324,8 @@ public class TocMaker {
                     thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
                 }
                 label.mapEach(value -> StringEscapeUtils.unescapeHtml(value));
-                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false, mimeType,
-                        docStructType, footerId));
+                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false,
+                        thumbnailUrl != null, mimeType, docStructType, footerId));
             }
         }
     }
@@ -427,7 +427,7 @@ public class TocMaker {
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml(l));
                 TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
-                        sourceFormatPdfAllowed, false, volumeMimeType, docStructType, footerId);
+                        sourceFormatPdfAllowed, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));
@@ -466,7 +466,7 @@ public class TocMaker {
         IMetadataValue label = buildLabel(anchorDoc, (String) anchorDoc.getFirstValue(SolrConstants.DOCSTRCT));
         String footerId = getFooterId(anchorDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
         ret.get(TOC.DEFAULT_GROUP).add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null,
-                sourceFormatPdfAllowed, true, mimeType, anchorDocstructType, footerId));
+                sourceFormatPdfAllowed, true, false, mimeType, anchorDocstructType, footerId));
 
         return hits;
     }
@@ -606,8 +606,8 @@ public class TocMaker {
         }
 
         IMetadataValue label = buildLabel(doc, docstructType);
-        TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, sourceFormatPdfAllowed, isAnchor, mimeType,
-                docstructType, footerId);
+        TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, sourceFormatPdfAllowed, isAnchor,
+                pageNo != null, mimeType, docstructType, footerId);
         tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docstructType);
         tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) doc.getFieldValue(SolrConstants.CURRENTNO));
         tocElement.getMetadata().put("MD_TITLE", (String) doc.getFirstValue("MD_TITLE"));

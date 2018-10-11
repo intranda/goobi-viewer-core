@@ -24,7 +24,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -37,18 +42,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.common.OAuthProviderType;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.jdom2.JDOMException;
+import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
-import de.intranda.digiverso.presentation.exceptions.AuthenticationException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -60,10 +61,14 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
-import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 @Named
 @SessionScoped
@@ -82,9 +87,9 @@ public class UserBean implements Serializable {
     private String password;
     private String activationKey;
     /** Selected OpenID Connect provider. */
-    private OpenIdProvider openIdProvider;
-    private String oAuthState = null;
-    private String oAuthAccessToken = null;
+    private IAuthenticationProvider authenticationProvider;
+    private List<IAuthenticationProvider> authenticationProviders;
+
     // Passwords for creating an new local user account
     private String passwordOne = "";
     private String passwordTwo = "";
@@ -92,6 +97,8 @@ public class UserBean implements Serializable {
     private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
+
+    private CompletableFuture<Optional<User>> loginFuture = null;
 
     /** Empty constructor. */
     public UserBean() {
@@ -181,117 +188,81 @@ public class UserBean implements Serializable {
     /**
      * Login action method for local accounts.
      *
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws AuthenticationProviderException If an error occured while logging in
+     * @throws IllegalStateException If a user is already logged in
+     * @return the url mapping to navigate to
+     * @throws ExecutionException
+     * @throws InterruptedException
      *
      */
-    public String login() throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("login");
-        if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(password)) {
-            try {
-                User user = User.auth(getEmail(), getPassword());
-                if (user.isActive() && !user.isSuspended()) {
-                    HttpServletRequest request = BeanUtils.getRequest();
-                    DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
-                    wipeSession(request);
-                    // Update last login
-                    user.setLastLogin(new Date());
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
-                        logger.error("Could not update user in DB.");
-                    }
-                    setUser(user);
-                    request = BeanUtils.getRequest();
-                    request.getSession(false).setAttribute("user", user);
-                    SearchHelper.updateFilterQuerySuffix(request);
-
-
-//                    BeanUtils.getCmsBean().resetCollections(); 
-                    // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
-
-                    if (StringUtils.isNotEmpty(redirectUrl)) {
-                        if ("#".equals(redirectUrl)) {
-                            logger.trace("Stay on current page");
-                            return "";
-                        }
-                        logger.trace("Redirecting to {}", redirectUrl);
-                        String redirectUrl = this.redirectUrl;
-                        this.redirectUrl = "";
-                        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-                        try {
-                            response.sendRedirect(redirectUrl);
-                            return null;
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-                } else {
-                    Messages.error("errLoginWrong"); // maybe a different error msg?
-                }
-            } catch (AuthenticationException e) {
-                Messages.error("errLoginWrong");
-            }
-        } else {
-            Messages.error("errLoginWrong");
+    public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+        if (getUser() != null) {
+            throw new IllegalStateException("errAlreadyLoggedIn");
         }
-
-        return "pretty:user";
+        if ("#".equals(this.redirectUrl)) {
+            HttpServletRequest request = BeanUtils.getRequest();
+            this.redirectUrl = ViewHistory.getCurrentView(request)
+                    .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
+                    .orElse("");
+        }
+        logger.trace("login");
+        if (getAuthenticationProvider() != null) {
+            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result));
+        }
+        return null;
     }
 
-    /**
-     * Login action method for OpenID accounts.
-     * 
-     * @return
-     */
-    public String loginOpenIdConnectAction() {
-        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+    private void completeLogin(LoginResult result) {
+            HttpServletResponse response = result.getResponse();
+            HttpServletRequest request = result.getRequest();
+            try {
 
-        // Apache Oltu
-        try {
-            oAuthState = new StringBuilder(String.valueOf(System.currentTimeMillis())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                    .toString();
-            OAuthClientRequest request = null;
-            switch (openIdProvider.getName().toLowerCase()) {
-                case "google":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("openid email")
-                            .buildQueryMessage();
-                    break;
-                case "facebook":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-                default:
-                    // Other providers
-                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-            }
-            if (request != null) {
-                response.sendRedirect(request.getLocationUri());
-            }
-        } catch (OAuthSystemException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error("errLogin");
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error("errLogin");
+                Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
+
+                if (result.isRefused()) {
+                    Messages.error("errLoginWrong");
+                } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
+                    Messages.error("errLoginInactive");
+                } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+                    Messages.error("errLoginSuspended");
+                } else if (oUser.isPresent()) { //login successful
+                    try {
+                        User user = oUser.get();
+                        wipeSession(request);
+                        DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
+                        // Update last login
+                        user.setLastLogin(new Date());
+                        if (!DataManager.getInstance().getDao().updateUser(user)) {
+                            logger.error("Could not update user in DB.");
+                        }
+                        setUser(user);
+                        if (request != null && request.getSession(false) != null) {
+                            request.getSession(false).setAttribute("user", user);
+                        }
+                        if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
+                            logger.trace("Redirecting to {}", redirectUrl);
+                            String redirectUrl = this.redirectUrl;
+                            this.redirectUrl = "";
+                            response.sendRedirect(redirectUrl);
+                        } else if (response != null) {
+                            logger.trace("Redirecting to user page");
+                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                        }
+                        return;
+                    } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                        //user may login, but setting up viewer account failed
+                        getAuthenticationProvider().logout();
+                        throw new AuthenticationProviderException(e);
+                    }
+                } else {
+                    Messages.error("errLoginInactive");
+                }
+            } catch (AuthenticationProviderException e) {
+                logger.error("Error logging in ", e);
+                Messages.error("errLoginError");
+        } finally {
+            result.setRedirected();
         }
-
-        return "user";
     }
 
     /**
@@ -302,17 +273,22 @@ public class UserBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
-    public String logout() throws IndexUnreachableException, PresentationException, DAOException {
+    public String logout() throws AuthenticationProviderException {
         logger.trace("logout");
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
-        setOpenIdProvider(null);
-        setoAuthState(null);
-        setoAuthAccessToken(null);
+        if (getAuthenticationProvider() != null) {
+            getAuthenticationProvider().logout();
+        }
+        setAuthenticationProvider(null);
 
         HttpServletRequest request = BeanUtils.getRequest();
-        wipeSession(request);
+        try {
+            wipeSession(request);
+        } catch (IndexUnreachableException | PresentationException | DAOException e) {
+            throw new AuthenticationProviderException(e);
+        }
         try {
             request.logout();
         } catch (ServletException e) {
@@ -349,35 +325,42 @@ public class UserBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
-    public static void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
+    public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("wipeSession");
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return;
-        }
-        session.removeAttribute("user");
-
-        // Remove priv maps
-        Enumeration<String> attributeNames = session.getAttributeNames();
-        Set<String> attributesToRemove = new HashSet<>();
-        while (attributeNames.hasMoreElements()) {
-            String attribute = attributeNames.nextElement();
-            if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
-                attributesToRemove.add(attribute);
-
+        if (request != null) {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                return;
             }
-        }
-        if (!attributesToRemove.isEmpty()) {
-            for (String attribute : attributesToRemove) {
-                session.removeAttribute(attribute);
-                logger.trace("Removed session attribute: {}", attribute);
-            }
-        }
-        
-        BeanUtils.getCmsBean().invalidate();
+            session.removeAttribute("user");
 
-        // Update filter query suffix
-        SearchHelper.updateFilterQuerySuffix(request);
+            //        // Remove priv maps
+            Enumeration<String> attributeNames = session.getAttributeNames();
+            Set<String> attributesToRemove = new HashSet<>();
+            while (attributeNames.hasMoreElements()) {
+                String attribute = attributeNames.nextElement();
+                if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
+                    attributesToRemove.add(attribute);
+
+                }
+            }
+            if (!attributesToRemove.isEmpty()) {
+                for (String attribute : attributesToRemove) {
+                    session.removeAttribute(attribute);
+                    logger.trace("Removed session attribute: {}", attribute);
+                }
+            }
+
+            try {
+                BeanUtils.getCmsBean().invalidate();
+            } catch (Throwable e) {
+            }
+
+            this.authenticationProviders = null;
+
+            // Update filter query suffix
+            SearchHelper.updateFilterQuerySuffix(request);
+        }
     }
 
     /**
@@ -773,44 +756,23 @@ public class UserBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
 
-    public List<OpenIdProvider> getOpenIdConnectProviders() {
-        return DataManager.getInstance().getConfiguration().getOpenIdConnectProviders();
+    public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
+        if (this.authenticationProviders == null) {
+            this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        }
+        return this.authenticationProviders;
     }
 
-    public void setOpenIdProvider(OpenIdProvider openIdProvider) {
-        this.openIdProvider = openIdProvider;
+    public IAuthenticationProvider getLocalAuthenticationProvider() {
+        return getProvidersOfType("local").stream().findFirst().orElse(null);
     }
 
-    public OpenIdProvider getOpenIdProvider() {
-        return openIdProvider;
+    public void setAuthenticationProvider(IAuthenticationProvider provider) {
+        this.authenticationProvider = provider;
     }
 
-    /**
-     * @return the oAuthState
-     */
-    public String getoAuthState() {
-        return oAuthState;
-    }
-
-    /**
-     * @param oAuthState the oAuthState to set
-     */
-    public void setoAuthState(String oAuthState) {
-        this.oAuthState = oAuthState;
-    }
-
-    /**
-     * @return the oAuthAccessToken
-     */
-    public String getoAuthAccessToken() {
-        return oAuthAccessToken;
-    }
-
-    /**
-     * @param oAuthAccessToken the oAuthAccessToken to set
-     */
-    public void setoAuthAccessToken(String oAuthAccessToken) {
-        this.oAuthAccessToken = oAuthAccessToken;
+    public IAuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
     }
 
     public String loginTest() {
@@ -914,5 +876,29 @@ public class UserBean implements Serializable {
 
     public boolean userEquals(long id) {
         return getUser().getId().equals(id);
+    }
+
+    public boolean hasProvidersOfType(String type) {
+        if (type != null) {
+            return getAuthenticationProviders().stream().anyMatch(provider -> type.equalsIgnoreCase(provider.getType()));
+        } else {
+            return false;
+        }
+    }
+
+    public List<IAuthenticationProvider> getProvidersOfType(String type) {
+        if (type != null) {
+            return getAuthenticationProviders().stream().filter(provider -> type.equalsIgnoreCase(provider.getType())).collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public int getNumberOfProviderTypes() {
+        return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
+    }
+    
+    public boolean isAllowPasswordChange() {
+        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
     }
 }

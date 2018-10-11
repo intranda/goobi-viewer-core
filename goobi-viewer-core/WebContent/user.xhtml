@@ -29,14 +29,17 @@
             <h:panelGroup rendered="#{!userBean.loggedIn}">
             	<div class="user">
             		<div class="row">
-            			<div class="#{userBean.showOpenId ? 'col-xs-12 col-sm-6' : 'col-xs-12'}">
+
+                       <ui:fragment rendered="#{userBean.hasProvidersOfType('local')}">
+            			<div class="#{userBean.getNumberOfProviderTypes() gt 1 ? 'col-xs-12 col-sm-6' : 'col-xs-12'}">
 		            		<!-- LOCAL LOGIN -->
 							<div class="user__local">
 								<h3>#{msg.localAccount}</h3>
 
 								<p>#{msg.loginLocal}</p>
-
-								<h:form id="userLoginLocalForm" styleClass="form-horizontal" prependId="false">
+                                
+                                <h:form id="userLoginLocalForm" styleClass="form-horizontal" prependId="false">
+                                
 									<div class="form-group">
 										<label for="userEMail" class="col-xs-12 col-sm-3 control-label">#{msg.email}:</label>
 										<div class="col-xs-12 col-sm-9">
@@ -54,9 +57,11 @@
 									</div>
 									
 									<div class="user__action text-right">
-										<h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}" />
+										<h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}">
+                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
+                                        </h:commandButton>
 									</div>
-								</h:form>
+                                 </h:form>
 
 								<!-- OPTIONS -->
 								<nav class="user__options">
@@ -73,31 +78,82 @@
 								</nav>
 							</div>
 						</div>
-						<h:panelGroup rendered="#{userBean.showOpenId}">
-							<div class="col-xs-12 col-sm-6">
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{userBean.hasProvidersOfType('userpassword')}" >
+            			<div class="#{userBean.getNumberOfProviderTypes() gt 1 ? 'col-xs-12 col-sm-6' : 'col-xs-12'}">
+                       <div class="user__userpassword">
+                                <h3>#{msg.passwordAccount}</h3>
+
+                                <p>#{msg.loginPassword}</p>
+                                
+                                <h:form id="userPasswordLoginForm" styleClass="form-horizontal" prependId="false">
+                                
+                                    <div class="form-group">
+                                        <label for="username" class="col-xs-12 col-sm-3 control-label">#{msg.username}:</label>
+                                        <div class="col-xs-12 col-sm-9">
+                                            <h:inputText id="username" styleClass="form-control" value="#{userBean.email}" required="true" requiredMessage="#{msg.loginEnterUserName}">
+                                            </h:inputText>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="userPassword2" class="col-xs-12 col-sm-3 control-label">#{msg.password}:</label>
+                                        <div class="col-xs-12 col-sm-9">
+                                            <h:inputSecret id="userPassword2" styleClass="form-control" type="password" value="#{userBean.password}" required="true" requiredMessage="#{msg.loginEnterPassword}" />
+                                        </div>
+                                    </div>
+                                    
+<!--                                     <div class="user__action text-right"> -->
+<!--                                         <h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}"> -->
+<!--                                             <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" /> -->
+<!--                                         </h:commandButton> -->
+<!--                                     </div> -->
+                                         <nav>
+                                            <ul>
+                                                <ui:repeat var="provider" value="#{userBean.getProvidersOfType('userpassword')}">
+                                                    <li> 
+                                                    <div class="user__action text-right">
+                                                        <h:commandLink action="#{userBean.login}">
+                                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
+                                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
+                                                        </h:commandLink>
+                                                    </div>
+                                                    </li> 
+                                                </ui:repeat>
+                                            </ul>
+                                         </nav>
+                                </h:form>
+                            </div>
+                        </div>
+                        </ui:fragment>
+                        
+                        <ui:fragment  rendered="#{userBean.hasProvidersOfType('openId')}">
+            			<div class="col-xs-12">
 								<!-- OPEN ID LOGIN -->
 								<div class="user__openid">
 									<h3>#{msg.openIdAccount}</h3>
 
 									<p>#{msg.loginOpenId}</p>
+                
+                                    <h:form id="userLoginOpenIdForm" styleClass="form-horizontal" prependId="false">
 
-									<h:form id="userLoginOpenIdForm" prependId="false">
 										<nav>
 											<ul>
-												<ui:repeat var="provider" value="#{userBean.openIdConnectProviders}">
+												<ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
 													<li>
-														<h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.loginOpenIdConnectAction}">
+														<h:commandLink action="#{userBean.login}">
 															<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
-															<f:setPropertyActionListener target="#{userBean.openIdProvider}" value="#{provider}" />
+															<f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
 														</h:commandLink>
 													</li>
 												</ui:repeat>
 											</ul>
 										</nav>
-									</h:form>
+        						</h:form>
 								</div>
 							</div>
-						</h:panelGroup>
+                            </ui:fragment>
 					</div>
             	</div>				
 			</h:panelGroup>

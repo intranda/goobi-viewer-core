@@ -27,6 +27,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.base.Preconditions;
+
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -81,7 +83,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getAllUsersTest() throws DAOException {
         List<User> users = DataManager.getInstance().getDao().getAllUsers(false);
-        Assert.assertEquals(2, users.size());
+        Assert.assertEquals(3, users.size());
     }
 
     @Test
@@ -144,7 +146,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateUserTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUsers(false).size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         user.setEmail("b@b.com");
@@ -161,7 +163,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setSuperuser(false);
         DataManager.getInstance().getDao().updateUser(user);
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUsers(false).size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
 
         User user2 = DataManager.getInstance().getDao().getUser(user.getId());
         Assert.assertNotNull(user2);
@@ -2009,7 +2011,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getUserCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(2L, DataManager.getInstance().getDao().getUserCount(null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getUserCount(null));
     }
 
     /**

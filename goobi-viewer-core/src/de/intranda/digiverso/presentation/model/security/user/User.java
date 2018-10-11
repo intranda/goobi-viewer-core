@@ -82,6 +82,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     public static final String ATTRIBUTE_LOGINS = "logins";
 
     public static final int AVATAR_DEFAULT_SIZE = 96;
+    
+    @Transient
+    private BCrypt bcrypt = new BCrypt();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -632,10 +635,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @throws AuthenticationException if login data incorrect
      * @throws DAOException
      */
-    public static User auth(String email, String password) throws AuthenticationException, DAOException {
+    public User auth(String email, String password) throws AuthenticationException, DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only allow non-openID accounts
-        if (user != null && user.getPasswordHash() != null && BCrypt.checkpw(password, user.getPasswordHash())) {
+        if (user != null && user.getPasswordHash() != null && bcrypt.checkpw(password, user.getPasswordHash())) {
             user.setLastLogin(new Date());
             return user;
         }
@@ -972,6 +975,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return getDisplayName();
     }
 
+    protected void setBCrypt(BCrypt bcrypt) {
+        this.bcrypt = bcrypt;
+    }
+    
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }

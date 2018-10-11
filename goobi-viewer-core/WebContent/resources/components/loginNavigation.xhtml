@@ -39,6 +39,7 @@
                                 <div class="login-navigation__login-dropdown-action text-right">
                                     <h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}">
                                         <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
+                                        <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
                                     </h:commandButton>
                                 </div>
                             </h:form>
@@ -60,23 +61,25 @@
                             <!-- OPEN ID -->
                             <ui:fragment rendered="#{userBean.showOpenId}">
                                 <nav class="login-navigation__open-id">
-                                    <h3>#{msg.user_openIdLogin}</h3>
+                                    <h3>#{msg.user_openIdLogin}</h3>                                    
                                     <h:form id="loginNavigationOpenIdForm" prependId="false">
                                         <ul class="list list--horizontal">
-                                            <ui:repeat var="provider" value="#{userBean.openIdConnectProviders}">
+                                            <ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
                                                 <ui:fragment rendered="#{provider.name == 'Google'}">
                                                     <li>
-                                                        <h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.loginOpenIdConnectAction}">
+                                                        <h:commandLink action="#{userBean.login}">
                                                             <i class="fa fa-google" aria-hidden="true"></i>
-                                                            <f:setPropertyActionListener target="#{userBean.openIdProvider}" value="#{provider}" />
+                                                            <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
+                                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                                         </h:commandLink>
                                                     </li>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{provider.name == 'Facebook'}">
                                                     <li>
-                                                        <h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.loginOpenIdConnectAction}">
+                                                        <h:commandLink action="#{userBean.login}">
                                                             <i class="fa fa-facebook-official" aria-hidden="true"></i>
-                                                            <f:setPropertyActionListener target="#{userBean.openIdProvider}" value="#{provider}" />
+                                                            <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
+                                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                                         </h:commandLink>
                                                     </li>
                                                 </ui:fragment>

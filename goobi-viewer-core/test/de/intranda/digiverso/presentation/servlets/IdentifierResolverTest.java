@@ -37,6 +37,7 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 
 public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -127,6 +128,19 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
         Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false, true));
+    }
+
+    /**
+     * @see IdentifierResolver#constructUrl(SolrDocument,boolean,boolean)
+     * @verifies construct group url correctly
+     */
+    @Test
+    public void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
+        String pi = "PPN_GROUP";
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
+        doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
+        Assert.assertEquals("/toc/" + pi + "/1/", IdentifierResolver.constructUrl(doc, false, false));
     }
 
     /**

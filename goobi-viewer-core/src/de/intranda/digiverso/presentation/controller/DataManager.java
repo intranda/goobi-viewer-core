@@ -30,6 +30,8 @@ import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
+import de.intranda.digiverso.presentation.model.security.authentication.IOAuthResponseListener;
+import de.intranda.digiverso.presentation.model.security.authentication.OAuthResponseListener;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 public final class DataManager {
@@ -53,6 +55,8 @@ public final class DataManager {
     private IDAO dao;
 
     private SessionStoreBookshelfManager bookshelfManager;
+    
+    private IOAuthResponseListener oAuthResponseListener;
 
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -252,5 +256,21 @@ public final class DataManager {
 
     public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
         this.bookshelfManager = bookshelfManager;
+    }
+    
+    public void injectOAuthResponseListener(IOAuthResponseListener listener) {
+        if(listener != null) {
+            this.oAuthResponseListener = listener;
+        }
+    }
+    
+    public IOAuthResponseListener getOAuthResponseListener() {
+        if (oAuthResponseListener == null) {
+            synchronized (lock) {
+                oAuthResponseListener = new OAuthResponseListener();
+            }
+        }
+
+        return oAuthResponseListener;
     }
 }

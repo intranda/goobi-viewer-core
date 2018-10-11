@@ -88,14 +88,17 @@ public class TOCElement implements Serializable {
      * @param topStructPi
      * @param thumbnailUrl
      * @param sourceFormatPdfAllowed
-     * @param isAnchorOrGroup
+     * @param anchorOrGroup
+     * @param hasImages
      * @param recordMimeType
      * @param docStructType
+     * @param footerId
      * @should add logId to url
      * @should set correct view url for given docStructType
      */
-    public TOCElement(IMetadataValue label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi, String thumbnailUrl,
-            boolean sourceFormatPdfAllowed, boolean anchorOrGroup, String recordMimeType, String docStructType, String footerId) {
+    public TOCElement(IMetadataValue label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi,
+            String thumbnailUrl, boolean sourceFormatPdfAllowed, boolean anchorOrGroup, boolean hasImages, String recordMimeType,
+            String docStructType, String footerId) {
         this.label = label;
         this.pageNo = pageNo;
         this.pageNoLabel = pageNoLabel;
@@ -109,11 +112,16 @@ public class TOCElement implements Serializable {
         this.recordMimeType = recordMimeType;
         this.footerId = footerId;
 
-        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, true, false, false);
+        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false, false);
         view = pageType.getName();
         urlPrefix = new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').toString();
-        urlSuffix = new StringBuilder().append('/').append(topStructPi).append('/').append(StringUtils.isNotEmpty(pageNo) ? pageNo : '1').append('/')
-                .append(StringUtils.isNotEmpty(logId) ? logId + '/' : "").toString();
+        urlSuffix = new StringBuilder().append('/')
+                .append(topStructPi)
+                .append('/')
+                .append(StringUtils.isNotEmpty(pageNo) ? pageNo : '1')
+                .append('/')
+                .append(StringUtils.isNotEmpty(logId) ? logId + '/' : "")
+                .toString();
     }
 
     /* (non-Javadoc)
@@ -175,11 +183,12 @@ public class TOCElement implements Serializable {
      * @return {@link String}
      * @throws ViewerConfigurationException
      ***************************************************************************************************************/
-    public String getContentServerPdfUrl() throws ViewerConfigurationException {        
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
+    public String getContentServerPdfUrl() throws ViewerConfigurationException {
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()),
+                Optional.empty(), label.getValue());
 
     }
-    
+
     private String getFooterId() {
         return this.footerId;
     }
@@ -196,11 +205,8 @@ public class TOCElement implements Serializable {
         if (accessPermissionPdf == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
-                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
-                        topStructPi,
-                        logId,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
-                        request);
+                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, logId,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;
@@ -248,20 +254,20 @@ public class TOCElement implements Serializable {
      */
     public String getLabel() {
         Locale locale = BeanUtils.getLocale();
-        if(locale != null) {
+        if (locale != null) {
             return getLabel(locale);
         }
-        
+
         return label.getValue().orElse("");
     }
-    
+
     /**
      * @return the label
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
-    
+
     /**
      * @return the label
      */
