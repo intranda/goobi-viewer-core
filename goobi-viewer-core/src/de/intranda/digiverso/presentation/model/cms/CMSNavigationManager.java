@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
 public class CMSNavigationManager {
 
@@ -89,7 +90,7 @@ public class CMSNavigationManager {
      * @throws DAOException
      */
     public void addCMSPageItems() throws DAOException {
-        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
+        List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
             if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus())) {
                 SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
