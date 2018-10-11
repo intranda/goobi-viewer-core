@@ -349,6 +349,124 @@ span[class*=" image-"] {
   content: "\e913";
 }
 /* ==============================================================
+   CSS Grid Classes
+   ==============================================================*/
+/* CSS GRID */
+.grid {
+  display: -ms-grid;
+  display: grid;
+  grid-gap: 15px;
+  /* COLS */
+  /* MODIFICATION */
+}
+.grid__col-2 {
+  -ms-grid-column-span: 2;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 2;
+}
+.grid__col-3 {
+  -ms-grid-column-span: 3;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 3;
+}
+.grid__col-4 {
+  -ms-grid-column-span: 4;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 4;
+}
+.grid__col-5 {
+  -ms-grid-column-span: 5;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 5;
+}
+.grid__col-6 {
+  -ms-grid-column-span: 6;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 6;
+}
+.grid__col-7 {
+  -ms-grid-column-span: 7;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 7;
+}
+.grid__col-8 {
+  -ms-grid-column-span: 8;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 8;
+}
+.grid__col-9 {
+  -ms-grid-column-span: 9;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 9;
+}
+.grid__col-10 {
+  -ms-grid-column-span: 10;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 10;
+}
+.grid__col-11 {
+  -ms-grid-column-span: 11;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 11;
+}
+.grid__col-12 {
+  -ms-grid-column-span: 12;
+  -ms-grid-column: 1;
+      grid-column: 1 / span 12;
+}
+.grid--1 {
+  -ms-grid-columns: 1fr;
+      grid-template-columns: 1fr;
+}
+.grid--2 {
+  -ms-grid-columns: (1fr)[2];
+      grid-template-columns: repeat(2, 1fr);
+}
+.grid--3 {
+  -ms-grid-columns: (1fr)[3];
+      grid-template-columns: repeat(3, 1fr);
+}
+.grid--4 {
+  -ms-grid-columns: (1fr)[4];
+      grid-template-columns: repeat(4, 1fr);
+}
+.grid--5 {
+  -ms-grid-columns: (1fr)[5];
+      grid-template-columns: repeat(5, 1fr);
+}
+.grid--6 {
+  -ms-grid-columns: (1fr)[6];
+      grid-template-columns: repeat(6, 1fr);
+}
+.grid--7 {
+  -ms-grid-columns: (1fr)[7];
+      grid-template-columns: repeat(7, 1fr);
+}
+.grid--8 {
+  -ms-grid-columns: (1fr)[8];
+      grid-template-columns: repeat(8, 1fr);
+}
+.grid--9 {
+  -ms-grid-columns: (1fr)[9];
+      grid-template-columns: repeat(9, 1fr);
+}
+.grid--10 {
+  -ms-grid-columns: (1fr)[10];
+      grid-template-columns: repeat(10, 1fr);
+}
+.grid--11 {
+  -ms-grid-columns: (1fr)[11];
+      grid-template-columns: repeat(11, 1fr);
+}
+.grid--12 {
+  -ms-grid-columns: (1fr)[12];
+      grid-template-columns: repeat(12, 1fr);
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Resets for CSS Libs
    ==============================================================*/
 /* BOOTSTRAP */
@@ -5375,13 +5493,33 @@ div[id*="-Modal"] .email-form .form-group {
    User
    style declarations for user.xhtml
    ==============================================================*/
-/* USER */
+/* USER LOGIN */
 /* BLOCK */
-.user {
-  /* ELEMENT */
+.user-login {
+  /* LOCAL */
+  /* EXTERNAL */
+  /* OPEN ID */
+  /* ELMENTS */
 }
-.user__action .btn {
+.user-login__external .user-login__options li {
+  text-align: right;
+}
+.user-login__action .btn {
   margin: 0;
+}
+/* USER LOGIN CARD */
+.user-login__card {
+  height: 100%;
+  border: 1px solid #ccc;
+}
+.user-login__card h3 {
+  margin: 0;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+}
+.user-login__card-body {
+  padding: 15px;
 }
 /* MODALS */
 #createAccountModal p {
@@ -5394,11 +5532,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .user__options {
-    margin-top: 10px;
-  }
-}
 /* ==============================================================
    User Account Create
    style declarations for userAccountCreate.xhtml
