@@ -21,7 +21,7 @@
                         <!-- PDF -->
                         <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
                             <li class="image-controls__option pdf">
-                                <h:outputLink value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}"
+                                <h:outputLink styleClass="btn btn--icon" value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}"
                                     rendered="#{activeDocumentBean.viewManager.currentPage.displayPagePdfLink}" target="_blank">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -32,7 +32,7 @@
                         <!-- FULLTEXT -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
                             <li class="image-controls__option fulltext">
-                                <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
+                                <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
                                     title="#{msg.fulltext}" target="_blank">
                                     <i class="fa fa-file-text-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -43,7 +43,7 @@
                         <!-- ADD TO BOOKSHELF -->
                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                             <li class="image-controls__option add-to-bookshelf">
-                                <button type="button" class="btn-clean" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
+                                <button type="button" class="btn btn--icon" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
                                     <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
                                         <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
                                         <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
@@ -53,7 +53,7 @@
                         </ui:fragment>
                         <!-- IIIF -->
                         <li class="image-controls__option iiif">
-                        <button type="button" class="btn-clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-toggle="tooltip" data-placement="bottom">
+                        <button type="button" class="btn btn--icon" data-copy="img-url" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-toggle="tooltip" data-placement="bottom">
                         </button>
 <!--                             <a href="#{imageDelivery.iiifManifest}" title="#{msg.iiif}" data-toggle="tooltip" data-placement="bottom" target="_blank"></a> -->
                         </li>

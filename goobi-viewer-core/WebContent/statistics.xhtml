@@ -105,13 +105,11 @@
                 
                 <div class="clearfix"></div>
             </div>
-            
+
             <h:form prependId="false" id="dsSearchForm" style="display: none;">
-            	<h:inputText id="searchInput" value="#{searchBean.exactSearchString}"></h:inputText>
-            	<h:commandButton id="searchBtn"
-					styleClass="btn" 
-					action="#{searchBean.searchDirect}">
-				</h:commandButton>
+                <h:inputText id="searchInput" value="#{searchBean.exactSearchString}" />
+                <h:commandButton id="searchBtn" styleClass="btn btn--full" action="#{searchBean.searchDirect}">
+                </h:commandButton>
             </h:form>
         </f:view>
     </ui:define>

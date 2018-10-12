@@ -33,7 +33,7 @@
 						<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage}">
 							<h:form id="deleteOverviewPage" prependId="false">
 								<div class="overview__delete text-right">
-									<button type="button" class="btn" data-toggle="modal" data-target="#pageDeleteModal">#{msg.viewOverviewDeletePage}</button>
+									<button type="button" class="btn btn--danger" data-toggle="modal" data-target="#pageDeleteModal">#{msg.viewOverviewDeletePage}</button>
 								</div>
 
 								<!-- DELTE PAGE MODAL -->
@@ -50,8 +50,8 @@
 											</div>
 											<div class="modal-body">#{msg.viewOverviewDeletePageConfirmation}</div>
 											<div class="modal-footer">
-												<button type="button" class="btn btn-default" data-dismiss="modal">#{msg.cancel}</button>
-												<h:commandButton id="btnDelete" styleClass="btn" value="#{msg.viewOverviewDeletePage}" action="#{activeDocumentBean.overviewPage.deleteAction}" />
+												<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+												<h:commandButton id="btnDelete" styleClass="btn btn--danger" value="#{msg.viewOverviewDeletePage}" action="#{activeDocumentBean.overviewPage.deleteAction}" />
 											</div>
 										</div>
 									</div>
@@ -210,7 +210,7 @@
 												<div class="col-xs-4">
 													<!-- ADD -->
 													<div class="overview__metadata-add text-right">
-														<h:commandLink action="#{activeDocumentBean.overviewPage.addMetadataFieldAction}" styleClass="btn" value="#{msg.viewOverviewMetadata_add}" />
+														<h:commandLink action="#{activeDocumentBean.overviewPage.addMetadataFieldAction}" styleClass="btn btn--full" value="#{msg.viewOverviewMetadata_add}" />
 													</div>
 												</div>
 											</div>
@@ -219,7 +219,7 @@
 										<!-- SAVE -->
 										<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage}">
 											<div class="overview__metadata-save text-right">
-												<h:commandLink styleClass="btn" action="#{activeDocumentBean.overviewPage.saveAction(userBean.user)}" value="#{msg.viewOverviewMetadata_save}" />
+												<h:commandLink styleClass="btn btn--success" action="#{activeDocumentBean.overviewPage.saveAction(userBean.user)}" value="#{msg.viewOverviewMetadata_save}" />
 											</div>
 										</h:panelGroup>
 									</div>

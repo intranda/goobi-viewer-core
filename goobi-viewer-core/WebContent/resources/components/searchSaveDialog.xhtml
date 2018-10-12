@@ -10,7 +10,7 @@
     <composite:implementation>
         <div class="search-list__save-search">
 			<span data-toggle="tooltip" data-placement="top" title="#{msg.saveSearch}">
-				<button type="button" class="btn-clean" data-toggle="modal" data-target="#saveSearchModal">
+				<button type="button" class="btn btn--icon" data-toggle="modal" data-target="#saveSearchModal">
 					<i class="fa fa-floppy-o" aria-hidden="true"></i>
 				</button>
 			</span>
@@ -35,7 +35,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                <h:commandButton styleClass="btn" action="#{searchBean.saveSearchAction()}" value="#{msg.save}" />
+                                <h:commandButton styleClass="btn btn--success" action="#{searchBean.saveSearchAction()}" value="#{msg.save}" />
                             </div>
                         </div>
                     </div>

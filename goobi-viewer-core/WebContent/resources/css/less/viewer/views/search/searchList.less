@@ -33,7 +33,6 @@
             &:active,
             &.active {
                 color: @blue;
-                outline: none !important;
             }
         }
         form {
@@ -98,11 +97,9 @@
                     color: @black;
                 }
             }
-            a, button {
-				padding: 8px 12px;
-            }
+            a, button {}
             input[type="submit"] {
-	            padding: 9px 20px;
+	            padding: 6px 20px;
 	            background-image: url("@{images}/icons/icon-search.png");
 	            background-repeat: no-repeat;
 	            background-position: center center;
@@ -110,6 +107,9 @@
             }
             &.reset {
                 background-color: @lightgray;
+                a, button {
+                	padding: 6px 12px;
+                }
                 &.focus {
                 	border-color: @blue;
                 }
@@ -229,14 +229,18 @@
 		    font-size: 18px;
 		    color: @white;
 		    background-image: none;
+		    .fa-bookmark-o,
+		    .fa-bookmark {
+		        color: @blue;
+		    }
 		    .fa-bookmark-o {
 		        display: inline-block;
 		    }
 		    .fa-bookmark {
 		        display: none;
-		        color: @blue;
 		    }
-		    &.added, &:hover {
+		    &.added, 
+		    &:hover {
 		        .fa-bookmark-o {
 		            display: none;
 		        }

@@ -208,7 +208,7 @@
                             action="#{cmsCollectionsBean.resetCurrentFacets()}" />
                         <h:commandButton
                             disabled="#{!cmsCollectionsBean.currentCollectionValid}"
-                            styleClass="btn"
+                            styleClass="btn btn--success"
                             id="saveCollection"
                             value="#{msg.save}"
                             action="#{cmsCollectionsBean.saveCurrentCollection()}" />
@@ -275,17 +275,10 @@
                                     </h:panelGroup>
                                 </div>
                                 <div class="modal-footer">
-
-                                    <a
-                                        class="btn"
-                                        data-dismiss="modal"> #{msg.cancel} </a>
-                                    <h:commandLink
-                                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(cmsCollectionsBean.selectedMediaItem)}"
-                                        value="#{msg.cms_selectMediaItem_agree}"
-                                        styleClass="btn">
-                                        <f:passThroughAttribute
-                                            name="data-dismiss"
-                                            value="modal" />
+                                    <a class="btn" data-dismiss="modal"> #{msg.cancel} </a>
+                                    <h:commandLink action="#{cmsCollectionsBean.currentCollection.setMediaItem(cmsCollectionsBean.selectedMediaItem)}"
+                                        value="#{msg.cms_selectMediaItem_agree}" styleClass="btn btn--success">
+                                        <f:passThroughAttribute name="data-dismiss" value="modal" />
                                         <f:ajax render="@form" />
                                     </h:commandLink>
                                 </div>

@@ -16,7 +16,7 @@
                 <h3>#{msg.licenses}</h3>
                 
                 <p>
-                    <h:commandLink value="#{msg.license_addNew}" action="#{adminBean.resetCurrentLicenseForIpRangeAction}" styleClass="btn">
+                    <h:commandLink value="#{msg.license_addNew}" action="#{adminBean.resetCurrentLicenseForIpRangeAction}" styleClass="btn btn--default">
 						<f:ajax render="@form" />
 					</h:commandLink>
                 </p>
@@ -36,9 +36,8 @@
 						<f:setPropertyActionListener target="#{adminBean.currentLicense}" value="#{null}" />
 						<f:ajax render="@form" />
 					</h:commandLink>
-					<h:commandLink id="saveButton" styleClass="btn" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
+					<h:commandLink id="saveButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
 						disabled="#{adminBean.currentLicense == null}">
-<!-- 						<f:ajax render="@form" /> -->
 					</h:commandLink>
 				</div>
 			</h:panelGroup>

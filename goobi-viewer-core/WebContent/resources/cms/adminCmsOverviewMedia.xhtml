@@ -28,7 +28,7 @@
 
                     <div class="overview-media__file-upload text-right">
                         <h:form id="overviewMediaFileUploadForm" prependId="false">
-                            <h:commandLink action="#{cmsMediaBean.setCurrentMediaItem(cmsMediaBean.createMediaItem())}" styleClass="btn">
+                            <h:commandLink action="#{cmsMediaBean.setCurrentMediaItem(cmsMediaBean.createMediaItem())}" styleClass="btn btn--default">
 								#{msg.cms_media_uploadFile}
 								<f:passThroughAttribute name="data-toggle" value="modal" />
                                 <f:passThroughAttribute name="data-target" value="#addMediaModal" />
@@ -70,7 +70,7 @@
                                             <div class="media-gallery__item">
                                                 <div class="media-gallery__item-image">
                                                     <!-- COPY IMAGE URL TO CLIPBOARD -->
-                                                    <button type="button" class="btn-clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" title="#{msg.cms_media_copyUrlToClipboard}">
+                                                    <button type="button" class="btn btn--clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" title="#{msg.cms_media_copyUrlToClipboard}">
                                                         <i class="fa fa-clipboard" aria-hidden="true"></i>
                                                     </button>
 
@@ -87,7 +87,7 @@
                                                     <div class="col-xs-4">
                                                         <div class="media-gallery__item-action text-right">
                                                             <!-- EDIT MEDIA BUTTON -->
-                                                            <h:commandLink action="#{cmsMediaBean.setCurrentMediaItem(media)}" title="#{msg.edit}">
+                                                            <h:commandLink styleClass="btn btn--icon" action="#{cmsMediaBean.setCurrentMediaItem(media)}" title="#{msg.edit}">
                                                                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                                                 <f:passThroughAttribute name="data-toggle" value="modal" />
                                                                 <f:passThroughAttribute name="data-target" value="#addMediaModal" />
@@ -95,7 +95,7 @@
                                                             </h:commandLink>
     
                                                             <!-- DELETE MEDIA BUTTON -->
-                                                            <button type="button" class="btn-clean" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" title="#{msg.delete}">
+                                                            <button type="button" class="btn btn--icon" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" title="#{msg.delete}">
                                                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                             </button>
                                                         </div>                                                    
@@ -126,7 +126,7 @@
                                                             </ul>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <a href="#" class="btn" data-dismiss="modal">#{msg.OK}</a>
+                                                            <a href="#" class="btn btn--success" data-dismiss="modal">#{msg.OK}</a>
                                                         </div>
                                                     </h:panelGroup>
 
@@ -143,7 +143,7 @@
                                                             <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
                                                             <h:commandButton type="submit" action="pretty:adminCmsMedia"
                                                                 actionListener="#{cmsMediaBean.deleteMedia(media)}"
-                                                                value="#{msg.cms_deleteMedia_agree}" styleClass="btn" />
+                                                                value="#{msg.cms_deleteMedia_agree}" styleClass="btn btn--danger" />
                                                         </div>
                                                     </h:panelGroup>
                                                 </div>

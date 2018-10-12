@@ -51,7 +51,7 @@
 					</td>
                     <td>
                         <!-- edit license --> 
-                        <h:commandLink styleClass="btn" title="#{msg.edit}">
+                        <h:commandLink styleClass="btn btn--icon" title="#{msg.edit}">
                             <f:setPropertyActionListener value="#{license}" target="#{adminBean.currentLicense}" />
                             <f:ajax render="@form" />
                             <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -61,7 +61,7 @@
                         <h:commandLink 
                             onclick="if ( !confirm( &quot;#{msg.license_deleteConfirmationText}&quot; ) ) { return false };" 
                             action="#{adminBean.deleteLicenseAction(license)}" 
-                            styleClass="btn" 
+                            styleClass="btn btn--icon" 
                             title="#{msg.delete}">
                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                         </h:commandLink>

@@ -141,13 +141,13 @@
                         </div>
 
                         <!-- preview page -->
-                        <button type="button" id="preview-button" class="btn" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
+                        <button type="button" id="preview-button" class="btn btn--default" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
                             #{msg.cms_pagePreview}
                         </button>
                     </li>
                     <li>
                         <!-- delete page -->
-                        <a href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn"> #{msg.cms_pageMetadata_delete} </a>
+                        <a href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn btn--danger"> #{msg.cms_pageMetadata_delete} </a>
 
                         <!-- delete media modal -->
                         <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
@@ -167,7 +167,7 @@
                                         <div class="modal-footer">
                                             <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
                                             <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
-                                                styleClass="btn">
+                                                styleClass="btn btn--danger">
                                                 <f:ajax render="@none" />
                                             </h:commandLink>
                                         </div>
@@ -186,7 +186,7 @@
                                             <h4 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h4>
                                         </div>
                                         <div class="modal-footer">
-                                            <a href="#" class="btn" data-dismiss="modal">#{msg.OK}</a>
+                                            <a href="#" class="btn btn--full" data-dismiss="modal">#{msg.OK}</a>
                                         </div>
                                     </h:panelGroup>
                                 </div>
@@ -195,7 +195,7 @@
                     </li>
                     <li>
                         <!-- save page -->
-                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn" value="#{msg.cms_pageMetadata_save}"
+                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
                             onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
                         </h:commandButton>
                     </li>

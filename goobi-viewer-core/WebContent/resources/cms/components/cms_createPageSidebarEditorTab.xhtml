@@ -37,7 +37,7 @@
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 									<div id="addMenuItemWrapper">
 										<!-- trigger -->
-										<h:commandButton id="addSidebarItemBtn" styleClass="btn" value="#{msg.cms_sidebar_createItem}" action="#{cmsBean.createSidebarElement}">
+										<h:commandButton id="addSidebarItemBtn" styleClass="btn btn--default" value="#{msg.cms_sidebar_createItem}" action="#{cmsBean.createSidebarElement}">
 											<f:passThroughAttribute name="data-toggle" value="modal" />
 											<f:passThroughAttribute name="data-target" value="#addSidebarItemModal" />
 											<f:ajax render="sidebar_item_editor" />
@@ -206,7 +206,7 @@
 																	<!-- ACTION -->
 																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
 																		<div class="sidebar-editor-item-widget-editor-action">
-																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
+																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
 																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
@@ -374,7 +374,7 @@
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
 																		<div class="sidebar-editor-item-widget-editor-action">
-																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
+																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
 																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
@@ -445,7 +445,7 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn" data-dismiss="modal">#{msg.cms_sidebar_cancelItem}</button>
-								<h:commandButton value="#{msg.cms_sidebar_saveItem}" action="#{cmsBean.saveSidebarElement()}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
+								<h:commandButton value="#{msg.cms_sidebar_saveItem}" action="#{cmsBean.saveSidebarElement()}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn btn--success">
 								</h:commandButton>
 							</div>
 						</div>

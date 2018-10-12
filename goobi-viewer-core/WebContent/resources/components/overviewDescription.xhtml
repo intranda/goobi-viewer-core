@@ -29,7 +29,7 @@
 				                <h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and !activeDocumentBean.overviewPage.editDescriptionMode}">
 				                	<!-- EDIT -->
 				                	<h:commandButton 
-				                		styleClass="btn" 
+				                		styleClass="btn btn--full" 
 				                		action="#{activeDocumentBean.overviewPage.toggleEditDescriptionModeAction}"
 					                    value="#{msg.viewOverviewDescription_edit}">
 					                    <f:ajax render="@form" />
@@ -47,7 +47,7 @@
     				
     				                    <!-- SAVE -->
     				                    <h:commandButton
-    				                    	styleClass="btn"
+    				                    	styleClass="btn btn--full"
     				                        action="#{activeDocumentBean.overviewPage.saveAction(userBean.user)}" 
     				                        value="#{msg.viewOverviewDescription_save}" />
                                     </div>
