@@ -146,7 +146,7 @@
                 <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true">
                     <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" />
                 </h:commandLink>
-                <h:commandLink id="saveUserButton" styleClass="btn" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
+                <h:commandLink id="saveUserButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
             </div>
         </h:form>
     </composite:implementation>

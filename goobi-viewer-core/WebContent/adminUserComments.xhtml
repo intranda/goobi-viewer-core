@@ -138,8 +138,8 @@
                                                             <h:inputTextarea class="form-control" value="#{comment.text}" />
 														</div>
 														<div class="modal-footer">
-															<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-															<h:commandLink action="#{adminBean.saveCommentAction(comment)}" value="#{msg.save}" styleClass="btn" />
+                                                            <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+															<h:commandLink action="#{adminBean.saveCommentAction(comment)}" value="#{msg.save}" styleClass="btn btn--success" />
 														</div>
 													</div>
 												</div>

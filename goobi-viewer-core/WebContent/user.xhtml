@@ -59,7 +59,7 @@
                                         </div>
     
                                         <div class="user-login__action text-right">
-                                            <h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}">
+                                            <h:commandButton styleClass="btn btn--full" value="#{msg.login}" action="#{userBean.login}">
                                                 <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
                                             </h:commandButton>
                                         </div>
@@ -69,11 +69,11 @@
                                     <nav class="user-login__options">
                                         <ul>
                                             <li>
-                                                <button type="button" class="btn-clean" data-toggle="modal" data-target="#retrieveAccountModal">#{msg.user_forgotPassword}</button>
+                                                <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#retrieveAccountModal">#{msg.user_forgotPassword}</button>
                                             </li>
                                             <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
                                                 <li>
-                                                    <button type="button" class="btn-clean" data-toggle="modal" data-target="#createAccountModal">#{msg.user_createNewAccount}</button>
+                                                    <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#createAccountModal">#{msg.user_createNewAccount}</button>
                                                 </li>
                                             </h:panelGroup>
                                         </ul>
@@ -190,7 +190,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                <h:commandButton styleClass="btn" value="#{msg.submit}" action="#{userBean.sendPasswordResetLinkAction}" />
+                                <h:commandButton styleClass="btn btn--success" value="#{msg.submit}" action="#{userBean.sendPasswordResetLinkAction}" />
                             </div>
                         </h:form>
                     </div>
@@ -252,7 +252,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                    <h:commandButton styleClass="btn" value="#{msg.newUserTab}" action="#{userBean.createNewUserAccount}" />
+                                    <h:commandButton styleClass="btn btn--success" value="#{msg.newUserTab}" action="#{userBean.createNewUserAccount}" />
                                 </div>
                             </h:form>
                         </div>

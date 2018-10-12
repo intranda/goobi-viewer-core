@@ -32,7 +32,7 @@
 									<!-- AJAX LOADER -->
 									<div class="search-advanced__loader"></div>
 
-									<h:commandLink styleClass="remove btn-clean" role="button" title="#{msg.searchAdvanved_deleteSearchGroup}"
+									<h:commandLink styleClass="remove btn btn--clean" role="button" title="#{msg.searchAdvanved_deleteSearchGroup}"
 										action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}" disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
 										<i class="fa fa-times-circle" aria-hidden="true"></i>
 										<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -83,7 +83,7 @@
 																		</h:inputText>
 
 																		<div class="input-group-addon">
-																			<button type="button" class="btn-clean reset" data-toggle="tooltip" data-placement="top"
+																			<button type="button" class="btn btn--clean reset" data-toggle="tooltip" data-placement="top"
 																				title="#{msg.searchAdvanved_resetCurrentValue}">
 																				<i class="fa fa-times-circle" aria-hidden="true"></i>
 																			</button>
@@ -165,8 +165,8 @@
 
 							<!-- SEARCH ADVANCED ACTION -->
 							<div class="search-advanced__action">
-								<h:commandLink styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-								<h:commandButton styleClass="btn" value="#{msg.search}" action="#{searchBean.searchAdvanced}">
+								<h:commandLink styleClass="btn btn--full" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
+								<h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{searchBean.searchAdvanced}">
 									<f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
 								</h:commandButton>
 							</div>

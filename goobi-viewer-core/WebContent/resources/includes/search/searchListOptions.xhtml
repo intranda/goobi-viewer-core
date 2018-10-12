@@ -21,7 +21,7 @@
         <!-- RSS LINK -->
         <h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
             <div class="search-list__rss">
-                <a href="#{searchBean.rssUrl}" data-toggle="tooltip" data-placement="top" title="#{msg.rssSubscribe}" target="_blank">
+                <a href="#{searchBean.rssUrl}" class="btn btn--icon" data-toggle="tooltip" data-placement="top" title="#{msg.rssSubscribe}" target="_blank">
                     <i class="fa fa-rss" aria-hidden="true"></i>
                 </a>
             </div>
@@ -36,7 +36,7 @@
         <h:panelGroup rendered="#{configurationBean.searchExcelExportEnabled}">
             <div class="search-list__excel-export">
                 <h:form id="slExportSearchForm" prependId="false">
-                    <h:commandLink styleClass="excel-export-trigger" action="#{searchBean.exportSearchAsExcelAction()}" title="#{msg.searchExportExcel}">
+                    <h:commandLink styleClass="btn btn--icon excel-export-trigger" action="#{searchBean.exportSearchAsExcelAction()}" title="#{msg.searchExportExcel}">
                         <i class="fa fa-table" aria-hidden="true"></i>
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                         <f:passThroughAttribute name="data-placement" value="top" />
@@ -52,14 +52,14 @@
 
         <!-- SEARCHLIST VIEWS -->
         <div class="search-list__views">
-            <button type="button" class="btn-clean" title="#{msg.searchListDetailView}" data-view="search-list-default" data-toggle="tooltip" data-placement="top"
+            <button type="button" class="btn btn--icon" title="#{msg.searchListDetailView}" data-view="search-list-default" data-toggle="tooltip" data-placement="top"
                 data-trigger="hover">
                 <i class="fa fa-list-ul" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn-clean" title="#{msg.searchListTileView}" data-view="search-list-grid" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+            <button type="button" class="btn btn--icon" title="#{msg.searchListTileView}" data-view="search-list-grid" data-toggle="tooltip" data-placement="top" data-trigger="hover">
                 <i class="fa fa-th-large" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn-clean" title="#{msg.searchListListView}" data-view="search-list-list" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+            <button type="button" class="btn btn--icon" title="#{msg.searchListListView}" data-view="search-list-list" data-toggle="tooltip" data-placement="top" data-trigger="hover">
                 <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
         </div>

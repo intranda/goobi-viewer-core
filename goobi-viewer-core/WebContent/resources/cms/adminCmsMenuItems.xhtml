@@ -33,7 +33,7 @@
                             <!-- SAVE MENU -->
                             <div class="cms-menu__save">
                                 <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
-                                <h:commandButton value="#{msg.cms_menu_save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn btn--default" />
+                                <h:commandButton value="#{msg.cms_menu_save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn btn--success" />
                             </div>
                         </header>    
                         
@@ -55,7 +55,7 @@
                                         <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_select_theme}</span>
                                     </div>
                                     <div class="cms-module__option-help">
-                                        <button type="button" class="btn-clean" data-toggle="helptext">
+                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -77,11 +77,11 @@
                                             class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
                                             <!-- ITEM LEVEL -->
                                             <div class="cms-menu__visible-item-level">
-                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decrease_menu_item_level}"
+                                                <button type="button" class="btn btn--clean left" title="#{msg.cms_menu_decrease_menu_item_level}"
                                                     onclick="cmsJS.sortableList.decreaseLevel(this, true);">
                                                     <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                                 </button>
-                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increase_menu_item_level}"
+                                                <button type="button" class="btn btn--clean right" title="#{msg.cms_menu_increase_menu_item_level}"
                                                     onclick="cmsJS.sortableList.increaseLevel(this, true);">
                                                     <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                                 </button>
@@ -97,7 +97,7 @@
 
                                             <!-- ITEM EDIT -->
                                             <div class="cms-menu__visible-item-edit">
-                                                <button type="button" class="btn-clean" data-toggle="edit-visible-item">
+                                                <button type="button" class="btn btn--clean" data-toggle="edit-visible-item">
                                                     <i class="fa fa-caret-down" aria-hidden="true"></i>
                                                 </button>
                                             </div>
@@ -115,7 +115,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
@@ -131,7 +131,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
@@ -150,7 +150,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
@@ -159,7 +159,7 @@
                                                 
                                                 <!-- ITEM ACTIONS -->
                                                 <div class="cms-module__option-action">
-                                                    <button type="button" class="btn-clean btn--link" onclick="cmsJS.sortableList.remove(this)">#{msg.cms_menu_remove_item}</button>
+                                                    <button type="button" class="btn btn--clean btn--link" onclick="cmsJS.sortableList.remove(this)">#{msg.cms_menu_remove_item}</button>
                                                 </div>
                                             </div>
                                         </li>
@@ -218,7 +218,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
@@ -234,7 +234,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>
@@ -253,7 +253,7 @@
                                                             <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_new_tab}</span>
                                                         </div>
                                                         <div class="cms-module__option-help">
-                                                            <button type="button" class="btn-clean" data-toggle="helptext">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
                                                                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                                                             </button>
                                                         </div>

@@ -17,13 +17,13 @@
         <nav id="dataTablePaginator" class="data-table-paginator clearfix">
             <ul>
                 <li>
-                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveFirst}" disabled="#{cc.attrs.tableValues.firstPage}">
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveFirst}" disabled="#{cc.attrs.tableValues.firstPage}">
                         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
                         <f:ajax render="@form" />
                     </h:commandLink>
                 </li>
                 <li>
-                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMovePrevious}" disabled="#{cc.attrs.tableValues.firstPage}">
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMovePrevious}" disabled="#{cc.attrs.tableValues.firstPage}">
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
                         <f:ajax render="@form" />
                         <h:outputText value=" #{msgs.pagePrevious}" />
@@ -42,16 +42,16 @@
                     </span>
                     
                     <!-- GO TO PAGE --> 
-                    <h:commandButton action="#{navigationHelper.reload()}" id="cmdMoveTo" class="btn-clean" />
+                    <h:commandButton action="#{navigationHelper.reload()}" id="cmdMoveTo" class="btn btn--clean" />
                 </li>
                 <li>
-                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveNext}" disabled="#{cc.attrs.tableValues.lastPage}">
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveNext}" disabled="#{cc.attrs.tableValues.lastPage}">
                         <i class="fa fa-angle-right" aria-hidden="true"></i>
                         <f:ajax render="@form" />
                     </h:commandLink>
                 </li>
                 <li>
-                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveLast}" disabled="#{cc.attrs.tableValues.lastPage}">
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveLast}" disabled="#{cc.attrs.tableValues.lastPage}">
                         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
                         <f:ajax render="@form" />
                     </h:commandLink>
