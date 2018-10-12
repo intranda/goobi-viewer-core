@@ -13,6 +13,7 @@
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-less": "^1.4.1",
     "grunt-contrib-watch": "^1.1.0",
+    "grunt-riot": "^0.1.8",
     "grunt-jsdoc": "^2.2.0",
     "jsdoc": "^3.5.5",
     "less-plugin-autoprefix": "^1.5.1",
