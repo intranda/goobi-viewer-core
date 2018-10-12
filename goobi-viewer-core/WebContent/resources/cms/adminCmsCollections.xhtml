@@ -46,7 +46,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- ADD COLLECTION -->
                     <div class="cms-collections__selection">
                         <!-- LABEL -->
@@ -84,9 +84,9 @@
                             </script>
                         </div>
                     </div>
-                    
+
                     <hr />
-                    
+
                     <!-- COLLECTION LIST -->
                     <div class="cms-collections__table">
                         <table class="table table-bordered">
@@ -110,26 +110,15 @@
                                             <a href="#{collection.collectionUrl}" target="_blank">#{collection.collectionUrl}</a>
                                         </td>
                                         <td>
-                                                    <img src="#{collection.getIconURI()}" class="img-responsive" alt="" />
-<!--                                             <ui:fragment rendered="#{collection.hasImage()}"> -->
-<!--                                                 <ui:fragment rendered="#{collection.hasRepresentativeWork()}"> -->
-<!--                                                 </ui:fragment> -->
-<!--                                                 <ui:fragment rendered="#{!collection.hasRepresentativeWork()}"> -->
-<!--                                                     <img src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,100)}" class="img-responsive" alt="" /> -->
-<!--                                                 </ui:fragment> -->
-<!--                                             </ui:fragment> -->
-<!--                                             <ui:fragment rendered="#{!collection.hasImage()}"> -->
-<!--                                                 <img src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}" class="img-responsive" alt="" /> -->
-<!--                                             </ui:fragment> -->
+                                            <img src="#{collection.getIconURI()}" class="img-responsive" alt="" />
                                         </td>
                                         <td class="actions">
-                                            <h:commandLink action="#{cmsCollectionsBean.editCollection(collection)}" title="#{msg.cms_collection_edit}">
+                                            <h:commandLink styleClass="btn btn--icon" action="#{cmsCollectionsBean.editCollection(collection)}" title="#{msg.cms_collection_edit}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />
                                             </h:commandLink>
-                                            <h:commandLink 
-                                                action="#{cmsCollectionsBean.deleteCollection(collection)}"
+                                            <h:commandLink styleClass="btn btn--icon" action="#{cmsCollectionsBean.deleteCollection(collection)}"
                                                 title="#{msg.cms_collection_delete}"
                                                 onclick="if ( !confirm( &quot;#{msg.cms_deleteCollection_confirmation}&quot; ) ) { return false };">
                                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -138,7 +127,7 @@
                                             </h:commandLink>
                                         </td>
                                     </tr>
-                                </ui:repeat>    
+                                </ui:repeat>
                             </tbody>
                         </table>
                     </div>

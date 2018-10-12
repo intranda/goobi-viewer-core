@@ -89,8 +89,8 @@
 
                         <!-- SEARCH STANDARD ACTION -->
                         <div class="search-standard__action">
-                            <h:commandLink styleClass="btn btn--full" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                            <h:commandButton id="submitSearch" type="submit" styleClass="btn  btn--full" action="#{searchBean.searchSimple}" value="#{msg.search}">
+                            <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
+                            <h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchSimple}" value="#{msg.search}">
                                 <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
                             </h:commandButton>
                         </div>

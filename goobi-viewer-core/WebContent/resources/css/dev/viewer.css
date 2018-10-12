@@ -3814,18 +3814,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-table__action a,
 .admin-table__action span {
-  display: inline-block;
-  padding: 5px;
-  text-decoration: none;
-  color: #1a1a1a;
-}
-.admin-table__action a:hover,
-.admin-table__action span:hover,
-.admin-table__action a:focus,
-.admin-table__action span:focus,
-.admin-table__action a:active,
-.admin-table__action span:active {
-  text-decoration: none;
+  margin-left: 5px;
 }
 .admin-table__action span {
   opacity: 0.5;
@@ -4759,6 +4748,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__current-search .input-group-addon.reset {
   background-color: #eee;
 }
+.search-list__current-search .input-group-addon.reset a,
 .search-list__current-search .input-group-addon.reset button {
   padding: 6px 12px;
 }
@@ -10027,7 +10017,7 @@ div[id*="-Modal"] .email-form .form-group {
   z-index: 999;
 }
 .cms-menu__select-theme {
-  margin-bottom: 15px;
+  margin-bottom: 45px;
 }
 .cms-menu__editor {
   display: -ms-grid;
@@ -10234,10 +10224,6 @@ div[id*="-Modal"] .email-form .form-group {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td .btn {
-  margin: 0 3px 0 0;
-  padding: 0 7px;
 }
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td img {
   width: 64px;
