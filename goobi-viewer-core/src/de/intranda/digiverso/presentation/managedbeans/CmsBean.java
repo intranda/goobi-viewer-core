@@ -723,13 +723,17 @@ public class CmsBean implements Serializable {
     }
 
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
-        if (currentPage.getId() != null) {
-            this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+        if(currentPage != null) {            
+            if (currentPage.getId() != null) {
+                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            } else {
+                this.selectedPage = currentPage;
+            }
+            this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            logger.debug("Selected page " + currentPage);
         } else {
-            this.selectedPage = currentPage;
+            this.selectedPage = null;
         }
-        this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-        logger.debug("Selected page " + currentPage);
 
     }
 

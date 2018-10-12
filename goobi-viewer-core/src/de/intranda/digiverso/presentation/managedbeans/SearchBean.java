@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
@@ -1994,5 +1996,46 @@ public class SearchBean implements Serializable {
                 .append(facets.getCurrentFacetString())
                 .append('/')
                 .toString();
+    }
+    
+    public String updateFacetItem(String field, boolean hierarchical) {
+        getFacets().updateFacetItem(field, hierarchical);
+        return getCurrentSearchUrl();
+    }
+
+    /**
+     * @return
+     */
+    private String getCurrentSearchUrl() {
+        try {
+            ViewerPathBuilder.createPath(BeanUtils.getRequest(), getSearchPageUrl()).ifPresent(path -> {
+                if (path != null) {
+                    path.setParameterPath(getParameterPath());
+                    final FacesContext context = FacesContext.getCurrentInstance();
+                    String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
+                    return redirectUrl;
+                }
+            });
+        } catch (DAOException e) {
+            logger.error("Error retrieving search url", e);
+        }
+    }
+    
+    private URI getParameterPath() {
+        URI path = URI.create("");
+        //        path = ViewerPathBuilder.resolve(path, getCollection());
+        path = ViewerPathBuilder.resolve(path, getQueryString());
+        path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
+        path = ViewerPathBuilder.resolve(path, getSolrSortFields());
+        path = ViewerPathBuilder.resolve(path, getFacetString());
+        return path;
+    }
+
+    /**
+     * @return
+     */
+    private String getSearchPageUrl() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
