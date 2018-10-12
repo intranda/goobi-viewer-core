@@ -104,22 +104,22 @@ var viewerJS = ( function( viewer ) {
         if ( _debug ) {
             console.log( '---------- _setAdvSearchValues() ----------' );
         }
-        
-        $( _defaults.inputSelector ).off().on( 'keyup', function() {
-            var currId = $( this ).attr( 'id' );
-            var currVal = $( this ).val();
-            var currValues = JSON.parse( localStorage.getItem( 'advSearchValues' ) );
-            
-            // check if values are in local storage
-            if ( !currValues.hasOwnProperty( currVal ) ) {
-                currValues[ currId ] = currVal;
-            }
-            else {
-                return false;
-            }
-            
-            // write values to local storage
-            localStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
+
+        $( _defaults.inputSelector ).off().on( 'keyup, change', function() {
+        	var currId = $( this ).attr( 'id' );
+        	var currVal = $( this ).val();
+        	var currValues = JSON.parse( localStorage.getItem( 'advSearchValues' ) );
+        	
+        	// check if values are in local storage
+        	if ( !currValues.hasOwnProperty( currVal ) ) {
+        		currValues[ currId ] = currVal;
+        	}
+        	else {
+        		return false;
+        	}
+        	
+        	// write values to local storage
+        	localStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
         } );
     }
     

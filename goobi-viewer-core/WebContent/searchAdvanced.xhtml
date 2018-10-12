@@ -93,7 +93,7 @@
 															</h:panelGroup>
 															<h:panelGroup rendered="#{queryItem.displaySelectItems}">
 																<div class="custom-control custom-control--select">
-																	<h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" value="#{queryItem.value}">
+																	<h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.value}">
 																		<c:forEach var="item" items="#{queryItem.selectItems}">
 																			<f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
 																		</c:forEach>
