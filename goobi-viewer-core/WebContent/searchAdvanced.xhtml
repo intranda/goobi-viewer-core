@@ -107,7 +107,7 @@
 													<!-- OPERATOR -->
 													<div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
 														<div class="custom-control custom-control--select">
-															<h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" value="#{queryItem.operator}"
+															<h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.operator}"
 																disabled="#{queryItem.displaySelectItems}">
 																<f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
 															</h:selectOneMenu>

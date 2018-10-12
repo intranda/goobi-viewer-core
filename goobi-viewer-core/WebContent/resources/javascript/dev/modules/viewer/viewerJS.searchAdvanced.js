@@ -52,52 +52,46 @@ var viewerJS = ( function( viewer ) {
             
             // init bs tooltips
             $( '[data-toggle="tooltip"]' ).tooltip();
-            
-            if ( viewer.localStoragePossible ) {
-                localStorage.setItem( 'advSearchValues', JSON.stringify( _advSearchValues ) );
-                
-                // set search values
-                _setAdvSearchValues();
-                _resetValue();
-                
-                // ajax eventlistener
-                jsf.ajax.addOnEvent( function( data ) {
-                    var ajaxstatus = data.status;
-                    
-                    switch ( ajaxstatus ) {
-                        case "begin":
-                            // show loader
-                            $( _defaults.loaderSelector ).show();
-                            break;
-                        case "success":
-                            // init bs tooltips
-                            $( '[data-toggle="tooltip"]' ).tooltip();
-                            
-                            // set search values
-                            _setAdvSearchValues();
-                            _getAdvSearchValues();
-                            _resetValue();
-                            
-                            // set disabled state to select wrapper
-                            $( 'select' ).each( function() {
-                                if ( $( this ).attr( 'disabled' ) === 'disabled' ) {
-                                    $( this ).parent().addClass( 'disabled' );
-                                }
-                                else {
-                                    $( this ).parent().removeClass( 'disabled' );
-                                }
-                            } );
-                            
-                            // hide loader
-                            $( _defaults.loaderSelector ).hide();
-                            break;
-                    }
-                } );
-            }
-            else {
-                return false;
-            }
-        },
+
+			sessionStorage.setItem('advSearchValues', JSON.stringify(_advSearchValues));
+
+			// set search values
+			_setAdvSearchValues();
+			_resetValue();
+
+			// ajax eventlistener
+			jsf.ajax.addOnEvent(function(data) {
+				var ajaxstatus = data.status;
+
+				switch (ajaxstatus) {
+				case "begin":
+					// show loader
+					$(_defaults.loaderSelector).show();
+					break;
+				case "success":
+					// init bs tooltips
+					$('[data-toggle="tooltip"]').tooltip();
+
+					// set search values
+					_setAdvSearchValues();
+					_getAdvSearchValues();
+					_resetValue();
+
+					// set disabled state to select wrapper
+					$('select').each(function() {
+						if ($(this).attr('disabled') === 'disabled') {
+							$(this).parent().addClass('disabled');
+						} else {
+							$(this).parent().removeClass('disabled');
+						}
+					});
+
+					// hide loader
+					$(_defaults.loaderSelector).hide();
+					break;
+				}
+			});
+		},
     };
     
     function _setAdvSearchValues() {
@@ -108,7 +102,7 @@ var viewerJS = ( function( viewer ) {
         $( _defaults.inputSelector ).off().on( 'keyup, change', function() {
         	var currId = $( this ).attr( 'id' );
         	var currVal = $( this ).val();
-        	var currValues = JSON.parse( localStorage.getItem( 'advSearchValues' ) );
+        	var currValues = JSON.parse( sessionStorage.getItem( 'advSearchValues' ) );
         	
         	// check if values are in local storage
         	if ( !currValues.hasOwnProperty( currVal ) ) {
@@ -119,7 +113,7 @@ var viewerJS = ( function( viewer ) {
         	}
         	
         	// write values to local storage
-        	localStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
+        	sessionStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
         } );
     }
     
@@ -128,7 +122,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '---------- _getAdvSearchValues() ----------' );
         }
         
-        var values = JSON.parse( localStorage.getItem( 'advSearchValues' ) );
+        var values = JSON.parse( sessionStorage.getItem( 'advSearchValues' ) );
         
         $.each( values, function( id, value ) {
             $( '#' + id ).val( value );
@@ -142,7 +136,7 @@ var viewerJS = ( function( viewer ) {
         
         $( _defaults.resetSelector ).off().on( 'click', function() {
             var inputId = $( this ).parents( '.input-group' ).find( 'input' ).attr( 'id' );
-            var currValues = JSON.parse( localStorage.getItem( 'advSearchValues' ) );
+            var currValues = JSON.parse( sessionStorage.getItem( 'advSearchValues' ) );
             
             // delete value from local storage object
             if ( currValues.hasOwnProperty( inputId ) ) {
@@ -150,7 +144,7 @@ var viewerJS = ( function( viewer ) {
             }
             
             // write new values to local storage
-            localStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
+            sessionStorage.setItem( 'advSearchValues', JSON.stringify( currValues ) );
             
             $( this ).parents( '.input-group' ).find( 'input' ).val( '' );
         } );
