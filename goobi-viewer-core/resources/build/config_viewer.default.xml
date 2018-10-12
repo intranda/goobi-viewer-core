@@ -303,7 +303,7 @@
 		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false">
+		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="false">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 			mechanism needs the root path of the theme. The path must be defined down 
 			to the /themes folder, just above the folder named like the theme. -->
