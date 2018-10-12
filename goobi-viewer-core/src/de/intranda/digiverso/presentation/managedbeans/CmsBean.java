@@ -665,7 +665,11 @@ public class CmsBean implements Serializable {
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
             String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
-            return DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme)) || currentTheme.equalsIgnoreCase( item.getAssociatedTheme())).collect(Collectors.toList());
+            List<CMSNavigationItem> items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme)) || currentTheme.equalsIgnoreCase( item.getAssociatedTheme())).collect(Collectors.toList());
+            if(items.isEmpty()) {
+                items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)).collect(Collectors.toList());
+            }
+            return items;
         } catch (DAOException e) {
             return Collections.emptyList();
         }
