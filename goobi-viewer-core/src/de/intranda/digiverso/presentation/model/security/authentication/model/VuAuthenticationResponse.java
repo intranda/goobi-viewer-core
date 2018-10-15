@@ -89,7 +89,7 @@ public class VuAuthenticationResponse {
         
         private Boolean isValid;
         private Boolean exists;
-        private String group;
+        private Group group;
         
         @JsonDeserialize(using=BooleanDeserializer.class)
         public void setIsValid(Boolean valid) {
@@ -107,10 +107,10 @@ public class VuAuthenticationResponse {
         public Boolean getExists() {
             return this.exists;
         }
-        public void setGroup(String group) {
+        public void setGroup(Group group) {
             this.group = group;
         }
-        public String getGroup() {
+        public Group getGroup() {
             return group;
         }
         
@@ -221,6 +221,25 @@ public class VuAuthenticationResponse {
         }
         public void setErrorMsg(String errorMsg) {
             this.errorMsg = errorMsg;
+        }
+    }
+    
+    @JsonInclude(Include.NON_EMPTY)
+    public static class Group {
+        private String desc;
+        private String code;
+        
+        public String getDesc() {
+            return desc;
+        }
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+        public String getCode() {
+            return code;
+        }
+        public void setCode(String code) {
+            this.code = code;
         }
     }
     
