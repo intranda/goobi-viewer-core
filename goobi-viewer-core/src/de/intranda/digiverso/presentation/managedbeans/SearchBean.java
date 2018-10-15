@@ -299,8 +299,7 @@ public class SearchBean implements Serializable {
         resetSearchParameters(true);
         searchInCurrentItemString = null;
 
-        //        return "pretty:search";
-
+        // After resetting, return to the correct search entry page
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return "pretty:" + PageType.advancedSearch.name();
