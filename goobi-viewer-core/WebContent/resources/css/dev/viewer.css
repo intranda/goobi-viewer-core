@@ -1110,25 +1110,25 @@ button {
 }
 .btn--success {
   color: #155724;
-  border-color: #155724;
+  border-color: #ABD9B5;
   background-color: #d4edda;
 }
 .btn--success:hover,
 .btn--success:active,
 .btn--success:focus {
-  color: #fff;
-  background-color: #155724;
+  color: #155724;
+  background-color: #ABD9B5;
 }
 .btn--danger {
   color: #721c24;
-  border-color: #721c24;
+  border-color: #E3ABB2;
   background-color: #f8d7da;
 }
 .btn--danger:hover,
 .btn--danger:active,
 .btn--danger:focus {
-  color: #fff;
-  background-color: #721c24;
+  color: #721c24;
+  background-color: #E3ABB2;
 }
 .btn--full {
   color: #fff;
@@ -1138,8 +1138,8 @@ button {
 .btn--full:hover,
 .btn--full:active,
 .btn--full:focus {
-  color: #507ebf;
-  background-color: #cce5ff;
+  color: #fff;
+  background-color: #3365A9;
 }
 .btn--clean {
   padding: 0;
@@ -4777,12 +4777,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__links a {
   font-size: 0.8rem;
-  color: #1a1a1a;
-}
-.search-list__links a:hover,
-.search-list__links a:focus,
-.search-list__links a:active {
-  color: #1a1a1a;
 }
 .search-list__sorting {
   float: right;
@@ -10018,6 +10012,14 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-menu__select-theme {
   margin-bottom: 45px;
+}
+.cms-menu__select-theme .cms-module__option-label {
+  -ms-flex-preferred-size: 30%;
+      flex-basis: 30%;
+}
+.cms-menu__select-theme .cms-module__option-control {
+  -ms-flex-preferred-size: 65%;
+      flex-basis: 65%;
 }
 .cms-menu__editor {
   display: -ms-grid;
