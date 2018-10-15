@@ -3675,11 +3675,6 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
   margin: 0;
 }
-.login-navigation [data-login="true"] .login-navigation__user-dropdown-action .btn:hover,
-.login-navigation [data-login="true"] .login-navigation__user-dropdown-action .btn:active,
-.login-navigation [data-login="true"] .login-navigation__user-dropdown-action .btn:focus {
-  color: #507ebf;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
