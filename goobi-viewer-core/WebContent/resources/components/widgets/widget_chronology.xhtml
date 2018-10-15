@@ -13,7 +13,7 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) > 1) and (cc.attrs.widget.type == 'widgetChronology' or cc.attrs.widget.type == null)}">
+        <ui:fragment rendered="#{(fn:length(searchBean.facets.getLimitedFacetListForField('YEAR')) > 1) and (cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null)}">
         <div class="widget-chronology-slider">
             <!-- LABEL -->
             <div class="widget-chronology-slider__item chronology-slider-label">
