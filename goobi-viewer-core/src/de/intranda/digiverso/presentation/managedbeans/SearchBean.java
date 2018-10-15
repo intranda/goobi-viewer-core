@@ -2007,28 +2007,27 @@ public class SearchBean implements Serializable {
      * @return
      */
     private String getCurrentSearchUrl() {
-        try {
-            ViewerPathBuilder.createPath(BeanUtils.getRequest(), getSearchPageUrl()).ifPresent(path -> {
-                if (path != null) {
-                    path.setParameterPath(getParameterPath());
-                    final FacesContext context = FacesContext.getCurrentInstance();
-                    String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
-                    return redirectUrl;
-                }
-            });
-        } catch (DAOException e) {
-            logger.error("Error retrieving search url", e);
-        }
+       Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+       if(oCurrentPath.isPresent()) {
+           ViewerPath currentPath = oCurrentPath.get();
+           StringBuilder sb = new StringBuilder();
+           sb.append(currentPath.getApplicationUrl()).append(currentPath.getPagePath());
+           URI uri = URI.create(sb.toString());
+           uri = getParameterPath(uri);
+           return uri.toString();
+       } else {
+           //fallback
+           return "pretty:search5";
+       }
     }
     
-    private URI getParameterPath() {
-        URI path = URI.create("");
+    private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
-        path = ViewerPathBuilder.resolve(path, getQueryString());
-        path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
-        path = ViewerPathBuilder.resolve(path, getSolrSortFields());
-        path = ViewerPathBuilder.resolve(path, getFacetString());
-        return path;
+        basePath = ViewerPathBuilder.resolve(basePath, getExactSearchString());
+        basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
+        basePath = ViewerPathBuilder.resolve(basePath, getSortString());
+        basePath = ViewerPathBuilder.resolve(basePath, getFacets().getCurrentFacetString());
+        return basePath;
     }
 
     /**
