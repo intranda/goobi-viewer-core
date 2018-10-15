@@ -18,7 +18,7 @@
 							<h:panelGroup rendered="#{contentItem.mediaItem == null}">
 								<h:commandButton 
 									type="button" 
-									class="btn" 
+									class="btn btn--default" 
 									value="#{msg.cms_selectMedia}"
 									action="#{contentItem.setVisible(true)}">
 									<f:passThroughAttribute name="data-toggle" value="modal"></f:passThroughAttribute>
@@ -64,8 +64,6 @@
     																			value="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}"
     																			title="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}" />
     																	</div>
-<!--     																	<div class="edit-content-page-media-gallery-item-action"> -->
-<!--     																	</div> -->
                                                                         <f:ajax render="@none" />
                                                                     </h:commandLink>
     													        </div>
@@ -83,7 +81,6 @@
 												</div>
 											</div>
 											<div class="modal-footer">
-<!-- 												<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a> -->
 												<h:commandLink
 													action="#{contentItem.setVisible(false)}"
 													value="#{msg.cancel}"
@@ -96,7 +93,7 @@
 													action="#{contentItem.setMediaItem(cmsBean.selectedMediaItem)}" 
 													actionListener="#{contentItem.setVisible(false)}"
 													value="#{msg.save}"
-													styleClass="btn"
+													styleClass="btn btn--full"
 													onclick="$('body').removeClass('modal-open'); cmsJS.createPage.disablePreview();">
 													<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
 													<f:ajax render="content_media_group"/>

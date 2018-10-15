@@ -68,7 +68,7 @@
                                                 </td>
                                                 <td class="cms-static-pages__page-action admin-table__action">
                                                     <h:panelGroup rendered="#{page.hasCmsPage}">
-                                                        <h:outputLink value="#{cmsBean.getUrl(page.cmsPage)}" title="#{msg.cms_pageView}" target="_blank">
+                                                        <h:outputLink styleClass="btn btn--icon" value="#{cmsBean.getUrl(page.cmsPage)}" title="#{msg.cms_pageView}" target="_blank">
                                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                                         </h:outputLink>
                                                     </h:panelGroup>
@@ -79,7 +79,7 @@
                                 </tbody>
                             </table>
                             <div class="cms-static-pages__save">
-                                <h:commandButton styleClass="btn" id="savePages" value="#{msg.save}" action="#{cmsBean.saveStaticPages}" />
+                                <h:commandButton styleClass="btn btn--success" id="savePages" value="#{msg.save}" action="#{cmsBean.saveStaticPages}" />
                             </div>
                         </h:form>
                     </div>

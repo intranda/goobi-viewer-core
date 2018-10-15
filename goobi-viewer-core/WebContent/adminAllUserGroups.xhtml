@@ -38,7 +38,7 @@
 								action="adminUserGroup"
 								actionListener="#{adminBean.resetCurrentUserGroupAction}"
 								value="#{msg.userGroup_createNewUserGroup}"
-								styleClass="btn pull-right" />
+								styleClass="btn btn--default pull-right" />
 
 							<div class="clearfix"></div>
 
@@ -106,31 +106,22 @@
 													value="#{userGroup.active}"
 													disabled="true" />
 											</td>
-											<td class="admin-table__action">
-												<!-- edit user group -->
-												<h:commandLink
-													action="pretty:adminUserGroup"
-													title="#{msg.edit}">
-													<f:setPropertyActionListener
-														value="#{userGroup}"
-														target="#{adminBean.currentUserGroup}" />
-													<i
-														class="fa fa-pencil"
-														aria-hidden="true"></i>
-												</h:commandLink>
+                                            <td class="admin-table__action">
+                                                <!-- edit user group -->
+                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminUserGroup" title="#{msg.edit}">
+                                                    <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
+                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                </h:commandLink>
 
-												<!-- delete user group -->
-												<h:commandLink
-													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-													action="adminAllUserGroups"
-													actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
-													title="#{msg.delete}">
-													<i
-														class="fa fa-trash-o"
-														aria-hidden="true"></i>
-												</h:commandLink>
-											</td>
-										</tr>
+                                                <!-- delete user group -->
+                                                <h:commandLink
+                                                    styleClass="btn btn--icon"
+                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
+                                                    action="adminAllUserGroups" actionListener="#{adminBean.deleteUserGroupAction(userGroup)}" title="#{msg.delete}">
+                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </h:commandLink>
+                                            </td>
+                                        </tr>
 									</ui:repeat>
 								</tbody>
 							</table>

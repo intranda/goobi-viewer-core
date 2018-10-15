@@ -60,7 +60,7 @@
 								<label class="sr-only" for="currentSearchInput">#{msg.currentSearch}</label>
 								<div class="input-group">
 									<div class="input-group-addon reset">
-										<h:commandLink role="button" id="resetSearch" styleClass="btn-clean" data-toggle="tooltip" data-placement="top"
+										<h:commandLink role="button" id="resetSearch" styleClass="btn btn--icon" data-toggle="tooltip" data-placement="top"
 											action="#{cc.attrs.search.resetSearch()}" title="#{msg.searchList_resetCurrentSearch}">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
 											<!-- 												<f:ajax render="@this :searchListHitsForm"></f:ajax> -->
@@ -70,7 +70,7 @@
 									<h:inputText id="currentSearchInput" class="form-control" value="#{searchBean.searchString}" />
 
 									<div class="input-group-addon search">
-										<h:commandButton type="submit" id="slCurrentSearchTrigger" styleClass="btn-clean" action="#{cc.attrs.search.searchSimple(true, false)}">
+										<h:commandButton type="submit" id="slCurrentSearchTrigger" styleClass="btn btn--icon" action="#{cc.attrs.search.searchSimple(true, false)}">
 											<f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 										</h:commandButton>
 									</div>

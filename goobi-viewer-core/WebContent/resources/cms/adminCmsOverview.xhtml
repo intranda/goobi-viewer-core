@@ -111,19 +111,18 @@
                                                 </h:outputText>
                                             </td>
                                             <td class="admin-table__action column_actions">
-                                                <h:commandLink action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
+                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                     <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                 </h:commandLink>
                                                 <h:panelGroup rendered="#{page.published}">
-                                                    <h:outputLink value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}"
-                                                        target="_blank">
+                                                    <h:outputLink styleClass="btn btn--icon" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
                                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                                     </h:outputLink>
                                                 </h:panelGroup> 
                                                 <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page)}">
-                                                    <h:commandLink href="#" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
+                                                    <h:commandLink styleClass="btn btn--icon" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
                                                         <f:passThroughAttribute name="data-toggle" value="modal" />
                                                         <f:passThroughAttribute name="data-target" value="#deletePageModal" />
                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -160,7 +159,7 @@
                                                 <f:ajax render="@none" />
                                             </h:commandLink>
                                             <h:commandLink action="#{cmsBean.deletePage(cmsBean.selectedPage)}" value="#{msg.cms_deletePage_agree}"
-                                                styleClass="btn">
+                                                styleClass="btn btn--danger">
                                                 <f:passThroughAttribute name="data-dismiss" value="modal" />
                                                 <f:ajax render="@form" />
                                             </h:commandLink>

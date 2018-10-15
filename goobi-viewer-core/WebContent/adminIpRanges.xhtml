@@ -23,7 +23,7 @@
 
                     <div id="adminIpRangesWrapper">
                         <h:form id="adminIpRangesForm" prependId="false">
-                            <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.ipRange_addNew}" styleClass="btn pull-right" />                                  
+                            <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.ipRange_addNew}" styleClass="btn btn--default pull-right" />                                  
                             
                             <div class="clearfix"></div>
                             
@@ -95,13 +95,14 @@
 											<td><h:outputText value="#{ipRange.description}" /></td>
 											<td class="admin-table__action">
 												<!-- edit ip range -->
-												<h:commandLink action="pretty:adminIpRange" title="#{msg.edit}">
+												<h:commandLink styleClass="btn btn--icon" action="pretty:adminIpRange" title="#{msg.edit}">
 													<f:setPropertyActionListener value="#{ipRange}" target="#{adminBean.currentIpRange}" />
 													<i class="fa fa-pencil" aria-hidden="true"></i>
 												</h:commandLink> 
 												
 												<!-- delete ip range -->
-												<h:commandLink 
+												<h:commandLink
+                                                    styleClass="btn btn--icon" 
 													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
 													action="adminIpRanges" 
 													actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"

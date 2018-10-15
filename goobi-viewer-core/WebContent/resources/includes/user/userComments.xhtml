@@ -20,7 +20,7 @@
                     
                     <h:outputText value="#{msg.commentDescription} " escape="false" />
                     <br />
-                    <a href="#{navigationHelper.applicationUrl}user/?from=#{navigationHelper.currentUrl}" class="btn" role="button">
+                    <a href="#{navigationHelper.applicationUrl}user/?from=#{navigationHelper.currentUrl}" class="btn btn--icon" role="button">
                         #{msg.login}
                     </a>
                 </div>
@@ -70,12 +70,12 @@
                                             </h:commandLink>
                                         </span>
                                         <span class="user-comments__comment-content-options-cancel">
-                                            <button type="button" class="btn-clean" title="#{msg.userCommentEditCancel}" data-edit="cancel" data-toggle="tooltip" data-placement="bottom">
+                                            <button type="button" class="btn btn--icon" title="#{msg.userCommentEditCancel}" data-edit="cancel" data-toggle="tooltip" data-placement="bottom">
                                                 <i class="fa fa-ban" aria-hidden="true"></i>
                                             </button>
                                         </span>
                                         <span class="user-comments__comment-content-options-edit in">
-                                            <button type="button" class="btn-clean" title="#{msg.userCommentEdit}" data-edit="comment" data-toggle="tooltip" data-placement="bottom">
+                                            <button type="button" class="btn btn--icon" title="#{msg.userCommentEdit}" data-edit="comment" data-toggle="tooltip" data-placement="bottom">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </button>
                                         </span>
@@ -124,7 +124,7 @@
                             <h:commandButton 
                                 rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
                                 action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}" 
-                                styleClass="btn" 
+                                styleClass="btn btn--success" 
                                 value="#{msg.addNoteText}">
                                 <f:ajax execute="userCommentAdd" render="@form" />
                             </h:commandButton>

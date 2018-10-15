@@ -609,7 +609,7 @@ var viewerJS = ( function( viewer ) {
         var bookshelfPopupFooterInput = $( '<input />' ).attr( 'type', 'text' ).attr( 'placeholder', _defaults.msg.addNewBookshelf );
         bookshelfPopupFooterColLeft.append( bookshelfPopupFooterInput );
         var bookshelfPopupFooterColright = $( '<div />' ).addClass( 'col-xs-1 no-padding' );
-        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi );
+        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi );
         bookshelfPopupFooterColright.append( bookshelfPopupFooterAddBtn );
         bookshelfPopupFooterRow.append( bookshelfPopupFooterColLeft ).append( bookshelfPopupFooterColright );
         bookshelfPopupFooter.append( bookshelfPopupFooterRow );
@@ -687,7 +687,7 @@ var viewerJS = ( function( viewer ) {
                         }
                     } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
-                    dropdownListItemAdd = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
+                    dropdownListItemAdd = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
                             .attr( 'data-pi', pi ).text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
                     
                     // build bookshelf item

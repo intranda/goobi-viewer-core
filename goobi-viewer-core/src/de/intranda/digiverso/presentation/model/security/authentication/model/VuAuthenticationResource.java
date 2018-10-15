@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.security.authentication.model.VuAuthenticationResponse.Group;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
@@ -47,7 +48,9 @@ public class VuAuthenticationResource {
         VuAuthenticationResponse.User vuUser = new VuAuthenticationResponse.User();
         vuUser.setExists(true);
         vuUser.setIsValid(true);
-        vuUser.setGroup("testGroup");
+        Group group = new Group();
+        group.setDesc("testGroup");
+        vuUser.setGroup(group);
         VuAuthenticationResponse.Expired expired = new VuAuthenticationResponse.Expired();
         expired.setIsExpired(false);
         VuAuthenticationResponse response = new VuAuthenticationResponse();

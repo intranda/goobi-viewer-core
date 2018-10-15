@@ -310,7 +310,7 @@ var viewerJS = (function(viewer) {
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
 			// DOM-Elements
-			var dropdownListReset = $('<button>').addClass('btn-clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookshelves + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
+			var dropdownListReset = $('<button>').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookshelves + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
 			var dropdownList = $('<ul />').addClass('list');
 			var dropdownListItem = null;
 			var dropdownListItemRow = null;
@@ -338,7 +338,7 @@ var viewerJS = (function(viewer) {
 						+ item.representativeImageUrl + ')');
 					dropdownListItemName = $('<h4 />');
 					dropdownListItemNameLink = $('<a />').attr('href', _defaults.root + item.url).text(item.name);
-					dropdownListItemDelete = $('<button />').addClass('btn-clean').attr('type', 'button').attr('data-bookshelf-type', 'delete')
+					dropdownListItemDelete = $('<button />').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'delete')
 						.attr('data-pi', item.pi).html('<i class="fa fa-ban" aria-hidden="true"></i>');
 
 					// build bookshelf item

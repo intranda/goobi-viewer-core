@@ -69,8 +69,7 @@
                             <!-- SEARCH TIMELINE RESET -->
                             <div class="search-timeline__reset">
                                 <h:commandLink id="timelineSearchResetBtn" styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                                <h:commandButton title="#{msg.limitSearch}" value="#{msg.limitSearch}" action="#{calendarBean.limitSearch}"
-                                    styleClass="btn" />
+                                <h:commandButton styleClass="btn btn--full" title="#{msg.limitSearch}" value="#{msg.limitSearch}" action="#{calendarBean.limitSearch}" />
                             </div>
                         </div>
 
@@ -163,7 +162,7 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <h:commandButton title="#{msg.search}" value="#{msg.search}" action="#{calendarBean.searchTimeline}"
-                                            styleClass="btn pull-right" rendered="#{calendarBean.currentYear != null}">
+                                            styleClass="btn btn--full pull-right" rendered="#{calendarBean.currentYear != null}">
                                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="2" />
                                         </h:commandButton>
                                     </div>

@@ -184,8 +184,8 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         }
         
         //add to user group
-        if(StringUtils.isNotBlank(authenticationResponse.getUser().getGroup())) {
-            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup());
+        if(authenticationResponse.getUser().getGroup() != null && StringUtils.isNotBlank(authenticationResponse.getUser().getGroup().getDesc())) {
+            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup().getDesc());
             if(userGroup != null && !userGroup.getMembers().contains(user)) {
 //                DataManager.getInstance().getDao().updateUserGroup(userGroup);
                 Role role = DataManager.getInstance().getDao().getRole(USER_GROUP_ROLE_MEMBER);

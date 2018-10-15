@@ -518,7 +518,7 @@ var viewerJS = ( function( viewer ) {
         if ( data.hasMoreChildren ) {
             // build get more link
             hitContentMore.addClass( 'search-list__hit-content-more' );
-            getMoreChildrenLink.addClass( 'btn-clean' );
+            getMoreChildrenLink.addClass( 'btn btn--clean' );
             getMoreChildrenLink.attr( 'data-api', apiUrl );
             getMoreChildrenLink.attr( 'data-iddoc', iddoc );
             getMoreChildrenLink.append( _defaults.msg.getMoreChildren );

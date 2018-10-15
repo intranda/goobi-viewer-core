@@ -116,7 +116,7 @@
                                         
                                         <!-- ADD TO BOOKSHELF -->
                                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
-                                            <button type="button" class="btn-clean" data-bookshelf-type="add" data-pi="#{hit.browseElement.pi}">
+                                            <button type="button" class="btn btn--icon" data-bookshelf-type="add" data-pi="#{hit.browseElement.pi}">
                                                 <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
                                                     <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
                                                     <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
@@ -131,7 +131,7 @@
 						<!-- CONTENT -->
 						<h:panelGroup rendered="#{hit.hasHitCount}">
 							<!-- GET CHILD HITS -->
-							<button type="button" class="btn-clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
+							<button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
 								<i class="fa fa-caret-right" aria-hidden="true"></i> <i class="fa fa-caret-down" aria-hidden="true"></i>
 								<h:outputFormat rendered="#{hit.overviewPageHitCount > 0}" value="#{msg.searchChildOverviewPageHitCount}">
 									<f:param value="#{hit.overviewPageHitCount}" />

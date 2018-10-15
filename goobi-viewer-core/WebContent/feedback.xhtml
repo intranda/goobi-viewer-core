@@ -75,8 +75,8 @@
                     <!-- ACTIONB -->
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10 text-right">
-							<h:commandButton rendered="#{configurationBean.useReCaptcha}" id="submitFeedbackBtn" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
-                            <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+							<h:commandButton rendered="#{configurationBean.useReCaptcha}" id="submitFeedbackBtn" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                            <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
 						</div>
 					</div>
 				</h:form>

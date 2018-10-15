@@ -16,7 +16,7 @@
                 <ui:fragment rendered="#{!userBean.loggedIn}">
                     <li data-login="false">
                         <!-- TOGGLE LOGIN DROPDOWN -->
-                        <button type="button" class="btn-clean" data-toggle="login-dropdown">
+                        <button type="button" class="btn btn--clean" data-toggle="login-dropdown">
                             <span>#{msg.userNotLoggedIn}</span>
                             <i class="fa fa-user-circle-o" aria-hidden="true"></i>
                         </button>
@@ -37,7 +37,7 @@
                                         requiredMessage="#{msg.loginEnterPassword}" />
                                 </div>
                                 <div class="login-navigation__login-dropdown-action text-right">
-                                    <h:commandButton styleClass="btn" value="#{msg.login}" action="#{userBean.login}">
+                                    <h:commandButton styleClass="btn btn--full" value="#{msg.login}" action="#{userBean.login}">
                                         <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
                                         <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
                                     </h:commandButton>
@@ -96,7 +96,7 @@
                 <ui:fragment rendered="#{userBean.loggedIn}">
                     <li data-login="true">
                         <!-- TOGGLE USER DROPDOWN -->
-                        <button type="button" class="btn-clean" data-toggle="user-dropdown">
+                        <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                             <!-- USER NAME -->
                             <ui:fragment rendered="#{userBean.user.nickName != ''}">
                                 <span class="login-navigation__user-name" title="#{userBean.user.nickName}">#{userBean.user.nickName}</span>
@@ -166,7 +166,7 @@
                                 
                                 <!-- LOGOUT -->
                                 <div class="login-navigation__user-dropdown-action">
-                                    <h:commandLink value="#{msg.logout}" action="#{userBean.logout}" styleClass="btn">
+                                    <h:commandLink value="#{msg.logout}" action="#{userBean.logout}" styleClass="btn btn--full">
                                         <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
                                     </h:commandLink>
                                 </div>

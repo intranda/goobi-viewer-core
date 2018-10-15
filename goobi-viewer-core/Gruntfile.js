@@ -115,19 +115,39 @@ module.exports = function(grunt) {
 			},
 			scripts : {
 				files : [
-					'<%=src.jsDevFolderModules%>**/*.js',
+					'<%=src.jsDevFolderModules%>**/*.js'
 				],
 				tasks : [ 'concat' ],
 				options : {
 					spawn : false,
 				}
+			},
+			riot: {
+				files : [
+					'<%=src.jsDevFolder %>tags/**/*.tag'
+				],
+				tasks : [ 'riot' ],
+				options : {
+					spawn : false,
+				}
 			}
 		},
+		riot: {
+            options:{
+                concat: true
+            },
+            dist: {
+                expand: false,
+                src: '<%=src.jsDevFolder %>tags/**/*.tag',
+                dest: '<%=src.jsDistFolder%>riot-tags.js'
+            }
+        },
 	});
 	
 	// ---------- LOAD TASKS ----------
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-riot');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// ---------- REGISTER DEVELOPMENT TASKS ----------

@@ -22,7 +22,7 @@
 
                 <div id="admin_allUser_wrapper">
                     <h:form id="adminAllUserForm" prependId="false">
-                        <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}" value="#{msg.admin_createNewUser}" styleClass="btn pull-right" />
+                        <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}" value="#{msg.admin_createNewUser}" styleClass="btn btn--default pull-right" />
                         
                         <div class="clearfix"></div>
                         
@@ -52,25 +52,6 @@
                                         <!-- FILTER -->
                                         <viewerComponent:dataTableColumnFilter filter="#{adminBean.lazyModelUsers.getFilter('firstName_lastName_nickName_email')}"/>    
                                     </th>
-<!--                             		<h:panelGroup rendered="#{configurationBean.crowdsourcingEnabled}"> -->
-<!--     	                        		<th> -->
-<!--                                             #{msg.score} -->
-                                            
-<!--                                             SORTING -->
-<!--                                             <div class="sorting-wrapper"> -->
-<!--                                                 <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('score', 'ASCENDING')}"> -->
-<!--                                                     <i class="fa fa-angle-down" aria-hidden="true"></i> -->
-<!--                                                     <f:ajax execute="@form" render="@form" /> -->
-<!--                                                 </h:commandLink> -->
-<!--                                                 <h:commandLink styleClass="sort" action="#{adminBean.lazyModelUsers.sortBy('score', 'DESCENDING')}"> -->
-<!--                                                     <i class="fa fa-angle-up" aria-hidden="true"></i> -->
-<!--                                                     <f:ajax execute="@form" render="@form" /> -->
-<!--                                                 </h:commandLink> -->
-<!--                                             </div> -->
-                                            
-<!--                                             <div class="clearfix"></div> -->
-<!--                                         </th> -->
-<!--                             		</h:panelGroup> -->
                             		<th>
                                         #{msg.lastLoginDate}
                                         
@@ -99,18 +80,13 @@
                                             <br />
 			                                <h:outputText value="#{user.email}" />
                         				</td>
-<!--                         				<h:panelGroup rendered="#{configurationBean.crowdsourcingEnabled}"> -->
-<!-- 	                        				<td> -->
-<!-- 				                                <h:outputText value="#{user.score}" /> -->
-<!-- 	                        				</td> -->
-<!--                         				</h:panelGroup> -->
                         				<td>
 			                                <h:outputText value="#{user.lastLogin}">
 			                                    <f:convertDateTime type="both" dateStyle="short" timeStyle="short" />
 			                                </h:outputText>
                         				</td>
                         				<td class="admin-table__action">
-			                           		<h:commandLink action="pretty:adminUser" title="#{msg.edit}">
+			                           		<h:commandLink styleClass="btn btn--icon" action="pretty:adminUser" title="#{msg.edit}">
 			                                    <f:setPropertyActionListener value="#{user}" target="#{adminBean.currentUser}" />
 			                                    <f:setPropertyActionListener value="#{null}" target="#{adminBean.currentLicense}" />
 			                                    <i class="fa fa-pencil" aria-hidden="true"></i>                          		
@@ -119,7 +95,8 @@
 											<h:panelGroup id="userStatus">
 												<!-- suspend user -->
 												<h:panelGroup rendered="#{!user.suspended}">
-													<h:commandLink 
+													<h:commandLink
+                                                        styleClass="btn btn--icon" 
 														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_suspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
 														action="adminAllUsers"
 														actionListener="#{adminBean.toggleSuspendUserAction(user)}"
@@ -131,7 +108,8 @@
 												
 												<!-- unsuspend user -->
 												<h:panelGroup rendered="#{user.suspended}">
-													<h:commandLink 
+													<h:commandLink
+                                                        styleClass="btn btn--icon" 
 														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_unsuspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
 														action="adminAllUsers"
 														actionListener="#{adminBean.toggleSuspendUserAction(user)}"

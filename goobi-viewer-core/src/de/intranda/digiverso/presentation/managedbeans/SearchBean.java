@@ -301,19 +301,18 @@ public class SearchBean implements Serializable {
         resetSearchResults();
         resetSearchParameters(true);
         searchInCurrentItemString = null;
-        
-        return "pretty:search";
-        
-//        switch (activeSearchType) {
-//            case SearchHelper.SEARCH_TYPE_ADVANCED:
-//                return "pretty:" + PageType.advancedSearch.name();
-//            case SearchHelper.SEARCH_TYPE_TIMELINE:
-//                return "pretty:" + PageType.timelinesearch.name();
-//            case SearchHelper.SEARCH_TYPE_CALENDAR:
-//                return "pretty:" + PageType.calendarsearch.name();
-//            default:
-//                return "pretty:" + PageType.search.name();
-//        }
+
+        // After resetting, return to the correct search entry page
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return "pretty:" + PageType.advancedSearch.name();
+            case SearchHelper.SEARCH_TYPE_TIMELINE:
+                return "pretty:" + PageType.timelinesearch.name();
+            case SearchHelper.SEARCH_TYPE_CALENDAR:
+                return "pretty:" + PageType.calendarsearch.name();
+            default:
+                return "pretty:" + PageType.search.name();
+        }
     }
 
     /**
