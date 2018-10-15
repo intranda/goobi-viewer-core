@@ -44,7 +44,7 @@
 									<div class="search-advanced__connector">
 										#{msg.searchAdvanced_operatorItems}:
 										<div class="custom-control custom-control--select">
-											<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" value="#{queryGroup.operator}">
+											<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="value-text" value="#{queryGroup.operator}">
 												<f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
 											</h:selectOneMenu>
 										</div>
@@ -60,7 +60,7 @@
 													<!-- SELECT -->
 													<div class="search-advanced__input-col">
 														<div class="custom-control custom-control--select">
-															<h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" value="#{queryItem.field}"
+															<h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
 																valueChangeListener="#{queryItem.selectOneMenuListener}">
 																<f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
 																<f:ajax
@@ -93,7 +93,7 @@
 															</h:panelGroup>
 															<h:panelGroup rendered="#{queryItem.displaySelectItems}">
 																<div class="custom-control custom-control--select">
-																	<h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" value="#{queryItem.value}">
+																	<h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.value}">
 																		<c:forEach var="item" items="#{queryItem.selectItems}">
 																			<f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
 																		</c:forEach>
@@ -107,7 +107,7 @@
 													<!-- OPERATOR -->
 													<div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
 														<div class="custom-control custom-control--select">
-															<h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" value="#{queryItem.operator}"
+															<h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.operator}"
 																disabled="#{queryItem.displaySelectItems}">
 																<f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
 															</h:selectOneMenu>
@@ -143,7 +143,7 @@
 								<div class="search-advanced__connect-group pull-left">
 									#{msg.searchAdvanced_connectGroups}:
 									<div class="custom-control custom-control--select">
-										<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select"
+										<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
 											value="#{searchBean.advancedSearchGroupOperator}">
 											<f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
 											<f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
@@ -165,7 +165,7 @@
 
 							<!-- SEARCH ADVANCED ACTION -->
 							<div class="search-advanced__action">
-								<h:commandLink styleClass="btn btn--full" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
+								<h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
 								<h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{searchBean.searchAdvanced}">
 									<f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
 								</h:commandButton>

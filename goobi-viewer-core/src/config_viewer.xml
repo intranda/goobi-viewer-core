@@ -372,7 +372,7 @@
 				<field>UGCTERMS</field>
 				<field>OVERVIEWPAGE</field>
 				<field>PI_TOPSTRUCT</field>
-				<field hierarchical="true">FACET_DC</field>
+				<field hierarchical="true">DC</field>
 				<field>DOCSTRCT</field>
 				<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
