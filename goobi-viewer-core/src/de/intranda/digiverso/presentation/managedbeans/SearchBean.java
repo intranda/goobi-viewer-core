@@ -63,6 +63,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -1998,9 +1999,10 @@ public class SearchBean implements Serializable {
                 .toString();
     }
     
-    public String updateFacetItem(String field, boolean hierarchical) {
+    public void updateFacetItem(String field, boolean hierarchical) {
         getFacets().updateFacetItem(field, hierarchical);
-        return getCurrentSearchUrl();
+        String url = getCurrentSearchUrl();
+        redirectToURL(url);
     }
 
     /**
@@ -2011,10 +2013,10 @@ public class SearchBean implements Serializable {
        if(oCurrentPath.isPresent()) {
            ViewerPath currentPath = oCurrentPath.get();
            StringBuilder sb = new StringBuilder();
-           sb.append(currentPath.getApplicationUrl()).append(currentPath.getPagePath());
+           sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
            URI uri = URI.create(sb.toString());
            uri = getParameterPath(uri);
-           return uri.toString();
+           return uri.toString() + "/";
        } else {
            //fallback
            return "pretty:search5";
@@ -2023,18 +2025,20 @@ public class SearchBean implements Serializable {
     
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
+        basePath = ViewerPathBuilder.resolve(basePath, "-");
         basePath = ViewerPathBuilder.resolve(basePath, getExactSearchString());
         basePath = ViewerPathBuilder.resolve(basePath, Integer.toString(getCurrentPage()));
         basePath = ViewerPathBuilder.resolve(basePath, getSortString());
-        basePath = ViewerPathBuilder.resolve(basePath, getFacets().getCurrentFacetString());
+        basePath = ViewerPathBuilder.resolve(basePath, StringTools.encodeUrl(getFacets().getCurrentFacetString()));
         return basePath;
     }
 
-    /**
-     * @return
-     */
-    private String getSearchPageUrl() {
-        // TODO Auto-generated method stub
-        return null;
+    private void redirectToURL(String url) {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            context.getExternalContext().redirect(url);
+        } catch (IOException e) {
+            logger.error("Failed to redirect to url", e);
+        }
     }
 }
