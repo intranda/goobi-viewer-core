@@ -10,7 +10,12 @@
 	&:hover,
 	&:active,
 	&:focus,
-	&.active {
+	&:active:focus,
+	&.active,
+	&.active.focus, 
+	&.active:focus, 
+	&.focus, 
+	&:active.focus {
 		outline: none;
 		box-shadow: none;
 	}
