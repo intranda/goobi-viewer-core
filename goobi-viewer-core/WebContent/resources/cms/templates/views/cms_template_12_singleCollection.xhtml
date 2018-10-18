@@ -2,6 +2,7 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
@@ -92,6 +93,7 @@
 		<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
 			<widgetComponent:widget_custom widget="#{element}" />
 			<widgetComponent:widget_customDrillDown widget="#{element}" />
+			<widgetComponent:widget_chronology widget="#{element}" />
 			<widgetComponent:widget_searchDrillDown widget="#{element}" />
 			<widgetComponent:widget_searchField widget="#{element}" />
 			<widgetComponent:widget_browsing widget="#{element}" />
@@ -100,7 +102,7 @@
 			<widgetComponent:widget_user widget="#{element}" />
 			<widgetComponent:widget_rssFeed widget="#{element}" />
 			<widgetComponent:widget_workCount widget="#{element}" />
-            <widgetComponent:widget_cmsPageLinks widget="#{element}" />
+			<widgetComponent:widget_cmsPageLinks widget="#{element}" />
 			<widgetComponent:widget_geoLocations widget="#{element}" />
 		</c:forEach>
 	</ui:define>
