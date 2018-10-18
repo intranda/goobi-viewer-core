@@ -20,6 +20,7 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +201,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
+    
+    /** Comma separated list of collection names to ignore for display */
+    @Column(name = "ignore_collections")
+    private String ignoreCollections = null;
 
     @Column(name = "toc_pi")
     private String tocPI = "";
@@ -293,6 +298,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setComponent(blueprint.component);
         this.setNumberOfTiles(blueprint.numberOfTiles);
         this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
+        this.setIgnoreCollections(blueprint.getIgnoreCollections());
         this.allowedTags = blueprint.allowedTags;
         this.glossaryName = blueprint.glossaryName;
         this.searchPrefix = blueprint.searchPrefix;
@@ -723,6 +729,27 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         Collections.sort(list);
         return list;
     }
+    
+    /**
+     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public List<String> getPossibleIgnoreCollectionList() throws IndexUnreachableException {
+        if (StringUtils.isBlank(collectionField)) {
+            return Collections.singletonList("");
+        }
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, true, true, true, true);
+        List<String> list = new ArrayList<>(dcStrings.keySet());
+        list = list.stream()
+                .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
+                .filter(c -> StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains("."))
+                .collect(Collectors.toList());
+        list.add(0, "");
+        Collections.sort(list);
+        return list;
+    }
 
     /**
      * Gets the current collection, creating it if neccessary
@@ -753,6 +780,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
+        collection.setIgnore(getIgnoreCollectionsAsList());
         if (isCollectionOpenExpanded()) {
             collection.setShowAllHierarchyLevels(true);
         }
@@ -912,6 +940,38 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public Glossary getGlossary() throws ContentNotFoundException, IOException, ParseException {
         Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
         return g;
+    }
+    
+    /**
+     * @return the ignoreCollections
+     */
+    public String getIgnoreCollections() {
+        return ignoreCollections;
+    }
+    
+    /**
+     * @param ignoreCollections the ignoreCollections to set
+     */
+    public void setIgnoreCollections(String ignoreCollections) {
+        this.ignoreCollections = ignoreCollections;
+    }
+    
+    public List<String> getIgnoreCollectionsAsList() {
+        if(StringUtils.isNotBlank(ignoreCollections)) {            
+            List<String> ret = Arrays.asList(ignoreCollections.split(","));
+            return ret;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    public void setIgnoreCollectionsAsList(List<String> toIgnore) {
+        if(toIgnore == null || toIgnore.isEmpty()) {
+            this.ignoreCollections = null;
+        } else {            
+            this.ignoreCollections = StringUtils.join(toIgnore, ",");
+        }
+        this.collection = null;
     }
 
 }

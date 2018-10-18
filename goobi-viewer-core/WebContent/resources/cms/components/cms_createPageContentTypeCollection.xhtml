@@ -32,11 +32,22 @@
 							<div class="form-control__select">
 								<h:selectOneMenu id="baseCollectionMenu" styleClass="form-control content-input" value="#{contentItem.baseCollection}" disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
 									<f:selectItems value="#{contentItem.possibleBaseCollectionList}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
-									<f:ajax render="@none" />
+									<f:ajax render="ignoreCollectionsMenu" />
 								</h:selectOneMenu>
 							</div>
 						</div>
 					</div>
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">#{msg.cms_itemIgnoreCollections}:</label>
+                        <div class="col-sm-6">
+                            <div class="form-control__select">
+                                <h:selectManyMenu id="ignoreCollectionsMenu" styleClass="form-control content-input select-many" value="#{contentItem.ignoreCollectionsAsList}" disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
+                                    <f:selectItems value="#{contentItem.possibleIgnoreCollectionList}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
+                                    <f:ajax render="@none" />
+                                </h:selectManyMenu>
+                            </div>
+                        </div>
+                    </div>
 					<h:panelGroup rendered="#{contentItem.mode == 'expanded'}">
 					<div class="form-group">
 						<label class="col-sm-6 control-label">#{msg.cms_baseLevels}:</label>
