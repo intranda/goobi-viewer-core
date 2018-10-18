@@ -746,7 +746,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains("."))
                 .collect(Collectors.toList());
-        list.add(0, "");
+//        list.add(0, "");
         Collections.sort(list);
         return list;
     }
