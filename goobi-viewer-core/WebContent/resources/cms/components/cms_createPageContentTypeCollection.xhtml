@@ -40,8 +40,9 @@
                     <div class="form-group">
                         <label class="col-sm-6 control-label">#{msg.cms_itemIgnoreCollections}:</label>
                         <div class="col-sm-6">
-                            <div class="form-control__select">
+                            <div class="form-control__select form-control--multi-select">
                                 <h:selectManyMenu id="ignoreCollectionsMenu" styleClass="form-control content-input select-many" value="#{contentItem.ignoreCollectionsAsList}" disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
+                                    <f:selectItem itemValue="" itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
                                     <f:selectItems value="#{contentItem.possibleIgnoreCollectionList}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
                                     <f:ajax render="@none" />
                                 </h:selectManyMenu>

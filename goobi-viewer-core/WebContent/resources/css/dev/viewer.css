@@ -974,6 +974,10 @@ button {
   cursor: not-allowed;
   opacity: 0.5;
 }
+.form-control--multi-select {
+  height: 125px;
+  overflow-y: auto;
+}
 /* CUSTOM CONTROL */
 /* BLOCK */
 .custom-control {
