@@ -17,6 +17,9 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
@@ -83,6 +87,11 @@ public class PdfHandler {
 
         if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
             sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+        }
+        
+        Path indexedMetsPath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pages[0].getPi() + ".xml");
+        if(Files.exists(indexedMetsPath)) {
+            sb.append(paramSep.getChar()).append("metsFile=").append(indexedMetsPath.toUri());
         }
 
         if (this.watermarkHandler != null) {
