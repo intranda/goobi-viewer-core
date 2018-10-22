@@ -35,7 +35,7 @@
 							<c:forEach items="#{browseBean.browseTermListEscaped}" var="term"
 								varStatus="status">
 								<li><h:outputLink
-										value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}:&quot;#{term}&quot;/1/-/-/"
+										value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}:&quot;#{term}&quot;/1/-/#{browseBean.filterQuery}/"
 										title="#{browseBean.browseTermList[status.count-1]}">
 										<h:outputText
 											value="#{browseBean.browseTermList[status.count-1]}"
