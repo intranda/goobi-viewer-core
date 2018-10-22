@@ -544,30 +544,31 @@ var ImageView = ( function( imageView ) {
         var coordsRegex = /xywh=(percent:)?([\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+,[\d\.\-\+]+)/;
         if(fragment) {
             var match = fragment.match(coordsRegex);
-            var percent = match[1] != undefined;
-            var coords = match[2];
-            coords = coords.split(",");
-            var x,y,w,h;
-            if(percent) {
-                x = parseInt(coords[0])*imageSize.x/100.0;
-                y = parseInt(coords[1])*imageSize.y/100.0;
-                w = parseInt(coords[2])*imageSize.x/100.0;
-                h = parseInt(coords[3])*imageSize.y/100.0;
-            } else {                
-                x = parseInt(coords[0]);
-                y = parseInt(coords[1]);
-                w = parseInt(coords[2]);
-                h = parseInt(coords[3]);
+            if(match) {                
+                var percent = match[1] != undefined;
+                var coords = match[2];
+                coords = coords.split(",");
+                var x,y,w,h;
+                if(percent) {
+                    x = parseInt(coords[0])*imageSize.x/100.0;
+                    y = parseInt(coords[1])*imageSize.y/100.0;
+                    w = parseInt(coords[2])*imageSize.x/100.0;
+                    h = parseInt(coords[3])*imageSize.y/100.0;
+                } else {                
+                    x = parseInt(coords[0]);
+                    y = parseInt(coords[1]);
+                    w = parseInt(coords[2]);
+                    h = parseInt(coords[3]);
+                }
+                //don't exceed image bounds
+                x = Math.max(Math.min(imageSize.x, x), 0);
+                y = Math.max(Math.min(imageSize.y, y), 0);
+                w = Math.max(Math.min(imageSize.x-x, w), 0);
+                h = Math.max(Math.min(imageSize.y-y, h), 0);
+                return [[x,y,x+w,y+h, "", ""]];
             }
-            //don't exceed image bounds
-            x = Math.max(Math.min(imageSize.x, x), 0);
-            y = Math.max(Math.min(imageSize.y, y), 0);
-            w = Math.max(Math.min(imageSize.x-x, w), 0);
-            h = Math.max(Math.min(imageSize.y-y, h), 0);
-            return [[x,y,x+w,y+h, "", ""]];
-        } else {
-            return [];
         }
+        return [];
     }
     
 // function _getScaleToOriginalSize() {

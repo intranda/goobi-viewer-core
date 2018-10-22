@@ -974,6 +974,10 @@ button {
   cursor: not-allowed;
   opacity: 0.5;
 }
+.form-control--multi-select {
+  height: 125px;
+  overflow-y: auto;
+}
 /* CUSTOM CONTROL */
 /* BLOCK */
 .custom-control {
@@ -1095,7 +1099,12 @@ button {
 .btn:hover,
 .btn:active,
 .btn:focus,
-.btn.active {
+.btn:active:focus,
+.btn.active,
+.btn.active.focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus {
   outline: none;
   box-shadow: none;
 }

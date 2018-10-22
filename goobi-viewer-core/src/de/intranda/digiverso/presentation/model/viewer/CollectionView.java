@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,8 @@ public class CollectionView {
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
+    
+    private List<String> ignoreList = new ArrayList<>();
 
     public CollectionView(String field, BrowseDataProvider dataProvider) {
         super();
@@ -153,13 +157,19 @@ public class CollectionView {
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
             if (topElement == null) {
                 for (HierarchicalBrowseDcElement element : completeCollectionList) {
-                    visibleList.add(element);
-                    visibleList.addAll(element.getAllVisibleDescendents(false));
+                    if(this.ignoreList.contains(element.getName())) {
+                        continue;
+                    } else {                        
+                        visibleList.add(element);
+                        visibleList.addAll(element.getAllVisibleDescendents(false));
+                    }
                 }
             } else {
                 topElement.setShowSubElements(true);
                 visibleList.add(topElement);
-                visibleList.addAll(topElement.getAllVisibleDescendents(false));
+                Collection<? extends HierarchicalBrowseDcElement> descendents = topElement.getAllVisibleDescendents(false);
+                descendents = descendents.stream().filter(c -> !this.ignoreList.contains(c.getName())).collect(Collectors.toList());
+                visibleList.addAll(descendents);
                 if (isDisplayParentCollections()
                         && (baseElement == null || topElement.getName().contains(baseElement.getName() + BrowseDcElement.split))) {
                     HierarchicalBrowseDcElement parent = topElement.getParent();
@@ -707,5 +717,17 @@ public class CollectionView {
      */
     public boolean isDisplayParentCollections() {
         return displayParentCollections;
+    }
+    
+    public void setIgnore(String collectionName) {
+        this.ignoreList.add(collectionName);
+    }
+    
+    public void setIgnore(Collection<String> collectionNames) {
+        this.ignoreList = new ArrayList<>(collectionNames);
+    }
+    
+    public void resetIgnore() {
+        this.ignoreList = new ArrayList<>();
     }
 }
