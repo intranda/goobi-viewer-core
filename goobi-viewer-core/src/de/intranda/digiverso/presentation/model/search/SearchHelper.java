@@ -892,7 +892,7 @@ public final class SearchHelper {
                         new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                     // If the use has an explicit priv to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                    query = new StringBuilder();
+                    //                    query = new StringBuilder();
                     continue;
                 }
                 if (licenseType.getConditions() != null) {
@@ -1331,11 +1331,11 @@ public final class SearchHelper {
             StringBuilder sbDocstructFilter = new StringBuilder();
             for (String docstruct : bmfc.getDocstructFilters()) {
                 sbDocstructFilter.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
-//                sbDocstructFilter.append(docstruct).append(" OR ");
+                //                sbDocstructFilter.append(docstruct).append(" OR ");
             }
             //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
             //            sbQuery.append(')');
-            if(sbDocstructFilter.length() > 4) {                
+            if (sbDocstructFilter.length() > 4) {
                 sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
             }
             filterQueries.add(sbDocstructFilter.toString());
