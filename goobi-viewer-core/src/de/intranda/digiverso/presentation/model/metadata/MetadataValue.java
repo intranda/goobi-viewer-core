@@ -38,7 +38,12 @@ public class MetadataValue implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
     private final List<String> paramLabels = new ArrayList<>();
-    private final List<String> paramValues = new ArrayList<>();
+
+    /**
+     * List of lists with parameter values. The top list represents the different parameters, with each containing one or more values for that
+     * parameters.
+     */
+    private final List<List<String>> paramValues = new ArrayList<>();
     private final List<String> paramPrefixes = new ArrayList<>();
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
@@ -59,6 +64,7 @@ public class MetadataValue implements Serializable {
      * @param index
      * @return
      * @should construct param correctly
+     * @should construct multivalued param correctly
      * @should not add prefix if first param
      * @should return empty string if value index larger than number of values
      * @should return empty string if value is empty
@@ -68,24 +74,29 @@ public class MetadataValue implements Serializable {
     public String getComboValueShort(int index) {
         StringBuilder sb = new StringBuilder();
 
-        if (paramValues.size() > index && StringUtils.isNotEmpty(paramValues.get(index))) {
-            boolean addPrefix = true;
-            if (index == 0) {
-                addPrefix = false;
-            }
-            // Only add prefix if the total parameter value lengths is > 0 so far
-            if (addPrefix && paramPrefixes.size() > index && paramPrefixes.get(index) != null) {
-                sb.append(paramPrefixes.get(index));
-            }
-            if (paramUrls.size() > index && StringUtils.isNotEmpty(paramUrls.get(index))) {
-                sb.append("<a href=\"").append(paramUrls.get(index)).append("\">").append(paramValues.get(index)).append("</a>");
-                //                logger.trace("URL: {}: {}", index,paramUrls.get(index));
-            } else {
-                //                logger.trace("Non-URL: {}: {}", index, paramValues.get(index));
-                sb.append(paramValues.get(index));
-            }
-            if (paramSuffixes.size() > index && paramSuffixes.get(index) != null) {
-                sb.append(paramSuffixes.get(index));
+        if (paramValues.size() > index && paramValues.get(index) != null && !paramValues.get(index).isEmpty()) {
+            for (String paramValue : paramValues.get(index)) {
+                if (StringUtils.isEmpty(paramValue)) {
+                    continue;
+                }
+                boolean addPrefix = true;
+                if (index == 0) {
+                    addPrefix = false;
+                }
+                // Only add prefix if the total parameter value lengths is > 0 so far
+                if (addPrefix && paramPrefixes.size() > index && paramPrefixes.get(index) != null) {
+                    sb.append(paramPrefixes.get(index));
+                }
+                if (paramUrls.size() > index && StringUtils.isNotEmpty(paramUrls.get(index))) {
+                    sb.append("<a href=\"").append(paramUrls.get(index)).append("\">").append(paramValue).append("</a>");
+                    //                logger.trace("URL: {}: {}", index,paramUrls.get(index));
+                } else {
+                    //                logger.trace("Non-URL: {}: {}", index, paramValues.get(index));
+                    sb.append(paramValue);
+                }
+                if (paramSuffixes.size() > index && paramSuffixes.get(index) != null) {
+                    sb.append(paramSuffixes.get(index));
+                }
             }
         }
 
@@ -112,7 +123,7 @@ public class MetadataValue implements Serializable {
     /**
      * @return the paramValues
      */
-    public List<String> getParamValues() {
+    public List<List<String>> getParamValues() {
         return paramValues;
     }
 
@@ -186,7 +197,7 @@ public class MetadataValue implements Serializable {
     public String getParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
         if (index > -1 && index < paramValues.size()) {
-            return paramValues.get(index);
+            return paramValues.get(index).get(0);
         }
         return "";
     }
@@ -213,9 +224,11 @@ public class MetadataValue implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int count = 0;
-        for (String s : this.paramValues) {
-            sb.append("ParamValue_").append(count).append(": ").append(s).append(' ');
-            count++;
+        for (List<String> params : this.paramValues) {
+            for (String s : params) {
+                sb.append("ParamValue_").append(count).append(": ").append(s).append(' ');
+                count++;
+            }
         }
         return sb.toString();
     }

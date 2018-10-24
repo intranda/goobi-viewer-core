@@ -16,10 +16,8 @@
 package de.intranda.digiverso.presentation.model.search;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +44,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
@@ -265,7 +262,7 @@ public class BrowseElement implements Serializable {
                             elementToUse = anchorStructElement;
                         } else {
                             // Add empty parameter if there is no anchor
-                            md.setParamValue(0, md.getParams().indexOf(param), "", null, null, null, locale);
+                            md.setParamValue(0, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, locale);
                             continue;
                         }
                     }
@@ -278,7 +275,7 @@ public class BrowseElement implements Serializable {
                             metadataValues = topStructElement.getMetadataValues(param.getKey());
                             // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
                         } else {
-                            md.setParamValue(count, md.getParams().indexOf(param), "", null, null, null, locale);
+                            md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, locale);
                             count++;
                         }
                     }
@@ -299,7 +296,7 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Helper.intern(value), null,
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(Helper.intern(value)), null,
                                 param.isAddUrl() ? elementToUse.getUrl() : null, null, locale);
                         count++;
                     }
@@ -1088,26 +1085,26 @@ public class BrowseElement implements Serializable {
     public boolean isHasMedia() {
         return hasMedia;
     }
-    
+
     /**
      * @return the originalFieldName
      */
     public String getOriginalFieldName() {
         return originalFieldName;
     }
-    
+
     public PageType determinePageType() {
-       return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
-                hasImages || hasMedia, useOverviewPage, false);
+        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, useOverviewPage,
+                false);
     }
-    
+
     /**
      * @return the logId
      */
     public String getLogId() {
         return logId;
     }
-    
+
     /**
      * @return the docType
      */

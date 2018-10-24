@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +78,10 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         values.add(new MetadataValue(masterValue));
-        values.get(0).getParamValues().add(paramValue);
+        if (paramValue != null) {
+            values.get(0).getParamValues().add(new ArrayList<>());
+            values.get(0).getParamValues().get(0).add(paramValue);
+        }
     }
 
     /**
@@ -92,7 +96,10 @@ public class Metadata implements Serializable {
         this.masterValue = masterValue;
         params.add(param);
         values.add(new MetadataValue(masterValue));
-        values.get(0).getParamValues().add(paramValue);
+        if (paramValue != null) {
+            values.get(0).getParamValues().add(new ArrayList<>());
+            values.get(0).getParamValues().get(0).add(paramValue);
+        }
     }
 
     /**
@@ -221,82 +228,20 @@ public class Metadata implements Serializable {
      * 
      * @param valueIndex
      * @param paramIndex
-     * @param value
+     * @param inValues List with values
      * @param label
      * @param url
      * @param normDataUrl
      * @param locale
+     * @should add multivalued param values correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, String value, String label, String url, Map<String, String> normDataUrl,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> normDataUrl,
             Locale locale) {
-        if (value != null) {
-            value = value.trim();
-            if (params.get(paramIndex).getType() != null) {
-                switch (params.get(paramIndex).getType()) {
-                    case WIKIFIELD:
-                    case WIKIPERSONFIELD:
-                        if (value.contains(",")) {
-                            // Find and remove additional information in a person's name
-                            Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
-                            Matcher m = p.matcher(value);
-                            while (m.find()) {
-                                String cut = value.substring(m.start(), m.end());
-                                value = value.replace(cut, "");
-                                m = p.matcher(value);
-                            }
-                            // Revert the name around the comma (persons only)
-                            if (params.get(paramIndex).getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
-                                String[] valueSplit = value.split("[,]");
-                                if (valueSplit.length > 1) {
-                                    value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
-                                }
-                            }
-                        }
-                        value = value.trim();
-                        value = value.replace("<", "");
-                        value = value.replace(">", "");
-                        value = value.replace(" ", "_");
-                        // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
-                        break;
-                    case PPNFIELD:
-                        if (value.toUpperCase().startsWith("PPN")) {
-                            value = value.substring(3);
-                        }
-                        break;
-                    case MESSAGES_KEY:
-                        //                    case THEME:
-                        // do nothing
-                        break;
-                    case TRANSLATEDFIELD:
-                        value = Helper.getTranslation(value, locale);
-                        // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-                        value = StringEscapeUtils.escapeHtml(value);
-                        // convert line breaks back to HTML
-                        value = value.replace("&lt;br /&gt;", "<br />");
-                        break;
-                    case UNESCAPEDFIELD:
-                        // convert line breaks back to HTML
-                        value = value.replace("&lt;br /&gt;", "<br />");
-                        break;
-                    case URLESCAPEDFIELD:
-                        // escape reserved URL characters
-                        value = BeanUtils.escapeCriticalUrlChracters(value);
-                        break;
-                    case HIERARCHICALFIELD:
-                        // create a link for reach hierarchy level
-                        NavigationHelper nh = BeanUtils.getNavigationHelper();
-                        value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
-                        break;
-                    default:
-                        // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-                        value = StringEscapeUtils.escapeHtml(value);
-                        // convert line breaks back to HTML
-                        value = value.replace("&lt;br /&gt;", "<br />");
-                }
-                value = value.replace("'", "&#39;");
-                value = SearchHelper.replaceHighlightingPlaceholders(value);
-            }
+        if (inValues == null) {
+            throw new IllegalArgumentException("inValues may not be null");
         }
+
+        // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
             values.add(new MetadataValue(masterValue));
         }
@@ -305,20 +250,100 @@ public class Metadata implements Serializable {
         while (mdValue.getParamValues().size() < paramIndex) {
             paramIndex--;
         }
-        if (paramIndex >= 0) {
-            MetadataParameter origParam = params.get(origParamIndex);
-            mdValue.getParamLabels().add(paramIndex, label);
-            mdValue.getParamValues().add(paramIndex, Helper.intern(value));
-            mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
-            mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
-            mdValue.getParamUrls().add(paramIndex, url);
-            if (normDataUrl != null) {
-                mdValue.getNormDataUrls().putAll(normDataUrl);
-                // logger.trace("added norm data url: {}", normDataUrl.toString());
-            }
-            // Replace master value with override value from the parameter
-            if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
-                mdValue.setMasterValue(origParam.getOverrideMasterValue());
+
+        if (paramIndex >= params.size()) {
+            logger.warn("No params defined");
+            return;
+        }
+
+        if (!inValues.isEmpty()) {
+            for (String value : inValues) {
+                value = value.trim();
+                if (params.get(paramIndex).getType() != null) {
+                    switch (params.get(paramIndex).getType()) {
+                        case WIKIFIELD:
+                        case WIKIPERSONFIELD:
+                            if (value.contains(",")) {
+                                // Find and remove additional information in a person's name
+                                Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
+                                Matcher m = p.matcher(value);
+                                while (m.find()) {
+                                    String cut = value.substring(m.start(), m.end());
+                                    value = value.replace(cut, "");
+                                    m = p.matcher(value);
+                                }
+                                // Revert the name around the comma (persons only)
+                                if (params.get(paramIndex).getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
+                                    String[] valueSplit = value.split("[,]");
+                                    if (valueSplit.length > 1) {
+                                        value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
+                                    }
+                                }
+                            }
+                            value = value.trim();
+                            value = value.replace("<", "");
+                            value = value.replace(">", "");
+                            value = value.replace(" ", "_");
+                            // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
+                            break;
+                        case PPNFIELD:
+                            if (value.toUpperCase().startsWith("PPN")) {
+                                value = value.substring(3);
+                            }
+                            break;
+                        case MESSAGES_KEY:
+                            //                    case THEME:
+                            // do nothing
+                            break;
+                        case TRANSLATEDFIELD:
+                            // Values that are message keys
+                            value = Helper.getTranslation(value, locale);
+                            value = StringEscapeUtils.escapeHtml(value);
+                            // convert line breaks back to HTML
+                            value = value.replace("&lt;br /&gt;", "<br />");
+                            break;
+                        case UNESCAPEDFIELD:
+                            // convert line breaks back to HTML
+                            value = value.replace("&lt;br /&gt;", "<br />");
+                            break;
+                        case URLESCAPEDFIELD:
+                            // escape reserved URL characters
+                            value = BeanUtils.escapeCriticalUrlChracters(value);
+                            break;
+                        case HIERARCHICALFIELD:
+                            // create a link for reach hierarchy level
+                            NavigationHelper nh = BeanUtils.getNavigationHelper();
+                            value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                            break;
+                        default:
+                            // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
+                            value = StringEscapeUtils.escapeHtml(value);
+                            // convert line breaks back to HTML
+                            value = value.replace("&lt;br /&gt;", "<br />");
+                    }
+                    value = value.replace("'", "&#39;");
+                    value = SearchHelper.replaceHighlightingPlaceholders(value);
+                }
+
+                if (paramIndex >= 0) {
+                    MetadataParameter origParam = params.get(origParamIndex);
+                    mdValue.getParamLabels().add(paramIndex, label);
+                    if (mdValue.getParamValues().size() <= paramIndex) {
+                        mdValue.getParamValues().add(paramIndex, new ArrayList<>());
+                    }
+                    mdValue.getParamValues().get(paramIndex).add(Helper.intern(value));
+                    mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
+                    mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
+                    mdValue.getParamUrls().add(paramIndex, url);
+                    if (normDataUrl != null) {
+                        mdValue.getNormDataUrls().putAll(normDataUrl);
+                        // logger.trace("added norm data url: {}", normDataUrl.toString());
+                    }
+                    // Replace master value with override value from the parameter
+                    if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
+                        mdValue.setMasterValue(origParam.getOverrideMasterValue());
+                    }
+                }
             }
         }
     }
@@ -381,28 +406,24 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 'empty' seems to be a reserved word in JSF, so use 'blank'.
+     * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
+     *
+     * @return true if all paramValues are empty or blank; false otherwise.
+     * @should return true if all paramValues are empty
+     * @should return false if at least one paramValue is not empty
      */
     public boolean isBlank() {
-        return isEmpty();
-    }
-
-    /**
-     * Checks whether any parameter values are set. This method seems to be required (not sure where).
-     *
-     * @return true if all paramValues are empty; false otherwise.
-     */
-    private boolean isEmpty() {
         if (values != null) {
             for (MetadataValue value : values) {
                 if (value.getParamValues().isEmpty()) {
                     return true;
                 }
-                for (String paramValue : value.getParamValues()) {
-                    if (paramValue != null && !paramValue.trim().isEmpty()) {
-                        return false;
+                for (List<String> paramValues : value.getParamValues())
+                    for (String paramValue : paramValues) {
+                        if (StringUtils.isNotBlank(paramValue)) {
+                            return false;
+                        }
                     }
-                }
             }
         }
 
@@ -446,9 +467,9 @@ public class Metadata implements Serializable {
                             .append(':')
                             .append(DocType.METADATA.name());
                     logger.trace("GROUP QUERY: {}", sbQuery.toString());
-                    SolrDocumentList aggregatedMdList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+                    SolrDocumentList groupedMdList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
                     int count = 0;
-                    for (SolrDocument doc : aggregatedMdList) {
+                    for (SolrDocument doc : groupedMdList) {
                         Map<String, List<String>> groupFieldMap = new HashMap<>();
                         // Collect values for all fields in this metadata doc
                         for (String fieldName : doc.getFieldNames()) {
@@ -471,28 +492,29 @@ public class Metadata implements Serializable {
                             if (groupFieldMap.get(param.getKey()) != null) {
                                 found = true;
                                 StringBuilder sbValue = new StringBuilder();
+                                // TODO
+                                List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                                 for (String mdValue : groupFieldMap.get(param.getKey())) {
-                                    if (sbValue.length() != 0) {
-                                        sbValue.append("; ");
+                                    if (sbValue.length() == 0) {
+                                        sbValue.append(mdValue);
                                     }
-                                    sbValue.append(mdValue);
+                                    values.add(mdValue);
                                 }
                                 String paramValue = sbValue.toString();
-                                // paramValue = paramValue.intern();
                                 if (param.getKey().equals(NormDataImporter.FIELD_URI) || param.getKey().equals(NormDataImporter.FIELD_URI_GND)) {
                                     Map<String, String> normDataUrl = new HashMap<>();
                                     normDataUrl.put(param.getKey(), paramValue);
                                     // logger.trace("found url: " + normDataUrl.toString());
-                                    setParamValue(count, i, paramValue, null, null, normDataUrl, locale);
+                                    setParamValue(count, i, values, null, null, normDataUrl, locale);
                                 } else {
-                                    setParamValue(count, i, paramValue, param.getKey(), null, null, locale);
+                                    setParamValue(count, i, values, param.getKey(), null, null, locale);
                                 }
                             } else if (param.getDefaultValue() != null) {
                                 logger.debug("No value found for {}, using default value", param.getKey());
-                                setParamValue(0, i, param.getDefaultValue(), param.getKey(), null, null, locale);
+                                setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, locale);
                                 found = true;
                             } else {
-                                setParamValue(count, i, "", null, null, null, locale);
+                                setParamValue(count, i, Collections.singletonList(""), null, null, null, locale);
                             }
                         }
                         count++;
@@ -525,36 +547,24 @@ public class Metadata implements Serializable {
                                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
                         mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
                     }
-                    //                    mdValue = mdValue.intern();
-                    setParamValue(count, indexOfParam, mdValue, param.getKey(), null, null, locale);
+                    setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, locale);
                     count++;
                 }
                 if (!found && param.getDefaultValue() != null) {
                     logger.debug("No value found for {}, using default value", param.getKey());
-                    setParamValue(0, indexOfParam, param.getDefaultValue(), param.getKey(), null, null, locale);
+                    setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, locale);
                     found = true;
                     count++;
                 }
-                //                if (param.getType().equals(MetadataParameterType.THEME) && found) {
-                //                    for (MetadataValue mdValue : this.getValues()) {
-                //                        while (mdValue.getParamValues().size() < 3) {
-                //                            mdValue.getParamValues().add("");
-                //                        }
-                //                        mdValue.getParamValues().set(2, param.getKey());
-                //
-                //                    }
-                //                    found = true;
-                //                    // TODO check wiki api if exists and if not, set masterValue = "{0}"
-                //                    // this.masterValue = "{0}";
-                //                    count++;
-                //                }
                 if (param.getType().equals(MetadataParameterType.LINK_MAPS) && found) {
                     for (MetadataValue mdValue : this.getValues()) {
                         if (mdValue.getParamValues().size() < 2) {
-                            mdValue.getParamValues().add("");
-                            mdValue.getParamValues().add(2, param.getKey());
+                            mdValue.getParamValues().add(new ArrayList<>());
+                            mdValue.getParamValues().get(0).add("");
+                            mdValue.getParamValues().add(2, new ArrayList<>());
+                            mdValue.getParamValues().get(2).add(0, param.getKey());
                         } else {
-                            mdValue.getParamValues().add(2, param.getKey());
+                            mdValue.getParamValues().get(2).add(0, param.getKey());
                         }
                     }
 

@@ -1,6 +1,7 @@
 package de.intranda.digiverso.presentation.model.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -9,6 +10,7 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
+import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 
 public class MetadataTest {
 
@@ -75,5 +77,44 @@ public class MetadataTest {
             String value = Metadata.buildHierarchicalValue("DC", "a.b.c.d", null, null);
             Assert.assertEquals("a > a.b > a.b.c > a.b.c.d", value);
         }
+    }
+
+    /**
+     * @see Metadata#isBlank()
+     * @verifies return true if all paramValues are empty
+     */
+    @Test
+    public void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
+        Metadata metadata = new Metadata("MD_FIELD", "", "");
+        Assert.assertEquals(1, metadata.getValues().size());
+        Assert.assertTrue(metadata.isBlank());
+    }
+
+    /**
+     * @see Metadata#isBlank()
+     * @verifies return false if at least one paramValue is not empty
+     */
+    @Test
+    public void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
+        Metadata metadata = new Metadata("MD_FIELD", "", "val");
+        Assert.assertEquals(1, metadata.getValues().size());
+        Assert.assertFalse(metadata.isBlank());
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,Locale)
+     * @verifies add multivalued param values correctly
+     */
+    @Test
+    public void setParamValue_shouldAddMultivaluedParamValuesCorrectly() throws Exception {
+        Metadata metadata = new Metadata("MD_FIELD", "", null);
+        String[] values = new String[] { "val1", "val2" };
+        metadata.getParams().add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false));
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null);
+        Assert.assertEquals(1, metadata.getValues().size());
+        Assert.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
+        Assert.assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
+        Assert.assertEquals("val1", metadata.getValues().get(0).getParamValues().get(0).get(0));
+        Assert.assertEquals("val2", metadata.getValues().get(0).getParamValues().get(0).get(1));
     }
 }
