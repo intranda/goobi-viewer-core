@@ -110,7 +110,7 @@ public final class SearchHelper {
     public static String collectionSplitRegex = new StringBuilder("[").append(BrowseDcElement.split).append(']').toString();
 
     /** Filter subquery for collection listing (no volumes). */
-    static volatile String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
+    static final String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
     static volatile String collectionBlacklistFilterSuffix = null;
 
     /**
