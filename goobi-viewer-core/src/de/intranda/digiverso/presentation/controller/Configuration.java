@@ -357,7 +357,7 @@ public final class Configuration extends AbstractConfiguration {
             }
 
             // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
+            if (usingTemplate == null && defaultTemplate != null) {
                 usingTemplate = defaultTemplate;
             }
 
@@ -370,7 +370,8 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for the sidebar.
      * 
-     * @return
+     * @param template Template name
+     * @return List of configured metadata for configured fields
      * @should return correct template configuration
      * @should return empty list if template not found
      * @should return empty list if template is null
@@ -395,23 +396,49 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param template Template name
+     * @return List of normdata fields configured for the given template name
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     * @should return default template if template is null
+     */
+    @SuppressWarnings("rawtypes")
+    public List<String> getNormdataFieldsForTemplate(String template) {
+        HierarchicalConfiguration usingTemplate = null;
+        List templateList = getLocalConfigurationsAt("metadata.normdataList.template");
+        if (templateList != null) {
+            HierarchicalConfiguration defaultTemplate = null;
+            for (Iterator it = templateList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
+                if (subElement.getString("[@name]").equals(template)) {
+                    usingTemplate = subElement;
+                    break;
+                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                    defaultTemplate = subElement;
+                }
+            }
+
+            // If the requested template does not exist in the config, use _DEFAULT
+            if (usingTemplate == null && defaultTemplate != null) {
+                usingTemplate = defaultTemplate;
+            }
+
+            if (usingTemplate != null) {
+                return getLocalList(usingTemplate, null, "field", null);
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
      * @return
      * @should return correct template configuration
      * @should return default template configuration if template not found
      */
     @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getTocLabelConfiguration(String template) {
-        //        List templateList = getLocalConfigurationsAt("toc.labelConfig");
-        //        if (templateList != null) {
-        //            for (Iterator it = templateList.iterator(); it.hasNext();) {
-        //                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-        //                List<Metadata> metadata = getMetadataForTemplate(subElement);
-        //                if (metadata != null && !metadata.isEmpty()) {
-        //                    return metadata.get(0);
-        //                }
-        //            }
-        //        }
-
         HierarchicalConfiguration usingTemplate = null;
         List templateList = getLocalConfigurationsAt("toc.labelConfig.template");
         if (templateList != null) {
