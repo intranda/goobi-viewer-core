@@ -109,7 +109,8 @@ public final class SearchHelper {
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
     public static String collectionSplitRegex = new StringBuilder("[").append(BrowseDcElement.split).append(']').toString();
 
-    static volatile String docstrctWhitelistFilterSuffix = null;
+    /** Filter subquery for collection listing (no volumes). */
+    static volatile String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
     static volatile String collectionBlacklistFilterSuffix = null;
 
     /**
@@ -731,25 +732,10 @@ public final class SearchHelper {
     }
 
     /**
-     * Builds a Solr query suffix that filters the results by the docstrct whitelist. It should be sufficient to build this string once per
-     * application lifetime, since updating the whitelist would also require a tomcat restart.
-     *
-     * @return
-     * @should construct suffix correctly
+     * @return docstrctWhitelistFilterSuffix
      */
     public static String getDocstrctWhitelistFilterSuffix() {
-        String suffix = docstrctWhitelistFilterSuffix;
-        if (suffix == null) {
-            synchronized (lock) {
-                suffix = docstrctWhitelistFilterSuffix;
-                if (suffix == null) {
-                    suffix = generateDocstrctWhitelistFilterSuffix(DataManager.getInstance().getConfiguration().getDocStructWhiteList());
-                    docstrctWhitelistFilterSuffix = suffix;
-                }
-            }
-        }
-
-        return suffix;
+        return docstrctWhitelistFilterSuffix;
     }
 
     /**
@@ -781,6 +767,7 @@ public final class SearchHelper {
      * @should construct suffix correctly
      * @should return empty string if only docstruct is asterisk
      */
+    @Deprecated
     protected static String generateDocstrctWhitelistFilterSuffix(List<String> docstructList) {
         if (docstructList == null) {
             throw new IllegalArgumentException("docstructList may not be null");

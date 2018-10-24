@@ -650,21 +650,6 @@
 			</template>
 		</sideBarMetadataList>
 
-		<!-- docStructWhiteList: only search hits of docstruct types that are allowed 
-			in this section will be listed -->
-		<docStructWhiteList>
-			<docStruct>Monograph</docStruct>
-			<docStruct>MultiVolumeWork</docStruct>
-			<docStruct>Periodical</docStruct>
-		</docStructWhiteList>
-
-		<!-- DEPRECATED: museumDocstructTypes: docsturct types listed in this section 
-			will be displayed using the museum view. They must be whitelisted in the 
-			docStructWhiteList -->
-		<museumDocstructTypes>
-			<docStruct>museum_object</docStruct>
-		</museumDocstructTypes>
-
 		<!-- calendarDocstructTypes: the list of structure elements allowed to 
 			be shown in calendar view -->
 		<calendarDocstructTypes>

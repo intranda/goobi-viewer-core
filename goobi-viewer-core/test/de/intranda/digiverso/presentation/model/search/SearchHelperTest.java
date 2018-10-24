@@ -198,17 +198,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getDocstrctWhitelistFilterSuffix()
-     * @verifies construct suffix correctly
-     */
-    @Test
-    public void getDocstrctWhitelistFilterSuffix_shouldConstructSuffixCorrectly() throws Exception {
-        String suffix = SearchHelper.getDocstrctWhitelistFilterSuffix();
-        Assert.assertEquals(" AND (" + SolrConstants.DOCSTRCT + ":Monograph OR " + SolrConstants.DOCSTRCT + ":MultiVolumeWork OR "
-                + SolrConstants.DOCSTRCT + ":Periodical)", suffix);
-    }
-
-    /**
      * @see SearchHelper#truncateFulltext(List,String)
      * @verifies truncate string to 200 chars if no terms are given and add prefix and suffix
      */

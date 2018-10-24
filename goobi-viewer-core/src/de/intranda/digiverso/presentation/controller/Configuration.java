@@ -550,27 +550,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of structure elements allowed to be shown in search results, collection listings, etc.
-     * 
-     * @return
-     * @should return all configured elements
-     */
-    public List<String> getDocStructWhiteList() {
-        return getLocalList("metadata.docStructWhiteList.docStruct");
-    }
-
-    /**
-     * Returns the list of structure elements that are to be displayed as museum items (as opposed to library items), e.g. with event metadata etc.
-     * 
-     * @return
-     * @should return all configured elements
-     */
-    @Deprecated
-    public List<String> getMuseumDocstructTypes() {
-        return getLocalList("metadata.museumDocstructTypes.docStruct");
-    }
-
-    /**
      * Returns the list of structure elements allowed to be shown in calendar view
      * 
      * @return
@@ -1192,7 +1171,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isShowOpenIdConnect() {
-        return getAuthenticationProviders().stream().anyMatch(provider ->  OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
+        return getAuthenticationProviders().stream().anyMatch(provider -> OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
     }
 
     /**
@@ -1218,14 +1197,14 @@ public final class Configuration extends AbstractConfiguration {
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
-            
-            if(visible) {
-                switch(type.toLowerCase()) {
+
+            if (visible) {
+                switch (type.toLowerCase()) {
                     case "openid":
                         providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
                     case "userpassword":
-                        switch(name.toLowerCase()) {
+                        switch (name.toLowerCase()) {
                             case "vufind":
                                 providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
                                 break;
@@ -2092,11 +2071,11 @@ public final class Configuration extends AbstractConfiguration {
         //        defaultList.add("600");
         //        defaultList.add("900");
         //        defaultList.add("1500");
-        
+
         SubnodeConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
-        if(zoomImageViewConfig != null) {
+        if (zoomImageViewConfig != null) {
             String[] scales = zoomImageViewConfig.getStringArray("scale");
-            if(scales != null) {
+            if (scales != null) {
                 return Arrays.asList(scales);
             }
         }
@@ -3120,7 +3099,7 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("collections.collection[@field]", Collections.emptyList());
 
     }
-    
+
     public String getWebApiToken() {
         String token = getLocalString("webapi.authorization.token", "");
         return token;

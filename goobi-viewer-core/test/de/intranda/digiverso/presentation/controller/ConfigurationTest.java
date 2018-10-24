@@ -241,15 +241,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getDocStructWhiteList()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getDocStructWhiteList_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getDocStructWhiteList().size());
-    }
-
-    /**
      * @see Configuration#getEseUrl()
      * @verifies return correct value
      */
@@ -454,20 +445,20 @@ public class ConfigurationTest {
     public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         Assert.assertEquals(4, providers.size());
-        
+
         //google openid
         Assert.assertEquals("Google", providers.get(0).getName());
         Assert.assertEquals("openid", providers.get(0).getType().toLowerCase());
-        Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider)providers.get(0)).getUrl());
-        Assert.assertEquals("id_google", ((OpenIdProvider)providers.get(0)).getClientId());
-        Assert.assertEquals("secret_google", ((OpenIdProvider)providers.get(0)).getClientSecret());
-        Assert.assertEquals("google.png", ((OpenIdProvider)providers.get(0)).getImage());
-        
+        Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider) providers.get(0)).getUrl());
+        Assert.assertEquals("id_google", ((OpenIdProvider) providers.get(0)).getClientId());
+        Assert.assertEquals("secret_google", ((OpenIdProvider) providers.get(0)).getClientSecret());
+        Assert.assertEquals("google.png", ((OpenIdProvider) providers.get(0)).getImage());
+
         //vuFind
         Assert.assertEquals("VuFind", providers.get(2).getName());
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
-        Assert.assertEquals(7000l, ((HttpAuthenticationProvider)providers.get(2)).getTimeoutMillis());
-        
+        Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
+
         //local
         Assert.assertEquals("Goobi viewer", providers.get(3).getName());
         Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
@@ -2329,7 +2320,7 @@ public class ConfigurationTest {
     public void isFullAccessForLocalhost_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
     }
-    
+
     @Test
     public void testGetWebapiToken() {
         Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());

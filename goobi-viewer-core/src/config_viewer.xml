@@ -869,41 +869,14 @@
 				</metadata>
 			</template>
 		</sideBarMetadataList>
-
-		<!-- docStructWhiteList: only search hits of docstruct types that are allowed 
-			in this section will be listed -->
-		<docStructWhiteList>
-			<docStruct>library_object</docStruct>
-			<docStruct>museum_object</docStruct>
-			<docStruct>monograph</docStruct>
-			<docStruct>Monograph</docStruct>
-			<docStruct>MultiVolumeWork</docStruct>
-			<docStruct>Volume</docStruct>
-			<docStruct>Periodical</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-			<docStruct>VolumeRun</docStruct>
-			<docStruct>Record</docStruct>
-			<docStruct>SingleLetter</docStruct>
-			<docStruct>Picture</docStruct>
-			<docStruct>Video</docStruct>
-			<docStruct>Audio</docStruct>
-			<docStruct>MusicSupplies</docStruct>
-			<docStruct>manuscript</docStruct>
-			<docStruct>Map</docStruct>
-			<docStruct>SingleMap</docStruct>
-			<docStruct>Incunable</docStruct>
-			<docStruct>Drawing</docStruct>
-			<docStruct>CollectedEdition</docStruct>
-			<docStruct>Casualia</docStruct>
-			<docStruct>SingleSheetMaterial</docStruct>
-		</docStructWhiteList>
-
-		<!-- DEPRECATED: museumDocstructTypes: docstruct types listed in this section 
-			will be displayed using the museum view. They must be whitelisted in the 
-			docStructWhiteList -->
-		<museumDocstructTypes>
-			<docStruct>museum_object</docStruct>
-		</museumDocstructTypes>
+		
+		<normdataList>
+            <template name="_DEFAULT">
+                <field></field>
+                <field></field>
+                <field></field>
+            </template>
+        </normdataList>
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to 
 			be shown in calendar view -->
