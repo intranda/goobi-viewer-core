@@ -52,6 +52,9 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.Metad
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
+/**
+ * Metadata field configuration.
+ */
 public class Metadata implements Serializable {
 
     private static final long serialVersionUID = 5671775647919258310L;
@@ -62,11 +65,11 @@ public class Metadata implements Serializable {
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private int type = 0;
-    private int number = -1;
+    private final int type;
+    private final int number;
     private final List<MetadataValue> values = new ArrayList<>();
     private final List<MetadataParameter> params = new ArrayList<>();
-    private boolean group = false;
+    private final boolean group;
 
     /**
      * 
@@ -82,6 +85,9 @@ public class Metadata implements Serializable {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
+        this.type = 0;
+        this.number = -1;
+        this.group = false;
     }
 
     /**
@@ -100,6 +106,9 @@ public class Metadata implements Serializable {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
+        this.type = 0;
+        this.number = -1;
+        this.group = false;
     }
 
     /**
@@ -116,6 +125,7 @@ public class Metadata implements Serializable {
         this.type = type;
         this.params.addAll(params);
         this.group = group;
+        this.number = -1;
     }
 
     /**
@@ -211,13 +221,6 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * @param type the type to set
-     */
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    /**
      * @return the values
      */
     public List<MetadataValue> getValues() {
@@ -232,11 +235,13 @@ public class Metadata implements Serializable {
      * @param label
      * @param url
      * @param normDataUrl
+     * @param groupType value of METADATATYPE, if available
      * @param locale
      * @should add multivalued param values correctly
+     * @should set group type correctly
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> normDataUrl,
-            Locale locale) {
+            String groupType, Locale locale) {
         if (inValues == null) {
             throw new IllegalArgumentException("inValues may not be null");
         }
@@ -246,6 +251,7 @@ public class Metadata implements Serializable {
             values.add(new MetadataValue(masterValue));
         }
         MetadataValue mdValue = values.get(valueIndex);
+        mdValue.setGroupType(groupType);
         int origParamIndex = paramIndex;
         while (mdValue.getParamValues().size() < paramIndex) {
             paramIndex--;
@@ -480,10 +486,15 @@ public class Metadata implements Serializable {
                             }
                             // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
                             if (doc.getFieldValue(fieldName) instanceof String) {
-                                values.add((String) doc.getFieldValue(fieldName));
+                                String value = (String) doc.getFieldValue(fieldName);
+                                values.add(value);
                             } else if (doc.getFieldValue(fieldName) instanceof Collection) {
                                 values.addAll((List<String>) doc.getFieldValue(fieldName));
                             }
+                        }
+                        String groupType = null;
+                        if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
+                            groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
                         }
                         // Populate params for which metadata values have been found
                         for (int i = 0; i < params.size(); ++i) {
@@ -505,16 +516,17 @@ public class Metadata implements Serializable {
                                     Map<String, String> normDataUrl = new HashMap<>();
                                     normDataUrl.put(param.getKey(), paramValue);
                                     // logger.trace("found url: " + normDataUrl.toString());
-                                    setParamValue(count, i, values, null, null, normDataUrl, locale);
+                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
                                 } else {
-                                    setParamValue(count, i, values, param.getKey(), null, null, locale);
+                                    setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
                                 }
                             } else if (param.getDefaultValue() != null) {
                                 logger.debug("No value found for {}, using default value", param.getKey());
-                                setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, locale);
+                                setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType,
+                                        locale);
                                 found = true;
                             } else {
-                                setParamValue(count, i, Collections.singletonList(""), null, null, null, locale);
+                                setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
                             }
                         }
                         count++;
@@ -547,12 +559,12 @@ public class Metadata implements Serializable {
                                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
                         mdValue = dateFormatMetadata.format(new Date(Long.valueOf(mdValue)));
                     }
-                    setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, locale);
+                    setParamValue(count, indexOfParam, Collections.singletonList(mdValue), param.getKey(), null, null, null, locale);
                     count++;
                 }
                 if (!found && param.getDefaultValue() != null) {
                     logger.debug("No value found for {}, using default value", param.getKey());
-                    setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, locale);
+                    setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                     found = true;
                     count++;
                 }
@@ -605,22 +617,11 @@ public class Metadata implements Serializable {
         return number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     /**
      * @return the group
      */
     public boolean isGroup() {
         return group;
-    }
-
-    /**
-     * @param group the group to set
-     */
-    public void setGroup(boolean group) {
-        this.group = group;
     }
 
     /**
