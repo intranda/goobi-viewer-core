@@ -49,6 +49,7 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private String masterValue;
+    private String groupType;
 
     /**
      * Package-private constructor.
@@ -218,6 +219,23 @@ public class MetadataValue implements Serializable {
      */
     public void setMasterValue(String masterValue) {
         this.masterValue = masterValue;
+    }
+
+    /**
+     * @return the groupType
+     */
+    public String getGroupTypeForUrl() {
+        if (StringUtils.isEmpty(groupType)) {
+            return "-";
+        }
+        return groupType;
+    }
+
+    /**
+     * @param groupType the groupType to set
+     */
+    public void setGroupType(String groupType) {
+        this.groupType = groupType;
     }
 
     @Override

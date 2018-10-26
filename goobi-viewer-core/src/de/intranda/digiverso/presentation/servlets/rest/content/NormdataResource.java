@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -76,10 +77,12 @@ public class NormdataResource {
     }
 
     /**
-     * Retrieves JSON representation of norm data fetched via the given URL.
+     * Retrieves JSON representation of norm data fetched via the given URL. Only fields configured for the given template are returned (_DEFAULT if
+     * template is null or not found).
      * 
      * @param url
-     * @param lang
+     * @param template Type of normdata set (person, corporation, etc.)
+     * @param lang Locale for field name translations
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -92,9 +95,9 @@ public class NormdataResource {
      */
     @SuppressWarnings("unchecked")
     @GET
-    @Path("/get/{url}/{lang}")
+    @Path("/get/{url}/{template}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getContentDocument(@PathParam("url") String url, @PathParam("lang") String lang)
+    public String getNormData(@PathParam("url") String url, @PathParam("template") String template, @PathParam("lang") String lang)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -115,56 +118,101 @@ public class NormdataResource {
                     break;
             }
         }
-        //                logger.debug("norm data locale: {}", locale.toString());
+        // logger.debug("norm data locale: {}", locale.toString());
 
         Map<String, List<NormData>> normDataMap = NormDataImporter.importNormData(BeanUtils.unescapeCriticalUrlChracters(url));
         if (normDataMap != null) {
-            JSONArray jsonArray = new JSONArray();
-            for (String key : normDataMap.keySet()) {
-                JSONObject jsonObj = new JSONObject();
-                for (NormData normData : normDataMap.get(key)) {
-                    if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey())) {
-                        continue;
-                    }
-                    String translation = Helper.getTranslation(normData.getKey(), locale);
-                    String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
-                    for (NormDataValue value : normData.getValues()) {
-                        List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
-                        if (jsonObj.get(translatedKey) == null) {
-                            valueList = new ArrayList<>();
-                            jsonObj.put(translatedKey, valueList);
-                        }
-                        Map<String, String> valueMap = new HashMap<>();
-                        if (value.getText() != null) {
-                            if (value.getText().startsWith("<div ")) {
-                                // Hack to discriminate pre-build HTML page
-                                valueMap.put("html", value.getText());
-                            } else {
-                                valueMap.put("text", value.getText());
-                            }
-                        }
-                        if (value.getIdentifier() != null) {
-                            valueMap.put("identifier", value.getIdentifier());
-                        }
-                        if (value.getUrl() != null) {
-                            valueMap.put("url", value.getUrl());
-                        }
-                        valueList.add(valueMap);
-                        // If no text found, use the identifier
-                        if (valueMap.get("text") == null) {
-                            valueMap.put("text", valueMap.get("identifier"));
-                        }
-                        //                                logger.debug(jsonObj.toJSONString());
-                    }
+            // Prefer GND group
+            List<NormData> normDataList = normDataMap.get("GND");
+            // Get first available group, of GND not found
+            if (normDataList == null) {
+                for (String key : normDataMap.keySet()) {
+                    normDataList = normDataMap.get(key);
+                    break;
                 }
-                jsonArray.add(jsonObj);
-                break; // break after first
+            }
+            if (normDataList == null) {
+                logger.trace("Normdata map is empty");
+                throw new ContentNotFoundException("Resource not found");
             }
 
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObj = new JSONObject();
+
+            if ("_ALL".equals(template)) {
+                // Explorative mode to return all available fields
+                for (NormData normData : normDataList) {
+                    addNormDataValuesToJSON(jsonObj, normData, locale);
+                }
+            } else {
+                for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
+                    for (NormData normData : normDataList) {
+                        if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
+                            continue;
+                        }
+                        addNormDataValuesToJSON(jsonObj, normData, locale);
+                    }
+                }
+            }
+            jsonArray.add(jsonObj);
             return jsonArray.toJSONString();
         }
 
         throw new ContentNotFoundException("Resource not found");
     }
 
+    @SuppressWarnings("unchecked")
+    void addNormDataValuesToJSON(JSONObject jsonObj, NormData normData, Locale locale) {
+        String translation = Helper.getTranslation(normData.getKey(), locale);
+        String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
+        for (NormDataValue value : normData.getValues()) {
+            List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
+            if (jsonObj.get(translatedKey) == null) {
+                valueList = new ArrayList<>();
+                jsonObj.put(translatedKey, valueList);
+            }
+            Map<String, String> valueMap = new HashMap<>();
+            if (value.getText() != null) {
+                if (value.getText().startsWith("<div ")) {
+                    // Hack to discriminate pre-build HTML page
+                    valueMap.put("html", value.getText());
+                } else {
+                    valueMap.put("text", value.getText());
+                }
+            }
+            if (value.getIdentifier() != null) {
+                valueMap.put("identifier", value.getIdentifier());
+            }
+            if (value.getUrl() != null) {
+                valueMap.put("url", value.getUrl());
+            }
+            valueList.add(valueMap);
+            // If no text found, use the identifier
+            if (valueMap.get("text") == null) {
+                valueMap.put("text", valueMap.get("identifier"));
+            }
+            //                                logger.debug(jsonObj.toJSONString());
+        }
+    }
+
+    /**
+     * Retrieves JSON representation of norm data fetched via the given URL.
+     * 
+     * @param url
+     * @param lang Locale for field name translations
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     */
+    @GET
+    @Path("/get/{url}/{lang}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getNormData(@PathParam("url") String url, @PathParam("lang") String lang)
+            throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+        return getNormData(url, null, lang);
+    }
 }

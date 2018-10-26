@@ -870,11 +870,12 @@
 			</template>
 		</sideBarMetadataList>
 		
+		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
 		<normdataList>
             <template name="_DEFAULT">
-                <field></field>
-                <field></field>
-                <field></field>
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_NAME</field>
+                <field>NORM_ALTNAME</field>
             </template>
         </normdataList>
 

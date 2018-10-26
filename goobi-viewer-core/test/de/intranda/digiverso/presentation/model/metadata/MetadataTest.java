@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 
@@ -110,11 +111,25 @@ public class MetadataTest {
         Metadata metadata = new Metadata("MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false));
-        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null);
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
         Assert.assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
         Assert.assertEquals("val1", metadata.getValues().get(0).getParamValues().get(0).get(0));
         Assert.assertEquals("val2", metadata.getValues().get(0).getParamValues().get(0).get(1));
+    }
+
+    /**
+     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
+     * @verifies set group type correctly
+     */
+    @Test
+    public void setParamValue_shouldSetGroupTypeCorrectly() throws Exception {
+        Metadata metadata = new Metadata("MD_FIELD", "", null);
+        String[] values = new String[] { "val1", "val2" };
+        metadata.getParams().add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false));
+        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
+        Assert.assertEquals(1, metadata.getValues().size());
+        Assert.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
     }
 }
