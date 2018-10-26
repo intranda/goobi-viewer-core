@@ -1153,6 +1153,7 @@ button {
 }
 .btn--clean {
   padding: 0;
+  line-height: inherit;
   color: inherit;
   border: none;
 }
