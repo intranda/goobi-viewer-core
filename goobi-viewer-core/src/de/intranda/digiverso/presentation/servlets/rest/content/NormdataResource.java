@@ -137,24 +137,24 @@ public class NormdataResource {
             }
 
             JSONArray jsonArray = new JSONArray();
-            JSONObject jsonObj = new JSONObject();
 
             if ("_ALL".equals(template)) {
                 // Explorative mode to return all available fields
                 for (NormData normData : normDataList) {
-                    addNormDataValuesToJSON(jsonObj, normData, locale);
+                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
                 }
             } else {
                 for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
+                    logger.trace("field: " + field);
                     for (NormData normData : normDataList) {
                         if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
                             continue;
                         }
-                        addNormDataValuesToJSON(jsonObj, normData, locale);
+                        jsonArray.add(addNormDataValuesToJSON(normData, locale));
                     }
                 }
             }
-            jsonArray.add(jsonObj);
+            //            jsonArray.add(jsonObj);
             return jsonArray.toJSONString();
         }
 
@@ -162,7 +162,8 @@ public class NormdataResource {
     }
 
     @SuppressWarnings("unchecked")
-    void addNormDataValuesToJSON(JSONObject jsonObj, NormData normData, Locale locale) {
+    JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
+        JSONObject jsonObj = new JSONObject();
         String translation = Helper.getTranslation(normData.getKey(), locale);
         String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
         for (NormDataValue value : normData.getValues()) {
@@ -193,6 +194,8 @@ public class NormdataResource {
             }
             //                                logger.debug(jsonObj.toJSONString());
         }
+
+        return jsonObj;
     }
 
     /**
