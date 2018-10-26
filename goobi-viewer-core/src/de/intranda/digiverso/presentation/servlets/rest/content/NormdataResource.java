@@ -138,40 +138,19 @@ public class NormdataResource {
 
             JSONArray jsonArray = new JSONArray();
             JSONObject jsonObj = new JSONObject();
-            for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
+
+            if ("_ALL".equals(template)) {
+                // Explorative mode to return all available fields
                 for (NormData normData : normDataList) {
-                    if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
-                        continue;
-                    }
-                    String translation = Helper.getTranslation(normData.getKey(), locale);
-                    String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
-                    for (NormDataValue value : normData.getValues()) {
-                        List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
-                        if (jsonObj.get(translatedKey) == null) {
-                            valueList = new ArrayList<>();
-                            jsonObj.put(translatedKey, valueList);
+                    addNormDataValuesToJSON(jsonObj, normData, locale);
+                }
+            } else {
+                for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
+                    for (NormData normData : normDataList) {
+                        if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
+                            continue;
                         }
-                        Map<String, String> valueMap = new HashMap<>();
-                        if (value.getText() != null) {
-                            if (value.getText().startsWith("<div ")) {
-                                // Hack to discriminate pre-build HTML page
-                                valueMap.put("html", value.getText());
-                            } else {
-                                valueMap.put("text", value.getText());
-                            }
-                        }
-                        if (value.getIdentifier() != null) {
-                            valueMap.put("identifier", value.getIdentifier());
-                        }
-                        if (value.getUrl() != null) {
-                            valueMap.put("url", value.getUrl());
-                        }
-                        valueList.add(valueMap);
-                        // If no text found, use the identifier
-                        if (valueMap.get("text") == null) {
-                            valueMap.put("text", valueMap.get("identifier"));
-                        }
-                        //                                logger.debug(jsonObj.toJSONString());
+                        addNormDataValuesToJSON(jsonObj, normData, locale);
                     }
                 }
             }
@@ -180,6 +159,40 @@ public class NormdataResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+
+    @SuppressWarnings("unchecked")
+    void addNormDataValuesToJSON(JSONObject jsonObj, NormData normData, Locale locale) {
+        String translation = Helper.getTranslation(normData.getKey(), locale);
+        String translatedKey = StringUtils.isNotEmpty(translation) ? translation : normData.getKey();
+        for (NormDataValue value : normData.getValues()) {
+            List<Map<String, String>> valueList = (List<Map<String, String>>) jsonObj.get(translatedKey);
+            if (jsonObj.get(translatedKey) == null) {
+                valueList = new ArrayList<>();
+                jsonObj.put(translatedKey, valueList);
+            }
+            Map<String, String> valueMap = new HashMap<>();
+            if (value.getText() != null) {
+                if (value.getText().startsWith("<div ")) {
+                    // Hack to discriminate pre-build HTML page
+                    valueMap.put("html", value.getText());
+                } else {
+                    valueMap.put("text", value.getText());
+                }
+            }
+            if (value.getIdentifier() != null) {
+                valueMap.put("identifier", value.getIdentifier());
+            }
+            if (value.getUrl() != null) {
+                valueMap.put("url", value.getUrl());
+            }
+            valueList.add(valueMap);
+            // If no text found, use the identifier
+            if (valueMap.get("text") == null) {
+                valueMap.put("text", valueMap.get("identifier"));
+            }
+            //                                logger.debug(jsonObj.toJSONString());
+        }
     }
 
     /**
