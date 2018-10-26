@@ -875,6 +875,14 @@
 				</metadata>
 			</template>
 		</sideBarMetadataList>
+		
+        <normdataList>
+            <template name="_DEFAULT">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_NAME</field>
+                <field>NORM_ALTNAME</field>
+            </template>
+        </normdataList>
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to be shown in calendar view -->
 		<calendarDocstructTypes>
