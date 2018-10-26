@@ -1105,6 +1105,7 @@ button {
 .btn.active:focus,
 .btn.focus,
 .btn:active.focus {
+  color: inherit;
   outline: none;
   box-shadow: none;
 }
