@@ -145,7 +145,6 @@ public class NormdataResource {
                 }
             } else {
                 for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
-                    logger.trace("field: " + field);
                     for (NormData normData : normDataList) {
                         if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
                             continue;

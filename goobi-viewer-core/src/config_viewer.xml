@@ -876,6 +876,30 @@
                 <field>NORM_IDENTIFIER</field>
                 <field>NORM_NAME</field>
                 <field>NORM_ALTNAME</field>
+                <field>URI</field>
+            </template>
+            <template name="CORPORATION">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_ORGANIZATION</field>
+                <field>NORM_ALTNAME</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PARENTINSTITUTION</field>
+                <field>URI</field>
+            </template>
+            <template name="RECORD">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_TITLE</field>
+                <field>NORM_OTHERTITLE</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PRODUCTIONPERIOD</field>
+                <field>NORM_CONTRIBUTOR</field>
+                <field>NORM_OWNER</field>
+                <field>NORM_COLLECTOR</field>
+                <field>NORM_WORK</field>
+                <field>NORM_RELATIONSHIP</field>
+                <field>URI</field>
             </template>
         </normdataList>
 
