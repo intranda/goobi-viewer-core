@@ -293,7 +293,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
-			$('[data-bookshelf-type="counter"]').empty().text(elements.items.length);
+			$('[data-bookshelf-type="counter"]').empty().text(elements.items.length).addClass( 'in' );
 		}).fail(function(error) {
 			console.error('ERROR - _getAllSessionElements: ', error.responseText);
 		});

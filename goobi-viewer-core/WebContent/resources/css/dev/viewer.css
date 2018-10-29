@@ -1597,6 +1597,12 @@ html.is-IE .support-overlay {
   background-repeat: no-repeat;
   background-position: center center;
 }
+[data-bookshelf-type="counter"] {
+  visibility: hidden;
+}
+[data-bookshelf-type="counter"].in {
+  visibility: visible;
+}
 [data-bookshelf-type="dropdown"] {
   padding: 6px 0;
 }
