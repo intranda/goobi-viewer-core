@@ -16,6 +16,7 @@ var viewerJS = ( function() {
     var _defaults = {
         currentPage: '',
         browser: '',
+        theme: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
         equalHeightRSSInterval: 1000,
@@ -26,7 +27,7 @@ var viewerJS = ( function() {
         pageScrollSelector: '.icon-totop',
         pageScrollAnchor: '#top',
         widgetNerSidebarRight: false,
-        accessDeniedImage: '/resources/images/access_denied.png',
+        accessDeniedImage: '',
         notFoundImage: '/resources/images/not_found.png'
     };
     
@@ -44,9 +45,13 @@ var viewerJS = ( function() {
         
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
+
+        // set path to acces denied image
+        _defaults.accessDeniedImage = '/resources/themes/' + _defaults.theme + '/images/access_denied.png';
         
-        console.info( 'Current Page = ', _defaults.currentPage );
         console.info( 'Current Browser = ', _defaults.browser );
+        console.info( 'Current Theme = ', _defaults.theme );
+        console.info( 'Current Page = ', _defaults.currentPage );
         
         // enable BS tooltips
         $( '[data-toggle="tooltip"]' ).tooltip( {
