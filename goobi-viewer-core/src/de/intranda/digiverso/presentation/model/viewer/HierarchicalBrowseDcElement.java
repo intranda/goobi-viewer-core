@@ -149,7 +149,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
             return false;
         }
         if (obj.getClass().equals(this.getClass())) {
-            return ((HierarchicalBrowseDcElement) obj).getName().equals(this.getName());
+            return ((HierarchicalBrowseDcElement) obj).getName().equalsIgnoreCase(this.getName());
         }
         return false;
     }
