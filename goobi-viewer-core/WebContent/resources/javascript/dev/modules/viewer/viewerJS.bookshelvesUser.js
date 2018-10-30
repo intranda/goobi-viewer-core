@@ -786,7 +786,7 @@ var viewerJS = ( function( viewer ) {
                 } );
                 
                 // set bookshelf item counter
-                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems );
+                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
             }
             else {
                 // add empty list item
@@ -797,7 +797,7 @@ var viewerJS = ( function( viewer ) {
                 dropdownList.append( dropdownListItem );
                 
                 // set bookshelf item counter
-                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems );
+                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems ).addClass( 'in' );
             }
             
             // render complete list
