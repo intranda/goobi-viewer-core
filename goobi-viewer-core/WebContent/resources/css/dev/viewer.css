@@ -1105,6 +1105,7 @@ button {
 .btn.active:focus,
 .btn.focus,
 .btn:active.focus {
+  color: inherit;
   outline: none;
   box-shadow: none;
 }
@@ -1152,6 +1153,7 @@ button {
 }
 .btn--clean {
   padding: 0;
+  line-height: inherit;
   color: inherit;
   border: none;
 }
@@ -1594,6 +1596,12 @@ html.is-IE .support-overlay {
 [data-bookshelf-type="reset"] {
   background-repeat: no-repeat;
   background-position: center center;
+}
+[data-bookshelf-type="counter"] {
+  visibility: hidden;
+}
+[data-bookshelf-type="counter"].in {
+  visibility: visible;
 }
 [data-bookshelf-type="dropdown"] {
   padding: 6px 0;

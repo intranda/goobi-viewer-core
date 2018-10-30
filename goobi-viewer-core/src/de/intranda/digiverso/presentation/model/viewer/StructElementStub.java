@@ -289,21 +289,12 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Looks up the current document's docstruct type in the museum docstruct type list from configuration.
-     *
      * @return
      * @deprecated Use StructElementStub.isLidoRecord()
      */
     @Deprecated
     public boolean isMuseumType() {
-        if (museumDocstructTypes == null) {
-            museumDocstructTypes = DataManager.getInstance().getConfiguration().getMuseumDocstructTypes();
-        }
-        if (museumDocstructTypes != null) {
-            return museumDocstructTypes.contains(docStructType);
-        }
-
-        return false;
+        return isLidoRecord();
     }
 
     /**

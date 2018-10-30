@@ -357,7 +357,7 @@ public final class Configuration extends AbstractConfiguration {
             }
 
             // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
+            if (usingTemplate == null && defaultTemplate != null) {
                 usingTemplate = defaultTemplate;
             }
 
@@ -370,7 +370,8 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for the sidebar.
      * 
-     * @return
+     * @param template Template name
+     * @return List of configured metadata for configured fields
      * @should return correct template configuration
      * @should return empty list if template not found
      * @should return empty list if template is null
@@ -395,23 +396,49 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param template Template name
+     * @return List of normdata fields configured for the given template name
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     * @should return default template if template is null
+     */
+    @SuppressWarnings("rawtypes")
+    public List<String> getNormdataFieldsForTemplate(String template) {
+        HierarchicalConfiguration usingTemplate = null;
+        List templateList = getLocalConfigurationsAt("metadata.normdataList.template");
+        if (templateList != null) {
+            HierarchicalConfiguration defaultTemplate = null;
+            for (Iterator it = templateList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
+                if (subElement.getString("[@name]").equals(template)) {
+                    usingTemplate = subElement;
+                    break;
+                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                    defaultTemplate = subElement;
+                }
+            }
+
+            // If the requested template does not exist in the config, use _DEFAULT
+            if (usingTemplate == null && defaultTemplate != null) {
+                usingTemplate = defaultTemplate;
+            }
+
+            if (usingTemplate != null) {
+                return getLocalList(usingTemplate, null, "field", null);
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * 
      * @return
      * @should return correct template configuration
      * @should return default template configuration if template not found
      */
     @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getTocLabelConfiguration(String template) {
-        //        List templateList = getLocalConfigurationsAt("toc.labelConfig");
-        //        if (templateList != null) {
-        //            for (Iterator it = templateList.iterator(); it.hasNext();) {
-        //                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-        //                List<Metadata> metadata = getMetadataForTemplate(subElement);
-        //                if (metadata != null && !metadata.isEmpty()) {
-        //                    return metadata.get(0);
-        //                }
-        //            }
-        //        }
-
         HierarchicalConfiguration usingTemplate = null;
         List templateList = getLocalConfigurationsAt("toc.labelConfig.template");
         if (templateList != null) {
@@ -547,27 +574,6 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     * Returns the list of structure elements allowed to be shown in search results, collection listings, etc.
-     * 
-     * @return
-     * @should return all configured elements
-     */
-    public List<String> getDocStructWhiteList() {
-        return getLocalList("metadata.docStructWhiteList.docStruct");
-    }
-
-    /**
-     * Returns the list of structure elements that are to be displayed as museum items (as opposed to library items), e.g. with event metadata etc.
-     * 
-     * @return
-     * @should return all configured elements
-     */
-    @Deprecated
-    public List<String> getMuseumDocstructTypes() {
-        return getLocalList("metadata.museumDocstructTypes.docStruct");
     }
 
     /**
@@ -1192,7 +1198,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isShowOpenIdConnect() {
-        return getAuthenticationProviders().stream().anyMatch(provider ->  OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
+        return getAuthenticationProviders().stream().anyMatch(provider -> OpenIdProvider.TYPE_OPENID.equalsIgnoreCase(provider.getType()));
     }
 
     /**
@@ -1218,14 +1224,14 @@ public final class Configuration extends AbstractConfiguration {
             String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
-            
-            if(visible) {
-                switch(type.toLowerCase()) {
+
+            if (visible) {
+                switch (type.toLowerCase()) {
                     case "openid":
                         providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
                     case "userpassword":
-                        switch(name.toLowerCase()) {
+                        switch (name.toLowerCase()) {
                             case "vufind":
                                 providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
                                 break;
@@ -2092,11 +2098,11 @@ public final class Configuration extends AbstractConfiguration {
         //        defaultList.add("600");
         //        defaultList.add("900");
         //        defaultList.add("1500");
-        
+
         SubnodeConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
-        if(zoomImageViewConfig != null) {
+        if (zoomImageViewConfig != null) {
             String[] scales = zoomImageViewConfig.getStringArray("scale");
-            if(scales != null) {
+            if (scales != null) {
                 return Arrays.asList(scales);
             }
         }
@@ -3120,7 +3126,7 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("collections.collection[@field]", Collections.emptyList());
 
     }
-    
+
     public String getWebApiToken() {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
