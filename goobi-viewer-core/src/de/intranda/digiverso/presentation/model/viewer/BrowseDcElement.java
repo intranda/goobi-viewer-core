@@ -110,7 +110,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
             if (other.name != null) {
                 return false;
             }
-        } else if (!name.equals(other.name)) {
+        } else if (!name.equalsIgnoreCase(other.name)) {
             return false;
         }
         return true;
