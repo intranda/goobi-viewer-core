@@ -25,6 +25,7 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
@@ -352,5 +353,112 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
         SearchBean sb = new SearchBean();
         Assert.assertNull(sb.getSearchUrl());
+    }
+
+    /**
+     * @see SearchBean#increaseCurrentHitIndex()
+     * @verifies increase index correctly
+     */
+    @Test
+    public void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.currentSearch = new Search();
+        sb.currentSearch.setHitsCount(10);
+
+        // Regular case
+        sb.setHitIndexOperand(1);
+        sb.currentHitIndex = 6;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(7, sb.currentHitIndex);
+
+        // Edge case (min)
+        sb.setHitIndexOperand(1);
+        sb.currentHitIndex = 0;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(1, sb.currentHitIndex);
+
+        // Edge case (max)
+        sb.setHitIndexOperand(1);
+        sb.currentHitIndex = 8;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(9, sb.currentHitIndex);
+    }
+
+    /**
+     * @see SearchBean#increaseCurrentHitIndex()
+     * @verifies decrease index correctly
+     */
+    @Test
+    public void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.currentSearch = new Search();
+        sb.currentSearch.setHitsCount(10);
+
+        // Regular case
+        sb.setHitIndexOperand(-1);
+        sb.currentHitIndex = 6;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(5, sb.currentHitIndex);
+
+        // Edge case (min)
+        sb.setHitIndexOperand(-1);
+        sb.currentHitIndex = 1;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(0, sb.currentHitIndex);
+
+        // Edge case (max)
+        sb.setHitIndexOperand(-1);
+        sb.currentHitIndex = 9;
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(8, sb.currentHitIndex);
+    }
+
+    /**
+     * @see SearchBean#increaseCurrentHitIndex()
+     * @verifies reset operand afterwards
+     */
+    @Test
+    public void increaseCurrentHitIndex_shouldResetOperandAfterwards() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.currentSearch = new Search();
+        sb.currentSearch.setHitsCount(10);
+
+        sb.setHitIndexOperand(1);
+        sb.currentHitIndex = 6;
+        Assert.assertEquals(1, sb.getHitIndexOperand());
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(0, sb.getHitIndexOperand());
+    }
+
+    /**
+     * @see SearchBean#increaseCurrentHitIndex()
+     * @verifies do nothing if hit index at the last hit
+     */
+    @Test
+    public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.currentSearch = new Search();
+        sb.currentSearch.setHitsCount(10);
+        sb.setHitIndexOperand(1);
+        sb.currentHitIndex = 9;
+
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(9, sb.currentHitIndex);
+    }
+
+    /**
+     * @see SearchBean#increaseCurrentHitIndex()
+     * @verifies do nothing if hit index at 0
+     */
+    @Test
+    public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.currentSearch = new Search();
+        sb.currentSearch.setHitsCount(10);
+        sb.setHitIndexOperand(-1);
+        sb.currentHitIndex = 0;
+
+        sb.increaseCurrentHitIndex();
+        Assert.assertEquals(0, sb.currentHitIndex);
     }
 }

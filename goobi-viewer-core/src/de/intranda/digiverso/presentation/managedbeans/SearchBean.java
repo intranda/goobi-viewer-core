@@ -130,7 +130,7 @@ public class SearchBean implements Serializable {
     /** Current search result page. */
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
-    private int currentHitIndex = -1;
+    int currentHitIndex = -1;
     /** Number by which currentHitIndex shall be increased or decreased. */
     private int hitIndexOperand = 0;
     private SearchFacets facets = new SearchFacets();
@@ -147,7 +147,7 @@ public class SearchBean implements Serializable {
 
     private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
-    private Search currentSearch;
+    Search currentSearch;
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
@@ -1259,18 +1259,32 @@ public class SearchBean implements Serializable {
         return currentHitIndex + 1;
     }
 
+    /**
+     * @should increase index correctly
+     * @should decrease index correctly
+     * @should reset operand afterwards
+     * @should do nothing if hit index at the last hit
+     * @should do nothing if hit index at 0
+     */
     public void increaseCurrentHitIndex() {
-        if (hitIndexOperand != 0 && currentSearch != null && currentHitIndex < currentSearch.getHitsCount() - 1) {
-            int old = currentHitIndex;
-            currentHitIndex += hitIndexOperand;
-            if (currentHitIndex < 0) {
-                currentHitIndex = 0;
-            } else if (currentHitIndex >= currentSearch.getHitsCount()) {
-                currentHitIndex = (int) (currentSearch.getHitsCount() - 1);
+        logger.trace("increaseCurrentHitIndex");
+        if (hitIndexOperand != 0 && currentSearch != null) {
+            try {
+                if (hitIndexOperand > 0 && currentHitIndex >= currentSearch.getHitsCount() - 1) {
+                    currentHitIndex = (int) (currentSearch.getHitsCount() - 1);
+                    return;
+                }
+                int old = currentHitIndex;
+                currentHitIndex += hitIndexOperand;
+                if (currentHitIndex < 0) {
+                    currentHitIndex = 0;
+                } else if (currentHitIndex >= currentSearch.getHitsCount()) {
+                    currentHitIndex = (int) (currentSearch.getHitsCount() - 1);
+                }
+                logger.trace("increaseCurrentHitIndex: {}->{}", old, currentHitIndex);
+            } finally {
+                hitIndexOperand = 0; // reset operand
             }
-            hitIndexOperand = 0; // reset operand
-
-            logger.trace("increaseCurrentHitIndex: {}->{}", old, currentHitIndex);
         }
     }
 
@@ -1285,6 +1299,7 @@ public class SearchBean implements Serializable {
      * @param hitIndexOperand the hitIndexOperand to set
      */
     public void setHitIndexOperand(int hitIndexOperand) {
+        logger.trace("setHitIndexOperand: {}", hitIndexOperand);
         this.hitIndexOperand = hitIndexOperand;
     }
 
@@ -1997,7 +2012,7 @@ public class SearchBean implements Serializable {
                 .append('/')
                 .toString();
     }
-    
+
     public void updateFacetItem(String field, boolean hierarchical) {
         getFacets().updateFacetItem(field, hierarchical);
         String url = getCurrentSearchUrl();
@@ -2008,20 +2023,20 @@ public class SearchBean implements Serializable {
      * @return
      */
     private String getCurrentSearchUrl() {
-       Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
-       if(oCurrentPath.isPresent()) {
-           ViewerPath currentPath = oCurrentPath.get();
-           StringBuilder sb = new StringBuilder();
-           sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
-           URI uri = URI.create(sb.toString());
-           uri = getParameterPath(uri);
-           return uri.toString() + "/";
-       } else {
-           //fallback
-           return "pretty:search5";
-       }
+        Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if (oCurrentPath.isPresent()) {
+            ViewerPath currentPath = oCurrentPath.get();
+            StringBuilder sb = new StringBuilder();
+            sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
+            URI uri = URI.create(sb.toString());
+            uri = getParameterPath(uri);
+            return uri.toString() + "/";
+        } else {
+            //fallback
+            return "pretty:search5";
+        }
     }
-    
+
     private URI getParameterPath(URI basePath) {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         basePath = ViewerPathBuilder.resolve(basePath, "-");
