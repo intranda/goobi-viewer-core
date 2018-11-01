@@ -60,6 +60,7 @@
 		<project>goobi-viewer-theme-hub-evifa</project>
 		<project>goobi-viewer-theme-albertina</project>
 		<project>goobi-viewer-theme-haendel</project>
+		<project>goobi-viewer-theme-cbl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
