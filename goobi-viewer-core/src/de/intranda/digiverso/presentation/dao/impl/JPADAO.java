@@ -3187,6 +3187,10 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(collection);
             em.getTransaction().commit();
+         // Refresh the object from the DB so that any new licenses etc. have IDs
+            if (this.em.contains(collection)) {
+                this.em.refresh(collection);
+            }
             return true;
         } finally {
             em.close();

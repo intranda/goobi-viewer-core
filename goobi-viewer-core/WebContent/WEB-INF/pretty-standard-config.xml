@@ -645,6 +645,7 @@
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
 	</url-mapping>
 	<url-mapping id="cmsOpenPage2">

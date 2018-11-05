@@ -32,10 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 
 /**
  * Current faceting settings for a search.
@@ -807,5 +809,58 @@ public class SearchFacets {
         }
 
         return false;
+    }
+    
+    public String getFacetValue(String field) {
+        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetName(facet)).findFirst().orElse("");
+    }
+    
+    public String getFacetDescription(String field) {
+        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
+    }
+
+    public String getFirstHierarchicalFacetValue() {
+        return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetName(facet)).findFirst().orElse("");
+    }
+    
+    public String getFirstHierarchicalFacetDescription(String field) {
+        return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
+    }
+    
+    /**
+     * @param facet
+     * @return
+     */
+    private String getFacetDescription(FacetItem facet) {
+        String desc = "";
+        try {
+            CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
+            if(cmsCollection != null) {
+                desc = cmsCollection.getDescription();
+            }
+        } catch (DAOException e) {
+            logger.trace("Error retrieving cmsCollection from DAO");
+        }
+        return desc;
+    }
+
+    /**
+     * @param facet
+     * @return
+     */
+    private String getFacetName(FacetItem facet) {
+        String name = "";
+        try {
+            CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
+            if(cmsCollection != null) {
+                name = cmsCollection.getLabel();
+            }
+        } catch (DAOException e) {
+            logger.trace("Error retrieving cmsCollection from DAO");
+        }
+        if(StringUtils.isBlank(name)) {
+            name = facet.getValue();  
+        }
+        return name;
     }
 }
