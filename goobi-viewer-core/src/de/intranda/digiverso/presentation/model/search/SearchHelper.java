@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1300,10 +1301,15 @@ public final class SearchHelper {
         Map<BrowseTerm, Boolean> terms = new ConcurrentHashMap<>();
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
 
+        List<String> fields = new ArrayList<>(3);
+        fields.add(SolrConstants.PI_TOPSTRUCT);
+        fields.add(bmfc.getField());
+
         StringBuilder sbQuery = new StringBuilder();
         // Only search via the sorting field if not doing a wildcard search
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
+            fields.add(bmfc.getSortField());
         } else {
             sbQuery.append(bmfc.getField());
         }
@@ -1355,7 +1361,7 @@ public final class SearchHelper {
             List<StringPair> sortFields =
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp =
-                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, null, filterQueries, params);
+                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fields, filterQueries, params);
             // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
             // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
