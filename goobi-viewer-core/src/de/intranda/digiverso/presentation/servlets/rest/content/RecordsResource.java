@@ -192,10 +192,11 @@ public class RecordsResource {
     /**
      * 
      * @param query Solr query
-     * @param sortFieldArray
+     * @param sortFields
      * @param sortOrder
      * @param jsonFormat
      * @param count Max number of records
+     * @param offset
      * @param randomize If true, the result will contain random records within the given search parameters
      * @return JSON array
      * @throws MalformedURLException
@@ -207,12 +208,12 @@ public class RecordsResource {
      * @throws DAOException
      */
     @GET
-    @Path("/q/{query}/{sortFields}/{sortOrder}/{jsonFormat}/{count}/{randomize}")
+    @Path("/q/{query}/{sortFields}/{sortOrder}/{jsonFormat}/{count}/{offset}/{randomize}")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getRecordsForQuery(@PathParam("query") String query, @PathParam("sortFields") String sortFields,
             @PathParam("sortOrder") String sortOrder, @PathParam("jsonFormat") String jsonFormat, @PathParam("count") int count,
-            @PathParam("randomize") boolean randomize) throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException,
-            IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
+            @PathParam("offset") int offset, @PathParam("randomize") boolean randomize) throws MalformedURLException, ContentNotFoundException,
+            ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
         if (StringUtils.isEmpty(query)) {
             throw new ContentNotFoundException("query required");
         }
@@ -236,6 +237,7 @@ public class RecordsResource {
             logger.trace("sortFields: {}", sortFields.toString());
         }
         logger.trace("count: {}", count);
+        logger.trace("offset: {}", offset);
         logger.trace("sortOrder: {}", sortOrder);
         logger.trace("randomize: {}", randomize);
         logger.trace("jsonFormat: {}", jsonFormat);
@@ -248,7 +250,7 @@ public class RecordsResource {
             logger.trace("sortFields: {}", sortFields);
         }
 
-        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFieldList, null, null).getResults();
+        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, offset, count, sortFieldList, null, null).getResults();
         JSONArray jsonArray = null;
         switch (jsonFormat) {
             case "datecentric":
