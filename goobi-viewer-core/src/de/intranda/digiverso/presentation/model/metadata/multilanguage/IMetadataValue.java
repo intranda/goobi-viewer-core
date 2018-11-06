@@ -115,7 +115,7 @@ public interface IMetadataValue {
      * @param function
      */
     public void mapEach(UnaryOperator<String> function);
-    
+
     /**
      * Removed the translation of the given locale from the values
      * 
@@ -151,23 +151,23 @@ public interface IMetadataValue {
         if (ViewerResourceBundle.getAllLocales() != null) {
             for (Locale locale : ViewerResourceBundle.getAllLocales()) {
                 String translation = ViewerResourceBundle.getTranslation(key, locale, false);
-                if (!key.equals(translation) && StringUtils.isNotBlank(translation)) {
+                if (key != null && !key.equals(translation) && StringUtils.isNotBlank(translation)) {
                     translations.put(locale.getLanguage(), translation);
                 }
             }
         }
         if (translations.isEmpty()) {
             return new SimpleMetadataValue(key);
-        } else {
-            return new MultiLanguageMetadataValue(translations);
         }
+
+        return new MultiLanguageMetadataValue(translations);
     }
 
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations));
-        } else if(translations.size() == 1){
+        } else if (translations.size() == 1) {
             return Optional.of(getTranslations(translations.values().iterator().next().stream().findFirst().orElse("")));
         } else {
             return Optional.empty();
@@ -180,7 +180,8 @@ public interface IMetadataValue {
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
-            return Optional.ofNullable(getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
+            return Optional.ofNullable(
+                    getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
         } else {
             return Optional.empty();
         }

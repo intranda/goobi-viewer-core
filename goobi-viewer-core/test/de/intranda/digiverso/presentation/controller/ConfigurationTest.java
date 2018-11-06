@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
-import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.HttpAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
@@ -239,15 +241,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getDocStructWhiteList()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getDocStructWhiteList_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getDocStructWhiteList().size());
-    }
-
-    /**
      * @see Configuration#getEseUrl()
      * @verifies return correct value
      */
@@ -441,22 +434,34 @@ public class ConfigurationTest {
      */
     @Test
     public void isShowOpenIdConnect_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isShowOpenIdConnect());
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowOpenIdConnect());
     }
 
     /**
-     * @see Configuration#getOpenIdConnectProviders()
+     * @see Configuration#getAuthenticationProviders()
      * @verifies return all properly configured elements
      */
     @Test
     public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
-        List<OpenIdProvider> providers = DataManager.getInstance().getConfiguration().getOpenIdConnectProviders();
-        Assert.assertEquals(2, providers.size());
+        List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        Assert.assertEquals(4, providers.size());
+
+        //google openid
         Assert.assertEquals("Google", providers.get(0).getName());
-        Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", providers.get(0).getUrl());
-        Assert.assertEquals("id_google", providers.get(0).getClientId());
-        Assert.assertEquals("secret_google", providers.get(0).getClientSecret());
-        Assert.assertEquals("google.png", providers.get(0).getImage());
+        Assert.assertEquals("openid", providers.get(0).getType().toLowerCase());
+        Assert.assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider) providers.get(0)).getUrl());
+        Assert.assertEquals("id_google", ((OpenIdProvider) providers.get(0)).getClientId());
+        Assert.assertEquals("secret_google", ((OpenIdProvider) providers.get(0)).getClientSecret());
+        Assert.assertEquals("google.png", ((OpenIdProvider) providers.get(0)).getImage());
+
+        //vuFind
+        Assert.assertEquals("VuFind", providers.get(2).getName());
+        Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
+        Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
+
+        //local
+        Assert.assertEquals("Goobi viewer", providers.get(3).getName());
+        Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
     }
 
     /**
@@ -1344,6 +1349,33 @@ public class ConfigurationTest {
     @Test
     public void getSidebarMetadataForTemplate_shouldReturnEmptyListIfTemplateIsNull() throws Exception {
         Assert.assertEquals(0, DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(null).size());
+    }
+
+    /**
+     * @see Configuration#getNormdataFieldsForTemplate(String)
+     * @verifies return correct template configuration
+     */
+    @Test
+    public void getNormdataFieldsForTemplate_shouldReturnCorrectTemplateConfiguration() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate("CORPORATION").size());
+    }
+
+    /**
+     * @see Configuration#getNormdataFieldsForTemplate(String)
+     * @verifies return default template configuration if template not found
+     */
+    @Test
+    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate("THING").size());
+    }
+
+    /**
+     * @see Configuration#getNormdataFieldsForTemplate(String)
+     * @verifies return default template if template is null
+     */
+    @Test
+    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(null).size());
     }
 
     /**
@@ -2314,5 +2346,11 @@ public class ConfigurationTest {
     @Test
     public void isFullAccessForLocalhost_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+    }
+
+    @Test
+    public void testGetWebapiToken() {
+        Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());
+
     }
 }

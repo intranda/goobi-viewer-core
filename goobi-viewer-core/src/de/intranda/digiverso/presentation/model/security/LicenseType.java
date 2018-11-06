@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -412,5 +413,17 @@ public class LicenseType implements IPrivilegeHolder {
                 logger.error("Could not add static license type '{}'.", IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
             }
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getName()).append(":\t");
+            sb.append("openaccess: ").append(isOpenAccess());
+            sb.append("\tconditions: ").append(conditions);
+            sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
+            return sb.toString();
     }
 }

@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +33,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**
  * @author Florian Alpers
@@ -74,11 +76,12 @@ public class IIIFUrlHandler {
      * @throws ViewerConfigurationException
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
-            String format, int thumbCompression) {
+            String format, /*deprecated*/int compression) {
+
         try {
-            if (ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
+            if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
-                    URI uri = ImageHandler.toURI(fileUrl);
+                    URI uri = PathConverter.toURI(fileUrl);
                     if (StringUtils.isBlank(uri.getScheme())) {
                         uri = new URI("file", fileUrl, null);
                     }
@@ -99,7 +102,7 @@ public class IIIFUrlHandler {
                     sb.append(size).append("/");
                     sb.append(rotation).append("/");
                     sb.append("default.").append(format);
-                    //                sb.append("?compression=").append(thumbCompression);
+//                  thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                     return sb.toString();
                 } else {
                     //assume its a iiif id
@@ -114,17 +117,28 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
+                
+                //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
+                int separatorIndex = fileUrl.indexOf("/");
+                if(separatorIndex > 0) {
+                    docStructIdentifier = fileUrl.substring(0, separatorIndex);
+                    fileUrl = fileUrl.substring(separatorIndex+1);
+                }
+                
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
                 sb.append("image/").append(docStructIdentifier).append("/").append(fileUrl).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
                 sb.append("default.").append(format);
-                //            sb.append("?compression=").append(thumbCompression);
+//                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                 return sb.toString();
             }
         } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage());
+            return "";
+        } catch (URISyntaxException e) {
+            logger.error("Not a valid url: " + fileUrl,e.getMessage());
             return "";
         }
     }

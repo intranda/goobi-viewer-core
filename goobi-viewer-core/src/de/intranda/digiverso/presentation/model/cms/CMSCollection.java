@@ -245,10 +245,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public String getDescription(String language) {
         return getDescriptions().stream()
                 .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
-                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
+//                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
                 .findFirst()
                 .map(translation -> translation.getValue())
-                .orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
+                .orElse("");
+//                .orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
 
     /**
@@ -476,5 +477,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return value;
         }
     }
+
 
 }

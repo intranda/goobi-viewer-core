@@ -43,7 +43,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -71,7 +70,6 @@ import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -192,7 +190,7 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if(getCurrentPage().getMimeType().startsWith("image")) {            
+        if (getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
         } else {
             return "{}";
@@ -290,7 +288,7 @@ public class ViewManager implements Serializable {
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage);
     }
-    
+
     public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
@@ -1216,7 +1214,8 @@ public class ViewManager implements Serializable {
                 // Prefer configured target page type for the docstruct type
                 PageType pageType = null;
                 if (topDocument != null) {
-                    pageType = PageType.getPageTypeForDocStructType(topDocument.getDocStructType());
+                    boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+                    pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
                 }
                 if (pageType == null) {
                     if (isHasPages()) {
@@ -1674,6 +1673,9 @@ public class ViewManager implements Serializable {
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
             return "";
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+            return "";
         }
     }
 
@@ -2066,5 +2068,13 @@ public class ViewManager implements Serializable {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * @param pageLoader2
+     */
+    public void setPageLoader(IPageLoader loader) {
+        this.pageLoader = loader;
+
     }
 }

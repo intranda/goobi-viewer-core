@@ -66,7 +66,9 @@ public class SolrConstants {
         CORPORATION,
         LOCATION,
         SUBJECT,
-        PUBLISHER;
+        ORIGININFO,
+        RECORD,
+        OTHER;
 
         public static MetadataGroupType getByName(String name) {
             if (name != null) {
@@ -79,8 +81,10 @@ public class SolrConstants {
                         return LOCATION;
                     case "SUBJECT":
                         return SUBJECT;
-                    case "PUBLISHER":
-                        return PUBLISHER;
+                    case "ORIGININFO":
+                        return ORIGININFO;
+                    case "OTHER":
+                        return OTHER;
                     default:
                         return null;
                 }

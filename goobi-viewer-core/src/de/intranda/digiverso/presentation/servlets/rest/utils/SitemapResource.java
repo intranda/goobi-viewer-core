@@ -21,16 +21,19 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.sitemap.Sitemap;
@@ -38,7 +41,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
- * Resource for outputting the current session info.
+ * Resource for sitemap generation.
  */
 @Path(SitemapResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
@@ -47,6 +50,8 @@ public class SitemapResource {
     private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);
 
     public static final String RESOURCE_PATH = "/sitemap";
+
+    private static Thread workerThread = null;
 
     @Context
     private HttpServletRequest servletRequest;
@@ -66,70 +71,89 @@ public class SitemapResource {
     }
 
     /**
-     * @param firstPageOnly
-     * @return Short summary of files created
-     */
-    @GET
-    @Path("/update/{firstPageOnly}")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("dataRepository") boolean firstPageOnly) {
-        return updateSitemap(null, firstPageOnly);
-    }
-
-    /**
      * @param outputPath Output path for sitemap files
      * @param firstPageOnly
+     * @param params
      * @return Short summary of files created
      */
-    @GET
-    @Path("/update/{outputPath}/{firstPageOnly}")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String updateSitemap(@PathParam("outputPath") String outputPath, @PathParam("dataRepository") boolean firstPageOnly) {
-        if (servletRequest == null) {
-            return "Servlet request not found";
-        }
+    @SuppressWarnings("unchecked")
+    @POST
+    @Path("/update")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public String updateSitemap(SitemapRequestParameters params) {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         }
 
-        StringBuilder sb = new StringBuilder();
+        JSONObject ret = new JSONObject();
+
+        if (params == null) {
+            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            ret.put("message", "Invalid JSON request object");
+            return ret.toJSONString();
+        }
 
         Sitemap sitemap = new Sitemap();
+        String outputPath = params.getOutputPath();
         if (outputPath == null) {
             outputPath = servletRequest.getServletContext().getRealPath("/");
         }
-        List<File> sitemapFiles = null;
-        try {
-            sitemapFiles = sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), outputPath, firstPageOnly);
+        final String passOutputPath = outputPath;
 
-            if (sitemapFiles != null) {
-                sb.append("Sitemap files created:\n");
-                for (File file : sitemapFiles) {
-                    sb.append("- " + file.getName() + "\n");
+        if (workerThread == null || !workerThread.isAlive()) {
+            workerThread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        List<File> sitemapFiles =
+                                sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), passOutputPath);
+                        if (sitemapFiles != null) {
+                            ret.put("status", HttpServletResponse.SC_OK);
+                            ret.put("message", sitemapFiles.size() + " sitemap files created");
+                            JSONArray fileArray = new JSONArray();
+                            for (File file : sitemapFiles) {
+                                JSONObject fileObj = new JSONObject();
+                                fileObj.put("filename", file.getName());
+                                fileArray.add(fileObj);
+                            }
+                            ret.put("files", fileArray);
+                        } else {
+                            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            ret.put("message", "Could not generate sitemap, please check logs");
+                        }
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (DAOException e) {
+                        logger.debug("DAOException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    }
                 }
-            } else {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            });
+
+            workerThread.start();
             try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
+                workerThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
             }
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            try {
-                servletResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-            }
+        } else {
+            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+            ret.put("message", "Sitemap generation currently in progress");
         }
 
-        return sb.toString();
+        return ret.toJSONString();
     }
 }

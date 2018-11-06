@@ -204,7 +204,7 @@ var viewerJS = ( function( viewer ) {
             modal += '<div class="modal-body">' + _defaults.string.body + '</div>';
             modal += '<div class="modal-footer">';
             modal += '<button type="button" id="' + _defaults.closeId + '"  class="btn" data-dismiss="modal">' + _defaults.string.closeBtn + '</button>';
-            modal += '<button type="button" id="' + _defaults.submitId + '" class="btn">' + _defaults.string.saveBtn + '</button>';
+            modal += '<button type="button" id="' + _defaults.submitId + '" class="btn btn--success">' + _defaults.string.saveBtn + '</button>';
             modal += '</div></div></div></div>';
             
             return modal;
@@ -310,7 +310,7 @@ var viewerJS = ( function( viewer ) {
             popover.addClass( 'warning-popover' );
             
             // build button
-            popoverButton.addClass( 'btn-clean' );
+            popoverButton.addClass( 'btn btn--clean' );
             popoverButton.attr( 'data-toggle', 'warning-popover' );
             popoverButtonIcon.addClass( 'fa fa-times' );
             popoverButton.append( popoverButtonIcon );

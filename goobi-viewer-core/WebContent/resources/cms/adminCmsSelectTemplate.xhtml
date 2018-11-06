@@ -66,7 +66,7 @@
                                                     <h:commandLink
                                                         action="pretty:adminCmsCreatePage"
                                                         value="#{msg.cms_createPageWithTemplate}"
-                                                        styleClass="btn #{template.themeTemplate ? 'btn-theme-template' : ''}">
+                                                        styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}">
                                                         <f:setPropertyActionListener
                                                             value="#{cmsBean.createNewPage(template)}"
                                                             target="#{cmsBean.selectedPage}" />

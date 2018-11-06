@@ -34,15 +34,13 @@
                                     class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
                                     <!-- WITHOUT SUBMENU -->
                                     <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
-                                        <h:outputLink value="#{navItem.navigationUrl}">
-                                            <h:outputText value="#{msg[navItem.itemLabel]}" />
-                                        </h:outputLink>
+                                        <component:navigationLink navItem="#{navItem}"/>
                                     </h:panelGroup>
                                     <!-- WITH SUBMENU -->
                                     <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
                                         <button
                                             type="button"
-                                            class="btn-clean"
+                                            class="btn btn--clean"
                                             data-toggle="submenu">
                                             #{msg[navItem.itemLabel]}
                                             <span class="caret"></span>
@@ -65,15 +63,13 @@
                                                             class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
                                                             <!-- WITHOUT SUBMENU -->
                                                             <h:panelGroup rendered="#{child.childItems.isEmpty()}">
-                                                                <h:outputLink value="#{child.navigationUrl}">
-                                                                    <h:outputText value="#{msg[child.itemLabel]}" />
-                                                                </h:outputLink>
+                                                                <component:navigationLink navItem="#{child}"/>
                                                             </h:panelGroup>
                                                             <!-- WITH SUBMENU -->
                                                             <h:panelGroup rendered="#{!child.childItems.isEmpty()}">
                                                                 <button
                                                                     type="button"
-                                                                    class="btn-clean"
+                                                                    class="btn btn--clean"
                                                                     data-toggle="submenu">
                                                                     #{msg[child.itemLabel]}
                                                                     <span class="caret"></span>
@@ -92,15 +88,13 @@
                                                                                     class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
                                                                                     <!-- WITHOUT SUBMENU -->
                                                                                     <h:panelGroup rendered="#{child1.childItems.isEmpty()}">
-                                                                                        <h:outputLink value="#{child1.navigationUrl}">
-                                                                                            <h:outputText value="#{msg[child1.itemLabel]}" />
-                                                                                        </h:outputLink>
+                                                                                        <component:navigationLink navItem="#{child1}"/>
                                                                                     </h:panelGroup>
                                                                                     <!-- WITH SUBMENU -->
                                                                                     <h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
                                                                                         <button
                                                                                             type="button"
-                                                                                            class="btn-clean"
+                                                                                            class="btn btn--clean"
                                                                                             data-toggle="submenu">
                                                                                             #{msg[child1.itemLabel]}
                                                                                             <span class="caret"></span>
@@ -121,18 +115,14 @@
                                                                                                             <!-- WITHOUT SUBMENU -->
                                                                                                             <h:panelGroup
                                                                                                                 rendered="#{child2.childItems.isEmpty()}">
-                                                                                                                <h:outputLink
-                                                                                                                    value="#{child2.navigationUrl}">
-                                                                                                                    <h:outputText
-                                                                                                                        value="#{msg[child2.itemLabel]}" />
-                                                                                                                </h:outputLink>
+                                                                                                                <component:navigationLink navItem="#{child2m}"/>
                                                                                                             </h:panelGroup>
                                                                                                             <!-- WITH SUBMENU -->
                                                                                                             <h:panelGroup
                                                                                                                 rendered="#{!child2.childItems.isEmpty()}">
                                                                                                                 <button
                                                                                                                     type="button"
-                                                                                                                    class="btn-clean"
+                                                                                                                    class="btn btn--clean"
                                                                                                                     data-toggle="submenu">
                                                                                                                     #{msg[child2.itemLabel]}
                                                                                                                     <span class="caret"></span>
@@ -155,18 +145,14 @@
                                                                                                                                     <!-- WITHOUT SUBMENU -->
                                                                                                                                     <h:panelGroup
                                                                                                                                         rendered="#{child3.childItems.isEmpty()}">
-                                                                                                                                        <h:outputLink
-                                                                                                                                            value="#{child3.navigationUrl}">
-                                                                                                                                            <h:outputText
-                                                                                                                                                value="#{msg[child3.itemLabel]}" />
-                                                                                                                                        </h:outputLink>
+                                                                                                                                        <component:navigationLink navItem="#{child3}"/>
                                                                                                                                     </h:panelGroup>
                                                                                                                                     <!-- WITH SUBMENU -->
                                                                                                                                     <h:panelGroup
                                                                                                                                         rendered="#{!child3.childItems.isEmpty()}">
                                                                                                                                         <button
                                                                                                                                             type="button"
-                                                                                                                                            class="btn-clean"
+                                                                                                                                            class="btn btn--clean"
                                                                                                                                             data-toggle="submenu">
                                                                                                                                             #{msg[child3.itemLabel]}
                                                                                                                                             <span
@@ -187,11 +173,7 @@
                                                                                                                                                         rendered="#{child4.valid and child4.shouldDisplay}">
                                                                                                                                                         <li
                                                                                                                                                             class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
-                                                                                                                                                            <h:outputLink
-                                                                                                                                                                value="#{child4.navigationUrl}">
-                                                                                                                                                                <h:outputText
-                                                                                                                                                                    value="#{msg[child4.itemLabel]}" />
-                                                                                                                                                            </h:outputLink>
+                                                                                                                                                            <component:navigationLink navItem="#{child4}"/>
                                                                                                                                                         </li>
                                                                                                                                                     </h:panelGroup>
                                                                                                                                                 </ui:repeat>
@@ -245,7 +227,7 @@
                                     <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
                                         <button
                                             type="button"
-                                            class="btn-clean"
+                                            class="btn btn--clean"
                                             data-toggle="megamenu">
                                             #{msg[navItem.itemLabel]}
                                             <span class="caret"></span>
@@ -259,7 +241,7 @@
                                                 <!-- CLOSE -->
                                                 <button
                                                     type="button"
-                                                    class="navigation__megamenu-close btn-clean"
+                                                    class="navigation__megamenu-close btn btn--clean"
                                                     data-toggle="close"
                                                     title="#{msg.close}">
                                                     <i
@@ -332,7 +314,7 @@
                                              navigationHelper.currentPage == 'adminUserActivity' ? 'active' : ''}">
                             <button
                                 type="button"
-                                class="btn-clean"
+                                class="btn btn--clean"
                                 data-toggle="submenu">
                                 #{msg.admin}
                                 <span class="caret"></span>
@@ -371,7 +353,7 @@
                                     <li>
                                         <button
                                             type="button"
-                                            class="btn-clean"
+                                            class="btn btn--clean"
                                             data-toggle="submenu">
                                             #{msg.cms_title_menu}
                                             <span class="caret"></span>
@@ -391,7 +373,7 @@
                                                 <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
                                                     <h:commandLink
                                                         action="pretty:adminCmsMenuItems"
-                                                        value="#{msg.cms_menuItems}" />
+                                                        value="#{msg.cms_menu_items}" />
                                                 </li>
                                                 <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
                                                     <h:commandLink

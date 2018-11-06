@@ -81,6 +81,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -556,9 +557,20 @@ public class Helper {
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND " + SolrConstants.ORDER + ':' + page, Arrays.asList(
-                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+                .append(':')
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(':')
+                .append(page)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.PAGE.name())
+                .toString();
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Arrays
+                .asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);

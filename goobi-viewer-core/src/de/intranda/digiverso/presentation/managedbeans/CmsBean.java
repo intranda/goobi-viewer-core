@@ -42,9 +42,12 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -70,6 +73,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
+import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.glossary.Glossary;
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
@@ -165,6 +169,8 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
+            lazyModelPages.addFilter("classifications", "classification");
         }
         selectedLocale = getDefaultLocale();
     }
@@ -381,7 +387,7 @@ public class CmsBean implements Serializable {
                 logger.warn("Could not parse page number: {}", e.getMessage());
             }
             if (page != null) {
-                logger.trace("Found cmsPage " + page.getMenuTitle());
+                logger.trace("Found cmsPage " + page.getTitle());
                 // DataManager.getInstance().getDao().updateCMSPage(page);
             }
         }
@@ -414,18 +420,19 @@ public class CmsBean implements Serializable {
     }
 
     public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
-        String classification = item.getPageClassification();
         int size = item.getElementsPerPage();
         int offset = item.getListOffset();
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        if (!StringUtils.isEmpty(classification)) {
-            for (CMSPage cmsPage : cmsPages) {
-                if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
-                    counter++;
-                    if (counter > offset && counter <= size + offset) {
-                        nestedPages.add(cmsPage);
+        for (String  classification : item.getPageClassification()) {            
+            if (!StringUtils.isEmpty(classification)) {
+                for (CMSPage cmsPage : cmsPages) {
+                    if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
+                        counter++;
+                        if (counter > offset && counter <= size + offset) {
+                            nestedPages.add(cmsPage);
+                        }
                     }
                 }
             }
@@ -521,7 +528,7 @@ public class CmsBean implements Serializable {
             resetCollectionsForPage(selectedPage.getId().toString());
             if (cmsNavigationBean != null) {
                 logger.trace("add navigation item");
-                cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
+                cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
             }
         }
         logger.trace("Done saving page");
@@ -538,6 +545,10 @@ public class CmsBean implements Serializable {
             }
         }
 
+    }
+    
+    public void invalidate() {
+        collections = new HashMap<>();
     }
 
     public static boolean validateSidebarElement(CMSSidebarElement element) {
@@ -566,7 +577,7 @@ public class CmsBean implements Serializable {
 
         for (CMSPageLanguageVersion languageVersion : page.getLanguageVersions()) {
             boolean languageIncomplete = false;
-            if (StringUtils.isBlank(languageVersion.getTitle()) || StringUtils.isBlank(languageVersion.getMenuTitle())) {
+            if (StringUtils.isBlank(languageVersion.getTitle())) {
                 // Messages.warn("cmsValidationErrorTitle");
                 languageIncomplete = true;
             }
@@ -593,7 +604,7 @@ public class CmsBean implements Serializable {
                             }
                             break;
                         case PAGELIST:
-                            if (StringUtils.isBlank(item.getPageClassification())) {
+                            if (item.getPageClassification().length == 0) {
                                 languageIncomplete = true;
                             }
                             break;
@@ -652,7 +663,13 @@ public class CmsBean implements Serializable {
 
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
-            return DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+            String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
+            String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+            List<CMSNavigationItem> items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme)) || currentTheme.equalsIgnoreCase( item.getAssociatedTheme())).collect(Collectors.toList());
+            if(items.isEmpty()) {
+                items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)).collect(Collectors.toList());
+            }
+            return items;
         } catch (DAOException e) {
             return Collections.emptyList();
         }
@@ -706,13 +723,17 @@ public class CmsBean implements Serializable {
     }
 
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
-        if (currentPage.getId() != null) {
-            this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+        if(currentPage != null) {            
+            if (currentPage.getId() != null) {
+                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            } else {
+                this.selectedPage = currentPage;
+            }
+            this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            logger.debug("Selected page " + currentPage);
         } else {
-            this.selectedPage = currentPage;
+            this.selectedPage = null;
         }
-        this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-        logger.debug("Selected page " + currentPage);
 
     }
 
@@ -728,7 +749,7 @@ public class CmsBean implements Serializable {
         if (currentPage != null) {
             this.currentPage.setListPage(1);
             navigationHelper.setCmsPage(true);
-            logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
+            logger.trace("Set current cms page to " + this.currentPage.getTitle());
         }
     }
 
@@ -881,7 +902,7 @@ public class CmsBean implements Serializable {
         if (searchBean != null) {
             Search search = searchBean.getCurrentSearch();
             if (search != null) {
-                return searchBean.getCurrentSearch().getHits();
+                return search.getHits();
             }
         }
 
@@ -1185,7 +1206,7 @@ public class CmsBean implements Serializable {
         Locale currentLocale = BeanUtils.getLocale();
         return getAllCMSPages().stream()
                 .filter(p -> !p.equals(page))
-                .sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2.getMenuTitle(currentLocale).toLowerCase()))
+                .sorted((p1, p2) -> p1.getTitle(currentLocale).toLowerCase().compareTo(p2.getTitle(currentLocale).toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -1242,9 +1263,14 @@ public class CmsBean implements Serializable {
         Messages.info("cms_staticPagesSaved");
     }
 
+    /**
+     * 
+     * @return all cmsPages which are valid and have a menu title
+     * @throws DAOException
+     */
     public List<CMSPage> getValidCMSPages() throws DAOException {
         return getAllCMSPages().stream()
-                .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID))
+                .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID) && StringUtils.isNotBlank(page.getMenuTitle()))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }
@@ -1381,6 +1407,12 @@ public class CmsBean implements Serializable {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
         }
         throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
+    }
+    
+    public List<String> getPossibleSortFields() throws PresentationException, IndexUnreachableException, SolrServerException, IOException {
+        List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+//        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
+        return sortFields;
     }
 
 }

@@ -20,9 +20,13 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,6 +49,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
@@ -64,8 +69,13 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 public class CMSContentItem implements Comparable<CMSContentItem> {
 
     /**
-     * The different types if content items. The names of these types need to be
-     * entered into the cms-template xml files to define the type of content item
+     * Separates the individual classifications in the classification string
+     */
+    private static final String CLASSIFICATION_SEPARATOR = "::";
+
+    /**
+     * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
+     * item
      * 
      * @author Florian Alpers
      *
@@ -105,6 +115,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
          */
         public Functionality createFunctionality(CMSContentItem item) {
             switch (this) {
+                case SOLRQUERY:
+                    return new QueryListFunctionality();
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:
@@ -168,7 +180,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     /** Page classification for page list content items. */
     @Column(name = "page_classification")
-    private String pageClassification;
+    private String pageClassification = "";
 
     /** Lucence field on which to base a collecion view */
     @Column(name = "collection_field")
@@ -189,13 +201,17 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
+    
+    /** Comma separated list of collection names to ignore for display */
+    @Column(name = "ignore_collections")
+    private String ignoreCollections = null;
 
     @Column(name = "toc_pi")
     private String tocPI = "";
-    
+
     @Column(name = "search_prefix")
     private String searchPrefix;
-    
+
     @Column(name = "glossary")
     private String glossaryName;
 
@@ -216,7 +232,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
-    
+
     @Column(name = "component")
     private String component = null;
 
@@ -228,8 +244,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private Functionality functionality = null;
 
     /**
-     * The collection for a collection view item
-     * TODO: Migrate this into a Functionality 
+     * The collection for a collection view item TODO: Migrate this into a Functionality
      */
     @Transient
     private CollectionView collection = null;
@@ -250,21 +265,20 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private int order = 0;
 
     /**
-     * Noop constructor for javax.persistence 
+     * Noop constructor for javax.persistence
      */
     public CMSContentItem() {
         // TODO Auto-generated constructor stub
     }
 
     /**
-     * Contructs a copy of the given item, inheriting all non-transient properties
-     * This is a shallow copy, but all affected properties are either primitives or strings anyway
-     * Except mediaItem which is a shared resource
+     * Contructs a copy of the given item, inheriting all non-transient properties This is a shallow copy, but all affected properties are either
+     * primitives or strings anyway Except mediaItem which is a shared resource
      * 
      * @param blueprint
      */
     public CMSContentItem(CMSContentItem blueprint, CMSPageLanguageVersion owner) {
-        if(blueprint.id != null) {            
+        if (blueprint.id != null) {
             this.id = blueprint.id;
         }
         this.setItemId(blueprint.itemId);
@@ -284,6 +298,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setComponent(blueprint.component);
         this.setNumberOfTiles(blueprint.numberOfTiles);
         this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
+        this.setIgnoreCollections(blueprint.getIgnoreCollections());
         this.allowedTags = blueprint.allowedTags;
         this.glossaryName = blueprint.glossaryName;
         this.searchPrefix = blueprint.searchPrefix;
@@ -292,8 +307,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.ownerPageLanguageVersion = owner;
         this.solrQuery = blueprint.solrQuery;
         this.solrSortFields = blueprint.solrSortFields;
-        
-        
+
     }
 
     /**
@@ -314,7 +328,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     }
 
     /**
-     * Creates the child class providing item-type specific functionality 
+     * Creates the child class providing item-type specific functionality
      */
     public void initFunctionality() {
         this.functionality = getType().createFunctionality(this);
@@ -461,14 +475,16 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setHtmlFragment(String htmlFragment) {
         this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
+        //replace unicode character u2028 (line separator) with java line break, because u2028 breaks mysql 
+        this.htmlFragment = this.htmlFragment.replace("" + '\u2028', "\n");
     }
 
     /**
      * @return the solrQuery
      */
     public String getSolrQuery() {
-        if(getType().equals(CMSContentItemType.SEARCH)) {
-            return ((SearchFunctionality)getFunctionality()).getQueryString();
+        if (getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality) getFunctionality()).getQueryString();
         }
         return solrQuery;
     }
@@ -484,8 +500,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
-        if(getType().equals(CMSContentItemType.SEARCH)) {
-            return ((SearchFunctionality)getFunctionality()).getSolrSortFields();
+        if (getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality) getFunctionality()).getSolrSortFields();
         }
         return solrSortFields;
     }
@@ -514,15 +530,44 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * @return the pageClassification
      */
-    public String getPageClassification() {
-        return pageClassification;
+    public String[] getPageClassification() {
+        if (StringUtils.isNotBlank(pageClassification)) {
+            return pageClassification.split(CLASSIFICATION_SEPARATOR);
+        } else {
+            return new String[0];
+        }
+    }
+
+    public List<String> getSortedPageClassifications() throws DAOException {
+        if (StringUtils.isNotBlank(pageClassification)) {
+            SortedMap<Long, String> sortMap = new TreeMap<>();
+            for (String classification : getPageClassification()) {
+                long order = getNestedPages(classification).stream()
+                        .filter(page -> page.getPageSorting() != null)
+                        .mapToLong(CMSPage::getPageSorting)
+                        .sorted()
+                        .findFirst()
+                        .orElse(Long.MAX_VALUE);
+                while(sortMap.containsKey(order)) {
+                    order++;
+                }
+                sortMap.put(order, classification);
+            }
+            return new ArrayList<>(sortMap.values());
+        } else {
+            return Collections.EMPTY_LIST;
+        }
     }
 
     /**
      * @param pageClassification the pageClassification to set
      */
-    public void setPageClassification(String pageClassification) {
-        this.pageClassification = pageClassification;
+    public void setPageClassification(String[] pageClassification) {
+        if (pageClassification != null && pageClassification.length > 0) {
+            this.pageClassification = StringUtils.join(pageClassification, CLASSIFICATION_SEPARATOR);
+        } else {
+            this.pageClassification = "";
+        }
     }
 
     public int getListPage() {
@@ -552,6 +597,16 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return nestedPages;
     }
 
+    public List<CMSPage> getNestedPages(String classification) throws DAOException {
+        if (nestedPages == null) {
+            return loadNestedPages();
+        }
+        List<CMSPage> pages =  nestedPages.stream()
+                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .collect(Collectors.toList());
+        return pages;
+    }
+
     public void resetData() {
         nestedPages = null;
     }
@@ -559,20 +614,26 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private List<CMSPage> loadNestedPages() throws DAOException {
         int size = getElementsPerPage();
         int offset = getListOffset();
+        
+        List<CMSPage> allPages = new ArrayList<>();
+        if (StringUtils.isBlank(pageClassification)) {
+            allPages = DataManager.getInstance().getDao().getAllCMSPages();
+        } else {
+            for (String classification : getPageClassification()) {
+                if (StringUtils.isNotBlank(classification)) {
+                    allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByClassification(classification));
+                }
+            }
+        }
+        
         nestedPages = new ArrayList<>();
         int counter = 0;
-        if (!StringUtils.isEmpty(getPageClassification())) {
-            List<CMSPage> allPages = DataManager.getInstance().getDao().getCMSPagesByClassification(getPageClassification());
-            Collections.sort(allPages, new CMSPage.PageComparator());
-            for (CMSPage cmsPage : allPages) {
-                if (cmsPage.isPublished()) {
-                    counter++;
-                    if (counter > offset && counter <= size + offset) {
-                        //                        if (cmsPage.sortGlobalLanguageItems()) {
-                        //                            DataManager.getInstance().getDao().updateCMSPage(cmsPage);
-                        //                        }
-                        nestedPages.add(cmsPage);
-                    }
+        Collections.sort(allPages, new CMSPage.PageComparator());
+        for (CMSPage cmsPage : allPages) {
+            if (cmsPage.isPublished() && !nestedPages.contains(cmsPage)) {
+                counter++;
+                if (counter > offset && counter <= size + offset) {
+                    nestedPages.add(cmsPage);
                 }
             }
         }
@@ -668,6 +729,27 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         Collections.sort(list);
         return list;
     }
+    
+    /**
+     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public List<String> getPossibleIgnoreCollectionList() throws IndexUnreachableException {
+        if (StringUtils.isBlank(collectionField)) {
+            return Collections.singletonList("");
+        }
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, true, true, true, true);
+        List<String> list = new ArrayList<>(dcStrings.keySet());
+        list = list.stream()
+                .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
+                .filter(c -> StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains("."))
+                .collect(Collectors.toList());
+//        list.add(0, "");
+        Collections.sort(list);
+        return list;
+    }
 
     /**
      * Gets the current collection, creating it if neccessary
@@ -698,6 +780,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
+        collection.setIgnore(getIgnoreCollectionsAsList());
         if (isCollectionOpenExpanded()) {
             collection.setShowAllHierarchyLevels(true);
         }
@@ -801,7 +884,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public String getSearchPrefix() {
         return searchPrefix;
     }
-    
+
     /**
      * @param searchPrefix the searchPrefix to set
      */
@@ -809,58 +892,86 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.searchPrefix = searchPrefix;
         initFunctionality();
     }
-    
+
     @Override
     public String toString() {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
     }
 
     /**
-     * Returns the content item mode from the template associated with the owning cmsPage 
-     * (i.e. The value always reflects the mode for this contentItem in the template xml for this page)
-     * Mode offers the ability to allow special options for a content item in some templates 
-     * (for example for the collection item, the extended mode allows finer control of the way the collection
-     * hierarchy is handled)
+     * Returns the content item mode from the template associated with the owning cmsPage (i.e. The value always reflects the mode for this
+     * contentItem in the template xml for this page) Mode offers the ability to allow special options for a content item in some templates (for
+     * example for the collection item, the extended mode allows finer control of the way the collection hierarchy is handled)
      * 
      * @return
      */
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
     }
-    
+
     /**
      * @return the component
      */
     public String getComponent() {
         return component;
     }
-    
+
     /**
      * @param component the component to set
      */
     public void setComponent(String component) {
         this.component = component;
     }
-    
+
     /**
      * @return the glossaryName
      */
     public String getGlossaryName() {
         return glossaryName;
     }
-    
+
     /**
      * @param glossaryName the glossaryName to set
      */
     public void setGlossaryName(String glossaryName) {
         this.glossaryName = glossaryName;
     }
-    
-    
+
     public Glossary getGlossary() throws ContentNotFoundException, IOException, ParseException {
         Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
         return g;
     }
     
+    /**
+     * @return the ignoreCollections
+     */
+    public String getIgnoreCollections() {
+        return ignoreCollections;
+    }
+    
+    /**
+     * @param ignoreCollections the ignoreCollections to set
+     */
+    public void setIgnoreCollections(String ignoreCollections) {
+        this.ignoreCollections = ignoreCollections;
+    }
+    
+    public List<String> getIgnoreCollectionsAsList() {
+        if(StringUtils.isNotBlank(ignoreCollections)) {            
+            List<String> ret = Arrays.asList(ignoreCollections.split(","));
+            return ret;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    
+    public void setIgnoreCollectionsAsList(List<String> toIgnore) {
+        if(toIgnore == null || toIgnore.isEmpty()) {
+            this.ignoreCollections = null;
+        } else {            
+            this.ignoreCollections = StringUtils.join(toIgnore, ",");
+        }
+        this.collection = null;
+    }
 
 }

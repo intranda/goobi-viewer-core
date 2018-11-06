@@ -66,6 +66,7 @@
                             persistZoom: #{configurationBean.rememberImageZoom},
                             persistRotation: #{configurationBean.rememberImageRotation},
                             persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+                            maxZoomLevel: 5,
                             controls : {
                     		    rotateLeft: '.image-rotate_left',
                     		    rotateRight: '.image-rotate_right',
@@ -86,7 +87,11 @@
                                     name: "ugc",
                                     coordinates: [],
                                     displayTooltip: true
-                                }
+                                }, {
+            		                name: "annotations",
+            		                coordinates: window.location.hash,
+            		                displayTooltip: false
+            		            }
                             ],
                             tileUrl: null
                         }

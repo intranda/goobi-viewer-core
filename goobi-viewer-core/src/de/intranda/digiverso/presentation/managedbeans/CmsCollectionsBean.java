@@ -146,10 +146,14 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     public void addCollection() throws DAOException {
-        CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
-        DataManager.getInstance().getDao().addCMSCollection(collection);
-        updateCollections();
-        setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
+        if(StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {            
+            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
+            DataManager.getInstance().getDao().addCMSCollection(collection);
+            updateCollections();
+            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
+        } else {
+            Messages.error("cms_collections_err_noselection");
+        }
     }
 
     public void deleteCollection(CMSCollection collection) throws DAOException {

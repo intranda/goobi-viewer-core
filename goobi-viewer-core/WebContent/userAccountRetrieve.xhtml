@@ -49,12 +49,11 @@
                                     </h:inputText>
                                 </div>
                             </div>
+                            
                             <p>#{msg.user_retrieveAccountDescription}</p>
+                            
                             <div class="user-account-retrieve__action">
-                                <h:commandButton
-                                    styleClass="btn"
-                                    value="#{msg.submit}"
-                                    action="#{userBean.sendPasswordResetLinkAction}" />
+                                <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.sendPasswordResetLinkAction}" />
                             </div>
                         </h:form>
                     </div>

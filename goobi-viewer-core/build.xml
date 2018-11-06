@@ -563,10 +563,10 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digitalesammlungen.uni-weimar.de/viewer/" />
+		<property name="server.url" value="https://digitalesammlungen.uni-weimar.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalesammlungen.uni-weimar.de%2Fviewer%2Foai" />
-		<property name="theme" value="buw" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigitalesammlungen.uni-weimar.de%2Fviewer%2Foai" />
+		<property name="theme" value="ubweimar" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="114" />
 		<property name="contentserver.color.green" value="0" />
@@ -653,9 +653,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer/" />
+		<property name="server.url" value="https://haab-digital.klassik-stiftung.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
 		<property name="theme" value="haab" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
@@ -1063,9 +1063,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://goobi-viewer.univie.ac.at/viewer/" />
+		<property name="server.url" value="https://goobi-viewer.univie.ac.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fgoobi-viewer.univie.ac.at%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fgoobi-viewer.univie.ac.at%2Fviewer%2Foai" />
 		<property name="theme" value="ubwien" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
@@ -1078,9 +1078,9 @@
                 <property name="local.folder" value="resources/build/deploy_ubuntu" />
                 <property name="server.folder" value="/opt/digiverso/viewer/" />
                 <property name="server.config" value="/opt/digiverso/viewer/config/" />
-                <property name="server.url" value="http://viewer.wu.ac.at/viewer/" />
+                <property name="server.url" value="https://viewer.wu.ac.at/viewer/" />
                 <property name="solr.url" value="http://localhost:8080/solr/collection1" />
-                <property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer.wu.ac.at%2Fviewer%2Foai" />
+                <property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.wu.ac.at%2Fviewer%2Foai" />
                 <property name="theme" value="wuw" />
 		<property name="ehcache.dirname" value="cache" />
                 <property name="contentserver.color.red" value="255" />
@@ -1413,6 +1413,36 @@
 		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fwww.testifyingtothetruth.co.uk%2Fviewer%Foai" />
 		<property name="theme" value="wienerlibrary-testifyingtothetruth" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="lamuha">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://esxh-5.gbv.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fesxh-5.gbv.de%2Fviewer%2Foai" />
+		<property name="theme" value="lamuhalle" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="kuni2">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://kulturerbe-niedersachsen.gbv.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fkulturerbe-niedersachsen.gbv.de%2Fviewer%2Foai" />
+		<property name="theme" value="kuni2" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />

@@ -16,10 +16,8 @@
 package de.intranda.digiverso.presentation.model.search;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,8 +44,8 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
@@ -264,7 +262,7 @@ public class BrowseElement implements Serializable {
                             elementToUse = anchorStructElement;
                         } else {
                             // Add empty parameter if there is no anchor
-                            md.setParamValue(0, md.getParams().indexOf(param), "", null, null, null, locale);
+                            md.setParamValue(0, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
                             continue;
                         }
                     }
@@ -277,7 +275,7 @@ public class BrowseElement implements Serializable {
                             metadataValues = topStructElement.getMetadataValues(param.getKey());
                             // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
                         } else {
-                            md.setParamValue(count, md.getParams().indexOf(param), "", null, null, null, locale);
+                            md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
                             count++;
                         }
                     }
@@ -298,8 +296,8 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Helper.intern(value), null,
-                                param.isAddUrl() ? elementToUse.getUrl() : null, null, locale);
+                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(Helper.intern(value)), null,
+                                param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
                         count++;
                     }
                 }
@@ -567,7 +565,8 @@ public class BrowseElement implements Serializable {
                             case CORPORATION:
                             case LOCATION:
                             case SUBJECT:
-                            case PUBLISHER:
+                            case ORIGININFO:
+                            case OTHER:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
@@ -608,7 +607,7 @@ public class BrowseElement implements Serializable {
                     break;
                 case UGC:
                     // User-generated content
-                    ret = generateUgcLabel(se);
+                    ret = DisplayUserGeneratedContent.generateUgcLabel(se);
                     ret = Helper.getTranslation(ret, locale);
                     break;
                 default:
@@ -627,97 +626,6 @@ public class BrowseElement implements Serializable {
         }
 
         return ret;
-    }
-
-    /**
-     * Builds label out of user-generated content metadata.
-     * 
-     * @param se
-     * @return the generated label
-     * @should generate person label correctly
-     * @should generate corporation label correctly
-     * @should generate address label correctly
-     * @should generate comment label correctly
-     * @should return label field value if ugc type unknown
-     */
-    static String generateUgcLabel(StructElement se) {
-        if (se == null) {
-            throw new IllegalArgumentException("se may not be null");
-        }
-
-        if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
-            switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
-                case "PERSON": {
-                    StringBuilder sb = new StringBuilder();
-                    String first = se.getMetadataValue("MD_FIRSTNAME");
-                    String last = se.getMetadataValue("MD_LASTNAME");
-                    if (StringUtils.isNotEmpty(last)) {
-                        sb.append(last);
-                    }
-                    if (StringUtils.isNotEmpty(first)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(first);
-                    }
-                    return sb.toString();
-                }
-                case "CORPORATION": {
-                    StringBuilder sb = new StringBuilder();
-                    String address = se.getMetadataValue("MD_ADDRESS");
-                    String corp = se.getMetadataValue("MD_CORPORATION");
-                    if (StringUtils.isNotEmpty(corp)) {
-                        sb.append(corp);
-                    }
-                    if (StringUtils.isNotEmpty(address)) {
-                        sb.append(" (").append(corp).append(')');
-                    }
-                    return sb.toString();
-                }
-                case "ADDRESS": {
-                    StringBuilder sb = new StringBuilder();
-                    String street = se.getMetadataValue("MD_STREET");
-                    String houseNumber = se.getMetadataValue("MD_HOUSENUMBER");
-                    String district = se.getMetadataValue("MD_DISTRICT");
-                    String city = se.getMetadataValue("MD_CITY");
-                    String country = se.getMetadataValue("MD_COUNTRY");
-                    if (StringUtils.isNotEmpty(street)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(street);
-                        if (StringUtils.isNotEmpty(houseNumber)) {
-                            sb.append(", ").append(houseNumber);
-                        }
-                    }
-                    if (StringUtils.isNotEmpty(district)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(district);
-                    }
-                    if (StringUtils.isNotEmpty(city)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(city);
-                    }
-                    if (StringUtils.isNotEmpty(country)) {
-                        if (sb.length() > 0) {
-                            sb.append(", ");
-                        }
-                        sb.append(country);
-                    }
-                    return sb.toString();
-                }
-                case "COMMENT":
-                    return se.getMetadataValue("MD_TEXT");
-                default:
-                    return se.getMetadataValue(SolrConstants.LABEL);
-            }
-        }
-
-        return se.getMetadataValue(SolrConstants.LABEL);
     }
 
     /**
@@ -978,75 +886,7 @@ public class BrowseElement implements Serializable {
      * @return
      */
     private String generateUrl() {
-        // For aggregated person search hits, start another search (label contains the person's name in this case)
-        StringBuilder sb = new StringBuilder();
-        if (metadataGroupType != null) {
-            switch (metadataGroupType) {
-                case PERSON:
-                case CORPORATION:
-                case LOCATION:
-                case SUBJECT:
-                case PUBLISHER:
-                    // Person metadata search hit ==> execute search for that person
-                    // TODO not for aggregated hits?
-                    try {
-                        sb.append(PageType.search.getName())
-                                .append("/-/")
-                                .append(originalFieldName)
-                                .append(":\"")
-                                .append(URLEncoder.encode(label, SearchBean.URL_ENCODING))
-                                .append("\"/1/-/-/");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error("{}: {}", e.getMessage(), label);
-                        sb = new StringBuilder();
-                        sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
-                                "\"/1/-/-/");
-                    }
-
-                    break;
-                default:
-                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
-                            hasImages || hasMedia, useOverviewPage, false);
-                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-                    // Hack for viewers that need a language parameter instead of LOGID
-                    String theme = DataManager.getInstance().getConfiguration().getTheme();
-                    if (theme != null) {
-                        switch (theme) {
-                            case "geiwv":
-                            case "wienerlibrary-novemberpogrom":
-                                sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                                        .append("/");
-                                break;
-                            default:
-                                sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-                        }
-                    }
-                    break;
-            }
-        } else {
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
-                    useOverviewPage, false);
-            if (DocType.UGC.equals(docType)) {
-                pageType = PageType.viewObject;
-            }
-            sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-            // Hack for viewers that need a language parameter instead of LOGID
-            String theme = DataManager.getInstance().getConfiguration().getTheme();
-            if (theme != null) {
-                switch (theme) {
-                    case "geiwv":
-                    case "wienerlibrary-novemberpogrom":
-                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                                .append("/");
-                        break;
-                    default:
-                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-                }
-            }
-        }
-
-        // logger.trace("generateUrl: {}", sb.toString());
-        return sb.toString();
+        return DataManager.getInstance().getUrlBuilder().generateURL(this);
     }
 
     /**
@@ -1244,6 +1084,32 @@ public class BrowseElement implements Serializable {
      */
     public boolean isHasMedia() {
         return hasMedia;
+    }
+
+    /**
+     * @return the originalFieldName
+     */
+    public String getOriginalFieldName() {
+        return originalFieldName;
+    }
+
+    public PageType determinePageType() {
+        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, useOverviewPage,
+                false);
+    }
+
+    /**
+     * @return the logId
+     */
+    public String getLogId() {
+        return logId;
+    }
+
+    /**
+     * @return the docType
+     */
+    public DocType getDocType() {
+        return docType;
     }
 
 }

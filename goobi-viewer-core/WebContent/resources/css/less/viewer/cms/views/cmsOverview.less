@@ -29,8 +29,7 @@
                         }
                         &.column_title {
                         }
-                        &.column_classification {
-                        }
+                        &.column_classification {}
                         &.column_date_updated {
                         }
                         &.column_actions {
@@ -48,6 +47,9 @@
 	                }
                     td {
                         vertical-align: top;
+                        &:nth-child(7) {
+                            word-break: break-all;
+                        }
                         &:nth-child(8) {
                             text-align: right;
                         }
@@ -57,10 +59,7 @@
                             padding: 0;
                             li {}
                         }
-                        .btn {
-                            margin: 0 3px 0 0;
-                            padding: 0 7px;
-                        }
+                        .btn {}
                         img {
                             width: 64px;
                         }
@@ -73,6 +72,14 @@
                                 opacity: 1;
                             }
                         }
+                        .column_title {
+	                        &__main_title {
+	                        	display: block;
+	                        }
+	                        &__menu_title {
+	                        	font-size: 12px;
+	                        }
+						}
                     }
                 }
             }

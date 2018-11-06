@@ -16,6 +16,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.object;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,7 +111,8 @@ public class ObjectResource {
         if (resourceFolderPath.toFile().isDirectory()) {
             try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(resourceFolderPath)) {
                 for (java.nio.file.Path path : directoryStream) {
-                    resourceURIs.add(new URI(baseURI + resourceFolderPath.getParent().relativize(path)));
+                    java.nio.file.Path relPath = resourceFolderPath.getParent().relativize(path);
+                    resourceURIs.add(new URI(baseURI + relPath.toString().replace(File.separator, "/")));
                 }
             }
         }
@@ -174,6 +176,15 @@ public class ObjectResource {
     }
     
     @GET
+    @Path("/{pi}/{subfolder}//{filename}")
+    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
+            @PathParam("pi") String pi, @PathParam("subfolder") String subfolder,
+            @PathParam("filename") final String filename) throws IOException, InterruptedException {
+        return getObjectResource(request, response, pi, subfolder, filename);      
+    }
+    
+    @GET
     @Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -191,6 +202,15 @@ public class ObjectResource {
         }
     }
 
+    @GET
+    @Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
+    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
+            @PathParam("pi") String pi, @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2,
+            @PathParam("filename") String filename) throws IOException, InterruptedException {
+        return getObjectResource(request, response, pi, subfolder1, subfolder2, filename);
+    }
+    
     public static class ObjectStreamingOutput implements StreamingOutput {
 
         private java.nio.file.Path filePath;

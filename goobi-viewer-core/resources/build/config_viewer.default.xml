@@ -90,12 +90,14 @@
 		<!-- userRegistrationEnabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<userRegistrationEnabled>true</userRegistrationEnabled>
 
-		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element defines an authentication provider.
-		     Required attributes: name, endpoint (auth URL), clientId, clientSecret, image. -->
-		<openIdConnect show="true">
-			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-			<provider name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
-		</openIdConnect>
+		<!-- List of authentication providers. Each <provider> element defines an authentication provider. 
+		     Possible attributes for providers are: type, show, name, endpoint (auth URL), clientId, clientSecret, image, timeout. -->
+	        <authenticationProviders>
+	            <provider type="local" show="true" name="Goobi viewer"/>
+	            <provider type="openId" show="true" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+		    <provider type="openId" show="false" ame="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
+		    <provider type="userPassword" show="false" name="VuFind" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000"/>
+	        </authenticationProviders>
 
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress')
 		     and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory and have no default value. -->
@@ -119,10 +121,10 @@
 
 
 	<accessConditions>
-        <!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
-        <unconditionalImageAccessMaxWidth>400</unconditionalImageAccessMaxWidth>
-        <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
-        <fullAccessForLocalhost>true</fullAccessForLocalhost>
+		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
+		<unconditionalImageAccessMaxWidth>400</unconditionalImageAccessMaxWidth>
+		<!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+		<fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
 
 
@@ -301,7 +303,7 @@
 		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false">
+		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="false">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 			mechanism needs the root path of the theme. The path must be defined down 
 			to the /themes folder, just above the folder named like the theme. -->
@@ -346,10 +348,10 @@
 
 		<!-- TODO DOCUMENTATION-->
 		<drillDown>
-			<hierarchicalField initialElementNumber="4">FACET_DC</hierarchicalField>
-			<field initialElementNumber="3">FACET_DOCSTRCT</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_CREATOR</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_PLACEPUBLISH</field>
+			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
+			<field initialElementNumber="3">DOCSTRCT</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
 			<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
 		</drillDown>
 
@@ -389,9 +391,10 @@
 				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
 			<startyear>1500</startyear>
 			<endyear>2013</endyear>
-	        <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
+
+			<!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
 		        maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
-	        <hits>108</hits>
+			<hits>108</hits>
 		</timeline>
 
 		<calendar>
@@ -442,15 +445,15 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix></staticQuerySuffix>
 
-        <!-- versioning -->
-        <versioning>
-            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
-            <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
-            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
-            <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
-            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
-            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
-        </versioning>
+	        <!-- versioning -->
+	        <versioning>
+	        	<!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
+	        	<previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
+	        	<!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
+	        	<nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
+	        	<!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+	        	<versionLabelField>MD_VERSIONLABEL</versionLabelField>
+	        </versioning>
 
 		<!-- Search export settings -->
 		<export>
@@ -685,9 +688,9 @@
 				<metadata label="MD_SIZESOURCEPRINT" value="">
 					<param type="field" key="MD_SIZESOURCEPRINT" />
 				</metadata>
-                <metadata label="MD_FORMATSOURCEPRINT" value="">
-                    <param type="field" key="MD_FORMATSOURCEPRINT" />
-                </metadata>
+                		<metadata label="MD_FORMATSOURCEPRINT" value="">
+                			<param type="field" key="MD_FORMATSOURCEPRINT" />
+                		</metadata>
 				<metadata label="MD_SCALE" value="">
 					<param type="field" key="MD_SCALE" />
 				</metadata>
@@ -872,37 +875,14 @@
 				</metadata>
 			</template>
 		</sideBarMetadataList>
-
-		<!-- docStructWhiteList: only search hits of docstruct types that are allowed in this section will be listed -->
-		<docStructWhiteList>
-			<docStruct>library_object</docStruct>
-			<docStruct>museum_object</docStruct>
-			<docStruct>monograph</docStruct>
-			<docStruct>Monograph</docStruct>
-			<docStruct>MultiVolumeWork</docStruct>
-			<docStruct>Periodical</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-			<docStruct>VolumeRun</docStruct>
-			<docStruct>Record</docStruct>
-			<docStruct>SingleLetter</docStruct>
-			<docStruct>Picture</docStruct>
-			<docStruct>Video</docStruct>
-			<docStruct>Audio</docStruct>
-			<docStruct>MusicSupplies</docStruct>
-			<docStruct>manuscript</docStruct>
-			<docStruct>Map</docStruct>
-			<docStruct>SingleMap</docStruct>
-			<docStruct>Incunable</docStruct>
-			<docStruct>Drawing</docStruct>
-			<docStruct>CollectedEdition</docStruct>
-			<docStruct>Casualia</docStruct>
-		</docStructWhiteList>
-
-		<!-- FIXME DEPRECATED-->
-		<!-- museumDocstructTypes: docsturct types listed in this section will be displayed using the museum view. They must be whitelisted in the docStructWhiteList -->
-		<museumDocstructTypes>
-			<docStruct>museum_object</docStruct>
-		</museumDocstructTypes>
+		
+        <normdataList>
+            <template name="_DEFAULT">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_NAME</field>
+                <field>NORM_ALTNAME</field>
+            </template>
+        </normdataList>
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to be shown in calendar view -->
 		<calendarDocstructTypes>
@@ -933,11 +913,11 @@
 			<!-- <luceneField recordsAndAnchorsOnly="true" >MD_SHELFMARK</luceneField> -->
 		</browsingMenu>
 
-        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
-        <addDublinCoreMetaTags>false</addDublinCoreMetaTags>
-        
-        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
-        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+	        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
+	        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+
+	        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
+	        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
 	</metadata>
 
 
@@ -1249,12 +1229,12 @@
 		<siteID>1</siteID>
 	</piwik>
 	
-    <sitemap>
-       <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
-       <sitelinksField>YEAR</sitelinksField>
-       <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
-       <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-    </sitemap>
+	<sitemap>
+		<!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
+		<sitelinksField>YEAR</sitelinksField>
+		<!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
+		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+	</sitemap>
 	
 	<!-- Web API configuration -->
 	<webapi>
@@ -1270,8 +1250,9 @@
 			<!-- A list of all metadata fields which should be included within 
 			     the IIIF Presentation response for manifests and ranges representing structural elements -->
 			<metadataFields>
-                <field>MD_TITLE</field>
-                <field>MD_CREATOR</field>
+                		<field>MD_TITLE</field>
+				<field>MD_CREATOR</field>
+				<!--field>MD_*</field-->
 			</metadataFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
@@ -1288,5 +1269,9 @@
 			     If no logo is configured, the image footer will be used-->
 			<logo>dfgviewer_intranda.jpg</logo>
 		</iiif>
+
+        	<authorization>
+        		<token>test</token>
+        	</authorization>
 	</webapi>
 </config>

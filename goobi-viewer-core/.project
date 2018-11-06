@@ -46,7 +46,6 @@
 		<project>goobi-viewer-theme-oeadw</project>
 		<project>goobi-viewer-theme-sudanmemories</project>
 		<project>goobi-viewer-theme-lie</project>
-		<project>goobi-viewer-theme-wienerlibrary-novemberpogrom</project>
 		<project>goobi-viewer-theme-wienerlibrary-testifyingtothetruth</project>
 		<project>goobi-viewer-theme-zlb</project>
 		<project>goobi-viewer-theme-kuepo</project>
@@ -55,6 +54,13 @@
 		<project>goobi-viewer-theme-dlam</project>
 		<project>goobi-viewer-theme-playground</project>
 		<project>goobi-viewer-theme-hu-archiv</project>
+		<project>goobi-viewer-theme-dipf</project>
+		<project>goobi-viewer-theme-lamuhalle</project>
+		<project>goobi-viewer-theme-ubweimar</project>
+		<project>goobi-viewer-theme-hub-evifa</project>
+		<project>goobi-viewer-theme-albertina</project>
+		<project>goobi-viewer-theme-haendel</project>
+		<project>goobi-viewer-theme-cbl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

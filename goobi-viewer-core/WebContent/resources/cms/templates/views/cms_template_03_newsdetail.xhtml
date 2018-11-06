@@ -14,8 +14,7 @@
 
 	<ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
-<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" /> -->
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
@@ -159,13 +158,13 @@
 					<div class="solr-query-collection">
 	                    <div class="solr-query-collection__thumbs">
 	                        <div class="row">
-	        					<ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
+	        					<ui:repeat var="hit" value="#{cmsBean.getQueryResults()}">
 	                                <div class="col-xs-12 col-sm-4">
 	            						<div class="solr-query-collection__thumb">
 	            							<!-- IMAGE -->
 	                                        <div class="solr-query-collection__image">
 	            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
-	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive thumbnail" alt="#{hit.browseElement.label}" />
+	            									<img data-src="#{hit.browseElement.thumbnailUrl}" class="img-responsive viewer-thumbnail" alt="#{hit.browseElement.label}" />
 	            								</h:outputLink>
 	            							</div>
 	            

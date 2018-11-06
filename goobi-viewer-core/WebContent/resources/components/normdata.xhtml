@@ -12,7 +12,7 @@
             <ui:repeat value="#{val.normDataUrlKeys}" var="normDataCollection">
                 <button
                     type="button"
-                    data-remotecontent="#{request.contextPath}/rest/normdata/get/#{val.getNormDataUrl(normDataCollection, true)}/#{navigationHelper.localeString}/"
+                    data-remotecontent="#{request.contextPath}/rest/normdata/get/#{val.getNormDataUrl(normDataCollection, true)}/#{val.groupTypeForUrl}/#{navigationHelper.localeString}/"
                     data-toggle="tooltip" 
                     data-placement="top"
                     data-trigger="hover" 

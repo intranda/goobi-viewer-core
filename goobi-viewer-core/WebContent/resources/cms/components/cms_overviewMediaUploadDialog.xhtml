@@ -228,17 +228,15 @@
                         </div>
                         </h:panelGroup>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-confirm" data-dismiss="modal" onclick="cmsJS.tagList.close()">#{msg.cancel}</button>
+                            <button type="button" class="btn" data-dismiss="modal" onclick="cmsJS.tagList.close()">#{msg.cancel}</button>
 
                             <h:panelGroup rendered="#{cmsMediaBean.newMedia}">
-                                <h:commandButton value="#{msg.cms_uploadMedia}" action="#{cmsMediaBean.uploadMedia()}" styleClass="btn btn-confirm" />
+                                <h:commandButton value="#{msg.cms_uploadMedia}" action="#{cmsMediaBean.uploadMedia()}" styleClass="btn btn--success" />
                             </h:panelGroup>
 
                             <h:panelGroup rendered="#{!cmsMediaBean.newMedia}">
                                 <h:commandButton disabled="#{cmsMediaBean.newMedia and !cmsMediaBean.uploadComplete}"
-                                    actionListener="#{cmsMediaBean.saveMedia()}" value="#{msg.save}" styleClass="btn btn-confirm">
-                                    <!-- 									<f:passThroughAttribute name="data-dismiss" value="modal" /> -->
-                                    <!-- 									<f:passThroughAttribute name="aria-hidden" value="true" /> -->
+                                    actionListener="#{cmsMediaBean.saveMedia()}" value="#{msg.save}" styleClass="btn btn--success">
                                 </h:commandButton>
                             </h:panelGroup>
                         </div>

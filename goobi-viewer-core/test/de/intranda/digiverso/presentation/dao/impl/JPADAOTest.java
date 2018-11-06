@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.dao.impl;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,9 +24,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.base.Preconditions;
+
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -41,6 +46,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
+import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.DownloadJob.JobStatus;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -63,12 +69,21 @@ import de.intranda.digiverso.presentation.model.security.user.UserRole;
  */
 public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        File webContent = new File("WebContent/").getAbsoluteFile();
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        CMSTemplateManager.getInstance(webContent.toURI().toString(), null);
+    }
+
     // Users
 
     @Test
     public void getAllUsersTest() throws DAOException {
         List<User> users = DataManager.getInstance().getDao().getAllUsers(false);
-        Assert.assertEquals(2, users.size());
+        Assert.assertEquals(3, users.size());
     }
 
     @Test
@@ -131,7 +146,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateUserTest() throws DAOException {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUsers(false).size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         user.setEmail("b@b.com");
@@ -148,7 +163,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setSuperuser(false);
         DataManager.getInstance().getDao().updateUser(user);
 
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllUsers(false).size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
 
         User user2 = DataManager.getInstance().getDao().getUser(user.getId());
         Assert.assertNotNull(user2);
@@ -1564,8 +1579,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void updateCMSPage_shouldUpdatePageCorrectly() throws Exception {
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
         Assert.assertNotNull(page);
+        page.getLanguageVersion("de").setTitle("Deutscher Titel");
+        page.getLanguageVersion("en").setTitle("English title");
+        page.getLanguageVersion("fr").setTitle("Titre français");
         page.getLanguageVersions().remove(0);
         page.getClassifications().add("new class");
+        page.getProperty("TEST_PROPERTY").setValue("true");
+        
         Date now = new Date();
         page.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
@@ -1573,9 +1593,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(1);
         Assert.assertNotNull(page2);
         Assert.assertEquals(page.getDateUpdated(), page2.getDateUpdated());
-        Assert.assertEquals(1, page2.getLanguageVersions().size());
+        Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
+        Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
+        Assert.assertEquals(2, page2.getLanguageVersions().size());
         Assert.assertEquals(3, page2.getClassifications().size());
         Assert.assertEquals(now, page2.getDateUpdated());
+        Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
+
+        page.getLanguageVersion("fr").setTitle("");
+        page.removeClassification("new class");
+        Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
+        Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
+        Assert.assertEquals(2, page.getClassifications().size(), 0);
     }
 
     /**
@@ -1982,7 +2011,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getUserCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(2L, DataManager.getInstance().getDao().getUserCount(null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getUserCount(null));
     }
 
     /**

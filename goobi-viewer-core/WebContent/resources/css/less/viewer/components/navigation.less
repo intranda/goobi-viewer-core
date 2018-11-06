@@ -33,10 +33,11 @@
         }
     }
     a, button {
-        display: block;
-        position: relative;
-        text-align: left;
-        padding: 6px 12px;
+	    position: relative;
+        display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    border: none;
         &:hover, 
         &:focus, 
         &:active {
@@ -46,6 +47,7 @@
         }
     }
     .caret {
+    	margin-left: 5px;
         color: @middlegray;
     }
     &__user-login {}
@@ -55,10 +57,9 @@
         display: none;
         position: absolute;
         float: left;
-        top: 100%;
+        top: calc(~"100% + 1px");
         left: 0;
         min-width: 250px;
-        padding: 9px 0;
         border: 1px solid @lightgray;
         background-color: @white;
         z-index: 999;
@@ -75,7 +76,9 @@
                 background-color: @middlegray;
             }
         }
-        a, button {}
+        a, button {
+        	width: 100%;
+        }
         &.in {
             display: block;
         }

@@ -1005,13 +1005,7 @@
 	</language>
 	<language>
 		<iso_639-2>fre</iso_639-2>
-		<iso_639-1>fr</iso_639-1>
-		<eng>French</eng>
-		<fre>français</fre>
-		<ger>Französisch</ger>
-	</language>
-	<language>
-		<iso_639-2>fre</iso_639-2>
+        <iso_639-2T>fra</iso_639-2T>
 		<iso_639-1>fr</iso_639-1>
 		<eng>French</eng>
 		<fre>français</fre>

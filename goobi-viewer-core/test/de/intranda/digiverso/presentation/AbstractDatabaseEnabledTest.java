@@ -45,8 +45,9 @@ public abstract class AbstractDatabaseEnabledTest {
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
         databaseTester = new H2JdbcDatabaseTester();
-        databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream(
-                "resources/test/test_db_dataset.xml")));
+        try (FileInputStream fis = new FileInputStream("resources/test/test_db_dataset.xml")) {
+            databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(fis));
+        }
         // databaseTester.setDataSet(getDataSet());
     }
 

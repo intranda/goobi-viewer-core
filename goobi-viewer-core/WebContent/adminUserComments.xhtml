@@ -109,12 +109,13 @@
 										</td>
 										<td class="admin-table__action">
 											<!-- edit comment -->
-											<a href="#" class="edit-comment-btn" title="#{msg.edit}">
+                                            <button type="button" class="btn btn--icon edit-comment-btn" title="#{msg.edit}">
 												<i class="fa fa-pencil" aria-hidden="true"></i>
-											</a>
+                                            </button>
 			
 											<!-- delete comment -->
-											<h:commandLink 
+											<h:commandLink
+                                                styleClass="btn btn--icon" 
 												onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
 												action="#{adminBean.deleteCommentAction(comment)}"
 												title="#{msg.delete}">
@@ -138,8 +139,8 @@
                                                             <h:inputTextarea class="form-control" value="#{comment.text}" />
 														</div>
 														<div class="modal-footer">
-															<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-															<h:commandLink action="#{adminBean.saveCommentAction(comment)}" value="#{msg.save}" styleClass="btn" />
+                                                            <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+															<h:commandLink action="#{adminBean.saveCommentAction(comment)}" value="#{msg.save}" styleClass="btn btn--success" />
 														</div>
 													</div>
 												</div>

@@ -76,10 +76,10 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
                                                         <h:commandButton rendered="#{userBean.user.transkribusSession == null}" type="submit"
-                                                            styleClass="btn" value="#{msg.transkribus_add}"
+                                                            styleClass="btn btn--success" value="#{msg.transkribus_add}"
                                                             action="#{activeDocumentBean.viewManager.addToTranskribusAction(true)}" />
                                                         <h:commandButton rendered="#{userBean.user.transkribusSession != null}" type="submit"
-                                                            styleClass="btn" value="#{msg.transkribus_add}"
+                                                            styleClass="btn btn--success" value="#{msg.transkribus_add}"
                                                             action="#{activeDocumentBean.viewManager.addToTranskribusAction(false)}" />
                                                     </div>
                                                 </div>

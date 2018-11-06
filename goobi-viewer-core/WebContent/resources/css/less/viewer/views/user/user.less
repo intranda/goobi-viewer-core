@@ -2,18 +2,47 @@
    User
    style declarations for user.xhtml
    ==============================================================*/
-/* USER */
+/* USER LOGIN */
 /* BLOCK */
-.user {
-	/* ELEMENT */
+.user-login {
+	/* LOCAL */
 	&__local {}
+	/* EXTERNAL */
+	&__external {
+		.user-login {
+			&__options {
+				li {
+					text-align: right;
+				}
+			}
+		}
+	}
+	/* OPEN ID */
+	&__openid {}
+	/* ELMENTS */
 	&__action {
 		.btn {
 			margin: 0;
 		}
 	}
 	&__options {}
-	&__openid {}
+}
+
+/* USER LOGIN CARD */
+.user-login {
+	&__card {
+		height: 100%;
+		border: 1px solid @middlegray;
+		h3 {
+			margin: 0;
+			padding: 10px 15px;
+			border-bottom: 1px solid @middlegray;
+			background-color: @lightgray;
+		}
+	}
+	&__card-body {
+		padding: 15px;
+	}
 }
 
 /* MODALS */
@@ -30,8 +59,4 @@
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {
-	.user__options {
-		margin-top: 10px;
-	}
-}
+@media screen and (max-width: @xSmallBreakpoint) {}

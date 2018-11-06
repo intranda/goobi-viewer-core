@@ -23,7 +23,7 @@
                     <h:form id="adminLicenseTypesForm" prependId="false">
                         <div id="adminLicenseTypesWrapper">
 							<h:commandLink action="adminLicenseType" actionListener="#{adminBean.resetCurrentLicenseTypeAction}" value="#{msg.license_licenseType_addNew}"
-									styleClass="btn pull-right" />
+									styleClass="btn btn--default pull-right" />
                                     
                             <div class="clearfix"></div>
                             
@@ -129,13 +129,14 @@
 												</ul>
 											</td>
 											<td class="admin-table__action">
-												<h:commandLink action="pretty:adminLicenseType" disabled="#{licenseType.editLocked}" title="#{msg.edit}">
+												<h:commandLink styleClass="btn btn--icon" action="pretty:adminLicenseType" disabled="#{licenseType.editLocked}" title="#{msg.edit}">
 													<f:setPropertyActionListener value="#{licenseType}" target="#{adminBean.currentLicenseType}" />
 													<i class="fa fa-pencil" aria-hidden="true"></i>										
 												</h:commandLink> 
 												
 												<!-- delete license type -->													
-												<h:commandLink 
+												<h:commandLink
+                                                    styleClass="btn btn--icon" 
 													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
 													action="adminLicenseTypes" 
 													actionListener="#{adminBean.deleteLicenseTypeAction(licenseType)}"

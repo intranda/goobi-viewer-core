@@ -329,7 +329,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                     .toString();
         }
         if (value2 == null) {
-            logger.debug("value2 is null");
             return new StringBuilder(field).append(':').append(escapedValue).toString();
         }
         String escapedValue2 = getEscapedValue(value2);

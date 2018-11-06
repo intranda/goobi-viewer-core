@@ -1,0 +1,101 @@
+/* ==============================================================
+   CMS Module Options
+   ==============================================================*/
+/* OPTIONS */
+.cms-module {
+	&__option {
+	    margin-bottom: 15px;
+	    padding: 15px;
+	    border: 1px solid @middlegray;
+	    background-color: @white;
+	    h4 {}
+	}	
+	/* OPTION GROUP */
+	&__option-group {
+	    display: flex;
+	    flex-wrap: wrap;
+	    justify-content: space-between;
+	    margin-bottom: 10px;
+	    &:last-child {
+	    	margin: 0;
+	    }
+	}	
+	&__option-label {
+		flex-basis: 20%;
+	    padding-top: 7px;
+	    word-break: break-word;
+	    &--fullwidth {
+	    	flex-basis: 100%;
+	    	& + .cms-module__option-control {
+	    		flex-basis: 95%;
+	    		padding-left: 0;
+	    	}
+	    }
+	}	
+	&__option-control {
+		flex-basis: 75%;
+		padding-left: 10px;
+	    &.in {
+	    	input,
+	    	.custom-control--select,
+	    	.cms-module__option-control-checkbox {
+	    		border-color: @green !important;
+	    	}
+	    	.cms-module__option-control-checkbox {
+	    		padding: 7px;
+	    	}
+	    }
+	}
+	&__option-control-checkbox {
+		display: inline-block;
+		padding: 7px 0;
+		border: 1px solid transparent;
+	}
+	&__option-control-helptext {
+	    display: none;
+	    color: @green;
+	    &.in {
+	    	display: inline;
+	    }
+	}
+	&__option-help {
+		flex-basis: 5%;
+		button {
+			display: block;
+			width: 100%;
+		    padding: 7px 0;
+		    text-align: right;
+		    &.in {
+		    	color: @green;
+		    }
+		}
+	}
+	&__option-action {
+		text-align: right;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.cms-module {
+		&__option-label {}
+		&__option-control {
+			flex-basis: 70%;
+		}
+		&__option-help {
+			flex-basis: 10%;
+		}
+		&__option-action {
+			padding-right: 10%;
+		}
+	}
+}

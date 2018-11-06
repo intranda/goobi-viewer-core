@@ -15,8 +15,11 @@
  */
 package de.intranda.digiverso.presentation.model.user;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -62,7 +65,8 @@ public class UserTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfUserHasLicense() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 1 name")),
+        List<String> licenceTypes = Arrays.asList(new String[]{"license type 1 name", "license type 3 name"});
+        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes),
                 IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 

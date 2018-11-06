@@ -52,6 +52,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -644,7 +645,6 @@ public class NavigationHelper implements Serializable {
 
     public void changeTheme() throws IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().isSubthemesEnabled()) {
-            String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             String discriminatorValue = getSubThemeDiscriminatorValue();
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 logger.trace("Using discriminator value: {}", discriminatorValue);
@@ -663,6 +663,7 @@ public class NavigationHelper implements Serializable {
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
         }
+        setCmsPage(false);
     }
 
     public void setTheme(String theme) {
@@ -854,18 +855,18 @@ public class NavigationHelper implements Serializable {
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
         CMSPage currentPage = cmsPage;
-        
-        
+
         //If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
         try {
-            if(cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
-                LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(), cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
+            if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
+                LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
+                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
                 tempBreadcrumbs.add(0, link);
             }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.toString(), e);
         }
-        
+
         while (currentPage != null) {
             if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
@@ -882,7 +883,7 @@ public class NavigationHelper implements Serializable {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
-            LabeledLink pageLink = new LabeledLink(currentPage.getMenuTitle(), currentPage.getPageUrl(), 0);
+            LabeledLink pageLink = new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(), currentPage.getPageUrl(), 0);
             tempBreadcrumbs.add(0, pageLink);
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
@@ -896,7 +897,6 @@ public class NavigationHelper implements Serializable {
                 currentPage = null;
             }
 
-            
         }
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
@@ -1153,7 +1153,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = getApplicationUrl();
+            previousUrl = "/";//getApplicationUrl();
         }
         return previousUrl;
     }
@@ -1175,7 +1175,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = getApplicationUrl();
+            previousUrl = "/";//getApplicationUrl();
         }
         return previousUrl;
     }
@@ -1193,4 +1193,37 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param s
+     * @return
+     */
+    public String urlEncode(String s) {
+        return StringTools.encodeUrl(s);
+    }
+
+    /**
+     * 
+     * @param s
+     * @return
+     */
+    public String urlEncodeUnicode(String s) {
+        return BeanUtils.escapeCriticalUrlChracters(s);
+    }
+
+    /**
+     * @return
+     */
+    public String getThemeOrSubtheme() {
+        String currentTheme = getTheme();
+        try {                
+            String discriminatorValue =  getSubThemeDiscriminatorValue();
+            if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
+                currentTheme = discriminatorValue;
+            }
+        } catch(IndexUnreachableException e) {
+            logger.error("Cannot read current subtheme", e);
+        }
+        return currentTheme;
+    }
 }

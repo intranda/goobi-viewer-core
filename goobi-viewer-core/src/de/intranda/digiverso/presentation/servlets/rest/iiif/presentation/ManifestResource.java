@@ -249,6 +249,7 @@ public class ManifestResource extends AbstractResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public Canvas getCanvas(@PathParam("pi") String pi, @PathParam("physPageNo") int physPageNo) throws PresentationException,
             IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
+               
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc != null) {
             PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);

@@ -19,6 +19,12 @@ var ImageView = ( function() {
                         styleClass: "ugcBox",
                         interactive: true
                     
+                    },
+                    {
+                        name: "annotations",
+                        styleClass: "image-fragment",
+                        interactive: false
+                    
                     }],
                 zoomSpeed: 1.25,
                 maxZoomLevel: 2,
@@ -33,32 +39,13 @@ var ImageView = ( function() {
                 rememberZoom: false,
                 rememberRotation: false,
                 panHomeOnZoomOut: true,
-                showControls: false
+                showControls: false,
+                useTiles: true
             },
             image: {
                 initialRotation: 0,
                 mimeType: "image/jpeg"
-            },
-            getOverlayGroup: function( name ) {
-                var allGroups = this.global.overlayGroups;
-                for ( var int = 0; int < allGroups.length; int++ ) {
-                    var group = allGroups[ int ];
-                    if ( group.name === name ) {
-                        return group;
-                    }
-                }
-            },
-            getCoordinates: function( name ) {
-                var coodinatesArray = this.image.highlightCoords;
-                if ( coodinatesArray ) {
-                    for ( var int = 0; int < coodinatesArray.length; int++ ) {
-                        var coords = coodinatesArray[ int ];
-                        if ( coords.name === name ) {
-                            return coords;
-                        }
-                    }
-                }
-            },
+            }
         };
     
      var imageView =  {};
@@ -94,6 +81,7 @@ var ImageView = ( function() {
              //create image source array
              var sources = this.config.image.tileSource;
              if(typeof sources === 'string' && sources.startsWith("[")) {
+                 if(_debug)console.log("Sources = ", sources);
                  sources = JSON.parse(sources);
              } else if(!$.isArray(sources)) {
                  sources = [sources];
@@ -151,9 +139,14 @@ var ImageView = ( function() {
              if ( _debug ) {
                  console.log( 'Loading image with tilesource: ', tileSources );
              }
-               
+             
              this.loadFooter();            
              var $div = $("#" + this.config.global.divId);
+             var maxZoomLevel = this.config.global.maxZoomLevel
+             if(this.config.image.originalImageWidth && $div.width() > 0) {
+                 maxZoomLevel = this.config.global.maxZoomLevel*this.config.image.originalImageWidth/$div.width();
+             }
+               
              var osConfig = {
                      tileSources: tileSources,
                      id: this.config.global.divId,
@@ -165,8 +158,8 @@ var ImageView = ( function() {
                      zoomPerClick: 1.0,
                      showRotationControl: true,
                      showNavigationControl: this.config.global.showControls,
-                     minZoomLevel: this.config.global.minZoomLeve,//Math.min(this.config.global.minZoomLevel, this.config.global.minZoomLevel*this.config.image.originalImageWidth/$div.width()),
-                     maxZoomLevel: this.config.global.maxZoomLevel*this.config.image.originalImageWidth/$div.width(),
+                     minZoomLevel: this.config.global.minZoomLevel,//Math.min(this.config.global.minZoomLevel, this.config.global.minZoomLevel*this.config.image.originalImageWidth/$div.width()),
+                     maxZoomLevel: maxZoomLevel,
                      zoomPerScroll: this.config.global.zoomSpeed,
                      mouseNavEnabled: this.config.global.zoomSpeed > 1,
                      homeButton: this.config.global.zoomHome,
@@ -187,7 +180,7 @@ var ImageView = ( function() {
                          bottom: this.config.global.footerHeight
                      }
                  }
-             console.log("osconfig ", osConfig);
+             if(_debug)console.log("osconfig ", osConfig);
              
              this.viewer = new OpenSeadragon( osConfig );
              var result = Q.defer();
@@ -289,17 +282,33 @@ var ImageView = ( function() {
              };
          }
      }
+
+     
      /**
       * gets the overlay group with the given name from the config
       */
      imageView.Image.prototype.getOverlayGroup = function( name ) {
-         return this.config.getOverlayGroup( name );
+         var allGroups = this.config.global.overlayGroups;
+         for ( var int = 0; int < allGroups.length; int++ ) {
+             var group = allGroups[ int ];
+             if ( group.name === name ) {
+                 return group;
+             }
+         }
      }
      /**
       * gets the highlighting coordinates from the config
       */
      imageView.Image.prototype.getHighlightCoordinates = function( name ) {
-         return this.config.getCoordinates( name );
+         var coodinatesArray = this.config.image.highlightCoords;
+         if ( coodinatesArray ) {
+             for ( var int = 0; int < coodinatesArray.length; int++ ) {
+                 var coords = coodinatesArray[ int ];
+                 if ( coords.name === name ) {
+                     return coords;
+                 }
+             }
+         }
      }
      /**
       * return the sizes associated with this view
@@ -372,9 +381,9 @@ var ImageView = ( function() {
          var displayImageSize = this.viewer.world.getItemAt(0).source.dimensions;
          var originalImageSize = this.sizes.originalImageSize;
          var scale = originalImageSize.x/displayImageSize.x;
-         roi = roi.times(displayImageSize.x);
-         roi = roi.times(scale);
-         return roi;
+         point = point.times(displayImageSize.x);
+         point = point.times(scale);
+         return point;
      }
 
 //     imageView.Image.prototype.convertDisplayToImageCoordinates = function(overlay) {
@@ -488,6 +497,10 @@ var ImageView = ( function() {
          var rectInCanvas = this.scaleToOpenSeadragonCoordinates(rect);
          var rectInOS = ImageView.convertRectFromRotatedImageToImage(rectInCanvas, this.viewer);
          return rectInOS;
+     }
+     
+     imageView.Image.prototype.getOriginalImageSize = function() {
+         return new OpenSeadragon.Point(this.config.image.originalImageWidth, this.config.image.originalImageHeight);
      }
      
      
@@ -1014,9 +1027,12 @@ var ImageView = ( function() {
                          console.log("IIIF image info ", imageInfo);                        
                      }               
                      _setImageSizes(imageInfo, config.global.imageSizes);       
-                     _setTileSizes(imageInfo, config.global.tileSizes);                
+                     _setTileSizes(imageInfo, config.global.tileSizes);      
+                     if(_debug) {                
+                         console.log("adapted IIIF image info ", imageInfo);                        
+                     } 
                      var tileSource;
-                     if(imageInfo.tiles && imageInfo.tiles.length > 0) {
+                     if(config.global.useTiles && imageInfo.tiles && imageInfo.tiles.length > 0) {
                          tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
                      } else {                
                          tileSource  = _createPyramid(imageInfo, config);                    
@@ -1117,16 +1133,20 @@ var ImageView = ( function() {
       */
      function _setImageSizes(imageInfo, sizes) {
          if(sizes) {             
+             if(typeof sizes == 'string') {                 
              var string = sizes.replace(/[\{\}]/, "");
              var sizes = JSON.parse(sizes);
+             }
              var iiifSizes = [];
              sizes.forEach(function(size) {
-                 iiifSizes.push({"width": parseInt(size), "height": parseInt(size)});
+                 if(size.width || size.height) {
+                     iiifSizes.push(size);
+                 } else {                     
+                     iiifSizes.push({"width": parseInt(size), "height": parseInt(size)});
+                 }
              });
              if(iiifSizes.length > 0) {              
                  imageInfo.sizes = iiifSizes;
-             } else {
-                 delete imageInfo.sizes;
              }
          }
      }
@@ -1142,13 +1162,17 @@ var ImageView = ( function() {
                  tiles = JSON.parse(tileString);
              }
              var iiifTiles = [];
-             
-             Object.keys(tiles).forEach(function(size) {
-                 var scaleFactors = tiles[size];
-                 iiifTiles.push({"width": parseInt(size), "height": parseInt(size), "scaleFactors": scaleFactors})
-             });
-             
-             imageInfo.tiles = iiifTiles;
+             if(Array.isArray(tiles)) {
+                 iiifTiles = tiles;
+             } else {                 
+                 Object.keys(tiles).forEach(function(size) {
+                     var scaleFactors = tiles[size];
+                     iiifTiles.push({"width": parseInt(size), "height": parseInt(size), "scaleFactors": scaleFactors})
+                 });
+             }
+             if(iiifTiles.length > 0) {                 
+                 imageInfo.tiles = iiifTiles;
+             }
          }
      }
      

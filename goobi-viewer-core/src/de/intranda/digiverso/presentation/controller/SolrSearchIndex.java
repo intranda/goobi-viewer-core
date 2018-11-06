@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +57,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -317,17 +319,35 @@ public final class SolrSearchIndex {
     }
 
     /**
-     *
-     * @param query
-     * @param fieldList
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @should return correct doc
-     */
-    public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+    *  Retrieves the first document found by the given query
+    *
+    * @param query
+    * @param fieldList
+    * @param sortFields 
+    * @return The first hit returned by the query
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    * @should return correct doc
+    */
+   public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+       return getFirstDoc(query, fieldList, null);
+   }
+    
+
+   /**
+    * 
+    * Retrieves the first document found by the given query
+    * 
+    * @param query      The query to search
+    * @param fieldList  The fields retrieved
+    * @param sortFields Sorting - the first volume according to this sorting is returned
+    * @return   The first hit returned by the query
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    */
+    public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields) throws PresentationException, IndexUnreachableException {
         logger.trace("getFirstDoc: {}", query);
-        SolrDocumentList hits = search(query, 0, 1, null, null, fieldList).getResults();
+        SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
             return hits.get(0);
         }
@@ -1118,6 +1138,23 @@ public final class SolrSearchIndex {
 
         return list;
     }
+    
+    public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
+        LukeRequest lukeRequest = new LukeRequest();
+        lukeRequest.setNumTerms(0);
+        LukeResponse lukeResponse = lukeRequest.process(server);
+        Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
+
+        List<String> list = new ArrayList<>();
+        for (String name : fieldInfoMap.keySet()) {
+            FieldInfo info = fieldInfoMap.get(name);
+            if (name.startsWith("SORT_")) {
+                list.add(name);
+            }
+        }
+
+        return list;
+    }
 
     /**
      * @param doc The document containing the metadata
@@ -1173,4 +1210,69 @@ public final class SolrSearchIndex {
         return map;
     }
 
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @return contents for the given page
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
+            throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(":")
+                .append(page)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.UGC.name())
+                .toString();
+
+        SolrDocumentList hits = search(query);
+        if (hits.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DisplayUserGeneratedContent> ret = new ArrayList<>(hits.size());
+        for (SolrDocument doc : hits) {
+            DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
+            if (ugc != null) {
+                ret.add(ugc);
+                logger.trace("Loaded UGC: {}", ugc.getLabel());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Catches the filename of the page with the given order under the given ip
+     * 
+     * @param pi        The topstruct pi
+     * @param order     The page order (1-based
+     * @return  An optíonal containing the filename of the page with the given order under the given ip.
+     *          Or an empty optional if no matching page was found.
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public Optional<String> getFilename(String pi, int order) throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append(SolrConstants.DOCTYPE).append(":").append("PAGE")
+        .append(" AND ")
+        .append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi)
+        .append(" AND ")
+        .append(SolrConstants.ORDER).append(":").append(order);
+        
+        SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
+        if (hits.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable((String)(hits.get(0).getFirstValue(SolrConstants.FILENAME)));
+        }
+    }
 }

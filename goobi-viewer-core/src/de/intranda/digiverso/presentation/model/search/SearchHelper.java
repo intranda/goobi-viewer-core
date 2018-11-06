@@ -109,7 +109,8 @@ public final class SearchHelper {
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
     public static String collectionSplitRegex = new StringBuilder("[").append(BrowseDcElement.split).append(']').toString();
 
-    static volatile String docstrctWhitelistFilterSuffix = null;
+    /** Filter subquery for collection listing (no volumes). */
+    static final String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
     static volatile String collectionBlacklistFilterSuffix = null;
 
     /**
@@ -731,25 +732,10 @@ public final class SearchHelper {
     }
 
     /**
-     * Builds a Solr query suffix that filters the results by the docstrct whitelist. It should be sufficient to build this string once per
-     * application lifetime, since updating the whitelist would also require a tomcat restart.
-     *
-     * @return
-     * @should construct suffix correctly
+     * @return docstrctWhitelistFilterSuffix
      */
     public static String getDocstrctWhitelistFilterSuffix() {
-        String suffix = docstrctWhitelistFilterSuffix;
-        if (suffix == null) {
-            synchronized (lock) {
-                suffix = docstrctWhitelistFilterSuffix;
-                if (suffix == null) {
-                    suffix = generateDocstrctWhitelistFilterSuffix(DataManager.getInstance().getConfiguration().getDocStructWhiteList());
-                    docstrctWhitelistFilterSuffix = suffix;
-                }
-            }
-        }
-
-        return suffix;
+        return docstrctWhitelistFilterSuffix;
     }
 
     /**
@@ -781,6 +767,7 @@ public final class SearchHelper {
      * @should construct suffix correctly
      * @should return empty string if only docstruct is asterisk
      */
+    @Deprecated
     protected static String generateDocstrctWhitelistFilterSuffix(List<String> docstructList) {
         if (docstructList == null) {
             throw new IllegalArgumentException("docstructList may not be null");
@@ -892,7 +879,7 @@ public final class SearchHelper {
                         new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                     // If the use has an explicit priv to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                    query = new StringBuilder();
+                    //                    query = new StringBuilder();
                     continue;
                 }
                 if (licenseType.getConditions() != null) {
@@ -1258,7 +1245,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
-        return getFacetValues(query, facetFieldName, null, facetMinCount);
+        return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount);
     }
 
     /**
@@ -1330,12 +1317,15 @@ public final class SearchHelper {
             //            sbQuery.append(" AND (");
             StringBuilder sbDocstructFilter = new StringBuilder();
             for (String docstruct : bmfc.getDocstructFilters()) {
-                //                sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
-                sbDocstructFilter.append(docstruct).append(" OR ");
+                sbDocstructFilter.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
+                //                sbDocstructFilter.append(docstruct).append(" OR ");
             }
             //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
             //            sbQuery.append(')');
-            sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
+            if (sbDocstructFilter.length() > 4) {
+                sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
+            }
+            filterQueries.add(sbDocstructFilter.toString());
         }
         if (bmfc.isRecordsAndAnchorsOnly()) {
             filterQueries.add(

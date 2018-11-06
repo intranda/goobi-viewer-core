@@ -97,9 +97,13 @@ public class CMSPage {
     @Column(name = "use_default_sidebar", nullable = false)
     private boolean useDefaultSidebar = false;
 
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToMany(
+            cascade = CascadeType.ALL, 
+            orphanRemoval = true
+        )
+    @JoinColumn(name = "owner_page_id")
     @PrivateOwned
-    private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
+    private List<CMSProperty> properties = new ArrayList<>();
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
@@ -124,22 +128,25 @@ public class CMSPage {
     @PrivateOwned
     private List<String> classifications = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
+
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
      * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
      */
     @Column(name = "parent_page")
     private String parentPageId = null;
-    
+
     /**
-     * whether the url to this page may contain additional path parameters at its end while still pointing to this page
-     * Should be true if this is a search page, because search parameters are introduced to the url for an actual search
-     * Should not be true if this overrides a default page, but should only do so if no parameters are present (for example
-     * if parameters indicate a search on the default search page)
+     * whether the url to this page may contain additional path parameters at its end while still pointing to this page Should be true if this is a
+     * search page, because search parameters are introduced to the url for an actual search Should not be true if this overrides a default page, but
+     * should only do so if no parameters are present (for example if parameters indicate a search on the default search page)
      * 
      */
     @Column(name = "may_contain_url_parameters")
-    private boolean mayContainUrlParameters = false;
+    private boolean mayContainUrlParameters = true;
 
     @Transient
     private String sidebarElementString = null;
@@ -157,24 +164,23 @@ public class CMSPage {
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
-    
     public CMSPage() {
     }
-    
+
     /**
      * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      * 
      * @param original
      */
     public CMSPage(CMSPage original) {
-        if(original.id != null) {            
+        if (original.id != null) {
             this.id = new Long(original.id);
         }
         this.templateId = original.templateId;
         this.dateCreated = new Date(original.dateCreated.getTime());
         this.dateUpdated = new Date(original.dateUpdated.getTime());
         this.published = original.published;
-        if(original.pageSorting != null) {
+        if (original.pageSorting != null) {
             this.pageSorting = new Long(original.pageSorting);
         }
         this.useDefaultSidebar = original.useDefaultSidebar;
@@ -185,24 +191,32 @@ public class CMSPage {
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
         
-        if(original.sidebarElements != null) {            
+        if (original.properties != null) {
+            this.properties = new ArrayList<>(original.properties.size());
+            for (CMSProperty property : original.properties) {
+                CMSProperty copy = new CMSProperty(property);
+                this.properties.add(copy);
+            }
+        }
+
+        if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
-            for(CMSSidebarElement sidebarElement : original.sidebarElements) {
+            for (CMSSidebarElement sidebarElement : original.sidebarElements) {
                 CMSSidebarElement copy = CMSSidebarElement.copy(sidebarElement, this);
                 this.sidebarElements.add(copy);
             }
         }
-        
-        if(original.languageVersions != null) {            
+
+        if (original.languageVersions != null) {
             this.languageVersions = new ArrayList<>(original.languageVersions.size());
-            for(CMSPageLanguageVersion language : original.languageVersions) {
+            for (CMSPageLanguageVersion language : original.languageVersions) {
                 CMSPageLanguageVersion copy = new CMSPageLanguageVersion(language, this);
                 this.languageVersions.add(copy);
             }
         }
-        
+
     }
-    
+
     public boolean saveSidebarElements() {
         logger.trace("selected elements:{}\n", sidebarElementString);
         if (sidebarElementString != null) {
@@ -637,9 +651,13 @@ public class CMSPage {
         return BeanUtils.getCmsBean().getUrl(this);
     }
 
-    @Deprecated
+    /**
+     * Like getPageUrl() but does not require CmsBean (which is unavailable in different threads).
+     * 
+     * @return URL to this page
+     */
     public String getUrl() {
-        return CMSContentResource.getPageUrl(this);
+        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(getRelativeUrlPath(true)).toString();
     }
 
     public boolean hasContent(String itemId) {
@@ -903,24 +921,24 @@ public class CMSPage {
 
     public void addContentItem(CMSContentItem item) {
         synchronized (languageVersions) {
-                List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
-                for (CMSPageLanguageVersion language : languages) {
-                    if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-                        if(!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
-                            language.addContentItem(item);
-                        }
-                    } else {
-                        if(language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
-                            language.addContentItem(item);
-                        }
+            List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
+            for (CMSPageLanguageVersion language : languages) {
+                if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+                    if (!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                        language.addContentItem(item);
+                    }
+                } else {
+                    if (language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                        language.addContentItem(item);
                     }
                 }
-                
-//                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
-//                        lang -> lang.addContentItem(item));
-//            } else {
-//                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
-//            }
+            }
+
+            //                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
+            //                        lang -> lang.addContentItem(item));
+            //            } else {
+            //                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+            //            }
         }
     }
 
@@ -995,14 +1013,14 @@ public class CMSPage {
     public void setValidityStatus(PageValidityStatus validityStatus) {
         this.validityStatus = validityStatus;
     }
-    
+
     /**
      * @return the mayContainUrlParameters
      */
     public boolean isMayContainUrlParameters() {
         return mayContainUrlParameters;
     }
-    
+
     /**
      * @param mayContainUrlParameters the mayContainUrlParameters to set
      */
@@ -1010,20 +1028,20 @@ public class CMSPage {
         this.mayContainUrlParameters = mayContainUrlParameters;
     }
 
-//    /**
-//     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
-//     */
-//    public boolean mayContainURLParameters() {
-//        try {
-//            if (getTemplate() != null) {
-//                return getTemplate().isAppliesToExpandedUrl();
-//            }
-//            return false;
-//        } catch (IllegalStateException e) {
-//            logger.warn("Unable to acquire template", e);
-//            return false;
-//        }
-//    }
+    //    /**
+    //     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+    //     */
+    //    public boolean mayContainURLParameters() {
+    //        try {
+    //            if (getTemplate() != null) {
+    //                return getTemplate().isAppliesToExpandedUrl();
+    //            }
+    //            return false;
+    //        } catch (IllegalStateException e) {
+    //            logger.warn("Unable to acquire template", e);
+    //            return false;
+    //        }
+    //    }
 
     /**
      * @return the relatedPI
@@ -1041,6 +1059,31 @@ public class CMSPage {
 
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         return BeanUtils.getCmsBean().getCollection(this);
+    }
+
+    
+    /**
+     * Returns the property with the given key or else creates a new one with that key and returns it
+     * 
+     * @param key
+     * @throws ClassCastException if the returned property has the wrong generic type
+     * @return the property with the given key or else creates a new one with that key and returns it
+     */
+    public CMSProperty getProperty(String key) throws ClassCastException {
+        CMSProperty property =  this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
+            CMSProperty prop = new CMSProperty(key);
+            this.properties.add(prop);
+            return prop;
+        });
+        return property;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getBestLanguage(Locale.GERMAN).getTitle();
     }
 
 }

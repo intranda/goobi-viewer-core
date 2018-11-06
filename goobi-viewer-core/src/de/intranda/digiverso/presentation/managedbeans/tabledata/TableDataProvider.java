@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class TableDataProvider<T> {
     private String sortField = "";
     private SortOrder sortOrder = SortOrder.ASCENDING;
     private List<TableDataFilter> filters = new ArrayList<>();
+    String lastFilterString = "";
 
     public static enum SortOrder {
         ASCENDING,
@@ -63,8 +65,25 @@ public class TableDataProvider<T> {
      * 
      */
     protected Optional<List<T>> loadList() {
+        String filterString = getFilterString(filters);
+        if(!filterString.equals(this.lastFilterString)) {
+            this.source.resetTotalNumberOfRecords();
+            this.lastFilterString = filterString;
+        }
         return Optional
                 .ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
+    }
+
+    /**
+     * @param filters2
+     * @return
+     */
+    private String getFilterString(List<TableDataFilter> filters) {
+        if(filters == null || filters.isEmpty()) {
+            return "";
+        } else {
+            return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
+        }
     }
 
     public Map<String, String> getFiltersAsMap() {
@@ -74,7 +93,7 @@ public class TableDataProvider<T> {
     private static Map<String, String> getAsMap(List<TableDataFilter> filters) {
         Map<String, String> map = new HashMap<>();
         for (TableDataFilter filter : filters) {
-            map.put(filter.getColumn(), filter.getValue());
+            map.put(filter.getJoinTable().map(table -> table + "::").orElse("") + filter.getColumn(), filter.getValue());
         }
         return map;
     }
@@ -221,6 +240,15 @@ public class TableDataProvider<T> {
         resetCurrentList();
     }
 
+    public boolean addFilter(String joinTable, String column) {
+        if (!getFilterAsOptional(joinTable, column).isPresent()) {
+            addFilter(new TableDataFilter(joinTable, column, ""));
+            return true;
+        }
+
+        return false;
+    }
+    
     public boolean addFilter(String column) {
         if (!getFilterAsOptional(column).isPresent()) {
             addFilter(new TableDataFilter(column, ""));
@@ -233,7 +261,17 @@ public class TableDataProvider<T> {
     public Optional<TableDataFilter> getFilterAsOptional(String column) {
         for (TableDataFilter filter : filters) {
             if (filter.getColumn()
-                    .equalsIgnoreCase(column)) {
+                    .equalsIgnoreCase(column) && !filter.getJoinTable().isPresent()) {
+                return Optional.of(filter);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<TableDataFilter> getFilterAsOptional(String joinTable, String column) {
+        for (TableDataFilter filter : filters) {
+            if (filter.getColumn()
+                    .equalsIgnoreCase(column) && filter.getJoinTable().equals(Optional.ofNullable(joinTable))) {
                 return Optional.of(filter);
             }
         }
@@ -243,6 +281,10 @@ public class TableDataProvider<T> {
     public TableDataFilter getFilter(String column) {
         return getFilterAsOptional(column).orElse(null);
     }
+    
+    public TableDataFilter getFilter(String joinTable, String column) {
+        return getFilterAsOptional(joinTable, column).orElse(null);
+    }
 
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
@@ -251,6 +293,10 @@ public class TableDataProvider<T> {
 
     public void removeFilter(String column) {
         getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
+    }
+    
+    public void removeFilter(String joinTable, String column) {
+        getFilterAsOptional(joinTable, column).ifPresent(filter -> removeFilter(filter));
     }
 
     public void resetFilters() {

@@ -17,64 +17,43 @@
 			<ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
 				<h:panelGroup rendered="#{child.valid}">
 					<li>
-					<h:outputLink value="#{child.navigationUrl}"
-										class="#{navigationHelper.currentPage == child.itemLabel?'mainnav-active':''}">
-					<h:outputText value="#{msg[child.itemLabel]}" />
-					</h:outputLink>
+                        <component:navigationLink linkClass="#{navigationHelper.currentPage == child.itemLabel?'mainnav-active':''}" navItem="#{child}"/>
 					<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
 						<ul class="mainsubnav">
 							<ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
 							<h:panelGroup rendered="#{child1.valid}">
 								<li>
-									<h:outputLink value="#{child1.navigationUrl}"
-														class="#{navigationHelper.currentPage == child1.itemLabel?'mainnav-active':''}">
-									<h:outputText value="#{msg[child1.itemLabel]}" />
-									</h:outputLink>
+								    <component:navigationLink linkClass="#{navigationHelper.currentPage == child1.itemLabel?'mainnav-active':''}" navItem="#{child1}"/>
 									<h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
 										<ul class="mainsubnav">
 											<ui:repeat varStatus="count" var="child2" value="#{child1.childItems}">
 												<h:panelGroup rendered="#{child2.valid}">
 												<li>
-													<h:outputLink value="#{child2.navigationUrl}"
-																		class="#{navigationHelper.currentPage == child2.itemLabel?'mainnav-active':''}">
-													<h:outputText value="#{msg[child2.itemLabel]}" />
-													</h:outputLink>
+		                  						    <component:navigationLink linkClass="#{navigationHelper.currentPage == child2.itemLabel?'mainnav-active':''}" navItem="#{child2}"/>
 													<h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
 														<ul class="mainsubnav">
 															<ui:repeat varStatus="count" var="child3" value="#{child2.childItems}">
 																<h:panelGroup rendered="#{child3.valid}">
 																<li>
-																	<h:outputLink value="#{child3.navigationUrl}"
-																						class="#{navigationHelper.currentPage == child3.itemLabel?'mainnav-active':''}">
-																	<h:outputText value="#{msg[child3.itemLabel]}" />
-																	</h:outputLink>
+					                                   			    <component:navigationLink linkClass="#{navigationHelper.currentPage == child3.itemLabel?'mainnav-active':''}" navItem="#{child3}"/>
 																	<h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
 																		<ul class="mainsubnav">
 																			<ui:repeat varStatus="count" var="child4" value="#{child3.childItems}">
 																				<h:panelGroup rendered="#{child4.valid}">
 																				<li>
-																					<h:outputLink value="#{child4.navigationUrl}"
-																										class="#{navigationHelper.currentPage == child4.itemLabel?'mainnav-active':''}">
-																					<h:outputText value="#{msg[child4.itemLabel]}" />
-																					</h:outputLink>
+																					<component:navigationLink linkClass="#{navigationHelper.currentPage == child4.itemLabel?'mainnav-active':''}" navItem="#{child4}"/>
 																					<h:panelGroup rendered="#{!child4.childItems.isEmpty()}">
 																						<ul class="mainsubnav">
 																							<ui:repeat varStatus="count" var="child5" value="#{child4.childItems}">
 																								<h:panelGroup rendered="#{child5.valid}">
 																								<li>
-																									<h:outputLink value="#{child5.navigationUrl}"
-																														class="#{navigationHelper.currentPage == child5.itemLabel?'mainnav-active':''}">
-																									<h:outputText value="#{msg[child5.itemLabel]}" />
-																									</h:outputLink>
+																									<component:navigationLink linkClass="#{navigationHelper.currentPage == child5.itemLabel?'mainnav-active':''}" navItem="#{child5}"/>
 																									<h:panelGroup rendered="#{!child5.childItems.isEmpty()}">
 																										<ul class="mainsubnav">
 																											<ui:repeat varStatus="count" var="child6" value="#{child5.childItems}">
 																											<h:panelGroup rendered="#{child6.valid}">
 																												<li>
-																													<h:outputLink value="#{child6.navigationUrl}"
-																																		class="#{navigationHelper.currentPage == child6.itemLabel?'mainnav-active':''}">
-																													<h:outputText value="#{msg[child6.itemLabel]}" />
-																													</h:outputLink>
+																													<component:navigationLink linkClass="#{navigationHelper.currentPage == child6.itemLabel?'mainnav-active':''}" navItem="#{child6}"/>
 																												</li>
 																												</h:panelGroup>
 																											</ui:repeat>

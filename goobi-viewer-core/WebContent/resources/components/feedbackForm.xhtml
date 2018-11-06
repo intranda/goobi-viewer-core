@@ -69,13 +69,13 @@
 					<div class="col-sm-offset-2 col-sm-10 text-right">
                         <!-- USE RECAPTCHA -->
                         <ui:fragment rendered="#{configurationBean.useReCaptcha}">
-    						<h:commandButton id="submitFeedbackBtn" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+    						<h:commandButton id="submitFeedbackBtn" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
                             <script type="text/javascript">
                             	$( '[id*="submitFeedbackBtn"]' ).attr( "disabled", true );
                             </script>
                         </ui:fragment>
 						<!-- DON'T USE RECAPTCHA -->
-                        <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                        <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
 					</div>
 				</div>
 			</h:form>

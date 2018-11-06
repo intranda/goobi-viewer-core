@@ -2,69 +2,107 @@
    Buttons
    style declarations for buttons
    ==============================================================*/
-.btn,
-.btn.ui-button,
-a.btn,
-input.btn,
-.btn.ui-button,
-.btn-search,
-.btn-clean,
-.btn-inactive {
+/* BUTTONS */
+.btn {
+	color: @btnDefault;
+	border-radius: 0;
+	background-color: transparent;
+	&:hover,
+	&:active,
 	&:focus,
-    &:active {
-    	outline: none;
-    }
+	&:active:focus,
+	&.active,
+	&.active.focus, 
+	&.active:focus, 
+	&.focus, 
+	&:active.focus {
+		color: inherit;
+		outline: none;
+		box-shadow: none;
+	}
+	/* MODIFICATION */
+	&--default {
+		border-color: @btnDefaultBorder;
+		background-color: @btnDefaultBgc;
+		&:hover,
+		&:active,
+		&:focus {
+			background-color: @btnDefaultHoverBgc;
+		}
+	}
+	&--success {
+		color: @btnSuccess;
+		border-color: @btnSuccessBorder;
+		background-color: @btnSuccessBgc;
+		&:hover,
+		&:active,
+		&:focus {
+			color: @btnSuccess;
+			background-color: @btnSuccessHoverBgc;
+		}
+	}
+	&--danger {
+		color: @btnDanger;
+		border-color: @btnDangerBorder;
+		background-color: @btnDangerBgc;
+		&:hover,
+		&:active,
+		&:focus {
+			color: @btnDanger;
+			background-color: @btnDangerHoverBgc;
+		}
+	}
+	&--full {
+		color: @white;
+		border-color: @blue;
+		background-color: @blue;
+		&:hover,
+		&:active,
+		&:focus {
+			color: @white;
+			background-color: @btnFullHoverBgc;
+		}
+	}
+	&--clean {
+		padding: 0;
+		line-height: inherit;
+		color: inherit;
+		border: none;
+	}
+	&--link {
+		padding: 0;
+		color: @blue;
+		border: none;
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: underline;
+			color: @btnDefault;
+		}
+	}
+	&--hidden {
+		display: none !important;
+	}
+	&--inactive {
+		cursor: not-allowed;
+		opacity: .65;
+	}
+	&--icon {
+		padding: 2px;
+		font-size: inherit;
+		color: @black;
+		border: none;
+		&:hover,
+		&:focus,
+		&:active {
+			color: @black;
+		}
+	}
 }
 
-.btn,
-.btn.ui-button {
-    position: relative;
-    display: inline-block;
-    padding: 6px 12px;
-    font-weight: bold;
-    text-align: center;
-    color: @black;
-    border: none;
-    border-radius: 0;
-    background: @lightgray;
-    background-repeat: no-repeat;
-    background-position: center center;
-    cursor: pointer;
-    &:hover {}
-}
+/* MODIFICATIONS */
+a.btn--icon { line-height: normal; }
 
-a.btn {
-    text-decoration: none;
-}
-
-input.btn,
-.btn.ui-button {
-    .ui-button-text {
-        font-weight: bold;
-        color: @black;        
-    }
-    &:hover {
-        .ui-button-text {}
-    }    
-}
-
-.btn-search {
-    background-image: url("@{images}/icons/search.png");
-}
-
-.btn-clean {
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: none;
-}
-
-.btn-inactive {
-    cursor: default;
-    opacity: 0.4;
-}
-
-/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOP */

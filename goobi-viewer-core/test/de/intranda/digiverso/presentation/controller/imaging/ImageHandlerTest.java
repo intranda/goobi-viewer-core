@@ -30,6 +30,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 
 /**
@@ -104,18 +105,18 @@ public class ImageHandlerTest {
         String stringInternal = "file:/a/b/c d#yxwg=123,52,564,213";
         String stringRelative = "a/b/c d [1]-falls.jpg";
 
-        URI uriExternal = ImageHandler.toURI(stringExternal);
+        URI uriExternal = PathConverter.toURI(stringExternal);
         Assert.assertEquals("https://localhost:8080/a/b/c%20d", uriExternal.toString());
-        URI uriInternal = ImageHandler.toURI(stringInternal);
+        URI uriInternal = PathConverter.toURI(stringInternal);
         Assert.assertEquals("file:///a/b/c%20d#yxwg=123,52,564,213", uriInternal.toString());
-        URI uriRelative = ImageHandler.toURI(stringRelative);
+        URI uriRelative = PathConverter.toURI(stringRelative);
         Assert.assertEquals("a/b/c%20d%20%5B1%5D-falls.jpg", uriRelative.toString());
 
-        Path pathExternal = ImageHandler.getPath(uriExternal);
+        Path pathExternal = PathConverter.getPath(uriExternal);
         Assert.assertEquals("/a/b/c d", pathExternal.toString());
-        Path pathInternal = ImageHandler.getPath(uriInternal);
+        Path pathInternal = PathConverter.getPath(uriInternal);
         Assert.assertEquals("/a/b/c d", pathInternal.toString());
-        Path pathRelative = ImageHandler.getPath(uriRelative);
+        Path pathRelative = PathConverter.getPath(uriRelative);
         Assert.assertEquals("a/b/c d [1]-falls.jpg", pathRelative.toString());
 
     }

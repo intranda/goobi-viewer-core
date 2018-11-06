@@ -1,0 +1,23 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    
+    <!-- INTERFACE -->
+    <composite:interface>
+        <composite:attribute name="navItem" type="de.intranda.digiverso.presentation.model.cms.CMSNavigationItem" required="true" />
+        <composite:attribute name="linkClass" required="false" default="" />
+    </composite:interface>
+
+	<!-- IMPLEMENTATION -->
+    <composite:implementation>
+		<ui:fragment rendered="#{cc.attrs.navItem.openInNewWindow}">
+            <a class="#{cc.attrs.linkClass}" href="#{cc.attrs.navItem.navigationUrl}" target="_blank" ref="nofollow">#{msg[cc.attrs.navItem.itemLabel]}</a>
+        </ui:fragment>
+        <ui:fragment rendered="#{!cc.attrs.navItem.openInNewWindow}">
+        	<a class="#{cc.attrs.linkClass}" href="#{cc.attrs.navItem.navigationUrl}">#{msg[cc.attrs.navItem.itemLabel]}</a>
+        </ui:fragment>
+	</composite:implementation>
+</ui:composition>

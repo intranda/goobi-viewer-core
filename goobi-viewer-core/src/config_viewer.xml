@@ -103,6 +103,13 @@
 		<!-- OpenID Connect (OAuth 2.0) authentication. Each <provider> element 
 			defines an authentication provider. Required attributes: name, endpoint (auth 
 			URL), clientId, clientSecret, image. -->
+        <authenticationProviders>
+            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
+            	clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth"
+                clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
+            <provider type="local" name="Goobi viewer"/>
+        </authenticationProviders>
 		<openIdConnect show="true">
 			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
 				clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
@@ -299,7 +306,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference"
+		<theme subTheme="false" mainTheme="orka"
 			discriminatorField="" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
@@ -365,7 +372,7 @@
 				<field>UGCTERMS</field>
 				<field>OVERVIEWPAGE</field>
 				<field>PI_TOPSTRUCT</field>
-				<field hierarchical="true">FACET_DC</field>
+				<field hierarchical="true">DC</field>
 				<field>DOCSTRCT</field>
 				<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
@@ -862,41 +869,39 @@
 				</metadata>
 			</template>
 		</sideBarMetadataList>
-
-		<!-- docStructWhiteList: only search hits of docstruct types that are allowed 
-			in this section will be listed -->
-		<docStructWhiteList>
-			<docStruct>library_object</docStruct>
-			<docStruct>museum_object</docStruct>
-			<docStruct>monograph</docStruct>
-			<docStruct>Monograph</docStruct>
-			<docStruct>MultiVolumeWork</docStruct>
-			<docStruct>Volume</docStruct>
-			<docStruct>Periodical</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-			<docStruct>VolumeRun</docStruct>
-			<docStruct>Record</docStruct>
-			<docStruct>SingleLetter</docStruct>
-			<docStruct>Picture</docStruct>
-			<docStruct>Video</docStruct>
-			<docStruct>Audio</docStruct>
-			<docStruct>MusicSupplies</docStruct>
-			<docStruct>manuscript</docStruct>
-			<docStruct>Map</docStruct>
-			<docStruct>SingleMap</docStruct>
-			<docStruct>Incunable</docStruct>
-			<docStruct>Drawing</docStruct>
-			<docStruct>CollectedEdition</docStruct>
-			<docStruct>Casualia</docStruct>
-			<docStruct>SingleSheetMaterial</docStruct>
-		</docStructWhiteList>
-
-		<!-- DEPRECATED: museumDocstructTypes: docstruct types listed in this section 
-			will be displayed using the museum view. They must be whitelisted in the 
-			docStructWhiteList -->
-		<museumDocstructTypes>
-			<docStruct>museum_object</docStruct>
-		</museumDocstructTypes>
+		
+		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
+		<normdataList>
+            <template name="_DEFAULT">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_NAME</field>
+                <field>NORM_ALTNAME</field>
+                <field>URI</field>
+            </template>
+            <template name="CORPORATION">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_ORGANIZATION</field>
+                <field>NORM_ALTNAME</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PARENTINSTITUTION</field>
+                <field>URI</field>
+            </template>
+            <template name="RECORD">
+                <field>NORM_IDENTIFIER</field>
+                <field>NORM_TITLE</field>
+                <field>NORM_OTHERTITLE</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PRODUCTIONPERIOD</field>
+                <field>NORM_CONTRIBUTOR</field>
+                <field>NORM_OWNER</field>
+                <field>NORM_COLLECTOR</field>
+                <field>NORM_WORK</field>
+                <field>NORM_RELATIONSHIP</field>
+                <field>URI</field>
+            </template>
+        </normdataList>
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to 
 			be shown in calendar view -->
@@ -934,7 +939,7 @@
 		</browsingMenu>
 
 		<!-- addDublinCoreMetaTags: render dc metadata to html head -->
-		<addDublinCoreMetaTags>false</addDublinCoreMetaTags>
+		<addDublinCoreMetaTags>true</addDublinCoreMetaTags>
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
@@ -1323,5 +1328,8 @@
 				If no logo is configured, the image footer will be used -->
 			<!-- <logo>dfgviewer_intranda.jpg</logo> -->
 		</iiif>
+        <authorization>
+            <token>test</token>
+        </authorization>
 	</webapi>
 </config>

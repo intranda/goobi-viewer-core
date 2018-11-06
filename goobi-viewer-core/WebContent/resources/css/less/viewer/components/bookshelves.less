@@ -229,7 +229,8 @@
 		}
 		input {
 			width: 100%;
-			height: 40px;			
+			height: 38px;
+			margin: 1px 0;
 			border: none;
 		}
 		[data-bookshelf-type="add"] {
@@ -256,6 +257,13 @@
 [data-bookshelf-type="reset"] {
 	background-repeat: no-repeat;
 	background-position: center center;	
+}
+
+[data-bookshelf-type="counter"] {
+	visibility: hidden;
+	&.in {
+		visibility: visible;
+	}
 }
 
 [data-bookshelf-type="dropdown"] {

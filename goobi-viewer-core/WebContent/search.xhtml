@@ -89,8 +89,8 @@
 
                         <!-- SEARCH STANDARD ACTION -->
                         <div class="search-standard__action">
-                            <h:commandLink styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                            <h:commandButton id="submitSearch" type="submit" styleClass="btn" action="#{searchBean.searchSimple}" value="#{msg.search}">
+                            <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
+                            <h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchSimple}" value="#{msg.search}">
                                 <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
                             </h:commandButton>
                         </div>
@@ -113,51 +113,11 @@
                                 <viewerComponent:searchHelpText />
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn" data-dismiss="modal">#{msg.search_helpModalClose}</button>
+                                <button type="button" class="btn btn--full" data-dismiss="modal">#{msg.search_helpModalClose}</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- SEARCH TILES -->
-<!--                 <div class="row"> -->
-<!--                     <div class="col-xs-12 col-sm-6"> -->
-<!--                         <div class="search-tile"> -->
-<!--                             <div class="search-tile__description"> -->
-<!--                                 <span class="search-tile__icon"> -->
-<!--                                     <i class="fa fa-user" aria-hidden="true"></i> -->
-<!--                                 </span> -->
-<!--                                 <h3>#{msg.search_tileTitle_person}</h3> -->
-<!--                                 <p>Suchen Sie hier gezielt nach einer Person. Es kann ein Name oder auch ein GND-Identifier eingegeben werden.</p> -->
-<!--                             </div> -->
-<!--                             <div class="search-tile__input"> -->
-<!--                                 <label for="personSearch" class="sr-only">#{msg.search_tile_personSearch}</label> -->
-<!--                                 <input type="text" id="personSearch" class="form-control" /> -->
-<!--                             </div> -->
-<!--                             <div class="search-tile__action"> -->
-<!--                                 <button type="button" class="btn">#{msg.search}</button> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
-<!--                     <div class="col-xs-12 col-sm-6"> -->
-<!--                         <div class="search-tile"> -->
-<!--                             <div class="search-tile__description"> -->
-<!--                                 <span class="search-tile__icon"> -->
-<!--                                     <i class="fa fa-book" aria-hidden="true"></i> -->
-<!--                                 </span> -->
-<!--                                 <h3>#{msg.search_tileTitle_metadata}</h3> -->
-<!--                                 <p>Suchen Sie hier gezielt nur in den Metadaten der einzelnen Objekte.</p> -->
-<!--                             </div> -->
-<!--                             <div class="search-tile__input"> -->
-<!--                                 <label for="metadataSearch" class="sr-only">#{msg.search_tile_metadataSearch}</label> -->
-<!--                                 <input type="text" id="metadataSearch" class="form-control" /> -->
-<!--                             </div> -->
-<!--                             <div class="search-tile__action"> -->
-<!--                                 <button type="button" class="btn">#{msg.search}</button> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
-<!--                 </div> -->
             </div>
         </f:view>
     </ui:define>

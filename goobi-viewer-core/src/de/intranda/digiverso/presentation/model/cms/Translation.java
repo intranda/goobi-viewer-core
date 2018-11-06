@@ -55,7 +55,7 @@ public class Translation {
     @Column(name = "language")
     private String language;
     
-    @Column(name = "value")
+    @Column(name = "value", nullable=true, columnDefinition = "LONGTEXT")
     private String value;
     
     public Translation() {

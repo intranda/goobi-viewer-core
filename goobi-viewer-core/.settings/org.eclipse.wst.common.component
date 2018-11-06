@@ -229,11 +229,44 @@
         <dependent-module archiveName="goobi-viewer-theme-dlam.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dlam/goobi-viewer-theme-dlam">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- PLAYGROUND -->
         <dependent-module archiveName="goobi-viewer-theme-playground.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-playground/goobi-viewer-theme-playground">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- HUB ARCHIVE -->
         <dependent-module archiveName="goobi-viewer-theme-hu-archiv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hu-archiv/goobi-viewer-theme-hu-archiv">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- DIPF -->
+        <dependent-module archiveName="goobi-viewer-theme-dipf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf/goobi-viewer-theme-dipf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- LMH -->
+        <dependent-module archiveName="goobi-viewer-theme-lamuhalle.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lamuhalle/goobi-viewer-theme-lamuhalle">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- AK WIEN -->
+        <dependent-module archiveName="goobi-viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- UB WEIMAR -->
+        <dependent-module archiveName="goobi-viewer-theme-ubweimar.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubweimar/goobi-viewer-theme-ubweimar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- HUB EVIFA -->
+        <dependent-module archiveName="goobi-viewer-theme-hub-evifa.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub-evifa/goobi-viewer-theme-hub-evifa">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- ALBERTINA -->
+        <dependent-module archiveName="goobi-viewer-theme-albertina.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-albertina/goobi-viewer-theme-albertina">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- HAENDEL -->
+        <dependent-module archiveName="goobi-viewer-theme-haendel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haendel/goobi-viewer-theme-haendel">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- CHESTER BEATTY LIBRARY -->
+        <dependent-module archiveName="goobi-viewer-theme-cbl.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-cbl/goobi-viewer-theme-cbl">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>

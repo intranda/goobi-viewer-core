@@ -92,12 +92,11 @@
                                         requiredMessage="#{msg.newUserPasswordTwoRequired}" />
                                 </div>
                             </div>
+                            
                             <p>#{msg.user_newAccountAgreement}</p>
+                            
                             <div class="user-account-create__action">
-                                <h:commandButton
-                                    styleClass="btn"
-                                    value="#{msg.newUserTab}"
-                                    action="#{userBean.createNewUserAccount}" />
+                                <h:commandButton styleClass="btn btn--full" value="#{msg.newUserTab}" action="#{userBean.createNewUserAccount}" />
                             </div>
                         </h:form>
                     </div>

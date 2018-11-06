@@ -37,13 +37,35 @@
                             <table id="cmsOverviewTable" class="table table-striped table-bordered admin-table">
                                 <thead>
                                     <tr>
-                                        <th class="{sorter: false} column_template">#{msg.cms_templateType}</th>
+                                        <th class="{sorter: false} column_template">#{msg.cms_templateType}
+                                        </th>
                                         <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                             <th class="{sorter: false} column_language">#{locale.language}</th>
                                         </c:forEach>
-                                        <th class="column_title">#{msg.cms_pageName}</th>
-                                        <th class="column_classification">#{msg.cms_pageClassifications}</th>
-                                        <th class="column_date_updated">#{msg.cms_pageMetadata_lastEdited}</th>
+                                        <th class="column_title">#{msg.cms_pageName}
+                                            <!-- FILTER -->
+                                            <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}"/>    
+                                        </th>
+                                        <th class="column_classification">#{msg.cms_pageClassifications}
+                                            <!-- FILTER -->
+                                            <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('classifications', 'classification')}"/>    
+                                        </th>
+                                        <th class="column_date_updated">#{msg.cms_pageMetadata_lastEdited}
+                                             <!-- SORTING -->
+                                        <div class="sorting-wrapper">
+                                            <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'ASCENDING')}">
+                                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                            <h:commandLink styleClass="sort" action="#{cmsBean.lazyModelPages.sortBy('dateUpdated', 'DESCENDING')}">
+                                                <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                                <f:ajax execute="@form" render="@form" />
+                                            </h:commandLink>
+                                        </div>
+                                        
+                                        <div class="clearfix"></div>
+                                        
+                                        </th>
                                         <th class="{sorter: false} column_actions">#{msg.cms_pageActions}</th>
                                     </tr>
                                 </thead>
@@ -71,7 +93,10 @@
                                                             alt="Flag Icon" />
                                                  </td>
                                             </c:forEach>
-                                            <td class="column_title"><h:outputText value="#{page.menuTitle}" /></td>
+                                            <td class="column_title">
+                                            <span class="column_title__main_title">#{page.title}</span>
+                                            <span class="column_title__menu_title">#{page.menuTitle}</span>
+                                            </td>
                                             <td class="column_classification">
                                                 <ul>
                                                     <ui:repeat value="#{page.classifications}" var="classification">
@@ -86,19 +111,18 @@
                                                 </h:outputText>
                                             </td>
                                             <td class="admin-table__action column_actions">
-                                                <h:commandLink action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
+                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminCmsCreatePage" title="#{msg.edit}" alt="#{msg.edit}">
                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                     <f:setPropertyActionListener value="#{page}" target="#{cmsBean.selectedPage}" />
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                 </h:commandLink>
                                                 <h:panelGroup rendered="#{page.published}">
-                                                    <h:outputLink value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}"
-                                                        target="_blank">
+                                                    <h:outputLink styleClass="btn btn--icon" value="#{cmsBean.getUrl(page)}" title="#{msg.cms_pageView}" target="_blank">
                                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                                     </h:outputLink>
                                                 </h:panelGroup> 
                                                 <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(page)}">
-                                                    <h:commandLink href="#" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
+                                                    <h:commandLink styleClass="btn btn--icon" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">
                                                         <f:passThroughAttribute name="data-toggle" value="modal" />
                                                         <f:passThroughAttribute name="data-target" value="#deletePageModal" />
                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -135,7 +159,7 @@
                                                 <f:ajax render="@none" />
                                             </h:commandLink>
                                             <h:commandLink action="#{cmsBean.deletePage(cmsBean.selectedPage)}" value="#{msg.cms_deletePage_agree}"
-                                                styleClass="btn">
+                                                styleClass="btn btn--danger">
                                                 <f:passThroughAttribute name="data-dismiss" value="modal" />
                                                 <f:ajax render="@form" />
                                             </h:commandLink>

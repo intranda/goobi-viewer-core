@@ -2,115 +2,209 @@
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml
    ==============================================================*/
-#cmsMenuItems {
-    h2 {}
-    #addMenuItemWrapper {
-        text-align: right;
-        margin-bottom: 1.3125rem;
-        .btn {}
-    }
-    #menuEditor {
-        h3 {
-            font-size: 0.9rem;
-            font-weight: normal;
-    	}
-        .menu-editor-left, .menu-editor-right {
-            .ui-sortable {
-                list-style: none;
-                min-height: 100px;
-                margin: 0;
-                padding: 0;
-            }
-        }
-        .menu-editor-left {
-            h4 {}
-        }
-        .menu-editor-right {
-            h4 {}
-        }
-    }
-    #saveMenuItemsWrapper {
-        .btn {
-            float: right;
-        }
-    }
-    #addMenuItemModal {
-        .modal-header {
-            text-align: left;
-        }
-        .tooltip {
-            .tooltip-inner {
-                font-weight: normal;
-            }
-        }
-    }
-}
-
-.menu-item {
-    margin-bottom: 4px;
-    padding: 10px;
-    color: @black;
-    border: 1px solid @middlegray;
-    background-color: @lightgray;
-    &__level, 
-    &__text, 
-    &__edit {
-        float: left;
-    }
-    &__level {
-        width: 15%;
-    }
-    &__text {
-        width: 70%;
-        padding: 0 10px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    &__edit {
-        width: 15%;
-        a {
-            font-size: 1.1rem;
-            color: @black;
-            &:hover, 
-            &:focus, 
-            &:active {
-                color: @black;
-            }
-        }
-    }
-    &.unpublished {
-        opacity: 0.5;
-        span {}
-    }
-    &.deleted {
-        border: 1px solid #ff0000;
-        opacity: 0.5;
-        span {}
-    }
-}
-
-#edit_navigationitem_wrapper {
-    display: none;
-    margin: 10px;
-    padding: 5px;
-    border-style: double;
-    border-width: medium;
-    dl {
-        margin-bottom: 5px;
-        dt {
-            clear: left;
-            float: left;
-            width: 120px;
-            margin: 0;
-            padding: 5px;
-        }
-        dd {
-            width: 500px;
-            margin: 0;
-            margin-left: 200px;
-            padding: 5px;
-        }
-    }
+/* CMS MENU */
+.cms-menu {
+	h2 {}
+	/* HEADER */
+	&__header {
+		display: flex;
+		justify-content: space-between;
+	}
+	/* SAVE */
+	&__save {
+		text-align: right;
+		padding-right: 11px;
+		&.fixed {
+			position: fixed;
+			top: 0;
+			padding: 15px 11px;
+			z-index: 999;
+		}
+	}
+	/* SELECT THEME */
+	&__select-theme {
+		margin-bottom: 45px;
+		.cms-module__option-label {
+			flex-basis: 30%;
+		}
+		.cms-module__option-control {
+			flex-basis: 65%;
+		}
+	}
+	/* MENU EDITOR */
+	&__editor {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-gap: 15px;
+		margin-top: 15px;
+	}
+	/* VISIBLE/AVAILABLE ITEMS */
+	&__visible-items,
+	&__available-items {
+		h4 {
+			margin-bottom: 10px;
+		}
+		.cms-menu__available-item-level {
+			visibility: visible;
+			flex-basis: 20%;
+			padding: 10px;
+		}
+	}
+	&__visible-items-list {
+		.mx-list-reset;
+	}
+	&__visible-item {
+		display: flex;
+		flex-wrap: wrap;
+	    margin-bottom: 5px;
+	    border: 1px solid @middlegray;
+	    background-color: @neutralgray;
+	    &.unpublished {
+	        opacity: 0.5;
+	    }
+	    &.deleted {
+	        border: 1px solid red;
+	        opacity: 0.5;
+	    }
+	}
+	&__visible-item-level {
+		flex-basis: 20%;
+		padding: 10px;
+		padding-right: 0;
+	}
+	&__visible-item-label {
+		flex-basis: 70%;
+		padding: 10px;
+		word-break: break-word;
+		small {
+			font-size: 0.75rem;
+			font-style: italic;
+		}
+	}
+	&__visible-item-edit {
+		flex-basis: 10%;
+		padding: 10px;
+		padding-left: 0;
+		button {
+			display: block;
+			width: 100%;
+		    text-align: right;
+		    .fa {
+				transition: all 0.2s linear;				
+			}
+			&.in {
+				.fa {
+					transform: rotate(180deg);				
+				}	
+			}
+		}
+	}
+	&__visible-item-edit-wrapper {
+		display: none;
+		flex-basis: 100%;
+		margin: 0;
+		border: none;
+		border-top: 1px solid @middlegray;
+		.cms-module__option-label {
+			flex-basis: 30%;
+		}
+		.cms-module__option-control {
+			flex-basis: 65%;
+		}
+		.cms-module__option-action {
+			.btn--link {
+				color: @red;
+			}
+		}
+	}
+	/* AVAILABLE ITEMS */
+	&__available-items {
+		h4 {}
+	}
+	&__available-items-list {
+		ul {
+			.mx-list-reset;
+		}
+		li {
+			border: 1px solid @middlegray;
+			border-top: none;
+			border-bottom: none;
+			background-color: @neutralgray;
+			&:first-child {
+				border-top: 1px solid @middlegray;
+			}
+		}
+		h5 {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin: 0;
+			padding: 12px;
+			border-bottom: 1px solid @middlegray;
+			cursor: pointer;
+			.fa {
+				transition: all 0.2s linear;				
+			}
+			&.in {
+				.fa {
+					transform: rotate(180deg);				
+				}	
+			}
+		}
+	}
+	&__available-items-toggle {
+		display: none;
+		&.in {
+			display: block;
+		}
+	}
+	/* PAGES */
+	&__available-items-list-pages {
+		max-height: 400px;
+		overflow-y: auto;
+	}
+	&__available-item-page {
+		display: flex;
+		margin: 0;
+		padding: 5px 10px;
+		background-color: @white;
+		cursor: pointer;
+	}
+	&__available-item-page-checkbox {
+		input[type="checkbox"] {
+			margin: 0;
+		}
+	}
+	&__available-item-page-label {
+		padding-left: 10px;
+	}
+	&__available-item-page-add {
+		padding: 10px;
+		text-align: right;
+		border-bottom: 1px solid @middlegray;
+		background-color: @white;
+	}
+	/* ITEMS */
+	&__available-items-list-add-item {		
+		.cms-module {
+			&__option {
+				margin: 0;
+				padding-bottom: 10px;
+				border: none;
+				border-bottom: 1px solid @middlegray;
+			}
+			&__option-group {
+				&:last-child {
+					margin: 0;
+				}
+			}
+			&__option-action {
+				margin-right: -15px;
+				margin-left: -15px;
+				padding: 0 10px;
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
