@@ -24,72 +24,75 @@
                     <h3 class="metadata__elements-h3">
                         <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{msg[type.tabName]}" />
                     </h3>
-                    <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
-                        <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                            <div class="metadata__element">
-                                <dl class="dl-horizontal metadata__element-dl">
-                                    <dt title="#{msg[metadata.label]}">
-                                        <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                    </dt>
-                                    <!-- grouped="true" -->
-                                    <h:panelGroup rendered="#{metadata.group}">
-                                        <dd>
-                                            <ui:repeat value="#{metadata.values}" var="val">
-                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <f:param value="#{val.getParamLabelWithColon(0)}" />
-                                                    <f:param value="#{val.getComboValueShort(0)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(1)}" />
-                                                    <f:param value="#{val.getComboValueShort(1)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(2)}" />
-                                                    <f:param value="#{val.getComboValueShort(2)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(3)}" />
-                                                    <f:param value="#{val.getComboValueShort(3)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(4)}" />
-                                                    <f:param value="#{val.getComboValueShort(4)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(5)}" />
-                                                    <f:param value="#{val.getComboValueShort(5)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(6)}" />
-                                                    <f:param value="#{val.getComboValueShort(6)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(7)}" />
-                                                    <f:param value="#{val.getComboValueShort(7)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(8)}" />
-                                                    <f:param value="#{val.getComboValueShort(8)}" />
-                                                    <f:param value="#{val.getParamLabelWithColon(9)}" />
-                                                    <f:param value="#{val.getComboValueShort(9)}" />
-                                                </h:outputFormat>
-
-                                                <!-- NORMDATA -->
-                                                <viewerComponent:normdata />
-                                                <br />
-                                            </ui:repeat>
-                                        </dd>
-                                    </h:panelGroup>
-
-                                    <!-- grouped="false" -->
-                                    <h:panelGroup rendered="#{!metadata.group}">
-                                        <dd>
-                                            <ui:repeat value="#{metadata.values}" var="val">
-                                                <span class="metadata__element-value">
+                    
+                    <div class="metadata__element-wrapper">
+                        <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
+                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                                <div class="metadata__element">
+                                    <dl class="dl-horizontal metadata__element-dl">
+                                        <dt title="#{msg[metadata.label]}">
+                                            <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                        </dt>
+                                        <!-- grouped="true" -->
+                                        <h:panelGroup rendered="#{metadata.group}">
+                                            <dd>
+                                                <ui:repeat value="#{metadata.values}" var="val">
                                                     <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                        <f:param value="#{val.getParamLabelWithColon(0)}" />
                                                         <f:param value="#{val.getComboValueShort(0)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(1)}" />
                                                         <f:param value="#{val.getComboValueShort(1)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(2)}" />
                                                         <f:param value="#{val.getComboValueShort(2)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(3)}" />
                                                         <f:param value="#{val.getComboValueShort(3)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(4)}" />
                                                         <f:param value="#{val.getComboValueShort(4)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(5)}" />
                                                         <f:param value="#{val.getComboValueShort(5)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(6)}" />
                                                         <f:param value="#{val.getComboValueShort(6)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(7)}" />
                                                         <f:param value="#{val.getComboValueShort(7)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(8)}" />
                                                         <f:param value="#{val.getComboValueShort(8)}" />
+                                                        <f:param value="#{val.getParamLabelWithColon(9)}" />
                                                         <f:param value="#{val.getComboValueShort(9)}" />
                                                     </h:outputFormat>
-                                                </span>
-                                            </ui:repeat>
-                                        </dd>
-                                    </h:panelGroup>
-                                </dl>
-                            </div>
-                        </h:panelGroup>
-                    </ui:repeat>
+    
+                                                    <!-- NORMDATA -->
+                                                    <viewerComponent:normdata />
+                                                    <br />
+                                                </ui:repeat>
+                                            </dd>
+                                        </h:panelGroup>
+    
+                                        <!-- grouped="false" -->
+                                        <h:panelGroup rendered="#{!metadata.group}">
+                                            <dd>
+                                                <ui:repeat value="#{metadata.values}" var="val">
+                                                    <span class="metadata__element-value">
+                                                        <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                            <f:param value="#{val.getComboValueShort(0)}" />
+                                                            <f:param value="#{val.getComboValueShort(1)}" />
+                                                            <f:param value="#{val.getComboValueShort(2)}" />
+                                                            <f:param value="#{val.getComboValueShort(3)}" />
+                                                            <f:param value="#{val.getComboValueShort(4)}" />
+                                                            <f:param value="#{val.getComboValueShort(5)}" />
+                                                            <f:param value="#{val.getComboValueShort(6)}" />
+                                                            <f:param value="#{val.getComboValueShort(7)}" />
+                                                            <f:param value="#{val.getComboValueShort(8)}" />
+                                                            <f:param value="#{val.getComboValueShort(9)}" />
+                                                        </h:outputFormat>
+                                                    </span>
+                                                </ui:repeat>
+                                            </dd>
+                                        </h:panelGroup>
+                                    </dl>
+                                </div>
+                            </h:panelGroup>
+                        </ui:repeat>
+                    </div>                    
                 </div>
             </ui:repeat>
         </ui:repeat>
