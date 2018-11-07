@@ -66,7 +66,7 @@ public class CalendarBean implements Serializable {
     private static final long serialVersionUID = 1095535586988646463L;
 
     private final static int MAX_ALLOWED_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 1000;
-    private final static int MIN_ALLOWED_YEAR = -5_000_000;
+    private final static int MIN_ALLOWED_YEAR = -10_000;
     
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
 
@@ -216,7 +216,6 @@ public class CalendarBean implements Serializable {
         }
 
         for (int currentYear = yearStart; currentYear <= yearEnd; currentYear++) {
-            System.out.println("Current year " + currentYear);
             if (row.getItemList().size() % NUMBER_OF_ITEMS_IN_ROW == 0) {
                 row = new CalendarRow();
                 rowList.add(row);
