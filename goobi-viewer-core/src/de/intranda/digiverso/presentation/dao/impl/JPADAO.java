@@ -3081,29 +3081,15 @@ public class JPADAO implements IDAO {
      * 
      */
     @Override
-    public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
+    public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
         preQuery();
         Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
         q.setParameter("id", page.getId());
+        return q.getResultList();
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        return getSingleResult(q);
+//        return getSingleResult(q);
     }
 
-    /**
-     * Helper method to get the first result of the given query if any results are returned, or an empty Optional otherwise
-     * 
-     * @throws ClassCastException if the first result cannot be cast to the expected type
-     * @param q the query to perform
-     * @return an Optional containing the first query result, or an empty Optional if no results are present
-     */
-    @SuppressWarnings("unchecked")
-    private static <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
-        List<Object> results = q.getResultList();
-        if (results == null || results.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable((T) results.get(0));
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getStaticPageForTypeType(de.intranda.digiverso.presentation.dao.PageType)
@@ -3136,6 +3122,23 @@ public class JPADAO implements IDAO {
         } else {
             return Optional.ofNullable((T) results.get(0));
         }
+    }
+    
+
+    /**
+     * Helper method to get the first result of the given query if any results are returned, or an empty Optional otherwise
+     * 
+     * @throws ClassCastException if the first result cannot be cast to the expected type
+     * @param q the query to perform
+     * @return an Optional containing the first query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
+        List<Object> results = q.getResultList();
+        if (results == null || results.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((T) results.get(0));
     }
 
     /* (non-Javadoc)

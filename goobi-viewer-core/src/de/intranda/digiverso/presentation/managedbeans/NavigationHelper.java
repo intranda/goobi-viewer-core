@@ -856,7 +856,7 @@ public class NavigationHelper implements Serializable {
             linkedPages.add(currentPage);
             if (DataManager.getInstance()
                     .getDao()
-                    .getStaticPageForCMSPage(currentPage)
+                    .getStaticPageForCMSPage(currentPage).stream().findFirst()
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {

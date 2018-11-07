@@ -169,7 +169,7 @@ public class ViewerPath {
             return URI.create(getCmsPage().getStaticPageName().replaceAll("^\\/|\\/$", ""));
         } else if (getCmsPage() != null) {
             try {
-                return DataManager.getInstance().getDao().getStaticPageForCMSPage(getCmsPage())
+                return DataManager.getInstance().getDao().getStaticPageForCMSPage(getCmsPage()).stream().findFirst()
                 .map(staticPage -> staticPage.getPageName().replaceAll("^\\/|\\/$", ""))
                 .map(pageName -> URI.create(pageName))
                 .orElse(getPagePath());

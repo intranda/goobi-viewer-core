@@ -2214,7 +2214,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getStaticPageForCMSPage_shouldReturnCorrectResult() throws Exception {
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         for (CMSPage page : cmsPages) {
-            Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(page);
+            Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(page).stream().findFirst();
             if (page.getId().equals(1l)) {
                 Assert.assertTrue(staticPage.isPresent());
                 Assert.assertTrue(staticPage.get().getPageName().equals("index"));
