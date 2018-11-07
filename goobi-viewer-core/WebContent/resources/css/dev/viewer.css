@@ -9876,7 +9876,7 @@ div[id*="-Modal"] .email-form .form-group {
   top: 0;
   right: 0;
   padding: 10px;
-  z-index: 999;
+  z-index: 998;
 }
 .media-gallery__item-image img {
   display: block;
