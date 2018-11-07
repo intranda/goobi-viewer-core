@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +65,9 @@ public class CalendarBean implements Serializable {
 
     private static final long serialVersionUID = 1095535586988646463L;
 
+    private final static int MAX_ALLOWED_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 1000;
+    private final static int MIN_ALLOWED_YEAR = -5_000_000;
+    
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
 
     @Inject
@@ -154,13 +158,13 @@ public class CalendarBean implements Serializable {
             }
             int[] minMaxYears = SearchHelper.getMinMaxYears(sbSearchString.toString());
             if (start.equalsIgnoreCase("MIN")) {
-                yearStart = minMaxYears[0];
+                yearStart = Math.max(minMaxYears[0], MIN_ALLOWED_YEAR);
             } else {
                 yearStart = Integer.parseInt(start);
             }
 
             if (end.equalsIgnoreCase("MAX")) {
-                yearEnd = minMaxYears[1];
+                yearEnd = Math.min(minMaxYears[1], MAX_ALLOWED_YEAR);
             } else {
                 yearEnd = Integer.parseInt(end);
             }
@@ -212,6 +216,7 @@ public class CalendarBean implements Serializable {
         }
 
         for (int currentYear = yearStart; currentYear <= yearEnd; currentYear++) {
+            System.out.println("Current year " + currentYear);
             if (row.getItemList().size() % NUMBER_OF_ITEMS_IN_ROW == 0) {
                 row = new CalendarRow();
                 rowList.add(row);
