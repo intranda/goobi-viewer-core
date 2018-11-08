@@ -798,14 +798,15 @@ public class TocMaker {
      * @param field
      * @return
      */
-    static String getFooterId(SolrDocument doc, String field) {
+    static String getFooterId(SolrDocument doc, List<String> fields) {
         String ret = null;
-        if (field != null) {
-            List<String> footerIdValues = SolrSearchIndex.getMetadataValues(doc, field);
-            if (footerIdValues != null && !footerIdValues.isEmpty()) {
-                ret = footerIdValues.get(0);
+            for (String field : fields) {
+                List<String> footerIdValues = SolrSearchIndex.getMetadataValues(doc, field);
+                if (footerIdValues != null && !footerIdValues.isEmpty()) {
+                    ret = footerIdValues.get(0);
+                    break;
+                }                
             }
-        }
 
         return ret;
     }
@@ -819,12 +820,13 @@ public class TocMaker {
      * @return
      */
 
-    static String getFooterId(StructElement doc, String field) {
+    static String getFooterId(StructElement doc, List<String> fields) {
         String ret = null;
-        if (field != null) {
+        for (String field : fields) {
             List<String> footerIdValues = doc.getMetadataValues(field);
             if (footerIdValues != null && !footerIdValues.isEmpty()) {
                 ret = footerIdValues.get(0);
+                break;
             }
         }
 

@@ -332,16 +332,6 @@ public class ViewManager implements Serializable {
         //                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
-    @Deprecated
-    private String getFooterId() {
-        String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-        String footerId = null;
-        if (footerIdField != null) {
-            footerId = topDocument.getMetadataValue(footerIdField);
-        }
-        return footerId;
-    }
-
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<List<String>> coords = new ArrayList<>();
         List<String> coordStrings = getSearchResultCoords(getCurrentPage());

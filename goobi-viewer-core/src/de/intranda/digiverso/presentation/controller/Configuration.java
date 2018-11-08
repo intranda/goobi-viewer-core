@@ -2415,8 +2415,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getWatermarkIdField() {
-        return getLocalString("viewer.watermarkIdField", SolrConstants.DC);
+    public List<String> getWatermarkIdField() {
+        return getLocalList("viewer.watermarkIdField", Collections.singletonList(SolrConstants.DC));
 
     }
 
