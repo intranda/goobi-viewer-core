@@ -248,6 +248,7 @@ public class UserBean implements Serializable {
                             logger.trace("Redirecting to user page");
                             response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
                         }
+                        SearchHelper.updateFilterQuerySuffix(request);
                         return;
                     } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
                         //user may login, but setting up viewer account failed
@@ -286,6 +287,7 @@ public class UserBean implements Serializable {
         HttpServletRequest request = BeanUtils.getRequest();
         try {
             wipeSession(request);
+            SearchHelper.updateFilterQuerySuffix(request);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }
@@ -358,8 +360,6 @@ public class UserBean implements Serializable {
 
             this.authenticationProviders = null;
 
-            // Update filter query suffix
-            SearchHelper.updateFilterQuerySuffix(request);
         }
     }
 
