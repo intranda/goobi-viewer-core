@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -934,7 +935,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getWatermarkIdField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("watermarkIdField_value", DataManager.getInstance().getConfiguration().getWatermarkIdField());
+        Assert.assertEquals(Collections.singletonList("watermarkIdField_value"), DataManager.getInstance().getConfiguration().getWatermarkIdField());
     }
 
     /**
