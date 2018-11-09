@@ -24,7 +24,10 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -277,21 +280,23 @@ public class RecordsResource {
      * @throws PresentationException
      */
     @SuppressWarnings("unchecked")
-    @GET
-    @Path("/count/{query}")
+    @POST
+    @Path("/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getCount(@PathParam("query") String query) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
-        if (StringUtils.isEmpty(query)) {
-            throw new ContentNotFoundException("query required");
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public String getCount(RecordsRequestParameters params) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
+        JSONObject ret = new JSONObject();
+        if (params == null) {
+            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            ret.put("message", "Invalid JSON request object");
+            return ret.toJSONString();
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-        query = new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        String query = new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
         logger.debug("q: {}", query);
-
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("count", count);
+        ret.put("count", count);
 
-        return jsonObject.toJSONString();
+        return ret.toJSONString();
     }
 }
