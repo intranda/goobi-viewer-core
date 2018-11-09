@@ -1382,7 +1382,7 @@
 		<property name="server.url" value="https://viewer.cbl.ie/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.cbl.ie%2Fviewer%2Foai" />
-		<property name="theme" value="reference" />
+		<property name="theme" value="cbl" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
