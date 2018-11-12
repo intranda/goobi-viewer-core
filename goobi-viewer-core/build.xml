@@ -488,9 +488,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
-		<property name="server.url" value="http://emedien.arbeiterkammer.at/viewer2/" />
+		<property name="server.url" value="https://emedien.arbeiterkammer.at/viewer2/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer2%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer2%2Foai" />
 		<property name="theme" value="akwien" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="190" />
