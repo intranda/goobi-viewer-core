@@ -512,10 +512,10 @@ public class Metadata implements Serializable {
                                     values.add(mdValue);
                                 }
                                 String paramValue = sbValue.toString();
-                                if (param.getKey().equals(NormDataImporter.FIELD_URI) || param.getKey().equals(NormDataImporter.FIELD_URI_GND)) {
+                                if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                                     Map<String, String> normDataUrl = new HashMap<>();
                                     normDataUrl.put(param.getKey(), paramValue);
-                                    // logger.trace("found url: " + normDataUrl.toString());
+                                     // logger.trace("found normdata uri: {}", normDataUrl.toString());
                                     setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
                                 } else {
                                     setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
