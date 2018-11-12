@@ -268,6 +268,8 @@ public class RecordsResource {
                     jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
                     break;
             }
+        } else {
+            jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();
