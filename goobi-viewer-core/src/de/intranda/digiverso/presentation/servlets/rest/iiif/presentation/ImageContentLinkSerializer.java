@@ -41,12 +41,12 @@ public class ImageContentLinkSerializer extends JsonSerializer<ImageContent>{
 //            generator.writeString(element.getId().toString());
             generator.writeStartObject();
             generator.writeStringField("@id", element.getId().toString());
-            generator.writeStringField("@type", "dcTypes:Image");
+            generator.writeStringField("@type", element.getType().getLabel());
             generator.writeEndObject();
         } else {
             generator.writeStartObject();
             generator.writeStringField("@id", element.getId().toString());
-            generator.writeStringField("@type", "dcTypes:Image");
+            generator.writeStringField("@type", element.getType().getLabel());
             generator.writeObjectFieldStart("service");
             generator.writeStringField("@context", ImageInformation.JSON_CONTEXT);
             generator.writeStringField("@id", element.getService().getId());

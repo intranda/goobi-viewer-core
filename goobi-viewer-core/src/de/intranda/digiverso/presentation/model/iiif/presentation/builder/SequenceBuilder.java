@@ -69,6 +69,7 @@ public class SequenceBuilder extends AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(SequenceBuilder.class);
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+    private BuildMode buildMode = BuildMode.IIIF;
 
     /**
      * @param request
@@ -104,10 +105,9 @@ public class SequenceBuilder extends AbstractBuilder {
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
-        
+
         sequence.addWithin(manifest);
-        
-        
+
         IPageLoader pageLoader = new EagerPageLoader(doc);
 
         String dataRepository = ContentResource.getDataRepository(doc.getPi());
@@ -117,15 +117,17 @@ public class SequenceBuilder extends AbstractBuilder {
             PhysicalElement page = pageLoader.getPage(i);
 
             Canvas canvas = generateCanvas(doc, page);
-            if (canvas != null) {
+            if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                 Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
 
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
-                sequence.addCanvas(canvas);
             }
+            sequence.addCanvas(canvas);
         }
-        annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+        if(getBuildMode().equals(BuildMode.IIIF)) {            
+            annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+        }
 
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
@@ -194,9 +196,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return
      * @throws URISyntaxException
      * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException 
+     * @throws IndexUnreachableException
      */
-    public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException {
+    public Canvas generateCanvas(StructElement doc, PhysicalElement page)
+            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException {
         if (doc == null || page == null) {
             return null;
         }
@@ -204,50 +207,52 @@ public class SequenceBuilder extends AbstractBuilder {
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
         canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page)), false));
-        
+
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
-        
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
-        viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-        canvas.addRendering(viewerPage);
-        
-        Dimension size = getSize(page);
-        if (size.getWidth() * size.getHeight() > 0) {
-            canvas.setWidth(size.width);
-            canvas.setHeight(size.height);
-        }
 
-        if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
+            LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
+            viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+            canvas.addRendering(viewerPage);
 
-            String thumbnailUrl = page.getThumbnailUrl();
-            ImageContent resource;
+        if (getBuildMode().equals(BuildMode.IIIF)) {
+            Dimension size = getSize(page);
             if (size.getWidth() * size.getHeight() > 0) {
-                resource = new ImageContent(new URI(thumbnailUrl), true);
-                resource.setWidth(size.width);
-                resource.setHeight(size.height);
-            } else {
-                ImageInformation imageInfo;
-                resource = new ImageContent(new URI(thumbnailUrl), false);
-                try {
-                    imageInfo = imageDelivery.getImages().getImageInformation(page);
-                    resource.setService(imageInfo);
-                } catch (ContentLibException e) {
-                    logger.error("Error reading image information from " + thumbnailUrl + ": " + e.toString());
+                canvas.setWidth(size.width);
+                canvas.setHeight(size.height);
+            }
+
+            if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
+
+                String thumbnailUrl = page.getThumbnailUrl();
+                ImageContent resource;
+                if (size.getWidth() * size.getHeight() > 0) {
                     resource = new ImageContent(new URI(thumbnailUrl), true);
                     resource.setWidth(size.width);
                     resource.setHeight(size.height);
+                } else {
+                    ImageInformation imageInfo;
+                    resource = new ImageContent(new URI(thumbnailUrl), false);
+                    try {
+                        imageInfo = imageDelivery.getImages().getImageInformation(page);
+                        resource.setService(imageInfo);
+                    } catch (ContentLibException e) {
+                        logger.error("Error reading image information from " + thumbnailUrl + ": " + e.toString());
+                        resource = new ImageContent(new URI(thumbnailUrl), true);
+                        resource.setWidth(size.width);
+                        resource.setHeight(size.height);
 
+                    }
                 }
+                resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
+
+                Annotation imageAnnotation = new Annotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
+                imageAnnotation.setMotivation(Motivation.PAINTING);
+                imageAnnotation.setOn(new Canvas(canvas.getId()));
+
+                imageAnnotation.setResource(resource);
+                canvas.addImage(imageAnnotation);
             }
-            resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
-
-            Annotation imageAnnotation = new Annotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
-            imageAnnotation.setMotivation(Motivation.PAINTING);
-            imageAnnotation.setOn(new Canvas(canvas.getId()));
-
-            imageAnnotation.setResource(resource);
-            canvas.addImage(imageAnnotation);
 
         }
         return canvas;
@@ -418,6 +423,21 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
         return size;
+    }
+
+    /**
+     * @return the buildMode
+     */
+    public BuildMode getBuildMode() {
+        return buildMode;
+    }
+
+    /**
+     * @param buildMode the buildMode to set
+     */
+    public SequenceBuilder setBuildMode(BuildMode buildMode) {
+        this.buildMode = buildMode;
+        return this;
     }
 
 }
