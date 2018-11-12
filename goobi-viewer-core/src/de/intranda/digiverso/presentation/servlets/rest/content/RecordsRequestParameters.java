@@ -16,11 +16,17 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
 /**
- * POST request parameters for SitemapResource.
+ * POST request parameters for RecordsResource.
  */
 public class RecordsRequestParameters {
 
     private String query;
+    private String sortFields;
+    private String sortOrder;
+    private String jsonFormat;
+    private int count;
+    private int offset;
+    private boolean randomize;
 
     /**
      * @return the query
@@ -34,5 +40,89 @@ public class RecordsRequestParameters {
      */
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    /**
+     * @return the sortFields
+     */
+    public String getSortFields() {
+        return sortFields;
+    }
+
+    /**
+     * @param sortFields the sortFields to set
+     */
+    public void setSortFields(String sortFields) {
+        this.sortFields = sortFields;
+    }
+
+    /**
+     * @return the sortOrder
+     */
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    /**
+     * @param sortOrder the sortOrder to set
+     */
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    /**
+     * @return the jsonFormat
+     */
+    public String getJsonFormat() {
+        return jsonFormat;
+    }
+
+    /**
+     * @param jsonFormat the jsonFormat to set
+     */
+    public void setJsonFormat(String jsonFormat) {
+        this.jsonFormat = jsonFormat;
+    }
+
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * @param count the count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    /**
+     * @return the offset
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset the offset to set
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    /**
+     * @return the randomize
+     */
+    public boolean isRandomize() {
+        return randomize;
+    }
+
+    /**
+     * @param randomize the randomize to set
+     */
+    public void setRandomize(boolean randomize) {
+        this.randomize = randomize;
     }
 }

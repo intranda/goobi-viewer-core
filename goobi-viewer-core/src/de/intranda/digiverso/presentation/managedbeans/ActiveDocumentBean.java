@@ -699,6 +699,9 @@ public class ActiveDocumentBean implements Serializable {
         //        }
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
+            if (pageType == null) {
+                pageType = PageType.viewObject.name();
+            }
             logger.trace("current view: {}", pageType);
         }
 
@@ -1298,7 +1301,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getRelativeUrlTags() throws IndexUnreachableException {
-        if (!isRecordLoaded()) {
+        if (!isRecordLoaded() || navigationHelper == null) {
             return "";
         }
         if (logger.isTraceEnabled() && navigationHelper != null) {
