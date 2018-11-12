@@ -64,6 +64,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+    private BuildMode buildMode = BuildMode.IIIF;
 
     /**
      * @param request
@@ -133,59 +134,61 @@ public class ManifestBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-        Optional<String> logoUrl = getLogoUrl();
-        if (!logoUrl.isPresent()) {
-            logoUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
-        }
-        logoUrl.ifPresent(url -> {
+        if (getBuildMode().equals(BuildMode.IIIF)) {
+            Optional<String> logoUrl = getLogoUrl();
+            if (!logoUrl.isPresent()) {
+                logoUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+            }
+            logoUrl.ifPresent(url -> {
+                try {
+                    ImageContent logo = new ImageContent(new URI(url), false);
+                    manifest.setLogo(logo);
+                } catch (URISyntaxException e) {
+                    logger.warn("Unable to retrieve logo url", e);
+                }
+            });
+
+            String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+            if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
+                try {
+                    manifest.setNavDate(Date.from(Instant.parse(ele.getMetadataValue(navDateField))));
+                } catch (NullPointerException | DateTimeParseException e) {
+                    logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
+                }
+            }
+
+            /*METS/MODS*/
             try {
-                ImageContent logo = new ImageContent(new URI(url), false);
-                manifest.setLogo(logo);
+                LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
+                metsResolver.setFormat(Format.TEXT_XML);
+                metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
+                manifest.addSeeAlso(metsResolver);
             } catch (URISyntaxException e) {
-                logger.warn("Unable to retrieve logo url", e);
+                logger.error("Unable to retrieve mets resolver url for {}", ele);
             }
-        });
 
-        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-        if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
+            /*VIEWER*/
             try {
-                manifest.setNavDate(Date.from(Instant.parse(ele.getMetadataValue(navDateField))));
-            } catch (NullPointerException | DateTimeParseException e) {
-                logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
-            }
-        }
-
-        /*METS/MODS*/
-        try {
-            LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
-            metsResolver.setFormat(Format.TEXT_XML);
-            metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
-            manifest.addSeeAlso(metsResolver);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to retrieve mets resolver url for {}", ele);
-        }
-
-        /*VIEWER*/
-        try {
-            LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
-            viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-            manifest.addRendering(viewerPage);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to retrieve viewer url for {}", ele);
-        }
-
-        if (manifest instanceof Manifest) {
-            /*PDF*/
-            try {
-                String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
-                LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-                pdfDownload.setFormat(Format.APPLICATION_PDF);
-                pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-                manifest.addRendering(pdfDownload);
+                LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
+                viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+                manifest.addRendering(viewerPage);
             } catch (URISyntaxException e) {
-                logger.error("Unable to retrieve pdf download url for {}", ele);
+                logger.error("Unable to retrieve viewer url for {}", ele);
             }
 
+            if (manifest instanceof Manifest) {
+                /*PDF*/
+                try {
+                    String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
+                    LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
+                    pdfDownload.setFormat(Format.APPLICATION_PDF);
+                    pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
+                    manifest.addRendering(pdfDownload);
+                } catch (URISyntaxException e) {
+                    logger.error("Unable to retrieve pdf download url for {}", ele);
+                }
+
+            }
         }
     }
 
@@ -294,11 +297,12 @@ public class ManifestBuilder extends AbstractBuilder {
                     //fall through
                 } else if (url.isAbsolute()) {
                     try {
-                        urlString = imageDelivery.getIiif().getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(),
-                                Rotation.NONE.toString(), Colortype.DEFAULT.toString(),
-                                ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath()))
-                                        .toString(),
-                                85);
+                        urlString = imageDelivery.getIiif()
+                                .getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(), Rotation.NONE.toString(),
+                                        Colortype.DEFAULT.toString(),
+                                        ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath()))
+                                                .toString(),
+                                        85);
                     } catch (NullPointerException e) {
                         logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
                         urlString = null;
@@ -314,6 +318,21 @@ public class ManifestBuilder extends AbstractBuilder {
             }
         }
         return Optional.ofNullable(urlString);
+    }
+
+    /**
+     * @return the buildMode
+     */
+    public BuildMode getBuildMode() {
+        return buildMode;
+    }
+
+    /**
+     * @param buildMode the buildMode to set
+     */
+    public ManifestBuilder setBuildMode(BuildMode buildMode) {
+        this.buildMode = buildMode;
+        return this;
     }
 
 }

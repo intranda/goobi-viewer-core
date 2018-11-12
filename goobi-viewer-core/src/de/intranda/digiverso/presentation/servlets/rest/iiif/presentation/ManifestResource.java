@@ -52,6 +52,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
+import de.intranda.digiverso.presentation.model.iiif.presentation.builder.BuildMode;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.LayerBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.SequenceBuilder;
@@ -197,6 +198,40 @@ public class ManifestResource extends AbstractResource {
         } else if (manifest instanceof Manifest) {
             getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0);
+        }
+        throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
+
+    }
+    
+    /**
+     * Creates A IIIF sequence containing all pages belonging to the given pi
+     * 
+     * @param pi
+     * @return A IIIF sequence with all pages of the book (if applicable)
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
+     * @throws ContentNotFoundException If no document was found for the given pi
+     */
+    @GET
+    @Path("/{pi}/sequence/thumbnails")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<Canvas> getThumbnailSequence(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+            ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
+
+        StructElement doc = getManifestBuilder().getDocument(pi);
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        IPresentationModelElement manifest = getManifestBuilder().setBuildMode(BuildMode.THUMBS).generateManifest(doc);
+
+        if (manifest instanceof Collection) {
+            throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
+        } else if (manifest instanceof Manifest) {
+            getSequenceBuilder().setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            return ((Manifest) manifest).getSequences().get(0).getCanvases();
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
