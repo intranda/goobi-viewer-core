@@ -306,7 +306,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="orka"
+		<theme subTheme="false" mainTheme="reference"
 			discriminatorField="" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
@@ -874,8 +874,16 @@
 		<normdataList>
             <template name="_DEFAULT">
                 <field>NORM_IDENTIFIER</field>
-                <field>NORM_NAME</field>
-                <field>NORM_ALTNAME</field>
+                <field>NORM_TITLE</field>
+                <field>NORM_OTHERTITLE</field>
+                <field>NORM_EXPLANATORYTEXT</field>
+                <field>NORM_PERIOD</field>
+                <field>NORM_PRODUCTIONPERIOD</field>
+                <field>NORM_CONTRIBUTOR</field>
+                <field>NORM_OWNER</field>
+                <field>NORM_COLLECTOR</field>
+                <field>NORM_WORK</field>
+                <field>NORM_RELATIONSHIP</field>
                 <field>URI</field>
             </template>
             <template name="CORPORATION">

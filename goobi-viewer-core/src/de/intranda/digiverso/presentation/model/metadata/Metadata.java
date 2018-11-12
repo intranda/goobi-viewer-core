@@ -321,6 +321,9 @@ public class Metadata implements Serializable {
                             NavigationHelper nh = BeanUtils.getNavigationHelper();
                             value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
                             break;
+                        case NORMDATAURI:
+                            // TODO
+                            break;
                         default:
                             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                             value = StringEscapeUtils.escapeHtml(value);
