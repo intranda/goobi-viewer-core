@@ -14,8 +14,11 @@
 				type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageAdmin('adminAllUserGroups')}" />
 			<f:event
+                type="preRenderView"
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event
 				type="preRenderView"
-				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUserGroups,1)}" />
+				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUserGroups,2)}" />
 			<f:event
 				type="preRenderView"
 				listener="#{adminBean.resetCurrentLicenseAction}" />

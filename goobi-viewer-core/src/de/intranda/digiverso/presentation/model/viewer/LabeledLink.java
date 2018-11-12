@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.model.viewer;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
+
 public class LabeledLink implements Serializable {
 
     private static final long serialVersionUID = -2546718627110716169L;
@@ -71,6 +73,10 @@ public class LabeledLink implements Serializable {
      */
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+    
+    public boolean isLink() {
+        return StringUtils.isNotBlank(getUrl());
     }
 
 
