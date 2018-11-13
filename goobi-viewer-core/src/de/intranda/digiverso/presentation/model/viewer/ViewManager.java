@@ -323,13 +323,17 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     private String getCurrentImageUrl(PageType view, int size) throws IndexUnreachableException, DAOException {
-        ImageFileFormat format = ImageFileFormat.JPG;
-        if (ImageFileFormat.PNG.equals(getCurrentPage().getImageType().getFormat())) {
-            format = ImageFileFormat.PNG;
+        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
+        try {            
+            if(DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
+                sb.append("?ignoreWatermark=false");
+                sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+            }
+        } catch(ViewerConfigurationException e) {
+            logger.error("Unable to read watermark config, ignore watermark", e);
         }
-        return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), size, size);
-        //        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getCurrentPage().getFileName(), RegionRequest.FULL,
-        //                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        return sb.toString();
     }
 
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
