@@ -61,12 +61,12 @@ public class WatermarkHandler {
      */
     private final Map<String, String> documentWatermarkTextMap = new HashMap<>();
     private final List<String> watermarkTextConfiguration;
-    private final String watermarkIdField;
+    private final List<String> watermarkIdFields;
     private final String servletPath;
 
     public WatermarkHandler(Configuration configuration, String servletPath) {
         this.watermarkTextConfiguration = configuration.getWatermarkTextConfiguration();
-        this.watermarkIdField = configuration.getWatermarkIdField();
+        this.watermarkIdFields = configuration.getWatermarkIdField();
         this.servletPath = servletPath;
     }
 
@@ -257,8 +257,13 @@ public class WatermarkHandler {
      */
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;
-        if (watermarkIdField != null && topDocument != null) {
-            footerId = topDocument.getMetadataValue(watermarkIdField);
+        if (!watermarkIdFields.isEmpty() && topDocument != null) {
+            for (String watermarkIdField : watermarkIdFields) {
+                footerId = topDocument.getMetadataValue(watermarkIdField);
+                if(StringUtils.isNotBlank(footerId)) {
+                    break;
+                }
+            }
         }
         return Optional.ofNullable(footerId);
     }

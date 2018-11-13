@@ -908,7 +908,7 @@ public class CMSPage {
             return getPersistentUrl() + "/";
         } else if (pretty) {
             try {
-                Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this);
+                Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this).stream().findFirst();
                 if (staticPage.isPresent()) {
                     return staticPage.get().getPageName() + "/";
                 }

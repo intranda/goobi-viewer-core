@@ -160,7 +160,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     public Optional<StructElement> getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
         List<String> fieldList = new ArrayList<>(Arrays.asList(WatermarkHandler.REQUIRED_SOLR_FIELDS));
-        fieldList.add(DataManager.getInstance().getConfiguration().getWatermarkIdField());
+        fieldList.addAll(DataManager.getInstance().getConfiguration().getWatermarkIdField());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, fieldList);
         if (doc != null) {
             Long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));

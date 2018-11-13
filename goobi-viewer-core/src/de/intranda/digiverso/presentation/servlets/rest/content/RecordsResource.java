@@ -24,7 +24,10 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -192,10 +195,11 @@ public class RecordsResource {
     /**
      * 
      * @param query Solr query
-     * @param sortFieldArray
+     * @param sortFields
      * @param sortOrder
      * @param jsonFormat
      * @param count Max number of records
+     * @param offset
      * @param randomize If true, the result will contain random records within the given search parameters
      * @return JSON array
      * @throws MalformedURLException
@@ -206,57 +210,66 @@ public class RecordsResource {
      * @throws ViewerConfigurationException
      * @throws DAOException
      */
-    @GET
-    @Path("/q/{query}/{sortFields}/{sortOrder}/{jsonFormat}/{count}/{randomize}")
+    @SuppressWarnings("unchecked")
+    @POST
+    @Path("/q")
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getRecordsForQuery(@PathParam("query") String query, @PathParam("sortFields") String sortFields,
-            @PathParam("sortOrder") String sortOrder, @PathParam("jsonFormat") String jsonFormat, @PathParam("count") int count,
-            @PathParam("randomize") boolean randomize) throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException,
-            IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
-        if (StringUtils.isEmpty(query)) {
-            throw new ContentNotFoundException("query required");
+    public String getRecordsForQuery(RecordsRequestParameters params) throws MalformedURLException, ContentNotFoundException,
+            ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException, DAOException {
+        JSONObject ret = new JSONObject();
+        if (params == null || params.getQuery() == null) {
+            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            ret.put("message", "Invalid JSON request object");
+            return ret.toJSONString();
         }
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        query = new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        String query = new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
         logger.trace("query: {}", query);
 
+        int count = params.getCount();
         if (count <= 0) {
             count = SolrSearchIndex.MAX_HITS;
         }
 
         List<StringPair> sortFieldList = new ArrayList<>();
-        if (!"-".equals(sortFields)) {
-            String[] sortFieldArray = sortFields.split(";");
+        if (StringUtils.isNotEmpty(params.getSortFields())) {
+            String[] sortFieldArray = params.getSortFields().split(";");
             for (String sortField : sortFieldArray) {
                 if (StringUtils.isNotEmpty(sortField)) {
-                    sortFieldList.add(new StringPair(sortField, sortOrder));
+                    sortFieldList.add(new StringPair(sortField, params.getSortOrder()));
                 }
             }
-            logger.trace("sortFields: {}", sortFields.toString());
+            logger.trace("sortFields: {}", params.getSortFields().toString());
         }
         logger.trace("count: {}", count);
-        logger.trace("sortOrder: {}", sortOrder);
-        logger.trace("randomize: {}", randomize);
-        logger.trace("jsonFormat: {}", jsonFormat);
+        logger.trace("offset: {}", params.getOffset());
+        logger.trace("sortOrder: {}", params.getSortOrder());
+        logger.trace("randomize: {}", params.isRandomize());
+        logger.trace("jsonFormat: {}", params.getJsonFormat());
 
-        if (randomize) {
+        if (params.isRandomize()) {
             sortFieldList.clear();
             // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
             Random random = new Random();
-            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), (!"-".equals(sortOrder)) ? sortOrder : "asc"));
-            logger.trace("sortFields: {}", sortFields);
+            sortFieldList.add(new StringPair("random_" + random.nextInt(Integer.MAX_VALUE), ("desc".equals(params.getSortOrder()) ? "desc" : "asc")));
         }
 
-        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFieldList, null, null).getResults();
+        SolrDocumentList result =
+                DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, null).getResults();
         JSONArray jsonArray = null;
-        switch (jsonFormat) {
-            case "datecentric":
-                jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                break;
-            default:
-                jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
-                break;
+        if (params.getJsonFormat() != null) {
+            switch (params.getJsonFormat()) {
+                case "datecentric":
+                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+                    break;
+                default:
+                    jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
+                    break;
+            }
+        } else {
+            jsonArray = JsonTools.getRecordJsonArray(result, servletRequest);
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();
@@ -275,21 +288,23 @@ public class RecordsResource {
      * @throws PresentationException
      */
     @SuppressWarnings("unchecked")
-    @GET
-    @Path("/count/{query}")
+    @POST
+    @Path("/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getCount(@PathParam("query") String query) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
-        if (StringUtils.isEmpty(query)) {
-            throw new ContentNotFoundException("query required");
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public String getCount(RecordsRequestParameters params) throws ContentNotFoundException, IndexUnreachableException, PresentationException {
+        JSONObject ret = new JSONObject();
+        if (params == null || params.getQuery() == null) {
+            ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            ret.put("message", "Invalid JSON request object");
+            return ret.toJSONString();
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-        query = new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        String query = new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
         logger.debug("q: {}", query);
-
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("count", count);
+        ret.put("count", count);
 
-        return jsonObject.toJSONString();
+        return ret.toJSONString();
     }
 }

@@ -187,60 +187,60 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 contentFileName = paramsSplit[3];
                 String[] imageFileNameSplit = contentFileName.split("[.]");
 
-                if ("image".equals(action) && pi != null) {
-                    // Search for the real file name in Lucene
-                    String watermarkIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.FILENAME)
-                            .append(':').append(imageFileNameSplit[0]).append('*').toString();
-                    String[] fieldNameFilter = { SolrConstants.FILENAME, SolrConstants.IMAGEURN, watermarkIdField };
-                    SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, Arrays.asList(
-                            fieldNameFilter));
-                    if (docs != null && docs.size() > 0) {
-                        SolrDocument doc = docs.get(0);
-                        Object field = doc.getFieldValue(SolrConstants.FILENAME);
-                        if (field != null) {
-                            contentFileName = (String) field;
-                        }
-                        // Add URN parameter for DFG
-                        Object fieldUrn = doc.getFieldValue(SolrConstants.IMAGEURN);
-                        if (fieldUrn != null) {
-                            urlArgs.append("&watermarkText=").append(fieldUrn);
-                        }
-                        String watermarkId = null;
-                        if (doc.getFieldNames().contains(watermarkIdField)) {
-                            // Check for the watermark ID in the page doc (should rarely be the case)
-                            Object obj = doc.getFieldValue(watermarkIdField);
-                            if (obj instanceof String) {
-                                watermarkId = (String) obj;
-                            } else if (obj instanceof ArrayList) {
-                                List<Object> objList = (List<Object>) obj;
-                                if (!objList.isEmpty()) {
-                                    watermarkId = (String) objList.get(0);
-                                }
-                            }
-                        } else {
-                            // Check for the watermark ID in the top document for the watermark ID field
-                            SolrDocumentList topDocList = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI)
-                                    .append(':').append(pi).toString(), SolrSearchIndex.MAX_HITS, null, Collections.singletonList(watermarkIdField));
-                            if (topDocList != null && topDocList.size() > 0) {
-                                Object obj = topDocList.get(0).getFieldValue(watermarkIdField);
-                                if (obj instanceof String) {
-                                    watermarkId = (String) topDocList.get(0).getFieldValue(watermarkIdField);
-                                } else if (obj instanceof ArrayList) {
-                                    List<Object> objList = (List<Object>) obj;
-                                    if (!objList.isEmpty()) {
-                                        watermarkId = (String) objList.get(0);
-                                    }
-                                }
-                            }
-                        }
-                        // Add watermark ID value, if applicable
-                        if (StringUtils.isNotEmpty(watermarkId)) {
-                            urlArgs.append("&watermarkId=").append(watermarkId);
-                            logger.debug("watermarkId={}", watermarkId);
-                        }
-                    }
-                }
+//                if ("image".equals(action) && pi != null) {
+//                    // Search for the real file name in Lucene
+//                    String watermarkIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
+//                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.FILENAME)
+//                            .append(':').append(imageFileNameSplit[0]).append('*').toString();
+//                    String[] fieldNameFilter = { SolrConstants.FILENAME, SolrConstants.IMAGEURN, watermarkIdField };
+//                    SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, Arrays.asList(
+//                            fieldNameFilter));
+//                    if (docs != null && docs.size() > 0) {
+//                        SolrDocument doc = docs.get(0);
+//                        Object field = doc.getFieldValue(SolrConstants.FILENAME);
+//                        if (field != null) {
+//                            contentFileName = (String) field;
+//                        }
+//                        // Add URN parameter for DFG
+//                        Object fieldUrn = doc.getFieldValue(SolrConstants.IMAGEURN);
+//                        if (fieldUrn != null) {
+//                            urlArgs.append("&watermarkText=").append(fieldUrn);
+//                        }
+//                        String watermarkId = null;
+//                        if (doc.getFieldNames().contains(watermarkIdField)) {
+//                            // Check for the watermark ID in the page doc (should rarely be the case)
+//                            Object obj = doc.getFieldValue(watermarkIdField);
+//                            if (obj instanceof String) {
+//                                watermarkId = (String) obj;
+//                            } else if (obj instanceof ArrayList) {
+//                                List<Object> objList = (List<Object>) obj;
+//                                if (!objList.isEmpty()) {
+//                                    watermarkId = (String) objList.get(0);
+//                                }
+//                            }
+//                        } else {
+//                            // Check for the watermark ID in the top document for the watermark ID field
+//                            SolrDocumentList topDocList = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI)
+//                                    .append(':').append(pi).toString(), SolrSearchIndex.MAX_HITS, null, Collections.singletonList(watermarkIdField));
+//                            if (topDocList != null && topDocList.size() > 0) {
+//                                Object obj = topDocList.get(0).getFieldValue(watermarkIdField);
+//                                if (obj instanceof String) {
+//                                    watermarkId = (String) topDocList.get(0).getFieldValue(watermarkIdField);
+//                                } else if (obj instanceof ArrayList) {
+//                                    List<Object> objList = (List<Object>) obj;
+//                                    if (!objList.isEmpty()) {
+//                                        watermarkId = (String) objList.get(0);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        // Add watermark ID value, if applicable
+//                        if (StringUtils.isNotEmpty(watermarkId)) {
+//                            urlArgs.append("&watermarkId=").append(watermarkId);
+//                            logger.debug("watermarkId={}", watermarkId);
+//                        }
+//                    }
+//                }
 
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     mediaFilePath = new StringBuilder(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
@@ -266,10 +266,10 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 logger.debug(e.getMessage(), e);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                 return;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
+//            } catch (PresentationException e) {
+//                logger.debug("PresentationException thrown here: {}", e.getMessage());
+//                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+//                return;
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

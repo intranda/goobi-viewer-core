@@ -318,7 +318,7 @@ public interface IDAO {
 
     public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
-    public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
+    public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
 
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
 
