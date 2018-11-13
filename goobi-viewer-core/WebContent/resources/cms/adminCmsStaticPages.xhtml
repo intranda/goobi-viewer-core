@@ -11,7 +11,9 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsStaticPages')}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_staticPages,1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_cms, '',2)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_staticPages,3)}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>

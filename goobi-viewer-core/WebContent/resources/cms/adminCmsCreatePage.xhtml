@@ -13,7 +13,10 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsBean.editMode ? 'adminCmsEditPage':'adminCmsCreatePage')}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage, 1)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_cms, '',2)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.editMode ? msg.cms_overview : msg.cms_createPage, cmsBean.editMode ? 'adminCmsOverview' : 'adminCmsSelectTemplate',3)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage, 4)}" />
 		</f:metadata>
 	</ui:define>
 
