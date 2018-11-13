@@ -56,7 +56,7 @@ public enum PageType {
     adminIpRange("adminIpRange"),
     adminIpRanges("adminIpRanges"),
     adminLicenseType("adminLicenseType"),
-    adminLicenseTypes("adminLicenseTypes"),
+    adminAllLicenseTypes("adminAllLicenseTypes"),
     adminUser("adminUser"),
     adminUserComments("adminUserComments"),
     adminUserGroup("adminUserGroup"),
