@@ -71,12 +71,13 @@ var cmsJS = ( function( cms ) {
         // DOM elements
         var rssItem = null;
         var rssItemTitle = null;
-        var rssItemTitleH3 = null;
+        var rssItemTitleH4 = null;
         var rssItemTitleLink = null;
         var rssItemRow = null;
         var rssItemColLeft = null;
         var rssItemColRight = null;
         var rssItemImageWrapper = null;
+        var rssItemDocTypeH3 = null;
         var rssItemImage = null;
         var rssItemImageLink = null;
         var rssItemDate = null;
@@ -96,28 +97,24 @@ var cmsJS = ( function( cms ) {
             
             // left
             rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
             rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
-            rssItemColLeft.append( rssItemImageWrapper );
+            rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
             
             // right
             rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
             
             // create item title
             rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
-            rssItemTitleH3 = $( '<h3 />' );
+            rssItemTitleH4 = $( '<h4 />' );
             rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
-            rssItemTitleH3.append( rssItemTitleLink );
-            rssItemTitle.append( rssItemTitleH3 );
-            
-            // create date
-            rssItemDate = $( '<div />' ).addClass( 'tpl-rss__item-date' );
-            rssItemTime = new Date( item.pubDate );
-            rssItemDate.text( rssItemTime.toLocaleString() );
-            
+            rssItemTitleH4.append( rssItemTitleLink );
+            rssItemTitle.append( rssItemTitleH4 );
+                        
             // create metadata
             rssItemMetadata = $( '<dl />' ).addClass( 'tpl-rss__item-metadata dl-horizontal' );
             item.description.metadata.forEach( function( metadata ) {
