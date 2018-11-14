@@ -29,6 +29,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ibm.icu.text.SimpleDateFormat;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -52,6 +53,11 @@ import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 public class RSSFeed {
+    /**
+     * 
+     */
+    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy, hh:mm:ss";
+
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
     public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE,
@@ -510,6 +516,12 @@ public class RSSFeed {
 
                 description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
 
+                if(modified != null) {
+                    SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_STRING);
+                    String imported = format.format(new Date(modified));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("DATECREATED", locale), imported));
+                }
+                
                 if (StringUtils.isNotBlank(placeAndTime)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
                 }
