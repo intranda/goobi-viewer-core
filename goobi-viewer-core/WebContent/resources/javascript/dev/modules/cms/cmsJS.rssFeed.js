@@ -29,6 +29,9 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     var _defaults = {
         rssFeedSelector: '.tpl-rss__feed',
+        msg: {
+            continueReading: 'Weiterlesen'
+        }
     };
     
     cms.rssFeed = {
@@ -85,6 +88,7 @@ var cmsJS = ( function( cms ) {
         var rssItemMetadata = null;
         var rssItemMetadataKey = null;
         var rssItemMetadataValue = null;
+        var rssItemLink = null;
         
         // create items
         data.items.forEach( function( item ) {
@@ -122,7 +126,11 @@ var cmsJS = ( function( cms ) {
                 rssItemMetadataValue = $( '<dd />' ).text( metadata.value );
                 rssItemMetadata.append( rssItemMetadataKey ).append( rssItemMetadataValue );
             } );
-            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata );
+            // link to work
+            rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
+            
+            // append to col right
+            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata ).append( rssItemLink );
             
             // append to row
             rssItemRow.append( rssItemColLeft ).append( rssItemColRight );
