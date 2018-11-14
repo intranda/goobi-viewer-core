@@ -112,10 +112,16 @@
                                         <ui:repeat value="#{metadata.values}" var="val">
                                             <span class="metadata__event-value">
                                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
-                                                    <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
-                                                    <f:param value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
-                                                    <f:param value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
+                                                     <f:param value="#{val.getComboValueShort(0)}" />
+                                                     <f:param value="#{val.getComboValueShort(1)}" />
+                                                     <f:param value="#{val.getComboValueShort(2)}" />
+                                                     <f:param value="#{val.getComboValueShort(3)}" />
+                                                     <f:param value="#{val.getComboValueShort(4)}" />
+                                                     <f:param value="#{val.getComboValueShort(5)}" />
+                                                     <f:param value="#{val.getComboValueShort(6)}" />
+                                                     <f:param value="#{val.getComboValueShort(7)}" />
+                                                     <f:param value="#{val.getComboValueShort(8)}" />
+                                                     <f:param value="#{val.getComboValueShort(9)}" />
                                                 </h:outputFormat>
                                             </span>
                                         </ui:repeat>
