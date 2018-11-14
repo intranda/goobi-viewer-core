@@ -134,6 +134,59 @@ public class ContentResource {
 
         throw new ContentNotFoundException("Resource not found");
     }
+    
+    /**
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/alto/{pi}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getAltoDocument(@PathParam("pi") String pi) throws PresentationException,
+            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        }
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi;
+
+        logger.trace(filePath);
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+//        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi,
+//                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ServiceNotAllowedException("No permission found");
+        }
+
+        
+        
+        
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        if (file != null && Files.isRegularFile(file)) {
+            try {
+                Document doc = FileTools.readXmlFile(file);
+                return new XMLOutputter().outputString(doc);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            } catch (JDOMException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+
+    }
 
     /**
      * @param pi
