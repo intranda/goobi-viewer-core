@@ -39,6 +39,7 @@ public class RssItem implements Comparable<RssItem> {
     Description description;
     Date pubDate;
     String creator;
+    String docType;
 
     /**
      * @return the title
@@ -108,6 +109,20 @@ public class RssItem implements Comparable<RssItem> {
      */
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+    
+    /**
+     * @param docType the docType to set
+     */
+    public void setDocType(String docType) {
+        this.docType = docType;
+    }
+    
+    /**
+     * @return the docType
+     */
+    public String getDocType() {
+        return docType;
     }
 
     /**

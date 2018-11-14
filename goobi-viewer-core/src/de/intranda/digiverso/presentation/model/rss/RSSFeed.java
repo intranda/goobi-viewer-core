@@ -409,6 +409,7 @@ public class RSSFeed {
                 String urnLink = "";
                 String bookSeries = "";
                 String shelfmark = "";
+                
                 int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
                 boolean hasImages = isHasImages(doc);
@@ -421,7 +422,10 @@ public class RSSFeed {
                     hasOverviewPage = true;
                 }
                 PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
+                entry.setDocType(Helper.getTranslation(docStructType, locale));
 
+                
+                
                 for (String field : FIELDS) {
                     Object value = doc.getFirstValue(field);
                     // If the doc has no field value, try the owner doc (in case of pages)
