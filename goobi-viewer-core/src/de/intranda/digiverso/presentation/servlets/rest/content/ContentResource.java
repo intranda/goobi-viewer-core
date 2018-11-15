@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,7 +40,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
@@ -57,6 +63,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
@@ -133,6 +140,76 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/alto/{pi}")
+    @Produces({ "application/zip" })
+    public StreamingOutput getAltoDocument(@PathParam("pi") String pi)
+            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
+        
+        boolean access =
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+        if (!access) {
+            throw new ServiceNotAllowedException("No permission found");
+        }
+        
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + pi + ".zip\"");
+        }
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        java.nio.file.Path filePath;
+        if (StringUtils.isNotBlank(dataRepository)) {
+            filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
+        } else {
+            filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                    DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
+        }
+
+        logger.trace(filePath.toString());
+
+        try {
+            List<File> altoFilePaths = Files.list(filePath)
+                    .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.(xml|alto)"))
+                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
+                    .map(p -> p.toFile())
+                    .collect(Collectors.toList());
+
+            File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_alto.zip");
+            if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
+                throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
+            }
+
+            FileTools.compressZipFile(altoFilePaths, tempFile, 9);
+            return (out) -> {
+                try (FileInputStream in = new FileInputStream(tempFile)) {
+                    FileTools.copyStream(out, in);
+                    //                  IOUtils.copyLarge(in, out);   
+                } finally {
+                    out.flush();
+                    out.close();
+                }
+            };
+
+        } catch (IOException e) {
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
+        }
+
+
     }
 
     /**
@@ -238,6 +315,108 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+    
+    /**
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/fulltext/{pi}")
+    @Produces({ "application/zip" })
+    public StreamingOutput getFulltextDocument(@PathParam("pi") String pi)
+            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
+        
+        boolean access =
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+        if (!access) {
+            throw new ServiceNotAllowedException("No permission found");
+        }
+        
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + pi + ".zip\"");
+        }
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        java.nio.file.Path filePath;
+        
+        boolean alto = false;
+        if (StringUtils.isNotBlank(dataRepository)) {
+            filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
+        } else {
+            filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                    DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
+        }
+        if(!Files.isDirectory(filePath)) {
+            alto = true;
+            if (StringUtils.isNotBlank(dataRepository)) {
+                filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
+            } else {
+                filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                        DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
+            }
+        }
+
+        logger.trace(filePath.toString());
+
+        try {
+            List<File> fulltextFilePaths;
+            if(alto) {
+                fulltextFilePaths = new ArrayList<>();
+                List<java.nio.file.Path> altoFilePaths = Files.list(filePath)
+                        .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.(xml|alto)"))
+                        .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
+                        .collect(Collectors.toList());
+                for (java.nio.file.Path altoFile : altoFilePaths) {
+                    File tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(),  pi, altoFile.getFileName().toString().replaceAll("\\.(ALTO|alto|xml|XML)$", ".txt")).toFile();
+                    if(!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
+                        throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
+                    }
+                    AltoDocument doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
+                    String fulltext = doc.getContent();
+                    FileUtils.write(tempFile, fulltext);
+                    fulltextFilePaths.add(tempFile);
+                }
+            } else {                
+                fulltextFilePaths = Files.list(filePath)
+                        .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.txt"))
+                        .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
+                        .map(p -> p.toFile())
+                        .collect(Collectors.toList());
+            }
+                File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
+                if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
+                    throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
+                }
+                
+                FileTools.compressZipFile(fulltextFilePaths, tempFile, 9);
+                return (out) -> {
+                    try (FileInputStream in = new FileInputStream(tempFile)) {
+                        FileTools.copyStream(out, in);
+                        //                  IOUtils.copyLarge(in, out);   
+                    } finally {
+                        out.flush();
+                        out.close();
+                    }
+                };
+
+        } catch (IOException e) {
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
+        } catch (JDOMException e) {
+            throw new ContentLibException("Failed to read alto file", e);
+
+        }
+
+
     }
 
     /**
@@ -365,8 +544,9 @@ public class ContentResource {
         // Fallback to ISO-2
         if (ret == null) {
             try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
-                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml")).findFirst().orElse(
-                        null);
+                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
 
@@ -436,8 +616,9 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
         return filePath;
@@ -466,8 +647,9 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
         return filePath;
@@ -500,4 +682,5 @@ public class ContentResource {
         }
         return Optional.empty();
     }
+
 }

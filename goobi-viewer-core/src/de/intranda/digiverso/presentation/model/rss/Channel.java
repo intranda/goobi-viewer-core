@@ -140,6 +140,5 @@ public class Channel {
     public void addItem(RssItem item) {
         this.items.add(item);
     }
-    
-    
+
 }

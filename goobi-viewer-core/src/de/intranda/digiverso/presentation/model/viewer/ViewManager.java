@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,6 +62,7 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
+import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataTools;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -125,6 +127,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
+    private Boolean workHasAlto = null;
 
     /**
      * 
@@ -324,13 +327,13 @@ public class ViewManager implements Serializable {
      */
     private String getCurrentImageUrl(PageType view, int size) throws IndexUnreachableException, DAOException {
         StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
-        try {            
-            if(DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
+        try {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
                 sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
             }
-        } catch(ViewerConfigurationException e) {
+        } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
         }
         return sb.toString();
@@ -966,6 +969,61 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Return the url to a REST service delivering all alto files of a work as zip
+     * 
+     * @return the url to a REST service delivering all alto files of a work as zip
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
+    }
+    
+    /**
+     * Return the url to a REST service delivering all plain text of a work as zip
+     * 
+     * @return the url to a REST service delivering all plain text of a work as zip
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
+    }
+
+    /**
+     * Return the url to a REST service delivering the alto file of the given page as xml
+     * 
+     * @return the url to a REST service delivering the alto file of the given page as xml
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
+        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
+    }
+    
+    /**
+     * Return the url to a REST service delivering the fulltext as plain text of the given page
+     * 
+     * @return the url to a REST service delivering the fulltext as plain text of the given page
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
+        String filename = getFulltextFilename();
+        if (StringUtils.isBlank(filename)) {
+            filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        }
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
+    }
+
+    /**
      * Returns the pdf download link for the current document
      * 
      * @return {@link String}
@@ -1075,8 +1133,14 @@ public class ViewManager implements Serializable {
         if (allowUserComments == null) {
             String query = DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery();
             try {
-                if (StringUtils.isNotEmpty(query) && DataManager.getInstance().getSearchIndex().getHitCount(
-                        new StringBuilder(SolrConstants.PI).append(':').append(pi).append(" AND (").append(query).append(')').toString()) == 0) {
+                if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount(new StringBuilder(SolrConstants.PI).append(':')
+                                .append(pi)
+                                .append(" AND (")
+                                .append(query)
+                                .append(')')
+                                .toString()) == 0) {
                     allowUserComments = false;
                     logger.trace("User comments are not allowed for this record.");
                 } else {
@@ -1287,6 +1351,46 @@ public class ViewManager implements Serializable {
         return belowFulltextThreshold;
     }
 
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException {
+        if (workHasAlto == null) {
+
+            ;
+
+            long pagesWithAlto = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_ALTO)
+                            .append(":*")
+                            .toString());
+            int threshold = 1;
+            logger.trace("{} of pages have full-text", pagesWithAlto);
+            if (pagesWithAlto < threshold) {
+                workHasAlto = false;
+            } else {
+                workHasAlto = true;
+            }
+        }
+
+        return workHasAlto;
+    }
+
+    public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
+        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        if (StringUtils.isNotBlank(filename)) {
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
+                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+            return access;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Default fulltext getter (with HTML escaping).
      *
@@ -1297,6 +1401,38 @@ public class ViewManager implements Serializable {
      */
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
+    }
+
+    public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
+        if (!getCurrentPage().isFulltextAvailable()) {
+            return false;
+        }
+        String filename = getFulltextFilename();
+        if (StringUtils.isBlank(filename)) {
+            filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        }
+        if (StringUtils.isNotBlank(filename)) {
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
+                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+            return access;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String getFulltextFilename() throws IndexUnreachableException, DAOException {
+        if(StringUtils.isNotBlank(getCurrentPage().getFulltextFileName())) {            
+            String filename = Paths.get(getCurrentPage().getFulltextFileName()).getFileName().toString();
+            return filename; 
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -2070,5 +2206,11 @@ public class ViewManager implements Serializable {
     public void setPageLoader(IPageLoader loader) {
         this.pageLoader = loader;
 
+    }
+
+    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException {
+        Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
+        md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
+        return md;
     }
 }

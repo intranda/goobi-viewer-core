@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -523,7 +525,72 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+    
+    
+    /**
+     * @return
+     */
+    public boolean isDisplayWidgetUsage() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage[@display]", false);
+    }
 
+    /**
+     * Get the metadata configuration for the license text in the usage widget
+     * 
+     * @return the metadata configuration for the license text in the usage widget
+     */
+    public Metadata getWidgetUsageLicenceTextMetadata() {
+        HierarchicalConfiguration sub = null;
+        try {            
+            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
+        } catch(IllegalArgumentException e) {
+            //no or multiple occurances 
+        }
+        if(sub != null) {
+            Metadata md = getMetadata(sub);
+            return md;
+        } else {
+            return new Metadata();
+        }
+    }
+
+    /**
+     * Creates a {@link Metadata} instance from the given subnode configuration
+     * 
+     * @param sub   The subnode configuration
+     * @return  the resulting {@link Metadata} instance
+     */
+    @SuppressWarnings("rawtypes")
+    private Metadata getMetadata(HierarchicalConfiguration sub) {
+        String label = sub.getString("[@label]");
+        String masterValue = sub.getString("[@value]");
+        boolean group = sub.getBoolean("[@group]", false);
+        int number = sub.getInt("[@number]", -1);
+        int type = sub.getInt("[@type]", 0);
+        List params = sub.configurationsAt("param");
+        List<MetadataParameter> paramList = null;
+        if (params != null) {
+            paramList = new ArrayList<>(params.size());
+            for (Iterator it3 = params.iterator(); it3.hasNext();) {
+                HierarchicalConfiguration sub2 = (HierarchicalConfiguration) it3.next();
+                String fieldType = sub2.getString("[@type]");
+                String source = sub2.getString("[@source]", null);
+                String key = sub2.getString("[@key]");
+                String overrideMasterValue = sub2.getString("[@value]");
+                String defaultValue = sub2.getString("[@defaultValue]");
+                String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
+                boolean addUrl = sub2.getBoolean("[@url]", false);
+                boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
+                        defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
+            }
+        }
+        Metadata md = new Metadata(label, masterValue, type, paramList, group, number);
+        return md;
+    }
+
+    
     /**
      * 
      * @param eleTemplate
@@ -825,7 +892,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return  The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      * @throws ViewerConfigurationException
      */
     public String getRestApiUrl() throws ViewerConfigurationException {
@@ -1171,7 +1238,8 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings("static-method")
     public String getTempFolder() {
-        return System.getProperty("java.io.tmpdir") + "viewer";
+        return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
+//        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**
@@ -3131,4 +3199,6 @@ public final class Configuration extends AbstractConfiguration {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
     }
+
+
 }

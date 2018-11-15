@@ -765,4 +765,8 @@ public class ConfigurationBean implements Serializable {
     public boolean isAddHighwirePressMetaTags() {
         return DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags();
     }
+    
+    public boolean isDisplayWidgetUsage() {
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
+    }
 }

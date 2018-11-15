@@ -71,6 +71,14 @@ public class Metadata implements Serializable {
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
 
+    public Metadata() {
+        this.label = "";
+        this.masterValue = "";
+        this.type = 0;
+        this.number = -1;
+        this.group = false;
+    }
+    
     /**
      * 
      * @param label
@@ -320,6 +328,9 @@ public class Metadata implements Serializable {
                             // create a link for reach hierarchy level
                             NavigationHelper nh = BeanUtils.getNavigationHelper();
                             value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                            break;
+                        case NORMDATAURI:
+                            // TODO
                             break;
                         default:
                             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string

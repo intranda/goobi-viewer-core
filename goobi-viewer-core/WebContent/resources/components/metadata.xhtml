@@ -1,0 +1,45 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute
+            name="metadata"
+            required="true"
+            type="de.intranda.digiverso.presentation.model.metadata.Metadata" />
+       <composite:attribute name="displayLabel" type="java.lang.Boolean" required="false" default="true"/>
+    </composite:interface>
+
+
+
+    <composite:implementation>
+        <ui:fragment rendered="#{!cc.attrs.metadata.blank}">
+                <ui:fragment rendered="#{cc.attrs.displayLabel}">
+                    <label>#{msg[cc.attrs.metadata.label]}:</label>
+                </ui:fragment>
+                        <ui:repeat
+                            value="#{cc.attrs.metadata.values}"
+                            var="val">
+                            <h:outputFormat
+                                value="#{msg[val.masterValue]}"
+                                escape="false">
+                                <f:param value="#{val.getComboValueShort(0)}" />
+                                <f:param value="#{val.getComboValueShort(1)}" />
+                                <f:param value="#{val.getComboValueShort(2)}" />
+                                <f:param value="#{val.getComboValueShort(3)}" />
+                                <f:param value="#{val.getComboValueShort(4)}" />
+                                <f:param value="#{val.getComboValueShort(5)}" />
+                                <f:param value="#{val.getComboValueShort(6)}" />
+                                <f:param value="#{val.getComboValueShort(7)}" />
+                                <f:param value="#{val.getComboValueShort(8)}" />
+                                <f:param value="#{val.getComboValueShort(9)}" />
+                            </h:outputFormat>
+                            <br />
+                        </ui:repeat>
+        </ui:fragment>
+
+    </composite:implementation>
+</ui:composition>

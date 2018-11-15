@@ -797,6 +797,15 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 
+        <sidebarWidgetUsage display="false">
+                <licenseText>
+                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                        <param type="field" key="LABEL" />
+                        <param type="translatedfield" key="ACCESSCONDITION" />
+                    </metadata>
+                </licenseText>
+            </sidebarWidgetUsage>
+
 		<!-- overview: if false, the image view is hidden -->
 		<overview>
 			<visible>false</visible>

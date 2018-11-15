@@ -8071,6 +8071,20 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   Widget Usage
+   style declarations for widget_usage.xhtml
+   ==============================================================*/
+/* WIDGET USAGE */
+.widget-usage {
+  /* LICENSE TEXT */
+  /* WORK DOWNLOADS */
+  /* PAGE DOWNLOADS */
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Widget User
    style declarations for widget_user.xhtml
    ==============================================================*/
