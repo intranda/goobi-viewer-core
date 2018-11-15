@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,6 +62,7 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
+import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataTools;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -988,7 +990,8 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException 
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + getCurrentPage().getFileName();
+        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
     }
 
     /**
@@ -1343,7 +1346,7 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        String filename = getCurrentPage().getAltoFileName();
+        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
         if(StringUtils.isNotBlank(filename)) {            
             boolean access = AccessConditionUtils
                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
@@ -2137,5 +2140,11 @@ public class ViewManager implements Serializable {
     public void setPageLoader(IPageLoader loader) {
         this.pageLoader = loader;
 
+    }
+    
+    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException {
+        Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
+        md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
+        return md;
     }
 }
