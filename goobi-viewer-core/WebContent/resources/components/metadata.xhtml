@@ -17,11 +17,9 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{!cc.attrs.metadata.blank}">
-            <dl class="dl-horizontal">
                 <ui:fragment rendered="#{cc.attrs.displayLabel}">
-                    <dt>#{msg[cc.attrs.metadata.label]}:</dt>
+                    <label>#{msg[cc.attrs.metadata.label]}:</label>
                 </ui:fragment>
-                    <dd>
                         <ui:repeat
                             value="#{cc.attrs.metadata.values}"
                             var="val">
@@ -41,8 +39,6 @@
                             </h:outputFormat>
                             <br />
                         </ui:repeat>
-                    </dd>
-            </dl>
         </ui:fragment>
 
     </composite:implementation>

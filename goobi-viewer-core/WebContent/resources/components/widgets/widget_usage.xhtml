@@ -9,63 +9,79 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
-            <div
-                id="widgetUsage"
-                class="widget">
-                <!-- 					<h3>#{msg.uage}</h3> -->
-                <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}"
-                displayLabel="false" />
-                
-               
-                <h4>#{msg.Werk}</h4>
-                <ul id="work">
+<!--             <div class="view-object__sidebar-accordeon-panel"> -->
+<!--                 <h3 class="view-object__sidebar-accordeon-panel-title">#{msg.usage}</h3> -->
+<!--             </div> -->
+
+            <div class="view-object__sidebar-accordeon-panel-body">
+                <div
+                    id="widgetUsage"
+                    class="widget widget-usage">
+                    <h3>#{msg.usage}</h3>
+
+                    <p
+                        id="licenseText"
+                        class="widget-usage__license-text">
+                        <viewerComponent:metadata
+                            metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}"
+                            displayLabel="false" />
+                    </p>
+
+
+                    <h4
+                        id="titleWork"
+                        class="widget-usage__subtitle">#{msg.Werk}</h4>
 
                     <!-- METS/LIDO -->
-                    <li id="mets">
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
-                            <a
-                                title="#{msg.metadata_dl_mets}"
-                                target="_blank"
-                                href="#{activeDocumentBean.viewManager.metsResolverUrl}"> #{msg.downloadMetsButtonLabel} </a>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
-                            <a
-                                title="#{msg.metadata_dl_lido}"
-                                target="_blank"
-                                href="#{activeDocumentBean.viewManager.lidoResolverUrl}"> #{msg.downloadLidoButtonLabel} </a>
-                        </ui:fragment>
-                    </li>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
+                        <a
+                            id="lidomets"
+                            class="label label-default"
+                            title="#{msg.metadata_dl_mets}"
+                            target="_blank"
+                            href="#{activeDocumentBean.viewManager.metsResolverUrl}"> #{msg.downloadMetsButtonLabel} </a>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
+                        <a
+                            id="lidomets"
+                            class="label label-default"
+                            title="#{msg.metadata_dl_lido}"
+                            target="_blank"
+                            href="#{activeDocumentBean.viewManager.lidoResolverUrl}"> #{msg.downloadLidoButtonLabel} </a>
+                    </ui:fragment>
 
                     <!-- ALTO (WORK) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
-                        <li id="alto">
-                            <a
-                                title="#{msg.metadata_dl_alto_work}"
-                                href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"> #{msg.downloadAltoWorkButtonLabel} </a>
-                        </li>
+                        <a
+                            id="alto"
+                            class="label label-default"
+                            title="#{msg.metadata_dl_alto_work}"
+                            href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"> #{msg.downloadAltoWorkButtonLabel} </a>
                     </ui:fragment>
 
                     <!-- PDF (WORK) -->
                     <ui:fragment
                         rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
-                        <li class="pdf">
-                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
-                                <a
-                                    href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
-                                    title="#{msg.metadata_dl_pdf}"
-                                    target="_blank"> #{msg.pdfDownload}</a>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
-                                <a
-                                    href="#"
-                                    class="download-modal-widget"
-                                    data-type="pdf"
-                                    data-title="#{activeDocumentBean.titleBarLabel}"
-                                    data-id=""
-                                    data-pi="#{activeDocumentBean.viewManager.pi}"
-                                    title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
+                        <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
+                            <a
+                                id="pdfWork"
+                                class="label label-default"
+                                href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+                                title="#{msg.metadata_dl_pdf}"
+                                target="_blank"> #{msg.pdfDownload}</a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
+                            <a
+                                id="pdfWork"
+                                class="label label-default download-modal-widget"
+                                href="#"
+                                data-type="pdf"
+                                data-title="#{activeDocumentBean.titleBarLabel}"
+                                data-id=""
+                                data-pi="#{activeDocumentBean.viewManager.pi}"
+                                title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
 
-                                <script>
+                            <script>
                                     var downloadModalConfig = {
                                             downloadBtn: $( ".download-modal-widget" ),
                                             path: "#{navigationHelper.applicationUrl}",
@@ -93,17 +109,17 @@
                                         
                                         viewerJS.downloadModal.init( downloadModalConfig );
                                     </script>
-                            </ui:fragment>
-                        </li>
+                        </ui:fragment>
                     </ui:fragment>
 
                     <!-- IIIF MANIFEST -->
-                    <li id="iiif">
-                        <a
-                            data-copy="iiif-manifest"
-                            data-clipboard-text="#{imageDelivery.iiifManifest}"
-                            title="#{msg.iiif_copyUrl}"> #{msg.iiif} </a>
-                        <script type="text/javascript">
+                    <a
+                        id="iiifManifest"
+                        class="label label-default"
+                        data-copy="iiif-manifest"
+                        data-clipboard-text="#{imageDelivery.iiifManifest}"
+                        title="#{msg.iiif_copyUrl}"> #{msg.iiif} </a>
+                    <script type="text/javascript">
                             var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
                             clipboard.on("success", function(e) {
                                var $trigger = $(e.trigger);
@@ -120,41 +136,40 @@
     
                             })
                         </script>
-                    </li>
-                </ul>
 
-                <h4>#{msg.page}</h4>
-                <ul id="page">
+                    <h4
+                        id="titlePage"
+                        class="widget_usage__subtitle">#{msg.page}</h4>
 
                     <!-- ALTO (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-                        <li id="alto">
-                            <a
-                                title="#{msg.metadata_dl_alto_page}"
-                                target="_blank"
-                                href="#{activeDocumentBean.viewManager.altoUrl}"> #{msg.downloadAltoPageButtonLabel} </a>
-                        </li>
+                        <a
+                            id="altoPage"
+                            class="label label-default"
+                            title="#{msg.metadata_dl_alto_page}"
+                            target="_blank"
+                            href="#{activeDocumentBean.viewManager.altoUrl}"> #{msg.downloadAltoPageButtonLabel} </a>
                     </ui:fragment>
 
                     <!-- PDF (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
-                        <li class="pdf">
-                            <a
-                                title="#{msg.pdfDownloadCurrentPage}"
-                                href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"> #{msg.pdfDownload} </a>
-                        </li>
+                        <a
+                            id="pdfPage"
+                            class="label label-default"
+                            title="#{msg.pdfDownloadCurrentPage}"
+                            href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"> #{msg.pdfDownload} </a>
                     </ui:fragment>
 
                     <!-- JPEG -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
-                        <li class="jpeg">
-                            <a
-                                title="#{msg.imageLinkDesc}"
-                                target="_blank"
-                                href="#{activeDocumentBean.viewManager.currentImageUrl}"> #{msg.imageLink} </a>
-                        </li>
+                        <a
+                            id="jpeg"
+                            class="label label-default"
+                            title="#{msg.imageLinkDesc}"
+                            target="_blank"
+                            href="#{activeDocumentBean.viewManager.currentImageUrl}"> #{msg.imageLink} </a>
                     </ui:fragment>
-                </ul>
+                </div>
             </div>
         </ui:fragment>
 
