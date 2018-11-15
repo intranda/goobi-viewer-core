@@ -2,7 +2,7 @@
 <dataset>
 	<users user_id="1" email="1@users.org" password_hash="abcdef1"
 		active="true" suspended="false" superuser="true" last_name="last 1"
-		first_name="first 1" nickname="nick 1" comments="no comments 1" score="0"
+		first_name="first 1" nickname="admin" comments="no comments 1" score="0"
 		use_gravatar="1" last_login="2012-03-03 11:22:33.000000000" />
 	<users user_id="2" email="2@users.org" password_hash="abcdef2"
 		active="true" suspended="false" superuser="false" last_name="last 2"
@@ -47,8 +47,14 @@
 		privilege_name="LIST" />
 
 	<license_types license_type_id="3" name="license type 3 name"
-		description="license type 3"
+		description="no listing"
 		open_access="false" />
+		
+    <license_types license_type_id="4" name="license type 4 name"
+        description="no listing, overridden by license type 1"
+        open_access="false" />
+		
+	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 
 	<licenses license_id="1" license_type_id="1" user_id="2"
 		description="license 1 desc" />
