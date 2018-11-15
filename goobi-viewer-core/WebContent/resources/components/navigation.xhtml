@@ -219,9 +219,7 @@
                                     class="#{!navItem.childItems.isEmpty() ? 'navigation__megamenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel ? 'active' : ''}">
                                     <!-- WITHOUT SUBMENU -->
                                     <h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
-                                        <h:outputLink value="#{navItem.navigationUrl}">
-                                            <h:outputText value="#{msg[navItem.itemLabel]}" />
-                                        </h:outputLink>
+                                        <component:navigationLink navItem="#{navItem}"/>
                                     </h:panelGroup>
                                     <!-- WITH SUBMENU -->
                                     <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
@@ -258,9 +256,7 @@
                                                             value="#{parentItem.childItems}">
                                                             <h:panelGroup rendered="#{child.valid}">
                                                                 <li class="navigation__megamenu-heading">
-                                                                    <h:outputLink value="#{child.navigationUrl}">
-                                                                        <h:outputText value="#{msg[child.itemLabel]}" />
-                                                                    </h:outputLink>
+                                                                    <component:navigationLink navItem="#{child}"/>
                                                                     <h:panelGroup rendered="#{!child.childItems.isEmpty()}">
                                                                         <!-- LEVEL 2 -->
                                                                         <div class="navigation__megamenu-element level-2">
@@ -272,9 +268,7 @@
                                                                                     <h:panelGroup rendered="#{child1.valid}">
                                                                                         <li
                                                                                             class="navigation__megamenu-item #{navigationHelper.currentPage == child1.itemLabel ? 'active' : ''}">
-                                                                                            <h:outputLink value="#{child1.navigationUrl}">
-                                                                                                <h:outputText value="#{msg[child1.itemLabel]}" />
-                                                                                            </h:outputLink>
+                                                                                            <component:navigationLink navItem="#{child1}"/>
                                                                                         </li>
                                                                                     </h:panelGroup>
                                                                                 </ui:repeat>
