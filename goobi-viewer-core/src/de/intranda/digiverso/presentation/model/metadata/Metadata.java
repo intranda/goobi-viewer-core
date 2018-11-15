@@ -71,6 +71,14 @@ public class Metadata implements Serializable {
     private final List<MetadataParameter> params = new ArrayList<>();
     private final boolean group;
 
+    public Metadata() {
+        this.label = "";
+        this.masterValue = "";
+        this.type = 0;
+        this.number = -1;
+        this.group = false;
+    }
+    
     /**
      * 
      * @param label

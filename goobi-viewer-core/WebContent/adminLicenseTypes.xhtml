@@ -10,7 +10,8 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseTypes')}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.license_licenseTypes,1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.license_licenseTypes,2)}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>

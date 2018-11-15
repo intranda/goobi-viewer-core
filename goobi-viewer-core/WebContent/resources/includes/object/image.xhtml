@@ -27,7 +27,8 @@
   		//<![CDATA[
     	var imageMap = $( "#imageMap" );
         var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" );
-        var staticImage = $( "<img />" ).attr( "src", "#{activeDocumentBean.viewManager.currentImageUrl}" ).attr( "alt", "current object" ).addClass( "img-responsive" );
+        var imageUrl = "#{activeDocumentBean.viewManager.currentImageUrl}";
+        var staticImage = $( "<img />" ).attr( "src", imageUrl).attr( "alt", "current object" ).addClass( "img-responsive" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";

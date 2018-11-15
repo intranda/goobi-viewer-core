@@ -1,6 +1,15 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.zip.ZipFile;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +45,23 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getAltoDocument_shouldReturnDocumentCorrectly() throws Exception {
         Assert.assertNotNull(resource.getAltoDocument("PPN517154005", "00000001.xml"));
+    }
+    
+    @Test
+    public void getAltoDocumentZip() throws Exception {
+        StreamingOutput response = resource.getAltoDocument("PPN517154005");
+        Path tempFile = Paths.get("test.zip");
+        if(Files.exists(tempFile)) {
+            Files.delete(tempFile);
+        }
+        Assert.assertFalse(Files.exists(tempFile));
+        try(OutputStream out = Files.newOutputStream(tempFile)) {            
+            response.write(out);
+            out.flush();
+        }
+        Assert.assertTrue(Files.exists(tempFile));
+        Assert.assertTrue(isValid(tempFile.toFile()));
+        Files.delete(tempFile);        
     }
 
     /**
@@ -101,5 +127,23 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = ContentNotFoundException.class)
     public void getTeiDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getTeiDocument("notfound", "en");
+    }
+    
+    public static boolean isValid(final File file) {
+        ZipFile zipfile = null;
+        try {
+            zipfile = new ZipFile(file);
+            return true;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            try {
+                if (zipfile != null) {
+                    zipfile.close();
+                    zipfile = null;
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 }

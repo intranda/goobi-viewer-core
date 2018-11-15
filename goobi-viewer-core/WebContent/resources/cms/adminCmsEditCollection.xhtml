@@ -14,9 +14,12 @@
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_cms, '',2)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collections, 'adminCmsCollections',3)}" />
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collections,1)}" />
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collection_edit,4)}" />
             <f:event
                 type="preRenderView"
                 listener="#{adminBean.resetCurrentLicenseAction}" />

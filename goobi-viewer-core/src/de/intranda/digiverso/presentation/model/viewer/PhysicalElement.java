@@ -1129,7 +1129,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * 
      * @return
      */
-    boolean isAccessPermissionPdf() {
+    public boolean isAccessPermissionPdf() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);

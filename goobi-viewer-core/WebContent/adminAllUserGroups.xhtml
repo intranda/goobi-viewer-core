@@ -1,136 +1,150 @@
 <ui:composition
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event
-				type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminAllUserGroups')}" />
-			<f:event
-				type="preRenderView"
-				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUserGroups,1)}" />
-			<f:event
-				type="preRenderView"
-				listener="#{adminBean.resetCurrentLicenseAction}" />
-		</f:metadata>
-	</ui:define>
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminAllUserGroups')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUserGroups,2)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{adminBean.resetCurrentLicenseAction}" />
+        </f:metadata>
+    </ui:define>
 
-	<ui:define name="content">
-		<f:view
-			contentType="text/html"
-			encoding="utf-8">
-			<div id="adminAllUserGroups">
-				<h:panelGroup rendered="#{userBean.admin}">
-					<h2>#{msg.admin_allUserGroups}</h2>
+    <ui:define name="content">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
+            <div id="adminAllUserGroups">
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <h2>#{msg.admin_allUserGroups}</h2>
 
-					<div id="admin_allUserGroups_wrapper">
-						<h:form
-							id="adminAllUserGroupsForm"
-							prependId="false">
-							<h:commandLink
-								action="adminUserGroup"
-								actionListener="#{adminBean.resetCurrentUserGroupAction}"
-								value="#{msg.userGroup_createNewUserGroup}"
-								styleClass="btn btn--default pull-right" />
+                    <div id="admin_allUserGroups_wrapper">
+                        <h:form
+                            id="adminAllUserGroupsForm"
+                            prependId="false">
+                            <h:commandLink
+                                action="adminUserGroup"
+                                actionListener="#{adminBean.resetCurrentUserGroupAction}"
+                                value="#{msg.userGroup_createNewUserGroup}"
+                                styleClass="btn btn--default pull-right" />
 
-							<div class="clearfix"></div>
+                            <div class="clearfix"></div>
 
-							<!-- paginator -->
-							<viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUserGroups}" />
+                            <!-- paginator -->
+                            <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUserGroups}" />
 
-							<table
-								id="adminAllUserGroupsTable"
-								class="table table-striped table-bordered admin-table">
-								<thead>
-									<tr>
-										<th>
-											#{msg.name}
+                            <table
+                                id="adminAllUserGroupsTable"
+                                class="table table-striped table-bordered admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #{msg.name}
 
-											<!-- SORTING -->
-											<div class="sorting-wrapper">
-												<h:commandLink
-													styleClass="sort"
-													action="#{adminBean.lazyModelUserGroups.sortBy('name', 'ASCENDING')}">
-													<i
-														class="fa fa-angle-down"
-														aria-hidden="true"></i>
-													<f:ajax
-														execute="@form"
-														render="@form" />
-												</h:commandLink>
-												<h:commandLink
-													styleClass="sort"
-													action="#{adminBean.lazyModelUserGroups.sortBy('name', 'DESCENDING')}">
-													<i
-														class="fa fa-angle-up"
-														aria-hidden="true"></i>
-													<f:ajax
-														execute="@form"
-														render="@form" />
-												</h:commandLink>
-											</div>
+                                            <!-- SORTING -->
+                                            <div class="sorting-wrapper">
+                                                <h:commandLink
+                                                    styleClass="sort"
+                                                    action="#{adminBean.lazyModelUserGroups.sortBy('name', 'ASCENDING')}">
+                                                    <i
+                                                        class="fa fa-angle-down"
+                                                        aria-hidden="true"></i>
+                                                    <f:ajax
+                                                        execute="@form"
+                                                        render="@form" />
+                                                </h:commandLink>
+                                                <h:commandLink
+                                                    styleClass="sort"
+                                                    action="#{adminBean.lazyModelUserGroups.sortBy('name', 'DESCENDING')}">
+                                                    <i
+                                                        class="fa fa-angle-up"
+                                                        aria-hidden="true"></i>
+                                                    <f:ajax
+                                                        execute="@form"
+                                                        render="@form" />
+                                                </h:commandLink>
+                                            </div>
 
-											<div class="clearfix"></div>
-										</th>
-										<th>#{msg.userGroup_owner}</th>
-										<th>#{msg.userGroup_active}</th>
-										<th>#{msg.action}</th>
-									</tr>
-								</thead>
-								<tbody>
-									<ui:repeat
-										var="userGroup"
-										value="#{adminBean.pageUserGroups}">
-										<tr>
-											<td>
-												<h:outputText value="#{userGroup.name}" />
-											</td>
-											<td>
-												<h:link
-													outcome="adminUser"
-													value="#{userGroup.owner.displayName}">
-													<f:param
-														name="userId"
-														value="#{userGroup.owner.id}" />
-												</h:link>
-											</td>
-											<td>
-												<h:selectBooleanCheckbox
-													value="#{userGroup.active}"
-													disabled="true" />
-											</td>
+                                            <div class="clearfix"></div>
+                                        </th>
+                                        <th>#{msg.userGroup_owner}</th>
+                                        <th>#{msg.userGroup_active}</th>
+                                        <th>#{msg.action}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ui:repeat
+                                        var="userGroup"
+                                        value="#{adminBean.pageUserGroups}">
+                                        <tr>
+                                            <td>
+                                                <h:outputText value="#{userGroup.name}" />
+                                            </td>
+                                            <td>
+                                                <h:link
+                                                    outcome="adminUser"
+                                                    value="#{userGroup.owner.displayName}">
+                                                    <f:param
+                                                        name="userId"
+                                                        value="#{userGroup.owner.id}" />
+                                                </h:link>
+                                            </td>
+                                            <td>
+                                                <h:selectBooleanCheckbox
+                                                    value="#{userGroup.active}"
+                                                    disabled="true" />
+                                            </td>
                                             <td class="admin-table__action">
                                                 <!-- edit user group -->
-                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminUserGroup" title="#{msg.edit}">
-                                                    <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
-                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                <h:commandLink
+                                                    styleClass="btn btn--icon"
+                                                    action="pretty:adminUserGroup"
+                                                    title="#{msg.edit}">
+                                                    <f:setPropertyActionListener
+                                                        value="#{userGroup}"
+                                                        target="#{adminBean.currentUserGroup}" />
+                                                    <i
+                                                        class="fa fa-pencil"
+                                                        aria-hidden="true"></i>
                                                 </h:commandLink>
 
                                                 <!-- delete user group -->
                                                 <h:commandLink
                                                     styleClass="btn btn--icon"
                                                     onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-                                                    action="adminAllUserGroups" actionListener="#{adminBean.deleteUserGroupAction(userGroup)}" title="#{msg.delete}">
-                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                    action="adminAllUserGroups"
+                                                    actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
+                                                    title="#{msg.delete}">
+                                                    <i
+                                                        class="fa fa-trash-o"
+                                                        aria-hidden="true"></i>
                                                 </h:commandLink>
                                             </td>
                                         </tr>
-									</ui:repeat>
-								</tbody>
-							</table>
-						</h:form>
-					</div>
-				</h:panelGroup>
-			</div>
+                                    </ui:repeat>
+                                </tbody>
+                            </table>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+            </div>
 
-			<script type="text/javascript">
+            <script type="text/javascript">
 				var dataTableConfig = {
 					dataTablePaginator : "#dataTablePaginator",
 					txtField1 : "#txtMoveTo1",
@@ -141,17 +155,17 @@
 
 				viewerJS.dataTable.init(dataTableConfig);
 			</script>
-		</f:view>
-	</ui:define>
+        </f:view>
+    </ui:define>
 
-	<ui:define name="sidebar">
-		<widgetComponent:widget_admin />
-		<widgetComponent:widget_cms />
-		<widgetComponent:widget_user />
-	</ui:define>
+    <ui:define name="sidebar">
+        <widgetComponent:widget_admin />
+        <widgetComponent:widget_cms />
+        <widgetComponent:widget_user />
+    </ui:define>
 
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
 
 </ui:composition>

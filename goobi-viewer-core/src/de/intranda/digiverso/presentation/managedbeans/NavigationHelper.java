@@ -63,6 +63,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
+import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView;
+import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -265,6 +268,13 @@ public class NavigationHelper implements Serializable {
         updateBreadcrumbs(new LabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
                 NavigationHelper.WEIGHT_BROWSE));
     }
+    
+    public void setCurrentPageBrowse(CollectionView collection) {
+        setCurrentPage("browse", true, true);
+            updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", collection, 
+                    NavigationHelper.WEIGHT_BROWSE));
+    }
+
 
     public void setCurrentPageTags() {
         setCurrentPage("tags", true, true);
@@ -812,7 +822,16 @@ public class NavigationHelper implements Serializable {
      * @return the breadcrumbs
      */
     public List<LabeledLink> getBreadcrumbs() {
-        return Collections.synchronizedList(this.breadcrumbs);
+        List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
+        List<LabeledLink> flattenedLinks = new ArrayList<>();
+        for (LabeledLink labeledLink : baseLinks) {
+            if(labeledLink instanceof CompoundLabeledLink) {
+                flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
+            } else {
+                flattenedLinks.add(labeledLink);
+            }
+        }
+        return flattenedLinks;
     }
 
     /**

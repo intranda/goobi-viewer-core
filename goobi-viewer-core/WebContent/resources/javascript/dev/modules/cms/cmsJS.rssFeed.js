@@ -29,6 +29,9 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     var _defaults = {
         rssFeedSelector: '.tpl-rss__feed',
+        msg: {
+            continueReading: 'Weiterlesen'
+        }
     };
     
     cms.rssFeed = {
@@ -71,12 +74,13 @@ var cmsJS = ( function( cms ) {
         // DOM elements
         var rssItem = null;
         var rssItemTitle = null;
-        var rssItemTitleH3 = null;
+        var rssItemTitleH4 = null;
         var rssItemTitleLink = null;
         var rssItemRow = null;
         var rssItemColLeft = null;
         var rssItemColRight = null;
         var rssItemImageWrapper = null;
+        var rssItemDocTypeH3 = null;
         var rssItemImage = null;
         var rssItemImageLink = null;
         var rssItemDate = null;
@@ -84,6 +88,8 @@ var cmsJS = ( function( cms ) {
         var rssItemMetadata = null;
         var rssItemMetadataKey = null;
         var rssItemMetadataValue = null;
+        var rssItemLinkWrapper = null;
+        var rssItemLink = null;
         
         // create items
         data.items.forEach( function( item ) {
@@ -96,28 +102,24 @@ var cmsJS = ( function( cms ) {
             
             // left
             rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemDocTypeH3 = $( '<h3 />' ).text( item.docType );
             rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
             rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
             rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
-            rssItemColLeft.append( rssItemImageWrapper );
+            rssItemColLeft.append( rssItemDocTypeH3 ).append( rssItemImageWrapper );
             
             // right
             rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
             
             // create item title
             rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
-            rssItemTitleH3 = $( '<h3 />' );
+            rssItemTitleH4 = $( '<h4 />' );
             rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
-            rssItemTitleH3.append( rssItemTitleLink );
-            rssItemTitle.append( rssItemTitleH3 );
-            
-            // create date
-            rssItemDate = $( '<div />' ).addClass( 'tpl-rss__item-date' );
-            rssItemTime = new Date( item.pubDate );
-            rssItemDate.text( rssItemTime.toLocaleString() );
-            
+            rssItemTitleH4.append( rssItemTitleLink );
+            rssItemTitle.append( rssItemTitleH4 );
+                        
             // create metadata
             rssItemMetadata = $( '<dl />' ).addClass( 'tpl-rss__item-metadata dl-horizontal' );
             item.description.metadata.forEach( function( metadata ) {
@@ -125,7 +127,13 @@ var cmsJS = ( function( cms ) {
                 rssItemMetadataValue = $( '<dd />' ).text( metadata.value );
                 rssItemMetadata.append( rssItemMetadataKey ).append( rssItemMetadataValue );
             } );
-            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata );
+            // link to work
+            rssItemLinkWrapper = $( '<div />' ).addClass( 'tpl-rss__item-link' );
+            rssItemLink = $( '<a />' ).attr( 'href', item.link ).addClass( 'btn btn--full' ).text( _defaults.msg.continueReading );
+            rssItemLinkWrapper.append( rssItemLink );
+
+            // append to col right
+            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata ).append( rssItemLinkWrapper);
             
             // append to row
             rssItemRow.append( rssItemColLeft ).append( rssItemColRight );

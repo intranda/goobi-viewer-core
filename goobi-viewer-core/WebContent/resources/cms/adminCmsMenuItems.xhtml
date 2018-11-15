@@ -11,8 +11,10 @@
 		<f:metadata>
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsMenuItems')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_cms, '',2)}" />
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_menu_items,1)}" />
+				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_menu_items,3)}" />
 			<f:event type="preRenderView"
 				listener="#{adminBean.resetCurrentLicenseAction}" />
 		</f:metadata>

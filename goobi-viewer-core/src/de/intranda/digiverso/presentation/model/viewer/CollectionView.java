@@ -194,6 +194,27 @@ public class CollectionView {
             }
         }
     }
+    
+    List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
+        List<HierarchicalBrowseDcElement> elements = new ArrayList<>();
+        HierarchicalBrowseDcElement currentElement = getElement(elementName, completeCollectionList);
+        if(currentElement != null) {            
+            HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
+            if(includeSelf) {
+                elements.add(currentElement);
+            }
+            HierarchicalBrowseDcElement parent = currentElement.getParent();
+            while (parent != null) {
+                elements.add(parent);
+                if (parent.equals(baseElement)) {
+                    break;
+                }
+                parent = parent.getParent();
+            }
+            Collections.reverse(elements);
+        }
+        return elements;
+    }
 
     /**
      * 
@@ -675,6 +696,14 @@ public class CollectionView {
                 .orElse("");
     }
 
+    public String loadCollection(HierarchicalBrowseDcElement element) {
+        logger.debug("Set current collection to " + element);
+        setTopVisibleElement(element);
+        String url =  getCollectionUrl(element);
+        url = url.replace(BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), "");
+        return url;
+    }
+    
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
