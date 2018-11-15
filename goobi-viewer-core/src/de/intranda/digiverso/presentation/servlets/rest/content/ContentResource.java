@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -39,14 +38,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
@@ -67,12 +63,7 @@ import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.LostConnectionException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfRequest;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 
 /**
  * Resource for delivering content documents such as ALTO and plain full-text.
@@ -183,8 +174,6 @@ public class ContentResource {
         logger.trace(filePath.toString());
         boolean access =
                 AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-        //        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi,
-        //                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         if (!access) {
             throw new ServiceNotAllowedException("No permission found");
         }
@@ -212,27 +201,10 @@ public class ContentResource {
                 }
             };
 
-        } catch (
-
-        IOException e) {
+        } catch (IOException e) {
             throw new ContentNotFoundException("Resource not found or not accessible", e);
         }
 
-        //
-        //        if (file != null && Files.isRegularFile(file)) {
-        //            try {
-        //                Document doc = FileTools.readXmlFile(file);
-        //                return new XMLOutputter().outputString(doc);
-        //            } catch (FileNotFoundException e) {
-        //                logger.debug(e.getMessage());
-        //            } catch (IOException e) {
-        //                logger.error(e.getMessage(), e);
-        //            } catch (JDOMException e) {
-        //                logger.error(e.getMessage(), e);
-        //            }
-        //        }
-        //
-        //        throw new ContentNotFoundException("Resource not found");
 
     }
 

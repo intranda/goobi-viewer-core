@@ -125,6 +125,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
+    private Boolean workHasAlto = null;
 
     /**
      * 
@@ -964,6 +965,31 @@ public class ViewManager implements Serializable {
 
         return null;
     }
+    
+    /**
+     * Return the url to a REST service delivering all alto files of a work as zip
+     * 
+     * @return  the url to a REST service delivering all alto files of a work as zip
+     * @throws ViewerConfigurationException
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
+     */
+    public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
+    }
+
+    /**
+     * Return the url to a REST service delivering the alto file of the given page as xml
+     * 
+     * @return the url to a REST service delivering the alto file of the given page as xml
+     * @throws ViewerConfigurationException
+     * @throws PresentationException 
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     */
+    public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + getCurrentPage().getFileName();
+    }
 
     /**
      * Returns the pdf download link for the current document
@@ -1285,6 +1311,47 @@ public class ViewManager implements Serializable {
         }
 
         return belowFulltextThreshold;
+    }
+    
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException {
+        if (workHasAlto == null) {
+
+;
+            
+            long pagesWithAlto = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_ALTO)
+                            .append(":*")
+                            .toString());
+            int threshold = 1;
+            logger.trace("{} of pages have full-text", pagesWithAlto);
+            if (pagesWithAlto < threshold) {
+                workHasAlto = false;
+            } else {
+                workHasAlto = true;
+            }
+        }
+
+        return workHasAlto;
+    }
+
+    public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
+        String filename = getCurrentPage().getAltoFileName();
+        if(StringUtils.isNotBlank(filename)) {            
+            boolean access = AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+           return access;
+        } else {
+            return false;
+        }
     }
 
     /**

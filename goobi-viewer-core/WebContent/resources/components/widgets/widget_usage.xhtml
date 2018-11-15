@@ -1,0 +1,172 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
+            <div
+                id="widgetUsage"
+                class="widget">
+                <!-- 					<h3>#{msg.uage}</h3> -->
+
+                <h:outputFormat
+                    value="#{msg[val.masterValue]}"
+                    escape="false">
+                    <f:param value="#{val.getComboValueShort(0)}" />
+                    <f:param value="#{val.getComboValueShort(1)}" />
+                    <f:param value="#{val.getComboValueShort(2)}" />
+                    <f:param value="#{val.getComboValueShort(3)}" />
+                    <f:param value="#{val.getComboValueShort(4)}" />
+                    <f:param value="#{val.getComboValueShort(5)}" />
+                    <f:param value="#{val.getComboValueShort(6)}" />
+                    <f:param value="#{val.getComboValueShort(7)}" />
+                    <f:param value="#{val.getComboValueShort(8)}" />
+                    <f:param value="#{val.getComboValueShort(9)}" />
+                </h:outputFormat>
+
+                <h4>#{msg.Werk}</h4>
+                <ul id="work">
+
+                    <!-- METS/LIDO -->
+                    <li id="mets">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
+                            <a
+                                title="#{msg.metadata_dl_mets}"
+                                href="#{activeDocumentBean.viewManager.metsResolverUrl}"> #{msg.downloadMetsButtonLabel} </a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
+                            <a
+                                title="#{msg.metadata_dl_lido}"
+                                href="#{activeDocumentBean.viewManager.lidoResolverUrl}"> #{msg.downloadLidoButtonLabel} </a>
+                        </ui:fragment>
+                    </li>
+
+                    <!-- ALTO (WORK) -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.altoAvailableForWork}">
+                        <li id="alto">
+                            <a
+                                title="#{msg.metadata_dl_alto_work}"
+                                href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"> #{msg.downloadAltoWorkButtonLabel} </a>
+                        </li>
+                    </ui:fragment>
+
+                    <!-- PDF (WORK) -->
+                    <ui:fragment
+                        rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
+                        <li class="pdf">
+                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
+                                <a
+                                    href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+                                    title="#{msg.metadata_dl_pdf}"
+                                    target="_blank"> #{msg.pdfDownload}</a>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
+                                <a
+                                    href="#"
+                                    class="download-modal-widget"
+                                    data-type="pdf"
+                                    data-title="#{activeDocumentBean.titleBarLabel}"
+                                    data-id=""
+                                    data-pi="#{activeDocumentBean.viewManager.pi}"
+                                    title="#{msg.pdfDownload}"
+                                    target="_blank"> #{msg.pdfDownload}</a>
+
+                                <script>
+                                    var downloadModalConfig = {
+                                            downloadBtn: $( ".download-modal-widget" ),
+                                            path: "#{navigationHelper.applicationUrl}",
+                                            iiifPath: "#{configurationBean.iiifApiUrl}",
+                                            userEmail: $( "#userEmail" ).val(),
+                                            useReCaptcha: #{configurationBean.useReCaptcha},
+                                            reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
+                                            messages: {
+                                                downloadInfo: {
+                                                    text: "#{msg.downloadInfoText}",
+                                                    title: "#{msg.downloadInfoTitle}",
+                                                    part: "#{msg.downloadInfoPart}",
+                                                    fileSize: "#{msg.downloadInfoFileSize}"
+                                                },
+                                                reCaptchaText: "#{msg.downloadReCaptchaText}",
+                                                rcInvalid: "#{msg.downloadRcInvalid}",
+                                                rcValid: "#{msg.downloadRcValid}",
+                                                eMailText: "#{msg.downloadEMailText}",
+                                                eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                                                eMail: "#{msg.downloadEmail}",
+                                                closeBtn: "#{msg.downloadCloseModal}",
+                                                saveBtn: "#{msg.downloadGenerateFile}",
+                                            }
+                                        };
+                                        
+                                        viewerJS.downloadModal.init( downloadModalConfig );
+                                    </script>
+                            </ui:fragment>
+                        </li>
+                    </ui:fragment>
+
+                    <!-- IIIF MANIFEST -->
+                    <li id="iiif">
+                        <a
+                            data-copy="iiif-manifest"
+                            data-clipboard-text="#{imageDelivery.iiifManifest}"
+                            title="#{msg.iiif_copyUrl}"> #{msg.iiif} </a>
+                        <script type="text/javascript">
+                            var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
+                            clipboard.on("success", function(e) {
+                               var $trigger = $(e.trigger);
+                               var tooltipText = "#{msg.iiif_CopyUrlDone}";
+                               if(!$trigger.attr('data-original-original-title')) {
+                                   $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
+                               }
+                               $trigger
+                               .attr('data-original-title', tooltipText)
+                               .tooltip('fixTitle')
+                               .tooltip('show')
+                               .attr('data-original-title', $trigger.attr('data-original-original-title'))
+                               .tooltip('fixTitle');
+    
+                            })
+                        </script>
+                    </li>
+                </ul>
+
+                <h4>#{msg.page}</h4>
+                <ul id="page">
+
+                    <!-- ALTO (PAGE) -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.altoAvailableForPage}">
+                        <li id="alto">
+                            <a
+                                title="#{msg.metadata_dl_alto_page}"
+                                href="#{activeDocumentBean.viewManager.altoUrl}"> #{msg.downloadAltoPageButtonLabel} </a>
+                        </li>
+                    </ui:fragment>
+
+                    <!-- PDF (PAGE) -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+                        <li class="pdf">
+                            <a
+                                title="#{msg.pdfDownloadCurrentPage}"
+                                href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"> #{msg.pdfDownload} </a>
+                        </li>
+                    </ui:fragment>
+
+                    <!-- JPEG -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
+                        <li class="jpeg">
+                            <a
+                                title="#{msg.imageLinkDesc}"
+                                target="_blank"
+                                href="#{activeDocumentBean.viewManager.currentPage.imageUrl}"> #{msg.imageLink} </a>
+                        </li>
+                    </ui:fragment>
+                </ul>
+            </div>
+        </ui:fragment>
+
+    </composite:implementation>
+</ui:composition>

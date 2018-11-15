@@ -826,7 +826,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
+     * @return  The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      * @throws ViewerConfigurationException
      */
     public String getRestApiUrl() throws ViewerConfigurationException {

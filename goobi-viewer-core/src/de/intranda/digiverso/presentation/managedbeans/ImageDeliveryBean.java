@@ -44,13 +44,16 @@ import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**
@@ -509,5 +512,6 @@ public class ImageDeliveryBean implements Serializable {
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
     }
+
 
 }
