@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1171,7 +1172,8 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings("static-method")
     public String getTempFolder() {
-        return System.getProperty("java.io.tmpdir") + "viewer";
+        return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
+//        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**

@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -432,6 +433,14 @@ public class FileTools {
         }
         logger.error("Folder not found: {}", path.toAbsolutePath().toString());
         return false;
+    }
+    
+    public static void copyStream(OutputStream output, InputStream input) throws IOException {
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = input.read(buf)) > 0) {
+            output.write(buf, 0, len);
+        }
     }
 
 }
