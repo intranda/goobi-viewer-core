@@ -714,9 +714,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/evifa_viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/evifa_viewer/" />
-		<property name="server.url" value="http://digi.evifa.de/viewer/" />
+		<property name="server.url" value="https://digi.evifa.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigi.evifa.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigi.evifa.de%2Fviewer%2Foai" />
 		<property name="theme" value="evifa" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="0" />
