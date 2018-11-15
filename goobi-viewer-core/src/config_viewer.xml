@@ -1039,6 +1039,16 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
+    
+            <sidebarWidgetUsage display="false">
+                <licenseText>
+                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                        <param type="field" key="LABEL" />
+                        <param type="translatedfield" key="ACCESSCONDITION" />
+                    </metadata>
+                </licenseText>
+            </sidebarWidgetUsage>
+    
 		<!-- This defines the order of sidebar-elements related to the navigation 
 			of the current work. The order corresponds to the order of <item>s in this 
 			list. 'type' defines the name of the particular PageType. Elements missing 
