@@ -195,25 +195,29 @@
 		<!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
 		    the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
 		    to true to use tiled images if possible (only possible when type=openlayers) -->
-		 <zoomImageView type="openSeadragon" tileImage="true" footerHeight="50">
+		 <zoomImageView tileImage="true" footerHeight="50">
 			<scale>600</scale>
 			<scale>900</scale>
 			<scale>1800</scale>
 			<tileSize>
-				<scaleFactors>1,32</scaleFactors>
-				<size>512</size>
+				<scaleFactors>4</scaleFactors>
+				<size>1024</size>
 			</tileSize>
 		</zoomImageView>
 
-		<zoomFullscreenView type="openSeadragon" tileImage="true" footerHeight="50">
+		<zoomImageView tileImage="true" footerHeight="50">
+			<!-- TODO DOCUMENTATION -->
+			<useFor>
+				<view>fullscreen</view>
+			</useFor>
 			<scale>900</scale>
 			<scale>1800</scale>
 			<scale>3600</scale>
 			<tileSize>
-				<scaleFactors>1,32</scaleFactors>
-				<size>512</size>
+				<scaleFactors>4</scaleFactors>
+				<size>1024</size>
 			</tileSize>
-		</zoomFullscreenView>
+		</zoomImageView>
 
 		<!-- TODO DOCUMENTATION-->
 		<rememberImageZoom>false</rememberImageZoom>
