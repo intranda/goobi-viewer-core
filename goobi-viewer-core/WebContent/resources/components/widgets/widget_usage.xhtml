@@ -9,9 +9,9 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
-<!--             <div class="view-object__sidebar-accordeon-panel"> -->
-<!--                 <h3 class="view-object__sidebar-accordeon-panel-title">#{msg.usage}</h3> -->
-<!--             </div> -->
+            <!--             <div class="view-object__sidebar-accordeon-panel"> -->
+            <!--                 <h3 class="view-object__sidebar-accordeon-panel-title">#{msg.usage}</h3> -->
+            <!--             </div> -->
 
             <div class="view-object__sidebar-accordeon-panel-body">
                 <div
@@ -58,6 +58,16 @@
                             title="#{msg.metadata_dl_alto_work}"
                             href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"> #{msg.downloadAltoWorkButtonLabel} </a>
                     </ui:fragment>
+                    
+                    <!-- FULLTEXT (WORK) -->
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
+                        <a
+                            id="textWork"
+                            class="label label-default"
+                            title="#{msg.downloadWorkFulltext}"
+                            href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"> #{msg.FULLEXT} </a>
+                    </ui:fragment>
+                    
 
                     <!-- PDF (WORK) -->
                     <ui:fragment
@@ -81,36 +91,21 @@
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
                                 title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
 
-                            <script>
-                                    var downloadModalConfig = {
-                                            downloadBtn: $( ".download-modal-widget" ),
-                                            path: "#{navigationHelper.applicationUrl}",
-                                            iiifPath: "#{configurationBean.iiifApiUrl}",
-                                            userEmail: $( "#userEmail" ).val(),
-                                            useReCaptcha: #{configurationBean.useReCaptcha},
-                                            reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                                            messages: {
-                                                downloadInfo: {
-                                                    text: "#{msg.downloadInfoText}",
-                                                    title: "#{msg.downloadInfoTitle}",
-                                                    part: "#{msg.downloadInfoPart}",
-                                                    fileSize: "#{msg.downloadInfoFileSize}"
-                                                },
-                                                reCaptchaText: "#{msg.downloadReCaptchaText}",
-                                                rcInvalid: "#{msg.downloadRcInvalid}",
-                                                rcValid: "#{msg.downloadRcValid}",
-                                                eMailText: "#{msg.downloadEMailText}",
-                                                eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                                                eMail: "#{msg.downloadEmail}",
-                                                closeBtn: "#{msg.downloadCloseModal}",
-                                                saveBtn: "#{msg.downloadGenerateFile}",
-                                            }
-                                        };
-                                        
-                                        viewerJS.downloadModal.init( downloadModalConfig );
-                                    </script>
                         </ui:fragment>
                     </ui:fragment>
+
+                    <!-- EPUB -->
+                    <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
+                        <a
+                            href="#"
+                            class="label label-default download-modal-widget"
+                            data-type="epub"
+                            data-title="#{activeDocumentBean.titleBarLabel}"
+                            data-id=""
+                            data-pi="#{activeDocumentBean.viewManager.pi}"
+                            title="#{msg.epubDownload}"> #{msg.epub} </a>
+                    </ui:fragment>
+
 
                     <!-- IIIF MANIFEST -->
                     <a
@@ -119,24 +114,6 @@
                         data-copy="iiif-manifest"
                         data-clipboard-text="#{imageDelivery.iiifManifest}"
                         title="#{msg.iiif_copyUrl}"> #{msg.iiif} </a>
-                    <script type="text/javascript">
-                            var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
-                            clipboard.on("success", function(e) {
-                               var $trigger = $(e.trigger);
-                               var tooltipText = "#{msg.iiif_CopyUrlDone}";
-                               if(!$trigger.attr('data-original-original-title')) {
-                                   $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
-                               }
-                               $trigger
-                               .attr('data-original-title', tooltipText)
-                               .tooltip('fixTitle')
-                               .tooltip('show')
-                               .attr('data-original-title', $trigger.attr('data-original-original-title'))
-                               .tooltip('fixTitle');
-    
-                            })
-                        </script>
-
                     <h4
                         id="titlePage"
                         class="widget_usage__subtitle">#{msg.page}</h4>
@@ -149,6 +126,16 @@
                             title="#{msg.metadata_dl_alto_page}"
                             target="_blank"
                             href="#{activeDocumentBean.viewManager.altoUrl}"> #{msg.downloadAltoPageButtonLabel} </a>
+                    </ui:fragment>
+                    
+                    <!-- FULLTEXT (PAGE) -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
+                        <a
+                            id="textPage"
+                            class="label label-default"
+                            title="#{msg.downloadPageFulltext}"
+                            target="_blank"
+                            href="#{activeDocumentBean.viewManager.fulltextUrl}"> #{msg.FULLEXT} </a>
                     </ui:fragment>
 
                     <!-- PDF (PAGE) -->
@@ -172,6 +159,51 @@
                 </div>
             </div>
         </ui:fragment>
-
+    
+        <script>
+        
+            var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
+            clipboard.on("success", function(e) {
+               var $trigger = $(e.trigger);
+               var tooltipText = "#{msg.iiif_CopyUrlDone}";
+               if(!$trigger.attr('data-original-original-title')) {
+                   $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
+               }
+               $trigger
+               .attr('data-original-title', tooltipText)
+               .tooltip('fixTitle')
+               .tooltip('show')
+               .attr('data-original-title', $trigger.attr('data-original-original-title'))
+               .tooltip('fixTitle');
+    
+            })
+        
+        	var downloadModalConfig = {
+                downloadBtn: $( ".download-modal-widget" ),
+                path: "#{navigationHelper.applicationUrl}",
+                iiifPath: "#{configurationBean.iiifApiUrl}",
+                userEmail: $( "#userEmail" ).val(),
+                useReCaptcha: #{configurationBean.useReCaptcha},
+                reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
+                messages: {
+                    downloadInfo: {
+                        text: "#{msg.downloadInfoText}",
+                        title: "#{msg.downloadInfoTitle}",
+                        part: "#{msg.downloadInfoPart}",
+                        fileSize: "#{msg.downloadInfoFileSize}"
+                    },
+                    reCaptchaText: "#{msg.downloadReCaptchaText}",
+                    rcInvalid: "#{msg.downloadRcInvalid}",
+                    rcValid: "#{msg.downloadRcValid}",
+                    eMailText: "#{msg.downloadEMailText}",
+                    eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                    eMail: "#{msg.downloadEmail}",
+                    closeBtn: "#{msg.downloadCloseModal}",
+                    saveBtn: "#{msg.downloadGenerateFile}",
+                }
+            };
+            viewerJS.downloadModal.init( downloadModalConfig );
+        </script>
+    
     </composite:implementation>
 </ui:composition>
