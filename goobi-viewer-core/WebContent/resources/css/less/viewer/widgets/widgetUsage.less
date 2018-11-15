@@ -1,0 +1,44 @@
+/* ==============================================================
+   Widget Usage
+   style declarations for widget_usage.xhtml
+   ==============================================================*/
+/* WIDGET USAGE */
+.widget-usage {
+	h3 {}
+	h4 {}
+	&__subtitle {}
+	/* LICENSE TEXT */
+	&__license-text {}
+	/* WORK DOWNLOADS */
+	&__work-downloads {
+		a {}
+		.label-default {}
+	}
+	&__work-download-lido-mets {}
+	&__work-download-alto {}
+	&__work-download-fulltext {}
+	&__work-download-pdf {}
+	&__work-download-epub {}
+	&__work-download-iiif {}
+	/* PAGE DOWNLOADS */
+	&__page-downloads {
+		a {}
+		.label-default {}
+	}
+	&__page-download-alto {}
+	&__page-download-fulltext {}
+	&__page-download-pdf {}
+	&__page-download-jpeg {}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

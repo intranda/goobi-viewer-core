@@ -9,201 +9,141 @@
 
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
-            <!--             <div class="view-object__sidebar-accordeon-panel"> -->
-            <!--                 <h3 class="view-object__sidebar-accordeon-panel-title">#{msg.usage}</h3> -->
-            <!--             </div> -->
+            <div id="widgetUsage" class="widget widget-usage">
+                <h3>#{msg.usage}</h3>
 
-            <div class="view-object__sidebar-accordeon-panel-body">
-                <div
-                    id="widgetUsage"
-                    class="widget widget-usage">
-                    <h3>#{msg.usage}</h3>
+                <!-- LICENSE TEXT -->
+                <p id="licenseText" class="widget-usage__license-text">
+                    <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}" displayLabel="false" />
+                </p>
 
-                    <p
-                        id="licenseText"
-                        class="widget-usage__license-text">
-                        <viewerComponent:metadata
-                            metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}"
-                            displayLabel="false" />
-                    </p>
-
-
-                    <h4
-                        id="titleWork"
-                        class="widget-usage__subtitle">#{msg.Werk}</h4>
-
+                <!-- WORK -->
+                <h4 id="titleWork" class="widget-usage__subtitle">#{msg.Werk}</h4>
+                
+                <!-- WORK DOWNLOADS -->
+                <div class="widget-usage__work-downloads">
                     <!-- METS/LIDO -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
-                        <a
-                            id="lidomets"
-                            class="label label-default"
-                            title="#{msg.metadata_dl_mets}"
-                            target="_blank"
-                            href="#{activeDocumentBean.viewManager.metsResolverUrl}"> #{msg.downloadMetsButtonLabel} </a>
+                        <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_mets}" target="_blank" href="#{activeDocumentBean.viewManager.metsResolverUrl}">
+                            #{msg.downloadMetsButtonLabel} </a>
                     </ui:fragment>
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
-                        <a
-                            id="lidomets"
-                            class="label label-default"
-                            title="#{msg.metadata_dl_lido}"
-                            target="_blank"
-                            href="#{activeDocumentBean.viewManager.lidoResolverUrl}"> #{msg.downloadLidoButtonLabel} </a>
+                        <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_lido}" target="_blank" href="#{activeDocumentBean.viewManager.lidoResolverUrl}">
+                            #{msg.downloadLidoButtonLabel} </a>
                     </ui:fragment>
-
+    
                     <!-- ALTO (WORK) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
-                        <a
-                            id="alto"
-                            class="label label-default"
-                            title="#{msg.metadata_dl_alto_work}"
-                            href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"> #{msg.downloadAltoWorkButtonLabel} </a>
+                        <a id="alto" class="label label-default widget-usage__work-download-alto" title="#{msg.metadata_dl_alto_work}" href="#{activeDocumentBean.viewManager.altoUrlForAllPages}">
+                            #{msg.downloadAltoWorkButtonLabel} </a>
                     </ui:fragment>
-                    
+    
                     <!-- FULLTEXT (WORK) -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
-                        <a
-                            id="textWork"
-                            class="label label-default"
-                            title="#{msg.downloadWorkFulltext}"
-                            href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"> #{msg.FULLEXT} </a>
+                        <a id="textWork" class="label label-default widget-usage__work-download-fulltext" title="#{msg.downloadWorkFulltext}" href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}">
+                            #{msg.FULLEXT} </a>
                     </ui:fragment>
-                    
-
+    
                     <!-- PDF (WORK) -->
-                    <ui:fragment
-                        rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
                         <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
-                            <a
-                                id="pdfWork"
-                                class="label label-default"
-                                href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
-                                title="#{msg.metadata_dl_pdf}"
-                                target="_blank"> #{msg.pdfDownload}</a>
+                            <a id="pdfWork" class="label label-default widget-usage__work-download-pdf" href="#{activeDocumentBean.viewManager.pdfDownloadLink}" title="#{msg.metadata_dl_pdf}" target="_blank">
+                                #{msg.pdfDownload}</a>
                         </ui:fragment>
                         <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
-                            <a
-                                id="pdfWork"
-                                class="label label-default download-modal-widget"
-                                href="#"
-                                data-type="pdf"
-                                data-title="#{activeDocumentBean.titleBarLabel}"
-                                data-id=""
-                                data-pi="#{activeDocumentBean.viewManager.pi}"
-                                title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
-
+                            <a id="pdfWork" class="label label-default widget-usage__work-download-pdf download-modal-widget" href="#" data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
+                                data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
+    
                         </ui:fragment>
                     </ui:fragment>
-
+    
                     <!-- EPUB -->
                     <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
-                        <a
-                            href="#"
-                            class="label label-default download-modal-widget"
-                            data-type="epub"
-                            data-title="#{activeDocumentBean.titleBarLabel}"
-                            data-id=""
-                            data-pi="#{activeDocumentBean.viewManager.pi}"
-                            title="#{msg.epubDownload}"> #{msg.epub} </a>
+                        <a href="#" class="label label-default widget-usage__work-download-epub download-modal-widget" data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
+                            data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.epubDownload}"> #{msg.epub} </a>
                     </ui:fragment>
-
-
+    
                     <!-- IIIF MANIFEST -->
-                    <a
-                        id="iiifManifest"
-                        class="label label-default"
-                        data-copy="iiif-manifest"
-                        data-clipboard-text="#{imageDelivery.iiifManifest}"
-                        title="#{msg.iiif_copyUrl}"> #{msg.iiif} </a>
-                    <h4
-                        id="titlePage"
-                        class="widget_usage__subtitle">#{msg.page}</h4>
-
+                    <a id="iiifManifest" class="label label-default widget-usage__work-download-iiif" data-copy="iiif-manifest" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}">
+                        #{msg.iiif} </a>
+                </div>
+                    
+                <!-- PAGE -->
+                <h4 id="titlePage" class="widget_usage__subtitle">#{msg.page}</h4>
+                
+                <!-- PAGE DOWNLOADS -->
+                <div class="widget-usage__page-downloads">
                     <!-- ALTO (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-                        <a
-                            id="altoPage"
-                            class="label label-default"
-                            title="#{msg.metadata_dl_alto_page}"
-                            target="_blank"
-                            href="#{activeDocumentBean.viewManager.altoUrl}"> #{msg.downloadAltoPageButtonLabel} </a>
+                        <a id="altoPage" class="label label-default widget-usage__page-download-alto" title="#{msg.metadata_dl_alto_page}" target="_blank" href="#{activeDocumentBean.viewManager.altoUrl}">
+                            #{msg.downloadAltoPageButtonLabel} </a>
                     </ui:fragment>
-                    
+    
                     <!-- FULLTEXT (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-                        <a
-                            id="textPage"
-                            class="label label-default"
-                            title="#{msg.downloadPageFulltext}"
-                            target="_blank"
-                            href="#{activeDocumentBean.viewManager.fulltextUrl}"> #{msg.FULLEXT} </a>
+                        <a id="textPage" class="label label-default widget-usage__page-download-fulltext" title="#{msg.downloadPageFulltext}" target="_blank" href="#{activeDocumentBean.viewManager.fulltextUrl}">
+                            #{msg.FULLEXT} </a>
                     </ui:fragment>
-
+    
                     <!-- PDF (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
-                        <a
-                            id="pdfPage"
-                            class="label label-default"
-                            title="#{msg.pdfDownloadCurrentPage}"
-                            href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"> #{msg.pdfDownload} </a>
+                        <a id="pdfPage" class="label label-default widget-usage__page-download-pdf" title="#{msg.pdfDownloadCurrentPage}" href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}">
+                            #{msg.pdfDownload} </a>
                     </ui:fragment>
-
+    
                     <!-- JPEG -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
-                        <a
-                            id="jpeg"
-                            class="label label-default"
-                            title="#{msg.imageLinkDesc}"
-                            target="_blank"
-                            href="#{activeDocumentBean.viewManager.currentImageUrl}"> #{msg.imageLink} </a>
+                        <a id="jpeg" class="label label-default widget-usage__page-download-jpeg" title="#{msg.imageLinkDesc}" target="_blank" href="#{activeDocumentBean.viewManager.currentImageUrl}">
+                            #{msg.imageLink} </a>
                     </ui:fragment>
                 </div>
             </div>
+            
+            <script>        
+                var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
+                
+                clipboard.on("success", function(e) {
+                   var $trigger = $(e.trigger);
+                   var tooltipText = "#{msg.iiif_CopyUrlDone}";
+                   if(!$trigger.attr('data-original-original-title')) {
+                       $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
+                   }
+                   $trigger
+                   .attr('data-original-title', tooltipText)
+                   .tooltip('fixTitle')
+                   .tooltip('show')
+                   .attr('data-original-title', $trigger.attr('data-original-original-title'))
+                   .tooltip('fixTitle');
+        
+                })
+            
+            	var downloadModalConfig = {
+                    downloadBtn: $( ".download-modal-widget" ),
+                    path: "#{navigationHelper.applicationUrl}",
+                    iiifPath: "#{configurationBean.iiifApiUrl}",
+                    userEmail: $( "#userEmail" ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
+                    messages: {
+                        downloadInfo: {
+                            text: "#{msg.downloadInfoText}",
+                            title: "#{msg.downloadInfoTitle}",
+                            part: "#{msg.downloadInfoPart}",
+                            fileSize: "#{msg.downloadInfoFileSize}"
+                        },
+                        reCaptchaText: "#{msg.downloadReCaptchaText}",
+                        rcInvalid: "#{msg.downloadRcInvalid}",
+                        rcValid: "#{msg.downloadRcValid}",
+                        eMailText: "#{msg.downloadEMailText}",
+                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                        eMail: "#{msg.downloadEmail}",
+                        closeBtn: "#{msg.downloadCloseModal}",
+                        saveBtn: "#{msg.downloadGenerateFile}",
+                    }
+                };
+                
+                viewerJS.downloadModal.init( downloadModalConfig );
+            </script>    
         </ui:fragment>
-    
-        <script>
-        
-            var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
-            clipboard.on("success", function(e) {
-               var $trigger = $(e.trigger);
-               var tooltipText = "#{msg.iiif_CopyUrlDone}";
-               if(!$trigger.attr('data-original-original-title')) {
-                   $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
-               }
-               $trigger
-               .attr('data-original-title', tooltipText)
-               .tooltip('fixTitle')
-               .tooltip('show')
-               .attr('data-original-title', $trigger.attr('data-original-original-title'))
-               .tooltip('fixTitle');
-    
-            })
-        
-        	var downloadModalConfig = {
-                downloadBtn: $( ".download-modal-widget" ),
-                path: "#{navigationHelper.applicationUrl}",
-                iiifPath: "#{configurationBean.iiifApiUrl}",
-                userEmail: $( "#userEmail" ).val(),
-                useReCaptcha: #{configurationBean.useReCaptcha},
-                reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                messages: {
-                    downloadInfo: {
-                        text: "#{msg.downloadInfoText}",
-                        title: "#{msg.downloadInfoTitle}",
-                        part: "#{msg.downloadInfoPart}",
-                        fileSize: "#{msg.downloadInfoFileSize}"
-                    },
-                    reCaptchaText: "#{msg.downloadReCaptchaText}",
-                    rcInvalid: "#{msg.downloadRcInvalid}",
-                    rcValid: "#{msg.downloadRcValid}",
-                    eMailText: "#{msg.downloadEMailText}",
-                    eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                    eMail: "#{msg.downloadEmail}",
-                    closeBtn: "#{msg.downloadCloseModal}",
-                    saveBtn: "#{msg.downloadGenerateFile}",
-                }
-            };
-            viewerJS.downloadModal.init( downloadModalConfig );
-        </script>
-    
     </composite:implementation>
 </ui:composition>
