@@ -1073,5 +1073,4 @@ public class AdminBean implements Serializable {
         Collections.sort(accessConditions);
         return accessConditions;
     }
-
 }
