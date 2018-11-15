@@ -889,7 +889,8 @@ public final class SearchHelper {
                         if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                                 new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user,
                                 ipAddress, null)) {
-                            logger.trace("User has listing privilege for overriding license type '{}'.", licenseType.getName());
+                            logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
+                                    overridingLicenseType.getName(), licenseType.getName());
                             skip = true;
                             break;
                         }
