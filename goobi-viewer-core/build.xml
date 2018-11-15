@@ -1210,6 +1210,36 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war-internal" />
 	</target>
+	<target name="GOOBITOGO-haendel">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/G2GFOLDER/config/" />
+		<property name="server.folder" value="/G2GFOLDER/" />
+		<property name="server.url" value="http://G2GURL/viewer/" />
+		<property name="solr.url" value="http://G2GURL/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2FG2GURL%2Fviewer%2Foai" />
+		<property name="theme" value="haendel" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-internal" />
+	</target>
+	<target name="GOOBITOGO-albertina">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/G2GFOLDER/config/" />
+		<property name="server.folder" value="/G2GFOLDER/" />
+		<property name="server.url" value="http://G2GURL/viewer/" />
+		<property name="solr.url" value="http://G2GURL/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2FG2GURL%2Fviewer%2Foai" />
+		<property name="theme" value="albertina" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-internal" />
+	</target>
 	<target name="grimm">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
