@@ -1309,8 +1309,6 @@ public class CmsBean implements Serializable {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
                 } else if (PageType.calendarsearch.equals(currentPath.get().getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_CALENDAR);
-                } else if (PageType.timelinesearch.equals(currentPath.get().getPageType())) {
-                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_TIMELINE);
                 } else if (PageType.search.equals(currentPath.get().getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
                 }
