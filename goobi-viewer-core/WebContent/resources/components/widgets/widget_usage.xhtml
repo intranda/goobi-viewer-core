@@ -26,23 +26,27 @@
                     <!-- METS/LIDO -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
                         <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_mets}" target="_blank" href="#{activeDocumentBean.viewManager.metsResolverUrl}">
-                            #{msg.downloadMetsButtonLabel} </a>
+                            #{msg.downloadMetsButtonLabel} 
+                        </a>
                     </ui:fragment>
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
                         <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_lido}" target="_blank" href="#{activeDocumentBean.viewManager.lidoResolverUrl}">
-                            #{msg.downloadLidoButtonLabel} </a>
+                            #{msg.downloadLidoButtonLabel}
+                        </a>
                     </ui:fragment>
     
                     <!-- ALTO (WORK) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
                         <a id="alto" class="label label-default widget-usage__work-download-alto" title="#{msg.metadata_dl_alto_work}" href="#{activeDocumentBean.viewManager.altoUrlForAllPages}">
-                            #{msg.downloadAltoWorkButtonLabel} </a>
+                            #{msg.downloadAltoWorkButtonLabel}
+                        </a>
                     </ui:fragment>
     
                     <!-- FULLTEXT (WORK) -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
                         <a id="textWork" class="label label-default widget-usage__work-download-fulltext" title="#{msg.downloadWorkFulltext}" href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}">
-                            #{msg.FULLEXT} </a>
+                            #{msg.FULLEXT}
+                        </a>
                     </ui:fragment>
     
                     <!-- PDF (WORK) -->
@@ -53,20 +57,24 @@
                         </ui:fragment>
                         <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
                             <a id="pdfWork" class="label label-default widget-usage__work-download-pdf download-modal-widget" href="#" data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                                data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.pdfDownload}"> #{msg.pdfDownload}</a>
-    
+                                data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.pdfDownload}">
+                                #{msg.pdfDownload}
+                            </a>    
                         </ui:fragment>
                     </ui:fragment>
     
                     <!-- EPUB -->
                     <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
                         <a href="#" class="label label-default widget-usage__work-download-epub download-modal-widget" data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                            data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.epubDownload}"> #{msg.epub} </a>
+                            data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.epubDownload}">
+                            #{msg.epub}
+                        </a>
                     </ui:fragment>
     
                     <!-- IIIF MANIFEST -->
                     <a id="iiifManifest" class="label label-default widget-usage__work-download-iiif" data-copy="iiif-manifest" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-copy-done="#{msg.iiif_CopyUrlDone}">
-                        #{msg.iiif} </a>
+                        #{msg.iiif}
+                    </a>
                 </div>
                     
                 <!-- PAGE -->
@@ -77,25 +85,29 @@
                     <!-- ALTO (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
                         <a id="altoPage" class="label label-default widget-usage__page-download-alto" title="#{msg.metadata_dl_alto_page}" target="_blank" href="#{activeDocumentBean.viewManager.altoUrl}">
-                            #{msg.downloadAltoPageButtonLabel} </a>
+                            #{msg.downloadAltoPageButtonLabel}
+                        </a>
                     </ui:fragment>
     
                     <!-- FULLTEXT (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
                         <a id="textPage" class="label label-default widget-usage__page-download-fulltext" title="#{msg.downloadPageFulltext}" target="_blank" href="#{activeDocumentBean.viewManager.fulltextUrl}">
-                            #{msg.FULLEXT} </a>
+                            #{msg.FULLEXT}
+                        </a>
                     </ui:fragment>
     
                     <!-- PDF (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
                         <a id="pdfPage" class="label label-default widget-usage__page-download-pdf" title="#{msg.pdfDownloadCurrentPage}" href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}">
-                            #{msg.pdfDownload} </a>
+                            #{msg.pdfDownload}
+                        </a>
                     </ui:fragment>
     
                     <!-- JPEG -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
                         <a id="jpeg" class="label label-default widget-usage__page-download-jpeg" title="#{msg.imageLinkDesc}" target="_blank" href="#{activeDocumentBean.viewManager.currentImageUrl}">
-                            #{msg.imageLink} </a>
+                            #{msg.imageLink}
+                        </a>
                     </ui:fragment>
                 </div>
             </div>
