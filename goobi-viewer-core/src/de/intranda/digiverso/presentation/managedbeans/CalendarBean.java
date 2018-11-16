@@ -73,7 +73,6 @@ public class CalendarBean implements Serializable {
     @Inject
     private SearchBean searchBean;
 
-    private List<CalendarRow> rowList = new ArrayList<>();
     private List<CalendarItemYear> allActiveYears;
     private CalendarItemYear currentYear;
     private CalendarItemMonth currentMonth;
@@ -121,7 +120,6 @@ public class CalendarBean implements Serializable {
         //        }
         try {
             getDefaultDates();
-            populateYearData();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here");
         } catch (IndexUnreachableException e) {
@@ -171,69 +169,6 @@ public class CalendarBean implements Serializable {
         } else {
             yearStart = Integer.parseInt(start);
             yearEnd = Integer.parseInt(end);
-        }
-    }
-
-    /**
-     * The method generates the data for the selected year for the time based view from solr index.
-     *
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-
-    public void populateYearData() throws IndexUnreachableException, PresentationException {
-        rowList = new ArrayList<>();
-        StringBuilder sbSearchString = new StringBuilder();
-        if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR)
-                    .append(":[")
-                    .append(yearStart)
-                    .append(" TO ")
-                    .append(yearEnd)
-                    .append("] AND ")
-                    .append(SolrConstants.DC)
-                    .append(':')
-                    .append(collection)
-                    .append('*')
-                    .append(docstructFilterQuery);
-        } else {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":[").append(yearStart).append(" TO ").append(yearEnd).append(']').append(
-                    docstructFilterQuery);
-        }
-        sbSearchString.append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
-        //            logger.debug("searchString: " + searchString);
-        QueryResponse resp =
-                SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
-        //            logger.debug("search end");
-
-        FacetField field = resp.getFacetField(SolrConstants._CALENDAR_YEAR);
-        List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
-        CalendarRow row = new CalendarRow();
-
-        if (fieldValues == null) {
-            //                logger.error("Unable to retrieve calendar field values");
-            return;
-        }
-
-        for (int currentYear = yearStart; currentYear <= yearEnd; currentYear++) {
-            if (row.getItemList().size() % NUMBER_OF_ITEMS_IN_ROW == 0) {
-                row = new CalendarRow();
-                rowList.add(row);
-            }
-            boolean match = false;
-            String name = String.valueOf(currentYear);
-            for (Count count : fieldValues) {
-                if (count.getName().equals(name)) {
-                    CalendarItemYear year = new CalendarItemYear(count.getName(), Integer.parseInt(count.getName()), (int) count.getCount());
-                    row.addItem(year);
-                    match = true;
-                    break;
-                }
-            }
-            if (!match) {
-                CalendarItemYear year = new CalendarItemYear(name, currentYear, 0);
-                row.addItem(year);
-            }
         }
     }
 
@@ -534,20 +469,6 @@ public class CalendarBean implements Serializable {
         }
     }
 
-    /**
-     * @return the rowList
-     */
-    public List<CalendarRow> getRowList() {
-        return rowList;
-    }
-
-    /**
-     * @param rowList the rowList to set
-     */
-    public void setRowList(List<CalendarRow> rowList) {
-        this.rowList = rowList;
-    }
-
     public int getRowIndex() {
         return rowIndex;
     }
@@ -710,13 +631,6 @@ public class CalendarBean implements Serializable {
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here");
         }
-        try {
-            populateYearData();
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here");
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here");
-        }
     }
 
     /**
@@ -785,7 +699,6 @@ public class CalendarBean implements Serializable {
         logger.trace("resetYears");
         allActiveYears = null;
         getAllActiveYears();
-        populateYearData();
     }
 
     // calendar view
@@ -1080,10 +993,6 @@ public class CalendarBean implements Serializable {
         return collection;
     }
 
-    public String limitSearch() throws IndexUnreachableException, PresentationException {
-        populateYearData();
-        return "";
-    }
 
     /**
      * 
