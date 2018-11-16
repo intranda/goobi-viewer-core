@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1002,7 +1003,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getAltoUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
     }
     
@@ -1016,9 +1017,9 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        String filename = getFulltextFilename();
+        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi() + "/" + filename;
     }
@@ -1381,7 +1382,7 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        String filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
         if (StringUtils.isNotBlank(filename)) {
             boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
                     filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -1407,9 +1408,9 @@ public class ViewManager implements Serializable {
         if (!getCurrentPage().isFulltextAvailable()) {
             return false;
         }
-        String filename = getFulltextFilename();
+        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = Paths.get(getCurrentPage().getAltoFileName()).getFileName().toString();
+            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
         }
         if (StringUtils.isNotBlank(filename)) {
             boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
@@ -1421,19 +1422,6 @@ public class ViewManager implements Serializable {
 
     }
 
-    /**
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public String getFulltextFilename() throws IndexUnreachableException, DAOException {
-        if(StringUtils.isNotBlank(getCurrentPage().getFulltextFileName())) {            
-            String filename = Paths.get(getCurrentPage().getFulltextFileName()).getFileName().toString();
-            return filename; 
-        } else {
-            return "";
-        }
-    }
 
     /**
      * Returns the full-text for the current page, stripped of any included JavaScript.
@@ -2212,5 +2200,23 @@ public class ViewManager implements Serializable {
         Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
         md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
         return md;
+    }
+    
+    /**
+     * 
+     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename)
+     * as String. Returns an empty String if the given path is empty or null
+     * 
+     * @param pathString
+     * @return  The filename, or an empty String if it could not be determined
+     */
+    
+    private String getFilenameFromPathString(String pathString) {
+        if(StringUtils.isNotBlank(pathString)) {
+            Path path = Paths.get(pathString);
+            return path.getFileName().toString();
+        } else {
+            return "";
+        }
     }
 }
