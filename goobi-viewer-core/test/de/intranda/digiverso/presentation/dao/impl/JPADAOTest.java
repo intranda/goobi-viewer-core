@@ -2042,7 +2042,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getLicenseTypeCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getLicenseTypeCount(null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getLicenseTypeCount(null));
     }
 
     /**
