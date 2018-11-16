@@ -65,7 +65,7 @@
                     </ui:fragment>
     
                     <!-- IIIF MANIFEST -->
-                    <a id="iiifManifest" class="label label-default widget-usage__work-download-iiif" data-copy="iiif-manifest" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}">
+                    <a id="iiifManifest" class="label label-default widget-usage__work-download-iiif" data-copy="iiif-manifest" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-copy-done="#{msg.iiif_CopyUrlDone}">
                         #{msg.iiif} </a>
                 </div>
                     
@@ -101,23 +101,7 @@
             </div>
             
             <script>        
-                var clipboard = new ClipboardJS( '[data-copy="iiif-manifest"]' );
-                
-                clipboard.on("success", function(e) {
-                   var $trigger = $(e.trigger);
-                   var tooltipText = "#{msg.iiif_CopyUrlDone}";
-                   if(!$trigger.attr('data-original-original-title')) {
-                       $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
-                   }
-                   $trigger
-                   .attr('data-original-title', tooltipText)
-                   .tooltip('fixTitle')
-                   .tooltip('show')
-                   .attr('data-original-title', $trigger.attr('data-original-original-title'))
-                   .tooltip('fixTitle');
-        
-                })
-            
+
             	var downloadModalConfig = {
                     downloadBtn: $( ".download-modal-widget" ),
                     path: "#{navigationHelper.applicationUrl}",
