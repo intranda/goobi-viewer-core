@@ -145,7 +145,7 @@
                                     <div class="">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
                                             value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
-                                            <f:selectItems value="#{adminBean.allLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}"  />
+                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}"  />
                                             <f:ajax render="@none" />
                                         </h:selectManyListbox>
                                     </div>
