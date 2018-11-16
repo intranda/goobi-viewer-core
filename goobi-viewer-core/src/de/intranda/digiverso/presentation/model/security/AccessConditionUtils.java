@@ -298,7 +298,7 @@ public class AccessConditionUtils {
                         if (fieldsAccessConddition != null) {
                             for (Object accessCondition : fieldsAccessConddition) {
                                 requiredAccessConditions.add((String) accessCondition);
-                                logger.debug(accessCondition.toString());
+                                logger.trace("{}", accessCondition.toString());
                             }
                         }
                     }
@@ -652,6 +652,7 @@ public class AccessConditionUtils {
         }
 
         // If not within an allowed IP range, check the current user's satisfied access conditions
+        
         if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
             return true;
         }

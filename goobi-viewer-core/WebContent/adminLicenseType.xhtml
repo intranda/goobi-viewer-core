@@ -34,8 +34,8 @@
                             <div class="form-group">
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
-                                <div class="form-control__select">
-                                        <h:selectOneMenu styleClass="form-control" value="#{adminBean.currentLicenseType.name}">
+                                    <div class="form-control__select">
+                                        <h:selectOneMenu id="name" styleClass="form-control" value="#{adminBean.currentLicenseType.name}">
                                             <f:selectItems value="#{adminBean.possibleAccessConditions}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
                                             <f:ajax render="@none" />
                                         </h:selectOneMenu>
@@ -135,6 +135,19 @@
                                         <label> 
                                             <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDownloadOriginalContent}" /> #{msg.license_privDownloadOriginalContent}
                                         </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <h:outputLabel for="overriding" styleClass="col-sm-4 control-label" value="#{msg.license_licenseType_overriding}" />
+                                <div class="col-sm-8">
+                                    <div class="">
+                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
+                                            value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
+                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}"  />
+                                            <f:ajax render="@none" />
+                                        </h:selectManyListbox>
                                     </div>
                                 </div>
                             </div>

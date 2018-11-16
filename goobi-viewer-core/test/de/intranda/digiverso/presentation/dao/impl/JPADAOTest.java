@@ -27,8 +27,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Preconditions;
-
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -75,7 +73,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        CMSTemplateManager.getInstance(webContent.toURI().toString(), null);
+        String webContentPath = webContent.toURI().toString();
+        //        if (webContentPath.startsWith("file:/")) {
+        //            webContentPath = webContentPath.replace("file:/", "");
+        //        }
+        CMSTemplateManager.getInstance(webContentPath, null);
     }
 
     // Users
@@ -107,7 +109,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getUserByNicknameTest() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByNickname("nick 1");
+        User user = DataManager.getInstance().getDao().getUserByNickname("admin");
         Assert.assertNotNull(user);
     }
 
@@ -838,7 +840,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getAllLicenseTypesTest() throws DAOException {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     /**
@@ -848,7 +850,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getOpenAccessLicenseTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
         List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes();
-        Assert.assertEquals(2, licenseTypes.size());
+        Assert.assertEquals(3, licenseTypes.size());
         Assert.assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
         Assert.assertEquals(Long.valueOf(3), licenseTypes.get(1).getId());
     }
@@ -878,14 +880,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void addLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = new LicenseType();
         licenseType.setName("license type to add name");
         licenseType.setDescription("license type to add desc");
         licenseType.getPrivileges().add("license type to add priv 1");
         Assert.assertTrue(DataManager.getInstance().getDao().addLicenseType(licenseType));
         Assert.assertNotNull(licenseType.getId());
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
         Assert.assertNotNull(licenseType2);
@@ -897,7 +899,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
         Assert.assertNotNull(licenseType);
         Assert.assertEquals(1, licenseType.getPrivileges().size());
@@ -906,7 +908,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         licenseType.setDescription("license type 1 new desc");
         licenseType.getPrivileges().add("license type 1 priv 2");
         Assert.assertTrue(DataManager.getInstance().getDao().updateLicenseType(licenseType));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
         Assert.assertNotNull(licenseType2);
@@ -918,22 +920,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteUsedLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
         Assert.assertNotNull(licenseType);
         Assert.assertFalse(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
         Assert.assertNotNull(DataManager.getInstance().getDao().getLicenseType(1));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     @Test
     public void deleteUnusedLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(2);
         Assert.assertNotNull(licenseType);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
         Assert.assertNull(DataManager.getInstance().getDao().getLicenseType(2));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     // Roles
@@ -1309,8 +1311,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getLicenseTypes_shouldSortResultsCorrectly() throws Exception {
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", true, null);
         Assert.assertEquals(2, ret.size());
-        Assert.assertEquals(Long.valueOf(3), ret.get(0).getId());
-        Assert.assertEquals(Long.valueOf(2), ret.get(1).getId());
+        Assert.assertEquals(Long.valueOf(4), ret.get(0).getId());
+        Assert.assertEquals(Long.valueOf(3), ret.get(1).getId());
     }
 
     /**
@@ -1585,7 +1587,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersions().remove(0);
         page.getClassifications().add("new class");
         page.getProperty("TEST_PROPERTY").setValue("true");
-        
+
         Date now = new Date();
         page.setDateUpdated(now);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
@@ -2040,7 +2042,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getLicenseTypeCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getLicenseTypeCount(null));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getLicenseTypeCount(null));
     }
 
     /**

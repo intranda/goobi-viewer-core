@@ -28,6 +28,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -73,6 +76,12 @@ public class LicenseType implements IPrivilegeHolder {
     @CollectionTable(name = "license_type_privileges", joinColumns = @JoinColumn(name = "license_type_id"))
     @Column(name = "privilege_name")
     private Set<String> privileges = new HashSet<>();
+
+    /** Other license types for which a user may have privileges that this license type does not grant. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
+    private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
 
     /*
      * (non-Javadoc)
@@ -138,8 +147,8 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     public boolean isStaticLicenseType() {
-        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_FORCE_OVERVIEW_PAGE.equals(name) || LICENSE_TYPE_DELETE_OCR_PAGE
-                .equals(name);
+        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_FORCE_OVERVIEW_PAGE.equals(name)
+                || LICENSE_TYPE_DELETE_OCR_PAGE.equals(name);
     }
 
     /**
@@ -379,6 +388,20 @@ public class LicenseType implements IPrivilegeHolder {
         }
     }
 
+    /**
+     * @return the overridingLicenseTypes
+     */
+    public Set<LicenseType> getOverridingLicenseTypes() {
+        return overridingLicenseTypes;
+    }
+
+    /**
+     * @param overridingLicenseTypes the overridingLicenseTypes to set
+     */
+    public void setOverridingLicenseTypes(Set<LicenseType> overridingLicenseTypes) {
+        this.overridingLicenseTypes = overridingLicenseTypes;
+    }
+
     public static void addStaticLicenseTypesToDB() throws DAOException {
         // Add the license type "may set representative image", if not yet in the database
         if (DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE) == null) {
@@ -414,16 +437,16 @@ public class LicenseType implements IPrivilegeHolder {
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getName()).append(":\t");
-            sb.append("openaccess: ").append(isOpenAccess());
-            sb.append("\tconditions: ").append(conditions);
-            sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
-            return sb.toString();
+        sb.append("openaccess: ").append(isOpenAccess());
+        sb.append("\tconditions: ").append(conditions);
+        sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
+        return sb.toString();
     }
 }

@@ -46,7 +46,11 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        CMSTemplateManager.getInstance(webContent.toURI().toString(), null);
+        String webContentPath = webContent.toURI().toString();
+        //        if (webContentPath.startsWith("file:/")) {
+        //            webContentPath = webContentPath.replace("file:/", "");
+        //        }
+        CMSTemplateManager.getInstance(webContentPath, null);
     }
 
     /**
