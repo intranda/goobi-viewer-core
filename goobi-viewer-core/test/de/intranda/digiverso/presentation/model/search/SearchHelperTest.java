@@ -172,7 +172,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
         Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
-                + ":\"license type 3 name\"", suffix);
+                + ":\"license type 3 name\" -" + SolrConstants.ACCESSCONDITION + ":\"license type 4 name\"", suffix);
     }
 
     /**
@@ -183,7 +183,18 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
-        Assert.assertEquals(" -" + SolrConstants.ACCESSCONDITION + ":\"license type 3 name\"", suffix);
+        Assert.assertTrue(!suffix.contains("license type 1 name"));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
+     * @verifies construct suffix correctly if user has overriding license privilege
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasOverridingLicensePrivilege() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
+        Assert.assertTrue(!suffix.contains("license type 4 name"));
     }
 
     /**

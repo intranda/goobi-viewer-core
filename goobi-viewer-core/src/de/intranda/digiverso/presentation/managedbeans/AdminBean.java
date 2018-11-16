@@ -131,7 +131,7 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public void resetTotalNumberOfRecords() {                
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -368,7 +368,7 @@ public class AdminBean implements Serializable {
             }
         }
         setCurrentUser(null);
-        
+
         return "adminAllUsers";
     }
 
@@ -529,6 +529,26 @@ public class AdminBean implements Serializable {
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenseTypes();
+    }
+
+    /**
+     * Returns all existing license types minus this one. Required for admin tabs.
+     */
+    public List<LicenseType> getOtherLicenseTypes() throws DAOException {
+        List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
+        if (all.isEmpty() || all.get(0).equals(this)) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> ret = new ArrayList<>(all.size() - 1);
+        for (LicenseType licenseType : all) {
+            if (licenseType.equals(this)) {
+                continue;
+            }
+            ret.add(licenseType);
+        }
+
+        return ret;
     }
 
     /**
@@ -984,12 +1004,19 @@ public class AdminBean implements Serializable {
                     if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
                         sbFilePath.append(dataRepositoriesHome).append(File.separator);
                     }
-                    sbFilePath.append(dataRepository).append(File.separator).append(DataManager.getInstance().getConfiguration()
-                            .getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
+                    sbFilePath.append(dataRepository)
+                            .append(File.separator)
+                            .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())
+                            .append(File.separator)
+                            .append(pi)
+                            .append(".xml");
                 } else {
                     // Backwards compatibility with old indexes
-                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
-                            .getConfiguration().getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
+                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                            .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())
+                            .append(File.separator)
+                            .append(pi)
+                            .append(".xml");
                 }
                 Document doc = FileTools.readXmlFile(sbFilePath.toString());
 
@@ -1059,19 +1086,18 @@ public class AdminBean implements Serializable {
 
         return "";
     }
-    
+
     /**
      * Querys solr for a list of all values of the set ACCESSCONDITION
      * 
      * @return A list of all indexed ACCESSCONDITIONs
      * @throws IndexUnreachableException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-        
+
         List<String> accessConditions = SearchHelper.getFacetValues(SolrConstants.ACCESSCONDITION + ":[* TO *]", SolrConstants.ACCESSCONDITION, 0);
         Collections.sort(accessConditions);
         return accessConditions;
     }
-
 }
