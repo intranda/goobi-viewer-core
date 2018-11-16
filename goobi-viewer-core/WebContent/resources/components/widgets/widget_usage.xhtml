@@ -25,26 +25,46 @@
                 <div class="widget-usage__work-downloads">
                     <!-- METS/LIDO -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
-                        <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_mets}" target="_blank" href="#{activeDocumentBean.viewManager.metsResolverUrl}">
-                            #{msg.downloadMetsButtonLabel} 
+                        <a 
+                            href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+                            id="lidomets" 
+                            class="label label-default widget-usage__work-download-lido-mets" 
+                            title="#{msg.metadata_dl_mets}" 
+                            target="_blank"> 
+                            #{msg.downloadMetsButtonLabel}
                         </a>
                     </ui:fragment>
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
-                        <a id="lidomets" class="label label-default widget-usage__work-download-lido-mets" title="#{msg.metadata_dl_lido}" target="_blank" href="#{activeDocumentBean.viewManager.lidoResolverUrl}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+                            id="lidomets" 
+                            class="label label-default widget-usage__work-download-lido-mets" 
+                            title="#{msg.metadata_dl_lido}" 
+                            target="_blank"> 
                             #{msg.downloadLidoButtonLabel}
                         </a>
                     </ui:fragment>
     
                     <!-- ALTO (WORK) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
-                        <a id="alto" class="label label-default widget-usage__work-download-alto" title="#{msg.metadata_dl_alto_work}" href="#{activeDocumentBean.viewManager.altoUrlForAllPages}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
+                            id="alto" 
+                            class="label label-default widget-usage__work-download-alto" 
+                            title="#{msg.metadata_dl_alto_work}"
+                            target="_blank"> 
                             #{msg.downloadAltoWorkButtonLabel}
                         </a>
                     </ui:fragment>
     
                     <!-- FULLTEXT (WORK) -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
-                        <a id="textWork" class="label label-default widget-usage__work-download-fulltext" title="#{msg.downloadWorkFulltext}" href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
+                            id="textWork" 
+                            class="label label-default widget-usage__work-download-fulltext" 
+                            title="#{msg.downloadWorkFulltext}"
+                            target="_blank">
                             #{msg.FULLEXT}
                         </a>
                     </ui:fragment>
@@ -52,12 +72,24 @@
                     <!-- PDF (WORK) -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages and activeDocumentBean.accessPermissionPdf}">
                         <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
-                            <a id="pdfWork" class="label label-default widget-usage__work-download-pdf" href="#{activeDocumentBean.viewManager.pdfDownloadLink}" title="#{msg.metadata_dl_pdf}" target="_blank">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.pdfDownloadLink}" 
+                                id="pdfWork" 
+                                class="label label-default widget-usage__work-download-pdf" 
+                                title="#{msg.metadata_dl_pdf}" 
+                                target="_blank">
                                 #{msg.pdfDownload}</a>
                         </ui:fragment>
                         <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
-                            <a id="pdfWork" class="label label-default widget-usage__work-download-pdf download-modal-widget" href="#" data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                                data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.pdfDownload}">
+                            <a 
+                                href="#" 
+                                id="pdfWork" 
+                                class="label label-default widget-usage__work-download-pdf download-modal-widget" 
+                                data-type="pdf" 
+                                data-title="#{activeDocumentBean.titleBarLabel}" 
+                                data-id=""
+                                data-pi="#{activeDocumentBean.viewManager.pi}" 
+                                title="#{msg.pdfDownload}">
                                 #{msg.pdfDownload}
                             </a>    
                         </ui:fragment>
@@ -65,14 +97,26 @@
     
                     <!-- EPUB -->
                     <ui:fragment rendered="#{activeDocumentBean.accessPermissionEpub}">
-                        <a href="#" class="label label-default widget-usage__work-download-epub download-modal-widget" data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                            data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.epubDownload}">
+                        <a 
+                            href="#" 
+                            class="label label-default widget-usage__work-download-epub download-modal-widget" 
+                            data-type="epub" 
+                            data-title="#{activeDocumentBean.titleBarLabel}" 
+                            data-id=""
+                            data-pi="#{activeDocumentBean.viewManager.pi}" 
+                            title="#{msg.epubDownload}">
                             #{msg.epub}
                         </a>
                     </ui:fragment>
     
                     <!-- IIIF MANIFEST -->
-                    <a id="iiifManifest" class="label label-default widget-usage__work-download-iiif" data-copy="iiif-manifest" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-copy-done="#{msg.iiif_CopyUrlDone}">
+                    <a 
+                        id="iiifManifest" 
+                        class="label label-default widget-usage__work-download-iiif" 
+                        data-copy="iiif-manifest" 
+                        data-clipboard-text="#{imageDelivery.iiifManifest}" 
+                        data-copy-done="#{msg.iiif_CopyUrlDone}"
+                        title="#{msg.iiif_copyUrl}"> 
                         #{msg.iiif}
                     </a>
                 </div>
@@ -84,36 +128,55 @@
                 <div class="widget-usage__page-downloads">
                     <!-- ALTO (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-                        <a id="altoPage" class="label label-default widget-usage__page-download-alto" title="#{msg.metadata_dl_alto_page}" target="_blank" href="#{activeDocumentBean.viewManager.altoUrl}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.altoUrl}"
+                            id="altoPage" 
+                            class="label label-default widget-usage__page-download-alto" 
+                            title="#{msg.metadata_dl_alto_page}" 
+                            target="_blank">
                             #{msg.downloadAltoPageButtonLabel}
                         </a>
                     </ui:fragment>
     
                     <!-- FULLTEXT (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-                        <a id="textPage" class="label label-default widget-usage__page-download-fulltext" title="#{msg.downloadPageFulltext}" target="_blank" href="#{activeDocumentBean.viewManager.fulltextUrl}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.fulltextUrl}"
+                            id="textPage" 
+                            class="label label-default widget-usage__page-download-fulltext" 
+                            title="#{msg.downloadPageFulltext}" 
+                            target="_blank">
                             #{msg.FULLEXT}
                         </a>
                     </ui:fragment>
     
                     <!-- PDF (PAGE) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
-                        <a id="pdfPage" class="label label-default widget-usage__page-download-pdf" title="#{msg.pdfDownloadCurrentPage}" href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" 
+                            id="pdfPage" 
+                            class="label label-default widget-usage__page-download-pdf" 
+                            title="#{msg.pdfDownloadCurrentPage}" 
+                            target="_blank">
                             #{msg.pdfDownload}
                         </a>
                     </ui:fragment>
     
                     <!-- JPEG -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
-                        <a id="jpeg" class="label label-default widget-usage__page-download-jpeg" title="#{msg.imageLinkDesc}" target="_blank" href="#{activeDocumentBean.viewManager.currentImageUrl}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.currentImageUrl}"
+                            id="jpeg" 
+                            class="label label-default widget-usage__page-download-jpeg" 
+                            title="#{msg.imageLinkDesc}" 
+                            target="_blank">
                             #{msg.imageLink}
                         </a>
                     </ui:fragment>
                 </div>
             </div>
             
-            <script>        
-
+            <script>
             	var downloadModalConfig = {
                     downloadBtn: $( ".download-modal-widget" ),
                     path: "#{navigationHelper.applicationUrl}",
@@ -140,6 +203,7 @@
                 };
                 
                 viewerJS.downloadModal.init( downloadModalConfig );
+                viewerJS.clipboard.init();
             </script>    
         </ui:fragment>
     </composite:implementation>
