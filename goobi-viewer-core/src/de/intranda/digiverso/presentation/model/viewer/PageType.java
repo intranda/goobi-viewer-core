@@ -43,7 +43,6 @@ public enum PageType {
     search("search", PageTypeHandling.cms),
     searchlist("searchlist"),
     advancedSearch("searchadvanced", PageTypeHandling.cms),
-    timelinesearch("searchtimeline"),
     calendarsearch("searchcalendar"),
     term("term"),
     browse("browse", PageTypeHandling.cms),

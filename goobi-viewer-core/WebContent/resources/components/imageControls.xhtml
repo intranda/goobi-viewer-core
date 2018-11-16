@@ -53,28 +53,12 @@
                         </ui:fragment>
                         <!-- IIIF -->
                         <li class="image-controls__option iiif">
-                        <button type="button" class="btn btn--icon" data-copy="img-url" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-toggle="tooltip" data-placement="bottom">
+                        <button type="button" class="btn btn--icon" data-copy="img-url" data-clipboard-text="#{imageDelivery.iiifManifest}" title="#{msg.iiif_copyUrl}" data-copy-done="#{msg.iiif_CopyUrlDone}" data-toggle="tooltip" data-placement="bottom">
                         </button>
 <!--                             <a href="#{imageDelivery.iiifManifest}" title="#{msg.iiif}" data-toggle="tooltip" data-placement="bottom" target="_blank"></a> -->
                         </li>
                     </ul>
-                    <script type="text/javascript">
-                        var clipboard = new ClipboardJS( '[data-copy="img-url"]' );
-                        clipboard.on("success", function(e) {
-                           var $trigger = $(e.trigger);
-                           var tooltipText = "#{msg.iiif_CopyUrlDone}";
-                           if(!$trigger.attr('data-original-original-title')) {
-                               $trigger.attr('data-original-original-title', $trigger.attr('data-original-title'));
-                           }
-                           $trigger
-                           .attr('data-original-title', tooltipText)
-                           .tooltip('fixTitle')
-                           .tooltip('show')
-                           .attr('data-original-title', $trigger.attr('data-original-original-title'))
-                    	   .tooltip('fixTitle');
-
-                        })
-                    </script>
+ 
                 </div>
 
                 <!-- ACTIONS -->

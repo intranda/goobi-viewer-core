@@ -64,8 +64,6 @@ public class CMSNavigationManager {
         addAvailableItem(search);
         SelectableNavigationItem searchadvanced = new SelectableNavigationItem("searchadvanced", "searchAdvanced");
         addAvailableItem(searchadvanced);
-        SelectableNavigationItem searchtimeline = new SelectableNavigationItem("searchtimeline", "searchTimeline");
-        addAvailableItem(searchtimeline);
         SelectableNavigationItem searchcalendar = new SelectableNavigationItem("searchcalendar", "searchCalendar");
         addAvailableItem(searchcalendar);
         SelectableNavigationItem browse = new SelectableNavigationItem("browse", "browse");

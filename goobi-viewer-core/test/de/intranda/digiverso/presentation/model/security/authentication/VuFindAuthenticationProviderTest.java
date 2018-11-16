@@ -43,7 +43,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
 
     VuFindProvider provider;
 
-    private static String userActive_nickname = "nick 1";
+    private static String userActive_nickname = "admin";
     private static String userActive_email = "1@users.org";
     private static String userActive_pwHash = "abcdef1";
 

@@ -310,8 +310,6 @@ public class SearchBean implements Serializable {
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return "pretty:" + PageType.advancedSearch.name();
-            case SearchHelper.SEARCH_TYPE_TIMELINE:
-                return "pretty:" + PageType.timelinesearch.name();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
                 return "pretty:" + PageType.calendarsearch.name();
             default:

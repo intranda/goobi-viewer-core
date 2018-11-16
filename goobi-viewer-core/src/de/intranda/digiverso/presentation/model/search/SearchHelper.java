@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -867,21 +866,38 @@ public final class SearchHelper {
      * @throws DAOException
      * @should construct suffix correctly
      * @should construct suffix correctly if user has license privilege
+     * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
      */
     public static String getPersonalFilterQuerySuffix(User user, String ipAddress)
             throws IndexUnreachableException, PresentationException, DAOException {
         StringBuilder query = new StringBuilder();
 
+        List<String> relevantLicenseTypes = new ArrayList<>();
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
             if (!licenseType.isStaticLicenseType() && !licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
                 if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
                         new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
-                    // If the use has an explicit priv to list a certain license type, ignore all other license types
+                    // If the user has an explicit permission to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                    //                    query = new StringBuilder();
                     continue;
+                } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
+                    // If there are overriding license types for which the user has listing permission, ignore the current license type
+                    boolean skip = false;
+                    for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
+                        if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
+                                new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user,
+                                ipAddress, null)) {
+                            logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
+                                    overridingLicenseType.getName(), licenseType.getName());
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (skip) {
+                        continue;
+                    }
                 }
                 if (licenseType.getConditions() != null) {
                     String processedConditions = licenseType.getProcessedConditions();

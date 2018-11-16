@@ -96,16 +96,17 @@
                                                         <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                             <f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}"
                                                                 itemLabel="#{msg[field]}" />
-                                                            <f:ajax
-                                                                render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
+                                                                <f:ajax render="advsearch_item_operator_#{statusGroup.count}-#{status.count} advsearch_value_group_#{statusGroup.count}-#{status.count}" />
+<!-- 																	render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />	                                                    </h:selectOneMenu> -->
                                                         </h:selectOneMenu>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-xs-12 col-sm-5">
                                                 <!-- INPUT FIELD -->
-                                                <h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
+													<h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
                                                     <div class="search-advanced__input-col">
+                                                    
                                                         <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
                                                             <div class="form-group">
                                                                 <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>

@@ -212,7 +212,11 @@ public final class CMSTemplateManager {
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
         } else if (filesystemPath != null) {
-            Path path = Paths.get(URLDecoder.decode(new URL(filesystemPath + templateFolderUrl).getPath(), "utf-8"));
+            String templateFolderPath = filesystemPath + templateFolderUrl;
+//            if (!templateFolderPath.startsWith("file:/")) {
+//                templateFolderPath = "file:/" + templateFolderPath;
+//            }
+            Path path = Paths.get(URLDecoder.decode(new URL(templateFolderPath).getPath(), "utf-8"));
             if (Files.exists(path)) {
                 fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
             } else {
