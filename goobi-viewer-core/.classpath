@@ -51,20 +51,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/cacheFiller.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-rss.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dbunit-2.5.3.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/geronimo-stax-api_1.0_spec-1.0.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/imgscalr-lib-4.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-annotations-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-core-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-databind-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-jaxrs-base-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-jaxrs-json-provider-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-module-jaxb-annotations-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-module-jsonSchema-2.6.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javassist-3.18.1-GA.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.faces-2.3.3.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.mail.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.persistence_2.2.1.v201807122140.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/prettyfaces-jsf2-3.3.4-20120314.162703-6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxon-9.0.0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxon-dom-9.0.0.2.jar"/>
