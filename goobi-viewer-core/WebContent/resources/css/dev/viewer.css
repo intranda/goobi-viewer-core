@@ -8086,7 +8086,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget-usage__work-downloads .label-default,
 .widget-usage__page-downloads .label-default {
-  margin: 0 3px 3px 0;
+  display: inline-block;
 }
 .widget-usage__work-downloads {
   margin-bottom: 15px;
