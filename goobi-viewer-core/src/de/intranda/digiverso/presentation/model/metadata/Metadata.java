@@ -48,6 +48,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -78,7 +79,7 @@ public class Metadata implements Serializable {
         this.number = -1;
         this.group = false;
     }
-    
+
     /**
      * 
      * @param label
@@ -325,12 +326,24 @@ public class Metadata implements Serializable {
                             value = BeanUtils.escapeCriticalUrlChracters(value);
                             break;
                         case HIERARCHICALFIELD:
-                            // create a link for reach hierarchy level
+                        // create a link for reach hierarchy level
+                        {
                             NavigationHelper nh = BeanUtils.getNavigationHelper();
                             value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                        }
                             break;
                         case NORMDATAURI:
-                            // TODO
+                        {
+                            NavigationHelper nh = BeanUtils.getNavigationHelper();
+                            String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
+                                    .replace("{0}", nh.getApplicationUrl())
+                                    .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                    .replace("{2}", groupType)
+                                    .replace("{3}", nh.getLocaleString())
+                                    .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
+                                    .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
+                            value = html;
+                        }
                             break;
                         default:
                             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
@@ -510,7 +523,7 @@ public class Metadata implements Serializable {
                         // Populate params for which metadata values have been found
                         for (int i = 0; i < params.size(); ++i) {
                             MetadataParameter param = params.get(i);
-                            //                            logger.trace("param: " + param.getKey());
+                            // logger.trace("param: {}", param.getKey());
                             if (groupFieldMap.get(param.getKey()) != null) {
                                 found = true;
                                 StringBuilder sbValue = new StringBuilder();
@@ -526,11 +539,10 @@ public class Metadata implements Serializable {
                                 if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
                                     Map<String, String> normDataUrl = new HashMap<>();
                                     normDataUrl.put(param.getKey(), paramValue);
-                                     // logger.trace("found normdata uri: {}", normDataUrl.toString());
-                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
-                                } else {
-                                    setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
+                                    // logger.trace("found normdata uri: {}", normDataUrl.toString());
+                                    //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
                                 }
+                                setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
                             } else if (param.getDefaultValue() != null) {
                                 logger.debug("No value found for {}, using default value", param.getKey());
                                 setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType,
