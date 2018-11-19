@@ -25,9 +25,16 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
+    const _defaultSelector ="[data-copy]";
+    
     viewer.clipboard = {
             init : function(selector) {
+                if(!selector) {
+                    selector = _defaultSelector;
+                }
                 var clipboard = new ClipboardJS( selector );
+                $(selector + "[data-copy-done]").tooltip();
+
                 
                 clipboard.on("success", function(e) {
                    var $trigger = $(e.trigger);
