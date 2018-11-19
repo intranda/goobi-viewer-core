@@ -18,20 +18,16 @@ package de.intranda.digiverso.presentation.model.glossary;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.json.JsonObject;
-import javax.ws.rs.PathParam;
-
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +76,7 @@ public class GlossaryManager {
         throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
     }
 
-    public Glossary getGlossary(String filename) throws IOException, ContentNotFoundException, ParseException {
+    public Glossary getGlossary(String filename) throws IOException, ContentNotFoundException, JSONException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
         java.nio.file.Path vocabularyPath = vocabulariesPath.resolve(filename);
@@ -125,10 +121,9 @@ public class GlossaryManager {
             }
             glossary.setRecords(glossaryRecords);
             return glossary;
-        } else {
-            throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
         }
-
+        
+        throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
     }
 
     /**

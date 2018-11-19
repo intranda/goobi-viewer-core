@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -28,46 +29,46 @@ import org.json.JSONObject;
  *
  */
 public class GeoLocationInfo {
-    
+
     private static final String JSON_PROPERTYNAME_CENTER = "centerLocation";
     private static final String JSON_PROPERTYNAME_OVERLAY = "displayOverlay";
     private static final String JSON_PROPERTYNAME_LOCATIONS = "locations";
-    
+
     private GeoLocation centerLocation = new GeoLocation();
-            
+
     private List<GeoLocation> locationList = new ArrayList<>();
 
     public GeoLocationInfo() {
-        
+
     }
-    
-    public GeoLocationInfo(JSONObject json) {
-        if(json.has(JSON_PROPERTYNAME_CENTER)) {            
+
+    public GeoLocationInfo(JSONObject json) throws JSONException {
+        if (json.has(JSON_PROPERTYNAME_CENTER)) {
             setCenterLocation(new GeoLocation(json.getJSONObject(JSON_PROPERTYNAME_CENTER)));
         }
         JSONArray locations = json.getJSONArray(JSON_PROPERTYNAME_LOCATIONS);
-        if(locations != null) {            
+        if (locations != null) {
             for (int i = 0; i < locations.length(); i++) {
                 locationList.add(new GeoLocation(locations.getJSONObject(i)));
             }
         }
     }
-    
+
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
         map.put(JSON_PROPERTYNAME_CENTER, getCenterLocation().getAsJson());
-        
+
         JSONArray locations = new JSONArray();
         for (GeoLocation geoLocation : locationList) {
             JSONObject obj = geoLocation.getAsJson();
             locations.put(obj);
         }
         map.put(JSON_PROPERTYNAME_LOCATIONS, locations);
-        
+
         JSONObject obj = new JSONObject(map);
         return obj;
     }
-    
+
     /**
      * @return the centerLocation
      */
@@ -96,5 +97,4 @@ public class GeoLocationInfo {
         this.locationList = locationList;
     }
 
-    
 }

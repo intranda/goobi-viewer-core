@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -937,7 +937,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.glossaryName = glossaryName;
     }
 
-    public Glossary getGlossary() throws ContentNotFoundException, IOException, ParseException {
+    public Glossary getGlossary() throws ContentNotFoundException, IOException, JSONException {
         Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
         return g;
     }
