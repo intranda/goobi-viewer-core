@@ -28,7 +28,7 @@ var viewerJS = ( function() {
         pageScrollAnchor: '#top',
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
-        notFoundImage: '/resources/images/not_found.png'
+        notFoundImage: ''
     };
     
     var viewer = {};
@@ -424,9 +424,9 @@ var viewerJS = ( function() {
     }
     
     function _loadImage(element, source) {
-//        console.log("loading image from ", source);
         var accessDenied = currentPath + _defaults.accessDeniedImage;
-        var notFound = currentPath + _defaults.notFoundImage;
+        var notFound = currentPath + '/resources/themes/' + _defaults.theme + '/images/image_not_found.png';
+
         $.ajax({
             url: source,
             cache: true,
@@ -448,7 +448,8 @@ var viewerJS = ( function() {
                         element.src = notFound;
                         break;
                     default:
-                        element.src = source;
+                        // element.src = source;
+                        element.src = notFound;
                 }
             });  
     }
