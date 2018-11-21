@@ -64,6 +64,9 @@ public class DateTools {
      *
      * @param dateString
      * @return
+     * @should parse single date correctly
+     * @should parse multiple dates correctly
+     * @should parse dates in parentheses correctly
      */
     public static List<Date> parseMultipleDatesFromString(String dateString) {
         List<Date> ret = new ArrayList<>();
@@ -74,6 +77,15 @@ public class DateTools {
             String[] dateStringSplit = dateString.split(splittingChar);
             for (String s : dateStringSplit) {
                 s = s.trim();
+
+                // Check whether this is a well-formed date and not a range or anything
+                {
+                    Date date = parseDateFromString(s);
+                    if (date != null) {
+                        ret.add(date);
+                        continue;
+                    }
+                }
 
                 // Try finding a complete date in the string (enclosed in parentheses)
                 Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
@@ -213,8 +225,7 @@ public class DateTools {
     }
 
     /**
-     * FIXME add some more documentation
-     * This method is used by the crowdsourcing module
+     * FIXME add some more documentation This method is used by the crowdsourcing module
      *
      * @param dateEnd
      * @param locale

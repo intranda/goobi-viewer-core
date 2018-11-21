@@ -333,17 +333,17 @@ public class Metadata implements Serializable {
                         }
                             break;
                         case NORMDATAURI:
-                        {
-                            NavigationHelper nh = BeanUtils.getNavigationHelper();
-                            String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
-                                    .replace("{0}", nh.getApplicationUrl())
-                                    .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                    .replace("{2}", groupType)
-                                    .replace("{3}", nh.getLocaleString())
-                                    .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
-                                    .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
-                            value = html;
-                        }
+                            if (StringUtils.isNotEmpty(value)) {
+                                NavigationHelper nh = BeanUtils.getNavigationHelper();
+                                String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
+                                        .replace("{0}", nh.getApplicationUrl())
+                                        .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                        .replace("{2}", groupType)
+                                        .replace("{3}", nh.getLocaleString())
+                                        .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
+                                        .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
+                                value = html;
+                            }
                             break;
                         default:
                             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
