@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
@@ -2162,6 +2163,7 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
             preQuery();
             Query q = em.createQuery("SELECT o FROM CMSPage o");
+            q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         }
