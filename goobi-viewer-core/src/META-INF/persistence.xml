@@ -47,7 +47,7 @@
             <property name="logging.level" value="ALL"/> 
             <property name="eclipselink.logging.level" value="ALL" />
             <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" />
-            <property name="eclipselink.id-validation" value="None"/> 
+            <property name="eclipselink.id-validation" value="NONE"/> 
 <!--             <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
 <!--             <property name="eclipselink.logging.level.sql" value="ALL" /> -->
 <!--             <property name="eclipselink.logging.parameters" value="true" /> -->
