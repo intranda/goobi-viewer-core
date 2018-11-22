@@ -98,6 +98,7 @@
 			<!-- Shared cache must be disabled so each unit tests starts with an unaltered 
 				DB -->
 			<property name="eclipselink.cache.shared.default" value="false" />
+            <property name="eclipselink.id-validation" value="NONE"/> 
 		</properties>
 
 	</persistence-unit>
