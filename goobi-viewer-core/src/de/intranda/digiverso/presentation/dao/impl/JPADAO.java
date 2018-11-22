@@ -2454,7 +2454,6 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSPage(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
-            page.cleanup();
             preQuery();
             EntityManager em = factory.createEntityManager();
             try {
