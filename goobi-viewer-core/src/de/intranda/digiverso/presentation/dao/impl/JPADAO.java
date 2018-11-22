@@ -2209,31 +2209,37 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         synchronized (cmsRequestLock) {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
-            StringBuilder order = new StringBuilder();
-
-            Map<String, String> params = new HashMap<>();
-
-            String filterString = createFilterQuery(filters, params);
-            
-            if (StringUtils.isNotEmpty(sortField)) {
-                order.append(" ORDER BY a.").append(sortField);
-                if (descending) {
-                    order.append(" DESC");
+            try {                
+                preQuery();
+                StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
+                StringBuilder order = new StringBuilder();
+                
+                Map<String, String> params = new HashMap<>();
+                
+                String filterString = createFilterQuery(filters, params);
+                
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
                 }
+                sbQuery.append(filterString).append(order);
+                
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                
+                List<CMSPage> list = q.getResultList();
+                return list;
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
             }
-            sbQuery.append(filterString).append(order);
-
-            Query q = em.createQuery(sbQuery.toString());
-            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-            //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
-            q.setFirstResult(first);
-            q.setMaxResults(pageSize);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-            List<CMSPage> list = q.getResultList();
-            return list;
         }
     }
 
@@ -2337,12 +2343,18 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
         synchronized (cmsRequestLock) {
-            preQuery();
-            StringBuilder sbQuery = new StringBuilder(70);
-            sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
-            Query q = em.createQuery(sbQuery.toString());
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+            try {                
+                preQuery();
+                StringBuilder sbQuery = new StringBuilder(70);
+                sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
+                Query q = em.createQuery(sbQuery.toString());
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            }
         }
     }
 
@@ -2534,10 +2546,16 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException {
         synchronized (cmsRequestLock) {
-            preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+            try {                
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            }
         }
     }
 
@@ -2550,11 +2568,16 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException {
         synchronized (cmsRequestLock) {
-
-            preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+            try {                
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            }
         }
     }
 
@@ -2653,22 +2676,28 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
 
             List<CMSPage> ownerList = new ArrayList<>();
-            preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
-            q.setParameter("media", item);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            for (Object o : q.getResultList()) {
-                if (o instanceof CMSContentItem) {
-                    try {
-                        CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
-                        if (!ownerList.contains(page)) {
-                            ownerList.add(page);
+            try {                
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
+                q.setParameter("media", item);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                for (Object o : q.getResultList()) {
+                    if (o instanceof CMSContentItem) {
+                        try {
+                            CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
+                            if (!ownerList.contains(page)) {
+                                ownerList.add(page);
+                            }
+                        } catch (NullPointerException e) {
                         }
-                    } catch (NullPointerException e) {
                     }
                 }
+                return ownerList;
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
             }
-            return ownerList;
         }
     }
 
@@ -2682,11 +2711,17 @@ public class JPADAO implements IDAO {
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
         preQuery();
         synchronized (cmsRequestLock) {
-            Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            List<CMSNavigationItem> list = q.getResultList();
-            Collections.sort(list);
-            return list;
+            try {                
+                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
+                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setFlushMode(FlushModeType.COMMIT);
+                List<CMSNavigationItem> list = q.getResultList();
+                Collections.sort(list);
+                return list;
+            } catch(PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            }
         }
     }
 
