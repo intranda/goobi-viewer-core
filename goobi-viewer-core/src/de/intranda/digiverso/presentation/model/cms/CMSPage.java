@@ -47,6 +47,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.faces.el.LazyBeanNameFinder;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -1084,6 +1086,20 @@ public class CMSPage {
     @Override
     public String toString() {
         return getBestLanguage(Locale.GERMAN).getTitle();
+    }
+
+    /**
+     * Remove any language versions without primary key (because h2 doesn't like that)
+     */
+    public void cleanup() {
+       Iterator<CMSPageLanguageVersion> i = languageVersions.iterator();
+       while(i.hasNext()) {
+           CMSPageLanguageVersion langVersion = i.next();
+           if(langVersion.getId() == null) {
+               i.remove();
+           }
+       }
+        
     }
 
 }
