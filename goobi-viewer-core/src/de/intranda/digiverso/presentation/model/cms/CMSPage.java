@@ -1085,7 +1085,7 @@ public class CMSPage {
      */
     @Override
     public String toString() {
-        return getBestLanguage(Locale.GERMAN).getTitle();
+        return getBestLanguage(Locale.ENGLISH).getTitle();
     }
 
     /**
