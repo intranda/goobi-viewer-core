@@ -2169,8 +2169,8 @@ public class JPADAO implements IDAO {
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
             }
-        } catch(ConcurrentModificationException e) {
-            logger.error("Concurrent modification exception when trying to get cms pages. Returning empty list");
+        } catch(PersistenceException e) {
+            logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
             return new ArrayList<>();
         }
     }
