@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.dao.impl;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -2160,12 +2161,17 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            Query q = em.createQuery("SELECT o FROM CMSPage o");
-            q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-            return q.getResultList();
+        try {            
+            synchronized (cmsRequestLock) {
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSPage o");
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            }
+        } catch(ConcurrentModificationException e) {
+            logger.error("Concurrent modification exception when trying to get cms pages. Returning empty list");
+            return new ArrayList<>();
         }
     }
 
