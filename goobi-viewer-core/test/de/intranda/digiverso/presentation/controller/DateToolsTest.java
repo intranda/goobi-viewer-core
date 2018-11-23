@@ -2,6 +2,7 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
@@ -199,5 +200,40 @@ public class DateToolsTest {
     @Test(expected = IllegalArgumentException.class)
     public void parseDateTimeFromString_shouldThrowIllegalArgumentExceptionIfDateStringIsNull() throws Exception {
         DateTools.parseDateTimeFromString(null, false);
+    }
+
+    /**
+     * @see DateTools#parseMultipleDatesFromString(String)
+     * @verifies parse single date correctly
+     */
+    @Test
+    public void parseMultipleDatesFromString_shouldParseSingleDateCorrectly() throws Exception {
+        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-20");
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
+    }
+
+    /**
+     * @see DateTools#parseMultipleDatesFromString(String)
+     * @verifies parse multiple dates correctly
+     */
+    @Test
+    public void parseMultipleDatesFromString_shouldParseMultipleDatesCorrectly() throws Exception {
+        List<Date> result = DateTools.parseMultipleDatesFromString("2018-11-19 / 2018-11-20");
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("2018-11-19", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
+        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(1).getTime()));
+    }
+
+    /**
+     * @see DateTools#parseMultipleDatesFromString(String)
+     * @verifies parse dates in parentheses correctly
+     */
+    @Test
+    public void parseMultipleDatesFromString_shouldParseDatesInParenthesesCorrectly() throws Exception {
+        List<Date> result = DateTools.parseMultipleDatesFromString("(2018-11-19) / (2018-11-20)");
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("2018-11-19", DateTools.formatterISO8601Date.print(result.get(0).getTime()));
+        Assert.assertEquals("2018-11-20", DateTools.formatterISO8601Date.print(result.get(1).getTime()));
     }
 }
