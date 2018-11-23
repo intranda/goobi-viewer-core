@@ -59,6 +59,8 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * @param doc
      * @param locale
      * @throws IndexUnreachableException
+     * @should fill in missing dateStart from displayDate
+     * @should fill in missing dateEnd from dateStart
      */
     public EventElement(SolrDocument doc, Locale locale) throws IndexUnreachableException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
@@ -119,6 +121,10 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             if (o.getDateEnd().before(getDateStart())) {
                 return 1;
             }
+        } else if (getDateStart() == null) {
+            return 1;
+        } else if (o.getDateStart() == null) {
+            return -1;
         }
 
         return 0;
@@ -146,7 +152,16 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
     }
 
+    /**
+     * Checks the presence of date objects and fills in the gaps, if necessary.
+     */
     private void checkDates() {
+        if (dateStart == null && displayDate != null) {
+            List<Date> dates = DateTools.parseMultipleDatesFromString(displayDate);
+            if (!dates.isEmpty()) {
+                dateStart = dates.get(0);
+            }
+        }
         if (dateEnd == null && dateStart != null) {
             dateEnd = dateStart;
         }
