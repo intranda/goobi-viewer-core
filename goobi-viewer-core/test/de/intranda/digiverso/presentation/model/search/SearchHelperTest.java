@@ -103,7 +103,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the docstruct whitelist and the collection blacklist always come from the same config file;
-        Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, true, true, true, true);
+        Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, true, true);
         Assert.assertEquals(32, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);

@@ -631,7 +631,7 @@ public class BrowseBean implements Serializable {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, true, true, true, true);
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true);
                 return dcStrings;
             }
         }));

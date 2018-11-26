@@ -292,7 +292,7 @@ public class CollectionBuilder extends AbstractBuilder {
         }
 
         CollectionView view = new CollectionView(collectionField,
-                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, true, true, true, true));
+                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true));
         view.populateCollectionList();
 
         synchronized (collectionViewMap) {

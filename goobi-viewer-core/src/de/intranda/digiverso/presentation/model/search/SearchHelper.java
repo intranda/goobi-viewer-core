@@ -448,6 +448,7 @@ public final class SearchHelper {
      *
      * @param luceneField
      * @param facetField
+     * @param filterQuery   An addition solr-query to filer collections by
      * @param filterForWhitelist
      * @param filterForBlacklist
      * @param filterForWorks
@@ -456,12 +457,17 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @should find all collections
      */
-    public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, boolean filterForWhitelist,
+    public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
             boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
+            
+            if(StringUtils.isNotBlank(filterQuery)) {
+                sbQuery.append(filterQuery).append(" AND ");
+            }
+            
             if (filterForWorks || filterForAnchors) {
                 sbQuery.append("(");
             }

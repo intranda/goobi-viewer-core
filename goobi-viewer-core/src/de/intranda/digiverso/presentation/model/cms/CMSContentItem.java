@@ -723,7 +723,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, true, true, true, true);
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true, true);
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
         Collections.sort(list);
@@ -740,7 +740,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, true, true, true, true);
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true, true);
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
@@ -776,7 +776,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
-        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField());
+        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField(), getSearchPrefix());
         collection.setBaseElementName(getBaseCollection());
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
@@ -795,12 +795,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @param facetField
      * @param sortField
      */
-    private static CollectionView initializeCollection(final String collectionField, final String facetField) {
+    private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, true, true, true, true);
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true, true, true);
                 return dcStrings;
             }
         });

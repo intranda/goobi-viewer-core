@@ -9,7 +9,7 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{contentItem.type == 'SEARCH'}">
+		<h:panelGroup rendered="#{contentItem.type == 'SEARCH' or contentItem.type == 'COLLECTION'}">
 			<div class="edit-content-page__facetting">
 				<div class="form-group">
 					<label class="col-sm-3 control-label">#{msg.cms_searchPrefix}#{contentItem.mandatory?'*':''}:</label>
