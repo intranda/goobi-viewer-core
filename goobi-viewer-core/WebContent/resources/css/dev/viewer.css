@@ -8992,6 +8992,14 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   background-color: #6f6f6f;
 }
+.tpl-single-collection__description a {
+  color: #fff;
+}
+.tpl-single-collection__description a:hover,
+.tpl-single-collection__description a:active,
+.tpl-single-collection__description a:focus {
+  color: #fff;
+}
 .tpl-single-collection .search-list {
   /* OPTIONS */
 }
