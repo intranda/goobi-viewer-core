@@ -72,7 +72,6 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -167,7 +166,7 @@ public class ViewManager implements Serializable {
             dropdownFulltext.clear();
             if (pageLoader != null) {
                 pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext(),
-                        isBelowFulltextThreshold());
+                        isBelowFulltextThreshold(), BeanUtils.getLocale());
             }
         }
         this.mainMimeType = mainMimeType;

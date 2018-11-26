@@ -173,8 +173,7 @@
 		<metadataEpubEnabled>true</metadataEpubEnabled>
 
 		 <!-- Folder for generated download files -->
-		 <downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
-
+		<downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
 	</epub>
 
 
@@ -273,6 +272,12 @@
 
 		<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
 		<splittingCharacter>.</splittingCharacter>
+		
+        <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
+            Values that are not among the following allowed variables will be displayed 
+            as-is.
+            Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
+        <pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat> 
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
 		     Custom URL names must be mapped in the faces config, too. -->

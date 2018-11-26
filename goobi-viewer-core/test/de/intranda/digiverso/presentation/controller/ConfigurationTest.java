@@ -711,6 +711,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getPageSelectionFormat()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectionFormat_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("{order} {msg.of} {numpages}", DataManager.getInstance().getConfiguration().getPageSelectionFormat());
+    }
+
+    /**
      * @see Configuration#loadStopwords(String)
      * @verifies load all stopwords
      */

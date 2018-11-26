@@ -41,7 +41,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -88,7 +87,6 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
-import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -1447,7 +1445,7 @@ public class SearchBean implements Serializable {
         String facetString = facets.getCurrentFacetString();
         facetString = StringTools.decodeUrl(facetString);
         List<String> facets = getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
-        if(facets.size() > 0) {
+        if (facets.size() > 0) {
             String facet = facets.get(0);
             facets = splitHierarchicalFacet(facet);
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation", facets, NavigationHelper.WEIGHT_SEARCH_RESULTS);
@@ -1463,11 +1461,11 @@ public class SearchBean implements Serializable {
      */
     public static List<String> splitHierarchicalFacet(String facet) {
         List<String> facets = new ArrayList<>();
-        while(facet.contains(".")) {
+        while (facet.contains(".")) {
             facets.add(facet);
             facet = facet.substring(0, facet.lastIndexOf("."));
         }
-        if(StringUtils.isNotBlank(facet)) {
+        if (StringUtils.isNotBlank(facet)) {
             facets.add(facet);
         }
         Collections.reverse(facets);
@@ -1482,13 +1480,14 @@ public class SearchBean implements Serializable {
     public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
         List<String> facets = Arrays.asList(StringUtils.split(facetString, ";;"));
         List<String> values = new ArrayList<>();
-        
+
         for (String facetField : facetFields) {
-            String matchingFacet = facets.stream().filter(facet -> facet.replace("_UNTOKENIZED", "").startsWith(facetField + ":")).findFirst().orElse("");
-            if(StringUtils.isNotBlank(matchingFacet)) {
+            String matchingFacet =
+                    facets.stream().filter(facet -> facet.replace("_UNTOKENIZED", "").startsWith(facetField + ":")).findFirst().orElse("");
+            if (StringUtils.isNotBlank(matchingFacet)) {
                 int separatorIndex = matchingFacet.indexOf(":");
-                if(separatorIndex > 0 && separatorIndex < matchingFacet.length()-1) {                
-                    String value = matchingFacet.substring(separatorIndex+1);
+                if (separatorIndex > 0 && separatorIndex < matchingFacet.length() - 1) {
+                    String value = matchingFacet.substring(separatorIndex + 1);
                     values.add(value);
                 }
             }
@@ -1508,8 +1507,8 @@ public class SearchBean implements Serializable {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
         }
-    }  
-    
+    }
+
     /**
      * Adds a new breadcrumb for the current Pretty URL.
      *
@@ -1520,13 +1519,11 @@ public class SearchBean implements Serializable {
         if (navigationHelper != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-//            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
-            navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection", 
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", subItems, 
-                    weight));
+            //            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
+            navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection",
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", subItems, weight));
         }
-    }  
-    
+    }
 
     @Deprecated
     public String getCurrentQuery() {

@@ -525,8 +525,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
-    
+
     /**
      * @return
      */
@@ -541,12 +540,12 @@ public final class Configuration extends AbstractConfiguration {
      */
     public Metadata getWidgetUsageLicenceTextMetadata() {
         HierarchicalConfiguration sub = null;
-        try {            
+        try {
             sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             //no or multiple occurances 
         }
-        if(sub != null) {
+        if (sub != null) {
             Metadata md = getMetadata(sub);
             return md;
         } else {
@@ -557,8 +556,8 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Creates a {@link Metadata} instance from the given subnode configuration
      * 
-     * @param sub   The subnode configuration
-     * @return  the resulting {@link Metadata} instance
+     * @param sub The subnode configuration
+     * @return the resulting {@link Metadata} instance
      */
     @SuppressWarnings("rawtypes")
     private Metadata getMetadata(HierarchicalConfiguration sub) {
@@ -582,15 +581,14 @@ public final class Configuration extends AbstractConfiguration {
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
                 boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                        defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
+                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                        prefix, suffix, addUrl, dontUseTopstructValue));
             }
         }
         Metadata md = new Metadata(label, masterValue, type, paramList, group, number);
         return md;
     }
 
-    
     /**
      * 
      * @param eleTemplate
@@ -892,7 +890,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return  The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
+     * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      * @throws ViewerConfigurationException
      */
     public String getRestApiUrl() throws ViewerConfigurationException {
@@ -1142,6 +1140,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public String getPageSelectionFormat() {
+        return getLocalString("viewer.pageSelectionFormat", "{pageno}:{pagenolabel}");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
@@ -1239,7 +1246,7 @@ public final class Configuration extends AbstractConfiguration {
     @SuppressWarnings("static-method")
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
-//        return System.getProperty("java.io.tmpdir") + "viewer";
+        //        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**
@@ -3199,6 +3206,5 @@ public final class Configuration extends AbstractConfiguration {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
     }
-
 
 }

@@ -26,7 +26,7 @@ import java.util.List;
 public class CompoundLabeledLink extends LabeledLink {
 
     private final List<String> subItems;
-    
+
     /**
      * 
      */
@@ -39,15 +39,15 @@ public class CompoundLabeledLink extends LabeledLink {
      */
     public CompoundLabeledLink(String name, String url, int weight) {
         super(name, url, weight);
-        this.subItems = Collections.EMPTY_LIST;
+        this.subItems = Collections.emptyList();
     }
-    
+
     public CompoundLabeledLink(String name, String url, List<String> subItems, int weight) {
         super(name, url, weight);
         this.subItems = subItems;
     }
 
-    public  List<LabeledLink> getSubLinks() {
+    public List<LabeledLink> getSubLinks() {
         List<LabeledLink> links = new ArrayList<>();
         for (String string : subItems) {
             LabeledLink link = new LabeledLink(string, getUrl(), 0);
