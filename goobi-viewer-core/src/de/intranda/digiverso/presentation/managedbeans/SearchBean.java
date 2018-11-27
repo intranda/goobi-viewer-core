@@ -1448,7 +1448,9 @@ public class SearchBean implements Serializable {
         if (facets.size() > 0) {
             String facet = facets.get(0);
             facets = splitHierarchicalFacet(facet);
-            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", facets, NavigationHelper.WEIGHT_SEARCH_RESULTS);
+            updateBreadcrumbsWithCurrentUrl("searchHitNavigation",
+                    DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().get(0), facets,
+                    NavigationHelper.WEIGHT_SEARCH_RESULTS);
         } else {
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
         }
@@ -1513,15 +1515,22 @@ public class SearchBean implements Serializable {
      * Adds a new breadcrumb for the current Pretty URL.
      *
      * @param name Breadcrumb name.
+     * @param field Facet field for building the URL
+     * @param subItems Facet values
      * @param weight The weight of the link.
      */
-    private void updateBreadcrumbsWithCurrentUrl(String name, List<String> subItems, int weight) {
+    private void updateBreadcrumbsWithCurrentUrl(String name, String field, List<String> subItems, int weight) {
+        logger.trace("updateBreadcrumbsWithCurrentUrl: {}", name);
         if (navigationHelper != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+            //            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             //            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
+            StringBuilder sbUrlPart = new StringBuilder().append('/').append(PageType.browse.getName()).append('/');
+            if (field != null && !subItems.isEmpty()) {
+                sbUrlPart.append("-/1/-/").append(field).append(":{value}/");
+            }
             navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection",
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", subItems, weight));
+                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + sbUrlPart.toString(), subItems, weight));
         }
     }
 

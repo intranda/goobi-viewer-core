@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class CompoundLabeledLink extends LabeledLink {
 
-    private final List<String> subItems;
+    protected final List<String> subItems;
 
     /**
      * 
@@ -50,7 +50,8 @@ public class CompoundLabeledLink extends LabeledLink {
     public List<LabeledLink> getSubLinks() {
         List<LabeledLink> links = new ArrayList<>();
         for (String string : subItems) {
-            LabeledLink link = new LabeledLink(string, getUrl(), 0);
+            // TODO write correct url
+            LabeledLink link = new LabeledLink(string, url.replace("{value}", string), 0);
             links.add(link);
         }
         return links;

@@ -23,9 +23,9 @@ public class LabeledLink implements Serializable {
 
     private static final long serialVersionUID = -2546718627110716169L;
 
-    private String name;
-    private String url;
-    private int weight;
+    protected String name;
+    protected String url;
+    protected int weight;
 
     public LabeledLink(String name, String url, int weight) {
         this.name = name;

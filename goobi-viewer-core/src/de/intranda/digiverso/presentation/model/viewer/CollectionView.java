@@ -16,7 +16,6 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +50,7 @@ public class CollectionView {
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
-    
+
     private List<String> ignoreList = new ArrayList<>();
 
     public CollectionView(String field, BrowseDataProvider dataProvider) {
@@ -157,9 +156,9 @@ public class CollectionView {
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
             if (topElement == null) {
                 for (HierarchicalBrowseDcElement element : completeCollectionList) {
-                    if(this.ignoreList.contains(element.getName())) {
+                    if (this.ignoreList.contains(element.getName())) {
                         continue;
-                    } else {                        
+                    } else {
                         visibleList.add(element);
                         visibleList.addAll(element.getAllVisibleDescendents(false));
                     }
@@ -194,13 +193,13 @@ public class CollectionView {
             }
         }
     }
-    
+
     List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
         List<HierarchicalBrowseDcElement> elements = new ArrayList<>();
         HierarchicalBrowseDcElement currentElement = getElement(elementName, completeCollectionList);
-        if(currentElement != null) {            
+        if (currentElement != null) {
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
-            if(includeSelf) {
+            if (includeSelf) {
                 elements.add(currentElement);
             }
             HierarchicalBrowseDcElement parent = currentElement.getParent();
@@ -699,14 +698,17 @@ public class CollectionView {
     public String loadCollection(HierarchicalBrowseDcElement element) {
         logger.debug("Set current collection to " + element);
         setTopVisibleElement(element);
-        String url =  getCollectionUrl(element);
+        String url = getCollectionUrl(element);
         url = url.replace(BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), "");
         return url;
     }
-    
+
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
+        logger.trace("getCollectionUrl");
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
-            return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
+            String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
+            logger.trace("COLLETION static url: {}", ret);
+            return ret;
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
                     .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
@@ -715,13 +717,17 @@ public class CollectionView {
             //            if (cutoffIndex > 0) {
             //                baseUri = baseUri.substring(0, cutoffIndex - 1);
             //            }
-            return baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
+            String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
+            logger.trace("COLLETION new window url: {}", ret);
+            return ret;
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
-                    + collection.getLuceneName() + "/";
+            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
+                    + "/" + collection.getLuceneName() + "/";
+            logger.trace("COLLETION single volume url: {}", ret);
+            return ret;
         } else {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+            String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
                     .append(PageType.browse.getName())
                     .append("/-/1/")
                     .append(collection.getSortField())
@@ -731,6 +737,8 @@ public class CollectionView {
                     .append(collection.getLuceneName())
                     .append('/')
                     .toString();
+            logger.trace("COLLETION url: {}", ret);
+            return ret;
         }
     }
 
@@ -747,15 +755,15 @@ public class CollectionView {
     public boolean isDisplayParentCollections() {
         return displayParentCollections;
     }
-    
+
     public void setIgnore(String collectionName) {
         this.ignoreList.add(collectionName);
     }
-    
+
     public void setIgnore(Collection<String> collectionNames) {
         this.ignoreList = new ArrayList<>(collectionNames);
     }
-    
+
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
     }
