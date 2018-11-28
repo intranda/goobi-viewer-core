@@ -36,9 +36,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.batik.dom.xbl.OriginalEvent;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
+
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 
 /**
  * Content instance of a CMS page for a particular language.
@@ -87,6 +92,10 @@ public class CMSPageLanguageVersion {
 	public CMSPageLanguageVersion() {
 	    
 	}
+	
+	   public CMSPageLanguageVersion(String language) {
+	        this.language = language;
+	    }
 	
 	/**
      * @param language2
@@ -220,8 +229,9 @@ public class CMSPageLanguageVersion {
 	/**
 	 * @param itemId
 	 * @return
+	 * @throws CmsElementNotFoundException 
 	 */
-	public CMSContentItem getContentItem(String itemId) {
+	public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
 	    if(getCompleteContentItemList() != null) {	        
 	        for (CMSContentItem item : getCompleteContentItemList()) {
 	            if (item.getItemId().equals(itemId)) {
@@ -229,7 +239,7 @@ public class CMSPageLanguageVersion {
 	            }
 	        }
 	    }
-		return null;
+		throw new CmsElementNotFoundException("No element of id " + itemId + " found in " + this);
 	}
 
 	public List<CMSContentItem> getCompleteContentItemList() {
@@ -244,7 +254,12 @@ public class CMSPageLanguageVersion {
 	 *
 	 */
 	protected void generateCompleteContentItemList() {
-		CMSPageLanguageVersion global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
+		CMSPageLanguageVersion global;
+        try {
+            global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
+        } catch (CmsElementNotFoundException e) {
+            global = null;
+        }
 		completeContentItemList = new ArrayList<>();
 		if (CMSPage.GLOBAL_LANGUAGE.equals(this.getLanguage())) {
 			completeContentItemList.addAll(getContentItems());

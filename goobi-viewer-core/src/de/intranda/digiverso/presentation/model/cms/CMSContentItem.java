@@ -961,7 +961,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             List<String> ret = Arrays.asList(ignoreCollections.split(","));
             return ret;
         } else {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
     }
     

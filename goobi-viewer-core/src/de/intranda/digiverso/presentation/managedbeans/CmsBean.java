@@ -730,11 +730,28 @@ public class CmsBean implements Serializable {
                 this.selectedPage = currentPage;
             }
             this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            createMissingLangaugeVersions(this.selectedPage, getAllLocales());
             logger.debug("Selected page " + currentPage);
         } else {
             this.selectedPage = null;
         }
 
+    }
+
+    /**
+     * Adds {@link CMSPageLanguageVersion}s to the given {@link CMSPage} for all given {@link Locale}s for which no 
+     * language versions already exist in the page
+     * 
+     * @param page
+     * @param locales
+     */
+    private void createMissingLangaugeVersions(CMSPage page, List<Locale> locales) {
+        for (Locale locale : locales) {
+            if(!page.hasLanguageVersion(locale)) {
+                page.addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
+            }
+        }
+        
     }
 
     public CMSPage getCurrentPage() {
