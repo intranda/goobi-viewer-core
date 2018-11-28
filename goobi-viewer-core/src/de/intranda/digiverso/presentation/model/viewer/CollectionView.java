@@ -715,7 +715,6 @@ public class CollectionView {
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        logger.trace("getCollectionUrl");
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLETION static url: {}", ret);
@@ -748,7 +747,6 @@ public class CollectionView {
                     .append(collection.getLuceneName())
                     .append('/')
                     .toString();
-            logger.trace("COLLETION url: {}", ret);
             return ret;
         }
     }
