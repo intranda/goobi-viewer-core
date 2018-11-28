@@ -9,8 +9,8 @@
 	</composite:interface>
 
     <composite:implementation>
-    	<h:form id="customDrillDownForm" prependId="false">
-			<h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
+        <h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
+    	   <h:form id="customDrillDownForm" prependId="false">
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
@@ -55,7 +55,7 @@
 						</div>
 					</h:panelGroup>
 				</div>
-        	</h:panelGroup>
-		</h:form>
+            </h:form>
+        </h:panelGroup>
     </composite:implementation>
 </ui:composition>
