@@ -197,11 +197,13 @@ public class CmsBean implements Serializable {
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
         list.add(ViewerResourceBundle.getDefaultLocale());
-        Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
-        while (iter.hasNext()) {
-            Locale locale = iter.next();
-            if (!list.contains(locale)) {
-                list.add(locale);
+        if(FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {            
+            Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            while (iter.hasNext()) {
+                Locale locale = iter.next();
+                if (!list.contains(locale)) {
+                    list.add(locale);
+                }
             }
         }
         return list;
