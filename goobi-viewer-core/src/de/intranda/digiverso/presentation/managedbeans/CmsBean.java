@@ -35,6 +35,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -42,24 +43,21 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
-import de.intranda.digiverso.presentation.managedbeans.tabledata.PersistentTableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -198,7 +196,7 @@ public class CmsBean implements Serializable {
      */
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
-        list.add(getDefaultLocaleStatic());
+        list.add(ViewerResourceBundle.getDefaultLocale());
         Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
         while (iter.hasNext()) {
             Locale locale = iter.next();
@@ -218,19 +216,9 @@ public class CmsBean implements Serializable {
     }
 
     public Locale getDefaultLocale() {
-        return getDefaultLocaleStatic();
+        return ViewerResourceBundle.getDefaultLocale();
     }
 
-    public static Locale getDefaultLocaleStatic() {
-        Locale defaultLocale = null;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
-        }
-        if (defaultLocale == null) {
-            defaultLocale = Locale.ENGLISH;
-        }
-        return defaultLocale;
-    }
 
     public static Locale getCurrentLocale() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
@@ -730,7 +718,7 @@ public class CmsBean implements Serializable {
                 this.selectedPage = currentPage;
             }
             this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
-            createMissingLangaugeVersions(this.selectedPage, getAllLocales());
+            this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
         } else {
             this.selectedPage = null;
@@ -738,21 +726,7 @@ public class CmsBean implements Serializable {
 
     }
 
-    /**
-     * Adds {@link CMSPageLanguageVersion}s to the given {@link CMSPage} for all given {@link Locale}s for which no 
-     * language versions already exist in the page
-     * 
-     * @param page
-     * @param locales
-     */
-    private void createMissingLangaugeVersions(CMSPage page, List<Locale> locales) {
-        for (Locale locale : locales) {
-            if(!page.hasLanguageVersion(locale)) {
-                page.addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
-            }
-        }
-        
-    }
+
 
     public CMSPage getCurrentPage() {
         if (currentPage == null) {

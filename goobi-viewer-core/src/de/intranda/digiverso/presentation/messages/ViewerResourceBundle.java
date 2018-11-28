@@ -127,6 +127,10 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
     }
+    
+    public static Locale getDefaultLocale() {
+        return defaultLocale != null ? defaultLocale : Locale.ENGLISH;
+    }
 
     /**
      * Loads resource bundles for the current locale and reloads them if the locale has since changed.

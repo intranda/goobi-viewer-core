@@ -16,10 +16,12 @@
 package de.intranda.digiverso.presentation.dao.impl;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -1580,6 +1582,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void updateCMSPage_shouldUpdatePageCorrectly() throws Exception {
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
+        page.createMissingLangaugeVersions(Arrays.asList(new Locale[]{Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH}));
         Assert.assertNotNull(page);
         page.getLanguageVersion("de").setTitle("Deutscher Titel");
         page.getLanguageVersion("en").setTitle("English title");

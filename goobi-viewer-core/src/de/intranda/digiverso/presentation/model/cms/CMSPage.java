@@ -60,6 +60,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -485,7 +486,7 @@ public class CMSPage {
 
     public CMSPageLanguageVersion getDefaultLanguage() throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = null;
-        String language = CmsBean.getDefaultLocaleStatic().getLanguage();
+        String language = ViewerResourceBundle.getDefaultLocale().getLanguage();
         version = getLanguageVersion(language);
         if (version == null) {
             version = new CMSPageLanguageVersion();
@@ -661,11 +662,10 @@ public class CMSPage {
      */
     private CMSPageLanguageVersion getBestLanguage(Locale locale) throws CmsElementNotFoundException {
         // logger.trace("getBestLanguage");
-        Locale defaultLocale = CmsBean.getDefaultLocaleStatic();
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> l.getStatus().equals(CMSPageStatus.FINISHED))
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
-                .sorted(new CMSPageLanguageVersionComparator(locale, defaultLocale))
+                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No finished language version exists for page " + this));
         return language;
@@ -681,12 +681,11 @@ public class CMSPage {
      * @throws CmsElementNotFoundException
      */
     private CMSPageLanguageVersion getBestLanguageIncludeUnfinished(Locale locale) throws CmsElementNotFoundException {
-        Locale defaultLocale = CmsBean.getDefaultLocaleStatic();
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
-                .sorted(new CMSPageLanguageVersionComparator(locale, defaultLocale))
+                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
                 .findFirst()
-                .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this));
+                .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
         return language;
     }
 
@@ -1154,6 +1153,22 @@ public class CMSPage {
      */
     public boolean hasLanguageVersion(Locale locale) {
         return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
+    }
+    
+    /**
+     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no 
+     * language versions already exist
+     * 
+     * @param page
+     * @param locales
+     */
+    public void createMissingLangaugeVersions( List<Locale> locales) {
+        for (Locale locale : locales) {
+            if(!hasLanguageVersion(locale)) {
+                addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
+            }
+        }
+        
     }
 
 }
