@@ -201,7 +201,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
-    
+
     /** Comma separated list of collection names to ignore for display */
     @Column(name = "ignore_collections")
     private String ignoreCollections = null;
@@ -533,9 +533,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public String[] getPageClassification() {
         if (StringUtils.isNotBlank(pageClassification)) {
             return pageClassification.split(CLASSIFICATION_SEPARATOR);
-        } else {
-            return new String[0];
         }
+        
+        return new String[0];
     }
 
     public List<String> getSortedPageClassifications() throws DAOException {
@@ -548,15 +548,15 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         .sorted()
                         .findFirst()
                         .orElse(Long.MAX_VALUE);
-                while(sortMap.containsKey(order)) {
+                while (sortMap.containsKey(order)) {
                     order++;
                 }
                 sortMap.put(order, classification);
             }
             return new ArrayList<>(sortMap.values());
-        } else {
-            return Collections.EMPTY_LIST;
         }
+        
+        return Collections.emptyList();
     }
 
     /**
@@ -601,9 +601,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (nestedPages == null) {
             return loadNestedPages();
         }
-        List<CMSPage> pages =  nestedPages.stream()
-                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
-                .collect(Collectors.toList());
+        List<CMSPage> pages =
+                nestedPages.stream().filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification)).collect(
+                        Collectors.toList());
         return pages;
     }
 
@@ -614,7 +614,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private List<CMSPage> loadNestedPages() throws DAOException {
         int size = getElementsPerPage();
         int offset = getListOffset();
-        
+
         List<CMSPage> allPages = new ArrayList<>();
         if (StringUtils.isBlank(pageClassification)) {
             allPages = DataManager.getInstance().getDao().getAllCMSPages();
@@ -625,7 +625,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 }
             }
         }
-        
+
         nestedPages = new ArrayList<>();
         int counter = 0;
         Collections.sort(allPages, new CMSPage.PageComparator());
@@ -723,13 +723,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true, true);
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
+                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
         Collections.sort(list);
         return list;
     }
-    
+
     /**
      * Querys solr for a list of all values of the set collectionField which my serve as a collection
      * 
@@ -740,13 +741,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true, true);
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
+                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains("."))
                 .collect(Collectors.toList());
-//        list.add(0, "");
+        //        list.add(0, "");
         Collections.sort(list);
         return list;
     }
@@ -794,13 +796,15 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @param collectionField
      * @param facetField
      * @param sortField
+     * @param filterQuery
      */
     private static CollectionView initializeCollection(final String collectionField, final String facetField, final String filterQuery) {
         CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true, true, true);
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true, true,
+                        true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
         });
@@ -941,34 +945,34 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
         return g;
     }
-    
+
     /**
      * @return the ignoreCollections
      */
     public String getIgnoreCollections() {
         return ignoreCollections;
     }
-    
+
     /**
      * @param ignoreCollections the ignoreCollections to set
      */
     public void setIgnoreCollections(String ignoreCollections) {
         this.ignoreCollections = ignoreCollections;
     }
-    
+
     public List<String> getIgnoreCollectionsAsList() {
-        if(StringUtils.isNotBlank(ignoreCollections)) {            
+        if (StringUtils.isNotBlank(ignoreCollections)) {
             List<String> ret = Arrays.asList(ignoreCollections.split(","));
             return ret;
-        } else {
-            return Collections.emptyList();
         }
+        
+        return Collections.emptyList();
     }
-    
+
     public void setIgnoreCollectionsAsList(List<String> toIgnore) {
-        if(toIgnore == null || toIgnore.isEmpty()) {
+        if (toIgnore == null || toIgnore.isEmpty()) {
             this.ignoreCollections = null;
-        } else {            
+        } else {
             this.ignoreCollections = StringUtils.join(toIgnore, ",");
         }
         this.collection = null;

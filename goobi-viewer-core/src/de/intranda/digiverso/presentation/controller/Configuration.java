@@ -696,6 +696,21 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    public String getCollectionSplittingChar(String field) {
+        HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
+        if (subConfig != null) {
+            return subConfig.getString("defaultBrowseIcon", ".");
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the collection config block for the given field.
      *
      * @param field
@@ -1124,15 +1139,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getSplittingCharacter() {
-        return getLocalString("viewer.splittingCharacter");
     }
 
     /**

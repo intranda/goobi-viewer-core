@@ -272,10 +272,6 @@
 			<text>purl</text>
 		</watermarkTextConfiguration>
 
-		<!-- TODO: MOVE TO <collection>; splitingCharacter: defines symbol that 
-			splits collections into subcollections -->
-		<splittingCharacter>.</splittingCharacter>
-
 	    <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
 		    Values that are not among the following allowed variables will be displayed 
 		    as-is.
@@ -476,6 +472,10 @@
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
 	<collections>
 		<collection field="DC">
+		
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+		    
 			<!-- In the following section you can define an index field that is used 
 				for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>

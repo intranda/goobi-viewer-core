@@ -60,17 +60,18 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 public class CollectionBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionBuilder.class);
-    
-    private static final String[] CONTAINED_WORKS_QUERY_FIELDS = {SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT};
+
+    private static final String[] CONTAINED_WORKS_QUERY_FIELDS =
+            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT };
     public final static String RSS_FEED_LABEL = "Rss feed";
     public final static String RSS_FEED_FORMAT = "Rss feed";
-    
+
     /**
      * Caching for collections
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
-    
+
     /**
      * @param request
      * @throws URISyntaxException
@@ -90,19 +91,17 @@ public class CollectionBuilder extends AbstractBuilder {
     /**
      * @param collectionField
      * @param topElement
-     * @param url
-     * @param locale
-     * @param facetField
+     * @param splittingChar
      * @return
      * @throws IndexUnreachableException
      * @throws MalformedURLException
      * @throws URISyntaxException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
-    public Collection generateCollection(String collectionField, final String topElement)
+    public Collection generateCollection(String collectionField, final String topElement, final String splittingChar)
             throws IndexUnreachableException, URISyntaxException, PresentationException {
 
-        CollectionView collectionView = getCollectionView(collectionField, getFacetField(collectionField));
+        CollectionView collectionView = getCollectionView(collectionField, getFacetField(collectionField), splittingChar);
 
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
             collectionView.setTopVisibleElement(topElement);
@@ -128,25 +127,24 @@ public class CollectionBuilder extends AbstractBuilder {
              * First make sure that the base Element is contained within visibleElements, then recalculate the visibleElements to
              * get CMS-Information for the base Element and its children
              */
-            collectionView.setDisplayParentCollections(true); 
+            collectionView.setDisplayParentCollections(true);
             collectionView.calculateVisibleDcElements(true);
             collection = createCollection(collectionView, baseElement, getCollectionURI(collectionField, baseElement.getName()));
-            
+
             String parentName = null;
             if (baseElement.getParent() != null) {
                 parentName = baseElement.getParent().getName();
             }
-            Collection parent =
-                    createCollection(collectionView, baseElement.getParent(), getCollectionURI(collectionField, parentName));
+            Collection parent = createCollection(collectionView, baseElement.getParent(), getCollectionURI(collectionField, parentName));
             collection.addWithin(parent);
 
             for (HierarchicalBrowseDcElement childElement : baseElement.getChildren()) {
                 Collection child = createCollection(collectionView, childElement, getCollectionURI(collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
-            
+
             addContainedWorks(collectionField, topElement, collection);
-            
+
         } else {
             collection = createCollection(collectionView, null, getCollectionURI(collectionField, null));
 
@@ -170,14 +168,14 @@ public class CollectionBuilder extends AbstractBuilder {
     public void addContainedWorks(String collectionField, final String topElement, Collection collection)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
         SolrDocumentList containedWorks = getContainedWorks(createCollectionQuery(collectionField, topElement));
-        if(containedWorks != null) {
+        if (containedWorks != null) {
             for (SolrDocument solrDocument : containedWorks) {
-                
+
                 AbstractPresentationModelElement work;
-                Boolean anchor = (Boolean)solrDocument.getFirstValue(SolrConstants.ISANCHOR);
+                Boolean anchor = (Boolean) solrDocument.getFirstValue(SolrConstants.ISANCHOR);
                 String pi = solrDocument.getFirstValue(SolrConstants.PI).toString();
                 URI uri = getManifestURI(pi);
-                if(Boolean.TRUE.equals(anchor)) {
+                if (Boolean.TRUE.equals(anchor)) {
                     work = new Collection(uri);
                     work.setViewingHint(ViewingHint.multipart);
                     collection.addCollection((Collection) work);
@@ -190,14 +188,13 @@ public class CollectionBuilder extends AbstractBuilder {
         }
     }
 
-
     /**
      * @param createCollectionQuery
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    private SolrDocumentList getContainedWorks(String query) throws PresentationException, IndexUnreachableException {
+    private static SolrDocumentList getContainedWorks(String query) throws PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getSearchIndex().getDocs(query, Arrays.asList(CONTAINED_WORKS_QUERY_FIELDS));
     }
 
@@ -208,7 +205,7 @@ public class CollectionBuilder extends AbstractBuilder {
      */
     public String createCollectionQuery(String collectionField, final String topElement) {
         String query;
-        if(topElement != null) {            
+        if (topElement != null) {
             query = collectionField + ":" + topElement + " OR " + collectionField + ":" + topElement + ".*";
         } else {
             query = collectionField + ":*";
@@ -231,42 +228,41 @@ public class CollectionBuilder extends AbstractBuilder {
             collection.setAttribution(getAttribution());
 
             if (baseElement != null) {
-                
+
                 BrowseElementInfo info = baseElement.getInfo();
-                if(info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {                    
+                if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
                     collection.setLabel(info.getTranslationsForName());
                 } else {
                     collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
                 }
 
-                
-
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
-                if(thumbURI != null) {                    
+                if (thumbURI != null) {
                     ImageContent thumb = new ImageContent(thumbURI, true);
                     collection.setThumbnail(thumb);
                 }
 
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
-                collection.addService(new CollectionExtent(subCollections, (int)volumes));
-                
-                LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
+                collection.addService(new CollectionExtent(subCollections, (int) volumes));
+
+                LinkingContent rss =
+                        new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.addRelated(rss);
 
-//              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
-              LinkingContent viewerPage = new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)));
-              viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-              collection.addRendering(viewerPage);
-//          }
-                
-//                LinkingContent viewer =
-//                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
-//                collection.addRendering(viewer);
+                //              if(info != null && info.getLinkURI(getRequest().orElse(null)) != null) {
+                LinkingContent viewerPage = new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)));
+                viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+                collection.addRendering(viewerPage);
+                //          }
+
+                //                LinkingContent viewer =
+                //                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
+                //                collection.addRendering(viewer);
 
             } else {
                 collection.setViewingHint(ViewingHint.top);
-//                collection.addService(new CollectionExtent(collectionView.getVisibleDcElements().size(), 0));
+                //                collection.addService(new CollectionExtent(collectionView.getVisibleDcElements().size(), 0));
             }
 
         } catch (URISyntaxException e) {
@@ -275,15 +271,15 @@ public class CollectionBuilder extends AbstractBuilder {
         return collection;
     }
 
-
-
     /**
      * @param collectionField
      * @param facetField
+     * @param splittingChar
      * @return
      * @throws IndexUnreachableException
      */
-    public CollectionView getCollectionView(String collectionField, final String facetField) throws IndexUnreachableException {
+    public CollectionView getCollectionView(String collectionField, final String facetField, final String splittingChar)
+            throws IndexUnreachableException {
 
         synchronized (collectionViewMap) {
             if (collectionViewMap.containsKey(collectionField)) {
@@ -292,7 +288,7 @@ public class CollectionBuilder extends AbstractBuilder {
         }
 
         CollectionView view = new CollectionView(collectionField,
-                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true));
+                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true, splittingChar));
         view.populateCollectionList();
 
         synchronized (collectionViewMap) {
@@ -303,7 +299,6 @@ public class CollectionBuilder extends AbstractBuilder {
             return view;
         }
     }
-
 
     /**
      * @param collectionField

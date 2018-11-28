@@ -27,11 +27,11 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.CollectionBuilder;
-import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -44,12 +44,11 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 @Path("/iiif/collections")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
-public class CollectionResource extends AbstractResource{
+public class CollectionResource extends AbstractResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
     private CollectionBuilder collectionBuilder;
-
 
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
@@ -70,8 +69,9 @@ public class CollectionResource extends AbstractResource{
     public Collection getCollections(@PathParam("collectionField") String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
 
-        Collection collection =  getCollectionBuilder().generateCollection(collectionField, null);
-                
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, null,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         return collection;
@@ -84,7 +84,7 @@ public class CollectionResource extends AbstractResource{
      * member-collections Requires passing a language to set the language for all metadata values
      * 
      * @throws URISyntaxException
-     * @throws PresentationException 
+     * @throws PresentationException
      * 
      */
     @GET
@@ -93,15 +93,15 @@ public class CollectionResource extends AbstractResource{
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException {
 
-        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement);
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         return collection;
 
     }
-    
-    
+
     /**
      * @return the manifestBuilder
      */
@@ -115,6 +115,5 @@ public class CollectionResource extends AbstractResource{
         }
         return collectionBuilder;
     }
-
 
 }
