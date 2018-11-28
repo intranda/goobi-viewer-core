@@ -1,9 +1,17 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" template="/resources/themes/#{navigationHelper.theme}/template.html">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-	<ui:define name="metadata">
+	<!-- METADATA -->
+    <ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchadvanced', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.searchAdvanced,1)}" />
@@ -11,201 +19,38 @@
 		</f:metadata>
 	</ui:define>
 
-	<ui:define name="content">
+	<!-- BREADCRUMBS -->
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+    <!-- CONTENT -->
+    <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="searchAdvanced">
 				<h2>#{msg.searchAdvanced}</h2>
 
-				<!-- SEARCH ADVANCED -->
-				<div class="search-advanced">
-					<!-- MESSAGE -->
-					<h:panelGroup rendered="#{!configurationBean.advancedSearchEnabled}">
-						<div class="alert alert-warning" role="alert">
-							<h:outputText value="#{msg.errFunctionalityDisabled}" />
-						</div>
-					</h:panelGroup>
-
-					<h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
-						<h:form id="searchAdvancedForm" prependId="false">
-							<c:forEach var="queryGroup" items="#{searchBean.advancedQueryGroups}" varStatus="statusGroup">
-								<div class="search-advanced__group">
-									<!-- AJAX LOADER -->
-									<div class="search-advanced__loader"></div>
-
-									<h:commandLink styleClass="remove btn btn--clean" role="button" title="#{msg.searchAdvanved_deleteSearchGroup}"
-										action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}" disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
-										<i class="fa fa-times-circle" aria-hidden="true"></i>
-										<f:passThroughAttribute name="data-toggle" value="tooltip" />
-										<f:passThroughAttribute name="data-placement" value="top" />
-										<f:ajax render="@form" />
-									</h:commandLink>
-
-									<!-- SEARCH ADVANCED CONNECTOR -->
-									<div class="search-advanced__connector">
-										#{msg.searchAdvanced_operatorItems}:
-										<div class="custom-control custom-control--select">
-											<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="value-text" value="#{queryGroup.operator}">
-												<f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
-											</h:selectOneMenu>
-										</div>
-									</div>
-
-									<hr />
-
-									<!-- SEARCH ADVANCED INPUT GROUP -->
-									<c:forEach var="queryItem" items="#{queryGroup.queryItems}" varStatus="status">
-										<div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
-											<div class="row">
-												<div class="col-xs-12 col-sm-3">
-													<!-- SELECT -->
-													<div class="search-advanced__input-col">
-														<div class="custom-control custom-control--select">
-															<h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
-																valueChangeListener="#{queryItem.selectOneMenuListener}">
-																<f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
-																<f:ajax
-																	render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
-															</h:selectOneMenu>
-														</div>
-													</div>
-												</div>
-												<div class="col-xs-12 col-sm-5">
-													<!-- INPUT FIELD -->
-													<h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
-														<div class="search-advanced__input-col">
-															<h:panelGroup rendered="#{!queryItem.displaySelectItems}">
-																<div class="form-group">
-																	<label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
-																	<div class="input-group">
-																		<h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}" styleClass="form-control value-text"
-																			value="#{queryItem.value}">
-																			<f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-																		</h:inputText>
-
-																		<div class="input-group-addon">
-																			<button type="button" class="btn btn--clean reset" data-toggle="tooltip" data-placement="top"
-																				title="#{msg.searchAdvanved_resetCurrentValue}">
-																				<i class="fa fa-times-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
-																	</div>
-																</div>
-															</h:panelGroup>
-															<h:panelGroup rendered="#{queryItem.displaySelectItems}">
-																<div class="custom-control custom-control--select">
-																	<h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.value}">
-																		<c:forEach var="item" items="#{queryItem.selectItems}">
-																			<f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
-																		</c:forEach>
-																	</h:selectOneMenu>
-																</div>
-															</h:panelGroup>
-														</div>
-													</h:panelGroup>
-												</div>
-												<div class="col-xs-6 col-sm-3">
-													<!-- OPERATOR -->
-													<div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
-														<div class="custom-control custom-control--select">
-															<h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.operator}"
-																disabled="#{queryItem.displaySelectItems}">
-																<f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
-															</h:selectOneMenu>
-														</div>
-													</div>
-												</div>
-												<div class="col-xs-6 col-sm-1">
-													<!-- ADD / REMOVE -->
-													<div class="search-advanced__input-col">
-														<h:commandLink role="button" title="#{msg.searchAdvanved_deleteSelection}" action="#{queryGroup.removeQueryItem(queryItem)}">
-															<i class="fa fa-times-circle" aria-hidden="true"></i>
-															<f:passThroughAttribute name="data-toggle" value="tooltip" />
-															<f:passThroughAttribute name="data-placement" value="top" />
-															<f:ajax render="@form" />
-														</h:commandLink>
-														<h:commandLink role="button" title="#{msg.searchAdvanved_addSelection}" action="#{queryGroup.addNewQueryItem}"
-															disabled="#{fn:length(queryGroup.queryItems) != status.count}">
-															<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-															<f:passThroughAttribute name="data-toggle" value="tooltip" />
-															<f:passThroughAttribute name="data-placement" value="top" />
-															<f:ajax render="@form" />
-														</h:commandLink>
-													</div>
-												</div>
-											</div>
-										</div>
-									</c:forEach>
-								</div>
-							</c:forEach>
-
-							<!-- SEARCH ADVANCED CONNECT GROUP -->
-							<h:panelGroup rendered="#{fn:length(searchBean.advancedQueryGroups) > 1}">
-								<div class="search-advanced__connect-group pull-left">
-									#{msg.searchAdvanced_connectGroups}:
-									<div class="custom-control custom-control--select">
-										<h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
-											value="#{searchBean.advancedSearchGroupOperator}">
-											<f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
-											<f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
-										</h:selectOneMenu>
-									</div>
-								</div>
-							</h:panelGroup>
-
-							<!-- SEARCH ADVANCED ADD GROUP -->
-							<div class="search-advanced__add-group pull-right">
-								<h:commandLink action="#{searchBean.addNewAdvancedQueryGroup}" role="button">
-                                #{msg.searchAdvanved_addSearchGroup}
-                                <i class="fa fa-plus-square-o" aria-hidden="true"></i>
-									<f:ajax render="@form" />
-								</h:commandLink>
-							</div>
-
-							<div class="clearfix"></div>
-
-							<!-- SEARCH ADVANCED ACTION -->
-							<div class="search-advanced__action">
-								<h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-								<h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{searchBean.searchAdvanced}">
-									<f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
-								</h:commandButton>
-							</div>
-						</h:form>
-					</h:panelGroup>
-				</div>
+                <!-- SEARCH STANDARD -->
+                <ui:include src="/resources/includes/search/searchAdvanced.xhtml" />
 			</div>
-
-			<script type="text/javascript">
-				$(document).ready(function() {
-					var searchAdvancedConfig = {};
-
-					viewerJS.searchAdvanced.init(searchAdvancedConfig);
-				});
-			</script>
 		</f:view>
 	</ui:define>
 
-	<ui:define name="sidebar">
-		<widgetComponent:widget_browsing />
+	<!-- SIDEBAR -->
+    <ui:define name="sidebar">             
+        <widgetComponent:widget_browsing />        
+        <widgetComponent:widget_bookshelfList />
+        <widgetComponent:widget_mySearches />
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>        
+        <widgetComponent:widget_user />
+    </ui:define>
 
-		<widgetComponent:widget_bookshelfList />
-
-		<widgetComponent:widget_mySearches />
-
-		<c:forEach var="module" items="#{configurationBean.modules}">
-			<c:forEach var="contribution" items="#{module.sidebarContributions}">
-				<ui:include src="/#{contribution}" />
-			</c:forEach>
-		</c:forEach>
-
-		<widgetComponent:widget_user />
-	</ui:define>
-
-	<ui:define name="rssFeed">
-		<ui:include src="/resources/includes/rssFeed.xhtml" />
-	</ui:define>
-
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
+    <!-- RSS FEED -->
+    <ui:define name="rssFeed">
+        <ui:include src="/resources/includes/rssFeed.xhtml" />
+    </ui:define>
 </ui:composition>
