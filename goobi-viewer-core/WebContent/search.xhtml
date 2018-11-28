@@ -1,16 +1,18 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html" 
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:jsf="http://xmlns.jcp.org/jsf"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/template.html"> 
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"> 
 
+    <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
             <!-- JSF 2.2 passthrough parameter (needed to use HTML <input> elements with bean backing) -->
@@ -21,128 +23,38 @@
         </f:metadata>
     </ui:define>
 
+    <!-- BREADCRUMBS -->
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+    <!-- CONTENT -->
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="searchStandard">
                 <h2>#{msg.searchHeader}</h2>
                 
                 <!-- SEARCH STANDARD -->
-                <div class="search-standard">
-                    <!-- SEARCH STANDARD HELP -->
-                    <div class="search-standard__help pull-right clearfix">
-                        <button type="button" data-toggle="modal" data-target="#searchHelpModal">
-                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                        </button>
-                    </div>
-
-                    <h:form id="searchForm" prependId="false">
-                        <!-- SEARCH STANDRAD TITLE -->
-                        <div class="search-standard__title">
-                            <h3>
-                                <h:outputText rendered="#{!searchBean.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
-                                <h:panelGroup rendered="#{searchBean.searchInDcFlag}">
-                                    <h:outputText value="#{msg.searchIn}: " />
-                                    <ui:repeat var="facet" value="#{searchBean.facets.getCurrentFacetsForField('DC')}">
-                                        <br />
-                                        <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
-                                    </ui:repeat>
-                                </h:panelGroup>
-                            </h3>
-                        </div>
-
-                        <!-- SEARCH STANDARD INPUT -->
-                        <div class="search-standard__input">
-                            <div class="search-standard__input-autocomplete">
-                                <p:autoComplete id="pfAutocomplete" completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="15" minQueryLength="3" autoHighlight="false">
-                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-                                </p:autoComplete>
-                            </div>
-                        </div>
-
-                        <!-- SEARCH STANDARD FILTER -->
-                        <div class="search-standard__filter">
-                            <div class="search-standard__filter-radio">
-                                <ui:repeat var="filter" value="#{searchBean.searchFilters}">
-                                    <label for="#{filter.label}" class="custom-control custom-control--radio"> 
-                                        <!-- jsf:id is needed for automatic setting of the current value from the bean -->
-                                        <!-- pt:name is needed binding this input to the bean variable via passthrough --> 
-                                        <input 
-                                            type="radio" 
-                                            id="#{filter.label}" 
-                                            jsf:id="#{filter.label}" 
-                                            name="searchStandardFilter" 
-                                            pt:name="searchStandardFilter" 
-                                            value="#{filter.label}"
-                                            checked="#{filter.label eq searchBean.currentSearchFilterString ? 'checked' : null}" />
-                                        <span class="custom-control__icon"> 
-                                            <i class="fa fa-circle-o" aria-hidden="true"></i> 
-                                            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
-                                        </span>
-                                        #{msg[filter.label]}
-                                    </label>
-                                </ui:repeat>
-                            </div>
-                            <div class="search-standard__filter-link">
-                                <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
-                            </div>
-                        </div>
-
-                        <!-- SEARCH STANDARD ACTION -->
-                        <div class="search-standard__action">
-                            <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                            <h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{searchBean.searchSimple}" value="#{msg.search}">
-                                <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
-                            </h:commandButton>
-                        </div>
-                    </h:form>
-                </div>
-                
-                <!-- SEARCH HELP MODAL -->
-                <div class="modal fade search-help" id="searchHelpModal" tabindex="-1" role="dialog" aria-labelledby="searchHelpModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true"> 
-                                        <h:outputText value="&amp;times;" escape="false" />
-                                    </span>
-                                </button>
-                                <h4 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h4>
-                            </div>
-                            <div class="modal-body">
-                                <viewerComponent:searchHelpText />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn--full" data-dismiss="modal">#{msg.search_helpModalClose}</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ui:include src="/resources/includes/search/searchStandard.xhtml" />
             </div>
         </f:view>
     </ui:define>
 
+    <!-- SIDEBAR -->
     <ui:define name="sidebar">             
-        <widgetComponent:widget_browsing />
-        
-        <widgetComponent:widget_bookshelfList />        
-
+        <widgetComponent:widget_browsing />        
+        <widgetComponent:widget_bookshelfList />
         <widgetComponent:widget_mySearches />
-        
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
-        </c:forEach>
-        
+        </c:forEach>        
         <widgetComponent:widget_user />
     </ui:define>
 
+    <!-- RSS FEED -->
     <ui:define name="rssFeed">
         <ui:include src="/resources/includes/rssFeed.xhtml" />
-    </ui:define>
-
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 </ui:composition>
