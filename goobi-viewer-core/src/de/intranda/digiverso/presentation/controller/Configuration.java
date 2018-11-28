@@ -3120,7 +3120,7 @@ public final class Configuration extends AbstractConfiguration {
             return subConfig.getString("defaultBrowseIcon", "");
         }
 
-        return getLocalString("collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
+        return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
     /**

@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -96,9 +97,10 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
      * {@link de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource#getContentUrl(de.intranda.digiverso.presentation.model.cms.CMSContentItem)}.
      * 
      * @throws DAOException
+     * @throws CmsElementNotFoundException 
      */
     @Test
-    public void testGetContentUrl() throws DAOException {
+    public void testGetContentUrl() throws DAOException, CmsElementNotFoundException {
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(1l);
         CMSContentItem item = page.getContentItem("C1", "de");
         String url = CMSContentResource.getContentUrl(item);

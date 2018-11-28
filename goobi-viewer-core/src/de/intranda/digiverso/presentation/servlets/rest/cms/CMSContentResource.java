@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
@@ -197,9 +198,18 @@ public class CMSContentResource {
     private static String getValue(Long pageId, String fieldId, String language) throws DAOException {
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(pageId);
         if (page != null) {
-            CMSContentItem item = page.getContentItem(fieldId, language);
+            CMSContentItem item;
+            try {
+                item = page.getContentItem(fieldId, language);
+            } catch (CmsElementNotFoundException e) {
+                item = null;
+            }
             if (item == null || item.getHtmlFragment() == null) {
-                item = page.getDefaultLanguage().getContentItem(fieldId);
+                try {
+                    item = page.getDefaultLanguage().getContentItem(fieldId);
+                } catch (CmsElementNotFoundException e) {
+                    item = null;
+                }
             }
             if (item != null) {
                 return item.getHtmlFragment();

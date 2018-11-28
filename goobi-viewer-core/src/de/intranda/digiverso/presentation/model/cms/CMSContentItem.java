@@ -534,7 +534,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isNotBlank(pageClassification)) {
             return pageClassification.split(CLASSIFICATION_SEPARATOR);
         }
-        
+
         return new String[0];
     }
 
@@ -555,7 +555,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
             return new ArrayList<>(sortMap.values());
         }
-        
+
         return Collections.emptyList();
     }
 
@@ -965,8 +965,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             List<String> ret = Arrays.asList(ignoreCollections.split(","));
             return ret;
         }
-        
-        return Collections.emptyList();
+
+        return new ArrayList<>();
     }
 
     public void setIgnoreCollectionsAsList(List<String> toIgnore) {
