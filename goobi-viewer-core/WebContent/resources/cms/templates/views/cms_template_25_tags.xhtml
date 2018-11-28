@@ -27,7 +27,7 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-			<div id="templateSearchAdvanced" class="tpl-search-advanced">				
+			<div id="templateTags" class="tpl-tags">				
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">
@@ -35,18 +35,18 @@
                     </div>
                 </h:panelGroup>
 
-                <div class="tpl-search-advanced__content">
+                <div class="tpl-tags__content">
 					<h2>#{cmsPage.title}</h2>
 					
 					<!-- TEXT -->
                     <ui:fragment rendered="#{cmsPage.hasContent('text')}">
-                        <div class="tpl-search-advanced__text">
+                        <div class="tpl-tags__text">
     	                    <ui:include src="#{cmsPage.getContent('text')}" />
     					</div>
                     </ui:fragment>
                     
-                    <!-- SEARCH ADVANCED -->
-                    <ui:include src="/resources/includes/search/searchAdvanced.xhtml" /> 
+                    <!-- TAGS -->
+                    <ui:include src="/resources/includes/search/tags.xhtml" /> 
                 </div>
             </div>
         </f:view>

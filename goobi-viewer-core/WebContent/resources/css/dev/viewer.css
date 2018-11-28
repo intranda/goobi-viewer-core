@@ -9402,6 +9402,9 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-search-standard {
   /* ELEMENT */
 }
+.tpl-search-standard__text {
+  margin-bottom: 15px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -9414,6 +9417,25 @@ div[id*="-Modal"] .email-form .form-group {
 /* BLOCK */
 .tpl-search-advanced {
   /* ELEMENT */
+}
+.tpl-search-advanced__text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Tags"
+   style declarations for cms_template_25_tags.xhtml
+   ==============================================================*/
+/* TAGS */
+/* BLOCK */
+.tpl-tags {
+  /* ELEMENT */
+}
+.tpl-tags__text {
+  margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

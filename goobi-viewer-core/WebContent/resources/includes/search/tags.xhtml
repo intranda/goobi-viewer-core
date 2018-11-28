@@ -1,0 +1,33 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- TAGS -->
+    <h:panelGroup rendered="#{tagCloudBean.tagsTitles.size() > 0}">
+        <h3>#{msg.title}</h3>
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsTitles}" />
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{tagCloudBean.tagsPersons.size() > 0}">
+        <h3>#{msg.persons}</h3>
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPersons}" />
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{tagCloudBean.tagsPlaces.size() > 0}">
+        <h3>#{msg.places}</h3>
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPlaces}" />
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{tagCloudBean.tagsYears.size() > 0}">
+        <h3>#{msg.years}</h3>
+        <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsYears}" />
+    </h:panelGroup>
+</ui:composition>
