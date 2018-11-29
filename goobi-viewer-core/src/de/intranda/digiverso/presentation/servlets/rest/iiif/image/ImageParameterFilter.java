@@ -98,7 +98,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             if(Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
                 repositoriesHome = "";
             } else {
-                repositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                repositoriesHome = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).toUri().toString();
             }
             StringBuilder sb = new StringBuilder(repositoriesHome).append(dataRepository)
                     .append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder());
