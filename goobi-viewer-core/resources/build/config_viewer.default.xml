@@ -269,9 +269,6 @@
 
 		<!-- set solr field that is used to define different watermark configuration ids -->
 		<watermarkIdField>MD_GEIFOOTERID</watermarkIdField>
-
-		<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
-		<splittingCharacter>.</splittingCharacter>
 		
         <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
             Values that are not among the following allowed variables will be displayed 
@@ -482,6 +479,10 @@
 
 	<collections>
 		<collection field="DC">
+		
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+		
 			<!-- In the following section you can define an index field that is used for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
 				<field collection="varia">SORT_TITLE</field>

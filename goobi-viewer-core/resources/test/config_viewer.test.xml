@@ -280,9 +280,6 @@
 
 		<watermarkIdField>watermarkIdField_value</watermarkIdField>
 
-		<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
-		<splittingCharacter>.</splittingCharacter>
-		
         <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
             Values that are not among the following allowed variables will be displayed 
             as-is.
@@ -463,6 +460,10 @@
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
 	<collections>
 		<collection field="DC">
+		
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+		
 			<!-- In the following section you can define an index field that is used 
 				for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
@@ -509,7 +510,9 @@
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
 		</collection>
-        <collection field="MD_KNOWLEDGEFIELD"/>
+        <collection field="MD_KNOWLEDGEFIELD">
+                    <splittingCharacter>/</splittingCharacter>
+        </collection>
         <collection field="MD_HIERARCHICALFIELD"/>
 	</collections>
 

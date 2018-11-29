@@ -38,7 +38,7 @@
         </div>
 
         <!-- ZOOM SLIDER -->
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType} == 'image'}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image' or activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
             <div id="fullscreenZoomSliderWrapper" class="hidden-xs hidden-sm">
                 <div class="zoom-slider" id="slider-id">
                     <span class="zoom-slider-handle"></span>

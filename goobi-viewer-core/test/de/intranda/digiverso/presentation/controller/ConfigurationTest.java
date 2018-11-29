@@ -702,12 +702,14 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getSplittingCharacter()
+     * @see Configuration#getCollectionSplittingChar(String)
      * @verifies return correct value
      */
     @Test
-    public void getSplittingCharacter_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getSplittingCharacter());
+    public void getCollectionSplittingChar_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
+        Assert.assertEquals("/", DataManager.getInstance().getConfiguration().getCollectionSplittingChar("MD_KNOWLEDGEFIELD"));
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DOCTYPE));
     }
 
     /**

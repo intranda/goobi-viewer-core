@@ -76,7 +76,6 @@ import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.user.User;
-import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -107,7 +106,6 @@ public final class SearchHelper {
 
     public static Pattern patternNotBrackets = Pattern.compile("NOT\\([^()]*\\)");
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
-    public static String collectionSplitRegex = new StringBuilder("[").append(BrowseDcElement.split).append(']').toString();
 
     /** Filter subquery for collection listing (no volumes). */
     static final String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
@@ -393,8 +391,14 @@ public final class SearchHelper {
             sbQuery.append(getDocstrctWhitelistFilterSuffix());
         }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-        sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(
-                value + separatorString + "*)");
+        sbQuery.append(" AND (")
+                .append(luceneField)
+                .append(":")
+                .append(value)
+                .append(" OR ")
+                .append(luceneField)
+                .append(":")
+                .append(value + separatorString + "*)");
         Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -417,13 +421,14 @@ public final class SearchHelper {
         logger.trace("query done");
 
         if (resp.getResults().size() > 0) {
+            String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
             try {
                 for (SolrDocument doc : resp.getResults()) {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
                             String dc = SolrSearchIndex.getAsString(o);
-                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
+                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
                                 continue;
                             }
                             String pi = (String) doc.getFieldValue(SolrConstants.PI);
@@ -448,26 +453,27 @@ public final class SearchHelper {
      *
      * @param luceneField
      * @param facetField
-     * @param filterQuery   An addition solr-query to filer collections by
+     * @param filterQuery An addition solr-query to filer collections by
      * @param filterForWhitelist
      * @param filterForBlacklist
      * @param filterForWorks
      * @param filterForAnchors
+     * @param splittingChar
      * @return
      * @throws IndexUnreachableException
      * @should find all collections
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
-            boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors) throws IndexUnreachableException {
+            boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
-            
-            if(StringUtils.isNotBlank(filterQuery)) {
+
+            if (StringUtils.isNotBlank(filterQuery)) {
                 sbQuery.append(filterQuery).append(" AND ");
             }
-            
+
             if (filterForWorks || filterForAnchors) {
                 sbQuery.append("(");
             }
@@ -553,32 +559,34 @@ public final class SearchHelper {
                     if (fieldList != null) {
                         for (Object o : fieldList) {
                             String dc = SolrSearchIndex.getAsString(o);
-                            //                            String dc = (String) o;
-                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
-                                continue;
-                            }
-                            {
-                                Long count = ret.get(dc);
-                                if (count == null) {
-                                    count = 0L;
+                            if (StringUtils.isNotBlank(dc)) {
+                                //                            String dc = (String) o;
+                                if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
+                                    continue;
                                 }
-                                count++;
-                                ret.put(dc, count);
-                                dcDoneForThisRecord.add(dc);
-                            }
+                                {
+                                    Long count = ret.get(dc);
+                                    if (count == null) {
+                                        count = 0L;
+                                    }
+                                    count++;
+                                    ret.put(dc, count);
+                                    dcDoneForThisRecord.add(dc);
+                                }
 
-                            if (dc.contains(BrowseDcElement.split)) {
-                                String parent = dc;
-                                while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
-                                    parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
-                                    if (!dcDoneForThisRecord.contains(parent)) {
-                                        Long count = ret.get(parent);
-                                        if (count == null) {
-                                            count = 0L;
+                                if (dc.contains(splittingChar)) {
+                                    String parent = dc;
+                                    while (parent.lastIndexOf(splittingChar) != -1) {
+                                        parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                                        if (!dcDoneForThisRecord.contains(parent)) {
+                                            Long count = ret.get(parent);
+                                            if (count == null) {
+                                                count = 0L;
+                                            }
+                                            count++;
+                                            ret.put(parent, count);
+                                            dcDoneForThisRecord.add(parent);
                                         }
-                                        count++;
-                                        ret.put(parent, count);
-                                        dcDoneForThisRecord.add(parent);
                                     }
                                 }
                             }
@@ -599,26 +607,31 @@ public final class SearchHelper {
      *
      * @param dc
      * @param blacklist
+     * @param splittingChar
      * @return
      * @should match simple collections correctly
      * @should match subcollections correctly
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
      */
-    protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist) {
+    protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist, String splittingChar) {
         if (dc == null) {
             throw new IllegalArgumentException("dc may not be null");
         }
         if (blacklist == null) {
             throw new IllegalArgumentException("blacklist may not be null");
         }
+        if (splittingChar == null) {
+            throw new IllegalArgumentException("splittingChar may not be null");
+        }
 
+        String collectionSplitRegex = new StringBuilder("[").append(splittingChar).append(']').toString();
         String dcSplit[] = dc.split(collectionSplitRegex);
         // boolean blacklisted = false;
         StringBuilder sbDc = new StringBuilder();
         for (String element : dcSplit) {
             if (sbDc.length() > 0) {
-                sbDc.append(BrowseDcElement.split);
+                sbDc.append(splittingChar);
             }
             sbDc.append(element);
             String current = sbDc.toString();
@@ -644,8 +657,9 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
-                getFieldStatistics);
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -709,8 +723,9 @@ public final class SearchHelper {
                 }
                 sbQuery.append(getAllSuffixes(true));
                 logger.debug("Autocomplete query: {}", sbQuery.toString());
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 100, null,
-                        Collections.singletonList(SolrConstants.DEFAULT));
+                SolrDocumentList hits = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
                 for (SolrDocument doc : hits) {
                     String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
                     if (StringUtils.isNotEmpty(defaultValue)) {
@@ -1173,8 +1188,8 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">").replace(PLACEHOLDER_HIGHLIGHTING_END,
-                "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
+                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
     }
 
     /**
@@ -1291,8 +1306,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                facetMinCount, facetPrefix, false);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {

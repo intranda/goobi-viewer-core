@@ -102,8 +102,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
-        // First, make sure the docstruct whitelist and the collection blacklist always come from the same config file;
-        Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, true, true);
+        // First, make sure the collection blacklist always comes from the same config file;
+        Map<String, Long> collections =
+                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, true, true, ".");
         Assert.assertEquals(32, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
@@ -475,13 +476,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
         {
             Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
-            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
-            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist, "."));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist, "."));
         }
         {
             Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b.c.d"));
-            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
-            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist, "."));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist, "."));
         }
     }
 
@@ -492,8 +493,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void checkCollectionInBlacklist_shouldMatchSubcollectionsCorrectly() throws Exception {
         Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b"));
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist));
+        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist, "."));
+        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist, "."));
     }
 
     /**
@@ -502,7 +503,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void checkCollectionInBlacklist_shouldThrowIllegalArgumentExceptionIfDcIsNull() throws Exception {
-        SearchHelper.checkCollectionInBlacklist(null, new HashSet<>(Collections.singletonList("a*")));
+        SearchHelper.checkCollectionInBlacklist(null, new HashSet<>(Collections.singletonList("a*")), ".");
     }
 
     /**
@@ -511,7 +512,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void checkCollectionInBlacklist_shouldThrowIllegalArgumentExceptionIfBlacklistIsNull() throws Exception {
-        SearchHelper.checkCollectionInBlacklist("a", null);
+        SearchHelper.checkCollectionInBlacklist("a", null, ".");
     }
 
     /**

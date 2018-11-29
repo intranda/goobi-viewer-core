@@ -587,7 +587,7 @@ public class BrowseBean implements Serializable {
             return null;
         }
         String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true,
-                DataManager.getInstance().getConfiguration().getSplittingCharacter(), BeanUtils.getLocale());
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
         url = url.replace("http://localhost:8082/viewer/", "");
         return "pretty:" + url;
     }
@@ -623,7 +623,6 @@ public class BrowseBean implements Serializable {
      *
      * @param collectionField
      * @param facetField
-     * @param sortField
      */
     public void initializeCollection(final String collectionField, final String facetField) {
         logger.trace("initializeCollection: {}", collectionField);
@@ -631,7 +630,8 @@ public class BrowseBean implements Serializable {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true);
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
         }));

@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
@@ -130,6 +131,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         CMSPageLanguageVersion german = new CMSPageLanguageVersion();
         german.setLanguage("de");
+        german.setStatus(CMSPageStatus.FINISHED);
         page.addLanguageVersion(german);
         CMSPageLanguageVersion global = new CMSPageLanguageVersion();
         global.setLanguage("global");

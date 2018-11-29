@@ -317,6 +317,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     public String getQueryEscapedLink() {
         String escapedValue = getEscapedValue(value);
+        String field = SearchHelper.facetifyField(this.field);
         if (hierarchial) {
             return new StringBuilder("(").append(field)
                     .append(':')
