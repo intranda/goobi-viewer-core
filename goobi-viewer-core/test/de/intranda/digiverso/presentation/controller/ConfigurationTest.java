@@ -707,7 +707,9 @@ public class ConfigurationTest {
      */
     @Test
     public void getCollectionSplittingChar_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
+        Assert.assertEquals("/", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar("MD_KNOWLEDGEFIELD"));
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DOCTYPE));
     }
 
     /**

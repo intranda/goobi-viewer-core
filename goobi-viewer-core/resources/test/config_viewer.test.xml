@@ -462,7 +462,7 @@
 		<collection field="DC">
 		
             <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
-            <splittingCharacter>.</splittingCharacter>
+            <splittingCharacter>/</splittingCharacter>
 		
 			<!-- In the following section you can define an index field that is used 
 				for default sorting when opening. Only non-multivalued fields may be used! -->
