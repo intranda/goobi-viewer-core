@@ -441,7 +441,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (!values.isEmpty()) {
             return values.get(0);
         } else if(!fieldName.contains("_LANG_")){
-            return  getMetadataValue(fieldName + "LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+            return  getMetadataValue(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return null;
@@ -458,7 +458,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (values != null) {
             return values;
         } else if(!fieldName.contains("_LANG_")){
-            return  getMetadataValues(fieldName + "LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+            return  getMetadataValues(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return Collections.emptyList();
