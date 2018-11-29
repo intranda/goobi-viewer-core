@@ -92,7 +92,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         RSS,
         SEARCH,
         GLOSSARY,
-        COMPONENT;
+        COMPONENT,
+        TAGS;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type

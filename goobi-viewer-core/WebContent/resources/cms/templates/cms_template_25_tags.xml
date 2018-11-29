@@ -7,6 +7,6 @@
     
     <content>
         <item id="text" order="1" label="Text" type="HTML" />
-<!--         <item id="tags" order="2" label="Tags" type="TAGS" /> -->
+        <item id="tags" order="2" label="Tags" type="TAGS" />
     </content>
 </cms_page_template>

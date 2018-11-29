@@ -16,10 +16,9 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('cmssearchlist', false, false, true)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
-<!-- 			<f:event type="preRenderView" listener="#{searchBean.updateBreadcrumbsForSearchHits}" /> -->
-            <f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
 		</f:metadata>
 	</ui:define>
 
