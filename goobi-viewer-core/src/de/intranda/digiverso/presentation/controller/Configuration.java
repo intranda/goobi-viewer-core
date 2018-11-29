@@ -704,10 +704,10 @@ public final class Configuration extends AbstractConfiguration {
     public String getCollectionSplittingChar(String field) {
         HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
         if (subConfig != null) {
-            return subConfig.getString("defaultBrowseIcon", ".");
+            return subConfig.getString("splittingCharacter", ".");
         }
 
-        return null;
+        return getLocalString("viewer.splittingCharacter", ".");
     }
 
     /**
