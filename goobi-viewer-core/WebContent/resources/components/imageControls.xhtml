@@ -65,7 +65,7 @@
                 <div class="image-controls__actions">
                     <ul>
                         <!-- START -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.multiPageRecord}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2}">
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow gt 1}">
@@ -146,29 +146,33 @@
                                     </ui:fragment>                                    
                                 </li>
                             </ui:fragment>
-                            <!-- SELECT TEXT -->
-                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
-                                <li class="image-controls__action select-text">
-                                    <span>#{msg.pageSelectDropdown}</span>
+                            
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2}">
+                                <!-- SELECT TEXT -->
+                                <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
+                                    <li class="image-controls__action select-text">
+                                        <span>#{msg.pageSelectDropdown}</span>
+                                    </li>
+                                </ui:fragment>
+                                <!-- SELECT -->
+                                <li class="image-controls__action select">
+                                    <div class="form-control__select">
+                                        <!-- Image view select -->
+                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
+                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+                                            value="#{activeDocumentBean.viewManager.dropdownSelected}" styleClass="form-control">
+                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                        </h:selectOneMenu>
+                                        <!-- Full-text view select -->
+                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
+                                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+                                            value="#{activeDocumentBean.viewManager.dropdownSelected}" styleClass="form-control">
+                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                                        </h:selectOneMenu>
+                                    </div>
                                 </li>
                             </ui:fragment>
-                            <!-- SELECT -->
-                            <li class="image-controls__action select">
-                                <div class="form-control__select">
-                                    <!-- Image view select -->
-                                    <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
-                                        onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
-                                        value="#{activeDocumentBean.viewManager.dropdownSelected}" styleClass="form-control">
-                                        <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
-                                    </h:selectOneMenu>
-                                    <!-- Full-text view select -->
-                                    <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
-                                        onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
-                                        value="#{activeDocumentBean.viewManager.dropdownSelected}" styleClass="form-control">
-                                        <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
-                                    </h:selectOneMenu>
-                                </div>
-                            </li>
+                            
                             <!-- FORWARD -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
@@ -233,7 +237,7 @@
                                 </ui:fragment>
                             </ui:fragment>
                             <!-- END -->
-                            <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+                            <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold) and activeDocumentBean.viewManager.imagesCount gt 2}">
                                 <li class="image-controls__action end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
                                         <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
