@@ -391,8 +391,14 @@ public final class SearchHelper {
             sbQuery.append(getDocstrctWhitelistFilterSuffix());
         }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-        sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(
-                value + separatorString + "*)");
+        sbQuery.append(" AND (")
+                .append(luceneField)
+                .append(":")
+                .append(value)
+                .append(" OR ")
+                .append(luceneField)
+                .append(":")
+                .append(value + separatorString + "*)");
         Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -553,32 +559,34 @@ public final class SearchHelper {
                     if (fieldList != null) {
                         for (Object o : fieldList) {
                             String dc = SolrSearchIndex.getAsString(o);
-                            //                            String dc = (String) o;
-                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
-                                continue;
-                            }
-                            {
-                                Long count = ret.get(dc);
-                                if (count == null) {
-                                    count = 0L;
+                            if (StringUtils.isNotBlank(dc)) {
+                                //                            String dc = (String) o;
+                                if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
+                                    continue;
                                 }
-                                count++;
-                                ret.put(dc, count);
-                                dcDoneForThisRecord.add(dc);
-                            }
+                                {
+                                    Long count = ret.get(dc);
+                                    if (count == null) {
+                                        count = 0L;
+                                    }
+                                    count++;
+                                    ret.put(dc, count);
+                                    dcDoneForThisRecord.add(dc);
+                                }
 
-                            if (dc.contains(splittingChar)) {
-                                String parent = dc;
-                                while (parent.lastIndexOf(splittingChar) != -1) {
-                                    parent = parent.substring(0, parent.lastIndexOf(splittingChar));
-                                    if (!dcDoneForThisRecord.contains(parent)) {
-                                        Long count = ret.get(parent);
-                                        if (count == null) {
-                                            count = 0L;
+                                if (dc.contains(splittingChar)) {
+                                    String parent = dc;
+                                    while (parent.lastIndexOf(splittingChar) != -1) {
+                                        parent = parent.substring(0, parent.lastIndexOf(splittingChar));
+                                        if (!dcDoneForThisRecord.contains(parent)) {
+                                            Long count = ret.get(parent);
+                                            if (count == null) {
+                                                count = 0L;
+                                            }
+                                            count++;
+                                            ret.put(parent, count);
+                                            dcDoneForThisRecord.add(parent);
                                         }
-                                        count++;
-                                        ret.put(parent, count);
-                                        dcDoneForThisRecord.add(parent);
                                     }
                                 }
                             }
@@ -649,8 +657,9 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
-                getFieldStatistics);
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -714,8 +723,9 @@ public final class SearchHelper {
                 }
                 sbQuery.append(getAllSuffixes(true));
                 logger.debug("Autocomplete query: {}", sbQuery.toString());
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 100, null,
-                        Collections.singletonList(SolrConstants.DEFAULT));
+                SolrDocumentList hits = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
                 for (SolrDocument doc : hits) {
                     String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
                     if (StringUtils.isNotEmpty(defaultValue)) {
@@ -1178,8 +1188,8 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">").replace(PLACEHOLDER_HIGHLIGHTING_END,
-                "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
+                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
     }
 
     /**
@@ -1296,8 +1306,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                facetMinCount, facetPrefix, false);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
