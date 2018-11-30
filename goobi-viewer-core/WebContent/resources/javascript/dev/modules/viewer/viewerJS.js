@@ -363,7 +363,9 @@ var viewerJS = ( function() {
                             viewerJS.tinyMce.overview();
                         }
                         
-                        viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                        if ( $( '.tinyMCE' ).length > 0 ) {
+                        	viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                        }
                         break;
                 }
             } );
