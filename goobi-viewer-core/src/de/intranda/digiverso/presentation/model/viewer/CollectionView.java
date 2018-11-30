@@ -40,8 +40,8 @@ public class CollectionView {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionView.class);
 
-    private List<HierarchicalBrowseDcElement> completeCollectionList;
-    private List<HierarchicalBrowseDcElement> visibleCollectionList;
+    private List<HierarchicalBrowseDcElement> completeCollectionList = new ArrayList<>();
+    private List<HierarchicalBrowseDcElement> visibleCollectionList = new ArrayList<>();
 
     private final String field;
     private final String splittingChar;
