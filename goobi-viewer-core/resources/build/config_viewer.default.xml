@@ -886,13 +886,67 @@
 			</template>
 		</sideBarMetadataList>
 		
-        <normdataList>
-            <template name="_DEFAULT">
-                <field>NORM_IDENTIFIER</field>
-                <field>NORM_NAME</field>
-                <field>NORM_ALTNAME</field>
-            </template>
-        </normdataList>
+
+		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
+		<normdataList>
+			<template name="_DEFAULT">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_TITLE</field>
+				<field>NORM_OTHERTITLE</field>
+				<field>NORM_EXPLANATORYTEXT</field>
+				<field>NORM_PERIOD</field>
+				<field>NORM_PRODUCTIONPERIOD</field>
+				<field>NORM_CONTRIBUTOR</field>
+				<field>NORM_OWNER</field>
+				<field>NORM_COLLECTOR</field>
+				<field>NORM_WORK</field>
+				<field>NORM_RELATIONSHIP</field>
+				<field>URI</field>
+			</template>
+			<template name="PERSON">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_NAME</field>
+				<field>NORM_LIFEPERIOD</field>
+				<field>NORM_LIFEPERIODEXACT</field>
+				<field>NORM_PROFESSION</field>
+				<field>NORM_EDUCATION</field>
+				<field>NORM_FUNCTION</field>
+				<field>NORM_PLACEOFBIRTH</field>
+				<field>NORM_PLACEOFDEATH</field>
+				<field>NORM_SEX</field>
+				<field>NORM_LOCATION</field>
+				<field>NORM_FATHER</field>
+				<field>NORM_MOTHER</field>
+				<field>NORM_SON</field>
+				<field>NORM_ALTNAME</field>
+				<field>NORM_SOURCE</field>
+				<field>URI</field>
+			</template>
+			<template name="CORPORATION">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_ORGANIZATION</field>
+				<field>NORM_ALTNAME</field>
+				<field>NORM_EXPLANATORYTEXT</field>
+				<field>NORM_PERIOD</field>
+				<field>NORM_PARENTINSTITUTION</field>
+				<field>URI</field>
+			</template>
+			<template name="RECORD">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_TITLE</field>
+				<field>NORM_OTHERTITLE</field>
+				<field>NORM_EXPLANATORYTEXT</field>
+				<field>NORM_PERIOD</field>
+				<field>NORM_PRODUCTIONPERIOD</field>
+				<field>NORM_CONTRIBUTOR</field>
+				<field>NORM_OWNER</field>
+				<field>NORM_COLLECTOR</field>
+				<field>NORM_WORK</field>
+				<field>NORM_RELATIONSHIP</field>
+				<field>URI</field>
+			</template>
+		</normdataList>
+
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to be shown in calendar view -->
 		<calendarDocstructTypes>
@@ -1019,15 +1073,6 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
     
-            <sidebarWidgetUsage display="false">
-                <licenseText>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                </licenseText>
-            </sidebarWidgetUsage>
-    
 		<!-- overview: if false, the image view is hidden -->
 		<overview>
 			<visible>true</visible>
@@ -1099,6 +1144,18 @@
 			<!-- max length of level before it gets collapsed -->
 			<collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
 		</sidebarToc>
+
+		<!-- Show or hide the widget including download links for record and page while viewing the object-->
+		<sidebarWidgetUsage display="false">
+			<!-- You can specify any text at the top of the record links using the same mechanism as for metadata display-->
+			<licenseText>
+				<metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+					<param type="field" key="LABEL" />
+					<param type="translatedfield" key="ACCESSCONDITION" />
+				</metadata>
+			</licenseText>
+		</sidebarWidgetUsage>
+
 	</sidebar>
 
 
