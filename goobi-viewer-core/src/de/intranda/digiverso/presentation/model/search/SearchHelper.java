@@ -1727,6 +1727,8 @@ public final class SearchHelper {
                     return SolrConstants.DC;
                 case "FACET_DOCSTRCT":
                     return SolrConstants.DOCSTRCT;
+                case "FACET_SUPERDOCSTRCT":
+                    return SolrConstants.SUPERDOCSTRCT;
                 default:
                     if (fieldName.startsWith("FACET_")) {
                         return fieldName.replace("FACET_", "MD_");
