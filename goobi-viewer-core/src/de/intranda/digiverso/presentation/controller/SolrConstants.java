@@ -161,6 +161,7 @@ public class SolrConstants {
     public static final String SOURCEDOCFORMAT = "SOURCEDOCFORMAT";
     public static final String SUBTITLE = "SUBTITLE";
     public static final String SUPERDEFAULT = "SUPERDEFAULT";
+    public static final String SUPERDOCSTRCT = "SUPERDOCSTRCT";
     public static final String SUPERFULLTEXT = "SUPERFULLTEXT";
     public static final String TITLE = "MD_TITLE";
     public static final String THUMBNAIL = "THUMBNAIL";
