@@ -5407,6 +5407,9 @@ div[id*="-Modal"] .email-form .form-group {
 .user-login__external .user-login__options li {
   text-align: right;
 }
+.user-login__external .user-login__options img {
+  width: 70px;
+}
 .user-login__action .btn {
   margin: 0;
 }
