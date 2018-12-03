@@ -144,19 +144,22 @@ public class StringTools {
     public static int getLength(String s) {
         if (StringUtils.isEmpty(s)) {
             return 0;
-        } else {
-            return s.length();
         }
+        return s.length();
     }
 
     /**
-     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} 
-     * and additionally converts all linebreaks (\r\n, \r, \n) to html linebraks ({@code <br/>})
+     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} and additionally converts all linebreaks (\r\n, \r, \n) to html
+     * linebraks ({@code <br/>
+     * })
      * 
-     * @param text  the text to escape
-     * @return  the escaped string
+     * @param text the text to escape
+     * @return the escaped string
      */
     public static String escapeHtml(String text) {
+        if (text == null) {
+            return null;
+        }
         text = StringEscapeUtils.escapeHtml4(text);
         text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
         return text;
