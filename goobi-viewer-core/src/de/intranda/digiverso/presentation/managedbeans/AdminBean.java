@@ -35,7 +35,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.jdom2.xpath.XPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +42,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -991,7 +991,6 @@ public class AdminBean implements Serializable {
      * @param dataRepository
      * @param fileIdRoot
      */
-    @SuppressWarnings("unchecked")
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
         logger.debug("setRepresantativeImageStatic");
         if (StringUtils.isNotEmpty(pi)) {
@@ -1019,9 +1018,8 @@ public class AdminBean implements Serializable {
                 }
                 Document doc = FileTools.readXmlFile(sbFilePath.toString());
 
-                XPath xp = XPath.newInstance("mets:mets/mets:fileSec/mets:fileGrp/mets:file");
-                xp.addNamespace(nsMets);
-                List<Element> eleFileList = (List<Element>) xp.selectNodes(doc);
+                List<Element> eleFileList =
+                        XmlTools.evaluateToElements("mets:fileSec/mets:fileGrp/mets:file", doc.getRootElement(), Collections.singletonList(nsMets));
                 if (eleFileList != null) {
                     for (Element eleFile : eleFileList) {
                         String id = eleFile.getAttributeValue("ID");
