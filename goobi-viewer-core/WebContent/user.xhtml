@@ -116,7 +116,7 @@
                                                 <ui:repeat var="provider" value="#{userBean.getProvidersOfType('userpassword')}">
                                                     <li>
                                                         <h:commandLink action="#{userBean.login}">
-                                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
+                                                            <img src="#{provider.imageUrl}" alt="#{provider.name}" />
                                                             <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                                         </h:commandLink>
                                                     </li>
