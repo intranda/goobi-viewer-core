@@ -391,14 +391,8 @@ public final class SearchHelper {
             sbQuery.append(getDocstrctWhitelistFilterSuffix());
         }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-        sbQuery.append(" AND (")
-                .append(luceneField)
-                .append(":")
-                .append(value)
-                .append(" OR ")
-                .append(luceneField)
-                .append(":")
-                .append(value + separatorString + "*)");
+        sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(
+                value + separatorString + "*)");
         Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -657,9 +651,8 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
+        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
+                getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -723,9 +716,8 @@ public final class SearchHelper {
                 }
                 sbQuery.append(getAllSuffixes(true));
                 logger.debug("Autocomplete query: {}", sbQuery.toString());
-                SolrDocumentList hits = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
+                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 100, null,
+                        Collections.singletonList(SolrConstants.DEFAULT));
                 for (SolrDocument doc : hits) {
                     String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
                     if (StringUtils.isNotEmpty(defaultValue)) {
@@ -1188,8 +1180,8 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
-                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">").replace(PLACEHOLDER_HIGHLIGHTING_END,
+                "</span>");
     }
 
     /**
@@ -1306,9 +1298,8 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
-        QueryResponse resp = DataManager.getInstance()
-                .getSearchIndex()
-                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
+                facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
@@ -1701,8 +1692,8 @@ public final class SearchHelper {
                     return SolrConstants.FACET_DC;
                 case SolrConstants.DOCSTRCT:
                     return "FACET_DOCSTRCT";
-                case SolrConstants.SUPERDOCSTRCT:
-                    return "FACET_SUPERDOCSTRCT";
+                //                case SolrConstants.SUPERDOCSTRCT:
+                //                    return "FACET_SUPERDOCSTRCT";
                 default:
                     if (fieldName.startsWith("MD_")) {
                         fieldName = fieldName.replace("MD_", "FACET_");
@@ -1727,8 +1718,8 @@ public final class SearchHelper {
                     return SolrConstants.DC;
                 case "FACET_DOCSTRCT":
                     return SolrConstants.DOCSTRCT;
-                case "FACET_SUPERDOCSTRCT":
-                    return SolrConstants.SUPERDOCSTRCT;
+                //                case "FACET_SUPERDOCSTRCT":
+                //                    return SolrConstants.SUPERDOCSTRCT;
                 default:
                     if (fieldName.startsWith("FACET_")) {
                         return fieldName.replace("FACET_", "MD_");
