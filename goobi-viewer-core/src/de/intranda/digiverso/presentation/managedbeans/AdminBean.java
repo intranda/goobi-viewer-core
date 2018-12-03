@@ -64,7 +64,6 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 /**
  * Administration backend functions.
  */
-@SuppressWarnings("deprecation")
 @Named
 @SessionScoped
 public class AdminBean implements Serializable {
@@ -536,13 +535,13 @@ public class AdminBean implements Serializable {
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
         List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
-        if (all.isEmpty() || all.get(0).equals(this)) {
+        if (all.isEmpty() || all.get(0).equals(this.currentLicenseType)) {
             return Collections.emptyList();
         }
 
         List<LicenseType> ret = new ArrayList<>(all.size() - 1);
         for (LicenseType licenseType : all) {
-            if (licenseType.equals(this)) {
+            if (licenseType.equals(this.currentLicenseType)) {
                 continue;
             }
             ret.add(licenseType);
@@ -894,7 +893,7 @@ public class AdminBean implements Serializable {
         return lazyModelUsers;
     }
 
-    public List<User> getPageUsers() throws DAOException {
+    public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
     }
 
@@ -905,7 +904,7 @@ public class AdminBean implements Serializable {
         return lazyModelUserGroups;
     }
 
-    public List<UserGroup> getPageUserGroups() throws DAOException {
+    public List<UserGroup> getPageUserGroups() {
         return lazyModelUserGroups.getPaginatorList();
     }
 
@@ -916,7 +915,7 @@ public class AdminBean implements Serializable {
         return lazyModelLicenseTypes;
     }
 
-    public List<LicenseType> getPageLicenseTypes() throws DAOException {
+    public List<LicenseType> getPageLicenseTypes() {
         return lazyModelLicenseTypes.getPaginatorList();
     }
 
@@ -927,7 +926,7 @@ public class AdminBean implements Serializable {
         return lazyModelIpRanges;
     }
 
-    public List<IpRange> getPageIpRanges() throws DAOException {
+    public List<IpRange> getPageIpRanges() {
         return lazyModelIpRanges.getPaginatorList();
     }
 
@@ -938,7 +937,7 @@ public class AdminBean implements Serializable {
         return lazyModelComments;
     }
 
-    public List<Comment> getPageComments() throws DAOException {
+    public List<Comment> getPageComments() {
         return lazyModelComments.getPaginatorList();
     }
 
