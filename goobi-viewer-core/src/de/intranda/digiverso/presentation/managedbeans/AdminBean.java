@@ -1017,6 +1017,10 @@ public class AdminBean implements Serializable {
                             .append(".xml");
                 }
                 Document doc = FileTools.readXmlFile(sbFilePath.toString());
+                if (doc == null || doc.getRootElement() == null) {
+                    logger.error("Invalid METS file: {}", sbFilePath.toString());
+                    return;
+                }
 
                 List<Element> eleFileList =
                         XmlTools.evaluateToElements("mets:fileSec/mets:fileGrp/mets:file", doc.getRootElement(), Collections.singletonList(nsMets));
