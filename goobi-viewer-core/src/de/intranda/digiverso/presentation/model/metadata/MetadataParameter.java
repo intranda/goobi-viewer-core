@@ -28,8 +28,6 @@ public class MetadataParameter implements Serializable {
         TRANSLATEDFIELD("translatedfield"),
         WIKIFIELD("wikifield"),
         WIKIPERSONFIELD("wikipersonfield"),
-        PPNFIELD("ppnfield"),
-        MESSAGES_KEY("messages_key"),
         LINK_MAPS("linkMaps"),
         TOPSTRUCTFIELD("topstructfield"),
         ANCHORFIELD("anchorfield"),
