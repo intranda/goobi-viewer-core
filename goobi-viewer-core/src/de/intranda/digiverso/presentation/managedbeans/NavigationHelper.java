@@ -860,7 +860,7 @@ public class NavigationHelper implements Serializable {
         try {
             if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
                 LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
-                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
+                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()),WEIGHT_SEARCH_RESULTS);
                 tempBreadcrumbs.add(0, link);
             }
         } catch (PresentationException | IndexUnreachableException e) {
@@ -883,7 +883,7 @@ public class NavigationHelper implements Serializable {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
-            LabeledLink pageLink = new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(), currentPage.getPageUrl(), 0);
+            LabeledLink pageLink = new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(), currentPage.getPageUrl(), WEIGHT_BROWSE);
             tempBreadcrumbs.add(0, pageLink);
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {

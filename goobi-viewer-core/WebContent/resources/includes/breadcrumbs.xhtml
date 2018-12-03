@@ -21,7 +21,7 @@
     						<span>#{msg.breadcrumbStartText}:</span>
     					</li>
     					<ui:repeat value="#{navigationHelper.breadcrumbs}" var="breadcrumb" varStatus="status">
-<!--     						<span class="testbc"> -->
+    						<span class="testbc">
                             <h:panelGroup rendered="#{!status.last and breadcrumb.link}">
     							<li class="breadcrumbs__crumb">
     								<a href="#{breadcrumb.url}">#{msg[breadcrumb.name]}</a>
@@ -32,7 +32,7 @@
     								<span>#{msg[breadcrumb.name]}</span>
     							</li>
     						</h:panelGroup>
-<!--                             </span> -->
+                            </span>
     					</ui:repeat>
     				</ul>                    
                 </nav>

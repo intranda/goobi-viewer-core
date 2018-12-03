@@ -186,7 +186,7 @@ var viewerJS = ( function() {
         } );
         
         viewer.loadThumbnails();
-        
+         
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
