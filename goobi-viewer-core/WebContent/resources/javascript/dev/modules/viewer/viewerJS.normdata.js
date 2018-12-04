@@ -202,7 +202,7 @@ var viewerJS = ( function( viewer ) {
                         html += _defaults.path;
                         html += '/rest/normdata/get/';
                         html += _unicodeEscapeUri(v.url);
-                        html += '/de/'; // TODO use navigationHelper.localeString
+                        html += '/_DEFAULT/de/'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
                         html += '<i class="fa fa-list-ul" aria-hidden="true"></i>';
                         html += '<div class="normdata-preloader"></div>';
