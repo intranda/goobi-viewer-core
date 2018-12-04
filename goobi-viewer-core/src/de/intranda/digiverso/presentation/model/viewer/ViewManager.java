@@ -1363,7 +1363,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private boolean isBelowFulltextThreshold(int threshold) throws PresentationException, IndexUnreachableException {
+    private boolean isBelowFulltextThreshold(double threshold) throws PresentationException, IndexUnreachableException {
         if (pagesWithFulltext == null) {
             
             pagesWithFulltext = DataManager.getInstance()
@@ -1391,12 +1391,12 @@ public class ViewManager implements Serializable {
     
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
-        return access && (!isBelowFulltextThreshold(1) || isAltoAvailableForWork());
+        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
     
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
-        return access && (!isBelowFulltextThreshold(1) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
     }
     
     public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
