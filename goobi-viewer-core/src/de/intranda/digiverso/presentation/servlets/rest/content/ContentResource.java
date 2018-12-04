@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -651,7 +652,7 @@ public class ContentResource {
                 .map(Title::new)
                 .ifPresent(title -> header.setTitle(title));
 
-        List<String> authors = solrDoc.getFieldValues("MD_AUTHOR").stream().map(Object::toString).collect(Collectors.toList());
+        List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR")).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
         for (String name : authors) {
             if (name.contains(",")) {
                 String[] parts = name.split(",");
