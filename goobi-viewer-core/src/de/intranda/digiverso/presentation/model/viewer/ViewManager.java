@@ -128,6 +128,7 @@ public class ViewManager implements Serializable {
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
     private Boolean workHasAlto = null;
+    private Boolean workHasTEIFiles = null;
 
     /**
      * 
@@ -991,6 +992,31 @@ public class ViewManager implements Serializable {
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
     }
+    
+    /**
+     * Return the url to a REST service delivering a TEI document containing the text of all pages
+     *     
+     * @return  the TEI REST url 
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     */
+    public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + BeanUtils.getLocale().getLanguage();
+    }
+    
+    /**
+     * Return the url to a REST service delivering the fulltext of the current page as TEI 
+     * 
+     * @return the TEI REST url
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/" + BeanUtils.getLocale().getLanguage();
+
+    }
 
     /**
      * Return the url to a REST service delivering the alto file of the given page as xml
@@ -1325,7 +1351,7 @@ public class ViewManager implements Serializable {
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         if (belowFulltextThreshold == null) {
-
+            
             long pagesWithFulltext = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -1350,11 +1376,60 @@ public class ViewManager implements Serializable {
 
         return belowFulltextThreshold;
     }
+    
+    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+        return access && !isBelowFulltextThreshold();
+    }
+    
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+        return access && (!isBelowFulltextThreshold() || isWorkHasTEIFiles());
+    }
+    
+    public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
+        return isFulltextAvailableForPage();
+    }
 
-    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException {
+    /**
+     * @return  true if there are any TEI files associated directly with the top document
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
+     */
+    private boolean isWorkHasTEIFiles() throws IndexUnreachableException, PresentationException {
+        if (workHasTEIFiles == null) {
+
+            long teiDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" + ")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":")
+                            .append(SolrConstants.DOCSTRCT)
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_TEI)
+                            .append(":*")
+                            .toString());
+            int threshold = 1;
+            logger.trace("{} of pages have tei", teiDocs);
+            if (teiDocs < threshold) {
+                workHasTEIFiles = false;
+            } else {
+                workHasTEIFiles = true;
+            }
+        }
+
+        return workHasTEIFiles;
+    }
+
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+        if(!access) {
+            return false;
+        }
         if (workHasAlto == null) {
-
-            ;
 
             long pagesWithAlto = DataManager.getInstance()
                     .getSearchIndex()
@@ -2218,4 +2293,5 @@ public class ViewManager implements Serializable {
             return "";
         }
     }
+
 }

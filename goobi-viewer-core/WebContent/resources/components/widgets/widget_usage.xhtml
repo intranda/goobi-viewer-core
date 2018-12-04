@@ -58,7 +58,7 @@
                     </ui:fragment>
     
                     <!-- FULLTEXT (WORK) -->
-                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextAvailableForWork}">
                         <a 
                             href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
                             id="textWork" 
@@ -66,6 +66,18 @@
                             title="#{msg.downloadWorkFulltext}"
                             target="_blank">
                             #{msg.FULLEXT}
+                        </a>
+                    </ui:fragment>
+                    
+                    <!-- TEI (WORK) -->
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.teiAvailableForWork }">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
+                            id="textWork" 
+                            class="label label-default widget-usage__work-download-tei" 
+                            title="#{msg.downloadWorkTei}"
+                            target="_blank">
+                            #{msg.TEI}
                         </a>
                     </ui:fragment>
     
@@ -147,6 +159,18 @@
                             title="#{msg.downloadPageFulltext}" 
                             target="_blank">
                             #{msg.FULLEXT}
+                        </a>
+                    </ui:fragment>
+                    
+                    <!-- TEI (PAGE) -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
+                        <a 
+                            href="#{activeDocumentBean.viewManager.teiUrl}"
+                            id="textPage" 
+                            class="label label-default widget-usage__page-download-tei" 
+                            title="#{msg.downloadPageTei}" 
+                            target="_blank">
+                            #{msg.TEI}
                         </a>
                     </ui:fragment>
     
