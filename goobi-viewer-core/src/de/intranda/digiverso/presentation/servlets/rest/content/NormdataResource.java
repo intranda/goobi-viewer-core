@@ -138,26 +138,36 @@ public class NormdataResource {
 
             JSONArray jsonArray = new JSONArray();
 
-            if ("_DEFAULT".equals(template) || "_ALL".equals(template)) {
-                // Explorative mode to return all available fields
+            // Explorative mode to return all available fields
+            if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
                 for (NormData normData : normDataList) {
                     jsonArray.add(addNormDataValuesToJSON(normData, locale));
                 }
-            } else {
-                for (String field : DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template)) {
-                    for (NormData normData : normDataList) {
-                        if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
-                            continue;
-                        }
-                        jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                return jsonArray.toJSONString();
+            }
+
+            List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
+            // Missing template config - add all fields
+            if (normdataFields.isEmpty()) {
+                for (NormData normData : normDataList) {
+                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
+                }
+                return jsonArray.toJSONString();
+            }
+            // Use template config
+            for (String field : normdataFields) {
+                for (NormData normData : normDataList) {
+                    if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
+                        continue;
                     }
+                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
                 }
             }
-            //            jsonArray.add(jsonObj);
             return jsonArray.toJSONString();
         }
 
         throw new ContentNotFoundException("Resource not found");
+
     }
 
     @SuppressWarnings("unchecked")
