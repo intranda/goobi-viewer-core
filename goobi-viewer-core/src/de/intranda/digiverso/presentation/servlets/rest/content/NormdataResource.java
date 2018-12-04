@@ -215,6 +215,6 @@ public class NormdataResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public String getNormData(@PathParam("url") String url, @PathParam("lang") String lang)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
-        return getNormData(url, null, lang);
+        return getNormData(url, "_DEFAULT", lang);
     }
 }
