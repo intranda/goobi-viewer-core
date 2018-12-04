@@ -106,7 +106,9 @@ public class NavigationHelper implements Serializable {
 
     private static final String HOME_PAGE = "index";
     private static final String SEARCH_PAGE = "search";
+    private static final String SEARCH_TERM_LIST_PAGE = "searchTermList";
     private static final String BROWSE_PAGE = "browse";
+    private static final String TAGS_PAGE = "tags";
 
     private Locale locale = Locale.ENGLISH;
 
@@ -254,30 +256,29 @@ public class NavigationHelper implements Serializable {
     }
 
     public void setCurrentPageIndex() {
-        setCurrentPage("index", true, true);
+        setCurrentPage(HOME_PAGE, true, true);
     }
 
     public void setCurrentPageSearch() {
-        setCurrentPage("search", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("search", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search/", NavigationHelper.WEIGHT_SEARCH));
+        setCurrentPage(SEARCH_PAGE, true, true);
+        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/",
+                NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
-        setCurrentPage("browse", true, true);
-        updateBreadcrumbs(new LabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
-                NavigationHelper.WEIGHT_BROWSE));
-    }
-    
-    public void setCurrentPageBrowse(CollectionView collection) {
-        setCurrentPage("browse", true, true);
-            updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/", collection, 
-                    NavigationHelper.WEIGHT_BROWSE));
+        setCurrentPage(BROWSE_PAGE, true, true);
+        updateBreadcrumbs(new LabeledLink("browseCollection",
+                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/", NavigationHelper.WEIGHT_BROWSE));
     }
 
+    public void setCurrentPageBrowse(CollectionView collection) {
+        setCurrentPage(BROWSE_PAGE, true, true);
+        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
+                collection, NavigationHelper.WEIGHT_BROWSE));
+    }
 
     public void setCurrentPageTags() {
-        setCurrentPage("tags", true, true);
+        setCurrentPage(TAGS_PAGE, true, true);
         updateBreadcrumbs(
                 new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/", NavigationHelper.WEIGHT_TAG_CLOUD));
     }
@@ -317,7 +318,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public void setCurrentPageSearchTermList() {
-        setCurrentPage("searchTermList", false, true);
+        setCurrentPage(SEARCH_TERM_LIST_PAGE, false, true);
     }
 
     public void resetCurrentPage() {
@@ -825,7 +826,7 @@ public class NavigationHelper implements Serializable {
         List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
         List<LabeledLink> flattenedLinks = new ArrayList<>();
         for (LabeledLink labeledLink : baseLinks) {
-            if(labeledLink instanceof CompoundLabeledLink) {
+            if (labeledLink instanceof CompoundLabeledLink) {
                 flattenedLinks.addAll(((CompoundLabeledLink) labeledLink).getSubLinks());
             } else {
                 flattenedLinks.add(labeledLink);
@@ -860,7 +861,7 @@ public class NavigationHelper implements Serializable {
         try {
             if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
                 LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
-                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()),WEIGHT_SEARCH_RESULTS);
+                        cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
                 tempBreadcrumbs.add(0, link);
             }
         } catch (PresentationException | IndexUnreachableException e) {
@@ -875,7 +876,9 @@ public class NavigationHelper implements Serializable {
             linkedPages.add(currentPage);
             if (DataManager.getInstance()
                     .getDao()
-                    .getStaticPageForCMSPage(currentPage).stream().findFirst()
+                    .getStaticPageForCMSPage(currentPage)
+                    .stream()
+                    .findFirst()
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {
@@ -883,7 +886,9 @@ public class NavigationHelper implements Serializable {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
-            LabeledLink pageLink = new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(), currentPage.getPageUrl(), WEIGHT_BROWSE);
+            LabeledLink pageLink =
+                    new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
+                            currentPage.getPageUrl(), WEIGHT_BROWSE);
             tempBreadcrumbs.add(0, pageLink);
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
@@ -1120,6 +1125,26 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * Checks whether to display a noindex meta tag on the current page.
+     * 
+     * @return true for a set of current page values; false otherwise
+     */
+    public boolean isDisplayNoIndexMetaTag() {
+        if (this.currentPage == null) {
+            return false;
+        }
+        
+        switch (this.currentPage) {
+            case SEARCH_PAGE:
+            case TAGS_PAGE:
+            case SEARCH_TERM_LIST_PAGE:
+                return true;
+        }
+        
+        return false;
+    }
+
+    /**
      * Checks if the current page displays document information, solely based on the String getCurrentPage() The Pages for which this method should
      * return true are set in the PageType class.
      *
@@ -1216,12 +1241,12 @@ public class NavigationHelper implements Serializable {
      */
     public String getThemeOrSubtheme() {
         String currentTheme = getTheme();
-        try {                
-            String discriminatorValue =  getSubThemeDiscriminatorValue();
+        try {
+            String discriminatorValue = getSubThemeDiscriminatorValue();
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 currentTheme = discriminatorValue;
             }
-        } catch(IndexUnreachableException e) {
+        } catch (IndexUnreachableException e) {
             logger.error("Cannot read current subtheme", e);
         }
         return currentTheme;
