@@ -58,7 +58,7 @@
                     </ui:fragment>
     
                     <!-- FULLTEXT (WORK) -->
-                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextAvailableForWork}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
                         <a 
                             href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
                             id="textWork" 
@@ -70,7 +70,7 @@
                     </ui:fragment>
                     
                     <!-- TEI (WORK) -->
-                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.teiAvailableForWork }">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork }">
                         <a 
                             href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
                             id="textWork" 
