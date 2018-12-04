@@ -18,14 +18,11 @@ package de.intranda.digiverso.presentation.dao.impl;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -47,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
@@ -1480,6 +1476,7 @@ public class JPADAO implements IDAO {
      * @return
      * @throws DAOException
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<Integer> getPagesWithComments(String pi) throws DAOException {
         preQuery();
@@ -2492,6 +2489,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean updateFromDatabase(Long id, Class clazz) {
         Object o = null;
         try {
@@ -3122,6 +3120,7 @@ public class JPADAO implements IDAO {
     /**
      * 
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
         preQuery();
@@ -3181,15 +3180,6 @@ public class JPADAO implements IDAO {
             return Optional.empty();
         }
         return Optional.ofNullable((T) results.get(0));
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
-     */
-    @Override
-    public void detach(Object object) throws DAOException {
-        preQuery();
-        em.detach(object);
     }
 
     /* (non-Javadoc)

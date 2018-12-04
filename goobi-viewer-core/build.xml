@@ -255,6 +255,21 @@
         <echo>Alles ist gut!</echo>
     </target>
 
+    <target name="jar-internal" depends="compile" description="Builds JAR file as a build dependency for modules without unit tests...">
+        <jar destfile="${dir.build}/viewer.jar" basedir="${dir.build.classes}">
+        </jar>
+
+        <delete dir="${dir.build}/WEB-INF" />
+        <delete dir="${dir.tests.classes}" />
+        <delete>
+            <fileset dir="${dir.build}">
+                <exclude name="*.jar" />
+            </fileset>
+        </delete>
+        <echo>Alles ist gut!</echo>
+    </target>
+
+
 	<!-- Build of war file for viewertest deploy-->
 	<target name="war-internal" depends="compile, resources, prepareConfig, customModifications" description="Build of war file for viewertest deploy">
 		<!-- replace custom faces and pretty config path in web.xml -->
