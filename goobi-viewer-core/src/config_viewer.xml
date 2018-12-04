@@ -1022,7 +1022,7 @@
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view (for _ALL or specific docstruct types) -->
-		<useTreeView showDocStructs="_ALL">true</useTreeView>
+		<useTreeView showDocStructs="_ALL">false</useTreeView>
 	</toc>
 
 	<tagclouds>
