@@ -322,11 +322,6 @@ public interface IDAO {
 
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
 
-    @Deprecated
-    public default void detach(Object object) throws DAOException {
-        //noop
-    }
-
     // Transkribus
 
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException;

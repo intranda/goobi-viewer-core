@@ -147,6 +147,7 @@ public class TestUtils {
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#getSessionContext()
          */
+        @SuppressWarnings("deprecation")
         @Override
         public HttpSessionContext getSessionContext() {
             return null;
