@@ -23,6 +23,31 @@
                 
                 <!-- WORK DOWNLOADS -->
                 <div class="widget-usage__work-downloads">
+                
+                    <!-- DFG Viewer -->
+                    <ui:fragment
+                        rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
+                       <a 
+                            href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+                            id="dfgViewer" 
+                            class="label label-default widget-usage__work-link-dfg-viewer" 
+                            title="#{msg.dfgViewerLink}" 
+                            target="_blank"> 
+                           #{msg.dfgViewerLink}
+                        </a>     
+                       
+                    </ui:fragment>
+
+                    <!-- OPAC -->
+                    <ui:fragment
+                        rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+                        <a href="#{activeDocumentBean.viewManager.opacUrl}"
+                            id="opac"
+                            class="label label-default widget-usage__work-link-opac" 
+                            title="#{msg.opacLink}" 
+                            target="_blank"> #{msg.opacLink} </a>
+                    </ui:fragment>
+                
                     <!-- METS/LIDO -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
                         <a 

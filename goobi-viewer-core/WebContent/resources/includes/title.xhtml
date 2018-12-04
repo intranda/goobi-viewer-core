@@ -47,51 +47,6 @@
                             <div id="downloadWrapper" class="text-right">
                                 <nav>
                                     <ul class="list list--horizontal">
-                                        <!-- PDF DOWNLOAD -->
-                                        <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
-                                            <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
-                                                <li>
-                                                    <a href="#{activeDocumentBean.viewManager.pdfDownloadLink}" data-toggle="tooltip" data-placement="top" title="#{msg.pdfDownloadTitle}"
-                                                        target="_blank">
-                                                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>                                                
-                                                    </a>
-                                                </li>
-                                            </h:panelGroup>
-                                            <h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
-                                                <li>
-                                                    <button
-                                                    	type="button" 
-                                                        class="btn btn--icon download-modal" 
-                                                        data-toggle="tooltip"
-                                                        data-placement="top" 
-                                                        data-type="pdf" 
-                                                        data-title="#{activeDocumentBean.titleBarLabel}"
-                                                        data-id="" 
-                                                        data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                                        title="#{msg.pdfDownloadTitle}">
-                                                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                                    </button>
-                                                </li>
-                                            </h:panelGroup>
-                                        </h:panelGroup>
-            
-                                        <!-- EPUB DOWNLOAD -->
-                                        <h:panelGroup rendered="#{activeDocumentBean.accessPermissionEpub}">
-                                            <li>
-                                                <button
-                                                	type="button"
-                                                   	class="btn btn--icon download-modal" 
-                                                    data-toggle="tooltip"
-                                                    data-placement="top"
-                                                    data-type="epub" 
-                                                    data-title="#{activeDocumentBean.titleBarLabel}"
-                                                    data-id="" 
-                                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
-                                                    title="#{msg.epubDownload}"> 
-                                                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                </button>
-                                            </li>
-                                        </h:panelGroup>
                                         
                                          <!-- TOC DOWNLOAD -->
                                         <h:panelGroup rendered="#{configurationBean.docHierarchyPdfEnabled}">
