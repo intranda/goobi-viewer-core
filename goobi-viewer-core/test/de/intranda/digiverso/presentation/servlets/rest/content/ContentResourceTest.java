@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -183,7 +183,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             } catch (IOException e) {
                 throw new IllegalStateException(e);
             }
-        }).map(list -> StringUtils.join(list)).collect(Collectors.toList());
+        }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
         
         Assert.assertEquals(8, content.size(), 0);
         
@@ -205,7 +205,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             } catch (IOException e) {
                 throw new IllegalStateException(e);
             }
-        }).map(list -> StringUtils.join(list)).collect(Collectors.toList());
+        }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
         
         Assert.assertEquals(8, content.size(), 0);
         
