@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +44,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
@@ -125,17 +125,10 @@ public class ContentResource {
     public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
-        }
+        setResponseHeader("");
+        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         if ("-".equals(dataRepository)) {
             dataRepository = null;
-        }
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
         }
 
         java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), contentFolder, pi, fileName);
@@ -171,33 +164,15 @@ public class ContentResource {
     public StreamingOutput getAltoDocument(@PathParam("pi") String pi)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
 
-        boolean access =
-                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
+        setResponseHeader(pi + ".zip");
+        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + pi + ".zip\"");
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        java.nio.file.Path filePath;
-        if (StringUtils.isNotBlank(dataRepository)) {
-            filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
-        } else {
-            filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                    DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
-        }
-
-        logger.trace(filePath.toString());
+        java.nio.file.Path altoPath = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(), null, null);
+        java.nio.file.Path altoPathCrowd = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd", null, null);
 
         try {
-            List<File> altoFilePaths = Files.list(filePath)
-                    .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.(xml|alto)"))
-                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                    .map(p -> p.toFile())
-                    .collect(Collectors.toList());
+            List<File> altoFilePaths =
+                    getFiles(altoPathCrowd, altoPath, "(?i).*\\.(alto|xml)").stream().map(java.nio.file.Path::toFile).collect(Collectors.toList());
 
             File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_alto.zip");
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
@@ -218,7 +193,6 @@ public class ContentResource {
         } catch (IOException e) {
             throw new ContentNotFoundException("Resource not found or not accessible", e);
         }
-
     }
 
     /**
@@ -239,20 +213,13 @@ public class ContentResource {
     @Produces({ MediaType.APPLICATION_XML })
     public String getAltoDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
             IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
 
-        logger.trace(filePath);
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
+        setResponseHeader("");
+        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
-        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        java.nio.file.Path file = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+                DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
+
         if (file != null && Files.isRegularFile(file)) {
             try {
                 Document doc = FileTools.readXmlFile(file);
@@ -267,6 +234,54 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws IOException
+     * @throws ContentNotFoundException
+     * @throws ServiceNotAllowedException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/fulltext/{pi}")
+    @Produces({ "application/zip" })
+    public StreamingOutput getFulltextDocument(@PathParam("pi") String pi)
+            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, IOException {
+
+        setResponseHeader(pi + ".zip");
+        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+
+        Map<java.nio.file.Path, String> fileMap = getFulltext(pi);
+
+        try {
+
+            File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
+            if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
+                throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
+            }
+
+            FileTools.compressZipFile(fileMap, tempFile, 9);
+            return (out) -> {
+                try (FileInputStream in = new FileInputStream(tempFile)) {
+                    FileTools.copyStream(out, in);
+                    //                  IOUtils.copyLarge(in, out);   
+                } finally {
+                    out.flush();
+                    out.close();
+                }
+            };
+
+        } catch (IOException e) {
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
+        }
 
     }
 
@@ -288,144 +303,11 @@ public class ContentResource {
     @Produces({ MediaType.TEXT_HTML })
     public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
             IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
+        setResponseHeader("");
+        checkAccess(pi, fileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
 
-        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
-        ;
-        if (file != null && Files.isRegularFile(file)) {
-            try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
-        } else {
-            file = getAltoFile(pi, fileName.replace(".txt", ".xml"), dataRepository);
-            if (file != null && Files.isRegularFile(file)) {
-                try {
-                    AltoDocument alto = AltoDocument.getDocumentFromFile(file.toFile());
-                    return alto.getContent();
-                } catch (IOException | JDOMException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
-
-        throw new ContentNotFoundException("Resource not found");
-    }
-
-    /**
-     * @param pi
-     * @param fileName
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @throws ServiceNotAllowedException
-     * @should return document correctly
-     * @should throw ContentNotFoundException if file not found
-     */
-    @GET
-    @Path("/fulltext/{pi}")
-    @Produces({ "application/zip" })
-    public StreamingOutput getFulltextDocument(@PathParam("pi") String pi)
-            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
-
-        boolean access =
-                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-        if (!access) {
-            throw new ServiceNotAllowedException("No permission found");
-        }
-
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + pi + ".zip\"");
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        java.nio.file.Path filePath;
-
-        boolean alto = false;
-        if (StringUtils.isNotBlank(dataRepository)) {
-            filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
-        } else {
-            filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                    DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
-        }
-        if (!Files.isDirectory(filePath)) {
-            alto = true;
-            if (StringUtils.isNotBlank(dataRepository)) {
-                filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
-            } else {
-                filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                        DataManager.getInstance().getConfiguration().getAltoFolder(), pi);
-            }
-        }
-
-        logger.trace(filePath.toString());
-
-        try {
-            List<File> fulltextFilePaths;
-            if (alto) {
-                fulltextFilePaths = new ArrayList<>();
-                List<java.nio.file.Path> altoFilePaths = Files.list(filePath)
-                        .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.(xml|alto)"))
-                        .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                        .collect(Collectors.toList());
-                for (java.nio.file.Path altoFile : altoFilePaths) {
-                    File tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), pi,
-                            altoFile.getFileName().toString().replaceAll("\\.(ALTO|alto|xml|XML)$", ".txt")).toFile();
-                    if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
-                        throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
-                    }
-                    AltoDocument doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
-                    String fulltext = doc.getContent();
-                    FileUtils.write(tempFile, fulltext);
-                    fulltextFilePaths.add(tempFile);
-                }
-            } else {
-                fulltextFilePaths = Files.list(filePath)
-                        .filter(p -> p.getFileName().toString().toLowerCase().matches(".*\\.txt"))
-                        .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                        .map(p -> p.toFile())
-                        .collect(Collectors.toList());
-            }
-            File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
-            if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
-                throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
-            }
-
-            FileTools.compressZipFile(fulltextFilePaths, tempFile, 9);
-            return (out) -> {
-                try (FileInputStream in = new FileInputStream(tempFile)) {
-                    FileTools.copyStream(out, in);
-                    //                  IOUtils.copyLarge(in, out);   
-                } finally {
-                    out.flush();
-                    out.close();
-                }
-            };
-
-        } catch (IOException e) {
-            throw new ContentNotFoundException("Resource not found or not accessible", e);
-        } catch (JDOMException e) {
-            throw new ContentLibException("Failed to read alto file", e);
-
-        }
-
+        return getFulltext(pi, fileName);
     }
 
     /**
@@ -447,10 +329,13 @@ public class ContentResource {
     public String getFulltextAsTEI(@PathParam("pi") String pi, @PathParam("filename") String filename, @PathParam("lang") String language)
             throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException, JDOMException {
 
+        setResponseHeader("");
+        checkAccess(pi, filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
 
-            String text = getFulltextDocument(pi, filename);
+            String text = getFulltext(pi, filename);
             HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
             text = textConverter.convert(text);
 
@@ -464,6 +349,295 @@ public class ContentResource {
             throw new ContentNotFoundException("No document found with pi " + pi);
         }
 
+    }
+
+    /**
+     * @param pi
+     * @param lang
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException * @throws DAOException
+     * @throws ContentNotFoundException
+     * @throws IOException
+     * @throws ServiceNotAllowedException
+     * @throws JDOMException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/tei/{pi}/{lang}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
+            IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException, JDOMException {
+
+        setResponseHeader("");
+        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+        java.nio.file.Path teiPath = getPath(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), null, null);
+        java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
+
+        if (filePath != null && Files.isRegularFile(filePath)) {
+
+            try {
+                Document doc = FileTools.readXmlFile(filePath);
+                return new XMLOutputter().outputString(doc);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            } catch (JDOMException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } else {
+
+            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+            if (solrDoc != null) {
+
+                Map<java.nio.file.Path, String> fulltexts = getFulltext(pi);
+
+                if (!fulltexts.isEmpty()) {
+
+                    TEIBuilder builder = new TEIBuilder();
+                    TEIHeaderBuilder header = createTEIHeader(solrDoc);
+                    HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+
+                    List<String> pages = fulltexts.values()
+                            .stream()
+                            .filter(text -> StringUtils.isNotBlank(text))
+                            .map(textConverter::convert)
+                            .collect(Collectors.toList());
+
+                    Document xmlDoc = builder.build(header, pages);
+                    return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                }
+
+            } else {
+                throw new ContentNotFoundException("No document found with pi " + pi);
+            }
+
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
+     * @param pi
+     * @param lang
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException * @throws DAOException
+     * @throws ContentNotFoundException
+     * @throws IOException
+     * @throws ServiceNotAllowedException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/cmdi/{pi}/{lang}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
+            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
+        
+        setResponseHeader("");
+        checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+        java.nio.file.Path cmdiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
+        java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
+        if (filePath != null) {
+
+            if (Files.isRegularFile(filePath)) {
+                try {
+                    Document doc = FileTools.readXmlFile(filePath);
+                    return new XMLOutputter().outputString(doc);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @param privilegeHolder
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ServiceNotAllowedException
+     */
+    public void checkAccess(String pi, String fileName, String privilegeHolder)
+            throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
+        boolean access =
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName, privilegeHolder);
+        if (!access) {
+            throw new ServiceNotAllowedException("No permission found");
+        }
+    }
+
+    /**
+     * @param pi
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ServiceNotAllowedException
+     */
+    public void checkAccess(String pi, String privilegeHolder) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeHolder, servletRequest);
+        if (!access) {
+            throw new ServiceNotAllowedException("No permission found");
+        }
+    }
+
+    /**
+     * @param pi
+     */
+    public void setResponseHeader(String filename) {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            if (StringUtils.isNotBlank(filename)) {
+                servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            }
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     */
+    public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+        java.nio.file.Path file = getPath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
+                DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
+        ;
+        if (file != null && Files.isRegularFile(file)) {
+            try {
+                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } else {
+            file = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+                    DataManager.getInstance().getConfiguration().getAltoFolder(), fileName.replaceAll("(i?)\\.txt", ".xml"));
+            if (file != null && Files.isRegularFile(file)) {
+                try {
+                    AltoDocument alto = AltoDocument.getDocumentFromFile(file.toFile());
+                    return alto.getContent();
+                } catch (IOException | JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+        throw new ContentNotFoundException("Resource not found");
+
+    }
+
+    /**
+     * @param pi
+     * @return
+     * @throws IOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public Map<java.nio.file.Path, String> getFulltext(String pi) throws IOException, PresentationException, IndexUnreachableException {
+        Map<java.nio.file.Path, String> fileMap;
+        List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
+                DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
+
+        if (!fulltextFiles.isEmpty()) {
+            fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
+                try {
+                    return FileTools.getStringFromFile(p.toFile(), Helper.DEFAULT_ENCODING);
+                } catch (IOException e) {
+                    logger.error("Error reading file " + p, e);
+                    return "";
+                }
+            }));
+        } else {
+            List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd",
+                    DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
+            fileMap = altoFiles.stream().collect(Collectors.toMap(p -> Paths.get(p.toString().replaceAll("(i?)\\.(alto|xml)", ".txt")), p -> {
+                try {
+                    return AltoDocument.getDocumentFromFile(p.toFile()).getContent();
+                } catch (IOException | JDOMException e) {
+                    logger.error("Error reading file " + p, e);
+                    return "";
+                }
+            }));
+        }
+        return fileMap;
+    }
+
+    public List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
+            throws IOException, PresentationException, IndexUnreachableException {
+
+        java.nio.file.Path folder1 = getPath(pi, foldername, null, null);
+        java.nio.file.Path folder2 = getPath(pi, altFoldername, null, null);
+
+        return getFiles(folder1, folder2, filter);
+    }
+
+    /**
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    public List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter) throws IOException {
+
+        List<java.nio.file.Path> files = new ArrayList<>();
+
+        if (folder != null && Files.isDirectory(folder)) {
+            files = Files.list(folder)
+                    .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
+                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
+                    .collect(Collectors.toList());
+        }
+
+        if (altFolder != null && Files.isDirectory(altFolder)) {
+            List<java.nio.file.Path> altFiles = Files.list(altFolder)
+                    .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
+                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
+                    .collect(Collectors.toList());
+
+            files = new ArrayList<>(Stream.of(files, altFiles)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toMap(java.nio.file.Path::getFileName, path -> path,
+                            (java.nio.file.Path path1, java.nio.file.Path path2) -> path1 == null ? path2 : path1))
+                    .values());
+        }
+        return files;
+    }
+
+    /**
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public java.nio.file.Path getPath(String pi, String foldername, String altFoldername, String filename)
+            throws PresentationException, IndexUnreachableException {
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        java.nio.file.Path filePath = Paths.get(Helper.getRepositoryPath(dataRepository), foldername, pi);
+        if (StringUtils.isNotBlank(filename)) {
+            filePath = filePath.resolve(filename);
+        }
+        if (StringUtils.isNotBlank(altFoldername) && !Files.exists(filePath)) {
+            return getPath(pi, altFoldername, null, filename);
+        }
+
+        return filePath;
     }
 
     /**
@@ -493,154 +667,6 @@ public class ContentResource {
                 .map(Identifier::new)
                 .ifPresent(id -> header.addIdentifier(id));
         return header;
-    }
-
-    /**
-     * @param pi
-     * @param lang
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
-     * @throws ContentNotFoundException
-     * @throws IOException
-     * @throws ServiceNotAllowedException
-     * @throws JDOMException 
-     * @should return document correctly
-     * @should throw ContentNotFoundException if file not found
-     */
-    @GET
-    @Path("/tei/{pi}/{lang}")
-    @Produces({ MediaType.APPLICATION_XML })
-    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException, JDOMException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path teiPath =
-                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
-        java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
-        
-        if (filePath != null && Files.isRegularFile(filePath)) {
-            boolean access =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-            if (!access) {
-                throw new ServiceNotAllowedException("No permission found");
-            }
-
-            try {
-                Document doc = FileTools.readXmlFile(filePath);
-                return new XMLOutputter().outputString(doc);
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } catch (JDOMException e) {
-                logger.error(e.getMessage(), e);
-            }
-        } else {
-            
-            SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-            if (solrDoc != null) {
- 
-                if (StringUtils.isNotBlank(dataRepository)) {
-                    filePath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
-                } else {
-                    filePath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                            DataManager.getInstance().getConfiguration().getFulltextFolder(), pi);
-                }
-
-                if(Files.isDirectory(filePath)) {
-                    
-                    boolean access =
-                            AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-                    if (!access) {
-                        throw new ServiceNotAllowedException("No permission found");
-                    }
-
-                    TEIBuilder builder = new TEIBuilder();
-                    TEIHeaderBuilder header = createTEIHeader(solrDoc);
-                    HtmlToTEIConvert textConverter = new HtmlToTEIConvert();                    
-                    
-                    List<String> pages = Files.list(filePath)
-                            .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".txt"))
-                            .map(file -> {
-                                try {
-                                    return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
-                                } catch (IOException e) {
-                                    logger.error("Error reading fulltext from " + file, e);
-                                    return "";
-                                }
-                            })
-                            .filter(text -> StringUtils.isNotBlank(text))
-                            .map(textConverter::convert)
-                            .collect(Collectors.toList());
-                    
-                    Document xmlDoc = builder.build(header, pages);
-                    return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
-                }
-                
-
-
-            } else {
-                throw new ContentNotFoundException("No document found with pi " + pi);
-            }
-            
-        }
-
-        throw new ContentNotFoundException("Resource not found");
-    }
-
-    /**
-     * @param pi
-     * @param lang
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
-     * @throws ContentNotFoundException
-     * @throws IOException
-     * @throws ServiceNotAllowedException
-     * @should return document correctly
-     * @should throw ContentNotFoundException if file not found
-     */
-    @GET
-    @Path("/cmdi/{pi}/{lang}")
-    @Produces({ MediaType.APPLICATION_XML })
-    public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
-            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path cmdiPath =
-                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
-        java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
-        if (filePath != null) {
-            boolean access =
-                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
-            if (!access) {
-                throw new ServiceNotAllowedException("No permission found");
-            }
-
-            if (Files.isRegularFile(filePath)) {
-                try {
-                    Document doc = FileTools.readXmlFile(filePath);
-                    return new XMLOutputter().outputString(doc);
-                } catch (FileNotFoundException e) {
-                    logger.debug(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (JDOMException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
-
-        throw new ContentNotFoundException("Resource not found");
     }
 
     /**

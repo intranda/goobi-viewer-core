@@ -126,8 +126,8 @@ public class ViewManager implements Serializable {
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
-    private Boolean belowFulltextThreshold = null;
-    private Boolean workHasAlto = null;
+    private Long pagesWithFulltext = null;
+    private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
 
     /**
@@ -1014,6 +1014,9 @@ public class ViewManager implements Serializable {
      */
     public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        if(StringUtils.isBlank(filename)) {
+            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        }
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/" + BeanUtils.getLocale().getLanguage();
 
     }
@@ -1350,9 +1353,20 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
-        if (belowFulltextThreshold == null) {
+        int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
+        return isBelowFulltextThreshold(threshold);
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    private boolean isBelowFulltextThreshold(int threshold) throws PresentationException, IndexUnreachableException {
+        if (pagesWithFulltext == null) {
             
-            long pagesWithFulltext = DataManager.getInstance()
+            pagesWithFulltext = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
                             .append(':')
@@ -1364,27 +1378,25 @@ public class ViewManager implements Serializable {
                             .append(SolrConstants.FULLTEXTAVAILABLE)
                             .append(":true")
                             .toString());
-            int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
+        }
             double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
             logger.trace("{}% of pages have full-text", percentage);
             if (percentage < threshold) {
-                belowFulltextThreshold = true;
+                return true;
             } else {
-                belowFulltextThreshold = false;
+                return false;
             }
-        }
 
-        return belowFulltextThreshold;
     }
     
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
-        return access && !isBelowFulltextThreshold();
+        return access && (!isBelowFulltextThreshold(1) || isAltoAvailableForWork());
     }
     
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
-        return access && (!isBelowFulltextThreshold() || isWorkHasTEIFiles());
+        return access && (!isBelowFulltextThreshold(1) || isAltoAvailableForWork() || isWorkHasTEIFiles());
     }
     
     public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
@@ -1429,9 +1441,9 @@ public class ViewManager implements Serializable {
         if(!access) {
             return false;
         }
-        if (workHasAlto == null) {
+        if (pagesWithAlto == null) {
 
-            long pagesWithAlto = DataManager.getInstance()
+            pagesWithAlto = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
                             .append(':')
@@ -1443,16 +1455,14 @@ public class ViewManager implements Serializable {
                             .append(SolrConstants.FILENAME_ALTO)
                             .append(":*")
                             .toString());
-            int threshold = 1;
             logger.trace("{} of pages have full-text", pagesWithAlto);
-            if (pagesWithAlto < threshold) {
-                workHasAlto = false;
-            } else {
-                workHasAlto = true;
-            }
         }
-
-        return workHasAlto;
+        int threshold = 1;
+            if (pagesWithAlto < threshold) {
+                return false;
+            } else {
+                return true;
+            }
     }
 
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
