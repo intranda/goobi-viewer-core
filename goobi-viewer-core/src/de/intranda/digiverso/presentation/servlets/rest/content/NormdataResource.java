@@ -138,7 +138,7 @@ public class NormdataResource {
 
             JSONArray jsonArray = new JSONArray();
 
-            if ("_ALL".equals(template)) {
+            if ("_DEFAULT".equals(template) || "_ALL".equals(template)) {
                 // Explorative mode to return all available fields
                 for (NormData normData : normDataList) {
                     jsonArray.add(addNormDataValuesToJSON(normData, locale));

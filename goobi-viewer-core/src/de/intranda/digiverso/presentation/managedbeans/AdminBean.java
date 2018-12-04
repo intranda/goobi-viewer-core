@@ -35,7 +35,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.jdom2.xpath.XPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +42,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -64,7 +64,6 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 /**
  * Administration backend functions.
  */
-@SuppressWarnings("deprecation")
 @Named
 @SessionScoped
 public class AdminBean implements Serializable {
@@ -536,13 +535,13 @@ public class AdminBean implements Serializable {
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
         List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
-        if (all.isEmpty() || all.get(0).equals(this)) {
+        if (all.isEmpty() || all.get(0).equals(this.currentLicenseType)) {
             return Collections.emptyList();
         }
 
         List<LicenseType> ret = new ArrayList<>(all.size() - 1);
         for (LicenseType licenseType : all) {
-            if (licenseType.equals(this)) {
+            if (licenseType.equals(this.currentLicenseType)) {
                 continue;
             }
             ret.add(licenseType);
@@ -894,7 +893,7 @@ public class AdminBean implements Serializable {
         return lazyModelUsers;
     }
 
-    public List<User> getPageUsers() throws DAOException {
+    public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
     }
 
@@ -905,7 +904,7 @@ public class AdminBean implements Serializable {
         return lazyModelUserGroups;
     }
 
-    public List<UserGroup> getPageUserGroups() throws DAOException {
+    public List<UserGroup> getPageUserGroups() {
         return lazyModelUserGroups.getPaginatorList();
     }
 
@@ -916,7 +915,7 @@ public class AdminBean implements Serializable {
         return lazyModelLicenseTypes;
     }
 
-    public List<LicenseType> getPageLicenseTypes() throws DAOException {
+    public List<LicenseType> getPageLicenseTypes() {
         return lazyModelLicenseTypes.getPaginatorList();
     }
 
@@ -927,7 +926,7 @@ public class AdminBean implements Serializable {
         return lazyModelIpRanges;
     }
 
-    public List<IpRange> getPageIpRanges() throws DAOException {
+    public List<IpRange> getPageIpRanges() {
         return lazyModelIpRanges.getPaginatorList();
     }
 
@@ -938,7 +937,7 @@ public class AdminBean implements Serializable {
         return lazyModelComments;
     }
 
-    public List<Comment> getPageComments() throws DAOException {
+    public List<Comment> getPageComments() {
         return lazyModelComments.getPaginatorList();
     }
 
@@ -992,7 +991,6 @@ public class AdminBean implements Serializable {
      * @param dataRepository
      * @param fileIdRoot
      */
-    @SuppressWarnings("unchecked")
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
         logger.debug("setRepresantativeImageStatic");
         if (StringUtils.isNotEmpty(pi)) {
@@ -1019,10 +1017,13 @@ public class AdminBean implements Serializable {
                             .append(".xml");
                 }
                 Document doc = FileTools.readXmlFile(sbFilePath.toString());
+                if (doc == null || doc.getRootElement() == null) {
+                    logger.error("Invalid METS file: {}", sbFilePath.toString());
+                    return;
+                }
 
-                XPath xp = XPath.newInstance("mets:mets/mets:fileSec/mets:fileGrp/mets:file");
-                xp.addNamespace(nsMets);
-                List<Element> eleFileList = (List<Element>) xp.selectNodes(doc);
+                List<Element> eleFileList =
+                        XmlTools.evaluateToElements("mets:fileSec/mets:fileGrp/mets:file", doc.getRootElement(), Collections.singletonList(nsMets));
                 if (eleFileList != null) {
                     for (Element eleFile : eleFileList) {
                         String id = eleFile.getAttributeValue("ID");

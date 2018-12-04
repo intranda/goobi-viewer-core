@@ -693,9 +693,6 @@ public class TocMaker {
                 if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType()) && !(value instanceof MultiLanguageMetadataValue)) {
                     //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
                     value = IMetadataValue.getTranslations(value.getValue().orElse(""));
-                } else if (MetadataParameterType.MESSAGES_KEY.equals(param.getType())) {
-                    //                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
-                    value = IMetadataValue.getTranslations(param.getKey());
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);

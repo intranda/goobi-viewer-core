@@ -301,15 +301,6 @@ public class Metadata implements Serializable {
                             value = value.replace(" ", "_");
                             // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
                             break;
-                        case PPNFIELD:
-                            if (value.toUpperCase().startsWith("PPN")) {
-                                value = value.substring(3);
-                            }
-                            break;
-                        case MESSAGES_KEY:
-                            //                    case THEME:
-                            // do nothing
-                            break;
                         case TRANSLATEDFIELD:
                             // Values that are message keys
                             value = Helper.getTranslation(value, locale);

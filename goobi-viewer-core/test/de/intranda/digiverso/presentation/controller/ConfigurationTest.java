@@ -1373,24 +1373,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getNormdataFieldsForTemplate(String)
-     * @verifies return default template configuration if template not found
-     */
-    @Test
-    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate("THING").size());
-    }
-
-    /**
-     * @see Configuration#getNormdataFieldsForTemplate(String)
-     * @verifies return default template if template is null
-     */
-    @Test
-    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(null).size());
-    }
-
-    /**
      * @see Configuration#isDisplayTopstructLabel()
      * @verifies return correct value
      */

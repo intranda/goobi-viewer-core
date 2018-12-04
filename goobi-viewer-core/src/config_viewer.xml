@@ -878,20 +878,6 @@
 		
 		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
 		<normdataList>
-            <template name="_DEFAULT">
-                <field>NORM_IDENTIFIER</field>
-                <field>NORM_TITLE</field>
-                <field>NORM_OTHERTITLE</field>
-                <field>NORM_EXPLANATORYTEXT</field>
-                <field>NORM_PERIOD</field>
-                <field>NORM_PRODUCTIONPERIOD</field>
-                <field>NORM_CONTRIBUTOR</field>
-                <field>NORM_OWNER</field>
-                <field>NORM_COLLECTOR</field>
-                <field>NORM_WORK</field>
-                <field>NORM_RELATIONSHIP</field>
-                <field>URI</field>
-            </template>
             <template name="CORPORATION">
                 <field>NORM_IDENTIFIER</field>
                 <field>NORM_ORGANIZATION</field>
