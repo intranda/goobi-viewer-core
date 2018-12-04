@@ -451,11 +451,12 @@ public class ContentResource {
         if (solrDoc != null) {
 
             String text = getFulltextDocument(pi, filename);
+            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+            text = textConverter.convert(text);
 
             TEIHeaderBuilder header = createTEIHeader(solrDoc);
 
             TEIBuilder builder = new TEIBuilder();
-            text = StringEscapeUtils.unescapeHtml(text);
             Document xmlDoc = builder.build(header, text);
             return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
 
@@ -561,6 +562,7 @@ public class ContentResource {
 
                     TEIBuilder builder = new TEIBuilder();
                     TEIHeaderBuilder header = createTEIHeader(solrDoc);
+                    HtmlToTEIConvert textConverter = new HtmlToTEIConvert();                    
                     
                     List<String> pages = Files.list(filePath)
                             .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".txt"))
@@ -573,7 +575,7 @@ public class ContentResource {
                                 }
                             })
                             .filter(text -> StringUtils.isNotBlank(text))
-                            .map(text  -> StringEscapeUtils.unescapeHtml(text))
+                            .map(textConverter::convert)
                             .collect(Collectors.toList());
                     
                     Document xmlDoc = builder.build(header, pages);
