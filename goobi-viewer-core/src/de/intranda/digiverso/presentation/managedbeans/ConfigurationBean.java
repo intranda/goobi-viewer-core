@@ -487,18 +487,12 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
     }
 
-    /**
-     * @return
-     * @should return correct value
-     */
+    @Deprecated
     public boolean isSidebarDfgLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible();
     }
 
-    /**
-     * @return
-     * @should return correct value
-     */
+    @Deprecated
     public boolean isSidebarOpacLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
     }

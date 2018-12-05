@@ -1550,20 +1550,12 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.fulltext.visible", true);
     }
 
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
+    @Deprecated
     public boolean isSidebarDfgLinkVisible() {
         return getLocalBoolean("sidebar.dfg.visible", true);
     }
 
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
+    @Deprecated
     public boolean isSidebarOpacLinkVisible() {
         return getLocalBoolean("sidebar.opac.visible", true);
     }

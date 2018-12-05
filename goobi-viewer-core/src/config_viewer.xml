@@ -1112,15 +1112,6 @@
 			<visible>true</visible>
 		</fulltext>
 
-		<!-- dfg: if false, the dfg-viewer link is hidden -->
-		<dfg>
-			<visible>true</visible>
-		</dfg>
-
-		<!-- opa/opt if false, the link to the catalogue is hidden -->
-		<opac>
-			<visible>true</visible>
-		</opac>
 
 		<!-- sidebarTo/opt configuration of the sidebar TOC component -->
 		<sidebarToc>

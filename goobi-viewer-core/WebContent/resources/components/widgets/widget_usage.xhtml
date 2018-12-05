@@ -11,7 +11,8 @@
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
             <div id="widgetUsage" class="widget widget-usage">
-                <h3>#{msg.widgetUsage}</h3>
+                <h3>#{msg.widgetUsage}
+                </h3>
 
                 <!-- LICENSE TEXT -->
                 <p id="licenseText" class="widget-usage__license-text">
@@ -58,6 +59,16 @@
                             target="_blank"> 
                             #{msg.downloadMetsButtonLabel}
                         </a>
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+                                id="metsanchor" 
+                                class="label label-default widget-usage__work-download-mets-anchor" 
+                                title="#{msg.metadata_dl_metsAnchor}" 
+                                target="_blank"> 
+                                 #{msg.downloadAnchorMetsButtonLabel}
+                            </a>
+                        </ui:fragment>
                     </ui:fragment>
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
                         <a 
@@ -69,7 +80,26 @@
                             #{msg.downloadLidoButtonLabel}
                         </a>
                     </ui:fragment>
-    
+
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null}">
+                        <a
+                            id="marc"
+                            href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+                            class="label label-default widget-usage__work-download-oai-marc"
+                            title="#{msg.metadata_dl_marc}"
+                            target="_blank"> #{msg.marcLink} </a>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
+                        <a
+                            id="dc"
+                            href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+                            class="label label-default widget-usage__work-download-oai-dc"
+                            title="#{msg.metadata_dl_dublinCore}"
+                            target="_blank"> 
+                            #{msg.dcLink} 
+                       </a>
+                    </ui:fragment>
+
                     <!-- ALTO (WORK) -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
                         <a 

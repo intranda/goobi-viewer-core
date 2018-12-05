@@ -912,16 +912,7 @@ public class ConfigurationTest {
     public void getUnconditionalImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth());
     }
-
-    /**
-     * @see Configuration#getViewerDfgViewerUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getViewerDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
-    }
-
+    
     /**
      * @see Configuration#getViewerHome()
      * @verifies return correct value
@@ -1145,15 +1136,6 @@ public class ConfigurationTest {
     @Test
     public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible());
-    }
-
-    /**
-     * @see Configuration#isSidebarOpacLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
     }
 
     /**
