@@ -71,7 +71,7 @@ public class ContentBean implements Serializable {
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException {
         logger.trace("getUserGeneratedContentsForDisplay");
-        if (page != null && (userGeneratedContentsForDisplay == null || page.getPi().equals(pi) || page.getOrder() != currentPage)) {
+        if (page != null && (userGeneratedContentsForDisplay == null || !page.getPi().equals(pi) || page.getOrder() != currentPage)) {
             loadUserGeneratedContentsForDisplay(page);
         }
         if (userGeneratedContentsForDisplay != null && userGeneratedContentsForDisplay.size() > 0) {
@@ -93,6 +93,7 @@ public class ContentBean implements Serializable {
             logger.debug("page is null, cannot load");
             return;
         }
+        pi = page.getPi();
         currentPage = page.getOrder();
         userGeneratedContentsForDisplay = new ArrayList<>();
         for (DisplayUserGeneratedContent ugcContent : DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForPage(page.getPi(),
