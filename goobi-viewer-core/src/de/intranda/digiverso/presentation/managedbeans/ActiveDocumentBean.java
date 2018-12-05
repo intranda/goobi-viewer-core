@@ -1299,20 +1299,54 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return string containing previous and/or next url <link> elements
      * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public String getRelativeUrlTags() throws IndexUnreachableException {
+    public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
         if (!isRecordLoaded() || navigationHelper == null) {
             return "";
         }
-        if (logger.isTraceEnabled() && navigationHelper != null) {
+        if (logger.isTraceEnabled()) {
             logger.trace("current view: {}", navigationHelper.getCurrentView());
         }
-        if (PageType.viewOverview.getRawName().equals(navigationHelper.getCurrentView())
-                || PageType.viewMetadata.getRawName().equals(navigationHelper.getCurrentView())
-                || PageType.viewToc.getRawName().equals(navigationHelper.getCurrentView())) {
+
+        StringBuilder sb = new StringBuilder();
+
+        // Add canonical links
+        if (viewManager.getCurrentPage().getUrn() != null) {
+            String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+            sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
+        }
+        if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
+            String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+            sb.append("\n<link rel=\"canonical\" href=\"").append(piResolverUrl).append("\" />");
+        }
+        PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
+        if (currentPageType != null) {
+            logger.trace("page type: {}", currentPageType.getName());
+            logger.trace("current url: {}", navigationHelper.getCurrentUrl());
+            logger.trace("pretty url: {}", navigationHelper.getCurrentPrettyUrl());
+            String currentUrl = navigationHelper.getCurrentUrl();
+            if (currentUrl.contains("!" + currentPageType.getName())) {
+                // Preferred view - add regular view URL
+                sb.append("\n<link rel=\"canonical\" href=\"")
+                        .append(currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName()))
+                        .append("\" />");
+            } else if (currentUrl.contains(currentPageType.getName())) {
+                // Regular view - add preferred view URL
+                sb.append("\n<link rel=\"canonical\" href=\"")
+                        .append(currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName()))
+                        .append("\" />");
+            }
+        }
+
+        // Skip prev/next links for non-paginated views
+        if (PageType.viewOverview.equals(currentPageType) || PageType.viewMetadata.equals(currentPageType)
+                || PageType.viewToc.equals(currentPageType)) {
             return "";
         }
-        StringBuilder sb = new StringBuilder();
+
+        // Add next/prev links
         String currentUrl = getPageUrl(imageToShow);
         String prevUrl = getPreviousPageUrl();
         String nextUrl = getNextPageUrl();
