@@ -2303,5 +2303,61 @@ public class ViewManager implements Serializable {
             return "";
         }
     }
+    
+    /**
+     * 
+     * @return A persistent link to the current work
+     * 
+     * TODO: additional urn-resolving logic
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (topDocument != null) {
+            String customPURL = topDocument.getMetadataValue("MD_PURL");
+            if (StringUtils.isNotEmpty(customPURL)) {
+                return customPURL;
+            } else if(StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
+                String urn = topDocument.getMetadataValue(SolrConstants.URN);
+                return getPersistentUrl(urn);
+            } else {
+                StringBuilder url = new StringBuilder();
+                    boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+                    PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
+                if (pageType == null) {
+                    if (isHasPages()) {
+                        pageType = PageType.viewImage;
+                    } else {
+                        pageType = PageType.viewMetadata;
+                    }
+                }
+                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(getRepresentativePage().getOrder()).append('/');
+                return url.toString();
+            }
+        } else {
+            return "";
+        }
+ 
+    }
+    
+    public boolean isDisplayCiteLinkWork() {
+        return topDocument != null;
+    }
+    
+    public String getCiteLinkPage() throws IndexUnreachableException, DAOException {
+        PhysicalElement currentPage = getCurrentPage();
+        if(currentPage == null) {
+            return "";
+        } else {            
+            String urn = currentPage.getUrn();
+            return getPersistentUrl(urn);
+        }
+    }
+    
+    public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
+        return getCurrentPage() != null;
+    }
 
 }

@@ -11,14 +11,19 @@
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
             <div id="widgetUsage" class="widget widget-usage">
-                <h3>#{msg.widgetUsage}
-                </h3>
-
+                
+                <div class="widget-title">
+                    <h3>#{msg.widgetUsage}
+                    </h3>
+                    <i class="fa fa-minus-square-o widget-collapse collapse" aria-hidden="true" data-collapse=".widget-usage .widget-body"></i>
+                    <i class="fa fa-plus-square-o widget-collapse expand" aria-hidden="true" data-collapse=".widget-usage .widget-body"></i>
+                </div>
+                <div class="widget-body">
                 <!-- LICENSE TEXT -->
                 <p id="licenseText" class="widget-usage__license-text">
                     <viewerComponent:metadata metadata="#{activeDocumentBean.viewManager.usageWidgetAccessCondition}" displayLabel="false" />
                 </p>
-
+                
                 <!-- WORK -->
                 <h4 id="titleWork" class="widget-usage__subtitle">#{msg.Werk}</h4>
                 
@@ -182,7 +187,7 @@
                         class="label label-default widget-usage__work-download-iiif" 
                         data-copy="iiif-manifest" 
                         data-clipboard-text="#{imageDelivery.iiifManifest}" 
-                        data-copy-done="#{msg.iiif_CopyUrlDone}"
+                        data-copy-done="#{msg.copyUrlDone}"
                         title="#{msg.iiif_copyUrl}"> 
                         #{msg.iiif}
                     </a>
@@ -253,9 +258,39 @@
                         </a>
                     </ui:fragment>
                 </div>
-            </div>
-            
+                
+                                <!-- CITE -->
+                <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
+
+                    <div class="widget-usage__citelinks">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork}">
+                                <a 
+                                    id="citeLinkWork" 
+                                    class="label label-default widget-usage__work-citelink" 
+                                    data-copy="work-citelink" 
+                                    data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkWork}" 
+                                    data-copy-done="#{msg.copyUrlDone}"
+                                    title="#{msg.copyUrl}"> 
+                                    #{msg.citeLinkWork}
+                                </a>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage}">
+                                <a 
+                                    id="citeLinkPage" 
+                                    class="label label-default widget-usage__page-citelink" 
+                                    data-copy="page-citelink" 
+                                    data-clipboard-text="#{activeDocumentBean.viewManager.citeLinkPage}" 
+                                    data-copy-done="#{msg.copyUrlDone}"
+                                    title="#{msg.copyUrl}"> 
+                                    #{msg.citeLinkPage}
+                                </a>
+                        </ui:fragment>
+                    </div>
+                
+                </div>
+            </div>   
             <script>
+    
             	var downloadModalConfig = {
                     downloadBtn: $( ".download-modal-widget" ),
                     path: "#{navigationHelper.applicationUrl}",

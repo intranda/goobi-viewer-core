@@ -7393,6 +7393,7 @@ div[id*="-Modal"] .email-form .form-group {
 .widget {
   margin-bottom: 1.3125rem;
   /* ELEMENT */
+  /* collapse */
 }
 .widget ul {
   list-style: none;
@@ -7410,6 +7411,18 @@ div[id*="-Modal"] .email-form .form-group {
 .widget dl dd {
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.widget .widget-title {
+  position: relative;
+}
+.widget .widget-title .widget-collapse {
+  position: absolute;
+}
+.widget .widget-title .widget-collapse.collapse {
+  display: none;
+}
+.widget .widget-title .widget-collapse.expand {
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -7938,13 +7951,13 @@ div[id*="-Modal"] .email-form .form-group {
 /* WIDGET USAGE */
 .widget-usage {
   /* LICENSE TEXT */
-  /* DOWNLOADS */
   /* WORK DOWNLOADS */
   /* PAGE DOWNLOADS */
 }
 .widget-usage__license-text {
   margin-bottom: 15px;
 }
+.widget-usage__citelinks .label-default,
 .widget-usage__work-downloads .label-default,
 .widget-usage__page-downloads .label-default {
   display: inline-block;
