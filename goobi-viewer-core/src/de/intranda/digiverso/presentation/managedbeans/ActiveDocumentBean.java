@@ -1313,13 +1313,15 @@ public class ActiveDocumentBean implements Serializable {
         StringBuilder sb = new StringBuilder();
 
         // Add canonical links
-        if (viewManager.getCurrentPage().getUrn() != null) {
-            String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
-            sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
-        }
-        if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
-            String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
-            sb.append("\n<link rel=\"canonical\" href=\"").append(piResolverUrl).append("\" />");
+        if (viewManager.getCurrentPage() != null) {
+            if (viewManager.getCurrentPage().getUrn() != null) {
+                String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+                sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
+            }
+            if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
+                String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+                sb.append("\n<link rel=\"canonical\" href=\"").append(piResolverUrl).append("\" />");
+            }
         }
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
         if (currentPageType != null) {
