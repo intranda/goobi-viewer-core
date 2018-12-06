@@ -68,7 +68,7 @@ public abstract class AbstractBuilder {
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
-            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES };
+            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES, SolrConstants.DATAREPOSITORY };
 
     private final URI servletURI;
     private final URI requestURI;
@@ -103,11 +103,10 @@ public abstract class AbstractBuilder {
     }
 
     protected URI absolutize(URI uri) throws URISyntaxException {
-        if(uri != null && !uri.isAbsolute()) {     
+        if (uri != null && !uri.isAbsolute()) {
             return new URI(getServletURI().toString() + uri.toString());
-        } else {
-            return uri;
         }
+        return uri;
     }
 
     /**
@@ -130,13 +129,12 @@ public abstract class AbstractBuilder {
         String request = requestURI.toString();
         if (!request.contains("/iiif/")) {
             return requestURI;
-        } else {
-            request = request.substring(0, request.indexOf("/iiif/") + 1);
-            try {
-                return new URI(request);
-            } catch (URISyntaxException e) {
-                return requestURI;
-            }
+        }
+        request = request.substring(0, request.indexOf("/iiif/") + 1);
+        try {
+            return new URI(request);
+        } catch (URISyntaxException e) {
+            return requestURI;
         }
 
     }
@@ -153,7 +151,7 @@ public abstract class AbstractBuilder {
         }
         return getServletURI() + "/metsresolver?id=" + 0;
     }
-    
+
     /**
      * @return viewer image view url for the given page
      */
@@ -199,16 +197,14 @@ public abstract class AbstractBuilder {
         for (String field : getMetadataFields(ele)) {
             if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith("_UNTOKENIZED") && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-                .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
-                .ifPresent(md -> {
-                    md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-                    md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-                    manifest.addMetadata(md);
-                });
-                    
+                        .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
+                        .ifPresent(md -> {
+                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                            manifest.addMetadata(md);
+                        });
 
-                
-//                manifest.addMetadata(new Metadata(IMetadataValue.getTranslations(field), mdValue));
+                //                manifest.addMetadata(new Metadata(IMetadataValue.getTranslations(field), mdValue));
             }
         }
     }
@@ -217,7 +213,7 @@ public abstract class AbstractBuilder {
      * @param ele
      * @return
      */
-    private List<String> getMetadataFields(StructElement ele) {
+    private static List<String> getMetadataFields(StructElement ele) {
         Set<String> fields = ele.getMetadataFields().keySet();
         List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
         return baseFields;
@@ -238,9 +234,8 @@ public abstract class AbstractBuilder {
             StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
             ele.setImageNumber(1);
             return ele;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -255,7 +250,7 @@ public abstract class AbstractBuilder {
     public List<StructElement> getChildren(StructElement parent) throws PresentationException, IndexUnreachableException {
         String query = "IDDOC_PARENT:" + parent.getLuceneId() + " AND DOCTYPE:DOCTRCT";
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
-        List<StructElement> eles = new ArrayList<StructElement>();
+        List<StructElement> eles = new ArrayList<>();
         if (docs != null) {
             for (SolrDocument doc : docs) {
                 StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
@@ -287,7 +282,7 @@ public abstract class AbstractBuilder {
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
-        List<StructElement> eles = new ArrayList<StructElement>();
+        List<StructElement> eles = new ArrayList<>();
         if (docs != null) {
             for (SolrDocument doc : docs) {
                 StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
@@ -318,9 +313,8 @@ public abstract class AbstractBuilder {
             StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
             ele.setImageNumber(1);
             return ele;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -390,12 +384,9 @@ public abstract class AbstractBuilder {
     }
 
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
-                .append(pi)
-                .append("/list/")
-                .append(pageNo)
-                .append("/")
-                .append(type.name());
+        StringBuilder sb =
+                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(pageNo).append("/").append(
+                        type.name());
         return new URI(sb.toString());
     }
 

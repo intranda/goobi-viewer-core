@@ -31,10 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -115,19 +118,26 @@ public class ImageHandler {
     /**
      * 
      * @param page
+     * @param dataRepository
      * @return The image information for the image file of the given page
      * @throws IllegalPathSyntaxException
      * @throws ContentLibException
      * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+    public ImageInformation getImageInformation(PhysicalElement page, String dataRepository)
+            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         String path = page.getFilepath();
-
         String url;
         if (isExternalUrl(path)) {
             url = path;
         } else {
-            url = page.getPi() + "/" + page.getFilepath();
+            url = "";
+            if (dataRepository != null) {
+                url += "file:/" + DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepository + "/media/";
+            }
+            url += page.getPi() + "/" + page.getFilepath();
         }
         ImageInformation info = getImageInformation(url);
 
@@ -198,7 +208,5 @@ public class ImageHandler {
         }
         return null;
     }
-
-
 
 }

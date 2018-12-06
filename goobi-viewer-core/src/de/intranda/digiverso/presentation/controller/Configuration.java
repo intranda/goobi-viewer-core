@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -547,9 +546,8 @@ public final class Configuration extends AbstractConfiguration {
         if (sub != null) {
             Metadata md = getMetadata(sub);
             return md;
-        } else {
-            return new Metadata();
         }
+        return new Metadata();
     }
 
     /**
@@ -559,7 +557,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return the resulting {@link Metadata} instance
      */
     @SuppressWarnings("rawtypes")
-    private Metadata getMetadata(HierarchicalConfiguration sub) {
+    private static Metadata getMetadata(HierarchicalConfiguration sub) {
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
         boolean group = sub.getBoolean("[@group]", false);
@@ -2485,7 +2483,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    @Deprecated
     public String getDataRepositoriesHome() {
         return getLocalString("dataRepositoriesHome", "");
     }

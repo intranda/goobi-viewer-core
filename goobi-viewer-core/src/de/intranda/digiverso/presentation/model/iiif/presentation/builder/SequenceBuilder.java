@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -125,7 +126,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
             sequence.addCanvas(canvas);
         }
-        if(getBuildMode().equals(BuildMode.IIIF)) {            
+        if (getBuildMode().equals(BuildMode.IIIF)) {
             annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
         }
 
@@ -211,12 +212,13 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-            LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
-            viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
-            canvas.addRendering(viewerPage);
+        LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
+        viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
+        canvas.addRendering(viewerPage);
 
         if (getBuildMode().equals(BuildMode.IIIF)) {
-            Dimension size = getSize(page);
+            String dataRepository = doc.getMetadataValue(SolrConstants.DATAREPOSITORY);
+            Dimension size = getSize(page, dataRepository);
             if (size.getWidth() * size.getHeight() > 0) {
                 canvas.setWidth(size.width);
                 canvas.setHeight(size.height);
@@ -234,10 +236,11 @@ public class SequenceBuilder extends AbstractBuilder {
                     ImageInformation imageInfo;
                     resource = new ImageContent(new URI(thumbnailUrl), false);
                     try {
-                        imageInfo = imageDelivery.getImages().getImageInformation(page);
+                        imageInfo = imageDelivery.getImages().getImageInformation(page, dataRepository);
                         resource.setService(imageInfo);
-                    } catch (ContentLibException e) {
-                        logger.error("Error reading image information from " + thumbnailUrl + ": " + e.toString());
+                    } catch (ContentLibException | PresentationException e) {
+                        logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
+                        //                        logger.error(e.getMessage(), e);
                         resource = new ImageContent(new URI(thumbnailUrl), true);
                         resource.setWidth(size.width);
                         resource.setHeight(size.height);
@@ -403,10 +406,11 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * @param page
+     * @param dataRepository
      * @return
      * @throws ViewerConfigurationException
      */
-    private Dimension getSize(PhysicalElement page) throws ViewerConfigurationException {
+    private Dimension getSize(PhysicalElement page, String dataRepository) throws ViewerConfigurationException {
         Dimension size = new Dimension(0, 0);
         if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());
@@ -415,10 +419,10 @@ public class SequenceBuilder extends AbstractBuilder {
                 size.setSize(page.getImageWidth(), page.getImageHeight());
             } else {
                 try {
-                    ImageInformation info = imageDelivery.getImages().getImageInformation(page);
+                    ImageInformation info = imageDelivery.getImages().getImageInformation(page, dataRepository);
                     size.setSize(info.getWidth(), info.getHeight());
-                } catch (ContentLibException | URISyntaxException e) {
-                    logger.error("Unable to retrieve image size for " + page + ": " + e.toString());
+                } catch (ContentLibException | URISyntaxException | PresentationException | IndexUnreachableException e) {
+                    logger.error("Unable to retrieve image size for {}: {}", page, e.toString());
                 }
             }
         }
