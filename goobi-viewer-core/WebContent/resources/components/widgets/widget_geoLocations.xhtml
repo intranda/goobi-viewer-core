@@ -21,7 +21,12 @@
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
                     <h3>
-                        <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+                        <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+                            #{msg[cc.attrs.widget.widgetTitle]}
+                        </ui:fragment>
+                        <ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">
+                            #{msg[cc.attrs.widget.type]}
+                        </ui:fragment>
                     </h3>
 
                     <!-- MAP -->
