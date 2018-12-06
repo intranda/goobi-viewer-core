@@ -1324,10 +1324,9 @@ public class ActiveDocumentBean implements Serializable {
             }
         }
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
-        if (currentPageType != null) {
-            logger.trace("page type: {}", currentPageType.getName());
-            logger.trace("current url: {}", navigationHelper.getCurrentUrl());
-            logger.trace("pretty url: {}", navigationHelper.getCurrentPrettyUrl());
+        if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.name())) {
+            // logger.trace("page type: {}", currentPageType.getName());
+            // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
             String currentUrl = navigationHelper.getCurrentUrl();
             if (currentUrl.contains("!" + currentPageType.getName())) {
                 // Preferred view - add regular view URL
