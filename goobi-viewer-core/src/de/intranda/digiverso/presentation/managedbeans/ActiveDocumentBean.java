@@ -1314,7 +1314,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Add canonical links
         if (viewManager.getCurrentPage() != null) {
-            if (viewManager.getCurrentPage().getUrn() != null) {
+            if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
                 String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
                 sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
             }
