@@ -140,7 +140,7 @@ public class ImageHandler {
                 }
                 sbUrl.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
             }
-            sbUrl.append(page.getPageLinkLabel()).append('/').append(page.getFilepath());
+            sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
             url = Paths.get(sbUrl.toString()).toUri().toString();
         }
         
