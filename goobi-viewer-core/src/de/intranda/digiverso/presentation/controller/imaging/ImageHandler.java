@@ -129,19 +129,23 @@ public class ImageHandler {
     public ImageInformation getImageInformation(PhysicalElement page, String dataRepository)
             throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         String path = page.getFilepath();
-        String url;
+        String url = null;
         if (isExternalUrl(path)) {
             url = path;
         } else {
-            url = "";
+            StringBuilder sbUrl = new StringBuilder();
             if (dataRepository != null) {
-                url += "file:/" + DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepository + "/media/";
+                if (!Paths.get(dataRepository).isAbsolute()) {
+                    sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
+                }
+                sbUrl.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
             }
-            url += page.getPi() + "/" + page.getFilepath();
+            sbUrl.append(page.getPageLinkLabel()).append('/').append(page.getFilepath());
+            url = Paths.get(sbUrl.toString()).toUri().toString();
         }
-        ImageInformation info = getImageInformation(url);
-
-        return info;
+        
+        logger.trace(url);
+        return getImageInformation(url);
     }
 
     /**
