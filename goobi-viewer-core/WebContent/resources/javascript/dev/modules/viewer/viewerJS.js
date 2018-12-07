@@ -74,7 +74,7 @@ var viewerJS = ( function() {
         }
         
         // off canvas
-        $( '[data-toggle="offcanvas"]' ).click( function() {
+        $( '[data-toggle="offcanvas"]' ).on( 'click', function() {
             var icon = $( this ).children( '.fa' );
             
             $( '.row-offcanvas' ).toggleClass( 'active' );
@@ -115,6 +115,11 @@ var viewerJS = ( function() {
             $( this ).toggleClass( 'in' );
             $( '.header-actions__search' ).fadeToggle( 'fast' );
         } );
+        
+        // toggle collapseable widgets
+        $( '.widget__title.collapseable' ).on( 'click', function() {
+    		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
+    	} );
         
         // set content height to sidebar height
         if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
@@ -187,7 +192,6 @@ var viewerJS = ( function() {
         } );
         
         viewer.loadThumbnails();
-        viewer.initWidgetCollapse();
          
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
