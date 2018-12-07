@@ -31,10 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -122,16 +125,23 @@ public class ImageHandler {
      */
     public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         String path = page.getFilepath();
-
-        String url;
+        String url = null;
         if (isExternalUrl(path)) {
             url = path;
         } else {
-            url = page.getPi() + "/" + page.getFilepath();
+            StringBuilder sbUrl = new StringBuilder();
+            if (page.getDataRepository() != null) {
+                if (!Paths.get(page.getDataRepository()).isAbsolute()) {
+                    sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
+                }
+                sbUrl.append(page.getDataRepository()).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
+            }
+            sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
+            url = Paths.get(sbUrl.toString()).toUri().toString();
         }
-        ImageInformation info = getImageInformation(url);
 
-        return info;
+        logger.trace(url);
+        return getImageInformation(url);
     }
 
     /**
@@ -198,7 +208,5 @@ public class ImageHandler {
         }
         return null;
     }
-
-
 
 }

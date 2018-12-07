@@ -1066,6 +1066,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the dataRepository
+     */
+    public String getDataRepository() {
+        return dataRepository;
+    }
+
+    /**
      * @return the fileSize
      */
     public long getFileSize() {

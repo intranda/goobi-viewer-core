@@ -196,9 +196,8 @@ public class ViewManager implements Serializable {
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
         if (getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
-        } else {
-            return "{}";
         }
+        return "{}";
     }
 
     public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
@@ -1162,14 +1161,8 @@ public class ViewManager implements Serializable {
         if (allowUserComments == null) {
             String query = DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery();
             try {
-                if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount(new StringBuilder(SolrConstants.PI).append(':')
-                                .append(pi)
-                                .append(" AND (")
-                                .append(query)
-                                .append(')')
-                                .toString()) == 0) {
+                if (StringUtils.isNotEmpty(query) && DataManager.getInstance().getSearchIndex().getHitCount(
+                        new StringBuilder(SolrConstants.PI).append(':').append(pi).append(" AND (").append(query).append(')').toString()) == 0) {
                     allowUserComments = false;
                     logger.trace("User comments are not allowed for this record.");
                 } else {
@@ -1379,14 +1372,13 @@ public class ViewManager implements Serializable {
                             .append(":true")
                             .toString());
         }
-            double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-            logger.trace("{}% of pages have full-text", percentage);
-            if (percentage < threshold) {
-                return true;
-            } else {
-                return false;
-            }
+        double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
+        logger.trace("{}% of pages have full-text", percentage);
+        if (percentage < threshold) {
+            return true;
+        }
 
+        return false;
     }
     
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
@@ -1458,22 +1450,25 @@ public class ViewManager implements Serializable {
             logger.trace("{} of pages have full-text", pagesWithAlto);
         }
         int threshold = 1;
-            if (pagesWithAlto < threshold) {
-                return false;
-            } else {
-                return true;
-            }
+        if (pagesWithAlto < threshold) {
+            return false;
+        }
+
+        return true;
     }
 
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        if (StringUtils.isNotBlank(filename)) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
-                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            return access;
-        } else {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
             return false;
         }
+        String filename = getFilenameFromPathString(currentPage.getAltoFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -1489,18 +1484,18 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
-        if (!getCurrentPage().isFulltextAvailable()) {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
             return false;
         }
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
-        if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        if (!currentPage.isFulltextAvailable()) {
+            return false;
         }
-        if (StringUtils.isNotBlank(filename)) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
-                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            return access;
-        } else {
+        String filename = getFilenameFromPathString(currentPage.getFulltextFileName());
+        if (StringUtils.isBlank(filename)) {
+            filename = getFilenameFromPathString(currentPage.getAltoFileName());
+        }
+        if (StringUtils.isBlank(filename)) {
             return false;
         }
 
@@ -2294,14 +2289,13 @@ public class ViewManager implements Serializable {
      * @param pathString
      * @return  The filename, or an empty String if it could not be determined
      */
-    
-    private String getFilenameFromPathString(String pathString) {
-        if(StringUtils.isNotBlank(pathString)) {
+
+    private static String getFilenameFromPathString(String pathString) {
+        if (StringUtils.isNotBlank(pathString)) {
             Path path = Paths.get(pathString);
             return path.getFileName().toString();
-        } else {
-            return "";
         }
+        return "";
     }
     
     /**
