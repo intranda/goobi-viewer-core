@@ -118,32 +118,28 @@ public class ImageHandler {
     /**
      * 
      * @param page
-     * @param dataRepository
      * @return The image information for the image file of the given page
      * @throws IllegalPathSyntaxException
      * @throws ContentLibException
      * @throws URISyntaxException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
-    public ImageInformation getImageInformation(PhysicalElement page, String dataRepository)
-            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+    public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         String path = page.getFilepath();
         String url = null;
         if (isExternalUrl(path)) {
             url = path;
         } else {
             StringBuilder sbUrl = new StringBuilder();
-            if (dataRepository != null) {
-                if (!Paths.get(dataRepository).isAbsolute()) {
+            if (page.getDataRepository() != null) {
+                if (!Paths.get(page.getDataRepository()).isAbsolute()) {
                     sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
                 }
-                sbUrl.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
+                sbUrl.append(page.getDataRepository()).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
             }
             sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
             url = Paths.get(sbUrl.toString()).toUri().toString();
         }
-        
+
         logger.trace(url);
         return getImageInformation(url);
     }
