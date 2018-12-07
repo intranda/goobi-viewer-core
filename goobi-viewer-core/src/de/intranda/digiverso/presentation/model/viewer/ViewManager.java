@@ -1499,6 +1499,8 @@ public class ViewManager implements Serializable {
             return false;
         }
 
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
 
