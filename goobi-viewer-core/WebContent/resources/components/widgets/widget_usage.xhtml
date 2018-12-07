@@ -29,28 +29,7 @@
                     
                     <!-- WORK DOWNLOADS -->
                     <div class="widget-usage__work-downloads">                
-                        <!-- DFG Viewer -->
-                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
-                           <a 
-                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
-                                id="dfgViewer" 
-                                class="label label-default widget-usage__work-link-dfg-viewer" 
-                                title="#{msg.dfgViewerLink}" 
-                                target="_blank"> 
-                               #{msg.dfgViewerLink}
-                            </a>
-                        </ui:fragment>
-    
-                        <!-- OPAC -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
-                                id="opac"
-                                class="label label-default widget-usage__work-link-opac" 
-                                title="#{msg.opacLink}" 
-                                target="_blank"> #{msg.opacLink} </a>
-                        </ui:fragment>
-                    
-                        <!-- METS/LIDO -->
+                        <!-- METS -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.metsResolverUrl}"
@@ -72,6 +51,7 @@
                             </ui:fragment>
                         </ui:fragment>
                         
+                        <!-- LIDO -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
@@ -102,6 +82,17 @@
                                 #{msg.dcLink} 
                            </a>
                         </ui:fragment>
+                        
+                        <!-- IIIF MANIFEST -->
+                        <a 
+                            id="iiifManifest" 
+                            class="label label-default widget-usage__work-download-iiif" 
+                            data-copy="iiif-manifest" 
+                            data-clipboard-text="#{imageDelivery.iiifManifest}" 
+                            data-copy-done="#{msg.copyUrlDone}"
+                            title="#{msg.iiif_copyUrl}"> 
+                            #{msg.iiif}
+                        </a>                        
     
                         <!-- ALTO (WORK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
@@ -114,18 +105,6 @@
                                 #{msg.downloadAltoWorkButtonLabel}
                             </a>
                         </ui:fragment>
-        
-                        <!-- FULLTEXT (WORK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
-                                id="textWork" 
-                                class="label label-default widget-usage__work-download-fulltext" 
-                                title="#{msg.downloadWorkFulltext}"
-                                target="_blank">
-                                #{msg.FULLEXT}
-                            </a>
-                        </ui:fragment>
                         
                         <!-- TEI (WORK) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForWork }">
@@ -136,6 +115,18 @@
                                 title="#{msg.downloadWorkTei}"
                                 target="_blank">
                                 #{msg.TEI}
+                            </a>
+                        </ui:fragment>
+
+                        <!-- FULLTEXT (WORK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
+                                id="textWork" 
+                                class="label label-default widget-usage__work-download-fulltext" 
+                                title="#{msg.downloadWorkFulltext}"
+                                target="_blank">
+                                #{msg.FULLEXT}
                             </a>
                         </ui:fragment>
         
@@ -179,16 +170,26 @@
                             </a>
                         </ui:fragment>
         
-                        <!-- IIIF MANIFEST -->
-                        <a 
-                            id="iiifManifest" 
-                            class="label label-default widget-usage__work-download-iiif" 
-                            data-copy="iiif-manifest" 
-                            data-clipboard-text="#{imageDelivery.iiifManifest}" 
-                            data-copy-done="#{msg.copyUrlDone}"
-                            title="#{msg.iiif_copyUrl}"> 
-                            #{msg.iiif}
-                        </a>
+                        <!-- DFG Viewer -->
+                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
+                           <a 
+                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+                                id="dfgViewer" 
+                                class="label label-default widget-usage__work-link-dfg-viewer" 
+                                title="#{msg.dfgViewerLink}" 
+                                target="_blank"> 
+                               #{msg.dfgViewerLink}
+                            </a>
+                        </ui:fragment>
+    
+                        <!-- OPAC -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
+                                id="opac"
+                                class="label label-default widget-usage__work-link-opac" 
+                                title="#{msg.opacLink}" 
+                                target="_blank"> #{msg.opacLink} </a>
+                        </ui:fragment>                        
                     </div>
                     
                     <!-- PAGE -->
@@ -196,42 +197,6 @@
                 
                     <!-- PAGE DOWNLOADS -->
                     <div class="widget-usage__page-downloads">
-                        <!-- ALTO (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.altoUrl}"
-                                id="altoPage" 
-                                class="label label-default widget-usage__page-download-alto" 
-                                title="#{msg.metadata_dl_alto_page}" 
-                                target="_blank">
-                                #{msg.downloadAltoPageButtonLabel}
-                            </a>
-                        </ui:fragment>
-        
-                        <!-- FULLTEXT (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.fulltextUrl}"
-                                id="textPage" 
-                                class="label label-default widget-usage__page-download-fulltext" 
-                                title="#{msg.downloadPageFulltext}" 
-                                target="_blank">
-                                #{msg.FULLEXT}
-                            </a>
-                        </ui:fragment>
-                        
-                        <!-- TEI (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.teiUrl}"
-                                id="textPage" 
-                                class="label label-default widget-usage__page-download-tei" 
-                                title="#{msg.downloadPageTei}" 
-                                target="_blank">
-                                #{msg.TEI}
-                            </a>
-                        </ui:fragment>
-        
                         <!-- PDF (PAGE) -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
                             <a 
@@ -255,6 +220,42 @@
                                 #{msg.imageLink}
                             </a>
                         </ui:fragment>
+                                            
+                        <!-- ALTO (PAGE) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.altoUrl}"
+                                id="altoPage" 
+                                class="label label-default widget-usage__page-download-alto" 
+                                title="#{msg.metadata_dl_alto_page}" 
+                                target="_blank">
+                                #{msg.downloadAltoPageButtonLabel}
+                            </a>
+                        </ui:fragment>
+        
+                        <!-- TEI (PAGE) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.teiUrl}"
+                                id="textPage" 
+                                class="label label-default widget-usage__page-download-tei" 
+                                title="#{msg.downloadPageTei}" 
+                                target="_blank">
+                                #{msg.TEI}
+                            </a>
+                        </ui:fragment>
+
+                        <!-- FULLTEXT (PAGE) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
+                            <a 
+                                href="#{activeDocumentBean.viewManager.fulltextUrl}"
+                                id="textPage" 
+                                class="label label-default widget-usage__page-download-fulltext" 
+                                title="#{msg.downloadPageFulltext}" 
+                                target="_blank">
+                                #{msg.FULLEXT}
+                            </a>
+                        </ui:fragment>                        
                     </div>
                 
                     <!-- CITE -->
