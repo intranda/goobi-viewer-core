@@ -124,6 +124,7 @@ public class TocMaker {
      */
     public static LinkedHashMap<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
             int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        logger.trace("generateToc");
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not me null");
         }
@@ -158,7 +159,7 @@ public class TocMaker {
                 //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String docstruct = "_GROUPS";
                 ret.get(TOC.DEFAULT_GROUP).add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level,
-                        structElement.getPi(), null, sourceFormatPdfAllowed, true, false, mimeType, docstruct, footerId));
+                        structElement.getPi(), null, false, true, false, mimeType, docstruct, footerId));
                 ++level;
                 buildGroupToc(ret.get(TOC.DEFAULT_GROUP), structElement.getGroupIdField(), structElement.getPi(), sourceFormatPdfAllowed, mimeType);
             } else if (structElement.isAnchor()) {
@@ -185,9 +186,11 @@ public class TocMaker {
      * @param sourceFormatPdfAllowed
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     private static List<TOCElement> buildToc(SolrDocument doc, StructElement structElement, boolean addAllSiblings, String mimeType,
-            boolean sourceFormatPdfAllowed) throws PresentationException, IndexUnreachableException {
+            boolean sourceFormatPdfAllowed) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("buildToc");
         List<List<TOCElement>> ret = new ArrayList<>();
 
         int level = 0;
@@ -214,6 +217,7 @@ public class TocMaker {
 
         int mainRecordLevel = 0; // currently not in use
         for (String ancestorField : ancestorFields) {
+            logger.trace("ancestor field: {}", ancestorField);
             // Collect ancestor hierarchy in a list
             List<SolrDocument> ancestorList = new ArrayList<>();
             SolrDocument currentDoc = doc;
@@ -273,9 +277,10 @@ public class TocMaker {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws DAOException
      */
     private static void buildGroupToc(List<TOCElement> ret, String groupIdField, String groupIdValue, boolean sourceFormatPdfAllowed, String mimeType)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         String template = "_GROUPS";
         String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
@@ -290,6 +295,7 @@ public class TocMaker {
                         .toString(),
                 SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(groupSortField, "asc")), getSolrFieldsToFetch(template));
         if (groupMemberDocs != null) {
+            HttpServletRequest request = BeanUtils.getRequest();
             for (SolrDocument doc : groupMemberDocs) {
                 // IMetadataValue label = new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
                 IMetadataValue label = buildLabel(doc, template);
@@ -324,7 +330,9 @@ public class TocMaker {
                     thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
                 }
                 label.mapEach(value -> StringEscapeUtils.unescapeHtml(value));
-                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false,
+                boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, accessPermissionPdf, false,
                         thumbnailUrl != null, mimeType, docStructType, footerId));
             }
         }
@@ -381,11 +389,12 @@ public class TocMaker {
         QueryResponse queryResponse = DataManager.getInstance().getSearchIndex().search(query, offset, hitsPerPage,
                 DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(anchorDocstructType), null, volumeFieldList);
         if (queryResponse != null) {
+            HttpServletRequest request = BeanUtils.getRequest();
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 // Skip volumes that may not be listed
-                if (FacesContext.getCurrentInstance() != null && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null,
-                        IPrivilegeHolder.PRIV_LIST, (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
+                if (FacesContext.getCurrentInstance() != null
+                        && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST, request)) {
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
@@ -426,8 +435,10 @@ public class TocMaker {
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml(l));
+                boolean accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
+                        volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
                 TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
-                        sourceFormatPdfAllowed, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+                        accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));
@@ -485,16 +496,23 @@ public class TocMaker {
      * @param footerId
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     private static void populateTocTree(List<TOCElement> ret, List<String> mainDocumentChain, SolrDocument doc, int level, boolean addChildren,
             boolean sourceFormatPdfAllowed, String mimeType, String ancestorField, boolean addAllSiblings, String footerId)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, List<SolrDocument>> childrenMap = new HashMap<>();
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
         if (pi == null) {
             logger.error("No PI found for: {}", doc.getFieldValue(SolrConstants.IDDOC));
         }
         logger.trace("populateTocTree: {}", pi);
+
+        Map<String, Boolean> pdfPermissionMap = null;
+        if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
+            pdfPermissionMap =
+                    AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
+        }
 
         // Real children (struct elements of the main record)
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -538,7 +556,7 @@ public class TocMaker {
         }
 
         // Add current doc and recursively build the tree from the children map
-        addTocElementsRecusively(ret, childrenMap, doc, level, addChildren, sourceFormatPdfAllowed, mimeType, footerId);
+        addTocElementsRecusively(ret, childrenMap, doc, level, addChildren, pdfPermissionMap, mimeType, footerId);
 
         // Loosely referenced children (e.g. anchor volumes)
         if (StringUtils.isNotEmpty(ancestorField)) {
@@ -585,7 +603,7 @@ public class TocMaker {
      * @throws PresentationException
      */
     private static void addTocElementsRecusively(List<TOCElement> ret, Map<String, List<SolrDocument>> childrenMap, SolrDocument doc, int level,
-            boolean addChildren, boolean sourceFormatPdfAllowed, String mimeType, String footerId) throws PresentationException {
+            boolean addChildren, Map<String, Boolean> pdfPermissionMap, String mimeType, String footerId) throws PresentationException {
         String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         String docstructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -606,7 +624,8 @@ public class TocMaker {
         }
 
         IMetadataValue label = buildLabel(doc, docstructType);
-        TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, sourceFormatPdfAllowed, isAnchor,
+        boolean accessPermissionPdf = logId != null ? (pdfPermissionMap.containsKey(logId) ? pdfPermissionMap.get(logId) : false) : false;
+        TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, accessPermissionPdf, isAnchor,
                 pageNo != null, mimeType, docstructType, footerId);
         tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docstructType);
         tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) doc.getFieldValue(SolrConstants.CURRENTNO));
@@ -619,7 +638,7 @@ public class TocMaker {
             if (addChildren && childrenMap != null && childrenMap.get(iddoc) != null && !childrenMap.get(iddoc).isEmpty()) {
                 logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc);
                 for (SolrDocument childDoc : childrenMap.get(iddoc)) {
-                    addTocElementsRecusively(ret, childrenMap, childDoc, level + 1, true, sourceFormatPdfAllowed, mimeType, footerId);
+                    addTocElementsRecusively(ret, childrenMap, childDoc, level + 1, true, pdfPermissionMap, mimeType, footerId);
                 }
             }
         }
@@ -797,13 +816,13 @@ public class TocMaker {
      */
     static String getFooterId(SolrDocument doc, List<String> fields) {
         String ret = null;
-            for (String field : fields) {
-                List<String> footerIdValues = SolrSearchIndex.getMetadataValues(doc, field);
-                if (footerIdValues != null && !footerIdValues.isEmpty()) {
-                    ret = footerIdValues.get(0);
-                    break;
-                }                
+        for (String field : fields) {
+            List<String> footerIdValues = SolrSearchIndex.getMetadataValues(doc, field);
+            if (footerIdValues != null && !footerIdValues.isEmpty()) {
+                ret = footerIdValues.get(0);
+                break;
             }
+        }
 
         return ret;
     }

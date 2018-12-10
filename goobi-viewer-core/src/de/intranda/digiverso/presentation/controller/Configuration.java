@@ -1659,7 +1659,7 @@ public final class Configuration extends AbstractConfiguration {
 
         }
 
-        logger.trace("Tree view for {} not allowed", docStructType);
+        // logger.trace("Tree view for {} not allowed", docStructType);
         return false;
     }
 

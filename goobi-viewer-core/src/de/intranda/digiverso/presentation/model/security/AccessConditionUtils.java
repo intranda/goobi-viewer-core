@@ -321,6 +321,64 @@ public class AccessConditionUtils {
         return false;
     }
 
+    /**
+     * 
+     * @param identifier
+     * @param privilegeName
+     * @param request
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should fill map completely
+     */
+    public static Map<String, Boolean> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
+        logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
+        Map<String, Boolean> ret = new HashMap<>();
+        if (StringUtils.isNotEmpty(identifier)) {
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(
+                    DocType.DOCSTRCT.name());
+            try {
+                logger.trace(sbQuery.toString());
+                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, null,
+                        Arrays.asList(new String[] { SolrConstants.LOGID, SolrConstants.ACCESSCONDITION }));
+                if (results != null) {
+                    User user = BeanUtils.getUserFromRequest(request);
+                    if (user == null) {
+                        UserBean userBean = BeanUtils.getUserBean();
+                        if (userBean != null) {
+                            user = userBean.getUser();
+                        }
+                    }
+
+                    for (SolrDocument doc : results) {
+                        Set<String> requiredAccessConditions = new HashSet<>();
+                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                        if (fieldsAccessConddition != null) {
+                            for (Object accessCondition : fieldsAccessConddition) {
+                                requiredAccessConditions.add((String) accessCondition);
+                                // logger.trace("{}", accessCondition.toString());
+                            }
+                        }
+
+                        String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
+                        if (logid != null) {
+                            ret.put(logid, checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(),
+                                    requiredAccessConditions, privilegeName, user, Helper.getIpAddress(request), sbQuery.toString()));
+                        }
+                    }
+                }
+
+            } catch (PresentationException e) {
+                logger.debug("PresentationException thrown here: {}", e.getMessage());
+            }
+        }
+
+        logger.trace("Found access permisstions for {} elements.", ret.size());
+        return ret;
+    }
+
     public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission({})", identifier);
@@ -524,7 +582,7 @@ public class AccessConditionUtils {
         // logger.debug("session id: " + request.getSession().getId());
         // Session persistent permission check: Servlet-local method.
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
-        logger.trace("Checking session attribute: {}", attributeName);
+        // logger.trace("Checking session attribute: {}", attributeName);
         Map<String, Boolean> permissions = null;
         if (request != null) {
             permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
@@ -652,7 +710,7 @@ public class AccessConditionUtils {
         }
 
         // If not within an allowed IP range, check the current user's satisfied access conditions
-        
+
         if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
             return true;
         }
