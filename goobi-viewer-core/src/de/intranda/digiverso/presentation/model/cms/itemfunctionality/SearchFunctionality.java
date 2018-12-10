@@ -101,7 +101,7 @@ public class SearchFunctionality implements Functionality {
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
         } else {
-            getSearchBean().searchSimple();
+            getSearchBean().searchSimple(true, false);
             redirectToSearchUrl();
         }
     }

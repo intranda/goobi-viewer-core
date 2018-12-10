@@ -256,7 +256,7 @@ public class SearchBean implements Serializable {
     public String searchSimpleSetFacets(String facetString) {
         facets.resetCurrentFacetString();
         facets.setCurrentFacetString(facetString);
-        return searchSimple();
+        return searchSimple(true, false);
     }
 
     public String searchAdvanced() {
