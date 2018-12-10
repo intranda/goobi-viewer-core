@@ -1692,8 +1692,8 @@ public final class SearchHelper {
                     return SolrConstants.FACET_DC;
                 case SolrConstants.DOCSTRCT:
                     return "FACET_DOCSTRCT";
-                //                case SolrConstants.SUPERDOCSTRCT:
-                //                    return "FACET_SUPERDOCSTRCT";
+                case SolrConstants.SUPERDOCSTRCT:
+                    return "FACET_SUPERDOCSTRCT";
                 default:
                     if (fieldName.startsWith("MD_")) {
                         fieldName = fieldName.replace("MD_", "FACET_");
@@ -1718,8 +1718,8 @@ public final class SearchHelper {
                     return SolrConstants.DC;
                 case "FACET_DOCSTRCT":
                     return SolrConstants.DOCSTRCT;
-                //                case "FACET_SUPERDOCSTRCT":
-                //                    return SolrConstants.SUPERDOCSTRCT;
+                case "FACET_SUPERDOCSTRCT":
+                    return SolrConstants.SUPERDOCSTRCT;
                 default:
                     if (fieldName.startsWith("FACET_")) {
                         return fieldName.replace("FACET_", "MD_");

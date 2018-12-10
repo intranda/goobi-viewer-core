@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -238,17 +239,35 @@ public class Search implements Serializable {
 
         // Apply current facets
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
+        String removeFq = null;
+        String mainQueryFilterSuffix = "";
         for (String fq : facetFilterQueries) {
             logger.trace("Facet query: {}", fq);
+            if (fq.startsWith("FACET_" + SolrConstants.SUPERDOCSTRCT)) {
+                // Faceting over sub-element docstructs requires filtering via the main query rather than a filter query
+                removeFq = fq;
+                mainQueryFilterSuffix = new StringBuilder().append(" +")
+                        .append(fq.replace(SolrConstants.SUPERDOCSTRCT, SolrConstants.DOCSTRCT))
+                        .append(" AND ")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":")
+                        .append(DocType.DOCSTRCT.name())
+                        .toString();
+                // TODO Non-join query for true docstrct facets
+            }
+        }
+        if (removeFq != null) {
+            facetFilterQueries.remove(removeFq);
         }
 
+        String finalQuery = query + mainQueryFilterSuffix;
         if (hitsCount == 0) {
-            logger.trace("Final main query: {}", query);
+            logger.trace("Final main query: {}", finalQuery);
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
             List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
-            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, rangeFacetFields,
+            resp = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, rangeFacetFields,
                     Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries, params);
             if (resp != null && resp.getFacetFields() != null) {
                 for (FacetField facetField : resp.getFacetFields()) {
@@ -268,7 +287,7 @@ public class Search implements Serializable {
                 }
             }
 
-            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields,
+            resp = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, allFacetFields,
                     Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {
                 hitsCount = resp.getResults().getNumFound();
@@ -335,9 +354,9 @@ public class Search implements Serializable {
             }
 
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
-                    ? SearchHelper.searchWithAggregation(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
-                            BeanUtils.getLocale())
-                    : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
+                    ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
+                            null, BeanUtils.getLocale())
+                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
                             BeanUtils.getLocale(), BeanUtils.getRequest());
             this.hits.addAll(hits);
         }
