@@ -163,6 +163,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         if (user == null) {
             user = new User();
             user.setNickName(request.getUsername());
+            user.setActive(true);
             user.setEmail(DEFAULT_EMAIL.replace("{username}",request.getUsername()));
             logger.debug("Created new user with nickname " + request.getUsername());
         }
