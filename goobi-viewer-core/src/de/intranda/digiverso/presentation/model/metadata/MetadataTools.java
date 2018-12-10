@@ -136,7 +136,7 @@ public class MetadataTools {
         // DCTERMS.abstract
         if (structElement.getMetadataValue("MD_INFORMATION") != null) {
             String value = structElement.getMetadataValue("MD_INFORMATION");
-            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(value).append("\"");
+            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(StringEscapeUtils.escapeHtml(value)).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
                 result.append(" xml:lang=\"").append(isoLanguage).append('"');
             }
