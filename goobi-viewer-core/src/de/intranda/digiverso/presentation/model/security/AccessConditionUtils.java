@@ -322,11 +322,12 @@ public class AccessConditionUtils {
     }
 
     /**
+     * Checks whether the current users has the given access permissions each element of the record with the given identifier.
      * 
      * @param identifier
      * @param privilegeName
      * @param request
-     * @return
+     * @return Map with true/false for each LOGID
      * @throws IndexUnreachableException
      * @throws DAOException
      * @should fill map completely
@@ -337,8 +338,13 @@ public class AccessConditionUtils {
         Map<String, Boolean> ret = new HashMap<>();
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(
-                    DocType.DOCSTRCT.name());
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(identifier)
+                    .append(" AND ")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.DOCSTRCT.name());
             try {
                 logger.trace(sbQuery.toString());
                 SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, null,

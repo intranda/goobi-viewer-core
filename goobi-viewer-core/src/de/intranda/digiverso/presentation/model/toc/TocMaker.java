@@ -508,6 +508,7 @@ public class TocMaker {
         }
         logger.trace("populateTocTree: {}", pi);
 
+        // Check PDF download permissions for all docstructs and save into map
         Map<String, Boolean> pdfPermissionMap = null;
         if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
             pdfPermissionMap =
@@ -624,7 +625,10 @@ public class TocMaker {
         }
 
         IMetadataValue label = buildLabel(doc, docstructType);
-        boolean accessPermissionPdf = logId != null ? (pdfPermissionMap.containsKey(logId) ? pdfPermissionMap.get(logId) : false) : false;
+        boolean accessPermissionPdf = false;
+        if (pdfPermissionMap != null && logId != null && pdfPermissionMap.get(logId)) {
+            accessPermissionPdf = pdfPermissionMap.get(logId);
+        }
         TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, accessPermissionPdf, isAnchor,
                 pageNo != null, mimeType, docstructType, footerId);
         tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docstructType);
