@@ -1485,7 +1485,7 @@ public class SearchBean implements Serializable {
 
         for (String facetField : facetFields) {
             String matchingFacet =
-                    facets.stream().filter(facet -> facet.replace("_UNTOKENIZED", "").startsWith(facetField + ":")).findFirst().orElse("");
+                    facets.stream().filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":")).findFirst().orElse("");
             if (StringUtils.isNotBlank(matchingFacet)) {
                 int separatorIndex = matchingFacet.indexOf(":");
                 if (separatorIndex > 0 && separatorIndex < matchingFacet.length() - 1) {
@@ -1627,7 +1627,8 @@ public class SearchBean implements Serializable {
             } else {
                 new BrowsingMenuFieldConfig(field, null, null, false);
                 String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
-                String facetField = field.replace(SolrConstants._UNTOKENIZED, "").replace("MD_", "FACET_");
+
+                String facetField = SearchHelper.facetifyField(field);
                 List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, facetField, 0);
                 for (String value : values) {
                     ret.add(new StringPair(value, Helper.getTranslation(value, null)));
