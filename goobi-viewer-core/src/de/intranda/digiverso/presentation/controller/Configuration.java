@@ -1065,6 +1065,28 @@ public final class Configuration extends AbstractConfiguration {
 
         return false;
     }
+    
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
+        List fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList != null) {
+
+            for (Iterator it = fieldList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      *
