@@ -122,10 +122,18 @@ public class SearchQueryItem implements Serializable {
 
     /**
      *
-     * @return
+     * @return true or false
      */
     public boolean isHierarchical() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(field);
+    }
+
+    /**
+     * 
+     * @return true or false
+     */
+    public boolean isUntokenizeForPhraseSearch() {
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field);
     }
 
     /**
@@ -284,10 +292,12 @@ public class SearchQueryItem implements Serializable {
                     if (additionalField) {
                         sbItem.append(" OR ");
                     }
-                    // No longer using _UNTOKENIZED fields for phrase searches, otherwise only complete field value matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
-                    //                    String useField = field.startsWith("MD_") && !field.endsWith(SolrConstants._UNTOKENIZED) ? new StringBuilder(field).append(
-                    //                            SolrConstants._UNTOKENIZED).toString() : field;
+                    // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value 
+                    // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
                     String useField = field;
+                    if (isUntokenizeForPhraseSearch() && !field.endsWith(SolrConstants._UNTOKENIZED)) {
+                        useField = field += SolrConstants._UNTOKENIZED;
+                    }
                     sbItem.append(useField).append(':');
                     if (useValue.charAt(0) != '"') {
                         sbItem.append('"');

@@ -1381,6 +1381,17 @@ public class ConfigurationTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical("MD_TITLE"));
     }
+    
+
+    /**
+     * @see Configuration#isAdvancedSearchFieldUntokenizeForPhraseSearch(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
+    }
 
     /**
      * @see Configuration#getSidebarTocCollapseLengthThreshold()
