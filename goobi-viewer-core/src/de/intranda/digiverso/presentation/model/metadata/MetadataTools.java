@@ -154,12 +154,12 @@ public class MetadataTools {
                 .append('.')
                 .toString();
 
-        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
+        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\" />");
 
         if (structElement.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
             rights = structElement.getMetadataValue(SolrConstants.ACCESSCONDITION);
             if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
+                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\" />");
             }
         }
 
