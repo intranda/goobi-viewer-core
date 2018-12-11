@@ -195,7 +195,7 @@ public abstract class AbstractBuilder {
      */
     public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
         for (String field : getMetadataFields(ele)) {
-            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith("_UNTOKENIZED") && !field.matches(".*_LANG_\\w{2,3}")) {
+            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
                         .ifPresent(md -> {
