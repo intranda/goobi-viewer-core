@@ -472,6 +472,10 @@ public class CmsBean implements Serializable {
         }
         return CMSSidebarManager.getDefaultSidebarElements();
     }
+    
+    public CMSSidebarElement getSidebarElement(String type) {
+        return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
+    }
 
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise

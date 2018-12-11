@@ -136,7 +136,7 @@ public class MetadataTools {
         // DCTERMS.abstract
         if (structElement.getMetadataValue("MD_INFORMATION") != null) {
             String value = structElement.getMetadataValue("MD_INFORMATION");
-            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(value).append("\"");
+            result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(StringEscapeUtils.escapeHtml(value)).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
                 result.append(" xml:lang=\"").append(isoLanguage).append('"');
             }
@@ -154,12 +154,12 @@ public class MetadataTools {
                 .append('.')
                 .toString();
 
-        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
+        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\" />");
 
         if (structElement.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
             rights = structElement.getMetadataValue(SolrConstants.ACCESSCONDITION);
             if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
+                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\" />");
             }
         }
 

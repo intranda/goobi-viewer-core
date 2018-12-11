@@ -95,13 +95,17 @@ public class SearchFunctionality implements Functionality {
             logger.error("Error retrieving search url", e);
         }
     }
+    
+    public void searchSimple(boolean a, boolean b) {
+        
+    }
 
     public void searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
         } else {
-            getSearchBean().searchSimple();
+            getSearchBean().searchSimple(true, false);
             redirectToSearchUrl();
         }
     }
