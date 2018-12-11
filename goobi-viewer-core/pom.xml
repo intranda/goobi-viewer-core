@@ -634,6 +634,12 @@
 			<artifactId>stax-api</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+		
+        <dependency>
+            <groupId>de.intranda.digiverso.ocr</groupId>
+            <artifactId>tei-conversion</artifactId>
+            <version>[0.1,)</version>
+        </dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
 		<dependency>

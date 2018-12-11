@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -401,8 +400,6 @@ public final class Configuration extends AbstractConfiguration {
      * @param template Template name
      * @return List of normdata fields configured for the given template name
      * @should return correct template configuration
-     * @should return default template configuration if template not found
-     * @should return default template if template is null
      */
     @SuppressWarnings("rawtypes")
     public List<String> getNormdataFieldsForTemplate(String template) {
@@ -415,15 +412,16 @@ public final class Configuration extends AbstractConfiguration {
                 if (subElement.getString("[@name]").equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                    defaultTemplate = subElement;
                 }
+                //                else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                //                    defaultTemplate = subElement;
+                //                }
             }
 
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null && defaultTemplate != null) {
-                usingTemplate = defaultTemplate;
-            }
+            //            // If the requested template does not exist in the config, use _DEFAULT
+            //            if (usingTemplate == null && defaultTemplate != null) {
+            //                usingTemplate = defaultTemplate;
+            //            }
 
             if (usingTemplate != null) {
                 return getLocalList(usingTemplate, null, "field", null);
@@ -525,8 +523,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
-    
+
     /**
      * @return
      */
@@ -541,27 +538,26 @@ public final class Configuration extends AbstractConfiguration {
      */
     public Metadata getWidgetUsageLicenceTextMetadata() {
         HierarchicalConfiguration sub = null;
-        try {            
+        try {
             sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             //no or multiple occurances 
         }
-        if(sub != null) {
+        if (sub != null) {
             Metadata md = getMetadata(sub);
             return md;
-        } else {
-            return new Metadata();
         }
+        return new Metadata();
     }
 
     /**
      * Creates a {@link Metadata} instance from the given subnode configuration
      * 
-     * @param sub   The subnode configuration
-     * @return  the resulting {@link Metadata} instance
+     * @param sub The subnode configuration
+     * @return the resulting {@link Metadata} instance
      */
     @SuppressWarnings("rawtypes")
-    private Metadata getMetadata(HierarchicalConfiguration sub) {
+    private static Metadata getMetadata(HierarchicalConfiguration sub) {
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
         boolean group = sub.getBoolean("[@group]", false);
@@ -582,15 +578,14 @@ public final class Configuration extends AbstractConfiguration {
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
                 boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                        defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
+                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                        prefix, suffix, addUrl, dontUseTopstructValue));
             }
         }
         Metadata md = new Metadata(label, masterValue, type, paramList, group, number);
         return md;
     }
 
-    
     /**
      * 
      * @param eleTemplate
@@ -695,6 +690,21 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    public String getCollectionSplittingChar(String field) {
+        HierarchicalConfiguration subConfig = getCollectionConfiguration(field);
+        if (subConfig != null) {
+            return subConfig.getString("splittingCharacter", ".");
+        }
+
+        return getLocalString("viewer.splittingCharacter", ".");
     }
 
     /**
@@ -892,7 +902,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return  The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
+     * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      * @throws ViewerConfigurationException
      */
     public String getRestApiUrl() throws ViewerConfigurationException {
@@ -1055,6 +1065,28 @@ public final class Configuration extends AbstractConfiguration {
 
         return false;
     }
+    
+    /**
+     * 
+     * @param field
+     * @return
+     * @should return correct value
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
+        List fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList != null) {
+
+            for (Iterator it = fieldList.iterator(); it.hasNext();) {
+                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      *
@@ -1133,8 +1165,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getSplittingCharacter() {
-        return getLocalString("viewer.splittingCharacter");
+    public String getPageSelectionFormat() {
+        return getLocalString("viewer.pageSelectionFormat", "{pageno}:{pagenolabel}");
     }
 
     /**
@@ -1239,7 +1271,7 @@ public final class Configuration extends AbstractConfiguration {
     @SuppressWarnings("static-method")
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
-//        return System.getProperty("java.io.tmpdir") + "viewer";
+        //        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**
@@ -1543,24 +1575,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isSidebarDfgLinkVisible() {
-        return getLocalBoolean("sidebar.dfg.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarOpacLinkVisible() {
-        return getLocalBoolean("sidebar.opac.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
     public boolean isSidebarTocVisible() {
         return this.getLocalBoolean("sidebar.sidebarToc.visible", true);
     }
@@ -1645,7 +1659,7 @@ public final class Configuration extends AbstractConfiguration {
 
         }
 
-        logger.trace("Tree view for {} not allowed", docStructType);
+        // logger.trace("Tree view for {} not allowed", docStructType);
         return false;
     }
 
@@ -2473,7 +2487,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    @Deprecated
     public String getDataRepositoriesHome() {
         return getLocalString("dataRepositoriesHome", "");
     }
@@ -3107,7 +3120,7 @@ public final class Configuration extends AbstractConfiguration {
             return subConfig.getString("defaultBrowseIcon", "");
         }
 
-        return getLocalString("collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
+        return getLocalString("collections.collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
     /**
@@ -3199,6 +3212,5 @@ public final class Configuration extends AbstractConfiguration {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
     }
-
 
 }

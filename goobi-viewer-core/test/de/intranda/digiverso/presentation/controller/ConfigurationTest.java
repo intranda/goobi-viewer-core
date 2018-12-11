@@ -702,12 +702,23 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getSplittingCharacter()
+     * @see Configuration#getCollectionSplittingChar(String)
      * @verifies return correct value
      */
     @Test
-    public void getSplittingCharacter_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getSplittingCharacter());
+    public void getCollectionSplittingChar_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
+        Assert.assertEquals("/", DataManager.getInstance().getConfiguration().getCollectionSplittingChar("MD_KNOWLEDGEFIELD"));
+        Assert.assertEquals(".", DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DOCTYPE));
+    }
+
+    /**
+     * @see Configuration#getPageSelectionFormat()
+     * @verifies return correct value
+     */
+    @Test
+    public void getPageSelectionFormat_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("{order} {msg.of} {numpages}", DataManager.getInstance().getConfiguration().getPageSelectionFormat());
     }
 
     /**
@@ -900,15 +911,6 @@ public class ConfigurationTest {
     @Test
     public void getUnconditionalImageAccessMaxWidth_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getUnconditionalImageAccessMaxWidth());
-    }
-
-    /**
-     * @see Configuration#getViewerDfgViewerUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getViewerDfgViewerUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("dfg-viewer_value", DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
     }
 
     /**
@@ -1110,15 +1112,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isSidebarDfgLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarDfgLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible());
-    }
-
-    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -1134,15 +1127,6 @@ public class ConfigurationTest {
     @Test
     public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible());
-    }
-
-    /**
-     * @see Configuration#isSidebarOpacLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
     }
 
     /**
@@ -1362,24 +1346,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getNormdataFieldsForTemplate(String)
-     * @verifies return default template configuration if template not found
-     */
-    @Test
-    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate("THING").size());
-    }
-
-    /**
-     * @see Configuration#getNormdataFieldsForTemplate(String)
-     * @verifies return default template if template is null
-     */
-    @Test
-    public void getNormdataFieldsForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(null).size());
-    }
-
-    /**
      * @see Configuration#isDisplayTopstructLabel()
      * @verifies return correct value
      */
@@ -1414,6 +1380,17 @@ public class ConfigurationTest {
     public void isAdvancedSearchFieldHierarchical_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical("MD_TITLE"));
+    }
+    
+
+    /**
+     * @see Configuration#isAdvancedSearchFieldUntokenizeForPhraseSearch(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAdvancedSearchFieldUntokenizeForPhraseSearch_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(SolrConstants.DC));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch("MD_TITLE"));
     }
 
     /**

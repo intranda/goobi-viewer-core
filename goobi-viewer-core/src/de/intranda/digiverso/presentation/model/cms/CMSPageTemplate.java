@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 
@@ -182,7 +183,7 @@ public class CMSPageTemplate {
         for (Locale locale : locales) {
             CMSPageLanguageVersion langVersion = createNewLanguageVersion(page, locale.getLanguage());
             page.getLanguageVersions().add(langVersion);
-            if(locale.equals(CmsBean.getDefaultLocaleStatic())) {
+            if(locale.equals(ViewerResourceBundle.getDefaultLocale())) {
             	langVersion.setStatus(CMSPageStatus.FINISHED);
             }
         }

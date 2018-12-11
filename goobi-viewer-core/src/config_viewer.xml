@@ -272,9 +272,11 @@
 			<text>purl</text>
 		</watermarkTextConfiguration>
 
-		<!-- TODO: MOVE TO <collection>; splitingCharacter: defines symbol that 
-			splits collections into subcollections -->
-		<splittingCharacter>.</splittingCharacter>
+	    <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
+		    Values that are not among the following allowed variables will be displayed 
+		    as-is.
+		    Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
+	    <pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat>		
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names 
 			in the PageType enum. Sub-elements must have the same names as the enum values. -->
@@ -374,7 +376,7 @@
 				<field>PI_TOPSTRUCT</field>
 				<field hierarchical="true">DC</field>
 				<field>DOCSTRCT</field>
-				<field>MD_TITLE</field>
+				<field untokenizeForPhraseSearch="true">MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
@@ -470,6 +472,10 @@
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
 	<collections>
 		<collection field="DC">
+		
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+		    
 			<!-- In the following section you can define an index field that is used 
 				for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
@@ -502,9 +508,9 @@
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>-1</displayDepthForSearch>
 
-			<!-- Default-Image for tiled collection in CMS, relative to theme path. -->
-			<defaultBrowseIcon>images/collections/collection_tiled_default.jpg
-			</defaultBrowseIcon>
+			<!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
+                        No text means that no image is rendered for the collection -->
+			<defaultBrowseIcon></defaultBrowseIcon>
 		</collection>
 	</collections>
 
@@ -872,20 +878,6 @@
 		
 		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
 		<normdataList>
-            <template name="_DEFAULT">
-                <field>NORM_IDENTIFIER</field>
-                <field>NORM_TITLE</field>
-                <field>NORM_OTHERTITLE</field>
-                <field>NORM_EXPLANATORYTEXT</field>
-                <field>NORM_PERIOD</field>
-                <field>NORM_PRODUCTIONPERIOD</field>
-                <field>NORM_CONTRIBUTOR</field>
-                <field>NORM_OWNER</field>
-                <field>NORM_COLLECTOR</field>
-                <field>NORM_WORK</field>
-                <field>NORM_RELATIONSHIP</field>
-                <field>URI</field>
-            </template>
             <template name="CORPORATION">
                 <field>NORM_IDENTIFIER</field>
                 <field>NORM_ORGANIZATION</field>
@@ -1016,7 +1008,7 @@
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view (for _ALL or specific docstruct types) -->
-		<useTreeView showDocStructs="_ALL">true</useTreeView>
+		<useTreeView showDocStructs="_ALL">false</useTreeView>
 	</toc>
 
 	<tagclouds>
@@ -1120,15 +1112,6 @@
 			<visible>true</visible>
 		</fulltext>
 
-		<!-- dfg: if false, the dfg-viewer link is hidden -->
-		<dfg>
-			<visible>true</visible>
-		</dfg>
-
-		<!-- opa/opt if false, the link to the catalogue is hidden -->
-		<opac>
-			<visible>true</visible>
-		</opac>
 
 		<!-- sidebarTo/opt configuration of the sidebar TOC component -->
 		<sidebarToc>

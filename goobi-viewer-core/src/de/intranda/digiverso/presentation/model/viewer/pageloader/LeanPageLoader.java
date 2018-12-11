@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.model.SelectItem;
 
@@ -36,7 +37,6 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -44,7 +44,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 /**
  * Memory-saving page loader that only loads one page at a time.
  */
-public class LeanPageLoader implements IPageLoader, Serializable {
+public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     private static final long serialVersionUID = 7841595315092878078L;
 
@@ -112,8 +112,9 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
             return currentPage;
-        } else if(pageOrder == currentPageNumber) {
-;            return currentPage;
+        } else if (pageOrder == currentPageNumber) {
+            ;
+            return currentPage;
         } else {
             return null;
         }
@@ -142,36 +143,46 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean)
+     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean, java.util.Locale)
      */
     @Override
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
-            boolean recordBelowFulltextThreshold) throws IndexUnreachableException {
+            boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException {
         logger.debug("Generating drop-down page selector...");
         try {
             String pi = topElement.getPi();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
-                    ':').append(DocType.PAGE);
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections
-                    .singletonList(new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(topElement.getPi())
+                    .append(" AND ")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.PAGE);
+            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS,
+                    Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
             if (result == null || result.isEmpty()) {
                 sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.FILENAME)
+                sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(topElement.getPi())
+                        .append(" AND ")
+                        .append(SolrConstants.FILENAME)
                         .append(":*");
-                result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(
-                        new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
+                result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS,
+                        Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
             }
+            String labelTemplate = buildPageLabelTemplate(DataManager.getInstance().getConfiguration().getPageSelectionFormat(), locale);
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
-                boolean fulltextAvailable = doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(
-                        SolrConstants.FULLTEXTAVAILABLE) : false;
+                boolean fulltextAvailable =
+                        doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
                 SelectItem si = new SelectItem();
-                si.setLabel(order + ":" + orderLabel);
+                si.setLabel(labelTemplate.replace("{order}", String.valueOf(order)).replace("{orderlabel}", orderLabel));
                 si.setValue(order);
                 dropdownPages.add(si);
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
@@ -194,16 +205,21 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     protected final void setFirstAndLastPageOrder() throws IndexUnreachableException {
         try {
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
-                    ':').append(DocType.PAGE);
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, Collections.singletonList(
-                    new StringPair(SolrConstants.ORDER, "asc")), Collections.singletonList(SolrConstants.ORDER));
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(topElement.getPi())
+                    .append(" AND ")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.PAGE);
+            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1,
+                    Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), Collections.singletonList(SolrConstants.ORDER));
             if (!result.isEmpty()) {
                 firstPageOrder = (int) result.get(0).getFieldValue(SolrConstants.ORDER);
             }
 
-            result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, Collections.singletonList(new StringPair(
-                    SolrConstants.ORDER, "desc")), Collections.singletonList(SolrConstants.ORDER));
+            result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1,
+                    Collections.singletonList(new StringPair(SolrConstants.ORDER, "desc")), Collections.singletonList(SolrConstants.ORDER));
             if (!result.isEmpty()) {
                 lastPageOrder = (int) result.get(0).getFieldValue(SolrConstants.ORDER);
             }
@@ -231,8 +247,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
-                .append(DocType.PAGE);
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(
+                DocType.PAGE);
         if (pageNumber >= 0) {
             sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
         }
@@ -252,8 +268,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 sbQuery.append(" AND ").append(SolrConstants.FILENAME).append(":*");
             }
         }
-        result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, Collections.singletonList(new StringPair(
-                SolrConstants.ORDER, "asc")), fields);
+        result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1,
+                Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
         if (!result.isEmpty()) {
             SolrDocument doc = result.get(0);
             // PHYSID
@@ -300,12 +316,12 @@ public class LeanPageLoader implements IPageLoader, Serializable {
 
             PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
 
-                if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
-                    pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
-                }
-                if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
-                    pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-                }
+            if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
+                pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
+            }
+            if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
+                pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+            }
 
             // Full-text filename
             pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));

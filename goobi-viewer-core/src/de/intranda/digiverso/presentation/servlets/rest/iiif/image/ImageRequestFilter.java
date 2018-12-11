@@ -65,7 +65,14 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
+       
+        String mediaType = MediaType.APPLICATION_JSON;
+        if(servletRequest != null && servletRequest.getRequestURI().toLowerCase().contains("xml")) {
+            mediaType = MediaType.TEXT_XML;
+        }
+        
         try {
+            
             String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
             logger.trace("Filtering request " + requestPath);
@@ -100,15 +107,12 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                 }
             }
         } catch (ServiceNotAllowedException e) {
-            String mediaType = MediaType.APPLICATION_JSON;
-            //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-            //                mediaType = MediaType.APPLICATION_JSON;
-            //            }
+
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response =
-                    Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
+                    Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
             request.abortWith(response);
         }
     }

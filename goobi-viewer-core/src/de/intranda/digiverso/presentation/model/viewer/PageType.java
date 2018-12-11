@@ -191,6 +191,10 @@ public enum PageType {
         return name;
     }
 
+    /**
+     * 
+     * @return Mapped alternative name, if available; raw name otherwise
+     */
     public String getName() {
         String configName = DataManager.getInstance().getConfiguration().getPageType(this);
         if (configName != null) {

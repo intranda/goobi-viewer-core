@@ -16,7 +16,6 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -41,22 +40,24 @@ public class CollectionView {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionView.class);
 
-    private List<HierarchicalBrowseDcElement> completeCollectionList;
-    private List<HierarchicalBrowseDcElement> visibleCollectionList;
+    private List<HierarchicalBrowseDcElement> completeCollectionList = new ArrayList<>();
+    private List<HierarchicalBrowseDcElement> visibleCollectionList = new ArrayList<>();
 
-    private String field;
+    private final String field;
+    private final String splittingChar;
     private BrowseDataProvider dataProvider;
     private String topVisibleElement = null;
     private String baseElementName = null;
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     private boolean displayParentCollections = true;
-    
+
     private List<String> ignoreList = new ArrayList<>();
 
     public CollectionView(String field, BrowseDataProvider dataProvider) {
         super();
         this.field = field;
+        this.splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
         this.dataProvider = dataProvider;
     }
 
@@ -69,6 +70,7 @@ public class CollectionView {
         this.completeCollectionList =
                 blueprint.completeCollectionList.stream().map(element -> new HierarchicalBrowseDcElement(element)).collect(Collectors.toList());
         this.field = blueprint.field;
+        this.splittingChar = blueprint.splittingChar;
         this.dataProvider = blueprint.dataProvider;
     }
 
@@ -127,11 +129,11 @@ public class CollectionView {
         } else if (collectionName.equals(getBaseElementName())) {
             //If this is the base element of the entiry collection view, open in collection view (TODO: is that correct?)
             return true;
-        } else if (collectionName.startsWith(getBaseElementName() + BrowseDcElement.split)
+        } else if (collectionName.startsWith(getBaseElementName() + splittingChar)
                 && calculateLevel(collectionName) - calculateLevel(getBaseElementName()) <= getBaseLevels()) {
             //If this is a subcollection of the base element and less than base levels beneath the base element, open in collection view (same as second 'if' but for views with a base element
             return true;
-        } else if (getBaseElementName() != null && getBaseElementName().startsWith(collectionName + BrowseDcElement.split)) {
+        } else if (getBaseElementName() != null && getBaseElementName().startsWith(collectionName + splittingChar)) {
             //If this is a parent of the base collection, open in collection view (effectively going upwards in the view hierarchy
             return true;
         } else {
@@ -157,12 +159,11 @@ public class CollectionView {
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
             if (topElement == null) {
                 for (HierarchicalBrowseDcElement element : completeCollectionList) {
-                    if(this.ignoreList.contains(element.getName())) {
+                    if (this.ignoreList.contains(element.getName())) {
                         continue;
-                    } else {                        
-                        visibleList.add(element);
-                        visibleList.addAll(element.getAllVisibleDescendents(false));
                     }
+                    visibleList.add(element);
+                    visibleList.addAll(element.getAllVisibleDescendents(false));
                 }
             } else {
                 topElement.setShowSubElements(true);
@@ -170,8 +171,7 @@ public class CollectionView {
                 Collection<? extends HierarchicalBrowseDcElement> descendents = topElement.getAllVisibleDescendents(false);
                 descendents = descendents.stream().filter(c -> !this.ignoreList.contains(c.getName())).collect(Collectors.toList());
                 visibleList.addAll(descendents);
-                if (isDisplayParentCollections()
-                        && (baseElement == null || topElement.getName().contains(baseElement.getName() + BrowseDcElement.split))) {
+                if (isDisplayParentCollections() && (baseElement == null || topElement.getName().contains(baseElement.getName() + splittingChar))) {
                     HierarchicalBrowseDcElement parent = topElement.getParent();
                     while (parent != null) {
                         visibleList.add(0, parent);
@@ -182,8 +182,8 @@ public class CollectionView {
                     }
                 }
             }
-            this.visibleCollectionList =
-                    sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field), getTopVisibleElement());
+            this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
+                    getTopVisibleElement(), splittingChar);
             if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement) && !this.visibleCollectionList.isEmpty()) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
@@ -194,13 +194,13 @@ public class CollectionView {
             }
         }
     }
-    
+
     List<HierarchicalBrowseDcElement> getAncestors(String elementName, boolean includeSelf) {
         List<HierarchicalBrowseDcElement> elements = new ArrayList<>();
         HierarchicalBrowseDcElement currentElement = getElement(elementName, completeCollectionList);
-        if(currentElement != null) {            
+        if (currentElement != null) {
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
-            if(includeSelf) {
+            if (includeSelf) {
                 elements.add(currentElement);
             }
             HierarchicalBrowseDcElement parent = currentElement.getParent();
@@ -290,7 +290,7 @@ public class CollectionView {
         for (HierarchicalBrowseDcElement element : collections) {
             if (element.getName().equals(elementName)) {
                 return element;
-            } else if (elementName.contains(element.getName() + BrowseDcElement.split)) {
+            } else if (elementName.contains(element.getName() + splittingChar)) {
                 HierarchicalBrowseDcElement matchingElement = getElement(elementName, element.getChildren());
                 if (matchingElement != null) {
                     return matchingElement;
@@ -301,8 +301,8 @@ public class CollectionView {
     }
 
     public int calculateLevel(String name) {
-        if (StringUtils.isNotEmpty(BrowseDcElement.split)) {
-            int parts = name.split("\\" + BrowseDcElement.split).length - 1;
+        if (StringUtils.isNotEmpty(splittingChar)) {
+            int parts = name.split("\\" + splittingChar).length - 1;
             return parts;
         }
         return 0;
@@ -359,7 +359,7 @@ public class CollectionView {
             } else {
                 showChildren(element);
                 this.visibleCollectionList = sortDcList(visibleCollectionList,
-                        DataManager.getInstance().getConfiguration().getCollectionSorting(field), getTopVisibleElement());
+                        DataManager.getInstance().getConfiguration().getCollectionSorting(field), getTopVisibleElement(), splittingChar);
                 associateElementsWithCMSData();
             }
         }
@@ -370,13 +370,15 @@ public class CollectionView {
      * Sorts the given <code>BrowseDcElement</code> list as defined in the configuration. All other elements are moved to the end of the list.
      *
      * @param inDcList The list to sort.
-     * @param string
      * @param sortCriteriaList
+     * @param sortCriteriaSuperList
+     * @param topElement
+     * @param splittingChar
      * @return A sorted list.
      */
     @SuppressWarnings("unchecked")
     protected static List<HierarchicalBrowseDcElement> sortDcList(List<HierarchicalBrowseDcElement> inDcList,
-            List<DcSortingList> sortCriteriaSuperList, String topElement) {
+            List<DcSortingList> sortCriteriaSuperList, String topElement, String splittingChar) {
         if (sortCriteriaSuperList != null) {
             //iterate over all sorting lists
             for (DcSortingList sortCriteriaList : sortCriteriaSuperList) {
@@ -403,7 +405,7 @@ public class CollectionView {
                         if (dc.getName().equals(s) && !sortedDcList.contains(dc)) {
                             sortedDcList.add(dc);
                             //                            logger.trace("adding dc: {}", dc.getName());
-                        } else if (dc.getName().startsWith(s + BrowseDcElement.split) && !sortCriteriaList.getCollections().contains(dc.getName())
+                        } else if (dc.getName().startsWith(s + splittingChar) && !sortCriteriaList.getCollections().contains(dc.getName())
                                 && !unsortedSubCollections.contains(dc)) {
                             unsortedSubCollections.add(dc);
                             //                            logger.trace("adding dc to unsorted subcollections: {}", dc.getName());
@@ -412,10 +414,10 @@ public class CollectionView {
                 }
                 List<HierarchicalBrowseDcElement> unsortedRest = ListUtils.subtract(inDcList, sortedDcList);
                 unsortedRest = ListUtils.subtract(unsortedRest, unsortedSubCollections);
-                int firstLevel = getLevelOfFirstElement(sortCriteriaList.getCollections());
-                int index = getIndexOfElementWithName(unsortedRest, sortCriteriaList.getSortAfter(), firstLevel);
+                int firstLevel = getLevelOfFirstElement(sortCriteriaList.getCollections(), splittingChar);
+                int index = getIndexOfElementWithName(unsortedRest, sortCriteriaList.getSortAfter(), firstLevel, splittingChar);
                 unsortedRest.addAll(index, sortedDcList);
-                inDcList = addUnsortedSubcollections(unsortedRest, unsortedSubCollections);
+                inDcList = addUnsortedSubcollections(unsortedRest, unsortedSubCollections, splittingChar);
             }
         }
 
@@ -428,15 +430,16 @@ public class CollectionView {
      *
      * @param collections
      * @param unsortedSubCollections
+     * @param splittingChar
      * @return the first collection list
      */
     private static List<HierarchicalBrowseDcElement> addUnsortedSubcollections(List<HierarchicalBrowseDcElement> collections,
-            List<HierarchicalBrowseDcElement> unsortedSubCollections) {
+            List<HierarchicalBrowseDcElement> unsortedSubCollections, String splittingChar) {
         Collections.reverse(unsortedSubCollections);
         for (HierarchicalBrowseDcElement unsortedCollection : unsortedSubCollections) {
             for (int i = collections.size() - 1; i > -1; i--) {
                 String collectionName = collections.get(i).getName();
-                if (unsortedCollection.getName().startsWith(collectionName + BrowseDcElement.split)) {
+                if (unsortedCollection.getName().startsWith(collectionName + splittingChar)) {
                     collections.add(i + 1, unsortedCollection);
                     break;
                 }
@@ -449,20 +452,25 @@ public class CollectionView {
      * @param collections
      * @return The hiearchy level of the first collection within collections (1-based), or 0 if the list is empty
      */
-    private static int getLevelOfFirstElement(List<String> collections) {
+    private static int getLevelOfFirstElement(List<String> collections, String splittingChar) {
         if (collections.isEmpty()) {
             return 0;
         }
         String collection = collections.get(0);
-        return getCollectionLevel(collection);
+        return getCollectionLevel(collection, splittingChar);
     }
 
-    private static int getCollectionLevel(String collection) {
-        if (collection == null || collection.trim().isEmpty()) {
+    /**
+     * 
+     * @param collection
+     * @return
+     */
+    private static int getCollectionLevel(String collection, String splittingChar) {
+        if (collection == null || collection.trim().isEmpty() || StringUtils.isEmpty(splittingChar)) {
             return 0;
         }
-        String separator = BrowseDcElement.split;
-        if (!collection.contains(BrowseDcElement.split)) {
+        String separator = splittingChar;
+        if (!collection.contains(splittingChar)) {
             return 1;
         }
         if (separator.equals(".")) {
@@ -473,19 +481,21 @@ public class CollectionView {
     }
 
     /**
-     * @param unsortedRest
+     * @param elementList
      * @param sortAfter
-     * @param firstLevel
+     * @param sortingLevel
+     * @param splittingChar
      * @return
      */
-    private static int getIndexOfElementWithName(List<HierarchicalBrowseDcElement> elementList, String sortAfter, int sortingLevel) {
+    private static int getIndexOfElementWithName(List<HierarchicalBrowseDcElement> elementList, String sortAfter, int sortingLevel,
+            String splittingChar) {
         int index = 0;
         Integer selectedIndex = null;
-        int sortAfterLevel = getCollectionLevel(sortAfter);
+        int sortAfterLevel = getCollectionLevel(sortAfter, splittingChar);
         for (HierarchicalBrowseDcElement browseDcElement : elementList) {
             index++;
             if (browseDcElement.getName().equals(sortAfter)
-                    || browseDcElement.getName().startsWith(sortAfter + BrowseDcElement.split) && sortingLevel <= sortAfterLevel) {
+                    || browseDcElement.getName().startsWith(sortAfter + splittingChar) && sortingLevel <= sortAfterLevel) {
                 //sort after this element
                 selectedIndex = index;
             } else if (selectedIndex != null) {
@@ -566,7 +576,7 @@ public class CollectionView {
                 expandAll(collection, depth);
             }
             this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
-                    getTopVisibleElement());
+                    getTopVisibleElement(), splittingChar);
             associateElementsWithCMSData();
         }
     }
@@ -659,7 +669,7 @@ public class CollectionView {
 
     public int getTopVisibleElementLevel() {
         if (topVisibleElement != null) {
-            return topVisibleElement.split("\\" + BrowseDcElement.split).length - 1;
+            return topVisibleElement.split("\\" + splittingChar).length - 1;
         }
         return getBaseElementLevel();
     }
@@ -669,7 +679,7 @@ public class CollectionView {
      */
     public int getBaseElementLevel() {
         if (baseElementName != null) {
-            return baseElementName.split("\\" + BrowseDcElement.split).length - 1;
+            return baseElementName.split("\\" + splittingChar).length - 1;
         }
         return 0;
     }
@@ -699,14 +709,16 @@ public class CollectionView {
     public String loadCollection(HierarchicalBrowseDcElement element) {
         logger.debug("Set current collection to " + element);
         setTopVisibleElement(element);
-        String url =  getCollectionUrl(element);
+        String url = getCollectionUrl(element);
         url = url.replace(BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), "");
         return url;
     }
-    
+
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
-            return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
+            String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
+            logger.trace("COLLETION static url: {}", ret);
+            return ret;
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
                     .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
@@ -715,13 +727,17 @@ public class CollectionView {
             //            if (cutoffIndex > 0) {
             //                baseUri = baseUri.substring(0, cutoffIndex - 1);
             //            }
-            return baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
+            String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
+            logger.trace("COLLETION new window url: {}", ret);
+            return ret;
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
-                    + collection.getLuceneName() + "/";
+            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
+                    + "/" + collection.getLuceneName() + "/";
+            logger.trace("COLLETION single volume url: {}", ret);
+            return ret;
         } else {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+            String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
                     .append(PageType.browse.getName())
                     .append("/-/1/")
                     .append(collection.getSortField())
@@ -731,6 +747,7 @@ public class CollectionView {
                     .append(collection.getLuceneName())
                     .append('/')
                     .toString();
+            return ret;
         }
     }
 
@@ -747,15 +764,15 @@ public class CollectionView {
     public boolean isDisplayParentCollections() {
         return displayParentCollections;
     }
-    
+
     public void setIgnore(String collectionName) {
         this.ignoreList.add(collectionName);
     }
-    
+
     public void setIgnore(Collection<String> collectionNames) {
         this.ignoreList = new ArrayList<>(collectionNames);
     }
-    
+
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
     }

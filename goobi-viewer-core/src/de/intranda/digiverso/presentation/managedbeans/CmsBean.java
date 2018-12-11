@@ -35,6 +35,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -56,6 +57,7 @@ import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvid
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -194,12 +196,14 @@ public class CmsBean implements Serializable {
      */
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
-        list.add(getDefaultLocaleStatic());
-        Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
-        while (iter.hasNext()) {
-            Locale locale = iter.next();
-            if (!list.contains(locale)) {
-                list.add(locale);
+        list.add(ViewerResourceBundle.getDefaultLocale());
+        if(FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {            
+            Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            while (iter.hasNext()) {
+                Locale locale = iter.next();
+                if (!list.contains(locale)) {
+                    list.add(locale);
+                }
             }
         }
         return list;
@@ -214,19 +218,9 @@ public class CmsBean implements Serializable {
     }
 
     public Locale getDefaultLocale() {
-        return getDefaultLocaleStatic();
+        return ViewerResourceBundle.getDefaultLocale();
     }
 
-    public static Locale getDefaultLocaleStatic() {
-        Locale defaultLocale = null;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
-        }
-        if (defaultLocale == null) {
-            defaultLocale = Locale.ENGLISH;
-        }
-        return defaultLocale;
-    }
 
     public static Locale getCurrentLocale() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
@@ -478,6 +472,10 @@ public class CmsBean implements Serializable {
         }
         return CMSSidebarManager.getDefaultSidebarElements();
     }
+    
+    public CMSSidebarElement getSidebarElement(String type) {
+        return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
+    }
 
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
@@ -726,12 +724,15 @@ public class CmsBean implements Serializable {
                 this.selectedPage = currentPage;
             }
             this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
         } else {
             this.selectedPage = null;
         }
 
     }
+
+
 
     public CMSPage getCurrentPage() {
         if (currentPage == null) {

@@ -30,7 +30,7 @@
                                     <h:outputText value="#{msg['changeLocal_' += lang]}"
                                         rendered="#{cc.attrs.showLabels == true}" />
                                     <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-                                    <f:ajax render="@all"/>
+                                    <f:ajax render="@all" />
                                 </h:commandLink>
                             </li>
                         </ui:repeat>

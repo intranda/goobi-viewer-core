@@ -14,8 +14,8 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<h:form id="customDrillDownForm" prependId="false">
-			<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
+		<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
+    		<h:form id="customDrillDownForm" prependId="false">
 				<div id="widgetCustomDrillDown-#{cc.attrs.widget.order}" class="widget widget-custom-drilldown #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
@@ -110,7 +110,7 @@
 						}
 					}
 				</script>
-			</h:panelGroup>
-		</h:form>
+		  </h:form>
+		</h:panelGroup>
 	</composite:implementation>
 </ui:composition>

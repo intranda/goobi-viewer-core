@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateSearchAdvanced" version="2018-11-28">
+    <name>Erweiterte Suche</name>
+    <description>Dieses Template bildet die erweiterte Suche des Goobi viewers ab.</description>
+    <icon>cms_template_24_searchAdvanced.png</icon>
+    <html>cms_template_24_searchAdvanced.xhtml</html>
+    
+    <content>
+        <item id="text" order="1" label="Text" type="HTML" />
+        <item id="search" order="2" label="Suche" type="SEARCH" />
+    </content>
+</cms_page_template>

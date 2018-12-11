@@ -72,7 +72,6 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -127,8 +126,9 @@ public class ViewManager implements Serializable {
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
-    private Boolean belowFulltextThreshold = null;
-    private Boolean workHasAlto = null;
+    private Long pagesWithFulltext = null;
+    private Long pagesWithAlto = null;
+    private Boolean workHasTEIFiles = null;
 
     /**
      * 
@@ -167,7 +167,7 @@ public class ViewManager implements Serializable {
             dropdownFulltext.clear();
             if (pageLoader != null) {
                 pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext(),
-                        isBelowFulltextThreshold());
+                        isBelowFulltextThreshold(), BeanUtils.getLocale());
             }
         }
         this.mainMimeType = mainMimeType;
@@ -196,9 +196,8 @@ public class ViewManager implements Serializable {
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
         if (getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
-        } else {
-            return "{}";
         }
+        return "{}";
     }
 
     public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
@@ -980,7 +979,7 @@ public class ViewManager implements Serializable {
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi();
     }
-    
+
     /**
      * Return the url to a REST service delivering all plain text of a work as zip
      * 
@@ -991,6 +990,35 @@ public class ViewManager implements Serializable {
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/fulltext/" + getPi();
+    }
+
+    /**
+     * Return the url to a REST service delivering a TEI document containing the text of all pages
+     * 
+     * @return the TEI REST url
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     */
+    public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + BeanUtils.getLocale().getLanguage();
+    }
+
+    /**
+     * Return the url to a REST service delivering the fulltext of the current page as TEI
+     * 
+     * @return the TEI REST url
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String getTeiUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        if (StringUtils.isBlank(filename)) {
+            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+        }
+        return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/tei/" + getPi() + "/" + filename + "/"
+                + BeanUtils.getLocale().getLanguage();
+
     }
 
     /**
@@ -1006,7 +1034,7 @@ public class ViewManager implements Serializable {
         String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
         return DataManager.getInstance().getConfiguration().getRestApiUrl() + "content/alto/" + getPi() + "/" + filename;
     }
-    
+
     /**
      * Return the url to a REST service delivering the fulltext as plain text of the given page
      * 
@@ -1245,7 +1273,10 @@ public class ViewManager implements Serializable {
             urn = currentDocument.getMetadataValue(SolrConstants.URN);
         }
 
-        return getPersistentUrl(urn);
+        if (persistentUrl == null) {
+            persistentUrl = getPersistentUrl(urn);
+        }
+        return persistentUrl;
     }
 
     /**
@@ -1257,38 +1288,37 @@ public class ViewManager implements Serializable {
      * @should generate purl without urn correctly
      */
     public String getPersistentUrl(String urn) throws IndexUnreachableException {
-        if (persistentUrl == null) {
-            StringBuilder url = new StringBuilder();
-            if (StringUtils.isNotEmpty(urn) && !urn.equalsIgnoreCase("NULL")) {
-                // URN-based PURL
-                if (urn.startsWith("http:") || urn.startsWith("https:")) {
-                    // URN is full URL
-                    persistentUrl = urn;
-                } else {
-                    // Just the URN
-                    url.append(DataManager.getInstance().getConfiguration().getUrnResolverUrl()).append(urn);
-                    persistentUrl = url.toString();
-                }
+        String persistentUrl = "";
+        StringBuilder url = new StringBuilder();
+        if (StringUtils.isNotEmpty(urn) && !urn.equalsIgnoreCase("NULL")) {
+            // URN-based PURL
+            if (urn.startsWith("http:") || urn.startsWith("https:")) {
+                // URN is full URL
+                persistentUrl = urn;
             } else {
-                // Prefer configured target page type for the docstruct type
-                PageType pageType = null;
-                if (topDocument != null) {
-                    boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
-                    pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
-                }
-                if (pageType == null) {
-                    if (isHasPages()) {
-                        pageType = PageType.viewImage;
-                    } else {
-                        pageType = PageType.viewMetadata;
-                    }
-                }
-                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append('/');
+                // Just the URN
+                url.append(DataManager.getInstance().getConfiguration().getUrnResolverUrl()).append(urn);
                 persistentUrl = url.toString();
             }
-            logger.trace("PURL: {}", persistentUrl);
+        } else {
+            // Prefer configured target page type for the docstruct type
+            PageType pageType = null;
+            if (topDocument != null) {
+                boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+                pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
+            }
+            if (pageType == null) {
+                if (isHasPages()) {
+                    pageType = PageType.viewImage;
+                } else {
+                    pageType = PageType.viewMetadata;
+                }
+            }
+            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append('/');
+            persistentUrl = url.toString();
         }
+        logger.trace("PURL: {}", persistentUrl);
 
         return persistentUrl;
     }
@@ -1325,9 +1355,20 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
-        if (belowFulltextThreshold == null) {
+        int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
+        return isBelowFulltextThreshold(threshold);
+    }
 
-            long pagesWithFulltext = DataManager.getInstance()
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    private boolean isBelowFulltextThreshold(double threshold) throws PresentationException, IndexUnreachableException {
+        if (pagesWithFulltext == null) {
+
+            pagesWithFulltext = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
                             .append(':')
@@ -1339,25 +1380,74 @@ public class ViewManager implements Serializable {
                             .append(SolrConstants.FULLTEXTAVAILABLE)
                             .append(":true")
                             .toString());
-            int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
-            double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-            logger.trace("{}% of pages have full-text", percentage);
-            if (percentage < threshold) {
-                belowFulltextThreshold = true;
+        }
+        double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
+        logger.trace("{}% of pages have full-text", percentage);
+        if (percentage < threshold) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                BeanUtils.getRequest());
+        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
+    }
+
+    public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                BeanUtils.getRequest());
+        return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
+    }
+
+    public boolean isTeiAvailableForPage() throws IndexUnreachableException, DAOException {
+        return isFulltextAvailableForPage();
+    }
+
+    /**
+     * @return true if there are any TEI files associated directly with the top document
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private boolean isWorkHasTEIFiles() throws IndexUnreachableException, PresentationException {
+        if (workHasTEIFiles == null) {
+
+            long teiDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" + ")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":")
+                            .append(SolrConstants.DOCSTRCT)
+                            .append(" +")
+                            .append(SolrConstants.FILENAME_TEI)
+                            .append(":*")
+                            .toString());
+            int threshold = 1;
+            logger.trace("{} of pages have tei", teiDocs);
+            if (teiDocs < threshold) {
+                workHasTEIFiles = false;
             } else {
-                belowFulltextThreshold = false;
+                workHasTEIFiles = true;
             }
         }
 
-        return belowFulltextThreshold;
+        return workHasTEIFiles;
     }
 
-    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException {
-        if (workHasAlto == null) {
+    public boolean isAltoAvailableForWork() throws IndexUnreachableException, PresentationException, DAOException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                BeanUtils.getRequest());
+        if (!access) {
+            return false;
+        }
+        if (pagesWithAlto == null) {
 
-            ;
-
-            long pagesWithAlto = DataManager.getInstance()
+            pagesWithAlto = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
                             .append(':')
@@ -1369,27 +1459,28 @@ public class ViewManager implements Serializable {
                             .append(SolrConstants.FILENAME_ALTO)
                             .append(":*")
                             .toString());
-            int threshold = 1;
             logger.trace("{} of pages have full-text", pagesWithAlto);
-            if (pagesWithAlto < threshold) {
-                workHasAlto = false;
-            } else {
-                workHasAlto = true;
-            }
+        }
+        int threshold = 1;
+        if (pagesWithAlto < threshold) {
+            return false;
         }
 
-        return workHasAlto;
+        return true;
     }
 
     public boolean isAltoAvailableForPage() throws IndexUnreachableException, DAOException {
-        String filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
-        if (StringUtils.isNotBlank(filename)) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
-                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            return access;
-        } else {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
             return false;
         }
+        String filename = getFilenameFromPathString(currentPage.getAltoFileName());
+        if (StringUtils.isBlank(filename)) {
+            return false;
+        }
+
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
 
     /**
@@ -1405,23 +1496,24 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isFulltextAvailableForPage() throws IndexUnreachableException, DAOException {
-        if (!getCurrentPage().isFulltextAvailable()) {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
             return false;
         }
-        String filename = getFilenameFromPathString(getCurrentPage().getFulltextFileName());
+        if (!currentPage.isFulltextAvailable()) {
+            return false;
+        }
+        String filename = getFilenameFromPathString(currentPage.getFulltextFileName());
         if (StringUtils.isBlank(filename)) {
-            filename = getFilenameFromPathString(getCurrentPage().getAltoFileName());
+            filename = getFilenameFromPathString(currentPage.getAltoFileName());
         }
-        if (StringUtils.isNotBlank(filename)) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(),
-                    filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            return access;
-        } else {
+        if (StringUtils.isBlank(filename)) {
             return false;
         }
 
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
     }
-
 
     /**
      * Returns the full-text for the current page, stripped of any included JavaScript.
@@ -2201,22 +2293,84 @@ public class ViewManager implements Serializable {
         md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
         return md;
     }
-    
+
     /**
      * 
-     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename)
-     * as String. Returns an empty String if the given path is empty or null
+     * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
+     * if the given path is empty or null
      * 
      * @param pathString
-     * @return  The filename, or an empty String if it could not be determined
+     * @return The filename, or an empty String if it could not be determined
      */
-    
-    private String getFilenameFromPathString(String pathString) {
-        if(StringUtils.isNotBlank(pathString)) {
+
+    private static String getFilenameFromPathString(String pathString) {
+        if (StringUtils.isNotBlank(pathString)) {
             Path path = Paths.get(pathString);
             return path.getFileName().toString();
+        }
+        return "";
+    }
+
+    /**
+     * 
+     * @return A persistent link to the current work
+     * 
+     *         TODO: additional urn-resolving logic
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
+        if (topDocument != null) {
+            String customPURL = topDocument.getMetadataValue("MD_PURL");
+            if (StringUtils.isNotEmpty(customPURL)) {
+                return customPURL;
+            } else if (StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
+                String urn = topDocument.getMetadataValue(SolrConstants.URN);
+                return getPersistentUrl(urn);
+            } else {
+                StringBuilder url = new StringBuilder();
+                boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+                PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
+                if (pageType == null) {
+                    if (isHasPages()) {
+                        pageType = PageType.viewImage;
+                    } else {
+                        pageType = PageType.viewMetadata;
+                    }
+                }
+                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+                url.append('/')
+                        .append(pageType.getName())
+                        .append('/')
+                        .append(getPi())
+                        .append('/')
+                        .append(getRepresentativePage().getOrder())
+                        .append('/');
+                return url.toString();
+            }
         } else {
             return "";
         }
+
     }
+
+    public boolean isDisplayCiteLinkWork() {
+        return topDocument != null;
+    }
+
+    public String getCiteLinkPage() throws IndexUnreachableException, DAOException {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
+            return "";
+        } else {
+            String urn = currentPage.getUrn();
+            return getPersistentUrl(urn);
+        }
+    }
+
+    public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
+        return getCurrentPage() != null;
+    }
+
 }

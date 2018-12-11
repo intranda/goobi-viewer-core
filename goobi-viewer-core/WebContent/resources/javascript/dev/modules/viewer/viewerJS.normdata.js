@@ -201,8 +201,8 @@ var viewerJS = ( function( viewer ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;
                         html += '/rest/normdata/get/';
-                        html += encodeURIComponent(v.url);
-                        html += '/de/'; // TODO use navigationHelper.localeString
+                        html += _unicodeEscapeUri(v.url);
+                        html += '/_DEFAULT/de/'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
                         html += '<i class="fa fa-list-ul" aria-hidden="true"></i>';
                         html += '<div class="normdata-preloader"></div>';
@@ -218,6 +218,15 @@ var viewerJS = ( function( viewer ) {
         html += "</div>";
         
         return html;
+    }
+    
+    /**
+     * Replaces /\?% with corresponding Unicode sequences.
+     * 
+     * @param uri URI to escape
+     */
+    function _unicodeEscapeUri(uri) {
+    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
     }
     
     /**

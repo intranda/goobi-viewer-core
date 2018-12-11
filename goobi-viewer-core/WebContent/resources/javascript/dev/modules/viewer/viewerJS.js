@@ -45,9 +45,10 @@ var viewerJS = ( function() {
         
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        
+        //write theme name to viewer object so submodules can use it
+        viewer.theme = _defaults.theme;
 
-        // set path to acces denied image
-        _defaults.accessDeniedImage = '/resources/themes/' + _defaults.theme + '/images/access_denied.png';
         
         console.info( 'Current Browser = ', _defaults.browser );
         console.info( 'Current Theme = ', _defaults.theme );
@@ -73,7 +74,7 @@ var viewerJS = ( function() {
         }
         
         // off canvas
-        $( '[data-toggle="offcanvas"]' ).click( function() {
+        $( '[data-toggle="offcanvas"]' ).on( 'click', function() {
             var icon = $( this ).children( '.fa' );
             
             $( '.row-offcanvas' ).toggleClass( 'active' );
@@ -114,6 +115,11 @@ var viewerJS = ( function() {
             $( this ).toggleClass( 'in' );
             $( '.header-actions__search' ).fadeToggle( 'fast' );
         } );
+        
+        // toggle collapseable widgets
+        $( '.widget__title.collapseable' ).on( 'click', function() {
+    		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
+    	} );
         
         // set content height to sidebar height
         if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
@@ -186,7 +192,7 @@ var viewerJS = ( function() {
         } );
         
         viewer.loadThumbnails();
-        
+         
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -363,7 +369,9 @@ var viewerJS = ( function() {
                             viewerJS.tinyMce.overview();
                         }
                         
-                        viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                        if ( $( '.tinyMCE' ).length > 0 ) {
+                        	viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                        }
                         break;
                 }
             } );
@@ -378,16 +386,8 @@ var viewerJS = ( function() {
         // handle browser bugs
         switch ( _defaults.browser ) {
             case 'Chrome':
-                /* BROKEN IMAGES */
-                $( 'img' ).on("error", function() {
-                    $( this ).addClass( 'broken' );
-                } );
                 break;
             case 'Firefox':
-                /* 1px BUG */
-                if ( $( '.image-doublePageView' ).length > 0 ) {
-                    $( '.image-doublePageView' ).addClass( 'oneUp' );
-                }
                 break;
             case 'IE':
                 /* SET IE CLASS TO HTML */
@@ -400,59 +400,7 @@ var viewerJS = ( function() {
         }
     };
     
-    // load images with error handling
-    viewer.loadThumbnails = function() {
-        $('.viewer-thumbnail').each(function() {
-            var element = this;
-            var source = element.src
-            var dataSource = element.dataset.src; 
-            if(dataSource && !source) { 
-                 _loadImage(element, dataSource);                
-            }else if (source) {                   
-                   var onErrorCallback = function() {
-                       _loadImage(element, element.src)
-                   }
-                   //reload image if error event occurs
-                   $(element).one("error", onErrorCallback)
-                   //if image is already loaded but has not width, assume error and also reload
-                   if(element.complete && element.naturalWidth === 0) {
-                       $(element).off("error", onErrorCallback);
-                       _loadImage(element, element.src)
-                   }
-            }
-        });
-    }
-    
-    function _loadImage(element, source) {
-        var accessDenied = currentPath + _defaults.accessDeniedImage;
-        var notFound = currentPath + '/resources/themes/' + _defaults.theme + '/images/image_not_found.png';
 
-        $.ajax({
-            url: source,
-            cache: true,
-            xhrFields: {
-                responseType: 'blob'
-            },
-        })
-        .done(function(blob) {
-            var url = window.URL || window.webkitURL;
-            element.src = url.createObjectURL(blob);
-        })
-        .fail(function(error) {
-            var status = error.status;
-                switch(status) {
-                    case 403:
-                        element.src = accessDenied;
-                        break;
-                    case 404:
-                        element.src = notFound;
-                        break;
-                    default:
-                        // element.src = source;
-                        element.src = notFound;
-                }
-            });  
-    }
     
     // global object for tinymce config
     viewer.tinyConfig = {};

@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.viewer.pageloader;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.model.SelectItem;
 
@@ -51,9 +52,10 @@ public interface IPageLoader {
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list
      * @param urlRoot
+     * @param locale
      * @param recordBelowFulltextThreshold
      * @throws IndexUnreachableException
      */
     public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
-            boolean recordBelowFulltextThreshold) throws IndexUnreachableException;
+            boolean recordBelowFulltextThreshold, Locale locale) throws IndexUnreachableException;
 }

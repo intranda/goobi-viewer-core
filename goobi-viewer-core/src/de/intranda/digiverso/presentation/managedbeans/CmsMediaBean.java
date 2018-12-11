@@ -83,7 +83,7 @@ public class CmsMediaBean implements Serializable {
                     saveMedia();
                 } catch (IOException | DAOException e) {
                     logger.error("Failed to upload media file:{}", e.getMessage());
-                    if (mediaFile.isFile()) {
+                    if (mediaFile != null && mediaFile.isFile()) {
                         mediaFile.delete();
                     }
                 }

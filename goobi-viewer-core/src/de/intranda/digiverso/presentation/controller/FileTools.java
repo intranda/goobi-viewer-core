@@ -30,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -37,6 +38,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
@@ -410,6 +412,40 @@ public class FileTools {
             }
         }
     }
+    
+    /**
+    *
+    * @param files
+    * @param zipFile
+    * @param level
+    * @throws FileNotFoundException
+    * @throws IOException
+    * @should throw FileNotFoundException if file not found
+    */
+   public static void compressZipFile(Map<Path, String> contentMap,  File zipFile, Integer level) throws FileNotFoundException, IOException {
+       if (contentMap == null || contentMap.isEmpty()) {
+           throw new IllegalArgumentException("texts may not be empty or null");
+       }
+       if (zipFile == null) {
+           throw new IllegalArgumentException("zipFile may not be empty or null");
+       }
+
+       try (FileOutputStream fos = new FileOutputStream(zipFile); ZipOutputStream zos = new ZipOutputStream(fos)) {
+           if (level != null) {
+               zos.setLevel(level);
+           }
+           for (Path path : contentMap.keySet()) {
+               try ( InputStream in = IOUtils.toInputStream(contentMap.get(path))) {
+                   zos.putNextEntry(new ZipEntry(path.getFileName().toString()));
+                   byte[] buffer = new byte[1024];
+                   int len;
+                   while ((len = in.read(buffer)) != -1) {
+                       zos.write(buffer, 0, len);
+                   }
+               }
+           }
+       }
+   }
 
     /**
      *

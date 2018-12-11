@@ -6,16 +6,19 @@
 .widget-usage {
 	h3 {}
 	h4 {}
-	&__subtitle {}
+	&__subtitle {
+		margin-bottom: 10px;
+	}
 	/* LICENSE TEXT */
 	&__license-text {
 		margin-bottom: 15px;
 	}
 	/* DOWNLOADS */
 	&__work-downloads,
-	&__page-downloads {
-		a {
-		}
+	&__page-downloads,
+	&__citelinks {
+		margin-bottom: 15px;
+		a {}
 		.label-default {
 			display: inline-block;
 			&:hover,
@@ -25,13 +28,18 @@
 	}
 	/* WORK DOWNLOADS */
 	&__work-downloads {
-		margin-bottom: 15px;
 		a {}
 		.label-default {}
 	}
+	&__work-link-dfg-viewer {}
+	&__work-link-opac {}
 	&__work-download-lido-mets {}
+	&__work-download-mets-anchor {}
+	&__work-download-oai-marc {}
+	&__work-download-oai-dc {}
 	&__work-download-alto {}
 	&__work-download-fulltext {}
+	&__work-download-tei {}
 	&__work-download-pdf {}
 	&__work-download-epub {}
 	&__work-download-iiif {}
@@ -42,8 +50,13 @@
 	}
 	&__page-download-alto {}
 	&__page-download-fulltext {}
+	&__page-download-tei {}
 	&__page-download-pdf {}
 	&__page-download-jpeg {}
+	/* CITE LINKS */
+	&__citelinks {}
+	&__citelink-work {}
+	&__citelink-page {}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

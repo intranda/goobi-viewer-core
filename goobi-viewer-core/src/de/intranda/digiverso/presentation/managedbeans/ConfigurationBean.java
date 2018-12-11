@@ -342,7 +342,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks();
     }
 
-
     public boolean showThumbnailsInToc() {
         return DataManager.getInstance().getConfiguration().showThumbnailsInToc();
     }
@@ -430,7 +429,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSidebarTocPageNumbersVisible();
     }
 
-
     /**
      * @return
      * @should return correct value
@@ -487,30 +485,13 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
     }
 
-    /**
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarDfgLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible();
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
-    }
-
     public boolean isTocTreeView(String docStructType) {
         return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
-    
+
     public boolean isSidebarTocTreeView() {
         return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
     }
-
 
     public int getSidebarTocLengthBeforeCut() {
         return DataManager.getInstance().getConfiguration().getSidebarTocLengthBeforeCut();
@@ -765,7 +746,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isAddHighwirePressMetaTags() {
         return DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags();
     }
-    
+
     public boolean isDisplayWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
     }

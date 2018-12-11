@@ -258,6 +258,7 @@ public class RecordsResource {
 
         SolrDocumentList result =
                 DataManager.getInstance().getSearchIndex().search(query, params.getOffset(), count, sortFieldList, null, null).getResults();
+        logger.trace("hits: {}", result.size());
         JSONArray jsonArray = null;
         if (params.getJsonFormat() != null) {
             switch (params.getJsonFormat()) {

@@ -115,8 +115,10 @@
                                             <ul>
                                                 <ui:repeat var="provider" value="#{userBean.getProvidersOfType('userpassword')}">
                                                     <li>
-                                                        <h:commandLink action="#{userBean.login}">
-                                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
+                                                        <div class="provider-logo">
+                                                            <img src="#{provider.imageUrl}" alt="#{provider.name}" />
+                                                        </div>
+                                                        <h:commandLink styleClass="btn btn--full"  value="#{msg.login}" action="#{userBean.login}">
                                                             <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                                         </h:commandLink>
                                                     </li>

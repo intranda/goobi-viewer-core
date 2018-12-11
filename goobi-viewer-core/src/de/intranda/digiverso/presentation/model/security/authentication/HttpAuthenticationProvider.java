@@ -15,6 +15,11 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+
 /**
  * @author Florian Alpers
  *
@@ -67,6 +72,21 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      */
     public String getImage() {
         return image;
+    }
+    
+    public String getImageUrl() {
+        try {
+            URI uri = new URI(image);
+            if(uri.isAbsolute()) {
+                return uri.toString();
+            }
+        } catch(NullPointerException | URISyntaxException e) {
+            //construct viewer path uri
+        }
+        StringBuilder url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        url.append("/resources/themes/").append(BeanUtils.getNavigationHelper().getTheme()).append("/images/openid/");
+        url.append(image);
+        return url.toString();
     }
     
     /**

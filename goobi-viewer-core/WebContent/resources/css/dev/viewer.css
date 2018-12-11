@@ -467,6 +467,26 @@ span[class*=" image-"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .grid {
+    /* MODIFICATION */
+  }
+  .grid--1,
+  .grid--2,
+  .grid--3,
+  .grid--4,
+  .grid--5,
+  .grid--6,
+  .grid--7,
+  .grid--8,
+  .grid--9,
+  .grid--10,
+  .grid--11,
+  .grid--12 {
+    -ms-grid-columns: 1fr;
+        grid-template-columns: 1fr;
+  }
+}
 /* ==============================================================
    Resets for CSS Libs
    ==============================================================*/
@@ -667,38 +687,6 @@ button {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.25);
 }
-.broken {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  height: auto;
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.broken:before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: -10px;
-  left: 0;
-  width: 100%;
-  height: calc(100% + 10px);
-  background-color: #ccc;
-}
-.broken:after {
-  content: "\f127" " " attr(alt);
-  position: absolute;
-  display: block;
-  top: 5px;
-  left: 0;
-  width: 100%;
-  font-size: 14px;
-  font-style: normal;
-  font-family: FontAwesome;
-  text-align: center;
-  color: #646464;
-}
 /* COORDS HIGHLIGHTING */
 .coords-highlighting {
   background-color: yellow;
@@ -707,11 +695,6 @@ button {
 /* TYPO */
 .uppercase {
   text-transform: uppercase;
-}
-/* FIREFOX LAYOUT FIXES */
-.oneUp {
-  position: relative;
-  top: -1px;
 }
 /* VISUALLY HIDDEN */
 .visually-hidden {
@@ -1366,14 +1349,6 @@ html.is-IE .support-overlay {
   position: relative;
 }
 .bookshelf-navigation__counter {
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: center;
-      justify-content: center;
-  min-width: 15px;
-  margin-right: 5px;
   padding: 0 3px;
   font-size: 12px;
   color: #fff;
@@ -1604,6 +1579,10 @@ html.is-IE .support-overlay {
   visibility: visible;
 }
 [data-bookshelf-type="dropdown"] {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
   padding: 6px 0;
 }
 [data-bookshelf-type="add"] {
@@ -2350,73 +2329,8 @@ html.is-IE .support-overlay {
 .image-controls {
   position: relative;
   padding: 15px 0;
-  /* ELEMENT */
-  /* DOCUMENT OPTIONS */
   /* ACTIONS */
   /* MODIFICATION */
-}
-.image-controls__options ul {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -ms-flex-pack: end;
-      justify-content: flex-end;
-}
-.image-controls__options li {
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
-}
-.image-controls__option {
-  width: 21px;
-  height: 21px;
-}
-.image-controls__option a,
-.image-controls__option span,
-.image-controls__option button {
-  color: #6f6f6f;
-}
-.image-controls__option a:hover,
-.image-controls__option span:hover,
-.image-controls__option button:hover,
-.image-controls__option a:active,
-.image-controls__option span:active,
-.image-controls__option button:active,
-.image-controls__option a:focus,
-.image-controls__option span:focus,
-.image-controls__option button:focus {
-  color: #6f6f6f;
-}
-.image-controls__option a,
-.image-controls__option button {
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-}
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
-  background-image: none;
-}
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o {
-  display: inline-block;
-}
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark {
-  display: none;
-}
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o {
-  display: none;
-}
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
-  display: inline-block;
-}
-.image-controls__option.iiif button {
-  background-image: url("../../images/icons/icon-iiif-logo.svg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 16px;
 }
 .image-controls__actions ul {
   display: -ms-flexbox;
@@ -5407,6 +5321,12 @@ div[id*="-Modal"] .email-form .form-group {
 .user-login__external .user-login__options li {
   text-align: right;
 }
+.user-login__external .user-login__options li .provider-logo {
+  float: left;
+}
+.user-login__external .user-login__options img {
+  max-height: 50px;
+}
 .user-login__action .btn {
   margin: 0;
 }
@@ -7388,7 +7308,7 @@ div[id*="-Modal"] .email-form .form-group {
 /* WIDGETS */
 /* BLOcK */
 .widget {
-  margin-bottom: 1.3125rem;
+  margin-bottom: 20px;
   /* ELEMENT */
 }
 .widget ul {
@@ -7407,6 +7327,32 @@ div[id*="-Modal"] .email-form .form-group {
 .widget dl dd {
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.widget__title {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.widget__title .fa {
+  display: none;
+  margin-left: auto;
+  transition: all .2s linear;
+}
+.widget__title.collapseable {
+  cursor: pointer;
+}
+.widget__title.collapseable .fa {
+  display: inline-block;
+}
+.widget__title.collapseable.in .fa-chevron-down {
+  transform: rotate(180deg);
+}
+.widget__body {
+  padding: 10px;
+}
+.widget__body.collapseable {
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -7938,16 +7884,23 @@ div[id*="-Modal"] .email-form .form-group {
   /* DOWNLOADS */
   /* WORK DOWNLOADS */
   /* PAGE DOWNLOADS */
+  /* CITE LINKS */
+}
+.widget-usage__subtitle {
+  margin-bottom: 10px;
 }
 .widget-usage__license-text {
   margin-bottom: 15px;
 }
-.widget-usage__work-downloads .label-default,
-.widget-usage__page-downloads .label-default {
-  display: inline-block;
-}
-.widget-usage__work-downloads {
+.widget-usage__work-downloads,
+.widget-usage__page-downloads,
+.widget-usage__citelinks {
   margin-bottom: 15px;
+}
+.widget-usage__work-downloads .label-default,
+.widget-usage__page-downloads .label-default,
+.widget-usage__citelinks .label-default {
+  display: inline-block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -8992,6 +8945,14 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   background-color: #6f6f6f;
 }
+.tpl-single-collection__description a {
+  color: #fff;
+}
+.tpl-single-collection__description a:hover,
+.tpl-single-collection__description a:active,
+.tpl-single-collection__description a:focus {
+  color: #fff;
+}
 .tpl-single-collection .search-list {
   /* OPTIONS */
 }
@@ -9380,6 +9341,54 @@ div[id*="-Modal"] .email-form .form-group {
 /* BLOCK */
 .tpl-faq-single {
   /* ELEMENT */
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Search Standard"
+   style declarations for cms_template_23_searchStandard.xhtml
+   ==============================================================*/
+/* SEARCH STANDARD */
+/* BLOCK */
+.tpl-search-standard {
+  /* ELEMENT */
+}
+.tpl-search-standard__text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Search Advanced"
+   style declarations for cms_template_24_searchAdvanced.xhtml
+   ==============================================================*/
+/* SEARCH ADVANCED */
+/* BLOCK */
+.tpl-search-advanced {
+  /* ELEMENT */
+}
+.tpl-search-advanced__text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Tags"
+   style declarations for cms_template_25_tags.xhtml
+   ==============================================================*/
+/* TAGS */
+/* BLOCK */
+.tpl-tags {
+  /* ELEMENT */
+}
+.tpl-tags__text {
+  margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

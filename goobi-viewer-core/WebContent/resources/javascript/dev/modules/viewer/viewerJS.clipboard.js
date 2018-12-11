@@ -26,7 +26,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     const _defaultSelector ="[data-copy]";
-    
+        
     viewer.clipboard = {
             init : function(selector) {
                 if(!selector) {

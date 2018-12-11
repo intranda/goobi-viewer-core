@@ -173,8 +173,7 @@
 		<metadataEpubEnabled>true</metadataEpubEnabled>
 
 		 <!-- Folder for generated download files -->
-		 <downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
-
+		<downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
 	</epub>
 
 
@@ -270,9 +269,12 @@
 
 		<!-- set solr field that is used to define different watermark configuration ids -->
 		<watermarkIdField>MD_GEIFOOTERID</watermarkIdField>
-
-		<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
-		<splittingCharacter>.</splittingCharacter>
+		
+        <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
+            Values that are not among the following allowed variables will be displayed 
+            as-is.
+            Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
+        <pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat> 
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
 		     Custom URL names must be mapped in the faces config, too. -->
@@ -477,6 +479,10 @@
 
 	<collections>
 		<collection field="DC">
+		
+            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+            <splittingCharacter>.</splittingCharacter>
+		
 			<!-- In the following section you can define an index field that is used for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
 				<field collection="varia">SORT_TITLE</field>
@@ -502,8 +508,9 @@
 			     0 is the first (lowest) level; a value of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>-1</displayDepthForSearch>
 
-                        <!-- Default-Image for tiled collection in CMS, relative to theme path. -->
-                        <defaultBrowseIcon>images/collections/collection_tiled_default.jpg</defaultBrowseIcon>
+                        <!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
+                        No text means that no image is rendered for the collection -->
+                        <defaultBrowseIcon></defaultBrowseIcon>
 
 		</collection>
 	</collections>
@@ -880,13 +887,53 @@
 			</template>
 		</sideBarMetadataList>
 		
-        <normdataList>
-            <template name="_DEFAULT">
-                <field>NORM_IDENTIFIER</field>
-                <field>NORM_NAME</field>
-                <field>NORM_ALTNAME</field>
-            </template>
-        </normdataList>
+
+		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
+		<normdataList>
+			<template name="PERSON">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_NAME</field>
+				<field>NORM_LIFEPERIOD</field>
+				<field>NORM_LIFEPERIODEXACT</field>
+				<field>NORM_PROFESSION</field>
+				<field>NORM_EDUCATION</field>
+				<field>NORM_FUNCTION</field>
+				<field>NORM_PLACEOFBIRTH</field>
+				<field>NORM_PLACEOFDEATH</field>
+				<field>NORM_SEX</field>
+				<field>NORM_LOCATION</field>
+				<field>NORM_FATHER</field>
+				<field>NORM_MOTHER</field>
+				<field>NORM_SON</field>
+				<field>NORM_ALTNAME</field>
+				<field>NORM_SOURCE</field>
+				<field>URI</field>
+			</template>
+			<template name="CORPORATION">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_ORGANIZATION</field>
+				<field>NORM_ALTNAME</field>
+				<field>NORM_EXPLANATORYTEXT</field>
+				<field>NORM_PERIOD</field>
+				<field>NORM_PARENTINSTITUTION</field>
+				<field>URI</field>
+			</template>
+			<template name="RECORD">
+				<field>NORM_IDENTIFIER</field>
+				<field>NORM_TITLE</field>
+				<field>NORM_OTHERTITLE</field>
+				<field>NORM_EXPLANATORYTEXT</field>
+				<field>NORM_PERIOD</field>
+				<field>NORM_PRODUCTIONPERIOD</field>
+				<field>NORM_CONTRIBUTOR</field>
+				<field>NORM_OWNER</field>
+				<field>NORM_COLLECTOR</field>
+				<field>NORM_WORK</field>
+				<field>NORM_RELATIONSHIP</field>
+				<field>URI</field>
+			</template>
+		</normdataList>
+
 
 		<!-- calendarDocstructTypes: the list of structure elements allowed to be shown in calendar view -->
 		<calendarDocstructTypes>
@@ -1013,15 +1060,6 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
     
-            <sidebarWidgetUsage display="false">
-                <licenseText>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                </licenseText>
-            </sidebarWidgetUsage>
-    
 		<!-- overview: if false, the image view is hidden -->
 		<overview>
 			<visible>true</visible>
@@ -1060,16 +1098,6 @@
 			<visible>true</visible>
 		</fulltext>
 
-		<!-- dfg: if false, the dfg-viewer link is hidden -->
-		<dfg>
-			<visible>false</visible>
-		</dfg>
-
-		<!-- opac: if false, the link to the catalogue is hidden -->
-		<opac>
-			<visible>true</visible>
-		</opac>
-
 		<!-- sidebarToc: configuration of the sidebar TOC component -->
 		<sidebarToc>
 			<!-- visible: if false, the sidebar toc is hidden -->
@@ -1093,6 +1121,18 @@
 			<!-- max length of level before it gets collapsed -->
 			<collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
 		</sidebarToc>
+
+		<!-- Show or hide the widget including download links for record and page while viewing the object-->
+		<sidebarWidgetUsage display="false">
+			<!-- You can specify any text at the top of the record links using the same mechanism as for metadata display-->
+			<licenseText>
+				<metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+					<param type="field" key="LABEL" />
+					<param type="translatedfield" key="ACCESSCONDITION" />
+				</metadata>
+			</licenseText>
+		</sidebarWidgetUsage>
+
 	</sidebar>
 
 

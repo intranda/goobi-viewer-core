@@ -137,21 +137,4 @@ public class ConfigurationBeanTest {
         Assert.assertEquals(false, bean.isSidebarFulltextLinkVisible());
     }
 
-    /**
-     * @see ConfigurationBean#isSidebarDfgLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarDfgLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarDfgLinkVisible());
-    }
-
-    /**
-     * @see ConfigurationBean#isSidebarOpacLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarOpacLinkVisible());
-    }
 }

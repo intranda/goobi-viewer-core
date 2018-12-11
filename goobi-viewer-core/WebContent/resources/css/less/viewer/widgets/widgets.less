@@ -5,7 +5,7 @@
 /* WIDGETS */
 /* BLOcK */
 .widget {
-    margin-bottom: 1.3125rem;
+    margin-bottom: 20px;
     /* ELEMENT */
     h3 {}
     ul {
@@ -33,6 +33,32 @@
         dt {}
         dd {}
     }
+    &__title {
+    	display: flex;
+    	align-items: center;
+    	.fa {
+    		display: none;
+    		margin-left: auto;
+    		transition: all .2s linear;
+    	}
+    	&.collapseable {
+    		cursor: pointer;
+    		.fa {
+    			display: inline-block;
+    		}
+	    	&.in {
+	    		.fa-chevron-down {
+	    			transform: rotate(180deg);
+	    		}
+	    	}    		
+    	}
+    }
+    &__body {
+    	padding: 10px;
+    	&.collapseable {
+    		display: none;
+    	}
+    }    
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

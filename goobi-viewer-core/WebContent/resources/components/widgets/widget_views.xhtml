@@ -132,23 +132,6 @@
 						</li>
 					</h:panelGroup>
 
-					<!-- DFG Viewer -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarDfgLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
-						<li><h:outputLink
-								value="#{activeDocumentBean.viewManager.linkForDFGViewer}"
-								target="_blank">
-								#{msg.dfgViewerLink}
-							</h:outputLink></li>
-					</h:panelGroup>
-
-					<!-- OPAC -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
-						<li><a href="#{activeDocumentBean.viewManager.opacUrl}"
-							target="_blank"> #{msg.opacLink} </a></li>
-					</h:panelGroup>
-
 					<!-- External URL -->
 					<h:panelGroup
 						rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">

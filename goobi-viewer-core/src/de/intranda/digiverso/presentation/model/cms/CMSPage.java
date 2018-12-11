@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -50,6 +51,8 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.faces.el.LazyBeanNameFinder;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.CmsEditException;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -57,6 +60,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -99,10 +103,7 @@ public class CMSPage {
     @Column(name = "use_default_sidebar", nullable = false)
     private boolean useDefaultSidebar = false;
 
-    @OneToMany(
-            cascade = CascadeType.ALL, 
-            orphanRemoval = true
-        )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "owner_page_id")
     @PrivateOwned
     private List<CMSProperty> properties = new ArrayList<>();
@@ -192,7 +193,7 @@ public class CMSPage {
         this.classifications = new ArrayList<>(original.classifications);
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
-        
+
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());
             for (CMSProperty property : original.properties) {
@@ -471,31 +472,21 @@ public class CMSPage {
         return false;
     }
 
-    public CMSContentItem getContentItem(String itemId, String language) {
+    /**
+     * 
+     * @param itemId
+     * @param language
+     * @return The item in the language version for the given language
+     * @throws CmsElementNotFoundException if no version exists for the given language
+     */
+    public CMSContentItem getContentItem(String itemId, String language) throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = getBestLanguage(Locale.forLanguageTag(language));
-        if (version == null) {
-            return null;
-        }
         return version.getContentItem(itemId);
     }
 
-    public CMSPageLanguageVersion getCurrentLanguage() {
+    public CMSPageLanguageVersion getDefaultLanguage() throws CmsElementNotFoundException {
         CMSPageLanguageVersion version = null;
-        String language = CmsBean.getCurrentLocale().getLanguage();
-        version = getLanguageVersion(language);
-        if (version == null) {
-            language = CmsBean.getDefaultLocaleStatic().getLanguage();
-            version = getLanguageVersion(language);
-        }
-        if (version == null) {
-            version = new CMSPageLanguageVersion();
-        }
-        return version;
-    }
-
-    public CMSPageLanguageVersion getDefaultLanguage() {
-        CMSPageLanguageVersion version = null;
-        String language = CmsBean.getDefaultLocaleStatic().getLanguage();
+        String language = ViewerResourceBundle.getDefaultLocale().getLanguage();
         version = getLanguageVersion(language);
         if (version == null) {
             version = new CMSPageLanguageVersion();
@@ -503,48 +494,71 @@ public class CMSPage {
         return version;
     }
 
-    public CMSPageLanguageVersion getLanguageVersion(Locale locale) {
+    public CMSPageLanguageVersion getLanguageVersion(Locale locale) throws CmsElementNotFoundException {
         String language = locale.getLanguage();
         return getLanguageVersion(language);
     }
 
-    public CMSPageLanguageVersion getLanguageVersion(String language) {
+    public CMSPageLanguageVersion getLanguageVersion(String language) throws CmsElementNotFoundException {
         for (CMSPageLanguageVersion version : getLanguageVersions()) {
             if (version.getLanguage().equals(language)) {
                 return version;
             }
         }
-        synchronized (languageVersions) {
-            try {
-                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
-                this.languageVersions.add(version);
-                return version;
-            } catch (NullPointerException | IllegalStateException e) {
-                return null;
-            }
-        }
+        throw new CmsElementNotFoundException("No language version for " + language);
+        //        synchronized (languageVersions) {
+        //            try {
+        //                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
+        //                this.languageVersions.add(version);
+        //                return version;
+        //            } catch (NullPointerException | IllegalStateException e) {
+        //                return null;
+        //            }
+        //        }
     }
 
     public String getTitle() {
-        String title = getBestLanguage().getTitle();
+        String title;
+        try {
+            title = getBestLanguage().getTitle();
+        } catch (CmsElementNotFoundException e) {
+            try {
+                title = getBestLanguageIncludeUnfinished().getTitle();
+            } catch (CmsElementNotFoundException e1) {
+                title = "";
+            }
+        }
         return title;
     }
 
     public String getTitle(Locale locale) {
-        return getLanguageVersion(locale.getLanguage()).getTitle();
+        try {
+            return getLanguageVersion(locale.getLanguage()).getTitle();
+        } catch (CmsElementNotFoundException e) {
+            return getTitle();
+        }
     }
 
     public String getMenuTitle() {
-        String title = getBestLanguage().getMenuTitle();
+        String title;
+        try {
+            title = getBestLanguage().getMenuTitle();
+        } catch (CmsElementNotFoundException e) {
+            try {
+                title = getBestLanguageIncludeUnfinished().getMenuTitle();
+            } catch (CmsElementNotFoundException e1) {
+                title = "";
+            }
+        }
         return title;
     }
 
     public String getMenuTitle(Locale locale) {
-        CMSPageLanguageVersion lang = getLanguageVersion(locale.getLanguage());
-        if (lang != null) {
-            return lang.getMenuTitle();
+        try {
+            return getLanguageVersion(locale.getLanguage()).getMenuTitle();
+        } catch (CmsElementNotFoundException e) {
+            return getMenuTitle();
         }
-        return "";
     }
 
     public Long getPageSorting() {
@@ -580,9 +594,11 @@ public class CMSPage {
     }
 
     private CMSMediaItemMetadata getMediaMetadata(String itemId) {
-        CMSContentItem item = getContentItem(itemId);
-        if (item == null) {
-            item = getLanguageVersion(CmsBean.getDefaultLocaleStatic().getLanguage()).getContentItem(itemId);
+        CMSContentItem item;
+        try {
+            item = getContentItem(itemId);
+        } catch (CmsElementNotFoundException e1) {
+            item = null;
         }
         if (item != null && item.getMediaItem() != null) {
             return item.getMediaItem().getCurrentLanguageMetadata();
@@ -590,60 +606,100 @@ public class CMSPage {
         return null;
     }
 
-    public CMSContentItem getContentItem(String itemId) {
-        CMSPageLanguageVersion language = getBestLanguage();
-        CMSContentItem item = language.getContentItem(itemId);
-        if (item == null) {
-            CMSPageLanguageVersion languageVersion = getDefaultLanguage();
-            item = languageVersion.getContentItem(itemId);
+    public Optional<CMSContentItem> getContentItemIfExists(String itemId) {
+        try {
+            return Optional.of(getContentItem(itemId));
+        } catch (CmsElementNotFoundException e) {
+            return Optional.empty();
         }
-        if (item == null) {
-            for (CMSPageLanguageVersion version : getLanguageVersions()) {
-                item = version.getContentItem(itemId);
-                if (item != null) {
-                    return item;
-                }
+    }
+
+    /**
+     * Return the content item of the given id for the most suitable language using {@link #getBestLanguage()} and - failing that
+     * {@link #getBestLanguageIncludeUnfinished()}.
+     * 
+     * @param itemId
+     * @return
+     * @throws CmsElementNotFoundException If absolutely no matching element was found
+     */
+    public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
+        CMSPageLanguageVersion language;
+        CMSContentItem item = null;
+        try {
+            item = getBestLanguage().getContentItem(itemId);
+        } catch (CmsElementNotFoundException e) {
+            try {
+                item = getDefaultLanguage().getContentItem(itemId);
+            } catch (CmsElementNotFoundException e1) {
+                item = getBestLanguageIncludeUnfinished().getContentItem(itemId);
             }
         }
+
         return item;
     }
 
     /**
+     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale. Returns the LanguageVersion for the given
+     * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
+     * is Finished, or failing that the first available (non-global) finished language version
+     * 
      * @return
+     * @throws CmsElementNotFoundException
      */
-    private CMSPageLanguageVersion getBestLanguage() {
+    private CMSPageLanguageVersion getBestLanguage() throws CmsElementNotFoundException {
         Locale currentLocale = CmsBean.getCurrentLocale();
         return getBestLanguage(currentLocale);
     }
 
-    private CMSPageLanguageVersion getBestLanguage(Locale locale) {
+    /**
+     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale. Returns the LanguageVersion for the given
+     * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
+     * is Finished, or failing that the first available (non-global) finished language version
+     * 
+     * @param locale The
+     * @return
+     * @throws CmsElementNotFoundException
+     */
+    private CMSPageLanguageVersion getBestLanguage(Locale locale) throws CmsElementNotFoundException {
         // logger.trace("getBestLanguage");
-        CMSPageLanguageVersion language = getLanguageVersion(locale);
-        if (language != null && language.getStatus().equals(CMSPageStatus.FINISHED)) {
-            return language;
-        }
-        Locale defaultLocale = CmsBean.getDefaultLocaleStatic();
-        language = getLanguageVersion(defaultLocale);
-        if (language != null && language.getStatus().equals(CMSPageStatus.FINISHED)) {
-            return language;
-        }
-        for (CMSPageLanguageVersion l : getLanguageVersions()) {
-            if (l.getLanguage().equals(GLOBAL_LANGUAGE)) {
-                continue;
-            }
-            if (l.getStatus().equals(CMSPageStatus.FINISHED)) {
-                return l;
-            }
-        }
-        for (CMSPageLanguageVersion l : getLanguageVersions()) {
-            if (l.getLanguage().equals(GLOBAL_LANGUAGE)) {
-                continue;
-            }
-            return l;
-        }
+        CMSPageLanguageVersion language = getLanguageVersions().stream()
+                .filter(l -> l.getStatus().equals(CMSPageStatus.FINISHED))
+                .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
+                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
+                .findFirst()
+                .orElseThrow(() -> new CmsElementNotFoundException("No finished language version exists for page " + this));
+        return language;
+    }
 
-        logger.trace("getBestLanguage END");
-        return new CMSPageLanguageVersion();
+    /**
+     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale, including unfinished versions. Returns the
+     * LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
+     * failing that the first available (non-global) language version
+     * 
+     * @param locale The
+     * @return
+     * @throws CmsElementNotFoundException
+     */
+    private CMSPageLanguageVersion getBestLanguageIncludeUnfinished(Locale locale) throws CmsElementNotFoundException {
+        CMSPageLanguageVersion language = getLanguageVersions().stream()
+                .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
+                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
+                .findFirst()
+                .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
+        return language;
+    }
+
+    /**
+     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale, including unfinished versions. Returns
+     * the LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
+     * failing that the first available (non-global) language version
+     * 
+     * @return
+     * @throws CmsElementNotFoundException
+     */
+    private CMSPageLanguageVersion getBestLanguageIncludeUnfinished() throws CmsElementNotFoundException {
+        Locale currentLocale = CmsBean.getCurrentLocale();
+        return getBestLanguageIncludeUnfinished(currentLocale);
     }
 
     /**
@@ -663,21 +719,23 @@ public class CMSPage {
     }
 
     public boolean hasContent(String itemId) {
-        CMSContentItem item = getContentItem(itemId);
-        if (item != null) {
-            switch (item.getType()) {
-                case TEXT:
-                case HTML:
-                    return StringUtils.isNotBlank(item.getHtmlFragment());
-                case MEDIA:
-                    return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
-                case COMPONENT:
-                    return StringUtils.isNotBlank(item.getComponent());
-                default:
-                    return false;
-            }
+        CMSContentItem item;
+        try {
+            item = getContentItem(itemId);
+        } catch (CmsElementNotFoundException e) {
+            return false;
         }
-        return false;
+        switch (item.getType()) {
+            case TEXT:
+            case HTML:
+                return StringUtils.isNotBlank(item.getHtmlFragment());
+            case MEDIA:
+                return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
+            case COMPONENT:
+                return StringUtils.isNotBlank(item.getComponent());
+            default:
+                return false;
+        }
     }
 
     public String getContent(String itemId) throws ViewerConfigurationException {
@@ -685,7 +743,7 @@ public class CMSPage {
     }
 
     public Optional<CMSMediaItem> getMediaItem(String itemId) {
-        return Optional.ofNullable(getContentItem(itemId)).map(content -> content.getMediaItem());
+        return getContentItemIfExists(itemId).map(content -> content.getMediaItem());
     }
 
     public Optional<CMSMediaItem> getMediaItem() {
@@ -698,62 +756,73 @@ public class CMSPage {
 
     public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
         logger.trace("Getting content " + itemId + " from page " + getId());
-        CMSContentItem item = getContentItem(itemId);
+        CMSContentItem item;
+        try {
+            item = getContentItem(itemId);
+        } catch (CmsElementNotFoundException e1) {
+            logger.error("No content item of id " + itemId + " found in page " + this.getId());
+            return "";
+        }
         String contentString = "";
-        if (item != null) {
-            switch (item.getType()) {
-                case TEXT:
-                    contentString = item.getHtmlFragment();
-                    break;
-                case HTML:
-                    contentString = CMSContentResource.getContentUrl(item);
-                    break;
-                case MEDIA:
-                    contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
-                    break;
-                case COMPONENT:
-                    contentString = item.getComponent();
-                    break;
-                case GLOSSARY:
-                    try {
-                        contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
-                    } catch (ContentNotFoundException | IOException e) {
-                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
-                    }
-                    break;
-                default:
-                    contentString = "";
-            }
+        switch (item.getType()) {
+            case TEXT:
+                contentString = item.getHtmlFragment();
+                break;
+            case HTML:
+                contentString = CMSContentResource.getContentUrl(item);
+                break;
+            case MEDIA:
+                contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                break;
+            case COMPONENT:
+                contentString = item.getComponent();
+                break;
+            case GLOSSARY:
+                try {
+                    contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+                } catch (ContentNotFoundException | IOException e) {
+                    logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+                }
+                break;
+            default:
+                contentString = "";
         }
         logger.trace("Got content as string: " + contentString);
         return contentString;
     }
 
     public List<CMSContentItem> getGlobalContentItems() {
-        CMSPageLanguageVersion defaultVersion = getLanguageVersion(GLOBAL_LANGUAGE);
-        if (defaultVersion != null) {
-            List<CMSContentItem> items = defaultVersion.getContentItems();
-            return items;
+        CMSPageLanguageVersion defaultVersion;
+        try {
+            defaultVersion = getLanguageVersion(GLOBAL_LANGUAGE);
+        } catch (CmsElementNotFoundException e) {
+            return new ArrayList<>();
         }
-        return null;
+        List<CMSContentItem> items = defaultVersion.getContentItems();
+        return items;
     }
 
     public List<CMSContentItem> getContentItems() {
-        CMSPageLanguageVersion defaultVersion = getLanguageVersion(CmsBean.getCurrentLocale().getLanguage());
-        if (defaultVersion != null) {
-            List<CMSContentItem> items = defaultVersion.getCompleteContentItemList();
-            return items;
+        CMSPageLanguageVersion defaultVersion;
+        try {
+            defaultVersion = getLanguageVersion(CmsBean.getCurrentLocale().getLanguage());
+        } catch (CmsElementNotFoundException e) {
+            return new ArrayList<>();
         }
-        return null;
+        List<CMSContentItem> items = defaultVersion.getCompleteContentItemList();
+        return items;
     }
 
     public List<CMSContentItem> getContentItems(Locale locale) {
         if (locale != null) {
-            CMSPageLanguageVersion version = getLanguageVersion(locale.getLanguage());
-            if (version != null) {
-                List<CMSContentItem> items = version.getCompleteContentItemList();
-                return items;
+            CMSPageLanguageVersion version;
+            try {
+                version = getLanguageVersion(locale.getLanguage());
+            } catch (CmsElementNotFoundException e) {
+                return new ArrayList<>();
             }
+            List<CMSContentItem> items = version.getCompleteContentItemList();
+            return items;
         }
         return null;
     }
@@ -814,40 +883,6 @@ public class CMSPage {
         }
     }
 
-    @Deprecated
-    public boolean sortGlobalLanguageItems() {
-        CMSPageLanguageVersion global = getLanguageVersion(GLOBAL_LANGUAGE);
-        boolean dirty = false;
-        if (global == null) {
-            global = new CMSPageLanguageVersion();
-            global.setOwnerPage(this);
-            global.setLanguage(GLOBAL_LANGUAGE);
-            global.setStatus(CMSPageStatus.WIP);
-            getLanguageVersions().add(global);
-            for (CMSPageLanguageVersion version : getLanguageVersions()) {
-                if (!version.equals(global)) {
-                    Iterator<CMSContentItem> iter = version.getContentItems().iterator();
-                    while (iter.hasNext()) {
-                        CMSContentItem item = iter.next();
-                        switch (item.getType()) {
-                            case MEDIA:
-                            case PAGELIST:
-                            case SOLRQUERY:
-                                iter.remove();
-                                global.addContentItem(item);
-                                item.setOwnerPageLanguageVersion(global);
-                                dirty = true;
-                            case HTML:
-                            case TEXT:
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-        return dirty;
-    }
 
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
@@ -881,7 +916,12 @@ public class CMSPage {
     }
 
     public String getTileGridUrl(String itemId) throws IllegalRequestException {
-        CMSContentItem item = getContentItem(itemId);
+        CMSContentItem item;
+        try {
+            item = getContentItem(itemId);
+        } catch (CmsElementNotFoundException e) {
+            item = null;
+        }
         if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
             StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
             sb.append("/rest/tilegrid/")
@@ -1063,7 +1103,6 @@ public class CMSPage {
         return BeanUtils.getCmsBean().getCollection(this);
     }
 
-    
     /**
      * Returns the property with the given key or else creates a new one with that key and returns it
      * 
@@ -1072,33 +1111,63 @@ public class CMSPage {
      * @return the property with the given key or else creates a new one with that key and returns it
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
-        CMSProperty property =  this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
+        CMSProperty property = this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
             CMSProperty prop = new CMSProperty(key);
             this.properties.add(prop);
             return prop;
         });
         return property;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return getBestLanguage(Locale.ENGLISH).getTitle();
+        try {
+            return getBestLanguageIncludeUnfinished(Locale.ENGLISH).getTitle();
+        } catch (CmsElementNotFoundException e) {
+            return "ID: " + this.getId() + " (no title)";
+        }
     }
 
     /**
      * Remove any language versions without primary key (because h2 doesn't like that)
      */
     public void cleanup() {
-       Iterator<CMSPageLanguageVersion> i = languageVersions.iterator();
-       while(i.hasNext()) {
-           CMSPageLanguageVersion langVersion = i.next();
-           if(langVersion.getId() == null) {
-               i.remove();
-           }
-       }
+        Iterator<CMSPageLanguageVersion> i = languageVersions.iterator();
+        while (i.hasNext()) {
+            CMSPageLanguageVersion langVersion = i.next();
+            if (langVersion.getId() == null) {
+                i.remove();
+            }
+        }
+
+    }
+
+    /**
+     * Return true if the page has a {@link CMSPageLanguageVersion} for the given locale
+     * 
+     * @param locale
+     * @return true if the page has a {@link CMSPageLanguageVersion} for the given locale, false otherwise
+     */
+    public boolean hasLanguageVersion(Locale locale) {
+        return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
+    }
+    
+    /**
+     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no 
+     * language versions already exist
+     * 
+     * @param page
+     * @param locales
+     */
+    public void createMissingLangaugeVersions( List<Locale> locales) {
+        for (Locale locale : locales) {
+            if(!hasLanguageVersion(locale)) {
+                addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
+            }
+        }
         
     }
 

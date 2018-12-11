@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -37,9 +36,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     private static final long serialVersionUID = -3308596220913009726L;
 
-    public static String split = DataManager.getInstance().getConfiguration().getSplittingCharacter();
-
-    private String name;
+    private final String name;
+    private final String field;
+    public final String splittingChar;
     private long number;
     private String sortField = "-";
     private boolean showSubElements = false;
@@ -48,8 +47,9 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
 
-    public BrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
+    public BrowseDcElement(String name, long number, String field, String sortField) {
         this.name = name != null ? name.intern() : name;
+        this.field = field;
         this.number = number;
         this.sortField = sortField;
         if (StringUtils.isEmpty(this.sortField)) {
@@ -59,13 +59,16 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         }
         this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
         this.info = new SimpleBrowseElementInfo(name);
+        splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field);
     }
-    
+
     /**
      * 
      */
     public BrowseDcElement(BrowseDcElement blueprint) {
         this.name = blueprint.name;
+        this.field = blueprint.field;
+        this.splittingChar = blueprint.splittingChar;
         this.number = blueprint.number;
         this.sortField = blueprint.sortField;
         this.hasSubelements = blueprint.hasSubelements;
@@ -122,13 +125,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getName() {
         return name;
     }
-    
+
     public String getLabel() {
-        if(getInfo() != null) {
+        if (getInfo() != null) {
             return getInfo().getName();
-        } else {
-            return name;
         }
+        return name;
     }
 
     /**
@@ -137,11 +139,10 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return
      */
     public String getDescription() {
-        if(getInfo() != null) {
+        if (getInfo() != null) {
             return getInfo().getDescription();
-        } else {            
-            return new StringBuilder(name).append("_DESCRIPTION").toString();
         }
+        return new StringBuilder(name).append("_DESCRIPTION").toString();
     }
 
     /**
@@ -150,11 +151,10 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return
      */
     public String getRepresentant() {
-        if(getInfo() != null && getInfo().getIconURI() != null) {
+        if (getInfo() != null && getInfo().getIconURI() != null) {
             return getInfo().getIconURI().toString();
-        } else {            
-            return new StringBuilder(name).append("_REPRESENTANT").toString();
         }
+        return new StringBuilder(name).append("_REPRESENTANT").toString();
     }
 
     /**
@@ -189,8 +189,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     public int getLevel() {
-        if (StringUtils.isNotEmpty(split)) {
-            return name.split("\\" + split).length - 1;
+        if (StringUtils.isNotEmpty(splittingChar)) {
+            return name.split("\\" + splittingChar).length - 1;
         }
         return 0;
     }
@@ -198,7 +198,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getParentName() {
         if (getLevel() > 0) {
             String parentTitle = name;
-            return parentTitle.substring(0, parentTitle.lastIndexOf(split));
+            return parentTitle.substring(0, parentTitle.lastIndexOf(splittingChar));
         }
         return "";
     }
@@ -246,16 +246,28 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      */
     public String getRssUrl() {
         StringBuilder sb = new StringBuilder();
-        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=(DC:").append(name)
-                .append(" OR DC:").append(name).append(".*) AND (ISWORK:true OR ISANCHOR:true)");
+        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append('/')
+                .append(NavigationHelper.URL_RSS)
+                .append("?q=(DC:")
+                .append(name)
+                .append(" OR DC:")
+                .append(name)
+                .append(".*) AND (ISWORK:true OR ISANCHOR:true)");
 
         return sb.toString();
     }
-    
+
     public String getRssUrl(HttpServletRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append(ServletUtils.getServletPathWithHostAsUrlFromRequest(request)).append('/').append(NavigationHelper.URL_RSS).append("?q=(DC:").append(name)
-                .append(" OR DC:").append(name).append(".*) AND (ISWORK:true OR ISANCHOR:true)");
+        sb.append(ServletUtils.getServletPathWithHostAsUrlFromRequest(request))
+                .append('/')
+                .append(NavigationHelper.URL_RSS)
+                .append("?q=(DC:")
+                .append(name)
+                .append(" OR DC:")
+                .append(name)
+                .append(".*) AND (ISWORK:true OR ISANCHOR:true)");
 
         return sb.toString();
     }
@@ -278,7 +290,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public BrowseElementInfo getInfo() {
         return info;
     }
-    
+
     public static class TranslationComparator implements Comparator<BrowseDcElement>, Serializable {
 
         private static final long serialVersionUID = -2594688666989841956L;
@@ -293,17 +305,16 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     }
 
-    
     public boolean hasCMSDescription() {
-    	return !(this.info instanceof SimpleBrowseElementInfo);
+        return !(this.info instanceof SimpleBrowseElementInfo);
     }
-    
+
     public boolean hasIcon() {
         return getInfo() != null && getInfo().getIconURI() != null;
     }
-    
+
     public URI getIcon() {
-        if(getInfo() != null) {
+        if (getInfo() != null) {
             return getInfo().getIconURI();
         } else {
             return null;

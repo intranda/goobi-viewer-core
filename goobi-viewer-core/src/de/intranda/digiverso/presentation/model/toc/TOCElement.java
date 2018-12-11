@@ -22,21 +22,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
-import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
@@ -57,14 +49,13 @@ public class TOCElement implements Serializable {
     private final String logId;
     private final int level;
     private final String topStructPi;
-    private final boolean sourceFormatPdfAllowed;
     private final String thumbnailUrl;
     private final String recordMimeType;
     private final boolean anchorOrGroup;
     private String urlPrefix = "";
     private String view;
     private String urlSuffix = "";
-    private Boolean accessPermissionPdf = null;
+    private final boolean accessPermissionPdf;
     /** Element is visible in the current tree. */
     private boolean visible = true;
     private int id = 0;
@@ -87,7 +78,7 @@ public class TOCElement implements Serializable {
      * @param level
      * @param topStructPi
      * @param thumbnailUrl
-     * @param sourceFormatPdfAllowed
+     * @param accessPermissionPdf
      * @param anchorOrGroup
      * @param hasImages
      * @param recordMimeType
@@ -97,8 +88,8 @@ public class TOCElement implements Serializable {
      * @should set correct view url for given docStructType
      */
     public TOCElement(IMetadataValue label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi,
-            String thumbnailUrl, boolean sourceFormatPdfAllowed, boolean anchorOrGroup, boolean hasImages, String recordMimeType,
-            String docStructType, String footerId) {
+            String thumbnailUrl, boolean accessPermissionPdf, boolean anchorOrGroup, boolean hasImages, String recordMimeType, String docStructType,
+            String footerId) {
         this.label = label;
         this.pageNo = pageNo;
         this.pageNoLabel = pageNoLabel;
@@ -107,7 +98,7 @@ public class TOCElement implements Serializable {
         this.level = level;
         this.topStructPi = topStructPi;
         this.thumbnailUrl = thumbnailUrl;
-        this.sourceFormatPdfAllowed = sourceFormatPdfAllowed;
+        this.accessPermissionPdf = accessPermissionPdf;
         this.anchorOrGroup = anchorOrGroup;
         this.recordMimeType = recordMimeType;
         this.footerId = footerId;
@@ -199,22 +190,21 @@ public class TOCElement implements Serializable {
      * @return
      */
     public boolean isAccessPermissionPdf() {
-        if (!DataManager.getInstance().getConfiguration().isTocPdfEnabled() || !sourceFormatPdfAllowed) {
-            return false;
-        }
-        if (accessPermissionPdf == null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            try {
-                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, logId,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                return false;
-            } catch (DAOException e) {
-                logger.debug("DAOException thrown here: {}", e.getMessage());
-                return false;
-            }
-        }
+        //        if (!DataManager.getInstance().getConfiguration().isTocPdfEnabled() || !sourceFormatPdfAllowed) {
+        //            return false;
+        //        }
+        //        if (accessPermissionPdf == null) {
+        //            try {
+        //                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, logId,
+        //                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
+        //            } catch (IndexUnreachableException e) {
+        //                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+        //                return false;
+        //            } catch (DAOException e) {
+        //                logger.debug("DAOException thrown here: {}", e.getMessage());
+        //                return false;
+        //            }
+        //        }
 
         return accessPermissionPdf;
     }

@@ -11,11 +11,6 @@
 	}
 	/* TOOGLE DROPDOWN */
 	&__counter {
-		display: inline-flex;
-    	align-items: center;
-	    justify-content: center;
-	    min-width: 15px;
-	    margin-right: 5px;
 		padding: 0 3px;
 		font-size: 12px;
 		color: @white;
@@ -25,7 +20,6 @@
 	&__string {
 		margin-right: 5px;
 	}
-	&__icon {}
 	/* DROPDOWN */
 	&__dropdown {
 		display: none;
@@ -258,20 +252,18 @@
 	background-repeat: no-repeat;
 	background-position: center center;	
 }
-
 [data-bookshelf-type="counter"] {
 	visibility: hidden;
 	&.in {
 		visibility: visible;
 	}
 }
-
 [data-bookshelf-type="dropdown"] {
-	padding: 6px 0;
+	display: flex;
+    align-items: center;
+    padding: 6px 0;
 }
-
 [data-bookshelf-type="get"] {}
-
 [data-bookshelf-type="add"] {
 	background-image: url("@{images}/icons/icon-bs-herz-blau_thin.svg");
 	background-size: 72%;
@@ -285,13 +277,10 @@
 		}	
 	}
 }
-
 [data-bookshelf-type="delete"] {}
-
 [data-bookshelf-type="link"] {
 	background-image: url("@{images}/icons/icon-bs-link.svg");
 }
-
 [data-bookshelf-type="reset"] {}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

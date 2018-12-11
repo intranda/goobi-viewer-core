@@ -255,6 +255,21 @@
         <echo>Alles ist gut!</echo>
     </target>
 
+    <target name="jar-internal" depends="compile" description="Builds JAR file as a build dependency for modules without unit tests...">
+        <jar destfile="${dir.build}/viewer.jar" basedir="${dir.build.classes}">
+        </jar>
+
+        <delete dir="${dir.build}/WEB-INF" />
+        <delete dir="${dir.tests.classes}" />
+        <delete>
+            <fileset dir="${dir.build}">
+                <exclude name="*.jar" />
+            </fileset>
+        </delete>
+        <echo>Alles ist gut!</echo>
+    </target>
+
+
 	<!-- Build of war file for viewertest deploy-->
 	<target name="war-internal" depends="compile, resources, prepareConfig, customModifications" description="Build of war file for viewertest deploy">
 		<!-- replace custom faces and pretty config path in web.xml -->
@@ -1362,12 +1377,14 @@
 	</target>
 	<target name="gaugsammlungen">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.url" value="https://sammlungen.uni-goettingen.de/" />
 		<property name="solr.url" value="https://sammlungen.uni-goettingen.de/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fsammlungen.uni-goettingen.de%2Foai" />
 		<property name="theme" value="gaugsammlungen" />
+		<property name="customDataSource" value="true" />
+		<property name="jta-data-source" value="java:comp/env/viewer2" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />

@@ -49,6 +49,22 @@ public class HttpResponseFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         
+        /*
+         * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch".
+         * This changes the session state and thus shall not pass
+         * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
+         * (https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ)
+         * However this header is not standardized and may change in the future
+         */
+        String xmoz = httpRequest.getHeader("X-Moz");
+        if(xmoz == null) {
+            xmoz = httpRequest.getHeader("X-moz");
+        }
+        if(xmoz != null && xmoz.equalsIgnoreCase("prefetch")) {
+            logger.trace("Refuse prefetch request");
+            return;
+        }
+        
         //rest calls should not carry character encoding
         String path = httpRequest.getServletPath();
         if(!path.equals("/rest")) {            

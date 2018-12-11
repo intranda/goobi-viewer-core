@@ -102,6 +102,16 @@ public class SearchQueryItemTest {
                     item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
         }
+        // Auto-tokenize phrase search field if so configured
+        {
+            SearchQueryItem item = new SearchQueryItem(null);
+            item.setOperator(SearchItemOperator.PHRASE);
+            item.setField("MD_TITLE");
+            item.setValue("lorem ipsum dolor sit amet");
+            Set<String> searchTerms = new HashSet<>(0);
+            Assert.assertEquals("MD_TITLE" + SolrConstants._UNTOKENIZED + ":\"lorem ipsum dolor sit amet\"", item.generateQuery(searchTerms, true));
+            Assert.assertTrue(searchTerms.isEmpty());
+        }
     }
 
     /**

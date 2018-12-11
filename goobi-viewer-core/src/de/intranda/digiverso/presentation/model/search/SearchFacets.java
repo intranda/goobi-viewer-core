@@ -479,6 +479,7 @@ public class SearchFacets {
         return "pretty:search6"; // TODO advanced search
     }
 
+
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
      * 
