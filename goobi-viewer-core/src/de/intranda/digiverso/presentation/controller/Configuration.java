@@ -1863,7 +1863,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings("static-method")
     public List<String> getRangeFacetFields() {
-        // TODO more fields than just YEAR
         return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
     }
 

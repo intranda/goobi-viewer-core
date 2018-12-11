@@ -952,7 +952,7 @@ public final class SearchHelper {
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches) {
-        logger.trace("truncateFulltext");
+        // logger.trace("truncateFulltext");
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
@@ -1689,11 +1689,9 @@ public final class SearchHelper {
         if (fieldName != null) {
             switch (fieldName) {
                 case SolrConstants.DC:
-                    return SolrConstants.FACET_DC;
                 case SolrConstants.DOCSTRCT:
-                    return "FACET_DOCSTRCT";
-                case SolrConstants.SUPERDOCSTRCT:
-                    return "FACET_SUPERDOCSTRCT";
+                case SolrConstants.DOCSTRCT_SUB:
+                    return "FACET_" + fieldName;
                 default:
                     if (fieldName.startsWith("MD_")) {
                         fieldName = fieldName.replace("MD_", "FACET_");
@@ -1715,11 +1713,9 @@ public final class SearchHelper {
         if (fieldName != null) {
             switch (fieldName) {
                 case SolrConstants.FACET_DC:
-                    return SolrConstants.DC;
                 case "FACET_DOCSTRCT":
-                    return SolrConstants.DOCSTRCT;
-                case "FACET_SUPERDOCSTRCT":
-                    return SolrConstants.SUPERDOCSTRCT;
+                case "FACET_DOCSTRCT_SUB":
+                    return fieldName.substring(6);
                 default:
                     if (fieldName.startsWith("FACET_")) {
                         return fieldName.replace("FACET_", "MD_");
