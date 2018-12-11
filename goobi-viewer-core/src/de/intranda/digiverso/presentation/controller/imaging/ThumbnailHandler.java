@@ -88,6 +88,9 @@ public class ThumbnailHandler {
     }
 
     public URI getThumbnailPath(String filename) {
+        if(StringUtils.isBlank(filename)) {
+            return null;
+        }
         URI uri;
         try {
             uri = new URI(staticImagesPath);

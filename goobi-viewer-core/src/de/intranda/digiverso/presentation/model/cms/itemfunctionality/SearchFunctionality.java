@@ -95,6 +95,10 @@ public class SearchFunctionality implements Functionality {
             logger.error("Error retrieving search url", e);
         }
     }
+    
+    public void searchSimple(boolean a, boolean b) {
+        
+    }
 
     public void searchSimple() {
         logger.trace("searchSimple");
