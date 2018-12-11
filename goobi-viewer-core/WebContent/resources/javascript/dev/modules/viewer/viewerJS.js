@@ -386,16 +386,8 @@ var viewerJS = ( function() {
         // handle browser bugs
         switch ( _defaults.browser ) {
             case 'Chrome':
-                /* BROKEN IMAGES */
-                $( 'img' ).on("error", function() {
-                    $( this ).addClass( 'broken' );
-                } );
                 break;
             case 'Firefox':
-                /* 1px BUG */
-                if ( $( '.image-doublePageView' ).length > 0 ) {
-                    $( '.image-doublePageView' ).addClass( 'oneUp' );
-                }
                 break;
             case 'IE':
                 /* SET IE CLASS TO HTML */

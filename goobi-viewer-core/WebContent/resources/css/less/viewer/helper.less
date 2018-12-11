@@ -77,38 +77,6 @@
 		background-color: rgba(0,0,0,.25);
 	}
 }
-.broken {
-	position: relative;
-	display: inline-block;
-	width: 100%;
-	height: auto;
-	text-align: center;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	&:before {  
-	  content: " ";
-	  display: block;
-	  position: absolute;
-	  top: -10px;
-	  left: 0;
-	  width: 100%;
-	  height: calc(~"100% + 10px");
-	  background-color: @middlegray;
-	}
-	&:after {  
-	  content: "\f127" " " attr(alt);
-	  position: absolute;
-	  display: block;
-	  top: 5px;
-	  left: 0;
-	  width: 100%;
-	  font-size: 14px;
-	  font-style: normal;
-	  font-family: FontAwesome;
-	  text-align: center;
-	  color: rgb(100, 100, 100);
-	}
-}
 /* COORDS HIGHLIGHTING */
 .coords-highlighting {
 	background-color: yellow;
@@ -118,11 +86,6 @@
 /* TYPO */
 .uppercase {
 	text-transform: uppercase;
-}
-/* FIREFOX LAYOUT FIXES */
-.oneUp {
-	position: relative;
-	top: -1px;
 }
 /* VISUALLY HIDDEN */
 .visually-hidden {

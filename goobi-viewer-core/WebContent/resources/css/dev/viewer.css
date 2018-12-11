@@ -687,38 +687,6 @@ button {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.25);
 }
-.broken {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  height: auto;
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.broken:before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: -10px;
-  left: 0;
-  width: 100%;
-  height: calc(100% + 10px);
-  background-color: #ccc;
-}
-.broken:after {
-  content: "\f127" " " attr(alt);
-  position: absolute;
-  display: block;
-  top: 5px;
-  left: 0;
-  width: 100%;
-  font-size: 14px;
-  font-style: normal;
-  font-family: FontAwesome;
-  text-align: center;
-  color: #646464;
-}
 /* COORDS HIGHLIGHTING */
 .coords-highlighting {
   background-color: yellow;
@@ -727,11 +695,6 @@ button {
 /* TYPO */
 .uppercase {
   text-transform: uppercase;
-}
-/* FIREFOX LAYOUT FIXES */
-.oneUp {
-  position: relative;
-  top: -1px;
 }
 /* VISUALLY HIDDEN */
 .visually-hidden {
