@@ -95,10 +95,6 @@ public class SearchFunctionality implements Functionality {
             logger.error("Error retrieving search url", e);
         }
     }
-    
-    public void searchSimple(boolean a, boolean b) {
-        
-    }
 
     public void searchSimple() {
         logger.trace("searchSimple");
@@ -136,10 +132,10 @@ public class SearchFunctionality implements Functionality {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
-        getSearchBean().search();
-        getSearchBean().getFacets().setCurrentFacetString(facetString);
+            String facetString = getSearchBean().getFacets().getCurrentFacetString();
+            getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
+            getSearchBean().search();
+            getSearchBean().getFacets().setCurrentFacetString(facetString);
     }
 
     /**

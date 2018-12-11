@@ -45,9 +45,41 @@
 				<ui:fragment rendered="#{cmsPage.hasContent('component')}">
 					<ui:include src="#{cmsPage.getContent('component')}" />
 				</ui:fragment>
+                
+                
+                                <viewerComponent:templateSearchList search="#{cmsPage.getContentItem('search').functionality}" />
+                
 
 				<!-- SEARCH LIST -->
-				<viewerComponent:templateSearchList search="#{cmsPage.getContentItem('search').functionality}" />
+                <viewerComponent:searchHitList/>
+                <!-- PAGINATOR -->
+                <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cc.attrs.search.urlPrefix}"
+                    urlSuffix="#{cc.attrs.search.urlSuffix}" />
+                <div class="clearfix"></div>
+                
+                <script type="text/javascript">
+                    $( document ).ready( function() {
+                        var searchSortingDropdownConfig = {};
+                        var searchListConfig = {
+                            contextPath: "#{request.contextPath}",
+                            msg: {
+                                getMoreChildren: "#{msg.searchList_getMoreHits}"
+                            }
+                        };
+                        
+                        viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+                        viewerJS.searchList.init( searchListConfig );
+                    } );
+                    
+                    $( window ).on( "load", function() {
+                        var stackedThumbnailsConfig = {};
+                        
+                        viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+                    } );
+                </script>
+                
+                
+                
 			</div>
 		</f:view>
 	</ui:define>

@@ -47,6 +47,38 @@
                     
                     <!-- SEARCH STANDARD -->
                     <ui:include src="/resources/includes/search/searchStandard.xhtml" /> 
+                    
+                    <!-- SEARCH LIST -->
+                    <viewerComponent:searchHitList/>
+                    
+                    <!-- PAGINATOR -->
+                    <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cc.attrs.search.urlPrefix}"
+                        urlSuffix="#{cc.attrs.search.urlSuffix}" />
+                    <div class="clearfix"></div>
+                    
+                    <script type="text/javascript">
+                        $( document ).ready( function() {
+                            var searchSortingDropdownConfig = {};
+                            var searchListConfig = {
+                                contextPath: "#{request.contextPath}",
+                                msg: {
+                                    getMoreChildren: "#{msg.searchList_getMoreHits}"
+                                }
+                            };
+                            
+                            viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+                            viewerJS.searchList.init( searchListConfig );
+                        } );
+                        
+                        $( window ).on( "load", function() {
+                            var stackedThumbnailsConfig = {};
+                            
+                            viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+                        } );
+                    </script>
+                
+                    
+                    
                 </div>
             </div>
         </f:view>
