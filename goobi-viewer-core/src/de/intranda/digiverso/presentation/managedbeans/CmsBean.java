@@ -987,13 +987,31 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Calculates the number of pages needed for the paginator. The value is taken directly from
+     * {@link Search#getLastPage(int)}
+     * 
+     * @return  The number of pages to display in the paginator
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public long getQueryResultCount() throws PresentationException, IndexUnreachableException {
+        if (searchBean != null && searchBean.getCurrentSearch() != null) {
+            return searchBean.getCurrentSearch().getLastPage(searchBean.getHitsPerPage());
+        }
+        return 0;
+    }
+
+    
+    /**
      * Calcs number of paginator pages for the query result.
      * 
      * @param item
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated  use {@link #getQueryResultCount()} instead
      */
+    @Deprecated
     public long getQueryResultCount(CMSContentItem item) throws PresentationException, IndexUnreachableException {
         if (item == null) {
             return 0;
