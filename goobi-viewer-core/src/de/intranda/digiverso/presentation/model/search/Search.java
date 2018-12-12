@@ -239,28 +239,39 @@ public class Search implements Serializable {
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
-        String removeFq = null;
-        String mainQueryFilterSuffix = "";
+        List<String> removeFqList = new ArrayList<>();
+        String subElementQueryFilterSuffix = "";
         for (String fq : activeFacetFilterQueries) {
             logger.trace("Facet query: {}", fq);
-            if (fq.startsWith("FACET_" + SolrConstants.DOCSTRCT_SUB) && DataManager.getInstance().getConfiguration().isAggregateHits()) {
-                // Faceting over sub-element docstructs requires filtering via the main query rather than a filter query
-                removeFq = fq;
-                mainQueryFilterSuffix = new StringBuilder().append(" +")
-                        .append(fq.replace(SolrConstants.DOCSTRCT_SUB, SolrConstants.DOCSTRCT))
-                        .append(" AND ")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(":")
-                        .append(DocType.DOCSTRCT.name())
-                        .toString();
-                // TODO Non-join query for true docstrct facets
+            if (DataManager.getInstance().getConfiguration().isAggregateHits()
+                    && (fq.startsWith("FACET_" + SolrConstants.DOCSTRCT_SUB) || fq.startsWith("FACET_EVENT_SUB"))) {
+                // Faceting over sub-element metadata fields requires filtering via the main query rather than a filter query
+                removeFqList.add(fq);
+                if (fq.startsWith("FACET_" + SolrConstants.DOCSTRCT_SUB)) {
+                    subElementQueryFilterSuffix = new StringBuilder().append(" +")
+                            .append(fq.replace(SolrConstants.DOCSTRCT_SUB, SolrConstants.DOCSTRCT))
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":")
+                            .append(DocType.DOCSTRCT.name())
+                            .toString();
+                }
+//                else if (fq.startsWith("FACET_EVENT_SUB")) {
+//                    subElementQueryFilterSuffix = new StringBuilder().append(" +")
+//                            .append(fq.replace("EVENT_SUB", "???"))
+//                            .append(" +")
+//                            .append(SolrConstants.DOCTYPE)
+//                            .append(":")
+//                            .append(DocType.EVENT.name())
+//                            .toString();
+//                }
             }
         }
-        if (removeFq != null) {
-            activeFacetFilterQueries.remove(removeFq);
+        if (!removeFqList.isEmpty()) {
+            activeFacetFilterQueries.removeAll(removeFqList);
         }
 
-        String finalQuery = query + mainQueryFilterSuffix;
+        String finalQuery = query + subElementQueryFilterSuffix;
         if (hitsCount == 0) {
             logger.trace("Final main query: {}", finalQuery);
 
@@ -379,10 +390,11 @@ public class Search implements Serializable {
             // Hits for the current page
             int from = (page - 1) * hitsPerPage;
 
-            if (StringUtils.isNotEmpty(expandQuery)) {
-                logger.trace("Expand query: {}", expandQuery);
+            String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+            if (StringUtils.isNotEmpty(useExpandQuery)) {
+                logger.trace("Expand query: {}", useExpandQuery);
                 params.put(ExpandParams.EXPAND, "true");
-                params.put(ExpandParams.EXPAND_Q, expandQuery);
+                params.put(ExpandParams.EXPAND_Q, useExpandQuery);
                 params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
                 params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
                 params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
