@@ -256,15 +256,15 @@ public class Search implements Serializable {
                             .append(DocType.DOCSTRCT.name())
                             .toString();
                 }
-//                else if (fq.startsWith("FACET_EVENT_SUB")) {
-//                    subElementQueryFilterSuffix = new StringBuilder().append(" +")
-//                            .append(fq.replace("EVENT_SUB", "???"))
-//                            .append(" +")
-//                            .append(SolrConstants.DOCTYPE)
-//                            .append(":")
-//                            .append(DocType.EVENT.name())
-//                            .toString();
-//                }
+                //                else if (fq.startsWith("FACET_EVENT_SUB")) {
+                //                    subElementQueryFilterSuffix = new StringBuilder().append(" +")
+                //                            .append(fq.replace("EVENT_SUB", "???"))
+                //                            .append(" +")
+                //                            .append(SolrConstants.DOCTYPE)
+                //                            .append(":")
+                //                            .append(DocType.EVENT.name())
+                //                            .toString();
+                //                }
             }
         }
         if (!removeFqList.isEmpty()) {
@@ -298,7 +298,7 @@ public class Search implements Serializable {
                 }
             }
 
-            // TODO Extra search for child element facet values
+            // Extra search for child element facet values
             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                 String extraQuery = new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, false))
                         .append(" -")
@@ -311,7 +311,7 @@ public class Search implements Serializable {
                         .toString();
                 logger.trace("extra query: {}", extraQuery);
                 resp = DataManager.getInstance().getSearchIndex().search(extraQuery, 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT),
-                        Collections.singletonList(SolrConstants.IDDOC), null, params);
+                        Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
                 if (resp != null && resp.getFacetFields() != null) {
                     //                    logger.trace("hits: {}", resp.getResults().getNumFound());
                     for (FacetField facetField : resp.getFacetFields()) {
