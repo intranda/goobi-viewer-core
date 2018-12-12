@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +37,9 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
+import de.intranda.digiverso.presentation.model.search.SearchFilter;
+import de.intranda.digiverso.presentation.model.search.SearchInterface;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
@@ -44,7 +48,7 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
  * @author Florian Alpers
  *
  */
-public class SearchFunctionality implements Functionality {
+public class SearchFunctionality implements Functionality, SearchInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchFunctionality.class);
 
@@ -68,9 +72,10 @@ public class SearchFunctionality implements Functionality {
         this.baseUrl = baseUrl;
     }
 
-    public void resetSearch() {
+    public String resetSearch() {
         getSearchBean().resetSearchAction();
         redirectToSearchUrl();
+        return "";
     }
 
     /**
@@ -96,7 +101,7 @@ public class SearchFunctionality implements Functionality {
         }
     }
 
-    public void searchSimple() {
+    public String searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -104,9 +109,10 @@ public class SearchFunctionality implements Functionality {
             getSearchBean().searchSimple(true, false);
             redirectToSearchUrl();
         }
+        return "";
     }
 
-    public void searchAdvanced() {
+    public String searchAdvanced() {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -114,6 +120,7 @@ public class SearchFunctionality implements Functionality {
             getSearchBean().searchAdvanced();
             redirectToSearchUrl();
         }
+        return "";
     }
 
     public void searchFacetted() {
@@ -198,6 +205,10 @@ public class SearchFunctionality implements Functionality {
         return getSearchBean().getCurrentPage();
     }
 
+    public int getCurrentPage() {
+        return getPageNo();
+    }
+    
     /**
      * @return the searchBean
      */
@@ -326,5 +337,78 @@ public class SearchFunctionality implements Functionality {
             return path.getApplicationName() + path.getPrettifiedPagePath();
         }
         return "";
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchInDcFlag()
+     */
+    @Override
+    public boolean isSearchInDcFlag() {
+        return getSearchBean().isSearchInDcFlag();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getFacets()
+     */
+    @Override
+    public SearchFacets getFacets() {
+        return getSearchBean().getFacets();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#autocomplete(java.lang.String)
+     */
+    @Override
+    public List<String> autocomplete(String suggestion) throws IndexUnreachableException {
+        return getSearchBean().autocomplete(suggestion);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getSearchString()
+     */
+    @Override
+    public String getSearchString() {
+        return getSearchBean().getSearchString();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getSearchFilters()
+     */
+    @Override
+    public List<SearchFilter> getSearchFilters() {
+        return getSearchBean().getSearchFilters();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getCurrentSearchFilterString()
+     */
+    @Override
+    public String getCurrentSearchFilterString() {
+        return getSearchBean().getCurrentSearchFilterString();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getActiveSearchType()
+     */
+    @Override
+    public int getActiveSearchType() {
+        return getSearchBean().getActiveSearchType();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setActiveSearchType(int)
+     */
+    @Override
+    public void setActiveSearchType(int type) {
+        getSearchBean().setActiveSearchType(type);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setSearchString(java.lang.String)
+     */
+    @Override
+    public void setSearchString(String searchString) {
+        getSearchBean().setSearchString(searchString);
     }
 }

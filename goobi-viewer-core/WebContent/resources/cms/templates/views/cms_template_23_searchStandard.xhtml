@@ -46,7 +46,9 @@
                     </ui:fragment>
                     
                     <!-- SEARCH STANDARD -->
-                    <ui:include src="/resources/includes/search/searchStandard.xhtml" /> 
+                    <ui:include src="/resources/includes/search/searchStandard.xhtml">
+                        <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                    </ui:include>
                     
                     <!-- SEARCH LIST -->
                     <viewerComponent:searchHitList/>

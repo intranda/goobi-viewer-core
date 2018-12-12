@@ -236,6 +236,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Column(name = "component")
     private String component = null;
+    
+    @Column(name = "displayEmptySearchResults")
+    private boolean displayEmptySearchResults = false;
 
     /**
      * This object may contain item type specific functionality (methods and transient properties)
@@ -264,6 +267,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
+
 
     /**
      * Noop constructor for javax.persistence
@@ -979,4 +983,20 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.collection = null;
     }
 
+    /**
+     * @return
+     */
+    public boolean isDisplayEmptySearchResults() {
+        return this.displayEmptySearchResults  ;
+    }
+    
+    /**
+     * @param displayEmptySearchResults the displayEmptySearchResults to set
+     */
+    public void setDisplayEmptySearchResults(boolean displayEmptySearchResults) {
+        this.displayEmptySearchResults = displayEmptySearchResults;
+    }
+
+    
+    
 }

@@ -874,7 +874,7 @@ public class CmsBean implements Serializable {
                     }                        
                     if(StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                         return searchAction(item);
-                    } else if(StringUtils.isNotBlank(item.getSolrQuery())) {
+                    } else if(item.isDisplayEmptySearchResults()) {
                         searchBean.setExactSearchString(item.getSolrQuery());
                         return searchAction(item);
                     }

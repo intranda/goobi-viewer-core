@@ -79,6 +79,7 @@ import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.search.SearchInterface;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
@@ -98,7 +99,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
  */
 @Named
 @SessionScoped
-public class SearchBean implements Serializable {
+public class SearchBean implements SearchInterface, Serializable {
 
     private static final long serialVersionUID = 6962223613432267768L;
 
@@ -313,6 +314,15 @@ public class SearchBean implements Serializable {
             default:
                 return "pretty:" + PageType.search.name();
         }
+    }
+    
+
+    /**
+     * Alias for {@link #resetSearchAction()}
+     */
+    @Override
+    public String resetSearch() {
+        return resetSearchAction();
     }
 
     /**
@@ -2130,4 +2140,5 @@ public class SearchBean implements Serializable {
             logger.error("Failed to redirect to url", e);
         }
     }
+
 }
