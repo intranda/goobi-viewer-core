@@ -301,6 +301,7 @@ public class Search implements Serializable {
             // Extra search for child element facet values
             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                 String extraQuery = new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, false))
+                        .append(subElementQueryFilterSuffix)
                         .append(" -")
                         .append(SolrConstants.PI)
                         .append(":*")
@@ -322,7 +323,6 @@ public class Search implements Serializable {
                                 continue;
                             }
                             facetResult.put(count.getName(), count.getCount());
-                            logger.trace(count.getName());
                         }
                         // Use non-FACET_ field names outside of the actual faceting query
                         String fieldName = SolrConstants.DOCSTRCT_SUB;
