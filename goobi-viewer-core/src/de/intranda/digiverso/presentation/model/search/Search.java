@@ -362,6 +362,10 @@ public class Search implements Serializable {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                     continue;
                 }
+                // Skip top element docstrct faceting if sub-element docstrct faceting is active
+                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
+                    continue;
+                }
                 // Skip language-specific facet fields if they don't match the given language
                 if (facetField.getName().contains(SolrConstants._LANG_)
                         && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
