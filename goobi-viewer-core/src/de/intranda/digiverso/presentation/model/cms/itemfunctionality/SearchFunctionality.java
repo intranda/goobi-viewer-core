@@ -392,6 +392,15 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setCurrentSearchFilterString(java.lang.String)
+     */
+    @Override
+    public void setCurrentSearchFilterString(String filter) {
+        getSearchBean().setCurrentSearchFilterString(filter);
+    }
+    
+
+    /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getActiveSearchType()
      */
     @Override
@@ -443,4 +452,5 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             return getBaseUrl();
         }
     }
+
 }

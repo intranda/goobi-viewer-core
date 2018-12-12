@@ -53,6 +53,8 @@ public interface SearchInterface {
     
     public String getCurrentSearchFilterString();
     
+    public void setCurrentSearchFilterString(String filter);
+    
     public int getActiveSearchType();
     
     public void setActiveSearchType(int type);
