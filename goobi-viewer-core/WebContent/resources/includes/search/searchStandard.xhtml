@@ -35,7 +35,11 @@
                             <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
                         </ui:repeat>
                     </h:panelGroup>
+                    
                 </h3>
+               <ui:fragment rendered="#{search.searchPerformed}">
+                   <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
+               </ui:fragment>
             </div>
 
             <!-- SEARCH STANDARD INPUT -->

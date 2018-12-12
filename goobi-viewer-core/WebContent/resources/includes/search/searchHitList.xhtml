@@ -1,18 +1,20 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<composite:interface />
-
-	<composite:implementation>
-		<!-- THIS COMPONENT MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
-	
         <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
-    
+
+		<!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
+	    
 		<!-- SEARCH LIST HITS -->
 		<div class="search-list__hits">
         
@@ -220,5 +222,4 @@
                 </ui:repeat>
 			</h:form>
 		</div>
-	</composite:implementation>
 </ui:composition>

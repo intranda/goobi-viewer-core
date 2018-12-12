@@ -334,6 +334,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentSearch != null) {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
+            currentSearch = null; //to indicate that no search results are expected. search is initially null anyway
         }
         // Only reset available facets here, not selected facets!
         facets.resetAvailableFacets();
@@ -2146,7 +2147,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public boolean isSearchPerformed() {
-        search()
+        return currentSearch != null;
     }
 
 }

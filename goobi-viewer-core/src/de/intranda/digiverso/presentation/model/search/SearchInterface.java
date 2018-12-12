@@ -45,6 +45,8 @@ public interface SearchInterface {
     
     public String getSearchString();
     
+    public String getExactSearchString();
+    
     public void setSearchString(String searchString);
     
     public List<SearchFilter> getSearchFilters();
@@ -54,10 +56,10 @@ public interface SearchInterface {
     public int getActiveSearchType();
     
     public void setActiveSearchType(int type);
-    
-    /**
-     * 
-     * @return true if either 
-     */
+
     public boolean isSearchPerformed();
+    
+    public long getHitsCount();
+    
+    public String getCurrentSearchUrlRoot();
 }

@@ -51,7 +51,9 @@
                     </ui:include>
                     
                     <!-- SEARCH LIST -->
-                    <viewerComponent:searchHitList/>
+                    <ui:include src="/resources/includes/search/searchHitList.xhtml">
+                        <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                    </ui:include>
                     
                     <!-- PAGINATOR -->
                     <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cc.attrs.search.urlPrefix}"

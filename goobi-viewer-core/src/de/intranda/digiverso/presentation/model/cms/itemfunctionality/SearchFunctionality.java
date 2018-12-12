@@ -268,6 +268,10 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
     }
+    
+    public String getExactSearchString() {
+        return getQueryString();
+    }
 
     public void setQueryString(String s) {
         getSearchBean().setExactSearchString(s);
@@ -410,5 +414,33 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public void setSearchString(String searchString) {
         getSearchBean().setSearchString(searchString);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchPerformed()
+     */
+    @Override
+    public boolean isSearchPerformed() {
+        return getSearchBean().isSearchPerformed();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getHitsCount()
+     */
+    @Override
+    public long getHitsCount() {
+        return getSearchBean().getHitsCount();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getCurrentSearchUrlRoot()
+     */
+    @Override
+    public String getCurrentSearchUrlRoot() {
+        if(getBaseUrl().endsWith("/")) {
+            return getBaseUrl().substring(0, getBaseUrl().length()-1);
+        } else {
+            return getBaseUrl();
+        }
     }
 }
