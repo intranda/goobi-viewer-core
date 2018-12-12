@@ -37,6 +37,12 @@ public interface SearchInterface {
     
     public int getCurrentPage();
     
+    public int getLastPage();
+    
+    public String getSortString();
+    
+    public void setSortString(String sortString);
+    
     public boolean isSearchInDcFlag();
 
     public SearchFacets getFacets();

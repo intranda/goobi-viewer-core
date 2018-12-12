@@ -174,7 +174,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     public String getUrlSuffix() {
-        return getUrlSuffix(getSolrSortFields());
+        return getUrlSuffix(getSortString());
     }
 
     /**
@@ -226,14 +226,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * @return the solrSortFields
      */
-    public String getSolrSortFields() {
+    public String getSortString() {
         return getSearchBean().getSortString();
     }
 
     /**
      * @param solrSortFields the solrSortFields to set
      */
-    public void setSolrSortFields(String solrSortFields) {
+    public void setSortString(String solrSortFields) {
         getSearchBean().setSortString(solrSortFields);
     }
 
@@ -289,7 +289,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         path = ViewerPathBuilder.resolve(path, getQueryString());
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
-        path = ViewerPathBuilder.resolve(path, getSolrSortFields());
+        path = ViewerPathBuilder.resolve(path, getSortString());
         path = ViewerPathBuilder.resolve(path, getFacetString());
         return path;
     }
@@ -315,7 +315,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         //        path = path.resolve(getCollection());
         path = path.resolve(getQueryString());
         path = path.resolve(Integer.toString(getPageNo()));
-        path = path.resolve(getSolrSortFields());
+        path = path.resolve(getSortString());
         path = path.resolve(facetString);
         return path.toString();
     }
@@ -451,6 +451,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         } else {
             return getBaseUrl();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getLastPage()
+     */
+    @Override
+    public int getLastPage() {
+        return getSearchBean().getLastPage();
     }
 
 }

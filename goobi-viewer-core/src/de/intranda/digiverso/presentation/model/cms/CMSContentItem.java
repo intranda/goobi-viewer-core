@@ -506,7 +506,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public String getSolrSortFields() {
         if (getType().equals(CMSContentItemType.SEARCH)) {
-            return ((SearchFunctionality) getFunctionality()).getSolrSortFields();
+            return ((SearchFunctionality) getFunctionality()).getSortString();
         }
         return solrSortFields;
     }

@@ -50,6 +50,14 @@
                         <div class="clearfix"></div>
                     </h:panelGroup>
         
+                <!-- PAGINATOR -->
+        <viewerComponent:simplePaginator
+            itemCount="#{search.lastPage}"
+            itemActive="#{search.currentPage}"
+            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+            urlSuffix="/#{search.sortString}/#{search.facets.currentFacetString}/" />
+        <div class="clearfix"></div>
+        
 			<h:form id="searchListHitsForm" prependId="false">
 				<ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
 					<div class="search-list__hit">
@@ -221,5 +229,38 @@
 					</div>
                 </ui:repeat>
 			</h:form>
-		</div>
+            
+        <!-- PAGINATOR -->
+        <viewerComponent:simplePaginator
+            itemCount="#{search.lastPage}"
+            itemActive="#{search.currentPage}"
+            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+            urlSuffix="/#{search.sortString}/#{search.facets.currentFacetString}/" />
+        <div class="clearfix"></div>
+
+    </div>
+
+
+    <script type="text/javascript">
+                    $( document ).ready( function() {
+                        var searchSortingDropdownConfig = {};
+                        var searchListConfig = {
+                            contextPath: "#{request.contextPath}",
+                            msg: {
+                                getMoreChildren: "#{msg.searchList_getMoreHits}"
+                            }
+                        };
+                        
+                        viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+                        viewerJS.searchList.init( searchListConfig );
+                    } );
+                    
+                    $( window ).on( "load", function() {
+                        var stackedThumbnailsConfig = {};
+                        
+                        viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+                    } );
+                </script>
+
 </ui:composition>
+

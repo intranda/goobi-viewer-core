@@ -15,7 +15,6 @@
 	    <f:metadata> 
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.title, false, false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
-            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
     
@@ -54,35 +53,7 @@
                     <ui:include src="/resources/includes/search/searchHitList.xhtml">
                         <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
                     </ui:include>
-                    
-                    <!-- PAGINATOR -->
-                    <viewerComponent:simplePaginator itemCount="#{searchBean.lastPage}" itemActive="#{searchBean.currentPage}" urlPrefix="#{cc.attrs.search.urlPrefix}"
-                        urlSuffix="#{cc.attrs.search.urlSuffix}" />
-                    <div class="clearfix"></div>
-                    
-                    <script type="text/javascript">
-                        $( document ).ready( function() {
-                            var searchSortingDropdownConfig = {};
-                            var searchListConfig = {
-                                contextPath: "#{request.contextPath}",
-                                msg: {
-                                    getMoreChildren: "#{msg.searchList_getMoreHits}"
-                                }
-                            };
-                            
-                            viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
-                            viewerJS.searchList.init( searchListConfig );
-                        } );
-                        
-                        $( window ).on( "load", function() {
-                            var stackedThumbnailsConfig = {};
-                            
-                            viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
-                        } );
-                    </script>
-                
-                    
-                    
+
                 </div>
             </div>
         </f:view>
