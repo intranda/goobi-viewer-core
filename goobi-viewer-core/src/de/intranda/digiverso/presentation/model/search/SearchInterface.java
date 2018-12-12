@@ -54,4 +54,10 @@ public interface SearchInterface {
     public int getActiveSearchType();
     
     public void setActiveSearchType(int type);
+    
+    /**
+     * 
+     * @return true if either 
+     */
+    public boolean isSearchPerformed();
 }

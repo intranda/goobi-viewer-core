@@ -2141,4 +2141,12 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchPerformed()
+     */
+    @Override
+    public boolean isSearchPerformed() {
+        search()
+    }
+
 }
