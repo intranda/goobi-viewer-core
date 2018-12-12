@@ -478,6 +478,7 @@
 
 
 	<collections>
+    
 		<collection field="DC">
 		
             <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
@@ -513,6 +514,9 @@
                         <defaultBrowseIcon></defaultBrowseIcon>
 
 		</collection>
+          
+        <!-- true if opening a collection containing only a single work should redirect to that work -->
+        <redirectToWork>true</redirectToWork>
 	</collections>
 
 

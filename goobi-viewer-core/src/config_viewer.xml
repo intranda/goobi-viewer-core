@@ -471,6 +471,7 @@
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
 	<collections>
+
 		<collection field="DC">
 		
             <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
@@ -512,6 +513,10 @@
                         No text means that no image is rendered for the collection -->
 			<defaultBrowseIcon></defaultBrowseIcon>
 		</collection>
+            
+        <!-- true if opening a collection containing only a single work should redirect to that work -->
+        <redirectToWork>true</redirectToWork>
+        
 	</collections>
 
 	<metadata>

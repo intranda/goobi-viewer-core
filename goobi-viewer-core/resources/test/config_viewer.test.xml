@@ -514,6 +514,10 @@
                     <splittingCharacter>/</splittingCharacter>
         </collection>
         <collection field="MD_HIERARCHICALFIELD"/>
+            
+        <!-- true if opening a collection containing only a single work should redirect to that work -->
+        <redirectToWork>false</redirectToWork>
+    
 	</collections>
 
 	<metadata>
