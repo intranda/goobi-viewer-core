@@ -193,6 +193,7 @@
                     </div>
                     
                     <!-- PAGE -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage != null}">
                     <h4 id="titlePage" class="widget-usage__subtitle">#{msg.page}</h4>
                 
                     <!-- PAGE DOWNLOADS -->
@@ -257,6 +258,7 @@
                             </a>
                         </ui:fragment>                        
                     </div>
+                    </ui:fragment>
                 
                     <!-- CITE -->
                     <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
