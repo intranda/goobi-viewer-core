@@ -249,11 +249,11 @@ public class Search implements Serializable {
                 removeFqList.add(fq);
                 if (fq.startsWith("FACET_" + SolrConstants.DOCSTRCT_SUB)) {
                     subElementQueryFilterSuffix = new StringBuilder().append(" +")
-                            .append(fq.replace(SolrConstants.DOCSTRCT_SUB, SolrConstants.DOCSTRCT))
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":")
-                            .append(DocType.DOCSTRCT.name())
+                            .append(fq)
+                            //                            .append(" +")
+                            //                            .append(SolrConstants.DOCTYPE)
+                            //                            .append(":")
+                            //                            .append(DocType.DOCSTRCT.name())
                             .toString();
                 }
                 //                else if (fq.startsWith("FACET_EVENT_SUB")) {
@@ -362,11 +362,11 @@ public class Search implements Serializable {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                     continue;
                 }
-                // Skip top element docstrct faceting if sub-element docstrct faceting is active
-                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
-                    continue;
-                }
-                // Skip language-specific facet fields if they don't match the given language
+                //                // Skip top element docstrct faceting if sub-element docstrct faceting is active
+                //                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
+                //                    continue;
+                //                }
+                //                // Skip language-specific facet fields if they don't match the given language
                 if (facetField.getName().contains(SolrConstants._LANG_)
                         && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
                     continue;
