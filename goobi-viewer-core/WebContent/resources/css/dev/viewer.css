@@ -5972,6 +5972,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   border-radius: 0;
   background-color: #eee;
+  white-space: pre-wrap;
 }
 .view-fulltext__box pre > br:first-child {
   display: none;
