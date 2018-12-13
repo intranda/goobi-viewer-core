@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -402,9 +403,10 @@ public class ContentResource {
                     TEIHeaderBuilder header = createTEIHeader(solrDoc);
                     HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
 
-                    List<String> pages = fulltexts.values()
+                    List<String> pages = fulltexts.entrySet()
                             .stream()
-                            .filter(text -> StringUtils.isNotBlank(text))
+                            .sorted(Comparator.comparing(Map.Entry::getKey))
+                            .map(Map.Entry::getValue)
                             .map(textConverter::convert)
                             .collect(Collectors.toList());
 

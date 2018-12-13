@@ -23,7 +23,6 @@
 	<classpathentry kind="lib" path="lib/lucene-grouping-4.10.4.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-join-4.10.4.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet-2.1.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/alto.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.4.193.jar"/>
 	<classpathentry kind="lib" path="lib/dbunit-2.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
