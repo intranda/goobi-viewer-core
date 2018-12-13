@@ -152,16 +152,20 @@ public class SearchFacets {
      * @should generate query correctly
      * @should return null if facet list is empty
      * @should skip range facet fields if so requested
+     * @should skip subelement fields
      */
     String generateFacetFilterQuery(boolean includeRangeFacets) {
         if (!currentFacets.isEmpty()) {
             StringBuilder sbQuery = new StringBuilder();
-            if (sbQuery.length() > 0) {
-                sbQuery.insert(0, '(');
-                sbQuery.append(')');
-            }
+            //            if (sbQuery.length() > 0) {
+            //                sbQuery.insert(0, '(');
+            //                sbQuery.append(')');
+            //            }
             for (FacetItem facetItem : currentFacets) {
                 if (facetItem.isHierarchial()) {
+                    continue;
+                }
+                if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
                     continue;
                 }
                 if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
@@ -178,6 +182,30 @@ public class SearchFacets {
         }
 
         return null;
+    }
+
+    /**
+     * Generates a filter query for the selected subelement facets.
+     * 
+     * @return
+     * @should generate query correctly
+     */
+    String generateSubElementFacetFilterQuery() {
+        StringBuilder sbQuery = new StringBuilder();
+
+        if (!currentFacets.isEmpty()) {
+            for (FacetItem facetItem : currentFacets) {
+                if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
+                    if (sbQuery.length() > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append(facetItem.getQueryEscapedLink());
+                    logger.trace("Added subelement facet: {}", facetItem.getQueryEscapedLink());
+                }
+            }
+        }
+
+        return sbQuery.toString();
     }
 
     /**
@@ -765,6 +793,22 @@ public class SearchFacets {
         for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @return Configured subelement fields names only
+     */
+    public List<String> getConfiguredSubelementFacetFields() {
+        List<String> ret = new ArrayList<>();
+
+        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+            if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
+                ret.add(field);
             }
         }
 

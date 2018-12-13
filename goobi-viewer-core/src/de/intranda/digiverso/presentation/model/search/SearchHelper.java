@@ -966,7 +966,7 @@ public final class SearchHelper {
                 if (searchTerm.length() == 0) {
                     continue;
                 }
-                logger.trace("term: {}", searchTerm);
+//                logger.trace("term: {}", searchTerm);
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
                     for (String stopword : DataManager.getInstance().getConfiguration().getStopwords()) {
@@ -1713,8 +1713,8 @@ public final class SearchHelper {
         if (fieldName != null) {
             switch (fieldName) {
                 case SolrConstants.FACET_DC:
-                case "FACET_DOCSTRCT":
-                case "FACET_DOCSTRCT_SUB":
+                case "FACET_" + SolrConstants.DOCSTRCT:
+                case "FACET_" + SolrConstants.DOCSTRCT_SUB:
                     return fieldName.substring(6);
                 default:
                     if (fieldName.startsWith("FACET_")) {
