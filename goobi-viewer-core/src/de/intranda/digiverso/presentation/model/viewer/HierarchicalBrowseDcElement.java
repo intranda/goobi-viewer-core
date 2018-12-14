@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -93,7 +94,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     public boolean isRedirectsToWork() {
-        return !isOpensInNewWindow() && getNumberOfVolumes() == 1;
+        return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() &&  !isOpensInNewWindow() && getNumberOfVolumes() == 1;
     }
 
     public boolean isOpensInSearch() {

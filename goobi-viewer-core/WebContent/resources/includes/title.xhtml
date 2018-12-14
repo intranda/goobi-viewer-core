@@ -42,11 +42,12 @@
                 </div>
                 <div class="title-body collapse" id="titleCollapse">
                     <h:form id="titleForm" prependId="false">
-                        <!-- DOWNLOAD TOC -->
+                        <!-- DOWNLOAD COMPLETE WORK AS PDF, EPUB OR TOC -->
                         <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
                             <div id="downloadWrapper" class="text-right">
                                 <nav>
-                                    <ul class="list list--horizontal">                                        
+                                    <ul class="list list--horizontal">
+                                        
                                          <!-- TOC DOWNLOAD -->
                                         <h:panelGroup rendered="#{configurationBean.docHierarchyPdfEnabled}">
                                             <li>
@@ -56,7 +57,8 @@
                                                     <f:passThroughAttribute name="data-placement" value="top" />
     											</h:commandLink>
                                             </li>
-                                        </h:panelGroup>                                        
+                                        </h:panelGroup>
+                                        
                                     </ul>
                                 </nav>
                             </div>
