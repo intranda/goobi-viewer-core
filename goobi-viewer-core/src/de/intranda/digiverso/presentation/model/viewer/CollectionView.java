@@ -730,7 +730,7 @@ public class CollectionView {
             String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
             logger.trace("COLLETION new window url: {}", ret);
             return ret;
-        } else if (collection.getNumberOfVolumes() == 1) {
+        } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
                     + "/" + collection.getLuceneName() + "/";

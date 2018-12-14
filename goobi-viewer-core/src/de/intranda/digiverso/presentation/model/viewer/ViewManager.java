@@ -591,7 +591,7 @@ public class ViewManager implements Serializable {
                     representativePage = pageLoader.getPageForFileName(thumbnailName);
                 }
                 if (representativePage == null) {
-                    representativePage = pageLoader.getPage(0);
+                    representativePage = pageLoader.getPage(pageLoader.getFirstPageOrder());
                 }
             }
         }
@@ -2344,9 +2344,11 @@ public class ViewManager implements Serializable {
                         .append(pageType.getName())
                         .append('/')
                         .append(getPi())
-                        .append('/')
-                        .append(getRepresentativePage().getOrder())
                         .append('/');
+                        if(getRepresentativePage() != null) {                            
+                            url.append(getRepresentativePage().getOrder())
+                            .append('/');
+                        }
                 return url.toString();
             }
         } else {

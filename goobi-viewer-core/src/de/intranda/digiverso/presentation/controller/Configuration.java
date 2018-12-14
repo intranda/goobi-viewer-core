@@ -3212,4 +3212,12 @@ public final class Configuration extends AbstractConfiguration {
         return token;
     }
 
+    /**
+     * @return  true if opening a collection containing only a single work should redirect to that work
+     */
+    public boolean isAllowRedirectCollectionToWork() {
+       boolean redirect = getLocalBoolean("collections.redirectToWork", true);
+       return redirect;
+    }
+
 }
