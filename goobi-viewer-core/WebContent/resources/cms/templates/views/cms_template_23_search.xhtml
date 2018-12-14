@@ -57,11 +57,42 @@
                         </ui:fragment>
                         
                         <!-- SEARCH ADVANCED -->
-                        <ui:fragment rendered="#{searchBean.activeSearchType == 1}">
+                        <ui:fragment rendered="#{searchBean.activeSearchType == 1 and !searchBean.showReducedSearchOptions}">
                             <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
                                 <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
                             </ui:include>
                         </ui:fragment>
+                        
+                    <!-- ADVANCED SEARCH INFO -->
+                    <ui:fragment rendered="#{searchBean.activeSearchType == 1 and searchBean.showReducedSearchOptions}">
+                        <div class="search-list__adv-search-info">
+                            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+                            
+                            <!-- ADVANCED SEARCH -->
+                            <div class="search-list__adv-search-info-back text-right">
+                                <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
+                                    <f:ajax render="searchArea"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    
+                    <!-- CALENDAR SEARCH INFO -->
+                    <ui:fragment rendered="#{searchBean.activeSearchType == 3 and !searchBean.showReducedSearchOptions}">
+                        <div class="search-list__adv-search-info">
+                            (<h:outputText value="#{msg.date}: " escape="false">
+                            </h:outputText>
+                            <h:outputText value="#{calendarBean.currentDate}">
+                                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                            </h:outputText>)
+                            
+                            <!-- CALENDAR SEARCH -->
+                            <div class="search-list__adv-search-info-back text-right">
+                                <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+                            </div>
+                        </div>
+                    </ui:fragment>
+                        
                     </h:panelGroup>
                     
                     <!-- SEARCH LIST -->

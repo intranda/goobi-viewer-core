@@ -462,5 +462,13 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public int getLastPage() {
         return getSearchBean().getLastPage();
     }
+    
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isExplicitSearchPerformed()
+     */
+    @Override
+    public boolean isExplicitSearchPerformed() {
+        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+    }
 
 }

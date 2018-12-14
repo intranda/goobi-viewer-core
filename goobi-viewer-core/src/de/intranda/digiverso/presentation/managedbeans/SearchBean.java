@@ -154,6 +154,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
+    
+    /**
+     * Whether to only display the current search parameters rather than the full input mask
+     */
+    private boolean showReducedSearchOptions = false;
 
     /** Empty constructor. */
     public SearchBean() {
@@ -2148,6 +2153,28 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public boolean isSearchPerformed() {
         return currentSearch != null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isExplicitSearchPerformed()
+     */
+    @Override
+    public boolean isExplicitSearchPerformed() {
+        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+    }
+    
+    /**
+     * @return the showReducedSearchOptions
+     */
+    public boolean isShowReducedSearchOptions() {
+        return showReducedSearchOptions;
+    }
+    
+    /**
+     * @param showReducedSearchOptions the showReducedSearchOptions to set
+     */
+    public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
+        this.showReducedSearchOptions = showReducedSearchOptions;
     }
 
 }
