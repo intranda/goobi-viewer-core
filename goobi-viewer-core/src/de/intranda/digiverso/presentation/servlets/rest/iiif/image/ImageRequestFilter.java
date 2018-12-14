@@ -47,9 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 @Provider
 @ContentServerImageBinding
@@ -75,7 +73,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             
             String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
-            logger.trace("Filtering request " + requestPath);
+            // logger.trace("Filtering request {}", requestPath);
             StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
@@ -96,15 +94,14 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
                 //if page order is given for image filename, forward to url with correct filename
                 return;
-            } else {
-                //only for actual image requests, no info requests
-                boolean isThumb = getIsThumbnail(request, size, region);
-                if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
-                        && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
-                    filterForAccessConditions(request, pi, imageName, isThumb);
-                    filterForImageSize(requestPath, size);
-                    setRequestParameter(request, isThumb);
-                }
+            }
+            //only for actual image requests, no info requests
+            boolean isThumb = getIsThumbnail(request, size, region);
+            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
+                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
+                filterForAccessConditions(request, pi, imageName, isThumb);
+                filterForImageSize(requestPath, size);
+                setRequestParameter(request, isThumb);
             }
         } catch (ServiceNotAllowedException e) {
 
@@ -160,7 +157,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      */
     private void filterForAccessConditions(ContainerRequestContext request, String pi, String contentFileName, boolean isThumb)
             throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
+        // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
 
         boolean access = false;
         try {

@@ -179,7 +179,7 @@ public class AccessConditionUtils {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
         if (StringUtils.isNotEmpty(identifier)) {
             String[] query = generateAccessCheckQuery(identifier, fileName);
-            logger.trace("query: {}", query[0]);
+            // logger.trace("query: {}", query[0]);
             try {
                 // Collect access conditions required by the page
                 Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
@@ -506,7 +506,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
+        // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
     }
 
@@ -580,7 +580,7 @@ public class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
             String privilegeType) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -595,7 +595,7 @@ public class AccessConditionUtils {
         }
         if (permissions == null) {
             permissions = new HashMap<>();
-            logger.trace("Session attribute not found, creating new");
+            // logger.trace("Session attribute not found, creating new");
         }
         // logger.debug("Permissions found, " + permissions.size() + " items.");
         // new pi -> create an new empty map in the session
