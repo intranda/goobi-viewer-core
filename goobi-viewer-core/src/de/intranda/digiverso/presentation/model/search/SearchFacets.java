@@ -808,7 +808,7 @@ public class SearchFacets {
 
         for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
             if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
-                ret.add(field);
+                ret.add(SearchHelper.facetifyField(field));
             }
         }
 

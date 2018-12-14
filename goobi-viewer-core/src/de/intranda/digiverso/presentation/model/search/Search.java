@@ -239,7 +239,7 @@ public class Search implements Serializable {
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
         String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
-        if(StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+        if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
             subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
         }
         if (logger.isTraceEnabled()) {
@@ -298,7 +298,8 @@ public class Search implements Serializable {
                         String fieldName = SearchHelper.defacetifyField(facetField.getName());
                         facets.getAvailableFacets().put(fieldName,
                                 FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
-                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
+                        //                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
+                        allFacetFields.remove(facetField.getName());
                     }
                 }
 
