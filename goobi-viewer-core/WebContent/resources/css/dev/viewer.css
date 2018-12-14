@@ -2329,8 +2329,67 @@ html.is-IE .support-overlay {
 .image-controls {
   position: relative;
   padding: 15px 0;
+  /* ELEMENT */
+  /* DOCUMENT OPTIONS */
   /* ACTIONS */
   /* MODIFICATION */
+}
+.image-controls__options ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+}
+.image-controls__options li {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+.image-controls__option {
+  width: 21px;
+  height: 21px;
+}
+.image-controls__option a,
+.image-controls__option span,
+.image-controls__option button {
+  color: #6f6f6f;
+}
+.image-controls__option a:hover,
+.image-controls__option span:hover,
+.image-controls__option button:hover,
+.image-controls__option a:active,
+.image-controls__option span:active,
+.image-controls__option button:active,
+.image-controls__option a:focus,
+.image-controls__option span:focus,
+.image-controls__option button:focus {
+  color: #6f6f6f;
+}
+.image-controls__option a,
+.image-controls__option button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
+  background-image: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o {
+  display: inline-block;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
+  display: inline-block;
 }
 .image-controls__actions ul {
   display: -ms-flexbox;
