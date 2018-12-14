@@ -74,7 +74,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     public String resetSearch() {
         getSearchBean().resetSearchAction();
-        redirectToSearchUrl();
+        redirectToSearchUrl(false);
         return "";
     }
 
@@ -82,11 +82,13 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @throws DAOException
      * 
      */
-    public void redirectToSearchUrl() {
+    public void redirectToSearchUrl(boolean keepUrlParameter) {
         try {
             ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {
                 if (path != null) {
-                    path.setParameterPath(getParameterPath());
+                    if(keepUrlParameter) {                        
+                        path.setParameterPath(getParameterPath());
+                    }
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
                     try {
@@ -107,7 +109,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchSimple(true, false);
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
         return "";
     }
@@ -118,7 +120,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchAdvanced();
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
         return "";
     }
@@ -129,7 +131,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchSimple();
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
     }
 

@@ -239,7 +239,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
-
+    
+    @Column(name = "searchType")
+    private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
+    
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -313,6 +316,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.solrQuery = blueprint.solrQuery;
         this.solrSortFields = blueprint.solrSortFields;
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
+        this.setSearchType(blueprint.getSearchType());
 
     }
 
@@ -998,6 +1002,29 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.displayEmptySearchResults = displayEmptySearchResults;
     }
 
+    /**
+     * @return the searchType
+     */
+    public int getSearchType() {
+        return searchType;
+    }
     
+    /**
+     * @param searchType the searchType to set
+     */
+    public void setSearchType(int searchType) {
+        this.searchType = searchType;
+    }
     
+    public void setAdvancedSearch(boolean advanced) {
+        if(advanced) {
+            this.searchType = SearchHelper.SEARCH_TYPE_ADVANCED;
+        } else {
+            this.searchType = SearchHelper.SEARCH_TYPE_REGULAR;
+        }
+    }
+    
+    public boolean isAdvancedSearch() {
+        return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
+    }
 }

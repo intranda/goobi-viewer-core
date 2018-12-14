@@ -23,25 +23,25 @@
             </button>
         </div>
 
+        <!-- SEARCH STANDRAD TITLE -->
+        <div class="search-standard__title">
+            <h3>
+                <h:outputText rendered="#{!search.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
+                <h:panelGroup rendered="#{search.searchInDcFlag}">
+                    <h:outputText value="#{msg.searchIn}: " />
+                    <ui:repeat var="facet" value="#{search.facets.getCurrentFacetsForField('DC')}">
+                        <br />
+                        <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
+                    </ui:repeat>
+                </h:panelGroup>
+                
+            </h3>
+<!--            <ui:fragment rendered="#{search.searchPerformed}"> -->
+<!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
+<!--            </ui:fragment> -->
+        </div>
+        
         <h:form id="searchForm" prependId="false">
-            <!-- SEARCH STANDRAD TITLE -->
-            <div class="search-standard__title">
-                <h3>
-                    <h:outputText rendered="#{!search.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
-                    <h:panelGroup rendered="#{search.searchInDcFlag}">
-                        <h:outputText value="#{msg.searchIn}: " />
-                        <ui:repeat var="facet" value="#{search.facets.getCurrentFacetsForField('DC')}">
-                            <br />
-                            <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
-                        </ui:repeat>
-                    </h:panelGroup>
-                    
-                </h3>
-               <ui:fragment rendered="#{search.searchPerformed}">
-                   <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
-               </ui:fragment>
-            </div>
-
             <!-- SEARCH STANDARD INPUT -->
             <div class="search-standard__input">
                 <div class="search-standard__input-autocomplete">
@@ -78,7 +78,10 @@
                 	</script>
                 </div>
                 <div class="search-standard__filter-link">
-                    <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
+                    <h:commandLink value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
+                        <f:ajax render="searchArea"></f:ajax>
+                    </h:commandLink>
+<!--                     <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a> -->
                 </div>
             </div>
 

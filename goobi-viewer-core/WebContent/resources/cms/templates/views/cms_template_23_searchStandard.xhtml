@@ -44,10 +44,25 @@
     					</div>
                     </ui:fragment>
                     
-                    <!-- SEARCH STANDARD -->
-                    <ui:include src="/resources/includes/search/searchStandard.xhtml">
-                        <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
-                    </ui:include>
+                    <ui:fragment rendered="#{cmsPage.getContentItem('search').functionality.searchPerformed}">
+                       <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
+                   </ui:fragment>
+                    
+                    <h:panelGroup id="searchArea">
+                        <!-- SEARCH STANDARD -->
+                        <ui:fragment rendered="#{searchBean.activeSearchType == 0}">
+                            <ui:include src="/resources/includes/search/searchStandard.xhtml">
+                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                            </ui:include>
+                        </ui:fragment>
+                        
+                        <!-- SEARCH ADVANCED -->
+                        <ui:fragment rendered="#{searchBean.activeSearchType == 1}">
+                            <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
+                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                            </ui:include>
+                        </ui:fragment>
+                    </h:panelGroup>
                     
                     <!-- SEARCH LIST -->
                     <ui:include src="/resources/includes/search/searchHitList.xhtml">

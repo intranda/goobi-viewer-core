@@ -871,6 +871,7 @@ public class CmsBean implements Serializable {
                     //                    setSearchType();
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
+                        searchBean.setActiveSearchType(item.getSearchType());
                     }                        
                     if(StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                         return searchAction(item);
@@ -878,8 +879,6 @@ public class CmsBean implements Serializable {
                         String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "*:*";
                         searchBean.setExactSearchString(searchString);
                         return searchAction(item);
-                    } else {
-                        searchBean.resetSearchResults();
                     }
                 } else if (item != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
                     getCollection(item.getItemId(), currentPage).reset(true);
