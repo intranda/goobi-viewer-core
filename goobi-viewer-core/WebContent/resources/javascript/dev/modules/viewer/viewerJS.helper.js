@@ -422,6 +422,13 @@ var viewerJS = ( function( viewer ) {
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
     
+    viewer.getMetadataValue = function(object, language) {
+        return viewer.getOrElse([language, 0], object);
+    }    
+    
+    viewer.getOrElse = (p, o) =>
+    p.reduce((xs, x) => (xs && xs[x]) ? xs[x] : ((xs && xs[Object.keys(xs)[0]]) ? xs[Object.keys(xs)[0]] : null), o)
+    
     return viewer;
     
 } )( viewerJS || {}, jQuery );
