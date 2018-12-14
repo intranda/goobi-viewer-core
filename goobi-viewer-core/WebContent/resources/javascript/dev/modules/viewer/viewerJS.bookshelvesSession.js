@@ -48,8 +48,8 @@ var viewerJS = (function(viewer) {
 			$.extend(true, _defaults, config);
 
 			// set confirm counter to local storage
-			if (localStorage.getItem('confirmCounter') == undefined) {
-				localStorage.setItem('confirmCounter', 0);
+			if (sessionStorage.getItem('confirmCounter') == undefined) {
+				sessionStorage.setItem('confirmCounter', 0);
 			}
 
 			// render bookshelf dropdown list
@@ -81,19 +81,19 @@ var viewerJS = (function(viewer) {
 			_setAddActiveState();
 
 			// add element to session
-			$('[data-bookshelf-type="add"]').off().on('click', function() {
+			$('body').on('click', '[data-bookshelf-type="add"]', function() {
 				var currBtn = $(this);
 				var currPi = currBtn.attr('data-pi');
 
 				_isElementSet(_defaults.root, currPi).then(function(isSet) {
 					// set confirm counter
-					_confirmCounter = parseInt(localStorage.getItem('confirmCounter'));
+					_confirmCounter = parseInt(sessionStorage.getItem('confirmCounter'));
 
 					if (!isSet) {
 						if (_confirmCounter == 0) {
 							if (confirm(_defaults.msg.saveItemToSession)) {
 								currBtn.addClass('added');
-								localStorage.setItem('confirmCounter', 1);
+								sessionStorage.setItem('confirmCounter', 1);
 								_setSessionElement(_defaults.root, currPi).then(function() {
 									_setSessionElementCount();
 									_renderDropdownList();
@@ -324,7 +324,7 @@ var viewerJS = (function(viewer) {
 
 			// set confirm counter
 			if (elements.items.length < 1) {
-				localStorage.setItem('confirmCounter', 0);
+				sessionStorage.setItem('confirmCounter', 0);
 			}
 
 			elements.items
@@ -379,7 +379,7 @@ var viewerJS = (function(viewer) {
 			$('[data-bookshelf-type="reset"]').on('click', function() {
 				if (confirm(_defaults.msg.resetBookshelvesConfirm)) {
 					_deleteAllSessionElements(_defaults.root).then(function() {
-						localStorage.setItem('confirmCounter', 0);
+						sessionStorage.setItem('confirmCounter', 0);
 						_setSessionElementCount();
 						_setAddActiveState();
 						_renderDropdownList();
