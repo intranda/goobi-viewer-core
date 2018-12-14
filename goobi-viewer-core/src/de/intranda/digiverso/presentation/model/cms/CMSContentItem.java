@@ -312,6 +312,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.ownerPageLanguageVersion = owner;
         this.solrQuery = blueprint.solrQuery;
         this.solrSortFields = blueprint.solrSortFields;
+        this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
 
     }
 
@@ -987,7 +988,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return
      */
     public boolean isDisplayEmptySearchResults() {
-        return this.displayEmptySearchResults  ;
+        return this.displayEmptySearchResults;
     }
     
     /**

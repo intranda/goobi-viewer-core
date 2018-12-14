@@ -875,8 +875,11 @@ public class CmsBean implements Serializable {
                     if(StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                         return searchAction(item);
                     } else if(item.isDisplayEmptySearchResults()) {
-                        searchBean.setExactSearchString(item.getSolrQuery());
+                        String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "*:*";
+                        searchBean.setExactSearchString(searchString);
                         return searchAction(item);
+                    } else {
+                        searchBean.resetSearchResults();
                     }
                 } else if (item != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
                     getCollection(item.getItemId(), currentPage).reset(true);
@@ -940,27 +943,12 @@ public class CmsBean implements Serializable {
                 searchBean.setSortString(item.getSolrSortFields());
             }
             return searchBean.search();
-        }
-        if (item == null) {
+        }else if (item == null) {
             logger.error("Cannot search: item is null");
             searchBean.resetSearchResults();
             return "";
         }
-        if (StringUtils.isBlank(item.getSolrQuery())) {
-            searchBean.resetSearchResults();
-            return "";
-        }
         return "";
-        //        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-        //        searchBean.setHitsPerPage(item.getElementsPerPage());
-        //        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-        //        searchBean.setCurrentPage(item.getListPage());
-        //        if (item.getSolrSortFields() != null) {
-        //            searchBean.setSortString(item.getSolrSortFields());
-        //        }
-        //        //            searchBean.getFacets().setCurrentFacetString();
-        //        //            searchBean.getFacets().setCurrentCollection();
-        //        return searchBean.search();
     }
 
     public boolean hasSearchResults() {
