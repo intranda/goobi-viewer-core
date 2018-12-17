@@ -100,9 +100,14 @@ public class SolrConstants {
     public static final String CURRENTNO = "CURRENTNO";
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
     public static final String DATAREPOSITORY = "DATAREPOSITORY";
+    public static final String DATECREATED = "DATECREATED";
+    public static final String DATEDELETED = "DATEDELETED";
+    public static final String DATEUPDATED = "DATEUPDATED";
     public static final String DEFAULT = "DEFAULT";
     public static final String DC = "DC";
     public static final String DOCSTRCT = "DOCSTRCT";
+    public static final String DOCSTRCT_SUB = "DOCSTRCT_SUB";
+    public static final String DOCSTRCT_TOP = "DOCSTRCT_TOP";
     public static final String DOCTYPE = "DOCTYPE";
     public static final String EVENTDATE = "EVENTDATE";
     public static final String EVENTDATESTART = "EVENTDATESTART";
@@ -112,9 +117,6 @@ public class SolrConstants {
     public static final String IDDOC_OWNER = "IDDOC_OWNER";
     public static final String IDDOC_PARENT = "IDDOC_PARENT";
     public static final String IDDOC_TOPSTRUCT = "IDDOC_TOPSTRUCT";
-    public static final String DATECREATED = "DATECREATED";
-    public static final String DATEDELETED = "DATEDELETED";
-    public static final String DATEUPDATED = "DATEUPDATED";
     public static final String FILEIDROOT = "FILEIDROOT";
     public static final String FILENAME = "FILENAME";
     public static final String FILENAME_ALTO = "FILENAME_ALTO";
@@ -161,7 +163,6 @@ public class SolrConstants {
     public static final String SOURCEDOCFORMAT = "SOURCEDOCFORMAT";
     public static final String SUBTITLE = "SUBTITLE";
     public static final String SUPERDEFAULT = "SUPERDEFAULT";
-    public static final String SUPERDOCSTRCT = "SUPERDOCSTRCT";
     public static final String SUPERFULLTEXT = "SUPERFULLTEXT";
     public static final String TITLE = "MD_TITLE";
     public static final String THUMBNAIL = "THUMBNAIL";

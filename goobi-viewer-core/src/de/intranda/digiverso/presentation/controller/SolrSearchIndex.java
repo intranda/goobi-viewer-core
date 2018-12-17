@@ -821,7 +821,7 @@ public final class SolrSearchIndex {
      * @throws IndexUnreachableException
      */
     public String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
-        logger.trace("findDataRepository: {}", pi);
+        // logger.trace("findDataRepository: {}", pi);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }

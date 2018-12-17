@@ -20,7 +20,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -237,6 +236,28 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
         Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+    }
+
+    /**
+     * @see SearchFacets#generateFacetFilterQuery(boolean)
+     * @verifies skip subelement fields
+     */
+    @Test
+    public void generateFacetFilterQuery_shouldSkipSubelementFields() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
+        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+    }
+
+    /**
+     * @see SearchFacets#generateSubElementFacetFilterQuery()
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateSubElementFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":article");
+        Assert.assertEquals("FACET_" + SolrConstants.DOCSTRCT_SUB + ":article", facets.generateSubElementFacetFilterQuery());
     }
 
     /**
