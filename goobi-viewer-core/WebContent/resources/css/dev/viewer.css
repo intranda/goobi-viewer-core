@@ -1173,6 +1173,11 @@ button {
 a.btn--icon {
   line-height: normal;
 }
+button.btn:active,
+button.btn:focus,
+button.btn:active:focus {
+  color: #fff;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
