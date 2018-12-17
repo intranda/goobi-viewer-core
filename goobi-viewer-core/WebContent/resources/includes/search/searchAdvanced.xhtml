@@ -11,6 +11,8 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+    <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+
     <!-- SEARCH ADVANCED -->
     <div class="search-advanced">
         <!-- MESSAGE -->
@@ -21,6 +23,9 @@
         </h:panelGroup>
 
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
+<!--             <ui:fragment rendered="#{search.searchPerformed}"> -->
+<!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
+<!--            </ui:fragment> -->
             <h:form id="searchAdvancedForm" prependId="false">
                 <c:forEach var="queryGroup" items="#{searchBean.advancedQueryGroups}" varStatus="statusGroup">
                     <div class="search-advanced__group">
@@ -161,8 +166,8 @@
 
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
-                    <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                    <h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{searchBean.searchAdvanced}">
+                    <h:commandLink styleClass="btn btn--default" value="#{msg.reset}" action="#{search.resetSearch}" />
+                    <h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{search.searchAdvanced}">
                         <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
                     </h:commandButton>
                 </div>

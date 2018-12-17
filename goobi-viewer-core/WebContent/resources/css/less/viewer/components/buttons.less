@@ -102,6 +102,13 @@
 
 /* MODIFICATIONS */
 a.btn--icon { line-height: normal; }
+button.btn {
+	&:active, 
+	&:focus, 
+	&:active:focus {
+		color: @white;
+	}
+}
 
 @media screen and (max-width: @largeBreakpoint) {} 
 

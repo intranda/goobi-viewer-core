@@ -2,8 +2,8 @@
 <cms_page_template id="templateTags" version="2018-11-28">
     <name>Tag Cloud</name>
     <description>Dieses Template listet eine Schlagwörterwolke als Sucheinstieg ab.</description>
-    <icon>cms_template_25_tags.png</icon>
-    <html>cms_template_25_tags.xhtml</html>
+    <icon>cms_template_24_tags.png</icon>
+    <html>cms_template_24_tags.xhtml</html>
     
     <content>
         <item id="text" order="1" label="Text" type="HTML" />

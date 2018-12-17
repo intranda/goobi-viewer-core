@@ -16,7 +16,7 @@
 	<composite:implementation>
 		<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
     		<h:form id="customDrillDownForm" prependId="false">
-				<div id="widgetCustomDrillDown-#{cc.attrs.widget.order}" class="widget widget-custom-drilldown #{cc.attrs.widget.cssClass}">
+                <div id="widgetCustomDrillDown-#{cc.attrs.widget.order}" class="widget widget-custom-drilldown #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
 								<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
@@ -28,7 +28,7 @@
 						<ul>
 							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)}" var="filterLink">
 								<li>
-									<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}#{cc.attrs.widget.additionalQuerySuffix}/1/-/-/">
+									<a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}#{cc.attrs.widget.additionalQuerySuffix}/1/-/-/">
 										#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
 									</a>
 								</li>

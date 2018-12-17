@@ -647,6 +647,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+        <action onPostback="false">#{searchBean.resetSearchFilter}</action>
 	</url-mapping>
 	<url-mapping id="cmsOpenPage2">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />

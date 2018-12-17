@@ -79,6 +79,7 @@ import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.search.SearchInterface;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
@@ -98,7 +99,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
  */
 @Named
 @SessionScoped
-public class SearchBean implements Serializable {
+public class SearchBean implements SearchInterface, Serializable {
 
     private static final long serialVersionUID = 6962223613432267768L;
 
@@ -153,6 +154,11 @@ public class SearchBean implements Serializable {
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
+    
+    /**
+     * Whether to only display the current search parameters rather than the full input mask
+     */
+    private boolean showReducedSearchOptions = false;
 
     /** Empty constructor. */
     public SearchBean() {
@@ -314,6 +320,15 @@ public class SearchBean implements Serializable {
                 return "pretty:" + PageType.search.name();
         }
     }
+    
+
+    /**
+     * Alias for {@link #resetSearchAction()}
+     */
+    @Override
+    public String resetSearch() {
+        return resetSearchAction();
+    }
 
     /**
      * Resets variables that hold search result data. Does not reset search parameter variables such as type, filter or collection.
@@ -324,6 +339,7 @@ public class SearchBean implements Serializable {
         if (currentSearch != null) {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
+            currentSearch = null; //to indicate that no search results are expected. search is initially null anyway
         }
         // Only reset available facets here, not selected facets!
         facets.resetAvailableFacets();
@@ -1191,7 +1207,7 @@ public class SearchBean implements Serializable {
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "pretty:browse4");
             SearchFunctionality search = oPath.get().getCmsPage().getSearch();
-            search.redirectToSearchUrl();
+            search.redirectToSearchUrl(true);
             return "";
         } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
             String ret = facets.removeFacetAction(facetQuery, "pretty:browse4");
@@ -2130,4 +2146,35 @@ public class SearchBean implements Serializable {
             logger.error("Failed to redirect to url", e);
         }
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchPerformed()
+     */
+    @Override
+    public boolean isSearchPerformed() {
+        return currentSearch != null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isExplicitSearchPerformed()
+     */
+    @Override
+    public boolean isExplicitSearchPerformed() {
+        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+    }
+    
+    /**
+     * @return the showReducedSearchOptions
+     */
+    public boolean isShowReducedSearchOptions() {
+        return showReducedSearchOptions;
+    }
+    
+    /**
+     * @param showReducedSearchOptions the showReducedSearchOptions to set
+     */
+    public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
+        this.showReducedSearchOptions = showReducedSearchOptions;
+    }
+
 }

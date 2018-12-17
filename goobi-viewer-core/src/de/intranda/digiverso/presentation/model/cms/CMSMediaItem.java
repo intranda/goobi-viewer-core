@@ -24,6 +24,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.persistence.CollectionTable;
@@ -51,6 +53,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
@@ -584,7 +587,14 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     @Override
     public IMetadataValue getTranslationsForName() {
-        return IMetadataValue.getTranslations(getName());
+        Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName())).collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
+        return new MultiLanguageMetadataValue(names);
+        //        return IMetadataValue.getTranslations(getName());
+    }
+    
+    public IMetadataValue getTranslationsForDescription() {
+        Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getDescription())).collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
+        return new MultiLanguageMetadataValue(names);
     }
 
 }

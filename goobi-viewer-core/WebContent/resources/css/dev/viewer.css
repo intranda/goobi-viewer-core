@@ -1173,6 +1173,11 @@ button {
 a.btn--icon {
   line-height: normal;
 }
+button.btn:active,
+button.btn:focus,
+button.btn:active:focus {
+  color: #fff;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -2377,18 +2382,18 @@ html.is-IE .support-overlay {
 .image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
   background-image: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark-o {
   display: inline-block;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark {
   display: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark-o,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark-o {
   display: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
 }
 .image-controls__actions ul {
@@ -9407,31 +9412,23 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   CMS Template "Search Standard"
-   style declarations for cms_template_23_searchStandard.xhtml
+   CMS Template "Search"
+   style declarations for cms_template_23_search.xhtml
    ==============================================================*/
-/* SEARCH STANDARD */
+/* SEARCH */
 /* BLOCK */
-.tpl-search-standard {
+.tpl-search {
   /* ELEMENT */
 }
-.tpl-search-standard__text {
+.tpl-search__content .search-list__options {
   margin-bottom: 15px;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Search Advanced"
-   style declarations for cms_template_24_searchAdvanced.xhtml
-   ==============================================================*/
-/* SEARCH ADVANCED */
-/* BLOCK */
-.tpl-search-advanced {
-  /* ELEMENT */
+.tpl-search__content .search-advanced {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
 }
-.tpl-search-advanced__text {
+.tpl-search__text {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */

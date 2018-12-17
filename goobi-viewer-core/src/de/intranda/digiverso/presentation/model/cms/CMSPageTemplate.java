@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
@@ -60,7 +61,7 @@ public class CMSPageTemplate {
 
     private boolean displaySortingField = false;
     
-    private boolean appliesToExpandedUrl = false;
+    private boolean appliesToExpandedUrl = true;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
     
@@ -121,8 +122,8 @@ public class CMSPageTemplate {
                 Collections.sort(template.getContentItems());
                 Element options = root.getChild("options");
                 if (options != null) {
-                    template.setDisplaySortingField(Boolean.parseBoolean(options.getChildText("useSorterField")));
-                    template.setAppliesToExpandedUrl(Boolean.parseBoolean(options.getChildText("appliesToExpandedUrl")));
+                    template.setDisplaySortingField(Helper.parseBoolean(options.getChildText("useSorterField")));
+                    template.setAppliesToExpandedUrl(Helper.parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
                 }
                 template.validate();
                 return template;

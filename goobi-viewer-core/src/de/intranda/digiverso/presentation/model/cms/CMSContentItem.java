@@ -236,7 +236,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Column(name = "component")
     private String component = null;
-
+    
+    @Column(name = "displayEmptySearchResults")
+    private boolean displayEmptySearchResults = false;
+    
+    @Column(name = "searchType")
+    private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
+    
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -264,6 +270,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
+
 
     /**
      * Noop constructor for javax.persistence
@@ -308,6 +315,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.ownerPageLanguageVersion = owner;
         this.solrQuery = blueprint.solrQuery;
         this.solrSortFields = blueprint.solrSortFields;
+        this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
+        this.setSearchType(blueprint.getSearchType());
 
     }
 
@@ -502,7 +511,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public String getSolrSortFields() {
         if (getType().equals(CMSContentItemType.SEARCH)) {
-            return ((SearchFunctionality) getFunctionality()).getSolrSortFields();
+            return ((SearchFunctionality) getFunctionality()).getSortString();
         }
         return solrSortFields;
     }
@@ -979,4 +988,43 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.collection = null;
     }
 
+    /**
+     * @return
+     */
+    public boolean isDisplayEmptySearchResults() {
+        return this.displayEmptySearchResults;
+    }
+    
+    /**
+     * @param displayEmptySearchResults the displayEmptySearchResults to set
+     */
+    public void setDisplayEmptySearchResults(boolean displayEmptySearchResults) {
+        this.displayEmptySearchResults = displayEmptySearchResults;
+    }
+
+    /**
+     * @return the searchType
+     */
+    public int getSearchType() {
+        return searchType;
+    }
+    
+    /**
+     * @param searchType the searchType to set
+     */
+    public void setSearchType(int searchType) {
+        this.searchType = searchType;
+    }
+    
+    public void setAdvancedSearch(boolean advanced) {
+        if(advanced) {
+            this.searchType = SearchHelper.SEARCH_TYPE_ADVANCED;
+        } else {
+            this.searchType = SearchHelper.SEARCH_TYPE_REGULAR;
+        }
+    }
+    
+    public boolean isAdvancedSearch() {
+        return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
+    }
 }
