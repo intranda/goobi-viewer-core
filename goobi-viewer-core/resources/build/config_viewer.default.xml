@@ -355,7 +355,8 @@
 		<!-- TODO DOCUMENTATION-->
 		<drillDown>
 			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
-			<field initialElementNumber="3">DOCSTRCT</field>
+			<field initialElementNumber="3">DOCSTRCT_TOP</field>
+			<field initialElementNumber="3">DOCSTRCT_SUB</field>
 			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
 			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
 			<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
