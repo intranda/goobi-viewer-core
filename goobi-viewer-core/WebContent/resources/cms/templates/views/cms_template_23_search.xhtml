@@ -26,7 +26,7 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-			<div id="templateSearchStandard" class="tpl-search-standard">				
+			<div id="templateSearch" class="tpl-search">				
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">
@@ -34,72 +34,72 @@
                     </div>
                 </h:panelGroup>
 
-                <div class="tpl-search-standard__content">
+                <div class="tpl-search__content">
 					<h2>#{cmsPage.title}</h2>
 					
 					<!-- TEXT -->
                     <ui:fragment rendered="#{cmsPage.hasContent('text')}">
-                        <div class="tpl-search-standard__text">
+                        <div class="tpl-search__text">
     	                    <ui:include src="#{cmsPage.getContent('text')}" />
     					</div>
                     </ui:fragment>
                     
+                    <!-- SEARCH LIST OPTIONS -->
                     <ui:fragment rendered="#{cmsPage.getContentItem('search').functionality.searchPerformed}">
                        <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                
                    </ui:fragment>
-                    
+
                     <h:panelGroup id="searchArea">
                         <!-- SEARCH STANDARD -->
                         <ui:fragment rendered="#{searchBean.activeSearchType == 0}">
                             <ui:include src="/resources/includes/search/searchStandard.xhtml">
-                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}" />
                             </ui:include>
                         </ui:fragment>
-                        
+
                         <!-- SEARCH ADVANCED -->
                         <ui:fragment rendered="#{searchBean.activeSearchType == 1 and !searchBean.showReducedSearchOptions}">
                             <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
-                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                                <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}" />
                             </ui:include>
                         </ui:fragment>
-                        
-                    <!-- ADVANCED SEARCH INFO -->
-                    <ui:fragment rendered="#{searchBean.activeSearchType == 1 and searchBean.showReducedSearchOptions}">
-                        <div class="search-list__adv-search-info">
-                            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
-                            
-                            <!-- ADVANCED SEARCH -->
-                            <div class="search-list__adv-search-info-back text-right">
-                                <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
-                                    <f:ajax render="searchArea"/>
-                                </h:commandLink>
+
+                        <!-- ADVANCED SEARCH INFO -->
+                        <ui:fragment rendered="#{searchBean.activeSearchType == 1 and searchBean.showReducedSearchOptions}">
+                            <div class="search-list__adv-search-info">
+                                <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+
+                                <!-- ADVANCED SEARCH -->
+                                <div class="search-list__adv-search-info-back text-right">
+                                    <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
+                                        <f:ajax render="searchArea" />
+                                    </h:commandLink>
+                                </div>
                             </div>
-                        </div>
-                    </ui:fragment>
-                    
-                    <!-- CALENDAR SEARCH INFO -->
-                    <ui:fragment rendered="#{searchBean.activeSearchType == 3 and !searchBean.showReducedSearchOptions}">
-                        <div class="search-list__adv-search-info">
-                            (<h:outputText value="#{msg.date}: " escape="false">
-                            </h:outputText>
-                            <h:outputText value="#{calendarBean.currentDate}">
-                                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                            </h:outputText>)
-                            
-                            <!-- CALENDAR SEARCH -->
-                            <div class="search-list__adv-search-info-back text-right">
-                                <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+                        </ui:fragment>
+
+                        <!-- CALENDAR SEARCH INFO -->
+                        <ui:fragment rendered="#{searchBean.activeSearchType == 3 and !searchBean.showReducedSearchOptions}">
+                            <div class="search-list__adv-search-info">
+                                (
+                                <h:outputText value="#{msg.date}: " escape="false" />
+                                <h:outputText value="#{calendarBean.currentDate}">
+                                    <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                </h:outputText>
+                                )
+
+                                <!-- CALENDAR SEARCH -->
+                                <div class="search-list__adv-search-info-back text-right">
+                                    <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+                                </div>
                             </div>
-                        </div>
-                    </ui:fragment>
-                        
+                        </ui:fragment>
                     </h:panelGroup>
-                    
+
                     <!-- SEARCH LIST -->
                     <ui:include src="/resources/includes/search/searchHitList.xhtml">
                         <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
                     </ui:include>
-
                 </div>
             </div>
         </f:view>
