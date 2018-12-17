@@ -57,6 +57,9 @@
 		&--9,
 		&--10,
 		&--11,
-		&--12 { grid-template-columns: 1fr; }
+		&--12 { display: block; }
+		& [class*="__col"] {
+			margin-bottom: 15px;
+		}
 	}
 }

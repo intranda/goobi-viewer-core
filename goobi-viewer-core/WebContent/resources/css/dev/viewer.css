@@ -483,8 +483,10 @@ span[class*=" image-"] {
   .grid--10,
   .grid--11,
   .grid--12 {
-    -ms-grid-columns: 1fr;
-        grid-template-columns: 1fr;
+    display: block;
+  }
+  .grid [class*="__col"] {
+    margin-bottom: 15px;
   }
 }
 /* ==============================================================
