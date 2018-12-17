@@ -214,7 +214,9 @@ var viewerJS = ( function() {
                         
                         case "success":
                             // enable BS tooltips
-                            $( '[data-toggle="tooltip"]' ).tooltip();
+                        	$( '[data-toggle="tooltip"]' ).tooltip( {
+                                trigger : 'hover'
+                            } );
                             
                             if ( viewer.localStoragePossible ) {
                                 viewer.helper.saveSidebarTocPosition();
@@ -245,7 +247,9 @@ var viewerJS = ( function() {
                         
                         case "success":
                             // enable BS tooltips
-                            $( '[data-toggle="tooltip"]' ).tooltip();
+                        	$( '[data-toggle="tooltip"]' ).tooltip( {
+                                trigger : 'hover'
+                            } );
                             
                             // set content height to sidebar height
                             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
@@ -263,7 +267,9 @@ var viewerJS = ( function() {
                     switch ( ajaxstatus ) {
                         case "success":
                             // enable BS tooltips
-                            $( '[data-toggle="tooltip"]' ).tooltip();
+                        	$( '[data-toggle="tooltip"]' ).tooltip( {
+                                trigger : 'hover'
+                            } );
                             
                             // set content height to sidebar height
                             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
