@@ -992,4 +992,27 @@ public class Helper {
 
         return null;
     }
+
+    /**
+     * @param childText
+     * @param b
+     * @return
+     */
+    public static boolean parseBoolean(String text, boolean defaultValue) {
+        if("FALSE".equalsIgnoreCase(text)) {
+            return false;
+        } else if("TRUE".equalsIgnoreCase(text)) {
+            return true;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * @param childText
+     * @return
+     */
+    public static boolean parseBoolean(String text) {
+        return parseBoolean(text, false);
+    }
 }
