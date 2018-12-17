@@ -218,6 +218,8 @@ public class SearchQueryItem implements Serializable {
             }
             switch (field) {
                 case SolrConstants.DOCSTRCT:
+                case SolrConstants.DOCSTRCT_TOP:
+                case SolrConstants.DOCSTRCT_SUB:
                     displaySelectItems = true;
                     break;
                 default:
