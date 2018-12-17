@@ -33,11 +33,9 @@
                         <!-- ADD TO BOOKSHELF -->
                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                             <li class="image-controls__option add-to-bookshelf">
-                                <button type="button" class="btn btn--icon" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
-                                    <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
-                                        <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
-                                        <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
-                                    </span>
+                                <button type="button" class="btn btn--icon" title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
+                                    <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
+                                    <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
                                 </button>
                             </li>
                         </ui:fragment>

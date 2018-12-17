@@ -51,7 +51,9 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             // init bs tooltips
-            $( '[data-toggle="tooltip"]' ).tooltip();
+            $( '[data-toggle="tooltip"]' ).tooltip( {
+                trigger : 'hover'
+            } );
 
 			sessionStorage.setItem('advSearchValues', JSON.stringify(_advSearchValues));
 
@@ -70,7 +72,9 @@ var viewerJS = ( function( viewer ) {
 					break;
 				case "success":
 					// init bs tooltips
-					$('[data-toggle="tooltip"]').tooltip();
+					$( '[data-toggle="tooltip"]' ).tooltip( {
+			            trigger : 'hover'
+			        } );
 
 					// set search values
 					_setAdvSearchValues();

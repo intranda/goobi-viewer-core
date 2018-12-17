@@ -2377,18 +2377,18 @@ html.is-IE .support-overlay {
 .image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
   background-image: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark-o {
   display: inline-block;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark {
   display: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark-o,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark-o {
   display: none;
 }
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
-.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
 }
 .image-controls__actions ul {
