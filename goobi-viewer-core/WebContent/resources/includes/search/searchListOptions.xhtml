@@ -10,12 +10,15 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+        <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+
+
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options pull-right">
         <!-- HITCOUNT -->
         <div class="search-list__hitcount">
-            <h:outputText rendered="#{searchBean.hitsCount > 0}" value="#{msg.hits}: #{searchBean.hitsCount}" />
-            <h:outputText rendered="#{searchBean.hitsCount == 0}" value="#{msg.hitsZero}." />
+            <h:outputText rendered="#{search.hitsCount > 0}" value="#{msg.hits}: #{search.hitsCount}" />
+            <h:outputText rendered="#{search.hitsCount == 0}" value="#{msg.hitsZero}." />
         </div>
 
         <!-- RSS LINK -->

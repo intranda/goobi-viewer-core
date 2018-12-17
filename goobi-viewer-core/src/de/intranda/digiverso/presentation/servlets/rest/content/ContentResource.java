@@ -328,7 +328,7 @@ public class ContentResource {
     @Path("/tei/{pi}/{filename}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getFulltextAsTEI(@PathParam("pi") String pi, @PathParam("filename") String filename, @PathParam("lang") String language)
-            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException, JDOMException {
+            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException {
 
         setResponseHeader("");
         checkAccess(pi, filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -343,8 +343,12 @@ public class ContentResource {
             TEIHeaderBuilder header = createTEIHeader(solrDoc);
 
             TEIBuilder builder = new TEIBuilder();
-            Document xmlDoc = builder.build(header, text);
-            return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+            try {
+                Document xmlDoc = builder.build(header, text);
+                return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+            } catch (JDOMException e) {
+                throw new ContentLibException("Unable to parse xml from alto file " + pi + ", " + filename, e);
+            }
 
         } else {
             throw new ContentNotFoundException("No document found with pi " + pi);
@@ -358,9 +362,8 @@ public class ContentResource {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException * @throws DAOException
-     * @throws ContentNotFoundException
      * @throws IOException
-     * @throws ServiceNotAllowedException
+     * @throws ContentLibException 
      * @throws JDOMException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
@@ -369,7 +372,7 @@ public class ContentResource {
     @Path("/tei/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException, JDOMException {
+            IndexUnreachableException, DAOException, IOException, ContentLibException {
 
         setResponseHeader("");
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -410,8 +413,13 @@ public class ContentResource {
                             .map(textConverter::convert)
                             .collect(Collectors.toList());
 
-                    Document xmlDoc = builder.build(header, pages);
-                    return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                    try {
+                        Document xmlDoc = builder.build(header, pages);
+                        return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                    } catch (JDOMException e) {
+                        throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
+                    }
+                    
                 }
 
             } else {

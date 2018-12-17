@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +37,9 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
+import de.intranda.digiverso.presentation.model.search.SearchFilter;
+import de.intranda.digiverso.presentation.model.search.SearchInterface;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
@@ -44,7 +48,7 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
  * @author Florian Alpers
  *
  */
-public class SearchFunctionality implements Functionality {
+public class SearchFunctionality implements Functionality, SearchInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchFunctionality.class);
 
@@ -68,20 +72,23 @@ public class SearchFunctionality implements Functionality {
         this.baseUrl = baseUrl;
     }
 
-    public void resetSearch() {
+    public String resetSearch() {
         getSearchBean().resetSearchAction();
-        redirectToSearchUrl();
+        redirectToSearchUrl(false);
+        return "";
     }
 
     /**
      * @throws DAOException
      * 
      */
-    public void redirectToSearchUrl() {
+    public void redirectToSearchUrl(boolean keepUrlParameter) {
         try {
             ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {
                 if (path != null) {
-                    path.setParameterPath(getParameterPath());
+                    if(keepUrlParameter) {                        
+                        path.setParameterPath(getParameterPath());
+                    }
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
                     try {
@@ -95,29 +102,27 @@ public class SearchFunctionality implements Functionality {
             logger.error("Error retrieving search url", e);
         }
     }
-    
-    public void searchSimple(boolean a, boolean b) {
-        
-    }
 
-    public void searchSimple() {
+    public String searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchSimple(true, false);
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
+        return "";
     }
 
-    public void searchAdvanced() {
+    public String searchAdvanced() {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchAdvanced();
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
+        return "";
     }
 
     public void searchFacetted() {
@@ -126,7 +131,7 @@ public class SearchFunctionality implements Functionality {
             logger.error("Cannot search: SearchBean is null");
         } else {
             getSearchBean().searchSimple();
-            redirectToSearchUrl();
+            redirectToSearchUrl(true);
         }
     }
 
@@ -136,10 +141,10 @@ public class SearchFunctionality implements Functionality {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        String facetString = getSearchBean().getFacets().getCurrentFacetString();
-        getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
-        getSearchBean().search();
-        getSearchBean().getFacets().setCurrentFacetString(facetString);
+            String facetString = getSearchBean().getFacets().getCurrentFacetString();
+            getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
+            getSearchBean().search();
+            getSearchBean().getFacets().setCurrentFacetString(facetString);
     }
 
     /**
@@ -171,7 +176,7 @@ public class SearchFunctionality implements Functionality {
     }
 
     public String getUrlSuffix() {
-        return getUrlSuffix(getSolrSortFields());
+        return getUrlSuffix(getSortString());
     }
 
     /**
@@ -202,6 +207,10 @@ public class SearchFunctionality implements Functionality {
         return getSearchBean().getCurrentPage();
     }
 
+    public int getCurrentPage() {
+        return getPageNo();
+    }
+    
     /**
      * @return the searchBean
      */
@@ -219,14 +228,14 @@ public class SearchFunctionality implements Functionality {
     /**
      * @return the solrSortFields
      */
-    public String getSolrSortFields() {
+    public String getSortString() {
         return getSearchBean().getSortString();
     }
 
     /**
      * @param solrSortFields the solrSortFields to set
      */
-    public void setSolrSortFields(String solrSortFields) {
+    public void setSortString(String solrSortFields) {
         getSearchBean().setSortString(solrSortFields);
     }
 
@@ -261,6 +270,10 @@ public class SearchFunctionality implements Functionality {
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
     }
+    
+    public String getExactSearchString() {
+        return getQueryString();
+    }
 
     public void setQueryString(String s) {
         getSearchBean().setExactSearchString(s);
@@ -278,7 +291,7 @@ public class SearchFunctionality implements Functionality {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         path = ViewerPathBuilder.resolve(path, getQueryString());
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
-        path = ViewerPathBuilder.resolve(path, getSolrSortFields());
+        path = ViewerPathBuilder.resolve(path, getSortString());
         path = ViewerPathBuilder.resolve(path, getFacetString());
         return path;
     }
@@ -304,7 +317,7 @@ public class SearchFunctionality implements Functionality {
         //        path = path.resolve(getCollection());
         path = path.resolve(getQueryString());
         path = path.resolve(Integer.toString(getPageNo()));
-        path = path.resolve(getSolrSortFields());
+        path = path.resolve(getSortString());
         path = path.resolve(facetString);
         return path.toString();
     }
@@ -331,4 +344,131 @@ public class SearchFunctionality implements Functionality {
         }
         return "";
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchInDcFlag()
+     */
+    @Override
+    public boolean isSearchInDcFlag() {
+        return getSearchBean().isSearchInDcFlag();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getFacets()
+     */
+    @Override
+    public SearchFacets getFacets() {
+        return getSearchBean().getFacets();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#autocomplete(java.lang.String)
+     */
+    @Override
+    public List<String> autocomplete(String suggestion) throws IndexUnreachableException {
+        return getSearchBean().autocomplete(suggestion);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getSearchString()
+     */
+    @Override
+    public String getSearchString() {
+        return getSearchBean().getSearchString();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getSearchFilters()
+     */
+    @Override
+    public List<SearchFilter> getSearchFilters() {
+        return getSearchBean().getSearchFilters();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getCurrentSearchFilterString()
+     */
+    @Override
+    public String getCurrentSearchFilterString() {
+        return getSearchBean().getCurrentSearchFilterString();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setCurrentSearchFilterString(java.lang.String)
+     */
+    @Override
+    public void setCurrentSearchFilterString(String filter) {
+        getSearchBean().setCurrentSearchFilterString(filter);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getActiveSearchType()
+     */
+    @Override
+    public int getActiveSearchType() {
+        return getSearchBean().getActiveSearchType();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setActiveSearchType(int)
+     */
+    @Override
+    public void setActiveSearchType(int type) {
+        getSearchBean().setActiveSearchType(type);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#setSearchString(java.lang.String)
+     */
+    @Override
+    public void setSearchString(String searchString) {
+        getSearchBean().setSearchString(searchString);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isSearchPerformed()
+     */
+    @Override
+    public boolean isSearchPerformed() {
+        return getSearchBean().isSearchPerformed();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getHitsCount()
+     */
+    @Override
+    public long getHitsCount() {
+        return getSearchBean().getHitsCount();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getCurrentSearchUrlRoot()
+     */
+    @Override
+    public String getCurrentSearchUrlRoot() {
+        if(getBaseUrl().endsWith("/")) {
+            return getBaseUrl().substring(0, getBaseUrl().length()-1);
+        } else {
+            return getBaseUrl();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#getLastPage()
+     */
+    @Override
+    public int getLastPage() {
+        return getSearchBean().getLastPage();
+    }
+    
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.search.SearchInterface#isExplicitSearchPerformed()
+     */
+    @Override
+    public boolean isExplicitSearchPerformed() {
+        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+    }
+
 }

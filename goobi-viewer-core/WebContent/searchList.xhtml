@@ -103,37 +103,6 @@
                     
                     <hr />
 
-                    <!-- SEARCH LIST SORTING -->
-                    <h:panelGroup rendered="#{searchBean.hitsCount > 1}">
-                        <div class="search-list__sorting">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-4">
-                                    <span class="search-list__label">#{msg.sortBy}:</span>
-                                </div>
-                                <div class="col-xs-12 col-sm-8">
-                                    <div class="custom-control custom-control--select">
-                                        <select id="sortSelect">
-                                            <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
-                                            <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
-                                                <option
-                                                    value="#{searchBean.currentSearchUrlRoot}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
-                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
-                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
-                                                </option>
-                                                <option
-                                                    value="#{searchBean.currentSearchUrlRoot}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
-                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
-                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
-                                                </option>
-                                            </ui:repeat>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="clearfix"></div>
-                    </h:panelGroup>
                     
                     <!-- TODO: access denied noch ergänzen -->
                     
