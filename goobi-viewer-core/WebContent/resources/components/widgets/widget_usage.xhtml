@@ -193,74 +193,64 @@
                     </div>
                     
                     <!-- PAGE -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage != null}">
-                    <h4 id="titlePage" class="widget-usage__subtitle">#{msg.page}</h4>
-                
-                    <!-- PAGE DOWNLOADS -->
-                    <div class="widget-usage__page-downloads">
-                        <!-- PDF (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" 
-                                id="pdfPage" 
-                                class="label label-default widget-usage__page-download-pdf" 
-                                title="#{msg.pdfDownloadCurrentPage}" 
-                                target="_blank">
-                                #{msg.pdfDownload}
-                            </a>
-                        </ui:fragment>
-        
-                        <!-- JPEG -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.currentImageUrl}"
-                                id="jpeg" 
-                                class="label label-default widget-usage__page-download-jpeg" 
-                                title="#{msg.imageLinkDesc}" 
-                                target="_blank">
-                                #{msg.imageLink}
-                            </a>
-                        </ui:fragment>
-                                            
-                        <!-- ALTO (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.altoUrl}"
-                                id="altoPage" 
-                                class="label label-default widget-usage__page-download-alto" 
-                                title="#{msg.metadata_dl_alto_page}" 
-                                target="_blank">
-                                #{msg.downloadAltoPageButtonLabel}
-                            </a>
-                        </ui:fragment>
-        
-                        <!-- TEI (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.teiUrl}"
-                                id="textPage" 
-                                class="label label-default widget-usage__page-download-tei" 
-                                title="#{msg.downloadPageTei}" 
-                                target="_blank">
-                                #{msg.TEI}
-                            </a>
-                        </ui:fragment>
+					<ui:fragment
+						rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf or activeDocumentBean.viewManager.currentPage.accessForJs or activeDocumentBean.viewManager.altoAvailableForPage or activeDocumentBean.viewManager.teiAvailableForPageor or activeDocumentBean.viewManager.fulltextAvailableForPage}">
+						<h4 id="titlePage" class="widget-usage__subtitle">#{msg.page}</h4>
 
-                        <!-- FULLTEXT (PAGE) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.fulltextUrl}"
-                                id="textPage" 
-                                class="label label-default widget-usage__page-download-fulltext" 
-                                title="#{msg.downloadPageFulltext}" 
-                                target="_blank">
-                                #{msg.FULLEXT}
-                            </a>
-                        </ui:fragment>                        
-                    </div>
-                    </ui:fragment>
-                
-                    <!-- CITE -->
+						<!-- PAGE DOWNLOADS -->
+						<div class="widget-usage__page-downloads">
+							<!-- PDF (PAGE) -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
+									id="pdfPage"
+									class="label label-default widget-usage__page-download-pdf"
+									title="#{msg.pdfDownloadCurrentPage}" target="_blank">
+									#{msg.pdfDownload} </a>
+							</ui:fragment>
+
+							<!-- JPEG -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
+								<a href="#{activeDocumentBean.viewManager.currentImageUrl}"
+									id="jpeg"
+									class="label label-default widget-usage__page-download-jpeg"
+									title="#{msg.imageLinkDesc}" target="_blank">
+									#{msg.imageLink} </a>
+							</ui:fragment>
+
+							<!-- ALTO (PAGE) -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.viewManager.altoAvailableForPage}">
+								<a href="#{activeDocumentBean.viewManager.altoUrl}"
+									id="altoPage"
+									class="label label-default widget-usage__page-download-alto"
+									title="#{msg.metadata_dl_alto_page}" target="_blank">
+									#{msg.downloadAltoPageButtonLabel} </a>
+							</ui:fragment>
+
+							<!-- TEI (PAGE) -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
+								<a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
+									class="label label-default widget-usage__page-download-tei"
+									title="#{msg.downloadPageTei}" target="_blank"> #{msg.TEI}
+								</a>
+							</ui:fragment>
+
+							<!-- FULLTEXT (PAGE) -->
+							<ui:fragment
+								rendered="#{activeDocumentBean.viewManager.fulltextAvailableForPage}">
+								<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
+									id="textPage"
+									class="label label-default widget-usage__page-download-fulltext"
+									title="#{msg.downloadPageFulltext}" target="_blank">
+									#{msg.FULLEXT} </a>
+							</ui:fragment>
+						</div>
+					</ui:fragment>
+
+					<!-- CITE -->
                     <h4 id="titleCiteLinks" class="widget-usage__subtitle">#{msg.citeLinks}</h4>
 
                     <div class="widget-usage__citelinks">
