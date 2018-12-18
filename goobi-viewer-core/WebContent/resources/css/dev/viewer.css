@@ -7416,7 +7416,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 .widget__title.collapseable.in .fa-chevron-down {
-  transform: rotate(180deg);
+  transform: rotate(-180deg);
 }
 .widget__body {
   padding: 10px;
