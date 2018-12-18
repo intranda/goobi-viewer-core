@@ -152,16 +152,20 @@ public class SearchFacets {
      * @should generate query correctly
      * @should return null if facet list is empty
      * @should skip range facet fields if so requested
+     * @should skip subelement fields
      */
     String generateFacetFilterQuery(boolean includeRangeFacets) {
         if (!currentFacets.isEmpty()) {
             StringBuilder sbQuery = new StringBuilder();
-            if (sbQuery.length() > 0) {
-                sbQuery.insert(0, '(');
-                sbQuery.append(')');
-            }
+            //            if (sbQuery.length() > 0) {
+            //                sbQuery.insert(0, '(');
+            //                sbQuery.append(')');
+            //            }
             for (FacetItem facetItem : currentFacets) {
                 if (facetItem.isHierarchial()) {
+                    continue;
+                }
+                if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
                     continue;
                 }
                 if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
@@ -178,6 +182,30 @@ public class SearchFacets {
         }
 
         return null;
+    }
+
+    /**
+     * Generates a filter query for the selected subelement facets.
+     * 
+     * @return
+     * @should generate query correctly
+     */
+    String generateSubElementFacetFilterQuery() {
+        StringBuilder sbQuery = new StringBuilder();
+
+        if (!currentFacets.isEmpty()) {
+            for (FacetItem facetItem : currentFacets) {
+                if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
+                    if (sbQuery.length() > 0) {
+                        sbQuery.append(" AND ");
+                    }
+                    sbQuery.append(facetItem.getQueryEscapedLink());
+                    logger.trace("Added subelement facet: {}", facetItem.getQueryEscapedLink());
+                }
+            }
+        }
+
+        return sbQuery.toString();
     }
 
     /**
@@ -229,6 +257,17 @@ public class SearchFacets {
         return false;
     }
 
+    public boolean isFacetListSizeSufficient(String field) {
+        if (availableFacets.get(field) != null) {
+            if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
+                return getAvailableFacetsListSizeForField(field) > 0;
+            }
+            return getAvailableFacetsListSizeForField(field) > 1;
+        }
+
+        return false;
+    }
+
     /**
      * Returns the size of the full element list of the facet for the given field.
      */
@@ -262,6 +301,7 @@ public class SearchFacets {
      * @should not contain currently used facets
      */
     public List<FacetItem> getLimitedFacetListForField(String field) {
+        logger.trace("getLimitedFacetListForField: {}", field);
         List<FacetItem> facetItems = availableFacets.get(field);
         if (facetItems != null) {
             // Remove currently used facets
@@ -478,7 +518,6 @@ public class SearchFacets {
 
         return "pretty:search6"; // TODO advanced search
     }
-
 
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
@@ -761,6 +800,22 @@ public class SearchFacets {
     }
 
     /**
+     * 
+     * @return Configured subelement fields names only
+     */
+    public List<String> getConfiguredSubelementFacetFields() {
+        List<String> ret = new ArrayList<>();
+
+        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+            if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
+                ret.add(SearchHelper.facetifyField(field));
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * @return the availableFacets
      */
     public Map<String, List<FacetItem>> getAvailableFacets() {
@@ -811,23 +866,27 @@ public class SearchFacets {
 
         return false;
     }
-    
+
     public String getFacetValue(String field) {
         return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetName(facet)).findFirst().orElse("");
     }
-    
+
     public String getFacetDescription(String field) {
-        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
+        return getCurrentFacets().stream()
+                .filter(facet -> facet.getField().equals(field))
+                .map(facet -> getFacetDescription(facet))
+                .findFirst()
+                .orElse("");
     }
 
     public String getFirstHierarchicalFacetValue() {
         return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetName(facet)).findFirst().orElse("");
     }
-    
+
     public String getFirstHierarchicalFacetDescription(String field) {
         return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
     }
-    
+
     /**
      * @param facet
      * @return
@@ -836,7 +895,7 @@ public class SearchFacets {
         String desc = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
-            if(cmsCollection != null) {
+            if (cmsCollection != null) {
                 desc = cmsCollection.getDescription();
             }
         } catch (DAOException e) {
@@ -853,14 +912,14 @@ public class SearchFacets {
         String name = "";
         try {
             CMSCollection cmsCollection = DataManager.getInstance().getDao().getCMSCollection(facet.getField(), facet.getValue());
-            if(cmsCollection != null) {
+            if (cmsCollection != null) {
                 name = cmsCollection.getLabel();
             }
         } catch (DAOException e) {
             logger.trace("Error retrieving cmsCollection from DAO");
         }
-        if(StringUtils.isBlank(name)) {
-            name = facet.getValue();  
+        if (StringUtils.isBlank(name)) {
+            name = facet.getValue();
         }
         return name;
     }

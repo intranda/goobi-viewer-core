@@ -945,8 +945,8 @@ public class Helper {
         try {
             return Helper.getWebContentGET(url);
         } catch (HTTPException e) {
-            logger.error("Could not retrieve file from {}", url);
-            logger.error(e.getMessage());
+//            logger.error("Could not retrieve file from {}", url);
+//            logger.error(e.getMessage());
             if (e.getCode() == 403) {
                 logger.debug("Access denied for text file {}", filePath);
                 throw new AccessDeniedException("fulltextAccessDenied");
