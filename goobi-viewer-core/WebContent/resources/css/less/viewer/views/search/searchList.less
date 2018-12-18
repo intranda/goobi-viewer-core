@@ -297,19 +297,13 @@
             text-decoration: none;
             color: @black;
         }
-        .fa-caret-right {
-            margin-right: 3px;
-        }
-        .fa-caret-down {
-            display: none;
-            margin-right: 4px;
+        .fa {
+            margin-right: 7px;
+            transition: all .2s linear;
         }
         &.in {
-            .fa-caret-right {
-                display: none;
-            }
-            .fa-caret-down {
-                display: inline-block;
+            .fa {
+                transform: rotate(90deg);
             }
         }
         .search-list__loader {

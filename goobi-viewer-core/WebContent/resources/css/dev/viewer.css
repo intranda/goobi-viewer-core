@@ -4919,22 +4919,14 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: none;
   color: #1a1a1a;
 }
-.search-list a[data-toggle="hit-content"] .fa-caret-right,
-.search-list button[data-toggle="hit-content"] .fa-caret-right {
-  margin-right: 3px;
+.search-list a[data-toggle="hit-content"] .fa,
+.search-list button[data-toggle="hit-content"] .fa {
+  margin-right: 7px;
+  transition: all .2s linear;
 }
-.search-list a[data-toggle="hit-content"] .fa-caret-down,
-.search-list button[data-toggle="hit-content"] .fa-caret-down {
-  display: none;
-  margin-right: 4px;
-}
-.search-list a[data-toggle="hit-content"].in .fa-caret-right,
-.search-list button[data-toggle="hit-content"].in .fa-caret-right {
-  display: none;
-}
-.search-list a[data-toggle="hit-content"].in .fa-caret-down,
-.search-list button[data-toggle="hit-content"].in .fa-caret-down {
-  display: inline-block;
+.search-list a[data-toggle="hit-content"].in .fa,
+.search-list button[data-toggle="hit-content"].in .fa {
+  transform: rotate(90deg);
 }
 .search-list a[data-toggle="hit-content"] .search-list__loader,
 .search-list button[data-toggle="hit-content"] .search-list__loader {

@@ -97,9 +97,11 @@
                     </h:panelGroup>
 
                     <!-- SEARCH LIST -->
-                    <ui:include src="/resources/includes/search/searchHitList.xhtml">
-                        <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
-                    </ui:include>
+                    <div class="search-list">
+                        <ui:include src="/resources/includes/search/searchHitList.xhtml">
+                            <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
+                        </ui:include>
+                    </div>
                 </div>
             </div>
         </f:view>

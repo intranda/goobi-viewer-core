@@ -11,229 +11,224 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-        <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+    <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
 
-		<!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
-	    
-		<!-- SEARCH LIST HITS -->
-		<div class="search-list__hits">
-        
-                    <!-- SEARCH LIST SORTING -->
-                    <h:panelGroup rendered="#{search.hitsCount > 1}">
-                        <div class="search-list__sorting">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-4">
-                                    <span class="search-list__label">#{msg.sortBy}:</span>
-                                </div>
-                                <div class="col-xs-12 col-sm-8">
-                                    <div class="custom-control custom-control--select">
-                                        <select id="sortSelect">
-                                            <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
-                                            <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
-                                                <option
-                                                    value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
-                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
-                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
-                                                </option>
-                                                <option
-                                                    value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
-                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
-                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
-                                                </option>
-                                            </ui:repeat>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- THIS INCLUDE MUSST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
+
+    <!-- SEARCH LIST HITS -->
+    <div class="search-list__hits">
+        <!-- SEARCH LIST SORTING -->
+        <h:panelGroup rendered="#{search.hitsCount > 1}">
+            <div class="search-list__sorting">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <span class="search-list__label">#{msg.sortBy}:</span>
+                    </div>
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="custom-control custom-control--select">
+                            <select id="sortSelect">
+                                <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
+                                <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
+                                    <option
+                                        value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/#{sortField}/#{search.facets.currentFacetString}/"
+                                        data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
+                                        <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
+                                    </option>
+                                    <option
+                                        value="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/#{search.currentPage}/!#{sortField}/#{search.facets.currentFacetString}/"
+                                        data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
+                                        <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
+                                    </option>
+                                </ui:repeat>
+                            </select>
                         </div>
-                        
-                        <div class="clearfix"></div>
-                    </h:panelGroup>
-        
-                <!-- PAGINATOR -->
-        <viewerComponent:simplePaginator
-            itemCount="#{search.lastPage}"
-            itemActive="#{search.currentPage}"
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </h:panelGroup>
+
+        <!-- PAGINATOR -->
+        <viewerComponent:simplePaginator 
+            itemCount="#{search.lastPage}" 
+            itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
             urlSuffix="/#{search.sortString}/#{search.facets.currentFacetString}/" />
         <div class="clearfix"></div>
-        
-			<h:form id="searchListHitsForm" prependId="false">
-				<ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
-					<div class="search-list__hit">
-						<!-- COinS IMPLEMENTATION -->
-						<span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
-						<!-- HEADER -->
-						<header class="search-list__hit-header">
-							<div class="row">
-								<div class="col-xs-12 col-sm-10">
-									<!-- TITLE -->
-									<div class="search-list__hit-title">
-										<h4>
-											<a href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}"> 
-												<h:outputText value="#{msg[hit.browseElement.labelShort]}" escape="false" />
-											</a>
-										</h4>
-									</div>
 
-									<!-- TYPE -->
-									<div class="search-list__hit-type">
-										<!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-										<h:panelGroup rendered="#{fn:length(hit.browseElement.structElements) > 0 and hit.browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-											<nav class="search-list__hit-docstruct">
-												<ul>
-													<ui:repeat value="#{hit.browseElement.structElements}" varStatus="stat" var="struct">
-														<li>
-															<h:outputLink value="#{struct.url}" rendered="#{hit.browseElement.hasImages or hit.browseElement.anchor}">
-																<h:outputText value="#{msg[struct.docStructType]}" />
-															</h:outputLink> 
-															<h:outputLink value="#{struct.metadataUrl}" rendered="#{!hit.browseElement.hasImages and !hit.browseElement.anchor}">
-																<h:outputText value="#{msg[struct.docStructType]}" />
-															</h:outputLink>
-														</li>
-													</ui:repeat>
-												</ul>
-											</nav>
-										</h:panelGroup>
-                                        
-										<!-- VALUES -->
-										<ui:repeat value="#{hit.browseElement.metadataList}" var="browseElementMetadata">
-											<h:panelGroup rendered="#{!browseElementMetadata.blank}">
-												<div class="search-list__hit-text">
-													<h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" rendered="#{!browseElementMetadata.blank}" styleClass="search-list__hit-text-label" />
-													<ui:repeat var="val" value="#{browseElementMetadata.values}">
-														<h:outputFormat value="#{msg[val.masterValue]}" escape="false" rendered="#{!browseElementMetadata.blank}" styleClass="search-list__hit-text-value">
-															<f:param value="#{val.getComboValueShort(0)}" />
-															<f:param value="#{val.getComboValueShort(1)}" />
-															<f:param value="#{val.getComboValueShort(2)}" />
-															<f:param value="#{val.getComboValueShort(3)}" />
-															<f:param value="#{val.getComboValueShort(4)}" />
-															<f:param value="#{val.getComboValueShort(5)}" />
-															<f:param value="#{val.getComboValueShort(6)}" />
-															<f:param value="#{val.getComboValueShort(7)}" />
-															<f:param value="#{val.getComboValueShort(8)}" />
-															<f:param value="#{val.getComboValueShort(9)}" />
-														</h:outputFormat>
-													</ui:repeat>
-												</div>
-											</h:panelGroup>
-                                        </ui:repeat>
+        <h:form id="searchListHitsForm" prependId="false">
+            <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
+                <div class="search-list__hit">
+                    <!-- COinS IMPLEMENTATION -->
+                    <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
+                    <!-- HEADER -->
+                    <header class="search-list__hit-header">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-10">
+                                <!-- TITLE -->
+                                <div class="search-list__hit-title">
+                                    <h4>
+                                        <a href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+                                            <h:outputText value="#{msg[hit.browseElement.labelShort]}" escape="false" />
+                                        </a>
+                                    </h4>
+                                </div>
 
-										<!-- FULLTEXT -->
-										<h:panelGroup rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}">
-											<h:outputText value="#{msg.fulltext}: " rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}" />
-											<h:outputText value="#{hit.browseElement.fulltextForHtml}" escape="false" rendered="#{hit.browseElement.fulltext != ''}" />
-										</h:panelGroup>
-									</div>
+                                <!-- TYPE -->
+                                <div class="search-list__hit-type">
+                                    <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+                                    <h:panelGroup
+                                        rendered="#{fn:length(hit.browseElement.structElements) > 0 and hit.browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+                                        <nav class="search-list__hit-docstruct">
+                                            <ul>
+                                                <ui:repeat value="#{hit.browseElement.structElements}" varStatus="stat" var="struct">
+                                                    <li>
+                                                        <h:outputLink value="#{struct.url}" rendered="#{hit.browseElement.hasImages or hit.browseElement.anchor}">
+                                                            <h:outputText value="#{msg[struct.docStructType]}" />
+                                                        </h:outputLink>
+                                                        <h:outputLink value="#{struct.metadataUrl}" rendered="#{!hit.browseElement.hasImages and !hit.browseElement.anchor}">
+                                                            <h:outputText value="#{msg[struct.docStructType]}" />
+                                                        </h:outputLink>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </nav>
+                                    </h:panelGroup>
 
-									<!-- INFO -->
-									<h:panelGroup rendered="#{hit.browseElement.anchor}">
-										<div class="search-list__hit-info">
-											<h:outputText value="#{msg.numVolumes}: " styleClass="search-list__hit-text-label" />
-											<h:outputText value="#{hit.browseElement.numVolumes}" />
-										</div>
-									</h:panelGroup>
-								</div>
-								<div class="col-xs-12 col-sm-2">
-									<!-- THUMBNAIL -->
-									<figure class="search-list__hit-thumbnail">
-                                        <!-- SINGLEVOLUME -->
-                                        <h:outputLink
-                                            value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
-                                            rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}"
-                                            title="#{hit.browseElement.label}">
-                                            <img
-                                                src="#{hit.browseElement.thumbnailUrl}"
-                                                alt="#{hit.browseElement.label}"
-                                                class="viewer-thumbnail" />
-                                        </h:outputLink>
+                                    <!-- VALUES -->
+                                    <ui:repeat value="#{hit.browseElement.metadataList}" var="browseElementMetadata">
+                                        <h:panelGroup rendered="#{!browseElementMetadata.blank}">
+                                            <div class="search-list__hit-text">
+                                                <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" rendered="#{!browseElementMetadata.blank}"
+                                                    styleClass="search-list__hit-text-label" />
+                                                <ui:repeat var="val" value="#{browseElementMetadata.values}">
+                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false" rendered="#{!browseElementMetadata.blank}"
+                                                        styleClass="search-list__hit-text-value">
+                                                        <f:param value="#{val.getComboValueShort(0)}" />
+                                                        <f:param value="#{val.getComboValueShort(1)}" />
+                                                        <f:param value="#{val.getComboValueShort(2)}" />
+                                                        <f:param value="#{val.getComboValueShort(3)}" />
+                                                        <f:param value="#{val.getComboValueShort(4)}" />
+                                                        <f:param value="#{val.getComboValueShort(5)}" />
+                                                        <f:param value="#{val.getComboValueShort(6)}" />
+                                                        <f:param value="#{val.getComboValueShort(7)}" />
+                                                        <f:param value="#{val.getComboValueShort(8)}" />
+                                                        <f:param value="#{val.getComboValueShort(9)}" />
+                                                    </h:outputFormat>
+                                                </ui:repeat>
+                                            </div>
+                                        </h:panelGroup>
+                                    </ui:repeat>
 
-                                        <!-- SINGLEVOLUME WITHOUT IMAGE -->
-                                        <h:outputLink
-                                            value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
-                                            rendered="#{hit.browseElement.thumbnailUrl == null and !hit.browseElement.anchor}"
-                                            title="#{hit.browseElement.label}">
-                                            <img
-                                                src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
-                                                alt="#{hit.browseElement.label}"
-                                                class="viewer-thumbnail" />
-                                        </h:outputLink>
+                                    <!-- FULLTEXT -->
+                                    <h:panelGroup rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}">
+                                        <h:outputText value="#{msg.fulltext}: " rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}" />
+                                        <h:outputText value="#{hit.browseElement.fulltextForHtml}" escape="false" rendered="#{hit.browseElement.fulltext != ''}" />
+                                    </h:panelGroup>
+                                </div>
 
+                                <!-- INFO -->
+                                <h:panelGroup rendered="#{hit.browseElement.anchor}">
+                                    <div class="search-list__hit-info">
+                                        <h:outputText value="#{msg.numVolumes}: " styleClass="search-list__hit-text-label" />
+                                        <h:outputText value="#{hit.browseElement.numVolumes}" />
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                            <div class="col-xs-12 col-sm-2">
+                                <!-- THUMBNAIL -->
+                                <figure class="search-list__hit-thumbnail">
+                                    <!-- SINGLEVOLUME -->
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
+                                        rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+                                        <img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" class="viewer-thumbnail" />
+                                    </h:outputLink>
 
-                                        <!-- MULTIVOLUME -->
-										<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
-											<img src="#{hit.browseElement.thumbnailUrl}" class="viewer-thumbnail #{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
-											<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
-												<div class="stacked-thumbnail-before"></div>
-												<div class="stacked-thumbnail-after"></div>
-											</h:panelGroup>
-										</h:outputLink>
-                                        
-                                        <!-- RELATED PAGE LINK -->
-                                        <ui:fragment rendered="#{cmsBean.isHasRelatedPages(hit.browseElement.pi)}">
-                                            <a href="#{cmsBean.getRelatedPages(hit.browseElement.pi).get(0).pageUrl}" data-link="related-page">
-                                                <i class="fa fa-bars" aria-hidden="true"></i>
-                                            </a>
-                                        </ui:fragment>
-                                        
-                                        <!-- ADD TO BOOKSHELF -->
-                                        <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
-                                            <button type="button" class="btn btn--icon" data-bookshelf-type="add" data-pi="#{hit.browseElement.pi}">
-                                                <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
-                                                    <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
-                                                    <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
-                                                </span>
-                                            </button>
-                                        </ui:fragment>
-									</figure>
-								</div>
-							</div>
-						</header>
+                                    <!-- SINGLEVOLUME WITHOUT IMAGE -->
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
+                                        rendered="#{hit.browseElement.thumbnailUrl == null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+                                        <img src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png" alt="#{hit.browseElement.label}" class="viewer-thumbnail" />
+                                    </h:outputLink>
 
-						<!-- CONTENT -->
-						<h:panelGroup rendered="#{hit.hasHitCount}">
-							<!-- GET CHILD HITS -->
-							<button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
-								<i class="fa fa-caret-right" aria-hidden="true"></i> <i class="fa fa-caret-down" aria-hidden="true"></i>
-								<h:outputFormat rendered="#{hit.overviewPageHitCount > 0}" value="#{msg.searchChildOverviewPageHitCount}">
-									<f:param value="#{hit.overviewPageHitCount}" />
-								</h:outputFormat>
-								<h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-									<h:outputText rendered="#{hit.overviewPageHitCount > 0}" value=", " />
-									<f:param value="#{hit.docstructHitCount}" />
-								</h:outputFormat>
-								<h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
-									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
-									<f:param value="#{hit.pageHitCount}" />
-								</h:outputFormat>
-								<h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
-                                    <f:param value="#{hit.metadataHitCount}" />
-                                </h:outputFormat>
-								<h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
-									<f:param value="#{hit.eventHitCount}" />
-								</h:outputFormat>
-                                <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}" value=", " />
-                                    <f:param value="#{hit.ugcHitCount}" />
-                                </h:outputFormat>
-								<!-- LOADER -->
-								<span class="search-list__loader"> 
-									<img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Search List Loader" />
-								</span>
-							</button>
-						</h:panelGroup>
+                                    <!-- MULTIVOLUME -->
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
+                                        <img src="#{hit.browseElement.thumbnailUrl}"
+                                            class="viewer-thumbnail #{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
+                                        <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+                                            <div class="stacked-thumbnail-before"></div>
+                                            <div class="stacked-thumbnail-after"></div>
+                                        </h:panelGroup>
+                                    </h:outputLink>
 
-						<div class="search-list__hit-content"></div>
-					</div>
-                </ui:repeat>
-			</h:form>
-            
+                                    <!-- RELATED PAGE LINK -->
+                                    <ui:fragment rendered="#{cmsBean.isHasRelatedPages(hit.browseElement.pi)}">
+                                        <a href="#{cmsBean.getRelatedPages(hit.browseElement.pi).get(0).pageUrl}" data-link="related-page">
+                                            <i class="fa fa-bars" aria-hidden="true"></i>
+                                        </a>
+                                    </ui:fragment>
+
+                                    <!-- ADD TO BOOKSHELF -->
+                                    <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+                                        <button type="button" class="btn btn--icon" data-bookshelf-type="add" data-pi="#{hit.browseElement.pi}">
+                                            <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
+                                                <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
+                                                <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </ui:fragment>
+                                </figure>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- CONTENT -->
+                    <h:panelGroup rendered="#{hit.hasHitCount}">
+                        <!-- GET CHILD HITS -->
+                        <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
+                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                            <h:outputFormat rendered="#{hit.overviewPageHitCount > 0}" value="#{msg.searchChildOverviewPageHitCount}">
+                                <f:param value="#{hit.overviewPageHitCount}" />
+                            </h:outputFormat>
+                            <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                <h:outputText rendered="#{hit.overviewPageHitCount > 0}" value=", " />
+                                <f:param value="#{hit.docstructHitCount}" />
+                            </h:outputFormat>
+                            <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
+                                <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                <f:param value="#{hit.pageHitCount}" />
+                            </h:outputFormat>
+                            <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                <f:param value="#{hit.metadataHitCount}" />
+                            </h:outputFormat>
+                            <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
+                                <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
+                                <f:param value="#{hit.eventHitCount}" />
+                            </h:outputFormat>
+                            <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
+                                <h:outputText
+                                    rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                    value=", " />
+                                <f:param value="#{hit.ugcHitCount}" />
+                            </h:outputFormat>
+                            
+                            <!-- LOADER -->
+                            <span class="search-list__loader">
+                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Search List Loader" />
+                            </span>
+                        </button>
+                    </h:panelGroup>
+
+                    <div class="search-list__hit-content"></div>
+                </div>
+            </ui:repeat>
+        </h:form>
+
         <!-- PAGINATOR -->
-        <viewerComponent:simplePaginator
-            itemCount="#{search.lastPage}"
-            itemActive="#{search.currentPage}"
+        <viewerComponent:simplePaginator 
+            itemCount="#{search.lastPage}" 
+            itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
             urlSuffix="/#{search.sortString}/#{search.facets.currentFacetString}/" />
         <div class="clearfix"></div>
@@ -242,25 +237,22 @@
 
 
     <script type="text/javascript">
-                    $( document ).ready( function() {
-                        var searchSortingDropdownConfig = {};
-                        var searchListConfig = {
-                            contextPath: "#{request.contextPath}",
-                            msg: {
-                                getMoreChildren: "#{msg.searchList_getMoreHits}"
-                            }
-                        };
+        $( document ).ready( function() {
+        	var searchSortingDropdownConfig = {};
+            var searchListConfig = {
+            	contextPath: "#{request.contextPath}",
+                    msg: {
+                    	getMoreChildren: "#{msg.searchList_getMoreHits}"
+                    }
+            };
+            
+        	viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+            viewerJS.searchList.init( searchListConfig );
+        } );
                         
-                        viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
-                        viewerJS.searchList.init( searchListConfig );
-                    } );
-                    
-                    $( window ).on( "load", function() {
-                        var stackedThumbnailsConfig = {};
-                        
-                        viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
-                    } );
-                </script>
-
+        $( window ).on( "load", function() {
+        	var stackedThumbnailsConfig = {};
+            viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+        } );    
+    </script>
 </ui:composition>
-
