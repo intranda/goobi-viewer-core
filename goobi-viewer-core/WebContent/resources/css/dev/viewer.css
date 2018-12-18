@@ -6832,6 +6832,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .reading-mode__content-sidebar-toggle {
   position: absolute;
+  top: 50%;
   left: -32px;
   margin-top: -32px;
   width: 32px;
@@ -6863,6 +6864,9 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode__content-sidebar-inner {
   height: calc(100vh - 70px);
   overflow-y: auto;
+}
+.reading-mode__content-sidebar-tabs {
+  height: calc(100vh - 70px);
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */

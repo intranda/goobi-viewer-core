@@ -89,10 +89,6 @@ var ImageView = ( function( imageView ) {
                 }
                 
                 // set viewport
-                if ( _defaults.useTabs ) {
-                    _setSidebarTabHeight();
-                }
-                _setSidebarButtonPosition();
                 _checkSidebarStatus();
                 setTimeout( function() {
                     _showContent();
@@ -145,86 +141,12 @@ var ImageView = ( function( imageView ) {
                     	viewImage.loadFooter();
                     }, 300 );
                 } );
-                
-                $( window ).on( 'resize orientationchange', function() {
-                    if ( _defaults.useTabs ) {
-                        _setSidebarTabHeight();
-                    }
-                    _setSidebarButtonPosition();
-                } );
-                
-                // AJAX Loader Eventlistener
-                if ( typeof jsf !== 'undefined' ) {
-                    jsf.ajax.addOnEvent( function( data ) {
-                        var ajaxstatus = data.status;
-                        
-                        switch ( ajaxstatus ) {
-                            case "success":
-                                if ( _defaults.useTabs ) {
-                                    _setSidebarTabHeight();
-                                }
-                                _setSidebarButtonPosition();
-                                break;
-                        }
-                    } );
-                }
             }
             else {
                 return false;
             }
         },
     };
-    
-    /**
-     * Method which sets the height of the sidebar Tabs.
-     * 
-     * @method _setSidebarTabHeight
-     */
-    function _setSidebarTabHeight() {
-        if ( _debug ) {
-            console.log( '---------- _setSidebarTabHeight() ----------' );
-            console.log( '_setSidebarTabHeight: sidebarTabs = ', _defaults.sidebarTabsSelector );
-        }
-        
-        var viewportHeight = $( window ).outerHeight();
-        var navHeight = $( _defaults.navSelector ).outerHeight();
-        var newHeight = viewportHeight - navHeight;
-        var tabPos = $( _defaults.sidebarTabsSelector ).position();
-        var tabHeight = newHeight - tabPos.top - 15;
-        var navTabsHeight = $( '.nav-tabs' ).outerHeight();
-        
-        if ( _debug ) {
-            console.log( '_setSidebarTabHeight: tabPos = ', tabPos );
-            console.log( '_setSidebarTabHeight: tabHeight = ', tabHeight );
-        }
-        
-        if ( viewportHeight > 768 ) {
-            $( _defaults.sidebarTabsSelector ).css( 'height', tabHeight );
-            $( _defaults.sidebarTabContentSelector ).css( 'height', tabHeight - navTabsHeight );
-            $( _defaults.sidebarTocWrapperSelector ).css( 'min-height', tabHeight - navTabsHeight );
-        }
-    }
-    
-    /**
-     * Method which sets the position of the sidebar toggle button.
-     * 
-     * @method _setSidebarButtonPosition
-     */
-    function _setSidebarButtonPosition() {
-        if ( _debug ) {
-            console.log( '---------- _setSidebarButtonPosition() ----------' );
-            console.log( '_setSidebarButtonPosition: view = ', _defaults.viewSelector );
-        }
-        
-        var viewHalfHeight = $( _defaults.viewSelector ).outerHeight() / 2;
-        
-        if ( _debug ) {
-            console.log( '_setSidebarButtonPosition: viewHalfHeight = ', viewHalfHeight );
-        }
-        
-        $( _defaults.sidebarToggleButton ).css( 'top', viewHalfHeight );
-        
-    }
     
     /**
      * Method which checks the current sidebar status, based on a local storage value.
