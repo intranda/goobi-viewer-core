@@ -48,6 +48,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -623,6 +624,43 @@ public class Helper {
     }
 
     /**
+     * 
+     * @param url
+     * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
+     *         or the error message.
+     */
+    public static String[] callUrlGET(String url) {
+        logger.debug("callUrlGET: {}", url);
+        String[] ret = new String[2];
+        try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
+            HttpGet httpGet = new HttpGet(url);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet); StringWriter writer = new StringWriter()) {
+                ret[0] = String.valueOf(response.getStatusLine().getStatusCode());
+                switch (response.getStatusLine().getStatusCode()) {
+                    case HttpServletResponse.SC_OK:
+                        HttpEntity httpEntity = response.getEntity();
+                        httpEntity.getContentLength();
+                        IOUtils.copy(httpEntity.getContent(), writer, DEFAULT_ENCODING);
+                        ret[1] = writer.toString();
+                        break;
+                    case 401:
+                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        ret[1] = response.getStatusLine().getReasonPhrase();
+                        break;
+                    default:
+                        logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                        ret[1] = response.getStatusLine().getReasonPhrase();
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
+    }
+
+    /**
      * Sends the given HttpEntity to the given URL via HTTP POST. Only returns a status code.
      *
      * @param url
@@ -945,8 +983,8 @@ public class Helper {
         try {
             return Helper.getWebContentGET(url);
         } catch (HTTPException e) {
-//            logger.error("Could not retrieve file from {}", url);
-//            logger.error(e.getMessage());
+            //            logger.error("Could not retrieve file from {}", url);
+            //            logger.error(e.getMessage());
             if (e.getCode() == 403) {
                 logger.debug("Access denied for text file {}", filePath);
                 throw new AccessDeniedException("fulltextAccessDenied");
@@ -999,9 +1037,9 @@ public class Helper {
      * @return
      */
     public static boolean parseBoolean(String text, boolean defaultValue) {
-        if("FALSE".equalsIgnoreCase(text)) {
+        if ("FALSE".equalsIgnoreCase(text)) {
             return false;
-        } else if("TRUE".equalsIgnoreCase(text)) {
+        } else if ("TRUE".equalsIgnoreCase(text)) {
             return true;
         } else {
             return defaultValue;

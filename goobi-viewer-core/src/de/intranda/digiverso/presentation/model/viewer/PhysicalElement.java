@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.PdfHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
@@ -659,7 +659,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText != null) {
             Document altoDoc;
             try {
-                altoDoc = FileTools.getDocumentFromString(altoText, "UTF-8");
+                altoDoc = XmlTools.getDocumentFromString(altoText, "UTF-8");
                 return ALTOTools.getWordCoords(altoDoc, searchTerms, rotation, getImageFooterHeight());
             } catch (JDOMException | IOException e) {
                 logger.error(e.getMessage(), e);

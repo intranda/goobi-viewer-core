@@ -32,7 +32,7 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 
 public class JPAClassLoader extends ClassLoader {
@@ -120,7 +120,7 @@ public class JPAClassLoader extends ClassLoader {
     static Document scanPersistenceXML(URL masterFileUrl, List<URL> moduleUrls) throws IOException, JDOMException {
         logger.trace("scanPersistenceXML(): {}", masterFileUrl);
         Document docMerged = new Document();
-        Document docMaster = FileTools.readXmlFile(masterFileUrl);
+        Document docMaster = XmlTools.readXmlFile(masterFileUrl);
         Element eleMasterRoot = docMaster.getRootElement();
 
         // Collect already defined class names for this persistence unit
@@ -142,7 +142,7 @@ public class JPAClassLoader extends ClassLoader {
         // Iterate over module persistence.xml files
         for (URL url : moduleUrls) {
             logger.trace("Processing {}", url.toString());
-            Document docModule = FileTools.readXmlFile(url);
+            Document docModule = XmlTools.readXmlFile(url);
             // For each persistence unit in the master file check for any new classes in the module file
             for (Element eleModulePU : docModule.getRootElement().getChildren("persistence-unit", null)) {
                 String puName = eleModulePU.getAttributeValue("name");
@@ -183,7 +183,7 @@ public class JPAClassLoader extends ClassLoader {
                     // The base directory must be empty since Hibernate will scan it searching for classes.
                     final File file = new File(System.getProperty("java.io.tmpdir") + "/viewer/" + PERSISTENCE_XML);
                     file.getParentFile().mkdirs();
-                    FileTools.writeXmlFile(docMerged, file.getAbsolutePath());
+                    XmlTools.writeXmlFile(docMerged, file.getAbsolutePath());
                     newUrl = file.toURI().toURL();
 //                    newUrl = new URL("file://" + file.getAbsolutePath());
                     logger.info("URL: " + newUrl);

@@ -1644,8 +1644,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 new BrowsingMenuFieldConfig(field, null, null, false);
                 String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
 
-                String facetField = SearchHelper.facetifyField(field);
-                List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, facetField, 0);
+                List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);
                 for (String value : values) {
                     ret.add(new StringPair(value, Helper.getTranslation(value, null)));
                 }

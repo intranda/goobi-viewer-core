@@ -30,9 +30,8 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
@@ -85,7 +84,7 @@ public class CMSPageTemplate {
         }
         Document doc;
         try {
-            doc = FileTools.readXmlFile(file);
+            doc = XmlTools.readXmlFile(file);
         } catch (IOException | JDOMException e1) {
            logger.error(e1.toString(), e1);
            return null;
