@@ -6685,6 +6685,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #readingModeImage {
   position: relative;
+  height: calc(100vh - 70px);
 }
 #readingModeImage .image-fragment {
   background-color: rgba(255, 255, 255, 0.3);
@@ -6804,6 +6805,7 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode__content-view,
 .reading-mode__content-sidebar {
   float: left;
+  height: calc(100vh - 70px);
 }
 .reading-mode__content-view {
   transition: all .3s linear;
@@ -6813,13 +6815,17 @@ div[id*="-Modal"] .email-form .form-group {
   width: 70%;
 }
 .reading-mode__content-sidebar {
-  position: relative;
-  width: 0;
+  position: fixed;
+  top: 70px;
+  right: -30%;
+  bottom: 0;
+  width: 30%;
   background-color: #ccc;
   transition: all .3s linear;
+  z-index: 999;
 }
 .reading-mode__content-sidebar.in {
-  width: 30%;
+  right: 0;
 }
 .reading-mode__content-sidebar.in .reading-mode__content-sidebar-inner {
   padding: 15px;
@@ -6855,6 +6861,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 .reading-mode__content-sidebar-inner {
+  height: calc(100vh - 70px);
   overflow-y: auto;
 }
 /* MODIFICATION */

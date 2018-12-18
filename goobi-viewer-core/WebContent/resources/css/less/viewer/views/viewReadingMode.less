@@ -13,10 +13,11 @@
 
 #readingModeImage {
 	position: relative;
+	height: calc(~"100vh - 70px");
 	.image-fragment {
-	    	background-color: rgba(255,255,255,0.3);
-	        border: solid @blue 3px;	        	
-	    }
+		background-color: rgba(255,255,255,0.3);
+		border: solid @blue 3px;
+	}
 }
 
 /* BLOCK */
@@ -126,6 +127,7 @@
     &__content-view,
     &__content-sidebar {
         float: left;
+        height: calc(~"100vh - 70px");
     }
     &__content-view {
         transition: all .3s linear;
@@ -136,12 +138,16 @@
     }
     &__content-view-image {}
     &__content-sidebar {
-        position: relative;
-        width: 0;
+        position: fixed;
+        top: 70px;
+        right: -30%;
+        bottom: 0;
+        width: 30%;
         background-color: @middlegray;
         transition: all .3s linear;
+        z-index: 999;
         &.in {
-            width: 30%;
+            right: 0;
             .reading-mode__content-sidebar-inner {
                 padding: 15px;
             }
@@ -180,6 +186,7 @@
         }
     }
     &__content-sidebar-inner {
+    	height: calc(~"100vh - 70px");
         overflow-y: auto;
     }
 }

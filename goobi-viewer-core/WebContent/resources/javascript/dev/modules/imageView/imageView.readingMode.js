@@ -82,14 +82,13 @@ var ImageView = ( function( imageView ) {
             _localStoragePossible = viewerJS.helper.checkLocalStorage();
             
             if ( _localStoragePossible ) {
-                _defaults.sidebarStatus = localStorage.getItem( 'sidebarStatus' );
+                _defaults.sidebarStatus = sessionStorage.getItem( 'sidebarStatus' );
                 
                 if ( _defaults.sidebarStatus === '' || _defaults.sidebarStatus === undefined ) {
-                    localStorage.setItem( 'sidebarStatus', 'true' );
+                    sessionStorage.setItem( 'sidebarStatus', 'true' );
                 }
                 
                 // set viewport
-                _setViewportHeight();
                 if ( _defaults.useTabs ) {
                     _setSidebarTabHeight();
                 }
@@ -101,15 +100,15 @@ var ImageView = ( function( imageView ) {
                 
                 // save panel status
                 if ( _defaults.useAccordeon ) {
-                    _activePanel = localStorage.getItem( 'activePanel' );
+                    _activePanel = sessionStorage.getItem( 'activePanel' );
                     
                     $( '.panel-collapse' ).each( function() {
                         $( this ).removeClass( 'in' );
                     } );
                     
                     if ( _activePanel === null ) {
-                        localStorage.setItem( 'activePanel', '#collapseOne' );
-                        _activePanel = localStorage.getItem( 'activePanel' );
+                        sessionStorage.setItem( 'activePanel', '#collapseOne' );
+                        _activePanel = sessionStorage.getItem( 'activePanel' );
                         
                         $( _activePanel ).addClass( 'in' );
                     }
@@ -121,7 +120,7 @@ var ImageView = ( function( imageView ) {
                     $( 'a[data-toggle="collapse"]' ).on( 'click', function() {
                         var currPanel = $( this ).attr( 'href' );
                         
-                        localStorage.setItem( 'activePanel', currPanel );
+                        sessionStorage.setItem( 'activePanel', currPanel );
                     } );
                 }
                 
@@ -132,13 +131,13 @@ var ImageView = ( function( imageView ) {
                     $( this ).parents( '.reading-mode__content-sidebar' ).prev().toggleClass( 'in' );
                     
                     // set sidebar status to local storage
-                    _defaults.sidebarStatus = localStorage.getItem( 'sidebarStatus' );
+                    _defaults.sidebarStatus = sessionStorage.getItem( 'sidebarStatus' );
                     
                     if ( _defaults.sidebarStatus === 'false' ) {
-                        localStorage.setItem( 'sidebarStatus', 'true' );
+                        sessionStorage.setItem( 'sidebarStatus', 'true' );
                     }
                     else {
-                        localStorage.setItem( 'sidebarStatus', 'false' );
+                        sessionStorage.setItem( 'sidebarStatus', 'false' );
                     }
                     
                     // reload image footer
@@ -147,16 +146,7 @@ var ImageView = ( function( imageView ) {
                     }, 300 );
                 } );
                 
-                $( window ).on( 'resize', function() {
-                    _setViewportHeight();
-                    if ( _defaults.useTabs ) {
-                        _setSidebarTabHeight();
-                    }
-                    _setSidebarButtonPosition();
-                } );
-                
-                $( window ).on( "orientationchange", function() {
-                    _setViewportHeight();
+                $( window ).on( 'resize orientationchange', function() {
                     if ( _defaults.useTabs ) {
                         _setSidebarTabHeight();
                     }
@@ -170,7 +160,6 @@ var ImageView = ( function( imageView ) {
                         
                         switch ( ajaxstatus ) {
                             case "success":
-                                _setViewportHeight();
                                 if ( _defaults.useTabs ) {
                                     _setSidebarTabHeight();
                                 }
@@ -185,38 +174,6 @@ var ImageView = ( function( imageView ) {
             }
         },
     };
-    
-    /**
-     * Method which sets the height of the viewport elements.
-     * 
-     * @method _setViewportHeight
-     */
-    function _setViewportHeight() {
-        if ( _debug ) {
-            console.log( '---------- _setViewportHeight() ----------' );
-            console.log( '_setViewportHeight: view = ', _defaults.viewSelector );
-            console.log( '_setViewportHeight: image = ', _defaults.imageSelector );
-            console.log( '_setViewportHeight: sidebar = ', _defaults.sidebarSelector );
-            console.log( '_setViewportHeight: sidebarInner = ', _defaults.sidebarInnerSelector );
-            console.log( '_setViewportHeight: sidebarTabs = ', _defaults.sidebarTabsSelector );
-        }
-        
-        var viewportHeight = $( window ).outerHeight();
-        var navHeight = $( _defaults.navSelector ).outerHeight();
-        var newHeight = viewportHeight - navHeight;
-        
-        if ( _debug ) {
-            console.log( '_setViewportHeight: viewportHeight = ', viewportHeight );
-            console.log( '_setViewportHeight: navHeight = ', navHeight );
-            console.log( '_setViewportHeight: newHeight = ', newHeight );
-        }
-        
-        $( _defaults.viewSelector ).css( 'height', newHeight );
-        $( _defaults.imageSelector ).css( 'height', newHeight );
-        $( _defaults.sidebarSelector ).css( 'height', newHeight );
-        $( _defaults.sidebarInnerSelector ).css( 'height', newHeight );
-        
-    }
     
     /**
      * Method which sets the height of the sidebar Tabs.
