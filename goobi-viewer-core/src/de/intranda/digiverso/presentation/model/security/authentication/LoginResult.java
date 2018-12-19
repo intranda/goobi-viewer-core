@@ -22,7 +22,6 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ch.qos.logback.classic.Logger;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
