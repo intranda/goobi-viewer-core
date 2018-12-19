@@ -1128,7 +1128,7 @@
 		</sidebarToc>
 
 		<!-- Show or hide the widget including download links for record and page while viewing the object-->
-		<sidebarWidgetUsage display="false">
+		<sidebarWidgetUsage display="true">
 			<!-- You can specify any text at the top of the record links using the same mechanism as for metadata display-->
 			<licenseText>
 				<metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">

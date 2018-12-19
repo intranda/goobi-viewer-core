@@ -68,7 +68,7 @@ public final class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20170710;
+    private static final int MIN_SCHEMA_VERSION = 20181214;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final int MULTILANGUAGE_FIELD_NAME_GROUP = 1;
