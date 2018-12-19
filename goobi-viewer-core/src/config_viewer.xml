@@ -110,12 +110,6 @@
                 clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
             <provider type="local" name="Goobi viewer"/>
         </authenticationProviders>
-		<openIdConnect show="true">
-			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
-				clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-			<provider name="Facebook" endpoint="https://www.facebook.com/dialog/oauth"
-				clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
-		</openIdConnect>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 
 			and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory 
 			and have no default value. -->
