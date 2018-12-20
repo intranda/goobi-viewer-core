@@ -380,7 +380,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      * @throws URISyntaxException
      */
     public void setLink(String linkUrl) throws URISyntaxException {
-        this.link = new URI(linkUrl);
+        if(StringUtils.isBlank(linkUrl)) {
+            this.link = null;
+        } else {            
+            this.link = new URI(linkUrl);
+        }
     }
 
     @Override
