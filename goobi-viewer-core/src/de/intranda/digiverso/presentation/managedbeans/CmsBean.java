@@ -1200,7 +1200,7 @@ public class CmsBean implements Serializable {
 //        }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
-            CMSStaticPage newPage = new CMSStaticPage(pageType.name());
+            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
             if (!staticPages.contains(newPage)) {
                 staticPages.add(newPage);
             }
@@ -1261,9 +1261,12 @@ public class CmsBean implements Serializable {
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {
             try {
-                if (page.getId() != null) {
+                //delete static pages with no mapped cms page to remove deprecated pages
+                if(page.getId() != null && !page.isHasCmsPage()) {
+                    DataManager.getInstance().getDao().deleteStaticPage(page);
+                } else if (page.getId() != null) {
                     DataManager.getInstance().getDao().updateStaticPage(page);
-                } else {
+                } else if(page.isHasCmsPage()) {
                     DataManager.getInstance().getDao().addStaticPage(page);
                 }
             } catch (DAOException e) {
@@ -1271,6 +1274,7 @@ public class CmsBean implements Serializable {
                 return;
             }
         }
+        this.staticPages = null;
         Messages.info("cms_staticPagesSaved");
     }
 
