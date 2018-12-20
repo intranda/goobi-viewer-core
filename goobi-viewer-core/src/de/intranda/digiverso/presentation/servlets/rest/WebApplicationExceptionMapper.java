@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest;
 
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotFoundException;
@@ -61,7 +64,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
         }
 
-        logger.error("Error on request {} ({})", request.getRequestURL(), (e != null ? e.getMessage() : eParent.getMessage()));
+        String headers = Collections.list(request.getHeaderNames()).stream()
+        .collect(Collectors.toMap(headerName -> headerName, headerName -> request.getHeader(headerName)))
+        .entrySet().stream()
+        .map(entry -> entry.getKey() + ": " + entry.getValue())
+        .collect(Collectors.joining("; "));
+        
+        logger.error("Error on request {}\n\t\t HEADERS: {}\n\t\t ERROR MESSAGE: {}", request.getRequestURL(), headers , (e != null ? e.getMessage() : eParent.getMessage()));
         String mediaType = MediaType.APPLICATION_JSON;
         return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
     }
