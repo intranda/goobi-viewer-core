@@ -448,6 +448,8 @@
 			<!-- translateField: Fields in this list will be highlighted with their translated value rather than raw. -->
 			<translateField>DC</translateField>
 			<translateField>DOCSTRCT</translateField>
+			<translateField>DOCSTRCT_TOP</translateField>
+			<translateField>DOCSTRCT_SUB</translateField>
 		</displayAdditionalMetadata>
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
