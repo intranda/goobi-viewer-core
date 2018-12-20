@@ -56,6 +56,7 @@ import de.intranda.digiverso.presentation.model.security.authentication.IAuthent
 import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.XServiceProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.DcSortingList;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -1065,7 +1066,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return false;
     }
-    
+
     /**
      * 
      * @param field
@@ -1313,8 +1314,8 @@ public final class Configuration extends AbstractConfiguration {
             myConfigToUse = configLocal;
         }
 
-        List<IAuthenticationProvider> providers = new ArrayList<>();
         int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
+        List<IAuthenticationProvider> providers = new ArrayList<>(max + 1);
         for (int i = 0; i <= max; i++) {
             String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
@@ -1334,6 +1335,10 @@ public final class Configuration extends AbstractConfiguration {
                         switch (name.toLowerCase()) {
                             case "vufind":
                                 providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
+                                break;
+                            case "x-service":
+                            case "xservice":
+                                providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
                                 break;
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
@@ -3213,11 +3218,11 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return  true if opening a collection containing only a single work should redirect to that work
+     * @return true if opening a collection containing only a single work should redirect to that work
      */
     public boolean isAllowRedirectCollectionToWork() {
-       boolean redirect = getLocalBoolean("collections.redirectToWork", true);
-       return redirect;
+        boolean redirect = getLocalBoolean("collections.redirectToWork", true);
+        return redirect;
     }
 
 }

@@ -26,11 +26,11 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
 
-    private final String name;
-    private final String type;
-    private final String url;
-    private final String image;
-    private final long timeoutMillis;
+    protected final String name;
+    protected final String type;
+    protected final String url;
+    protected final String image;
+    protected final long timeoutMillis;
     /**
      * @param name
      * @param url

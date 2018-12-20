@@ -26,9 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
@@ -43,7 +41,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.JDOMException;
-import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +60,6 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
-import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
@@ -98,7 +94,7 @@ public class UserBean implements Serializable {
     private String transkribusUserName;
     private String transkribusPassword;
 
-    private CompletableFuture<Optional<User>> loginFuture = null;
+    // private CompletableFuture<Optional<User>> loginFuture = null;
 
     /** Empty constructor. */
     public UserBean() {
@@ -209,58 +205,59 @@ public class UserBean implements Serializable {
         if (getAuthenticationProvider() != null) {
             getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result));
         }
+
         return null;
     }
 
     private void completeLogin(LoginResult result) {
-            HttpServletResponse response = result.getResponse();
-            HttpServletRequest request = result.getRequest();
-            try {
+        HttpServletResponse response = result.getResponse();
+        HttpServletRequest request = result.getRequest();
+        try {
 
-                Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
+            Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
 
-                if (result.isRefused()) {
-                    Messages.error("errLoginWrong");
-                } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
-                    Messages.error("errLoginInactive");
-                } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
-                    Messages.error("errLoginSuspended");
-                } else if (oUser.isPresent()) { //login successful
-                    try {
-                        User user = oUser.get();
-                        wipeSession(request);
-                        DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
-                        // Update last login
-                        user.setLastLogin(new Date());
-                        if (!DataManager.getInstance().getDao().updateUser(user)) {
-                            logger.error("Could not update user in DB.");
-                        }
-                        setUser(user);
-                        if (request != null && request.getSession(false) != null) {
-                            request.getSession(false).setAttribute("user", user);
-                        }
-                        if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
-                            logger.trace("Redirecting to {}", redirectUrl);
-                            String redirectUrl = this.redirectUrl;
-                            this.redirectUrl = "";
-                            response.sendRedirect(redirectUrl);
-                        } else if (response != null) {
-                            logger.trace("Redirecting to user page");
-                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
-                        }
-                        SearchHelper.updateFilterQuerySuffix(request);
-                        return;
-                    } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
-                        //user may login, but setting up viewer account failed
-                        getAuthenticationProvider().logout();
-                        throw new AuthenticationProviderException(e);
+            if (result.isRefused()) {
+                Messages.error("errLoginWrong");
+            } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
+                Messages.error("errLoginInactive");
+            } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+                Messages.error("errLoginSuspended");
+            } else if (oUser.isPresent()) { //login successful
+                try {
+                    User user = oUser.get();
+                    wipeSession(request);
+                    DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
+                    // Update last login
+                    user.setLastLogin(new Date());
+                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                        logger.error("Could not update user in DB.");
                     }
-                } else {
-                    Messages.error("errLoginInactive");
+                    setUser(user);
+                    if (request != null && request.getSession(false) != null) {
+                        request.getSession(false).setAttribute("user", user);
+                    }
+                    if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
+                        logger.trace("Redirecting to {}", redirectUrl);
+                        String redirectUrl = this.redirectUrl;
+                        this.redirectUrl = "";
+                        response.sendRedirect(redirectUrl);
+                    } else if (response != null) {
+                        logger.trace("Redirecting to user page");
+                        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                    }
+                    SearchHelper.updateFilterQuerySuffix(request);
+                    return;
+                } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
+                    //user may login, but setting up viewer account failed
+                    getAuthenticationProvider().logout();
+                    throw new AuthenticationProviderException(e);
                 }
-            } catch (AuthenticationProviderException e) {
-                logger.error("Error logging in ", e);
-                Messages.error("errLoginError");
+            } else {
+                Messages.error("errLoginInactive");
+            }
+        } catch (AuthenticationProviderException e) {
+            logger.error("Error logging in ", e);
+            Messages.error("errLoginError");
         } finally {
             result.setRedirected();
         }
@@ -767,6 +764,10 @@ public class UserBean implements Serializable {
         return getProvidersOfType("local").stream().findFirst().orElse(null);
     }
 
+    public IAuthenticationProvider getXserviceAuthenticationProvider() {
+        return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
+    }
+
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
         this.authenticationProvider = provider;
     }
@@ -881,23 +882,21 @@ public class UserBean implements Serializable {
     public boolean hasProvidersOfType(String type) {
         if (type != null) {
             return getAuthenticationProviders().stream().anyMatch(provider -> type.equalsIgnoreCase(provider.getType()));
-        } else {
-            return false;
         }
+        return false;
     }
 
     public List<IAuthenticationProvider> getProvidersOfType(String type) {
         if (type != null) {
             return getAuthenticationProviders().stream().filter(provider -> type.equalsIgnoreCase(provider.getType())).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     public int getNumberOfProviderTypes() {
         return getAuthenticationProviders().stream().collect(Collectors.groupingBy(IAuthenticationProvider::getType, Collectors.counting())).size();
     }
-    
+
     public boolean isAllowPasswordChange() {
         return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
     }

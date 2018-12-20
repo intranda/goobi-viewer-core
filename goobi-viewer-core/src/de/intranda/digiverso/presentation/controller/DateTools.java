@@ -44,6 +44,7 @@ public class DateTools {
     public static DateTimeFormatter formatterISO8601BasicDateNoYear = DateTimeFormat.forPattern("MMdd");
     public static DateTimeFormatter formatterISO8601YearMonth = DateTimeFormat.forPattern("yyyy-MM"); // yyyy-MM
     public static DateTimeFormatter formatterISO8601Date = ISODateTimeFormat.date(); // yyyy-MM-dd
+    public static DateTimeFormatter formatterISO8601DateReverse = DateTimeFormat.forPattern("dd-MM-yyyy"); // dd-MM-YYYY
     public static DateTimeFormatter formatterISO8601DateTime = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
     public static DateTimeFormatter formatterISO8601DateTimeMS = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
     public static DateTimeFormatter formatterISO8601DateTimeFull = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
