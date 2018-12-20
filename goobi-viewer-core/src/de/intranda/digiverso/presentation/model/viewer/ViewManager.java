@@ -194,9 +194,10 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if (getCurrentPage().getMimeType().startsWith("image")) {
+        if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
         }
+        
         return "{}";
     }
 
@@ -2340,15 +2341,10 @@ public class ViewManager implements Serializable {
                     }
                 }
                 url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                url.append('/')
-                        .append(pageType.getName())
-                        .append('/')
-                        .append(getPi())
-                        .append('/');
-                        if(getRepresentativePage() != null) {                            
-                            url.append(getRepresentativePage().getOrder())
-                            .append('/');
-                        }
+                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+                if (getRepresentativePage() != null) {
+                    url.append(getRepresentativePage().getOrder()).append('/');
+                }
                 return url.toString();
             }
         } else {
