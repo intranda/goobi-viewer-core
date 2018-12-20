@@ -117,7 +117,7 @@ public class IdentifierResolver extends HttpServlet {
         StringBuilder sbQuery = new StringBuilder(fieldName.toUpperCase());
         try {
             sbQuery.append(':').append('"').append(ClientUtils.escapeQueryChars(fieldValue)).append('"').append(
-                    SearchHelper.getAllSuffixes(request, true, false));
+                    SearchHelper.getAllSuffixes(request, false, false));
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
