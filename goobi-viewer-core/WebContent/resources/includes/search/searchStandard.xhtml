@@ -77,12 +77,14 @@
                                 });
                 	</script>
                 </div>
-                <div class="search-standard__filter-link">
-                    <h:commandLink value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
-                        <f:ajax render="searchArea"></f:ajax>
-                    </h:commandLink>
-<!--                     <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a> -->
-                </div>
+                <ui:fragment rendered="#{!searchBean.showReducedSearchOptions}">
+                    <div class="search-standard__filter-link">
+                        <h:commandLink value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
+                            <f:ajax render="searchArea"></f:ajax>
+                        </h:commandLink>
+    <!--                     <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a> -->
+                    </div>
+                </ui:fragment>
             </div>
 
             <!-- SEARCH STANDARD ACTION -->
