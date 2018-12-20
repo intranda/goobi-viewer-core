@@ -377,13 +377,14 @@
 				<field>OVERVIEWPAGE</field>
 				<field>PI_TOPSTRUCT</field>
 				<field hierarchical="true">DC</field>
-				<field>DOCSTRCT</field>
+				<field>DOCSTRCT_TOP</field>
+				<field>DOCSTRCT_SUB</field>
 				<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
-				<field>MD_SHELFMARK</field>
+				<field untokenizeForPhraseSearch="true">MD_SHELFMARK</field>
 			</searchFields>
 		</advanced>
 
