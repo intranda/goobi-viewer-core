@@ -84,9 +84,11 @@ public class XServiceProvider extends VuFindProvider {
     }
 
     /**
+     * Retrieves or creates User object for the given credentials.
+     * 
      * @param request
      * @param response
-     * @return
+     * @return User object
      * @throws AuthenticationProviderException
      */
     private static Optional<User> getUser(XServiceAuthenticationRequest request, XServiceAuthenticationResponse response)
@@ -120,9 +122,9 @@ public class XServiceProvider extends VuFindProvider {
             }
 
             //set user status
-            if (!user.isSuspended()) {
-                user.setSuspended(response.isExpired());
-            }
+            //            if (!user.isSuspended()) {
+            //                user.setSuspended(response.isExpired());
+            //            }
 
             // Add to bean and persist
             if (user.getId() == null) {

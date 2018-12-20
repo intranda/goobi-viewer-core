@@ -29,6 +29,9 @@ import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.model.security.authentication.model.VuAuthenticationResponse.Request;
 
+/**
+ * Authentication response object for X-Service.
+ */
 public class XServiceAuthenticationResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(XServiceAuthenticationResponse.class);
@@ -38,6 +41,14 @@ public class XServiceAuthenticationResponse {
     private boolean expired = true;
     private Request request;
 
+    /**
+     * Parses and evaluates the given XML response from X-Service.
+     * 
+     * @param xml
+     * @param encoding
+     * @throws JDOMException
+     * @throws IOException
+     */
     public XServiceAuthenticationResponse(String xml, String encoding) throws JDOMException, IOException {
         if (xml == null) {
             throw new IllegalArgumentException("xml may not be null");
