@@ -3110,7 +3110,7 @@ public class JPADAO implements IDAO {
             em.remove(o);
             em.getTransaction().commit();
             return true;
-        } catch (RollbackException e) {
+        } catch (RollbackException | EntityNotFoundException e) {
             return false;
         } finally {
             em.close();

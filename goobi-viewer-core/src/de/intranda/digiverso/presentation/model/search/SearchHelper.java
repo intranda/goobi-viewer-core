@@ -838,7 +838,9 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @should construct subquery correctly
      * @should return empty string if discriminator value is empty or hyphen
+     * @deprecated  Implicit filtering of queries by subtheme should not be neccessary anymore since it is now handled via CMS-Pages and their components/widgets
      */
+    @Deprecated
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
         // logger.trace("nh null? {}", nh == null);
         logger.trace("discriminatorField: {}", discriminatorField);
