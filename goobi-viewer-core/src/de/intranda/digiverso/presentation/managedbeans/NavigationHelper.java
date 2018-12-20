@@ -660,6 +660,7 @@ public class NavigationHelper implements Serializable {
 
     public void resetTheme() {
         logger.trace("resetTheme");
+        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
