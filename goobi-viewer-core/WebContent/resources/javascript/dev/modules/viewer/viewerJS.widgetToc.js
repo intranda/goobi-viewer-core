@@ -26,6 +26,7 @@ var viewerJS = (function(viewer) {
 	'use strict';
 
 	var _debug = false;
+	var _parentPos = 0;
 
 	viewer.widgetToc = {
 		/**
@@ -39,18 +40,24 @@ var viewerJS = (function(viewer) {
                 console.log( '##############################' );
             }
 			
-			// set events to show loader and overlay
-			$( '#widgetToc' ).on( 'click', '.widget-toc__title-expand a, .widget-toc__elements a', function() {
-				$( '.widget-toc__loader, .widget-toc__overlay' ).show();				
-			} );
-			
 			// hide loader and overlay after successful ajax request
 	        if ( typeof jsf !== 'undefined' ) {
 	            jsf.ajax.addOnEvent( function( data ) {
-	                var ajaxstatus = data.status;
+	                var status = data.status;
+	                var source = data.source;
+	                var iddoc = $( source ).parents( '.widget-toc__element' ).attr( 'data-iddoc' );
 	                
-	                switch ( ajaxstatus ) {
-	                    case "success":
+	                switch ( status ) {
+	                	case 'begin':
+	                		$( '[data-iddoc*="iddoc"]' ).removeClass( 'active' );
+	                		$( '.widget-toc__loader, .widget-toc__overlay' ).show();
+	                		
+	                		break;
+	                	case 'success':
+	                		_parentPos = $( '[data-iddoc="' + iddoc + '"]' ).position().top;
+	                		$( '[data-iddoc="' + iddoc + '"]' ).addClass( 'active' );
+	                		$( '.widget-toc__elements' ).scrollTop( _parentPos );
+	                    	
 	                        $( '.widget-toc__loader, .widget-toc__overlay' ).hide();
 	                        break;
 	                }
