@@ -15,6 +15,7 @@
 	}
 	&__title-expand {
 		display: flex;
+		align-items: center;
 		margin-left: auto;
 		padding-right: 10px;
 		a {
@@ -77,13 +78,14 @@
 	}
 	&__loader {
 		position: relative;
-		width: 16px;
-		height: 16px;
+		width: 32px;
+		height: 32px;
 		margin-top: 1px;
-		background-image: url("@{images}/ajax_preloader.gif");
+		border-radius: 10px;
+		background-image: url("@{images}/infinity_loader.svg");
         background-repeat: no-repeat;
         background-position: center center;
-        background-size: contain;
+        background-size: 85%;
         z-index: 11;
 	}
 	&__overlay {
@@ -92,7 +94,7 @@
 		right: 0;
 		bottom: 0;
 		left: 0;
-		background-color: rgba(255,255,255,0.75);
+		background-color: rgba(255,255,255,0.85);
 		z-index: 10;
 	}
 }

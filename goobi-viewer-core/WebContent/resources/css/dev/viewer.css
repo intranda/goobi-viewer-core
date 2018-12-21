@@ -7896,6 +7896,8 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-toc__title-expand {
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-align: center;
+      align-items: center;
   margin-left: auto;
   padding-right: 10px;
 }
@@ -7952,13 +7954,14 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget-toc__loader {
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
   margin-top: 1px;
-  background-image: url("../../images/ajax_preloader.gif");
+  border-radius: 10px;
+  background-image: url("../../images/infinity_loader.svg");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: contain;
+  background-size: 85%;
   z-index: 11;
 }
 .widget-toc__overlay {
@@ -7967,7 +7970,7 @@ div[id*="-Modal"] .email-form .form-group {
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.85);
   z-index: 10;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
