@@ -10,66 +10,67 @@
     </composite:interface>
 
     <composite:implementation>
-		<h:panelGroup rendered="#{configurationBean.sidebarTocVisible and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
-			<div id="widgetToc" class="widget">
-		    	<h:form id="widgetTocForm" prependId="false">
-		    		<!-- AJAX Loader -->
-					<div id="AJAXLoaderSidebarToc"></div>
-                    <div class="widget-toc-title">
+		<ui:fragment rendered="#{configurationBean.sidebarTocVisible and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+			<div id="widgetToc" class="widget widget-toc">
+		    	<h:form id="widgetTocForm" prependId="false">                    
+                    <!-- TITLE -->
+                    <div class="widget-toc__title">
                         <h3>#{msg.sidebarTocAnchor}</h3>
 
                         <!-- EXPAND ALL -->
-                        <h:panelGroup rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
-                            <ul class="widget-toc-title-expand">
-                                <li>
-                                    <h:commandLink styleClass="minus" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
-										<f:passThroughAttribute name="data-toggle" value="tooltip" />
-										<f:passThroughAttribute name="data-placement" value="top" />
-										<f:ajax render="widgetTocForm" />
-                                    </h:commandLink>
-                                </li>
-                                <li>
-                                    <h:commandLink styleClass="plus" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-										<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-										<f:passThroughAttribute name="data-toggle" value="tooltip" />
-										<f:passThroughAttribute name="data-placement" value="top" />
-                                        <f:ajax render="widgetTocForm" />
-                                    </h:commandLink>
-                                </li>
-                            </ul>
-                        </h:panelGroup>
+                        <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
+                            <div class="widget-toc__title-expand">
+                                <!-- LOADER -->
+                                <div class="widget-toc__loader"></div>
+                            
+                                <!-- CLOSE -->
+                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
+                                    <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="top" />
+                                    <f:ajax render="widgetTocForm" />
+                                </h:commandLink>
+                                <!-- OPEN -->
+                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
+                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="top" />
+                                    <f:ajax render="widgetTocForm" />
+                                </h:commandLink>
+                            </div>
+                        </ui:fragment>
                     </div>
 
-                    <div class="widget-toc-elem-wrapp">	            
-		            	<h:panelGroup rendered="#{configurationBean.sidebarTocTreeView}">
+                    <!-- ELEMENTS -->
+                    <div class="widget-toc__elements">
+                        <!-- OVERLAY -->
+                        <div class="widget-toc__overlay"></div>                        
+                    
+                        <!-- TREE VIEW -->
+		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>
 							    <ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
     								<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
-    									<h:panelGroup rendered="#{tocElement.visible}">
-    										<li class="widget-toc-elem #{tocElement.hasChild == true ? 'parent' : 'child' }" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * 16}px">
-    											<h:panelGroup rendered="#{tocElement.visible}">
+    									<ui:fragment rendered="#{tocElement.visible}">
+    										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}" data-iddoc="iddoc_#{tocElement.iddoc}" style="margin-left: #{tocElement.level * 15}px">
+    											<ui:fragment rendered="#{tocElement.visible}">
     												<!-- EXPAND -->
-    												<h:panelGroup rendered="#{tocElement.hasChild == true}">
-    													<div class="widget-toc-elem-expand">
-    														<h:commandLink styleClass="plus" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
+    												<ui:fragment rendered="#{tocElement.hasChild == true}">
+    													<div class="widget-toc__element-expand">
+    														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
 																<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 																<f:ajax render="@form" />
     														</h:commandLink>
-    														<h:commandLink styleClass="minus" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
+    														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
     															<i class="fa fa-minus-square-o" aria-hidden="true"></i>
     															<f:ajax render="@form" />
     														</h:commandLink>
     													</div>
-    												</h:panelGroup>
-                                                    
-                                                    <h:panelGroup rendered="#{tocElement.hasChild == false}">
-                                                        <div class="widget-toc-elem-expand"></div>
-                                                    </h:panelGroup>
+    												</ui:fragment>
     	
-    												<!-- LINK -->
-                                                    <h:panelGroup rendered="#{navigationHelper.currentView == 'readingmode'}">
-        												<div class="widget-toc-elem-link">
+    												<!-- READINGMODE LINK -->
+                                                    <ui:fragment rendered="#{navigationHelper.currentView == 'readingmode'}">
+        												<div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
         													<h:outputLink 
         														rendered="#{tocElement.label != null and tocElement.visible}" 
         														title="#{tocElement.label}"
@@ -78,42 +79,40 @@
         														#{tocElement.label}
         													</h:outputLink>
         												</div>
-                                                    </h:panelGroup>
-                                                    <h:panelGroup rendered="#{navigationHelper.currentView != 'readingmode'}">
-                                                        <div class="widget-toc-elem-link">
+                                                    </ui:fragment>
+                                                    
+                                                    <!-- LINK -->
+                                                    <ui:fragment rendered="#{navigationHelper.currentView != 'readingmode'}">
+                                                        <div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
                                                             <h:outputLink 
                                                                 rendered="#{tocElement.label != null and tocElement.visible}" 
                                                                 title="#{tocElement.label}"
-                                                                value="#{tocElement.url}"
-                                                                styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+                                                                value="#{tocElement.url}">
                                                                 #{tocElement.label}
                                                             </h:outputLink>
                                                         </div>
-                                                    </h:panelGroup>
+                                                    </ui:fragment>
     	
     												<!-- PAGE NUMBER -->
-    												<h:panelGroup rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
-    													<div class="widget-toc-elem-pagenumber">
-    														<h:outputText value="#{tocElement.pageNoLabel}" />
-    													</div>
-    												</h:panelGroup>
-                                                    
-                                                    <div class="clearfix"></div>
-    											</h:panelGroup>
+    												<ui:fragment rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
+    													<div class="widget-toc__element-pagenumber">#{tocElement.pageNoLabel}</div>
+    												</ui:fragment>
+    											</ui:fragment>
     										</li>
-    									</h:panelGroup>
+    									</ui:fragment>
     								</ui:repeat>
 								</ui:repeat>
 							</ul>
-						</h:panelGroup>	                
+						</ui:fragment>	                
 		
-		                <h:panelGroup rendered="#{!configurationBean.sidebarTocTreeView}">
+		                <!-- NON TREE VIEW -->
+                        <ui:fragment rendered="#{!configurationBean.sidebarTocTreeView}">
 							<ul>
 								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
 									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getViewForGroup(group)}">
-										<li class="widget-toc-elem" data-logid="#{tocElement.logId}" style="padding-left: #{tocElement.level * 16}px">
+										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }" data-logid="#{tocElement.logId}" style="margin-left: #{tocElement.level * 15}px">
 											<!-- LINK -->
-											<div class="widget-toc-elem-link">
+											<div class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}">
 												<h:outputLink rendered="#{tocElement.label != null}"
 													title="#{tocElement.label}" value="#{tocElement.url}"
 													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
@@ -121,39 +120,23 @@
 												</h:outputLink>
 											</div> 
                                             <!-- PAGE NUMBER --> 
-                                            <h:panelGroup rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
-												<div class="widget-toc-elem-pagenumber">
+                                            <ui:fragment rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
+												<div class="widget-toc__element-pagenumber">
 													<h:outputText value="#{tocElement.pageNoLabel}" />
 												</div>
-											</h:panelGroup>
-
-											<div class="clearfix"></div>
+											</ui:fragment>
 										</li>
 									</ui:repeat>
 								</ui:repeat>
 							</ul>
-						</h:panelGroup>
+						</ui:fragment>
 						
 		                <script type="text/javascript">																			
-    		                $( ".child" ).each( function() {
-    		                    if ( $( this ).next( ".widget-toc-elem" ).hasClass( "parent" )) {
-    		                        $( this ).addClass( "last-child" );
-    		                    }
-    						});
-    
-    						
-    		                $( ".widget-toc-title-expand a" ).on( "click", function() {
-    		                    $( "#AJAXLoaderSidebarToc" ).show();
-    						});
-    
-    						
-    		                $( ".widget-toc-elem-expand a" ).on( "click", function() {
-    							$( "#AJAXLoaderSidebarToc" ).show();
-    						});										
+							viewerJS.widgetToc.init();
 		                </script>
 		            </div>
 			    </h:form>
 		    </div>
-	    </h:panelGroup>
+	    </ui:fragment>
     </composite:implementation>
 </ui:composition>
