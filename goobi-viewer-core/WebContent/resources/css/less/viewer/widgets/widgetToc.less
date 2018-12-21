@@ -4,6 +4,7 @@
    ==============================================================*/
 /* WIDGET TOC */
 .widget-toc {
+	position: relative;
 	/* TITLE */
 	&__title {
 		display: flex;
@@ -75,6 +76,7 @@
 		display: none;
 	}
 	&__loader {
+		position: relative;
 		width: 16px;
 		height: 16px;
 		margin-top: 1px;
@@ -82,6 +84,7 @@
         background-repeat: no-repeat;
         background-position: center center;
         background-size: contain;
+        z-index: 11;
 	}
 	&__overlay {
 		position: absolute;

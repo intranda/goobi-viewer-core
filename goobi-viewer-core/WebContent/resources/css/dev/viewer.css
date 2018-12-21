@@ -7879,6 +7879,7 @@ div[id*="-Modal"] .email-form .form-group {
    ==============================================================*/
 /* WIDGET TOC */
 .widget-toc {
+  position: relative;
   /* TITLE */
   /* ELEMENTS */
   /* LOADING */
@@ -7950,6 +7951,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 .widget-toc__loader {
+  position: relative;
   width: 16px;
   height: 16px;
   margin-top: 1px;
@@ -7957,6 +7959,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  z-index: 11;
 }
 .widget-toc__overlay {
   position: absolute;

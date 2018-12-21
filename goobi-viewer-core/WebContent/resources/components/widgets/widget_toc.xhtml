@@ -12,6 +12,9 @@
     <composite:implementation>
 		<ui:fragment rendered="#{configurationBean.sidebarTocVisible and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
 			<div id="widgetToc" class="widget widget-toc">
+                <!-- OVERLAY -->
+                <div class="widget-toc__overlay"></div>
+                        
 		    	<h:form id="widgetTocForm" prependId="false">                    
                     <!-- TITLE -->
                     <div class="widget-toc__title">
@@ -42,10 +45,7 @@
                     </div>
 
                     <!-- ELEMENTS -->
-                    <div class="widget-toc__elements">
-                        <!-- OVERLAY -->
-                        <div class="widget-toc__overlay"></div>                        
-                    
+                    <div class="widget-toc__elements">                    
                         <!-- TREE VIEW -->
 		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>
