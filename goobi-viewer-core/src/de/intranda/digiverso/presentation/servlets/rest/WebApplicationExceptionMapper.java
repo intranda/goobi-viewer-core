@@ -32,6 +32,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -56,23 +57,38 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = Status.INTERNAL_SERVER_ERROR;
         Throwable e = eParent.getCause();
-        if (e == null && eParent instanceof NotFoundException) {
+        if(e == null) {
             e = eParent;
-            status = Status.NOT_FOUND;
         }
-        if (e instanceof ContentLibException) {
+        if (e instanceof NotFoundException) {
+            status = Status.NOT_FOUND;
+        } else if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
+        } else if(e instanceof RuntimeException) {
+            status = Status.INTERNAL_SERVER_ERROR;
+            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL() , e.getMessage());
+        } else if(e instanceof PresentationException) {
+            status = Status.INTERNAL_SERVER_ERROR;
+            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL() , e.getMessage());
+        } else {
+           //unknown error. Probably request error
+           status = Status.BAD_REQUEST;
         }
 
+        String mediaType = MediaType.APPLICATION_JSON;
+        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
+    }
+
+    /**
+     * @return
+     */
+    public String getRequestHeaders() {
         String headers = Collections.list(request.getHeaderNames()).stream()
         .collect(Collectors.toMap(headerName -> headerName, headerName -> request.getHeader(headerName)))
         .entrySet().stream()
         .map(entry -> entry.getKey() + ": " + entry.getValue())
         .collect(Collectors.joining("; "));
-        
-        logger.error("Error on request {}\n\t\t HEADERS: {}\n\t\t ERROR MESSAGE: {}", request.getRequestURL(), headers , (e != null ? e.getMessage() : eParent.getMessage()));
-        String mediaType = MediaType.APPLICATION_JSON;
-        return Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, true)).build();
+        return headers;
     }
 
 }
