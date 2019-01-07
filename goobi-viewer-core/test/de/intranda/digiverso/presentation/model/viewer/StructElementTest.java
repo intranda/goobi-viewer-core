@@ -187,4 +187,14 @@ public class StructElementTest extends AbstractSolrEnabledTest {
         StructElement element = new StructElement(1342710876421L);
         Assert.assertTrue(element.isHasChildren());
     }
+
+    /**
+     * @see StructElement#getGroupLabel(String,String)
+     * @verifies return altValue of no label was found
+     */
+    @Test
+    public void getGroupLabel_shouldReturnAltValueOfNoLabelWasFound() throws Exception {
+        StructElement element = new StructElement(1L);
+        Assert.assertEquals("alt", element.getGroupLabel("id10T", "alt"));
+    }
 }

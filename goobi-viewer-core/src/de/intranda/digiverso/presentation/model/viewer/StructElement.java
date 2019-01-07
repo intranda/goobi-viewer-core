@@ -212,8 +212,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     private SolrDocument getDocument() throws PresentationException, IndexUnreachableException {
         // logger.trace("getDocument(): {}", luceneId);
-        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
-                new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId).toString(), 1, null, null);
+        SolrDocumentList hits = DataManager.getInstance()
+                .getSearchIndex()
+                .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId).toString(), 1, null, null);
         if (!hits.isEmpty()) {
             exists = true;
             return hits.get(0);
@@ -272,8 +273,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
-            if (DataManager.getInstance().getSearchIndex().getHitCount(
-                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString()) > 0) {
+            if (DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString()) > 0) {
                 hasChildren = true;
             } else {
                 hasChildren = false;
@@ -296,8 +298,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         logger.trace("getChildren");
         List<StructElement> children = new ArrayList<>();
         try {
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
-                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fieldList);
+            SolrDocumentList hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fieldList);
             if (hits.isEmpty()) {
                 hasChildren = false;
             } else {
@@ -348,18 +351,22 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns the label for the group with the given identifier.
      *
-     * @param groupIdentifier
-     * @return
+     * @param groupIdentifier Group record identifier
+     * @param altValue Message key to return if no label was found
+     * @return label value for the group record; given message key if none found
      * @throws IndexUnreachableException
+     * @should return altValue of no label was found
      */
-    public String getGroupLabel(String groupIdentifier) throws IndexUnreachableException {
+    public String getGroupLabel(String groupIdentifier, String altValue) throws IndexUnreachableException {
         if (groupIdentifier == null) {
             throw new IllegalArgumentException("groupIdentifier may not be null");
         }
+        
         if (groupLabels.get(groupIdentifier) == null) {
             try {
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + groupIdentifier,
-                        Collections.singletonList(SolrConstants.LABEL));
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":" + groupIdentifier, Collections.singletonList(SolrConstants.LABEL));
                 if (doc != null) {
                     String label = (String) doc.getFieldValue(SolrConstants.LABEL);
                     if (label != null) {
@@ -369,9 +376,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
-            // If label doesn't exist or there has been an error while retrieving it, use the identifier.
-            if (groupLabels.get(groupIdentifier) == null) {
-                groupLabels.put(groupIdentifier, groupIdentifier);
+            // If label doesn't exist or there has been an error while retrieving it, use the given alternative value
+            if (groupLabels.get(groupIdentifier) == null && StringUtils.isNotEmpty(altValue)) {
+                groupLabels.put(groupIdentifier, altValue);
             }
         }
 
@@ -420,7 +427,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param width
      * @param height
      * @return Image URL
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      * @should construct url correctly
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
@@ -512,8 +519,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isAltoAvailable() throws IndexUnreachableException, PresentationException {
         if (altoAvailable == null) {
-            altoAvailable = DataManager.getInstance().getSearchIndex().getHitCount(
-                    SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.FILENAME_ALTO + ":*") > 0;
+            altoAvailable = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.FILENAME_ALTO + ":*") > 0;
         }
 
         return altoAvailable;
@@ -528,8 +536,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isNerAvailable() throws IndexUnreachableException, PresentationException {
         if (nerAvailable == null) {
-            nerAvailable = DataManager.getInstance().getSearchIndex().getHitCount(
-                    SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_person" + SolrConstants._UNTOKENIZED + ":* OR NE_location"
+            nerAvailable = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_person" + SolrConstants._UNTOKENIZED + ":* OR NE_location"
                             + SolrConstants._UNTOKENIZED + ":* OR NE_corporation" + SolrConstants._UNTOKENIZED + ":*)") > 0;
         }
 
@@ -625,8 +634,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             throw new IllegalArgumentException("field may not be null");
         }
         if (anchor) {
-            SolrDocument docParent = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), Collections.singletonList(field));
+            SolrDocument docParent = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
+                            Collections.singletonList(field));
             if (docParent == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
@@ -636,7 +647,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return null;
     }
-    
 
     /**
      *
@@ -652,8 +662,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (anchor) {
             List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
 
-            SolrDocument docVolume = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields, sortFields);
+            SolrDocument docVolume = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
