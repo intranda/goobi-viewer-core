@@ -104,7 +104,7 @@ public class ContentBean implements Serializable {
                 // getPageUserGeneratedContent(page).generateDisplayCoordinates(ugcContent);
             }
         }
-        logger.debug("Loaded {} user generated contents for page {}", userGeneratedContentsForDisplay.size(), currentPage);
+        logger.trace("Loaded {} user generated contents for page {}", userGeneratedContentsForDisplay.size(), currentPage);
     }
 
     public List<List<String>> getCurrentUGCCoords(PhysicalElement page) throws IndexUnreachableException, PresentationException {

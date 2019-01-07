@@ -1449,7 +1449,7 @@ public class SearchBean implements SearchInterface, Serializable {
         for (SearchFilter filter : getSearchFilters()) {
             if (filter.getLabel().equals(searchFilterLabel)) {
                 this.currentSearchFilter = filter;
-                logger.debug("currentSearchFilter: {}", this.currentSearchFilter.getField());
+                logger.trace("currentSearchFilter: {}", this.currentSearchFilter.getField());
                 break;
             }
         }

@@ -637,7 +637,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException {
-        logger.debug("setCurrentImageNo: {}", currentImageNo);
+        logger.trace("setCurrentImageNo: {}", currentImageNo);
         if (pageLoader != null) {
             if (currentImageNo < pageLoader.getFirstPageOrder()) {
                 currentImageNo = pageLoader.getFirstPageOrder();

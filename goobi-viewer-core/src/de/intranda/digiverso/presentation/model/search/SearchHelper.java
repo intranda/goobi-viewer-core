@@ -343,7 +343,7 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
         finalQuery = buildFinalQuery(finalQuery, aggregateHits);
-        logger.debug("getBrowseElement final query: {}", finalQuery);
+        logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale)
                 : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale, request);

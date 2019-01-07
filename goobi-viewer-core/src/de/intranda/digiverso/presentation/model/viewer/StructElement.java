@@ -361,7 +361,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (groupIdentifier == null) {
             throw new IllegalArgumentException("groupIdentifier may not be null");
         }
-        
+
         if (groupLabels.get(groupIdentifier) == null) {
             try {
                 SolrDocument doc = DataManager.getInstance()
@@ -639,7 +639,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
                             Collections.singletonList(field));
             if (docParent == null) {
-                logger.warn("Anchor has no child element: Cannot determine appropriate value");
+                logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
             } else {
                 return SolrSearchIndex.getSingleFieldStringValue(docParent, field);
             }

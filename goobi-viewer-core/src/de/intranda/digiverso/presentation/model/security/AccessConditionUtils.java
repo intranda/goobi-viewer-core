@@ -657,7 +657,7 @@ public class AccessConditionUtils {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
         // If OPENACCESS is the only condition, allow immediately
         if (requiredAccessConditions.isEmpty()) {
-            logger.debug("No required access conditions given, access granted.");
+            logger.trace("No required access conditions given, access granted.");
             return true;
         }
         if (requiredAccessConditions.size() == 1 && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)

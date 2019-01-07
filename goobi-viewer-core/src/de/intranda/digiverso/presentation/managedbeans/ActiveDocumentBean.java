@@ -182,7 +182,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void reset() {
         synchronized (this) {
-            logger.debug("reset (thread {})", Thread.currentThread().getId());
+            logger.trace("reset (thread {})", Thread.currentThread().getId());
             viewManager = null;
             overviewPage = null;
             topDocumentIddoc = 0;
@@ -238,7 +238,7 @@ public class ActiveDocumentBean implements Serializable {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
             }
-            logger.debug("update(): {} (thread {})", topDocumentIddoc, Thread.currentThread().getId());
+            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = false;
@@ -316,10 +316,16 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("Find doc by LOGID: {}", logid);
                 new StructElement(topDocumentIddoc);
                 StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.LOGID).append(':').append(logid).append(" AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(
-                        viewManager.getPi());
-                SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
-                        Collections.singletonList(SolrConstants.IDDOC));
+                sbQuery.append(SolrConstants.LOGID)
+                        .append(':')
+                        .append(logid)
+                        .append(" AND ")
+                        .append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(viewManager.getPi());
+                SolrDocumentList docList = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(sbQuery.toString(), 1, null, Collections.singletonList(SolrConstants.IDDOC));
                 long subElementIddoc = 0;
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
@@ -501,7 +507,7 @@ public class ActiveDocumentBean implements Serializable {
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
             setLogid("");
-            logger.debug("imageToShow: {}", this.imageToShow);
+            logger.trace("imageToShow: {}", this.imageToShow);
         }
     }
 

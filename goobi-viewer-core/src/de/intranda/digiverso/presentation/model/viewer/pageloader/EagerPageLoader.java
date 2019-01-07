@@ -185,7 +185,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         }
 
         String pi = topElement.getPi();
-        logger.debug("Loading pages for '{}'...", pi);
+        logger.trace("Loading pages for '{}'...", pi);
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
         StringBuilder sbQuery = new StringBuilder();
@@ -306,26 +306,9 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
             if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
                 pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
             }
-
-            //            // Eager load user generated contents from the DB
-            //                try {
-            //                    IUserGeneratedContent latestUGC = DataManager.getInstance().getCrowdsourcingDao().getLatestUserGeneratedContentForPage(pi, order);
-            //                    if (latestUGC != null && latestUGC.isPageCompleted()) {
-            //                        for (IUserGeneratedContent ugcContent : DataManager.getInstance().getCrowdsourcingDao().getUserGeneratedContents(pi, order,
-            //                                null, null)) {
-            //                            if (pe.getUserGeneratedContentsForDisplay() == null) {
-            //                                pe.setUserGeneratedContentsForDisplay(new ArrayList<IUserGeneratedContent>());
-            //                            }
-            //                            pe.getUserGeneratedContentsForDisplay().add(ugcContent);
-            //                        }
-            //                        logger.debug("Loaded " + pe.getUserGeneratedContentsForDisplay().size() + " user generated contents for page " + order);
-            //                    }
-            //                } catch (ModuleMissingException e) {
-            //                    logger.trace(e.getMessage());
-            //                }
         }
 
-        logger.debug("Loaded {} pages.", ret.size());
+        logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
         return ret;
     }
 }
