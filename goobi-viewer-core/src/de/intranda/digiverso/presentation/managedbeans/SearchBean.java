@@ -154,7 +154,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady;
     private volatile FutureTask<Boolean> downloadComplete;
-    
+
     /**
      * Whether to only display the current search parameters rather than the full input mask
      */
@@ -209,6 +209,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * 
      * @return Target URL
      */
+    @Override
     public String searchSimple() {
         return searchSimple(true, true);
     }
@@ -265,6 +266,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return searchSimple(true, false);
     }
 
+    @Override
     public String searchAdvanced() {
         return searchAdvanced(true);
     }
@@ -320,7 +322,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 return "pretty:" + PageType.search.name();
         }
     }
-    
 
     /**
      * Alias for {@link #resetSearchAction()}
@@ -472,8 +473,9 @@ public class SearchBean implements SearchInterface, Serializable {
                         sbInfo.append(' ').append(Helper.getTranslation("searchOperator_OR", BeanUtils.getLocale())).append("\n<br />");
                         break;
                     default:
-                        sbInfo.append(' ').append(Helper.getTranslation("searchOperator_AND", BeanUtils.getLocale()).toUpperCase()).append(
-                                "\n<br />");
+                        sbInfo.append(' ')
+                                .append(Helper.getTranslation("searchOperator_AND", BeanUtils.getLocale()).toUpperCase())
+                                .append("\n<br />");
                         break;
                 }
             }
@@ -623,6 +625,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @return the activeSearchType
      */
+    @Override
     public int getActiveSearchType() {
         return activeSearchType;
     }
@@ -630,6 +633,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @param activeSearchType the activeSearchType to set
      */
+    @Override
     public void setActiveSearchType(int activeSearchType) {
         logger.trace("setActiveSearchType: {}", activeSearchType);
         if (this.activeSearchType != activeSearchType) {
@@ -670,6 +674,7 @@ public class SearchBean implements SearchInterface, Serializable {
         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
     }
 
+    @Override
     public List<String> autocomplete(String suggest) throws IndexUnreachableException {
         logger.trace("autocomplete: {}", suggest);
         List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentFacets());
@@ -678,6 +683,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return result;
     }
 
+    @Override
     public boolean isSearchInDcFlag() {
         for (FacetItem item : facets.getCurrentFacets()) {
             if (item.getField().equals(SolrConstants.DC)) {
@@ -709,6 +715,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @return the searchString
      */
+    @Override
     public String getSearchString() {
         return guiSearchString;
     }
@@ -740,6 +747,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param searchString
      */
+    @Override
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
@@ -932,8 +940,11 @@ public class SearchBean implements SearchInterface, Serializable {
                         sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(").append(sbInner.toString()).append(
-                                ')');
+                        sbOuter.append(") OR ")
+                                .append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)
+                                .append(":(")
+                                .append(sbInner.toString())
+                                .append(')');
                     } else {
                         // Specific filter selected
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
@@ -948,10 +959,14 @@ public class SearchBean implements SearchInterface, Serializable {
                                     break;
                                 case SolrConstants.OVERVIEWPAGE:
                                     if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
-                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString()).append(
-                                                ") OR ");
-                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(").append(sbInner.toString()).append(
-                                                ')');
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION)
+                                                .append(":(")
+                                                .append(sbInner.toString())
+                                                .append(") OR ");
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)
+                                                .append(":(")
+                                                .append(sbInner.toString())
+                                                .append(')');
                                     }
                                     break;
                                 default:
@@ -1033,6 +1048,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return s;
     }
 
+    @Override
     public String getExactSearchString() {
         if (searchString.length() == 0) {
             return "-";
@@ -1101,6 +1117,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @param sortString the sortString to set
      */
+    @Override
     public void setSortString(String sortString) {
         if ("-".equals(sortString)) {
             this.sortString = "";
@@ -1116,6 +1133,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @return the sortString
      */
+    @Override
     public String getSortString() {
         if (StringUtils.isEmpty(sortString)) {
             return "-";
@@ -1223,6 +1241,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Paginator methods
      */
 
+    @Override
     public int getCurrentPage() {
         return currentPage;
     }
@@ -1238,6 +1257,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @return the hitsCount
      */
+    @Override
     public long getHitsCount() {
         if (currentSearch != null) {
             // logger.trace("Hits count = {}", currentSearch.getHitsCount());
@@ -1398,10 +1418,12 @@ public class SearchBean implements SearchInterface, Serializable {
         return null;
     }
 
+    @Override
     public List<SearchFilter> getSearchFilters() {
         return DataManager.getInstance().getConfiguration().getSearchFilters();
     }
 
+    @Override
     public String getCurrentSearchFilterString() {
         if (currentSearchFilter != null) {
             return currentSearchFilter.getLabel();
@@ -1421,6 +1443,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param searchFilterLabel
      */
+    @Override
     public void setCurrentSearchFilterString(String searchFilterLabel) {
         logger.trace("setCurrentSearchFilterString: {}", searchFilterLabel);
         for (SearchFilter filter : getSearchFilters()) {
@@ -1500,8 +1523,10 @@ public class SearchBean implements SearchInterface, Serializable {
         List<String> values = new ArrayList<>();
 
         for (String facetField : facetFields) {
-            String matchingFacet =
-                    facets.stream().filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":")).findFirst().orElse("");
+            String matchingFacet = facets.stream()
+                    .filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":"))
+                    .findFirst()
+                    .orElse("");
             if (StringUtils.isNotBlank(matchingFacet)) {
                 int separatorIndex = matchingFacet.indexOf(":");
                 if (separatorIndex > 0 && separatorIndex < matchingFacet.length() - 1) {
@@ -1710,7 +1735,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Returns index field names allowed for advanced search use. TODO from config
+     * Returns index field names allowed for advanced search use.
      *
      * @return
      */
@@ -1969,8 +1994,9 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             facesContext.getExternalContext().responseReset();
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            facesContext.getExternalContext().setResponseHeader("Content-Disposition",
-                    "attachment;filename=\"viewer_search_" + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+            facesContext.getExternalContext()
+                    .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
+                            + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
@@ -2017,6 +2043,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * @return the facets
      */
+    @Override
     public SearchFacets getFacets() {
         return facets;
     }
@@ -2059,6 +2086,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
     }
 
+    @Override
     public int getLastPage() {
         if (currentSearch != null) {
             return currentSearch.getLastPage(hitsPerPage);
@@ -2077,6 +2105,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * 
      * @return "search" or "searchadvanced", depending on the activeSearchType value
      */
+    @Override
     public String getCurrentSearchUrlRoot() {
         switch (activeSearchType) {
             case 1:
@@ -2121,10 +2150,10 @@ public class SearchBean implements SearchInterface, Serializable {
             URI uri = URI.create(sb.toString());
             uri = getParameterPath(uri);
             return uri.toString() + "/";
-        } else {
-            //fallback
-            return "pretty:search5";
         }
+
+        //fallback
+        return "pretty:search5";
     }
 
     private URI getParameterPath(URI basePath) {
@@ -2137,7 +2166,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return basePath;
     }
 
-    private void redirectToURL(String url) {
+    private static void redirectToURL(String url) {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
             context.getExternalContext().redirect(url);
@@ -2161,14 +2190,14 @@ public class SearchBean implements SearchInterface, Serializable {
     public boolean isExplicitSearchPerformed() {
         return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
     }
-    
+
     /**
      * @return the showReducedSearchOptions
      */
     public boolean isShowReducedSearchOptions() {
         return showReducedSearchOptions;
     }
-    
+
     /**
      * @param showReducedSearchOptions the showReducedSearchOptions to set
      */
