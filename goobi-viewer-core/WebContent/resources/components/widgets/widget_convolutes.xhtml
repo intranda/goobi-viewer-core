@@ -18,8 +18,7 @@
                             <ui:repeat var="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().toArray()}">
                                 <li>
                                     <a href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/" target="_blank">
-                                        <!-- <h:outputText value="#{activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership.value)}" /> -->
-                                        #{msg.convolute}
+                                        <h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership.value, 'convolute')]}" />
                                     </a>
                                 </li>
                             </ui:repeat>
