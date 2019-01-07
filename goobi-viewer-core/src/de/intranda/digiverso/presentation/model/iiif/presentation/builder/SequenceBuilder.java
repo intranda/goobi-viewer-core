@@ -236,7 +236,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     try {
                         imageInfo = imageDelivery.getImages().getImageInformation(page);
                         resource.setService(imageInfo);
-                    } catch (ContentLibException e) {
+                    } catch (NoClassDefFoundError | ContentLibException e) {
                         logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
                         //                        logger.error(e.getMessage(), e);
                         resource = new ImageContent(new URI(thumbnailUrl), true);
