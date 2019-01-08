@@ -488,7 +488,12 @@ public class AdminBean implements Serializable {
      *
      */
     public void saveUserRoleAction() throws DAOException {
-        logger.debug(getCurrentUserRole().getUserGroup() + ", " + getCurrentUserRole().getUser() + ", " + getCurrentUserRole().getRole());
+        if (currentUserRole == null) {
+            logger.trace("currentUserRole not set");
+            return;
+        }
+        
+        logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
         if (getCurrentUserRole().getId() != null) {
             // existing
             if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
@@ -498,7 +503,7 @@ public class AdminBean implements Serializable {
             }
         } else {
             // new
-            if (DataManager.getInstance().getDao().addUserRole(getCurrentUserRole())) {
+            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
                 Messages.info("userGroup_memberAddSuccess");
             } else {
                 Messages.error("userGroup_memberAddFailure");

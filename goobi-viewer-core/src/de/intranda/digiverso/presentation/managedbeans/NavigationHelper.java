@@ -43,6 +43,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1106,23 +1107,26 @@ public class NavigationHelper implements Serializable {
      *
      * @param msgKey
      * @param params One or more parameter values to replace the placeholders.
-     * @return
+     * @return Translated, escaped key with parameter replacements
+     * @should escape quotation marks
      */
     public String getTranslationWithParams(String msgKey, String... params) {
-        String msg = Helper.getTranslation(msgKey, null);
-        if (params != null) {
-            for (int i = 0; i < params.length; ++i) {
-                msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
-            }
-        }
-
-        return msg;
+        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
+        
+        return StringEscapeUtils.escapeJava(msg);
     }
 
+    /**
+     * 
+     * @param msgKey
+     * @param language
+     * @return Translated, escaped key
+     * @should escape quotation marks
+     */
     public String getTranslation(String msgKey, String language) {
-        String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
+        String msg = ViewerResourceBundle.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
 
-        return msg;
+        return StringEscapeUtils.escapeJava(msg);
     }
 
     /**
@@ -1134,14 +1138,14 @@ public class NavigationHelper implements Serializable {
         if (this.currentPage == null) {
             return false;
         }
-        
+
         switch (this.currentPage) {
             case SEARCH_PAGE:
             case TAGS_PAGE:
             case SEARCH_TERM_LIST_PAGE:
                 return true;
         }
-        
+
         return false;
     }
 
