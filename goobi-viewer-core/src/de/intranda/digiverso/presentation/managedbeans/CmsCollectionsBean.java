@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -29,7 +28,6 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +37,12 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.Translation;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 
 /**
  * Bean handling cms settings for collections
@@ -156,10 +155,38 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
+    /**
+     * @param collection
+     */
+    private void addToCollectionViews(CMSCollection collection) {
+        CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
+        if(collectionView != null) {
+            collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
+        }
+        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
+    }
+    
+
+    /**
+     * @param collection
+     */
+    private void removeFromCollectionViews(CMSCollection collection) {
+        CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
+        if(collectionView != null) {
+            collectionView.removeCollectionInfo(collection.getSolrFieldValue());
+        }
+        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
+        
+    }
+
     public void deleteCollection(CMSCollection collection) throws DAOException {
         DataManager.getInstance().getDao().deleteCMSCollection(collection);
+        removeFromCollectionViews(collection);
         updateCollections();
     }
+
 
     public String editCollection(CMSCollection collection) {
         setCurrentCollection(collection);
@@ -180,6 +207,8 @@ public class CmsCollectionsBean implements Serializable {
         if (getCurrentCollection() != null) {
             DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
             updateCollections();
+            addToCollectionViews(getCurrentCollection());
+
         }
         return "pretty:adminCmsCollections";
     }

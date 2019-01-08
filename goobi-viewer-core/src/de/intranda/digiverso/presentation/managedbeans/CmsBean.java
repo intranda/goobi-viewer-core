@@ -35,7 +35,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -1095,10 +1094,12 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Get the {@link CollectionView} of the given content item in the given page. If the view hasn't been initialized yet, do so and 
+     * add it to the Bean's CollectionView map
      * 
-     * @param id
-     * @param page
-     * @return
+     * @param id    The ContentItemId of the ContentItem to look for
+     * @param page  The page containing the collection ContentItem
+     * @return  The CollectionView or null if no matching ContentItem was found
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1114,7 +1115,27 @@ public class CmsBean implements Serializable {
         }
         return collection;
     }
+    
+    /**
+     * get a list of all {@link CollectionView}s with the given solr field which are already loaded via {@link #getCollection(CMSPage)}
+     * or {@link #getCollection(String, CMSPage)
+     * 
+     * @param field     The solr field the colleciton is based on
+     * @return
+     */
+    public List<CollectionView> getCollections(String field) {
+        return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());
+    }
 
+    /**
+     * Get the first available {@link CollectionView} from any {@link CMSContentItem} of the given {@link CMSPage page}. 
+     * The CollectionView is added to the Bean's internal collection map
+     * 
+     * @param page  The CMSPage to provide the collection
+     * @return  The CollectionView or null if none was found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
         Optional<CMSContentItem> collectionItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
