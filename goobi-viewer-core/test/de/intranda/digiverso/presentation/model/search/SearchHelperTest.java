@@ -851,17 +851,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void applyHighlightingToPhrase_shouldApplyHighlightingForAllTerms() throws Exception {
-        String phrase = "FOO BAR Foo Bar foo bar";
-        Set<String> terms = new HashSet<>();
-        terms.add("foo");
-        terms.add("bar");
-        String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
-        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
+        {
+            String phrase = "FOO BAR Foo Bar foo bar";
+            Set<String> terms = new HashSet<>();
+            terms.add("foo");
+            terms.add("bar");
+            String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+            Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                    + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                    + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                    + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                    + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                    + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase);
+        }
+        {
+            String phrase = "Γ qu 4";
+            Set<String> terms = new HashSet<>();
+            terms.add("Γ qu 4");
+            String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+            Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Γ qu 4" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
+                    highlightedPhrase);
+        }
     }
 
     /**
@@ -988,5 +998,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateDocstrctWhitelistFilterSuffix_shouldReturnEmptyStringIfOnlyDocstructIsAsterisk() throws Exception {
         Assert.assertEquals("", SearchHelper.generateDocstrctWhitelistFilterSuffix(Collections.singletonList("*")));
+    }
+
+    /**
+     * @see SearchHelper#cleanUpSearchTerm(String)
+     * @verifies remove illegal chars correctly
+     */
+    @Test
+    public void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
+        Assert.assertEquals("a", SearchHelper.cleanUpSearchTerm("(a)"));
+    }
+
+    /**
+     * @see SearchHelper#cleanUpSearchTerm(String)
+     * @verifies preserve truncation
+     */
+    @Test
+    public void cleanUpSearchTerm_shouldPreserveTruncation() throws Exception {
+        Assert.assertEquals("*a*", SearchHelper.cleanUpSearchTerm("*a*"));
+    }
+
+    /**
+     * @see SearchHelper#cleanUpSearchTerm(String)
+     * @verifies preserve negation
+     */
+    @Test
+    public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
+        Assert.assertEquals("-a", SearchHelper.cleanUpSearchTerm("-a"));
     }
 }

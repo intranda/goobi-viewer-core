@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -555,6 +556,48 @@ public class SearchFacets {
             fieldItem.setLink(field + ":" + updateValue);
             logger.trace("Facet item updated: {}", fieldItem.getLink());
         }
+    }
+
+    /**
+     * @param facetString
+     * @param hierarchicalDrillDownFields
+     * @return
+     */
+    public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
+        List<String> facets = Arrays.asList(StringUtils.split(facetString, ";;"));
+        List<String> values = new ArrayList<>();
+
+        for (String facetField : facetFields) {
+            String matchingFacet = facets.stream()
+                    .filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":"))
+                    .findFirst()
+                    .orElse("");
+            if (StringUtils.isNotBlank(matchingFacet)) {
+                int separatorIndex = matchingFacet.indexOf(":");
+                if (separatorIndex > 0 && separatorIndex < matchingFacet.length() - 1) {
+                    String value = matchingFacet.substring(separatorIndex + 1);
+                    values.add(value);
+                }
+            }
+        }
+        return values;
+    }
+
+    /**
+     * @param facet
+     * @return
+     */
+    public static List<String> splitHierarchicalFacet(String facet) {
+        List<String> facets = new ArrayList<>();
+        while (facet.contains(".")) {
+            facets.add(facet);
+            facet = facet.substring(0, facet.lastIndexOf("."));
+        }
+        if (StringUtils.isNotBlank(facet)) {
+            facets.add(facet);
+        }
+        Collections.reverse(facets);
+        return facets;
     }
 
     /**
