@@ -1105,27 +1105,30 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      *
-     * @param msgKey
+     * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.
      * @return Translated, escaped key with parameter replacements
      * @should escape quotation marks
      */
     public String getTranslationWithParams(String msgKey, String... params) {
         String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
-        
+
+        // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
     }
 
     /**
+     * Returns a simple translation for the given language (or current language, if none given).
      * 
-     * @param msgKey
-     * @param language
+     * @param msgKey Message key to translate
+     * @param language Optional desired language
      * @return Translated, escaped key
      * @should escape quotation marks
      */
     public String getTranslation(String msgKey, String language) {
         String msg = ViewerResourceBundle.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
 
+        // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
     }
 
