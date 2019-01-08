@@ -778,8 +778,10 @@ public class CollectionView {
     }
 
     /**
-     * @param solrFieldValue
-     * @param collection
+     * Set the  {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
+     * 
+     * @param name  The collection name
+     * @param info  The info to apply
      */
     public void setCollectionInfo(String name, BrowseElementInfo info) {
         completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
@@ -788,8 +790,9 @@ public class CollectionView {
     
 
     /**
-     * @param solrFieldValue
-     * @param collection
+     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}  
+     * 
+     * @param name    The collection name
      */
     public void removeCollectionInfo(String name) {
         completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
