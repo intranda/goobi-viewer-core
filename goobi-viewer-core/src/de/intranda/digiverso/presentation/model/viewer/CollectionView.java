@@ -776,4 +776,31 @@ public class CollectionView {
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
     }
+
+    /**
+     * @param solrFieldValue
+     * @param collection
+     */
+    public void setCollectionInfo(String name, BrowseElementInfo info) {
+        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
+        .ifPresent(ele -> ele.setInfo(info));
+    }
+    
+
+    /**
+     * @param solrFieldValue
+     * @param collection
+     */
+    public void removeCollectionInfo(String name) {
+        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
+        .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+    }
+    
+    /**
+     * @return the field
+     */
+    public String getField() {
+        return field;
+    }
+
 }

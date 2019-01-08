@@ -1114,6 +1114,16 @@ public class CmsBean implements Serializable {
         }
         return collection;
     }
+    
+    /**
+     * get a list of all collection views with
+     * 
+     * @param collectionName
+     * @return
+     */
+    public List<CollectionView> getCollections(String field) {
+        return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());
+    }
 
     public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
         Optional<CMSContentItem> collectionItem =
