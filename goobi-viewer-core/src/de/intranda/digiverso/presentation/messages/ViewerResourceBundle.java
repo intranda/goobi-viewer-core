@@ -226,11 +226,27 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale
      * @param params One or more parameter values to replace the placeholders
      * @return
-     * @should replace parameters correctly
      */
-    public static String getTranslationWithParameters(final String key, Locale locale, String... params) {
+    public static String getTranslationWithParameters(final String key, final Locale locale, final String... params) {
         String ret = getTranslation(key, locale);
         if (params != null) {
+            ret = replaceParameters(ret, params);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param msg
+     * @param params
+     * @return
+     * @should return null if msg is null
+     * @should replace parameters correctly
+     */
+    static String replaceParameters(final String msg, String... params) {
+        String ret = msg;
+        if (ret != null && params != null) {
             for (int i = 0; i < params.length; ++i) {
                 ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
             }
@@ -440,7 +456,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (allLocales == null) {
 
             checkAndLoadDefaultResourceBundles();
-            Set<Locale> locales = new HashSet<Locale>();
+            Set<Locale> locales = new HashSet<>();
             locales.addAll(defaultBundles.keySet());
             locales.addAll(localBundles.keySet());
             allLocales = new ArrayList<>(locales);

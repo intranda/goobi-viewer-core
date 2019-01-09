@@ -21,11 +21,20 @@ import org.junit.Test;
 public class ViewerResourceBundleTest {
 
     /**
-     * @see ViewerResourceBundle#getTranslationWithParameters(String,Locale,String[])
+     * @see ViewerResourceBundle#replaceParameters(String,String[])
+     * @verifies return null if msg is null
+     */
+    @Test
+    public void replaceParameters_shouldReturnNullIfMsgIsNull() throws Exception {
+        Assert.assertNull(ViewerResourceBundle.replaceParameters(null, "one", "two", "three"));
+    }
+
+    /**
+     * @see ViewerResourceBundle#replaceParameters(String,String[])
      * @verifies replace parameters correctly
      */
     @Test
-    public void getTranslationWithParameters_shouldReplaceParametersCorrectly() throws Exception {
-        Assert.assertEquals("one two three", ViewerResourceBundle.getTranslationWithParameters("{0} {1} {2}", null, "one", "two", "three"));
+    public void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
+        Assert.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", "one", "two", "three"));
     }
 }
