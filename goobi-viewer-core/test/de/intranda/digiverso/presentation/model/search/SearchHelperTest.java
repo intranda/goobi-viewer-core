@@ -580,9 +580,20 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, true, false, false);
         Assert.assertNotNull(suffix);
         Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
+    }
+
+    /**
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean)
+     * @verifies not add static suffix if not requested
+     */
+    @Test
+    public void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
+        String suffix = SearchHelper.getAllSuffixes(null, false, false, false);
+        Assert.assertNotNull(suffix);
+        Assert.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
 
     /**

@@ -250,7 +250,7 @@ public class RssResource {
      * @param feed
      * @return
      */
-    private Channel createFeed(SyndFeed feed) {
+    private static Channel createFeed(SyndFeed feed) {
         Channel rss = new Channel();
         rss.setCopyright(feed.getCopyright());
         rss.setDescription(feed.getDescription());
@@ -307,11 +307,14 @@ public class RssResource {
         }
 
         if (StringUtils.isNotBlank(partnerId)) {
-            sbQuery.append(" AND ").append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()).append(':').append(
-                    partnerId.trim());
+            sbQuery.append(" AND ")
+                    .append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                    .append(':')
+                    .append(partnerId.trim());
         }
 
-        sbQuery.append(SearchHelper.getAllSuffixes(servletRequest, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+        sbQuery.append(
+                SearchHelper.getAllSuffixes(servletRequest, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
 
         return sbQuery.toString();
     }

@@ -259,19 +259,22 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
+     * @param request
+     * @param addStaticQuerySuffix
      * @param addCollectionBlacklistSuffix
      * @param addDiscriminatorValueSuffix
      * @return
      * @throws IndexUnreachableException
      * @should add static suffix
+     * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addCollectionBlacklistSuffix, boolean addDiscriminatorValueSuffix)
-            throws IndexUnreachableException {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder();
-        String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
-        if (StringUtils.isNotBlank(staticSuffix)) {
+        if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
+            String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
             if (staticSuffix.charAt(0) != ' ') {
                 sbSuffix.append(' ');
             }
@@ -304,7 +307,7 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(null, true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -315,7 +318,7 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      */
     public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, false, addDiscriminatorValueSuffix);
+        return getAllSuffixes(null, true, false, addDiscriminatorValueSuffix);
     }
 
     /**

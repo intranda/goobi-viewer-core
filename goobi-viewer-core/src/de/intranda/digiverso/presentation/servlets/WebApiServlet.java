@@ -204,7 +204,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     String query;
                     try {
                         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-                        query = new StringBuilder().append(queryParameter[0]).append(SearchHelper.getAllSuffixes(request, true, false)).toString();
+                        query = new StringBuilder().append(queryParameter[0])
+                                .append(SearchHelper.getAllSuffixes(request, true, true, false))
+                                .toString();
                     } catch (IndexUnreachableException e) {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -307,7 +309,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     String query;
                     try {
                         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-                        query = new StringBuilder().append(queryParameter[0]).append(SearchHelper.getAllSuffixes(request, true, false)).toString();
+                        query = new StringBuilder().append(queryParameter[0])
+                                .append(SearchHelper.getAllSuffixes(request, true, true, false))
+                                .toString();
                     } catch (IndexUnreachableException e) {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

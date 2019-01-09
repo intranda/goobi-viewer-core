@@ -47,7 +47,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 public class RssResolver extends HttpServlet {
     private static final long serialVersionUID = -8188360280492927624L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ContentServerWrapperServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(RssResolver.class);
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -115,7 +115,7 @@ public class RssResolver extends HttpServlet {
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
-                                query + SearchHelper.getAllSuffixes(request, true,
+                                query + SearchHelper.getAllSuffixes(request, true, true,
                                         DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
                                 language),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));
