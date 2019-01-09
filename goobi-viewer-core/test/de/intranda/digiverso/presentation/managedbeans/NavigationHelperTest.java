@@ -222,4 +222,7 @@ public class NavigationHelperTest {
         nh.setSubThemeDiscriminatorValue("dValue");
         Assert.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
+
+
+
 }

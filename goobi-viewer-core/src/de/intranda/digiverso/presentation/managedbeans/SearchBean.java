@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -888,7 +887,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 List<String> preparedTerms = new ArrayList<>(termsSplit.length);
                 for (int i = 0; i < termsSplit.length; ++i) {
                     String term = termsSplit[i].trim();
-                    String unescapedTerm = cleanUpSearchTerm(term);
+                    String unescapedTerm = SearchHelper.cleanUpSearchTerm(term);
                     term = ClientUtils.escapeQueryChars(unescapedTerm);
                     term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                     if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
@@ -902,7 +901,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             // Two terms separated by OR: remove previous term and add it together with the next term as a group
                             int previousIndex = preparedTerms.size() - 1;
                             String prevTerm = preparedTerms.get(previousIndex);
-                            String unescapedNextTerm = cleanUpSearchTerm(termsSplit[i + 1]);
+                            String unescapedNextTerm = SearchHelper.cleanUpSearchTerm(termsSplit[i + 1]);
                             String nextTerm = ClientUtils.escapeQueryChars(unescapedNextTerm);
                             nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped runcation
                             preparedTerms.remove(previousIndex);
@@ -1006,46 +1005,6 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             guiSearchString = "";
         }
-    }
-
-    /**
-     * Removes illegal characters from an individual search term. Do not use on whole queries!
-     *
-     * @param s The term to clean up.
-     * @return Cleaned up term.
-     * @should remove illegal chars correctly
-     * @should preserve truncation
-     * @should preserve negation
-     */
-    protected static String cleanUpSearchTerm(String s) {
-        if (StringUtils.isNotEmpty(s)) {
-            boolean addNegation = false;
-            boolean addLeftTruncation = false;
-            boolean addRightTruncation = false;
-            if (s.charAt(0) == '-') {
-                addNegation = true;
-                s = s.substring(1);
-            } else if (s.charAt(0) == '*') {
-                addLeftTruncation = true;
-            }
-            if (s.endsWith("*")) {
-                addRightTruncation = true;
-            }
-            s = s.replace("*", "");
-            // s = s.replace(".", "");
-            s = s.replace("(", "");
-            s = s.replace(")", "");
-            if (addNegation) {
-                s = '-' + s;
-            } else if (addLeftTruncation) {
-                s = '*' + s;
-            }
-            if (addRightTruncation) {
-                s += '*';
-            }
-        }
-
-        return s;
     }
 
     @Override
@@ -1483,10 +1442,10 @@ public class SearchBean implements SearchInterface, Serializable {
         //        } else {
         String facetString = facets.getCurrentFacetString();
         facetString = StringTools.decodeUrl(facetString);
-        List<String> facets = getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
+        List<String> facets = SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
         if (facets.size() > 0) {
             String facet = facets.get(0);
-            facets = splitHierarchicalFacet(facet);
+            facets = SearchFacets.splitHierarchicalFacet(facet);
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation",
                     DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().get(0), facets,
                     NavigationHelper.WEIGHT_SEARCH_RESULTS);
@@ -1496,47 +1455,8 @@ public class SearchBean implements SearchInterface, Serializable {
         //        }
     }
 
-    /**
-     * @param facet
-     * @return
-     */
-    public static List<String> splitHierarchicalFacet(String facet) {
-        List<String> facets = new ArrayList<>();
-        while (facet.contains(".")) {
-            facets.add(facet);
-            facet = facet.substring(0, facet.lastIndexOf("."));
-        }
-        if (StringUtils.isNotBlank(facet)) {
-            facets.add(facet);
-        }
-        Collections.reverse(facets);
-        return facets;
-    }
 
-    /**
-     * @param facetString
-     * @param hierarchicalDrillDownFields
-     * @return
-     */
-    public static List<String> getHierarchicalFacets(String facetString, List<String> facetFields) {
-        List<String> facets = Arrays.asList(StringUtils.split(facetString, ";;"));
-        List<String> values = new ArrayList<>();
 
-        for (String facetField : facetFields) {
-            String matchingFacet = facets.stream()
-                    .filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":"))
-                    .findFirst()
-                    .orElse("");
-            if (StringUtils.isNotBlank(matchingFacet)) {
-                int separatorIndex = matchingFacet.indexOf(":");
-                if (separatorIndex > 0 && separatorIndex < matchingFacet.length() - 1) {
-                    String value = matchingFacet.substring(separatorIndex + 1);
-                    values.add(value);
-                }
-            }
-        }
-        return values;
-    }
 
     /**
      * Adds a new breadcrumb for the current Pretty URL.
