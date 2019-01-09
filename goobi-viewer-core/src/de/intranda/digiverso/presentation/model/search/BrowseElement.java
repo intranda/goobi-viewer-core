@@ -284,6 +284,7 @@ public class BrowseElement implements Serializable {
                         if (count >= md.getNumber() && md.getNumber() != -1 || count >= number) {
                             break;
                         }
+                        // Truncate long values
                         if (length > 0 && value.length() > length) {
                             value = new StringBuilder(value.substring(0, length - 3)).append("...").toString();
                         }
@@ -291,6 +292,8 @@ public class BrowseElement implements Serializable {
                         if (searchTerms != null) {
                             if (searchTerms.get(md.getLabel()) != null) {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(md.getLabel()));
+                            } else if(md.getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
                             }
                             if (searchTerms.get(SolrConstants.DEFAULT) != null) {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
@@ -504,6 +507,7 @@ public class BrowseElement implements Serializable {
                 default:
                     // Skip fields that are already in the list
                     for (Metadata md : metadataList) {
+                        logger.trace("field: " + md.getLabel());
                         if (md.getLabel().equals(termsFieldName)) {
                             skip = true;
                             break;
