@@ -972,7 +972,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
-            List<String> ret = Arrays.asList(ignoreCollections.split(","));
+            List<String> ret = Arrays.stream(ignoreCollections.split(",")).collect(Collectors.toList());
+//            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
+//          List<String> ret = Arrays.asList(ignoreCollections.split(","));
+
             return ret;
         }
 
