@@ -1,0 +1,185 @@
+/* ==============================================================
+   View Reading Mode Image Controls 
+   ==============================================================*/
+/* READING MODE IMAGE CONTROLS */
+.reading-mode {
+	.image-controls {
+		padding: 0;
+		border: 0;
+		/* DOCUMENT OPTIONS */
+		&__options {
+			.mx-hidden;
+		}
+	    /* ACTIONS */
+	    &__actions {
+	    	ul {}
+		    li {}
+	    }
+	    &__action {
+	    	height: auto;
+	    	margin: 0 7px 0 0;
+	    	font-size: 18px;
+			border: 0;
+		    /* ELEMENT */
+		    a, 
+			span, 
+			button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 32px;
+				height: 32px;
+				line-height: inherit;
+				background-repeat: no-repeat;
+				background-position: center center;
+				background-size: 28px;
+				&:hover,
+				&:active,
+				&:focus {}
+			}
+			span {}
+			[class*="image-"] {
+				.mx-hidden;
+			}
+			&.inactive {
+		    	a,
+		    	span,
+		    	button {}
+			}    
+		    /* ELEMENT */
+		    &.start {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-start.svg");
+					background-size: 18px;
+				}
+		    }
+		    &.page-browse,
+		    &.select {}
+		    &.page-browse {
+		        a, span {}
+		    }
+		    &.back {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-back.svg");
+					background-size: 12px;
+				}
+		    }
+		    &.select-text {
+		    	span {}
+		    }
+		    &.select {
+		        .form-control__select {
+		            select {
+		            	font-size: 18px;
+		            }
+		        }
+		    }
+		    &.forward {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-forward.svg");
+					background-size: 12px;
+				}
+		    }
+		    &.end {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-end.svg");
+					background-size: 18px;
+				}
+		    }
+		    &.double-page-view,
+		    &.single-page-view,
+		    &.switch-pages {
+			    [class*="image-"] {}	    	
+		    }
+		    &.double-page-view {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-double-page.svg");
+				}
+		    }
+		    &.single-page-view {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-single-page.svg");
+					background-size: 26px;
+				}
+		    }
+		    &.switch-pages {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-recto-verso.svg");
+					background-size: 32px;
+				}
+		    	svg {}
+		    }
+		    &.rotate-left,
+		    &.rotate-right {
+		    	[class*="image-"] {}
+		    }
+		    &.rotate-left {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-rotate-left.svg");
+				}
+		    }
+		    &.rotate-right {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-rotate-right.svg");
+				}
+		    }
+		    &.reset {
+		    	a, 
+				span, 
+				button {
+					background-image: url("@{images}/icons/readingmode/icon_rm-reset.svg");
+				}
+		    }
+		    &.fullscreen {
+		    	.mx-hidden;
+		    }
+		    &.zoom-slider {
+		    	width: 125px;
+		    	margin-left: 10px;
+		        .zoom-slider {
+		        	height: 2px;
+		        	margin-top: 0;
+		        	background-color: @rmDarkgray;
+		        }
+		        .zoom-slider-handle {
+		        	top: -12px;
+		        	width: 24px;
+		        	height: 24px;
+		        	border: 2px solid @rmDarkgray;
+		        	border-radius: 100%;
+		        	background-color: @white;
+		        }
+		    }
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+ 
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

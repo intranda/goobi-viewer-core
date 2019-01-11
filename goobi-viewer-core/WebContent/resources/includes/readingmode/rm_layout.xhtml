@@ -1,0 +1,114 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- READINGMODE HEADER -->
+    <ui:include src="/resources/includes/readingmode/rm_header.xhtml" />
+    
+    <!-- VIEW -->
+    <div id="readingModeView" class="reading-mode__view">
+        <!-- IMAGE -->
+        <section id="readingModeViewImage" class="reading-mode__view-image">
+            <div class="reading-mode__view-image-inner">
+                <!-- VIEW IMAGE -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                    <ui:include src="/resources/includes/object/image.xhtml" />
+
+                    <!-- THUMBNAILS -->
+                    <div class="reading-mode__view-image-thumbs-wrapper">
+                        <rmThumbnails></rmThumbnails>
+                    </div>
+                    
+                    <!-- OPEN SIDEBAR -->
+                    <div id="viewSidebarOpen" class="reading-mode__view-sidebar-open">
+                        <button class="btn btn--clean" data-open="rm-sidebar">
+                            <span>#{msg.readingmode_openSidebar}</span>
+                        </button>                    
+                    </div>                    
+                </ui:fragment>
+            </div>
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside id="readingModeViewSidebar" class="reading-mode__view-sidebar">
+            <div class="reading-mode__view-sidebar-inner">
+                <!-- SIDEBAR CONTROLS -->
+                <div class="reading-mode__view-sidebar-controls">
+                    <button class="btn btn--clean" data-close="rm-sidebar"></button>
+                    <button class="btn btn--clean" data-close="all-tabs"></button>
+                    <button class="btn btn--clean" data-open="all-tabs"></button>
+                </div>
+                
+                <!-- SIDEBAR ACCORDEON -->
+                <div class="reading-mode__view-sidebar-accordeon">
+                    <!-- METADATA -->
+                    <div class="reading-mode__view-sidebar-accordeon-panel rm-metadata">
+                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.sidebarBibData}</span>
+                        </h3>
+                        
+                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                        </div>
+                    </div>
+
+                    <!-- TOC -->
+                    <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren()}">
+                        <div class="reading-mode__view-sidebar-accordeon-panel rm-toc">
+                            <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.sidebarTocAnchor}</span>
+                            </h3>
+                            
+                            <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_toc />
+                            </div>
+                        </div>
+                    </ui:fragment>
+
+                    <!-- DOWNLOADS -->
+                    <div class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
+                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.widgetUsage}</span>
+                        </h3>
+
+                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <widgetComponent:widget_usage />
+                        </div>
+                    </div>
+                    
+                    <!-- FULLTEXT -->
+                    <div class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
+                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.fulltext}</span>
+                        </h3>
+
+                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                        </div>
+                    </div>
+
+                    <!-- SEARCH HIT NAVIGATION -->
+                    <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
+                        <div class="reading-mode__view-sidebar-accordeon-panel rm-search-hit-navigation">
+                            <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.searchHitNavigation}</span>
+                            </h3>
+                            
+                            <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_searchResultNavigation />
+                            </div>
+                        </div>                    
+                    </ui:fragment>
+                </div>
+            </div>
+        </aside>
+    </div>
+</ui:composition>

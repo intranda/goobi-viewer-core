@@ -72,7 +72,11 @@
         		]
         	}
         };
-
+        
+        // check for readingmode and change container height
+        if ( $( '#readingMode' ).length > 0 ) {
+        	configViewer.global.adaptContainerHeight = false;
+        }
                 
        	// desktop object view
        	if ( access && openSeadragonVisible ) {

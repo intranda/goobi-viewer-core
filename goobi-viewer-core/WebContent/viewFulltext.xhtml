@@ -43,13 +43,7 @@
                     <viewerComponent:imageControls />
                     
                     <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
-						<div id="fulltext-box" class="view-fulltext__box">
-                            <pre>
-                                <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false"
-                                    rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
-                                <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
-                            </pre>
-                        </div>
+						<ui:include src="/resources/includes/object/fulltext.xhtml" />
                     </div>
                     
                     <div class="clearfix"></div>

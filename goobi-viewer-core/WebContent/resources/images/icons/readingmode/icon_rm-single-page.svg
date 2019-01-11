@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="75" height="84" viewBox="0 0 75 84">
+  <g id="Gruppe_21" data-name="Gruppe 21" transform="translate(-1027 -622)">
+    <g id="Rechteck_10" data-name="Rechteck 10" transform="translate(1027 622)" fill="none" stroke="#666" stroke-width="5">
+      <rect width="75" height="84" stroke="none"/>
+      <rect x="2.5" y="2.5" width="70" height="79" fill="none"/>
+    </g>
+    <g id="Gruppe_16" data-name="Gruppe 16" transform="translate(128)">
+      <line id="Linie_3" data-name="Linie 3" x2="52.405" transform="translate(910.5 638.5)" fill="none" stroke="#666" stroke-width="5"/>
+      <line id="Linie_5" data-name="Linie 5" x2="52.405" transform="translate(910.5 664.5)" fill="none" stroke="#666" stroke-width="5"/>
+      <line id="Linie_4" data-name="Linie 4" x2="52.405" transform="translate(910.5 651.5)" fill="none" stroke="#666" stroke-width="5"/>
+      <line id="Linie_6" data-name="Linie 6" x2="52.405" transform="translate(910.5 677.5)" fill="none" stroke="#666" stroke-width="5"/>
+      <line id="Linie_7" data-name="Linie 7" x2="52.405" transform="translate(910.5 690.5)" fill="none" stroke="#666" stroke-width="5"/>
+    </g>
+  </g>
+</svg>

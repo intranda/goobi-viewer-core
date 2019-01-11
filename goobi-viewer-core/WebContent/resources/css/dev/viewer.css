@@ -146,7 +146,7 @@ table,
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -464,7 +464,7 @@ span[class*=" image-"] {
       grid-template-columns: repeat(12, 1fr);
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -667,7 +667,7 @@ button {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -929,7 +929,7 @@ button {
   background-position: -166px -405px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1067,7 +1067,7 @@ button {
   color: rgba(0, 0, 0, 0.25);
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1180,7 +1180,7 @@ button.btn:focus,
 button.btn:active:focus {
   color: #fff;
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1203,7 +1203,7 @@ button.btn:active:focus {
   margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* LAYOUT */
@@ -1335,7 +1335,7 @@ html.is-IE .support-overlay {
   visibility: visible !important;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWER COMPONENTS */
@@ -1609,7 +1609,7 @@ html.is-IE .support-overlay {
   background-image: url("../../images/icons/icon-bs-link.svg");
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -1779,7 +1779,7 @@ html.is-IE .support-overlay {
   padding: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .navigation {
@@ -1846,7 +1846,7 @@ html.is-IE .support-overlay {
   border-color: transparent transparent #eee transparent;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #mobileToggleWrapper {
@@ -1891,7 +1891,7 @@ html.is-IE .support-overlay {
   padding-left: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1918,7 +1918,7 @@ html.is-IE .support-overlay {
   margin: -0.125rem 0.25rem 0 0.25rem;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1957,7 +1957,7 @@ html.is-IE .support-overlay {
   padding: 5px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2001,7 +2001,7 @@ html.is-IE .support-overlay {
 .alphabetic-paginator a:focus {
   background-color: #eee;
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2054,7 +2054,7 @@ html.is-IE .support-overlay {
   border: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -2158,7 +2158,7 @@ html.is-IE .support-overlay {
   color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #titleWrapper .title-body form .dl-horizontal dt {
@@ -2324,7 +2324,7 @@ html.is-IE .support-overlay {
   background: #6f6f6f;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2510,9 +2510,10 @@ html.is-IE .support-overlay {
 }
 .image-controls .labeltext {
   padding: 0;
-  display: none;
+  display: none !important;
 }
 .tooltip_clipboard {
+  display: none;
   position: absolute;
   z-index: 10000;
   background-color: #444444;
@@ -2521,7 +2522,6 @@ html.is-IE .support-overlay {
   vertical-align: middle;
   border-radius: 10px;
   font-size: 12px;
-  display: none;
 }
 /* FIREFOX CORRECTION */
 @-moz-document url-prefix() {
@@ -2530,7 +2530,7 @@ html.is-IE .support-overlay {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOP */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .image-controls__options {
@@ -2585,7 +2585,7 @@ html.is-IE .support-overlay {
   background: #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2787,7 +2787,7 @@ html.is-IE .support-overlay {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2847,7 +2847,7 @@ html.is-IE .support-overlay {
   background-color: #507ebf;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3018,7 +3018,7 @@ html.is-IE .support-overlay {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: 992px) {
   #responsiveColumnGallery .rcg-col.col-4 {
     width: 33.33333333%;
@@ -3092,7 +3092,7 @@ input[id*="cmdMoveTo"] {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3188,7 +3188,7 @@ input[id*="cmdMoveTo"] {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3361,7 +3361,7 @@ input[id*="cmdMoveTo"] {
   /*border-bottom: 1px dotted #4F3E22 !important;*/
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3398,7 +3398,7 @@ input[id*="cmdMoveTo"] {
   background-color: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3444,7 +3444,7 @@ input[id*="cmdMoveTo"] {
   margin: 1%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3485,7 +3485,7 @@ div[id*="-Modal"] .email-form .form-group {
   z-index: 999;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3678,7 +3678,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3779,7 +3779,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0.625rem 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
@@ -3788,7 +3788,7 @@ div[id*="-Modal"] .email-form .form-group {
    global style declarations for admin backend
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3882,7 +3882,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 4px 7px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3890,7 +3890,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for adminIpRange.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3908,7 +3908,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0 0 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3923,7 +3923,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3931,7 +3931,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for adminUserGroup.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3973,7 +3973,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* COMMON VIEWS */
@@ -4042,7 +4042,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -4069,7 +4069,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4089,7 +4089,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4230,7 +4230,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4319,7 +4319,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4338,7 +4338,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4367,7 +4367,605 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 3px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* READINGMODE VIEWS / COMPONENTS */
+/* ==============================================================
+   View Reading Mode
+   style declarations for viewReadingMode.xhtml 
+   ==============================================================*/
+/* READING MODE */
+#readingMode {
+  background-color: #fff;
+}
+.reading-mode {
+  position: relative;
+  height: 100%;
+  /* HEADER */
+  /* VIEW */
+  /* IMAGE */
+  /* THUMBS */
+  /* SIDEBAR */
+  /* SIDEBAR ACCORDEON */
+  /* MODIFICATION */
+}
+.reading-mode__header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  height: 70px;
+  border-bottom: 1px solid #c6c6c6;
+  background-color: #fff;
+  transition: all .3s linear;
+  opacity: 1;
+  z-index: 1050;
+}
+.reading-mode__header.fullscreen {
+  top: -70px;
+}
+.reading-mode__header-brand,
+.reading-mode__header-controls,
+.reading-mode__header-exit {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.reading-mode__header-brand a,
+.reading-mode__header-controls a,
+.reading-mode__header-exit a,
+.reading-mode__header-brand button,
+.reading-mode__header-controls button,
+.reading-mode__header-exit button {
+  color: #666;
+}
+.reading-mode__header-brand a:hover,
+.reading-mode__header-controls a:hover,
+.reading-mode__header-exit a:hover,
+.reading-mode__header-brand button:hover,
+.reading-mode__header-controls button:hover,
+.reading-mode__header-exit button:hover,
+.reading-mode__header-brand a:active,
+.reading-mode__header-controls a:active,
+.reading-mode__header-exit a:active,
+.reading-mode__header-brand button:active,
+.reading-mode__header-controls button:active,
+.reading-mode__header-exit button:active,
+.reading-mode__header-brand a:focus,
+.reading-mode__header-controls a:focus,
+.reading-mode__header-exit a:focus,
+.reading-mode__header-brand button:focus,
+.reading-mode__header-controls button:focus,
+.reading-mode__header-exit button:focus {
+  color: #666;
+  text-decoration: none;
+}
+.reading-mode__header-brand {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.reading-mode__header-brand img {
+  max-height: 40px;
+}
+.reading-mode__header-controls {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.reading-mode__header-controls [data-show="thumbs"] {
+  width: 32px;
+  height: 32px;
+  margin-left: 10px;
+  background-image: url("../../images/icons/readingmode/icon_rm-thumbs.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 22px;
+}
+.reading-mode__header-controls [data-show="thumbs"].in {
+  background-image: url("../../images/icons/readingmode/icon_rm-close.svg");
+}
+.reading-mode__header-exit {
+  margin-left: auto;
+}
+.reading-mode__header-exit a {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-image: url("../../images/icons/readingmode/icon_rm-close.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 28px;
+}
+.reading-mode__view {
+  position: relative;
+  margin-top: 70px;
+  transition: all .3s linear;
+}
+.reading-mode__view:before,
+.reading-mode__view:after {
+  content: " ";
+  display: table;
+}
+.reading-mode__view:after {
+  clear: both;
+}
+.reading-mode__view.fullscreen {
+  margin-top: 0;
+}
+.reading-mode__view-image,
+.reading-mode__view-image-inner,
+.reading-mode .view-object__image-map {
+  height: calc(100vh - 70px);
+  transition: all .3s linear;
+}
+.reading-mode__view-image.fullscreen,
+.reading-mode__view-image-inner.fullscreen,
+.reading-mode .view-object__image-map.fullscreen {
+  height: 100vh;
+}
+.reading-mode__view-image-inner {
+  position: relative;
+}
+.reading-mode__view-image-inner .view-object__image {
+  padding: 0;
+}
+.reading-mode__view-image-thumbs-wrapper {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 15px;
+  background-color: #fff;
+  overflow-y: auto;
+  z-index: 10;
+}
+.reading-mode__view-image-thumbs {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: space-evenly;
+      justify-content: space-evenly;
+}
+.reading-mode__view-image-thumb {
+  position: relative;
+  width: 175px;
+  min-height: 250px;
+  margin: 10px;
+}
+.reading-mode__view-image-thumb-preloader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url("../../images/infinity_loader.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 64px;
+  z-index: 10;
+}
+.reading-mode__view-image-thumb-image img {
+  display: block;
+  margin: 0 auto;
+  max-height: 250px;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.reading-mode__view-image-thumb-image img.in {
+  opacity: 1;
+}
+.reading-mode__view-image-thumb-image-order {
+  padding: 5px;
+  text-align: center;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.reading-mode__view-image-thumb-image-order.in {
+  opacity: 1;
+}
+.reading-mode__view-sidebar-open {
+  display: none;
+  position: absolute;
+  top: 5px;
+  right: -110px;
+  width: 150px;
+  padding: 10px;
+  background-color: #fff;
+  transition: all .3s linear;
+}
+.reading-mode__view-sidebar-open:hover {
+  right: 0;
+}
+.reading-mode__view-sidebar-open:hover .btn {
+  padding-left: 20px;
+}
+.reading-mode__view-sidebar-open .btn {
+  padding-left: 40px;
+  color: #666;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 10px;
+  background-image: url("../../images/icons/readingmode/icon_rm-left.svg");
+  overflow: hidden;
+}
+.reading-mode__view-sidebar-open .btn:hover,
+.reading-mode__view-sidebar-open .btn:active,
+.reading-mode__view-sidebar-open .btn:focus,
+.reading-mode__view-sidebar-open .btn:active:focus,
+.reading-mode__view-sidebar-open .btn.active,
+.reading-mode__view-sidebar-open .btn.active.focus,
+.reading-mode__view-sidebar-open .btn.active:focus,
+.reading-mode__view-sidebar-open .btn.focus,
+.reading-mode__view-sidebar-open .btn:active.focus {
+  color: #666;
+  text-decoration: none;
+}
+.reading-mode__view-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  padding-top: 70px;
+  background-color: #fff;
+  overflow-y: auto;
+  transition: all .3s linear;
+  z-index: 1010;
+}
+.reading-mode__view-sidebar.fullscreen {
+  padding-top: 0;
+}
+.reading-mode__view-sidebar.closed {
+  right: -100% !important;
+  left: 100% !important;
+}
+.reading-mode__view-sidebar .ui-resizable-handle {
+  left: 0;
+  border-right: 1px solid #c6c6c6;
+  background-color: #fff;
+  z-index: 998 !important;
+}
+.reading-mode__view-sidebar .ui-resizable-handle:before,
+.reading-mode__view-sidebar .ui-resizable-handle:after {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 50%;
+  width: 1px;
+  height: 40px;
+  margin-top: -20px;
+  background-color: #c6c6c6;
+}
+.reading-mode__view-sidebar .ui-resizable-handle:before {
+  right: 2px;
+}
+.reading-mode__view-sidebar .ui-resizable-handle:after {
+  right: 5px;
+}
+.reading-mode__view-sidebar .ui-resizable-e {
+  width: 10px;
+  cursor: w-resize;
+}
+.reading-mode__view-sidebar-controls {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 15px;
+}
+.reading-mode__view-sidebar-controls .btn {
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 14px;
+}
+.reading-mode__view-sidebar-controls [data-close="rm-sidebar"] {
+  background-image: url("../../images/icons/readingmode/icon_rm-right.svg");
+  background-size: 10px;
+}
+.reading-mode__view-sidebar-controls [data-close="all-tabs"] {
+  margin-left: auto;
+  background-image: url("../../images/icons/readingmode/icon_rm-minus.svg");
+}
+.reading-mode__view-sidebar-controls [data-open="all-tabs"] {
+  background-image: url("../../images/icons/readingmode/icon_rm-plus.svg");
+}
+.reading-mode__view-sidebar-accordeon {
+  border-bottom: 1px solid #c6c6c6;
+}
+.reading-mode__view-sidebar-accordeon-panel {
+  position: relative;
+}
+.reading-mode__view-sidebar-accordeon-panel.rm-toc .reading-mode__view-sidebar-accordeon-panel-body {
+  padding-top: 0;
+}
+.reading-mode__view-sidebar-accordeon-panel.rm-search-hit-navigation {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode__view-sidebar-accordeon-panel-title {
+  position: relative;
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-top: 1px solid #c6c6c6;
+  background-image: url("../../images/icons/readingmode/icon_rm-plus.svg");
+  background-repeat: no-repeat;
+  background-position: 94% 17px;
+  background-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  z-index: 20;
+}
+.reading-mode__view-sidebar-accordeon-panel-title span {
+  display: inline-block;
+  max-width: 94%;
+}
+.reading-mode__view-sidebar-accordeon-panel-title.in {
+  background-image: url("../../images/icons/readingmode/icon_rm-minus.svg");
+}
+.reading-mode__view-sidebar-accordeon-panel-body {
+  display: none;
+  padding: 15px;
+  overflow-y: auto;
+}
+.reading-mode__view-sidebar-accordeon-panel-body > h2 {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .widget {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Reading Mode Image Controls 
+   ==============================================================*/
+/* READING MODE IMAGE CONTROLS */
+.reading-mode .image-controls {
+  padding: 0;
+  border: 0;
+  /* DOCUMENT OPTIONS */
+  /* ACTIONS */
+}
+.reading-mode .image-controls__options {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .image-controls__action {
+  height: auto;
+  margin: 0 7px 0 0;
+  font-size: 18px;
+  border: 0;
+  /* ELEMENT */
+  /* ELEMENT */
+}
+.reading-mode .image-controls__action a,
+.reading-mode .image-controls__action span,
+.reading-mode .image-controls__action button {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: inherit;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 28px;
+}
+.reading-mode .image-controls__action [class*="image-"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .image-controls__action.start a,
+.reading-mode .image-controls__action.start span,
+.reading-mode .image-controls__action.start button {
+  background-image: url("../../images/icons/readingmode/icon_rm-start.svg");
+  background-size: 18px;
+}
+.reading-mode .image-controls__action.back a,
+.reading-mode .image-controls__action.back span,
+.reading-mode .image-controls__action.back button {
+  background-image: url("../../images/icons/readingmode/icon_rm-back.svg");
+  background-size: 12px;
+}
+.reading-mode .image-controls__action.select .form-control__select select {
+  font-size: 18px;
+}
+.reading-mode .image-controls__action.forward a,
+.reading-mode .image-controls__action.forward span,
+.reading-mode .image-controls__action.forward button {
+  background-image: url("../../images/icons/readingmode/icon_rm-forward.svg");
+  background-size: 12px;
+}
+.reading-mode .image-controls__action.end a,
+.reading-mode .image-controls__action.end span,
+.reading-mode .image-controls__action.end button {
+  background-image: url("../../images/icons/readingmode/icon_rm-end.svg");
+  background-size: 18px;
+}
+.reading-mode .image-controls__action.double-page-view a,
+.reading-mode .image-controls__action.double-page-view span,
+.reading-mode .image-controls__action.double-page-view button {
+  background-image: url("../../images/icons/readingmode/icon_rm-double-page.svg");
+}
+.reading-mode .image-controls__action.single-page-view a,
+.reading-mode .image-controls__action.single-page-view span,
+.reading-mode .image-controls__action.single-page-view button {
+  background-image: url("../../images/icons/readingmode/icon_rm-single-page.svg");
+  background-size: 26px;
+}
+.reading-mode .image-controls__action.switch-pages a,
+.reading-mode .image-controls__action.switch-pages span,
+.reading-mode .image-controls__action.switch-pages button {
+  background-image: url("../../images/icons/readingmode/icon_rm-recto-verso.svg");
+  background-size: 32px;
+}
+.reading-mode .image-controls__action.rotate-left a,
+.reading-mode .image-controls__action.rotate-left span,
+.reading-mode .image-controls__action.rotate-left button {
+  background-image: url("../../images/icons/readingmode/icon_rm-rotate-left.svg");
+}
+.reading-mode .image-controls__action.rotate-right a,
+.reading-mode .image-controls__action.rotate-right span,
+.reading-mode .image-controls__action.rotate-right button {
+  background-image: url("../../images/icons/readingmode/icon_rm-rotate-right.svg");
+}
+.reading-mode .image-controls__action.reset a,
+.reading-mode .image-controls__action.reset span,
+.reading-mode .image-controls__action.reset button {
+  background-image: url("../../images/icons/readingmode/icon_rm-reset.svg");
+}
+.reading-mode .image-controls__action.fullscreen {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .image-controls__action.zoom-slider {
+  width: 125px;
+  margin-left: 10px;
+}
+.reading-mode .image-controls__action.zoom-slider .zoom-slider {
+  height: 2px;
+  margin-top: 0;
+  background-color: #666;
+}
+.reading-mode .image-controls__action.zoom-slider .zoom-slider-handle {
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #666;
+  border-radius: 100%;
+  background-color: #fff;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Reading Mode Metadata 
+   ==============================================================*/
+/* READING MODE METADATA */
+.reading-mode .metadata {
+  margin: 0;
+  /* ELEMENTS / EVENTS */
+  /* ELEMENT */
+  /* EVENT */
+}
+.reading-mode .metadata__elements,
+.reading-mode .metadata__events {
+  margin-bottom: 15px;
+  padding: 0;
+  padding-bottom: 15px;
+  border: 0;
+  border-bottom: 1px solid #c6c6c6;
+}
+.reading-mode .metadata__elements:last-child,
+.reading-mode .metadata__events:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.reading-mode .metadata__element,
+.reading-mode .metadata__event {
+  margin-bottom: 10px;
+  border: 0;
+}
+.reading-mode .metadata__element-dl dt,
+.reading-mode .metadata__event-dl dt {
+  float: none;
+  width: 100%;
+  margin-bottom: 5px;
+}
+.reading-mode .metadata__element-dl dd,
+.reading-mode .metadata__event-dl dd {
+  width: 100%;
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Reading Mode Toc 
+   ==============================================================*/
+/* READING MODE TOC */
+.reading-mode .widget-toc {
+  /* TITLE */
+  /* ELEMENTS */
+  /* LOADING */
+}
+.reading-mode .widget-toc__title {
+  background-color: #fff;
+}
+.reading-mode .widget-toc__title h3 {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .widget-toc__title-expand a {
+  color: #1a1a1a;
+}
+.reading-mode .widget-toc__title-expand a:hover,
+.reading-mode .widget-toc__title-expand a:active,
+.reading-mode .widget-toc__title-expand a:focus {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.reading-mode .widget-toc__elements {
+  max-height: inherit;
+  border: 0;
+}
+.reading-mode .widget-toc__elements ul {
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+}
+.reading-mode .widget-toc__element {
+  margin-bottom: 6px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Reading Mode Usage 
+   ==============================================================*/
+/* READING MODE USAGE */
+.reading-mode .widget-usage {
+  /* LICENSE TEXT */
+  /* DOWNLOADS */
+  /* WORK DOWNLOADS */
+  /* PAGE DOWNLOADS */
+  /* CITE LINKS */
+  /* MODIFICATION */
+}
+.reading-mode .widget-usage__citelinks {
+  margin-bottom: 0;
+}
+.reading-mode .widget-usage .widget__title {
+  display: none !important;
+  visibility: hidden !important;
+}
+.reading-mode .widget-usage .widget__body {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* SEARCH VIEWS */
@@ -4479,7 +5077,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4623,7 +5221,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .search-advanced__input-group input[type="text"],
@@ -5043,7 +5641,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -5155,7 +5753,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5192,7 +5790,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5313,7 +5911,7 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: bold;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5341,7 +5939,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .search-termlist__list ul {
@@ -5361,7 +5959,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for user backend tables
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5410,7 +6008,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5440,7 +6038,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5470,7 +6068,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5499,7 +6097,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: -15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -5539,7 +6137,7 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: normal;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5626,7 +6224,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5663,7 +6261,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5677,7 +6275,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: center;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5707,7 +6305,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5791,7 +6389,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 1.3125rem 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5836,7 +6434,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWS */
@@ -5977,7 +6575,7 @@ div[id*="-Modal"] .email-form .form-group {
   right: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #fullscreenPrevWrapper,
@@ -6036,7 +6634,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6094,7 +6692,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .metadata__element-dl dt,
@@ -6124,7 +6722,7 @@ div[id*="-Modal"] .email-form .form-group {
   max-height: 100%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6465,7 +7063,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #298A08;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6533,7 +7131,7 @@ div[id*="-Modal"] .email-form .form-group {
   background: #ffffff;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .view-object {
@@ -6670,312 +7268,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   View Reading Mode
-   style declarations for viewReadingMode.xhtml 
-   ==============================================================*/
-/* READING MODE */
-#readingMode {
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a1a;
-}
-#readingModeImage {
-  position: relative;
-  height: calc(100vh - 70px);
-}
-#readingModeImage .image-fragment {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: solid #507ebf 3px;
-}
-/* BLOCK */
-.reading-mode {
-  position: relative;
-  height: 100%;
-  /* ELEMENT */
-  /* NAVIGATION */
-  /* CONTENT */
-}
-.reading-mode__navigation {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1fr 2fr 1fr;
-      grid-template-columns: 1fr 2fr 1fr;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  height: 70px;
-  background-color: #ccc;
-}
-.reading-mode__nav.logo {
-  padding-left: 15px;
-}
-.reading-mode__nav.logo a {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  font-size: 14px;
-  color: #1a1a1a;
-}
-.reading-mode__nav.logo a:hover,
-.reading-mode__nav.logo a:active,
-.reading-mode__nav.logo a:focus {
-  color: #1a1a1a;
-  text-decoration: none;
-}
-.reading-mode__nav.logo img {
-  display: inline-block;
-  max-width: 50px;
-  max-height: 70px;
-  margin-right: 10px;
-}
-.reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
-  display: none;
-  width: 100%;
-  padding: 0 20px;
-  font-size: 21px;
-  text-align: right;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls {
-  padding: 0;
-}
-.reading-mode__nav.controls .image-controls__options {
-  float: right;
-  margin-left: 75px;
-}
-.reading-mode__nav.controls .image-controls__option {
-  width: 21px;
-  height: 32px;
-  margin: 0 3px;
-}
-.reading-mode__nav.controls .image-controls__option a,
-.reading-mode__nav.controls .image-controls__option button {
-  display: block;
-  height: 30px;
-  line-height: 30px;
-  padding: 0;
-  text-align: center;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls__option a:hover,
-.reading-mode__nav.controls .image-controls__option button:hover,
-.reading-mode__nav.controls .image-controls__option a:active,
-.reading-mode__nav.controls .image-controls__option button:active,
-.reading-mode__nav.controls .image-controls__option a:focus,
-.reading-mode__nav.controls .image-controls__option button:focus {
-  text-decoration: none;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls__option.add-to-bookshelf {
-  display: none !important;
-  visibility: hidden !important;
-}
-.reading-mode__nav.controls .image-controls__actions {
-  float: right;
-}
-.reading-mode__nav.back {
-  padding-right: 15px;
-  text-align: right;
-}
-.reading-mode__nav.back a {
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -ms-flex-pack: end;
-      justify-content: flex-end;
-  -ms-flex-align: center;
-      align-items: center;
-  font-size: 24px;
-  color: #6f6f6f;
-}
-.reading-mode__nav.back a:hover,
-.reading-mode__nav.back a:active,
-.reading-mode__nav.back a:focus {
-  color: #6f6f6f;
-  text-decoration: none;
-  outline: none;
-}
-.reading-mode__nav.back a .fa {
-  position: relative;
-  top: 2px;
-}
-.reading-mode__content-view,
-.reading-mode__content-sidebar {
-  float: left;
-  height: calc(100vh - 70px);
-}
-.reading-mode__content-view {
-  transition: all .3s linear;
-  width: 100%;
-}
-.reading-mode__content-view.in {
-  width: 70%;
-}
-.reading-mode__content-sidebar {
-  position: fixed;
-  top: 70px;
-  right: -30%;
-  bottom: 0;
-  width: 30%;
-  background-color: #ccc;
-  transition: all .3s linear;
-  z-index: 999;
-}
-.reading-mode__content-sidebar.in {
-  right: 0;
-}
-.reading-mode__content-sidebar.in .reading-mode__content-sidebar-inner {
-  padding: 15px;
-}
-.reading-mode__content-sidebar-toggle {
-  position: absolute;
-  top: 50%;
-  left: -32px;
-  margin-top: -32px;
-  width: 32px;
-  height: 64px;
-  line-height: 64px;
-  text-align: center;
-  background-color: #ccc;
-}
-.reading-mode__content-sidebar-toggle button {
-  width: 100%;
-  height: 64px;
-  padding-left: 5px;
-}
-.reading-mode__content-sidebar-toggle button .fa {
-  margin-left: -6px;
-}
-.reading-mode__content-sidebar-toggle button .fa-chevron-right {
-  display: none;
-}
-.reading-mode__content-sidebar-toggle button .fa-chevron-left {
-  display: inline-block;
-}
-.reading-mode__content-sidebar-toggle button.in .fa-chevron-right {
-  display: inline-block;
-}
-.reading-mode__content-sidebar-toggle button.in .fa-chevron-left {
-  display: none;
-}
-.reading-mode__content-sidebar-inner {
-  height: calc(100vh - 70px);
-  overflow-y: auto;
-}
-.reading-mode__content-sidebar-tabs {
-  height: calc(100vh - 70px);
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: 1430px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 3fr 1fr;
-        grid-template-columns: 1fr 3fr 1fr;
-  }
-  .reading-mode__nav.controls .image-controls__options {
-    margin-left: 0;
-  }
-  .reading-mode__nav.controls .image-controls__actions {
-    float: left;
-  }
-}
-@media screen and (max-width: 1200px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 4fr 1fr;
-        grid-template-columns: 1fr 4fr 1fr;
-  }
-}
-/* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: 1070px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 5fr 1fr;
-        grid-template-columns: 1fr 5fr 1fr;
-  }
-  .reading-mode__nav.logo span {
-    display: none !important;
-    visibility: hidden !important;
-  }
-}
-@media screen and (max-width: 992px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 6fr 1fr;
-        grid-template-columns: 1fr 6fr 1fr;
-  }
-}
-@media screen and (max-width: 950px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 7fr 1fr;
-        grid-template-columns: 1fr 7fr 1fr;
-  }
-}
-@media screen and (max-width: 918px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 8fr 1fr;
-        grid-template-columns: 1fr 8fr 1fr;
-  }
-}
-@media screen and (max-width: 893px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 9fr 1fr;
-        grid-template-columns: 1fr 9fr 1fr;
-  }
-}
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 10fr 1fr;
-        grid-template-columns: 1fr 10fr 1fr;
-  }
-  .reading-mode__nav.controls .image-controls__action.select {
-    width: 64px;
-  }
-  .reading-mode__nav.controls .image-controls__action.zoom-slider {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  .reading-mode__content-view.in {
-    width: 60%;
-  }
-  .reading-mode__content-sidebar.in {
-    width: 40%;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .reading-mode__navigation {
-    height: 50px;
-  }
-  .reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
-    display: inline-block;
-  }
-  .reading-mode__nav.controls .image-controls {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    padding: 15px;
-    border-bottom: 2px solid #507ebf;
-    background-color: #fff;
-    z-index: 999;
-  }
-  .reading-mode__nav.controls .image-controls__actions ul {
-    -ms-flex-pack: start;
-        justify-content: flex-start;
-  }
-  .reading-mode__nav.controls .image-controls__action {
-    margin: 0 3px 5px 3px;
-  }
-  .reading-mode__content-view.in {
-    width: 10%;
-  }
-  .reading-mode__content-sidebar.in {
-    width: 90%;
-  }
-}
 /* ==============================================================
    View Thumbs
    style declarations for viewThumbs.xhtml 
@@ -7020,7 +7315,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7196,7 +7491,7 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7330,7 +7625,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7367,7 +7662,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 10px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* WIDGETS */
@@ -7425,7 +7720,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7433,7 +7728,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_admin.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7441,7 +7736,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_bookshelves.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7460,7 +7755,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7468,7 +7763,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_browsing.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7565,7 +7860,7 @@ div[id*="-Modal"] .email-form .form-group {
   cursor: pointer;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7573,7 +7868,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_cms.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7599,7 +7894,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow-y: auto;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7611,7 +7906,7 @@ div[id*="-Modal"] .email-form .form-group {
   visibility: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7619,7 +7914,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_crowdsourcing.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7627,7 +7922,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_custom.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7648,7 +7943,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_downloads.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7661,7 +7956,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7669,7 +7964,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_mySearches.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7695,7 +7990,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7741,7 +8036,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7783,7 +8078,7 @@ div[id*="-Modal"] .email-form .form-group {
     top: 1px;
   }
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7826,7 +8121,7 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7858,7 +8153,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: -0.1875rem 0.1875rem 0 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7870,7 +8165,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0.25rem 0 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7974,7 +8269,7 @@ div[id*="-Modal"] .email-form .form-group {
   z-index: 10;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8006,7 +8301,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8014,7 +8309,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_user.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8022,7 +8317,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_views.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8365,7 +8660,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #298A08;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8379,7 +8674,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 5px 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8462,7 +8757,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS MODULES */
@@ -8548,7 +8843,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8596,7 +8891,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8630,7 +8925,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 60px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS TEMPLATES */
@@ -8664,7 +8959,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8711,7 +9006,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8746,7 +9041,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8762,7 +9057,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8785,7 +9080,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8801,7 +9096,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8818,7 +9113,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8835,7 +9130,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8851,7 +9146,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8897,7 +9192,7 @@ div[id*="-Modal"] .email-form .form-group {
   content: "";
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8995,7 +9290,7 @@ div[id*="-Modal"] .email-form .form-group {
     width: calc(31.33333333% + 9px);
   }
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: 992px) {
   .tpl-masonry .grid-sizer,
   .tpl-masonry .grid-item {
@@ -9075,7 +9370,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9121,7 +9416,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9157,7 +9452,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9257,7 +9552,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9275,7 +9570,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-bottom: 1px solid #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9293,7 +9588,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-bottom: 1px solid #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9312,7 +9607,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9336,7 +9631,7 @@ div[id*="-Modal"] .email-form .form-group {
   resize: vertical;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9377,7 +9672,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-right: 3px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9433,7 +9728,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 20px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9446,7 +9741,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9470,7 +9765,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9486,7 +9781,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
@@ -9980,7 +10275,7 @@ div[id*="-Modal"] .email-form .form-group {
   background: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10194,7 +10489,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10253,7 +10548,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10312,7 +10607,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #507ebf;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10352,7 +10647,7 @@ img.cms-static-pages__page-language--complete {
   opacity: 1;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
