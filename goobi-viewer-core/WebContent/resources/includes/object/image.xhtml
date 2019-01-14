@@ -28,7 +28,6 @@
     	var imageMap = $( "#imageMap" );
         var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" );
         var imageUrl = "#{activeDocumentBean.viewManager.currentImageUrl}";
-        var staticImage = $( "<img />" ).attr( "src", imageUrl).attr( "alt", "current object" ).addClass( "img-responsive" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";
@@ -96,6 +95,7 @@
        	// mobile object view
        	if ( $( "#imageContainerMobile" ).is( ":visible" ) ) {
        		if ( access ) {
+       	        var staticImage = $( "<img />" ).attr( "src", imageUrl).attr( "alt", "current object" ).addClass( "img-responsive" );
        			$( "#imageContainerMobile" ).append( staticImage );
        		}
        		else {
