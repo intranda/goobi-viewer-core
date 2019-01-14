@@ -67,7 +67,7 @@ public class CalendarBean implements Serializable {
 
     private final static int MAX_ALLOWED_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 1000;
     private final static int MIN_ALLOWED_YEAR = -10_000;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
 
     @Inject
@@ -805,31 +805,72 @@ public class CalendarBean implements Serializable {
         monthList.add(dec);
 
         for (Count monthCount : monthFacets) {
-            if (monthCount.getName().equals(selectYear + "01")) {
-                jan.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "02")) {
-                feb.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "03")) {
-                mar.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "04")) {
-                apr.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "05")) {
-                may.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "06")) {
-                jun.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "07")) {
-                jul.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "08")) {
-                aug.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "09")) {
-                sep.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "10")) {
-                oct.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "11")) {
-                nov.setHits((int) monthCount.getCount());
-            } else if (monthCount.getName().equals(selectYear + "12")) {
-                dec.setHits((int) monthCount.getCount());
+            int monthNumber = Integer.parseInt(monthCount.getName().substring(4));
+            if (monthCount.getCount() > 0)
+                logger.trace(monthCount.getName() + ": " + monthCount.getCount());
+            switch (monthNumber) {
+                case 1:
+                    jan.setHits((int) monthCount.getCount());
+                    break;
+                case 2:
+                    feb.setHits((int) monthCount.getCount());
+                    break;
+                case 3:
+                    mar.setHits((int) monthCount.getCount());
+                    break;
+                case 4:
+                    apr.setHits((int) monthCount.getCount());
+                    break;
+                case 5:
+                    may.setHits((int) monthCount.getCount());
+                    break;
+                case 6:
+                    jun.setHits((int) monthCount.getCount());
+                    break;
+                case 7:
+                    jul.setHits((int) monthCount.getCount());
+                    break;
+                case 8:
+                    aug.setHits((int) monthCount.getCount());
+                    break;
+                case 9:
+                    sep.setHits((int) monthCount.getCount());
+                    break;
+                case 10:
+                    oct.setHits((int) monthCount.getCount());
+                    break;
+                case 11:
+                    nov.setHits((int) monthCount.getCount());
+                    break;
+                case 12:
+                    dec.setHits((int) monthCount.getCount());
+                    break;
             }
+            //            if (monthCount.getName().equals(selectYear + "01")) {
+            //                jan.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "02")) {
+            //                feb.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "03")) {
+            //                mar.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "04")) {
+            //                apr.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "05")) {
+            //                may.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "06")) {
+            //                jun.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "07")) {
+            //                jul.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "08")) {
+            //                aug.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "09")) {
+            //                sep.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "10")) {
+            //                oct.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "11")) {
+            //                nov.setHits((int) monthCount.getCount());
+            //            } else if (monthCount.getName().equals(selectYear + "12")) {
+            //                dec.setHits((int) monthCount.getCount());
+            //            }
         }
 
         for (CalendarItemMonth monthItem : monthList) {
@@ -992,7 +1033,6 @@ public class CalendarBean implements Serializable {
     public String getCollection() {
         return collection;
     }
-
 
     /**
      * 

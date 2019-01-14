@@ -84,8 +84,8 @@ public class CalendarView {
      * @throws IndexUnreachableException
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
-        if (anchorPi != null) {
-            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_PARENT + ":" + anchorPi);
+        if (anchorPi != null && anchorPi.equals(pi)) {
+            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_ANCHOR + ":" + anchorPi);
         } else {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_TOPSTRUCT + ":" + pi);
         }
