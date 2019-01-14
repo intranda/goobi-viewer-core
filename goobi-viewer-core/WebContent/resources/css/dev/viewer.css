@@ -4570,6 +4570,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 10px;
   background-color: #fff;
   transition: all .3s linear;
+  z-index: 20;
 }
 .reading-mode__view-sidebar-open:hover {
   right: 0;
