@@ -160,7 +160,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getCurrentPage() {
-        return currentPage;
+        return StringTools.escapeQuotes(currentPage);
     }
 
     /**
