@@ -453,7 +453,7 @@
 		</displayAdditionalMetadata>
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
-		<staticQuerySuffix></staticQuerySuffix>
+        <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 
 	        <!-- versioning -->
 	        <versioning>
