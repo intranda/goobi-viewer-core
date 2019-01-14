@@ -195,7 +195,8 @@ public abstract class AbstractBuilder {
      */
     public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
         for (String field : getMetadataFields(ele)) {
-            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+            if (displayFields.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
                         .ifPresent(md -> {
@@ -331,6 +332,7 @@ public abstract class AbstractBuilder {
         if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
             fields.add(navDateField);
         }
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
         return fields;
     }
 
@@ -343,6 +345,20 @@ public abstract class AbstractBuilder {
     protected IMetadataValue getAttribution() {
         String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
         return IMetadataValue.getTranslations(message);
+    }
+
+    protected Optional<IMetadataValue> getDescription(StructElement ele) {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        for (String field : fields) {
+            Optional<IMetadataValue> optional = IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+                md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                return md;
+            });
+            if (optional.isPresent()) {
+                return optional;
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -384,9 +400,12 @@ public abstract class AbstractBuilder {
     }
 
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb =
-                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(pageNo).append("/").append(
-                        type.name());
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
+                .append(pi)
+                .append("/list/")
+                .append(pageNo)
+                .append("/")
+                .append(type.name());
         return new URI(sb.toString());
     }
 

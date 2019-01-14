@@ -3190,6 +3190,14 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * @return
+     */
+    public List<String> getIIIFDescriptionFields() {
+        return getLocalList("webapi.iiif.descriptionFields.field", Collections.singletonList("MD_CONTENTDESCRIPTION"));
+
+    }
+    
+    /**
+     * @return
      * @should return correct value
      */
     public String getSitelinksField() {
@@ -3224,5 +3232,7 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
+
+
 
 }

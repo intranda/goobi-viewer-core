@@ -453,7 +453,7 @@
 		</displayAdditionalMetadata>
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
-		<staticQuerySuffix></staticQuerySuffix>
+        <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 
 	        <!-- versioning -->
 	        <versioning>
@@ -1316,6 +1316,12 @@
 				<field>MD_CREATOR</field>
 				<!--field>MD_*</field-->
 			</metadataFields>
+            
+            <!-- A list of solr fieldnames which may serve as manifest description metadata. 
+            The first existing field is used to provide the medatada description -->
+            <descriptionFields>
+                <field>MD_CONTENTDESCRIPTION</field>
+            </descriptionFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
 			<navDateField>YEAR</navDateField>
