@@ -159,7 +159,7 @@ var ImageView = ( function( imageView ) {
     		console.log( 'EXECUTE: _showFullscreen' );
     	}
     	
-    	$( '#readingModeHeader, #readingModeView, #readingModeViewSidebar, .reading-mode__view-image, .reading-mode__view-image-inner, .view-object__image-map' ).addClass( 'fullscreen' );
+    	$( '#readingModeHeader' ).addClass( 'fullscreen' );
     }
     
     /**
@@ -171,7 +171,7 @@ var ImageView = ( function( imageView ) {
     		console.log( 'EXECUTE: _hideFullscreen' );
     	}
     	
-    	$( '#readingModeHeader, #readingModeView, #readingModeViewSidebar, .reading-mode__view-image, .reading-mode__view-image-inner, .view-object__image-map' ).removeClass( 'fullscreen' );
+    	$( '#readingModeHeader' ).removeClass( 'fullscreen' );
     }
     
     return imageView;

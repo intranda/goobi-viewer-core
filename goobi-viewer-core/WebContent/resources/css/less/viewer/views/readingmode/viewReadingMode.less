@@ -82,21 +82,13 @@
 	&__view {
 		.mx-clearfloats;
 		position: relative;
-		margin-top: 70px;
 		transition: all .3s linear;
-		&.fullscreen {
-			margin-top: 0;
-		}
 	}
 	/* IMAGE */
     &__view-image,
 	&__view-image-inner,
 	.view-object__image-map {
-		height: calc(~"100vh - 70px");
-		transition: all .3s linear;		
-		&.fullscreen {
-			height: 100vh;
-		}
+		height: 100vh;
 	}
 	&__view-image {}
 	&__view-image-inner {
@@ -167,7 +159,7 @@
 	&__view-sidebar-open {
 		display: none;
 		position: absolute;
-		top: 5px;
+		top: 75px;
 		right: -110px;
 		width: 150px;
 		padding: 10px;
@@ -208,13 +200,11 @@
 		bottom: 0;
 		width: 400px;
 		padding-top: 70px;
-		background-color: @white;
+		padding-left: 7px;
+		background-color: rgba(255,255,255,0.9);
 		overflow-y: auto;
 		transition: all .3s linear;
 		z-index: 1010;
-		&.fullscreen {
-			padding-top: 0;
-		}
 		&.closed {
 			right: -100% !important;
 			left: 100% !important;
@@ -222,7 +212,6 @@
 		.ui-resizable-handle {
 			left: 0;
 			border-right: 1px solid @rmMiddlegray;
-			background-color: @white;
 			z-index: 998 !important;
 			&:before,
 			&:after {
@@ -277,6 +266,7 @@
 	}
 	&__view-sidebar-accordeon-panel {
 		position: relative;
+		background-color: @white;
 		&.rm-metadata {}
 		&.rm-toc {
 			.reading-mode__view-sidebar-accordeon-panel-body {
