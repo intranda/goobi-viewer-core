@@ -50,7 +50,7 @@
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="reading-mode__view-sidebar-accordeon">
                     <!-- METADATA -->
-                    <div class="reading-mode__view-sidebar-accordeon-panel rm-metadata">
+                    <div id="panel-1" class="reading-mode__view-sidebar-accordeon-panel rm-metadata">
                         <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                             <span>#{msg.sidebarBibData}</span>
                         </h3>
@@ -62,7 +62,7 @@
 
                     <!-- TOC -->
                     <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren()}">
-                        <div class="reading-mode__view-sidebar-accordeon-panel rm-toc">
+                        <div id="panel-2" class="reading-mode__view-sidebar-accordeon-panel rm-toc">
                             <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.sidebarTocAnchor}</span>
                             </h3>
@@ -74,7 +74,7 @@
                     </ui:fragment>
 
                     <!-- DOWNLOADS -->
-                    <div class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
+                    <div id="panel-3" class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
                         <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                             <span>#{msg.widgetUsage}</span>
                         </h3>
@@ -85,7 +85,7 @@
                     </div>
                     
                     <!-- FULLTEXT -->
-                    <div class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
+                    <div id="panel-4" class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
                         <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                             <span>#{msg.fulltext}</span>
                         </h3>
@@ -97,7 +97,7 @@
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div class="reading-mode__view-sidebar-accordeon-panel rm-search-hit-navigation">
+                        <div id="panel-5" class="reading-mode__view-sidebar-accordeon-panel rm-search-hit-navigation">
                             <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
