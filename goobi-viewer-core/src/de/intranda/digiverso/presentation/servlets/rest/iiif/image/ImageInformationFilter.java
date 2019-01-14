@@ -228,7 +228,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 int size = Integer.parseInt(string);
                 sizes.add(size);
             } catch (NullPointerException | NumberFormatException e) {
-                logger.warn("Cannot parse " + string + " as int");
+//                logger.warn("Cannot parse " + string + " as int");
             }
         }
         return sizes;
