@@ -80,9 +80,15 @@ var ImageView = ( function( imageView ) {
             	}, 300 );
             } );
             
-            // toggle sidebar accordeon
+            // set panel status
+            _setPanelStatus();
+            
+            // toggle sidebar panels
             $( 'body' ).on( 'click', '.reading-mode__view-sidebar-accordeon-panel-title', function() {
-                if ( $( this ).hasClass( 'in' ) ) {
+                var parentPanel = $( this ).parent().attr( 'id' );
+                var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+            	
+            	if ( $( this ).hasClass( 'in' ) ) {
                     $( this ).toggleClass( 'in' );
                     $( this ).next().slideToggle( 'fast' );
                 }
@@ -98,9 +104,52 @@ var ImageView = ( function( imageView ) {
                     $( this ).next().slideToggle( 'fast' );
                 }
             } );
+
+            // hide all panels
+            $( 'body' ).on( 'click', '[data-close="all-tabs"]', function() {
+            	$( '.reading-mode__view-sidebar-accordeon-panel-title' ).each( function() {
+            		$( this ).removeClass( 'in' );
+                    $( this ).next().slideUp( 'fast' );
+            	} );
+            } );
+
+            // show all panels
+            $( 'body' ).on( 'click', '[data-open="all-tabs"]', function() {
+            	$( '.reading-mode__view-sidebar-accordeon-panel-title' ).each( function() {
+            		$( this ).addClass( 'in' );
+            		$( this ).next().slideDown( 'fast' );
+            	} );
+            } );            
         },
     };
     
+    /**
+     * @description Method to set the accordeon panel status.
+     * @method _setPanelStatus
+     * */
+    function _setPanelStatus() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _setPanelStatus' );
+    	}
+    	
+    	var panelStatus = {};
+    		
+    	// build panel status object
+    	$( '.reading-mode__view-sidebar-accordeon-panel' ).each( function() {
+        	var currId = $( this ).attr( 'id' );
+        	
+        	if ( !panelStatus.hasOwnProperty( currId ) ) {
+        		panelStatus[ currId ] = false;
+        	}
+        	else {
+        		return false;
+        	}        	
+        } );
+    	
+    	// write object to session storage
+    	sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelStatus ) );
+    }
+
     /**
      * @description Method to initialize the resizable view.
      * @method _setResizable
