@@ -25,7 +25,7 @@
 var ImageView = ( function( imageView ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _fadeout;
     var _defaults = {
     	resizeSelector: '#readingModeViewSidebar',

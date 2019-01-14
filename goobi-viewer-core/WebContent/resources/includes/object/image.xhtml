@@ -75,6 +75,7 @@
         // check for readingmode and change container height
         if ( $( '#readingMode' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
+        	configViewer.global.topMargin = $('#readingModeHeader').height();
 //         	configViewer.global.minZoomLevel = 0.8;
 //         	configViewer.image.location.zoom = 0.8;
         }
