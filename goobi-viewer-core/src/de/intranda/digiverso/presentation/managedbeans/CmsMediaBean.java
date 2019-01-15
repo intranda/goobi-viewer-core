@@ -35,7 +35,6 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.dbunit.util.concurrent.SynchronousChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class CmsMediaBean implements Serializable {
 
     public String uploadMedia() {
         logger.trace("uploadMedia");
-        if (filePart != null && isValidImageType(filePart.getContentType())) {
+        if (filePart != null && isValidMediaType(filePart.getContentType())) {
             if (isUploadComplete()) {
                 logger.debug("Media file has already been uploaded");
             } else {
@@ -100,14 +99,20 @@ public class CmsMediaBean implements Serializable {
 
     /**
      * @param contentType
-     * @return
+     * @return true if supported; false otherwise
+     * @should return true for tiff
+     * @should return true for jpeg
+     * @should return true for jpeg 2000
+     * @should return true for png
+     * @should return true for docx
      */
-    private static boolean isValidImageType(String contentType) {
+    private static boolean isValidMediaType(String contentType) {
         switch (contentType) {
             case "image/tiff":
             case "image/jpeg":
             case "image/jp2":
             case "image/png":
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 return true;
             default:
                 return false;
@@ -180,9 +185,16 @@ public class CmsMediaBean implements Serializable {
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) throws ViewerConfigurationException {
         if (item != null && item.getFileName() != null) {
-
-            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(Optional.ofNullable(item),
-                    StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+            String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
+            switch (extension) {
+                case "docx":
+                    return BeanUtils.getImageDeliveryBean().getStaticImagesURI() + "thumbnail_tei.png";
+                default:
+                    return BeanUtils.getImageDeliveryBean()
+                            .getThumbs()
+                            .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
+                                    StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+            }
 
         }
         return "";
@@ -273,10 +285,10 @@ public class CmsMediaBean implements Serializable {
         if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
             DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
-//            setCurrentMediaItem(null);
+            //            setCurrentMediaItem(null);
         } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
             DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
-//            setCurrentMediaItem(null);
+            //            setCurrentMediaItem(null);
         }
     }
 
@@ -469,14 +481,14 @@ public class CmsMediaBean implements Serializable {
         Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
         return sizes;
     }
-    
+
     /**
      * @return the selectedLanguage
      */
     public Locale getSelectedLocale() {
         return selectedLocale;
     }
-    
+
     /**
      * @param selectedLanguage the selectedLanguage to set
      */

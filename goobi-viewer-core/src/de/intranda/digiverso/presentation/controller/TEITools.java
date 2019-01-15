@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -53,6 +54,11 @@ public class TEITools {
                 return XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
             }
         }
+
+        return null;
+    }
+
+    public static String convertDocxToTei(Path docxFile) {
 
         return null;
     }
