@@ -27,7 +27,7 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-			<div id="templateFaqSingle" class="tpl-faq-single">
+			<div id="templateFaqSingle" class="tpl-faq-single #{cmsPage.wrapperElementClass}">
 				
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
