@@ -44,7 +44,7 @@
             <script>
                 // mount riot tags
 	            var rmConfig = {
-                	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/sequence/thumbnails/"
+                	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/#{navigationHelper.currentPage}/thumbnails/"
                 };
                 riot.mount( 'rmThumbnails, rmThumbnailImage', rmConfig );
             </script>

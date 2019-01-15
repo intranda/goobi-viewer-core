@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
@@ -70,6 +71,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
+    private PageType preferredView = PageType.viewImage;
 
     /**
      * @param request
@@ -211,7 +213,7 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
+        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferredView())));
         viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
         canvas.addRendering(viewerPage);
 
@@ -442,6 +444,21 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
+        return this;
+    }
+    
+    /**
+     * @return the preferredView
+     */
+    public PageType getPreferredView() {
+        return preferredView;
+    }
+    
+    /**
+     * @param preferredView the preferredView to set
+     */
+    public SequenceBuilder setPreferredView(PageType preferredView) {
+        this.preferredView = preferredView;
         return this;
     }
 
