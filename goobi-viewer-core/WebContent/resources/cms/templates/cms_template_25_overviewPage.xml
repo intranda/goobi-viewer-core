@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateTags" version="2018-11-28">
+    <name>Overview page</name>
+    <description>Overview page template.</description>
+    <icon>cms_template_25_overviewPage.png</icon>
+    <html>cms_template_25_overviewPage.xhtml</html>
+    
+    <content>
+        <item id="text" order="1" label="Text" type="HTML" />
+        <item id="tags" order="2" label="Tags" type="TAGS" />
+    </content>
+</cms_page_template>
