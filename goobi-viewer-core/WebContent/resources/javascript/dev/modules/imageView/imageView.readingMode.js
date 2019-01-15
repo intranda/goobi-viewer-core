@@ -48,9 +48,17 @@ var ImageView = ( function( imageView ) {
             
             $.extend( true, _defaults, config );
             
-            // switch to fullscreen after mouse doesn't move
-            $( '#readingModeViewImage' ).on( 'mousemove', function() {  
-                _switchToFullscreen();
+            // steer header on mousemove
+            $( '#readingModeViewImage, #readingModeViewSidebar' ).on( 'mousemove', function() {
+            	if ( $( '#readingModeViewSidebar' ).hasClass( 'closed' ) ) {
+            		$( '#readingModeHeader' ).show();
+            	}
+            	else {
+            		_hideHeader( true );
+            	}
+            } );
+            $( '#readingModeViewSidebar' ).on( 'click', function() {
+            	_hideHeader( false );
             } );
             
             // make elements resizable
@@ -71,9 +79,12 @@ var ImageView = ( function( imageView ) {
             // toggle sidebar
             $( 'body' ).on( 'click', '[data-close="rm-sidebar"]', function() {
             	$( '#readingModeViewSidebar' ).addClass( 'closed' );
+            	$( '#readingModeSidebarPanelControls' ).addClass( 'hidden' );
             	setTimeout( function() {
             		$( '#viewSidebarOpen' ).fadeIn( 'fast' );
-            		_unsetResizable( _defaults.resizeSelector );
+            		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+            			_unsetResizable( _defaults.resizeSelector );
+            		}
             		
             		sessionStorage.setItem( 'rmSidebarStatus', false );
             	}, 300 );
@@ -82,7 +93,11 @@ var ImageView = ( function( imageView ) {
             	$( '#readingModeViewSidebar' ).removeClass( 'closed' );
             	setTimeout( function() {
             		$( '#viewSidebarOpen' ).hide();
-            		_setResizable( _defaults.resizeSelector );
+            		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+            			_setResizable( _defaults.resizeSelector );
+            		}
+
+            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
             		
             		sessionStorage.setItem( 'rmSidebarStatus', true );
             	}, 300 );
@@ -97,6 +112,9 @@ var ImageView = ( function( imageView ) {
             $( 'body' ).on( 'click', '.reading-mode__view-sidebar-accordeon-panel-title', function() {
                 var parentPanelId = $( this ).parent().attr( 'id' );
                 var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+                
+                // scroll sidebar to top
+                $( '#readingModeViewSidebar' ).scrollTop( 0 );
                 
                 if ( $( this ).hasClass( 'in' ) ) {
                     $( this ).toggleClass( 'in' );
@@ -178,8 +196,10 @@ var ImageView = ( function( imageView ) {
     		
     		if ( sidebarStatus === 'false'  ) {
     			$( '#viewSidebarOpen' ).show();
-    			$( '#readingModeViewSidebar' ).addClass( 'closed' );    			
-    			_unsetResizable( _defaults.resizeSelector );
+    			$( '#readingModeViewSidebar' ).addClass( 'closed' );
+    			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+    				_unsetResizable( _defaults.resizeSelector );
+    			}
     		}
     	}
     }
@@ -203,7 +223,17 @@ var ImageView = ( function( imageView ) {
     			var currId = $( this ).attr( 'id' );
     			
     			if ( !panelStatus.hasOwnProperty( currId ) ) {
+    				// disable all panels
     				panelStatus[ currId ] = false;
+    				
+    				// enable first panel
+		    		panelStatus[Object.keys(panelStatus)[0]] = true;
+		    		
+		    		// show active panels
+		    		if ( panelStatus[ currId ] ) {
+		    			$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
+		    			$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-body' ).show();
+		    		}    			        	
     			}
     			else {
     				return false;
@@ -219,6 +249,7 @@ var ImageView = ( function( imageView ) {
     		$( '.reading-mode__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
     			
+    			// show active panels
     			if ( panelStatus[ currId ] ) {
     				$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
     				$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-body' ).show();
@@ -240,7 +271,7 @@ var ImageView = ( function( imageView ) {
     	
     	$( selector ).resizable({
     		handles: 'w',
-    		minWidth: 400,
+    		minWidth: 500,
     		maxWidth: 900
     	});
     }
@@ -261,43 +292,28 @@ var ImageView = ( function( imageView ) {
 
     /**
      * @description Method to switch the view to fullscreen.
-     * @method _switchToFullscreen
+     * @method _hideHeader
+     * @param {Boolean} trigger A boolean which enables/disables the fadeout.
      * */
-    function _switchToFullscreen() {
+    function _hideHeader( trigger ) {
     	if ( _debug ) {
-    		console.log( 'EXECUTE: _switchToFullscreen' );
+    		console.log( 'EXECUTE: _hideHeader' );
     	}  	
     	
-    	if ( _fadeout ) {
-            clearTimeout( _fadeout );
-            _hideFullscreen();
-        }
-
-    	_fadeout = setTimeout( _showFullscreen, 3000 );
-    }
-
-    /**
-     * @description Method to show the fullscreen.
-     * @method _showFullscreen
-     * */
-    function _showFullscreen() {
-    	if ( _debug ) {
-    		console.log( 'EXECUTE: _showFullscreen' );
+    	if ( trigger ) {
+    		if ( _fadeout ) {
+    			clearTimeout( _fadeout );
+    			$( '#readingModeHeader' ).fadeIn( '1000' );
+    		}
+    		
+    		_fadeout = setTimeout( function() {
+    			$( '#readingModeHeader' ).fadeOut( '1000' );
+    		}, 5000 );    		
     	}
-    	
-    	$( '#readingModeHeader' ).addClass( 'fullscreen' );
-    }
-    
-    /**
-     * @description Method to hide the fullscreen.
-     * @method _hideFullscreen
-     * */
-    function _hideFullscreen() {
-    	if ( _debug ) {
-    		console.log( 'EXECUTE: _hideFullscreen' );
+    	else {
+    		clearTimeout( _fadeout );
+			$( '#readingModeHeader' ).show();
     	}
-    	
-    	$( '#readingModeHeader' ).removeClass( 'fullscreen' );
     }
     
     return imageView;

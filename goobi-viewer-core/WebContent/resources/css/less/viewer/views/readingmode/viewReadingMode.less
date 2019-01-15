@@ -4,11 +4,13 @@
    ==============================================================*/
 /* READING MODE */
 #readingMode {
+	padding: 0;
     background-color: @white; 
 }
 .reading-mode {
     position: relative;
     height: 100%;
+    overflow: hidden;
     /* HEADER */
     &__header {
     	position: fixed;
@@ -84,11 +86,38 @@
 		position: relative;
 		transition: all .3s linear;
 	}
+	/* PANEL CONTROLS */
+	&__view-sidebar-panel-controls {
+		position: absolute;
+		top: 85px;
+		right: 15px;
+		z-index: 1020;
+		[data-close="all-tabs"],
+		[data-open="all-tabs"] {
+			width: 28px;
+			height: 28px;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: 14px;
+		}
+		[data-close="all-tabs"] {
+			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
+		}
+		[data-open="all-tabs"] {
+			background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
+		}
+	}
 	/* IMAGE */
     &__view-image,
 	&__view-image-inner,
-	.view-object__image-map {
+	.view-object__image-map,
+	.view-object__image-mobile {
 		height: 100vh;
+		img {
+		    display: block;
+			height: 100%;
+		    margin: 0 auto;
+		}
 	}
 	&__view-image {}
 	&__view-image-inner {
@@ -199,15 +228,14 @@
 		top: 0;
 		right: 0;
 		bottom: 0;
-		width: 400px;
+		width: 500px;
 		padding-top: 70px;
-		padding-left: 10px;
 		background-color: rgba(255,255,255,0.9);
 		overflow-y: auto;
 		transition: all .3s linear;
 		z-index: 1010;
 		&.closed {
-			right: -100% !important;
+			right: -500px !important;
 			left: 100% !important;
 		}
 		.ui-resizable-handle {
@@ -237,11 +265,14 @@
 			cursor: w-resize;
 		}
 	}
-	&__view-sidebar-inner {}
+	&__view-sidebar-inner {
+		padding-left: 10px;
+	}
 	&__view-sidebar-controls {
 		display: flex;
 		align-items: center;
 		padding: 15px;
+		background-color: @white;
 		.btn {
 			width: 28px;
 			height: 28px;
@@ -253,12 +284,23 @@
 			background-image: url("@{images}/icons/readingmode/icon_rm-right.svg");
 			background-size: 10px;
 		}
-		[data-close="all-tabs"] {
-			margin-left: auto;
-			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
-		}
-		[data-open="all-tabs"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
+//		[data-close="all-tabs"] {
+//			margin-left: auto;
+//			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
+//		}
+//		[data-open="all-tabs"] {
+//			background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
+//		}
+	}
+	/* SIDEBRA WORK TITLE */
+	&__view-sidebar-work-title {
+		padding: 15px;
+		background-color: @white;
+		word-break: break-word;
+		h2 {
+			margin: 0;
+    		line-height: 2rem;
+			font-size: 1.5rem;
 		}
 	}
 	/* SIDEBAR ACCORDEON */
@@ -279,26 +321,27 @@
 		&.rm-search-hit-navigation {
 			.mx-hidden;
 		}
+		&:first-child {
+			h3 {
+				border-top: 0;
+			}
+		}
 	}
 	&__view-sidebar-accordeon-panel-title {
 		position: relative;
 		margin: 0;
 		padding: 10px 15px;
 		font-size: 1rem;
-		border-top: 1px solid @rmMiddlegray;		
-		background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
-		background-repeat: no-repeat;
-		background-position: 94% 17px;
-		background-size: 14px;
+		border-top: 1px solid @rmMiddlegray;
 		background-color: @white;
 		cursor: pointer;
 		z-index: 20;
-		span {
-			display: inline-block;
-			max-width: 94%;
+		&:hover {
+			background-color: @rmLightgray;
 		}
+		span {}
 		&.in {
-			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
+			background-color: @rmLightgray;
 		}
 	}
 	&__view-sidebar-accordeon-panel-body {
@@ -322,7 +365,26 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.reading-mode {
+		&__view-sidebar {
+			width: 50%;
+			padding-left: 0;
+			border-left: 1px solid @rmMiddlegray;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.reading-mode {
+		&__header-brand {
+			span {
+				display: none;
+			}
+		}
+		&__view-sidebar {
+			width: 100%;
+		}
+	}
+}

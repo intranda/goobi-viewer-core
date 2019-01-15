@@ -4377,16 +4377,20 @@ div[id*="-Modal"] .email-form .form-group {
    ==============================================================*/
 /* READING MODE */
 #readingMode {
+  padding: 0;
   background-color: #fff;
 }
 .reading-mode {
   position: relative;
   height: 100%;
+  overflow: hidden;
   /* HEADER */
   /* VIEW */
+  /* PANEL CONTROLS */
   /* IMAGE */
   /* THUMBS */
   /* SIDEBAR */
+  /* SIDEBRA WORK TITLE */
   /* SIDEBAR ACCORDEON */
   /* MODIFICATION */
 }
@@ -4493,10 +4497,39 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode__view:after {
   clear: both;
 }
+.reading-mode__view-sidebar-panel-controls {
+  position: absolute;
+  top: 85px;
+  right: 15px;
+  z-index: 1020;
+}
+.reading-mode__view-sidebar-panel-controls [data-close="all-tabs"],
+.reading-mode__view-sidebar-panel-controls [data-open="all-tabs"] {
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 14px;
+}
+.reading-mode__view-sidebar-panel-controls [data-close="all-tabs"] {
+  background-image: url("../../images/icons/readingmode/icon_rm-minus.svg");
+}
+.reading-mode__view-sidebar-panel-controls [data-open="all-tabs"] {
+  background-image: url("../../images/icons/readingmode/icon_rm-plus.svg");
+}
 .reading-mode__view-image,
 .reading-mode__view-image-inner,
-.reading-mode .view-object__image-map {
+.reading-mode .view-object__image-map,
+.reading-mode .view-object__image-mobile {
   height: 100vh;
+}
+.reading-mode__view-image img,
+.reading-mode__view-image-inner img,
+.reading-mode .view-object__image-map img,
+.reading-mode .view-object__image-mobile img {
+  display: block;
+  height: 100%;
+  margin: 0 auto;
 }
 .reading-mode__view-image-inner {
   position: relative;
@@ -4604,16 +4637,15 @@ div[id*="-Modal"] .email-form .form-group {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 400px;
+  width: 500px;
   padding-top: 70px;
-  padding-left: 10px;
   background-color: rgba(255, 255, 255, 0.9);
   overflow-y: auto;
   transition: all .3s linear;
   z-index: 1010;
 }
 .reading-mode__view-sidebar.closed {
-  right: -100% !important;
+  right: -500px !important;
   left: 100% !important;
 }
 .reading-mode__view-sidebar .ui-resizable-handle {
@@ -4642,12 +4674,16 @@ div[id*="-Modal"] .email-form .form-group {
   width: 10px;
   cursor: w-resize;
 }
+.reading-mode__view-sidebar-inner {
+  padding-left: 10px;
+}
 .reading-mode__view-sidebar-controls {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
       align-items: center;
   padding: 15px;
+  background-color: #fff;
 }
 .reading-mode__view-sidebar-controls .btn {
   width: 28px;
@@ -4660,12 +4696,15 @@ div[id*="-Modal"] .email-form .form-group {
   background-image: url("../../images/icons/readingmode/icon_rm-right.svg");
   background-size: 10px;
 }
-.reading-mode__view-sidebar-controls [data-close="all-tabs"] {
-  margin-left: auto;
-  background-image: url("../../images/icons/readingmode/icon_rm-minus.svg");
+.reading-mode__view-sidebar-work-title {
+  padding: 15px;
+  background-color: #fff;
+  word-break: break-word;
 }
-.reading-mode__view-sidebar-controls [data-open="all-tabs"] {
-  background-image: url("../../images/icons/readingmode/icon_rm-plus.svg");
+.reading-mode__view-sidebar-work-title h2 {
+  margin: 0;
+  line-height: 2rem;
+  font-size: 1.5rem;
 }
 .reading-mode__view-sidebar-accordeon {
   border-bottom: 1px solid #c6c6c6;
@@ -4681,26 +4720,24 @@ div[id*="-Modal"] .email-form .form-group {
   display: none !important;
   visibility: hidden !important;
 }
+.reading-mode__view-sidebar-accordeon-panel:first-child h3 {
+  border-top: 0;
+}
 .reading-mode__view-sidebar-accordeon-panel-title {
   position: relative;
   margin: 0;
   padding: 10px 15px;
   font-size: 1rem;
   border-top: 1px solid #c6c6c6;
-  background-image: url("../../images/icons/readingmode/icon_rm-plus.svg");
-  background-repeat: no-repeat;
-  background-position: 94% 17px;
-  background-size: 14px;
   background-color: #fff;
   cursor: pointer;
   z-index: 20;
 }
-.reading-mode__view-sidebar-accordeon-panel-title span {
-  display: inline-block;
-  max-width: 94%;
+.reading-mode__view-sidebar-accordeon-panel-title:hover {
+  background-color: #f6f6f6;
 }
 .reading-mode__view-sidebar-accordeon-panel-title.in {
-  background-image: url("../../images/icons/readingmode/icon_rm-minus.svg");
+  background-color: #f6f6f6;
 }
 .reading-mode__view-sidebar-accordeon-panel-body {
   display: none;
@@ -4717,7 +4754,22 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .reading-mode__view-sidebar {
+    width: 50%;
+    padding-left: 0;
+    border-left: 1px solid #c6c6c6;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .reading-mode__header-brand span {
+    display: none;
+  }
+  .reading-mode__view-sidebar {
+    width: 100%;
+  }
+}
 /* ==============================================================
    View Reading Mode Image Controls 
    ==============================================================*/
@@ -4841,9 +4893,43 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #fff;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: 1030px) {
+  .reading-mode .image-controls__action.page-browse {
+    display: none;
+  }
+}
 /* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: 875px) {
+  .reading-mode .image-controls__action.zoom-slider {
+    width: 75px;
+  }
+}
+@media screen and (max-width: 825px) {
+  .reading-mode .image-controls__action.zoom-slider {
+    display: none;
+  }
+}
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .reading-mode .image-controls__action.rotate-left,
+  .reading-mode .image-controls__action.rotate-right,
+  .reading-mode .image-controls__action.reset,
+  .reading-mode .image-controls__action.double-page-view {
+    display: none;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .reading-mode .image-controls__action.start,
+  .reading-mode .image-controls__action.back,
+  .reading-mode .image-controls__action.forward,
+  .reading-mode .image-controls__action.end {
+    display: none;
+  }
+  .reading-mode .image-controls__action.select {
+    width: 130px;
+  }
+}
 /* ==============================================================
    View Reading Mode Metadata 
    ==============================================================*/

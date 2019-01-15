@@ -15,6 +15,12 @@
     
     <!-- VIEW -->
     <div id="readingModeView" class="reading-mode__view">
+        <!-- SIDEBAR PANEL CONTROLS -->
+        <div id="readingModeSidebarPanelControls" class="reading-mode__view-sidebar-panel-controls">
+            <button class="btn btn--clean" data-close="all-tabs"></button>
+            <button class="btn btn--clean" data-open="all-tabs"></button>
+        </div>
+
         <!-- IMAGE -->
         <section id="readingModeViewImage" class="reading-mode__view-image">
             <div class="reading-mode__view-image-inner">
@@ -38,13 +44,16 @@
         </section>
 
         <!-- SIDEBAR -->
-        <aside id="readingModeViewSidebar" class="reading-mode__view-sidebar">
-            <div class="reading-mode__view-sidebar-inner">
+        <aside id="readingModeViewSidebar" class="reading-mode__view-sidebar">        
+            <div class="reading-mode__view-sidebar-inner">            
                 <!-- SIDEBAR CONTROLS -->
                 <div class="reading-mode__view-sidebar-controls">
-                    <button class="btn btn--clean" data-close="rm-sidebar"></button>
-                    <button class="btn btn--clean" data-close="all-tabs"></button>
-                    <button class="btn btn--clean" data-open="all-tabs"></button>
+                    <button class="btn btn--clean" title="#{msg.readingmode_hideSidebar}" data-close="rm-sidebar" data-toggle="tooltip" data-placement="right"></button>
+                </div>
+                
+                <!-- SIDEBAR WORK TITLE -->
+                <div class="reading-mode__view-sidebar-work-title">
+                    <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
                 
                 <!-- SIDEBAR ACCORDEON -->
