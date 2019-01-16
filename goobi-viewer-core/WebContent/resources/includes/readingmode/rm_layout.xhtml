@@ -103,26 +103,26 @@
                             </div>
                         </div>
                     </ui:fragment>
-
-                    <!-- DOWNLOADS -->
-                    <div id="panel-3" class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
-                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
-                            <span>#{msg.widgetUsage}</span>
-                        </h3>
-
-                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_usage />
-                        </div>
-                    </div>
                     
                     <!-- FULLTEXT -->
-                    <div id="panel-4" class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
+                    <div id="panel-3" class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
                         <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
                             <span>#{msg.fulltext}</span>
                         </h3>
 
                         <div class="reading-mode__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                        </div>
+                    </div>
+
+                    <!-- DOWNLOADS -->
+                    <div id="panel-4" class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
+                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                            <span>#{msg.widgetUsage}</span>
+                        </h3>
+
+                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <widgetComponent:widget_usage />
                         </div>
                     </div>
 
