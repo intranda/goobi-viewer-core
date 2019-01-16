@@ -4827,8 +4827,17 @@ div[id*="-Modal"] .email-form .form-group {
   background-image: url("../../images/icons/readingmode/icon_rm-back.svg");
   background-size: 12px;
 }
+.reading-mode .image-controls__action.select {
+  width: 100px;
+}
 .reading-mode .image-controls__action.select .form-control__select select {
   font-size: 0.9375rem;
+}
+.reading-mode .image-controls__action.select .custom-control--select select {
+  color: #666;
+}
+.reading-mode .image-controls__action.select .custom-control--select:after {
+  border-top-color: #666;
 }
 .reading-mode .image-controls__action.forward a,
 .reading-mode .image-controls__action.forward span,

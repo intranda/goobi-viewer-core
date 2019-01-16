@@ -77,7 +77,7 @@ var viewerJS = ( function( viewer ) {
             	// check if sidebar is resizing
             	if ( e.target['id'] != _sidebarId ) {
 	            	$( 'body' ).hide();
-	            	location.reload();            		
+	            	window.location.href = window.location.href;            		
             	}
             } );            
             
@@ -263,6 +263,9 @@ var viewerJS = ( function( viewer ) {
     				'right': '-' + _sidebarWidth + 'px',
     				'left': 'inherit'
     			} );
+    			
+    			// show sidebar open
+    			$( '#viewSidebarOpen' ).show();
     			
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {

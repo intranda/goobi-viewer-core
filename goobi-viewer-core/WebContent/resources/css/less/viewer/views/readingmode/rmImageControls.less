@@ -76,10 +76,19 @@
 		    	span {}
 		    }
 		    &.select {
+		    	width: 100px;
 		        .form-control__select {
 		            select {
 		            	font-size: 0.9375rem;
 		            }
+		        }
+		        .custom-control--select {
+		        	select {
+		        		color: @rmDarkgray;
+		        	}
+		        	&:after {
+		        		border-top-color: @rmDarkgray;
+		        	}
 		        }
 		    }
 		    &.forward {
