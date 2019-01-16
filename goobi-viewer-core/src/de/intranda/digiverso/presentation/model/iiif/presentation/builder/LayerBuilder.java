@@ -88,15 +88,11 @@ public class LayerBuilder extends AbstractBuilder {
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
             language.ifPresent(lang -> {      
-                try {
 //                    URI link = ContentResource.getTEIURI(pi, lang);
                     URI link = linkGetter.apply(pi, lang);
                     URI annotationURI = getAnnotationListURI(pi, type);
                     Annotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
                     annotations.add(anno);
-                } catch (URISyntaxException e) {
-                    logger.error("Error creating url for TEI annotation in {}", lang, e);
-                }
             });
         }
         URI annoListURI = getAnnotationListURI(pi, type);

@@ -3173,6 +3173,13 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("webapi.iiif.metadataFields.field", Collections.emptyList());
     }
 
+    /**
+     * @return  The number of activities to display per collection page in the IIIF discovery api
+     */
+    public int getIIIFDiscoveryAvtivitiesPerPage() {
+        return getLocalInt("webapi.iiif.discovery.activitiesPerPage", 100);
+    }
+    
     public String getIIIFLogo() {
         return getLocalString("webapi.iiif.logo", null);
     }
@@ -3232,6 +3239,8 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
+
+
 
 
 
