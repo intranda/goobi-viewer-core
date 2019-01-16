@@ -507,7 +507,6 @@ public class BrowseElement implements Serializable {
                 default:
                     // Skip fields that are already in the list
                     for (Metadata md : metadataList) {
-                        logger.trace("field: " + md.getLabel());
                         if (md.getLabel().equals(termsFieldName)) {
                             skip = true;
                             break;
