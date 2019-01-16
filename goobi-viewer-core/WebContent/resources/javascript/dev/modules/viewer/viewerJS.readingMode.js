@@ -60,16 +60,20 @@ var viewerJS = ( function( viewer ) {
             $( '#readingModeHeader' ).on( 'mousemove', function() {
             	_hideHeader( false );
             } );
-            $( '#imageContainerMobile' ).on( 'touchmove', function() {
+            $( '#imageContainerMobile' ).on( 'touchmove touchend', function() {
             	_hideHeader( true );
-            } ).on( 'touchend', function() {
-            	_hideHeader( true );
-            });
+            } );
             
             // make elements resizable
             if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
             	_setResizable( _defaults.resizeSelector );
             }
+            
+            // set position on resize/orientationchange
+            $( window ).on( 'resize orientationchange', function() {
+            	$( 'body' ).hide();
+            	location.reload();
+            } );            
             
             // reset tooltips for sidebar
             $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'destroy' );
@@ -263,6 +267,9 @@ var viewerJS = ( function( viewer ) {
     			}
     		}
     	}
+    	
+    	// show sidebar
+    	$( '#readingModeViewSidebar' ).show();
     }
     
     /**
