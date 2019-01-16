@@ -42,13 +42,32 @@ riot.tag2('rmthumbnails', '<div class="reading-mode__view-image-thumbs" ref="thu
     	this.observable = new rmObservable();
         this.thumbnails = [];
     	this.wrapper = document.getElementsByClassName( 'reading-mode__view-image-thumbs-wrapper' );
+    	this.controls = document.getElementsByClassName( 'image-controls' );
+    	this.image = document.getElementById( 'imageContainer' );
+    	this.viewportWidth;
+    	this.sidebarWidth;
+    	this.thumbsWidth;
 
     	this.on( 'mount', function() {
         	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
         		e.currentTarget.classList.toggle('in');
-        		$( '.reading-mode__view-image-thumbs-wrapper' ).fadeToggle( 'fast' );
 
-    			if ( this.thumbnails.length == 0 ) {
+        		this.controls[0].classList.toggle( 'faded' );
+
+            	this.viewportWidth = document.getElementById( 'readingMode' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'readingModeViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'rmSidebarStatus' ) === 'false' ) {
+                	this.thumbsWidth = this.viewportWidth;
+            	}
+            	else {
+                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
+            	}
+
+            	$( this.image ).toggle();
+
+        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+
+            	if ( this.thumbnails.length == 0 ) {
 
             		$.ajax( {
                         url: opts.thumbnailUrl,

@@ -24,13 +24,37 @@
     	this.observable = new rmObservable();
         this.thumbnails = [];
     	this.wrapper = document.getElementsByClassName( 'reading-mode__view-image-thumbs-wrapper' );
+    	this.controls = document.getElementsByClassName( 'image-controls' );
+    	this.image = document.getElementById( 'imageContainer' );
+    	this.viewportWidth;
+    	this.sidebarWidth;
+    	this.thumbsWidth;
     	
     	this.on( 'mount', function() {
         	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
         		e.currentTarget.classList.toggle('in');
-        		$( '.reading-mode__view-image-thumbs-wrapper' ).fadeToggle( 'fast' );
         		
-    			if ( this.thumbnails.length == 0 ) {
+        		// hide image controls
+        		this.controls[0].classList.toggle( 'faded' );
+        		
+        		// set element widths
+            	this.viewportWidth = document.getElementById( 'readingMode' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'readingModeViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'rmSidebarStatus' ) === 'false' ) {
+                	this.thumbsWidth = this.viewportWidth;            		
+            	}
+            	else {
+                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;            		
+            	}
+            	
+            	// toggle image
+            	$( this.image ).toggle();
+            	
+            	// show thumb wrapper
+        		$( this.wrapper ).width( this.thumbsWidth ).fadeToggle( 'fast' );
+        		
+    			// get thumbnail images
+            	if ( this.thumbnails.length == 0 ) {
             		// get thumbnails
             		$.ajax( {
                         url: opts.thumbnailUrl,

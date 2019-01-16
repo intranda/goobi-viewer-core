@@ -6,6 +6,10 @@
 	.image-controls {
 		padding: 0;
 		border: 0;
+		opacity: 1;
+		&.faded {
+			opacity: 0;
+		}
 		/* DOCUMENT OPTIONS */
 		&__options {
 			.mx-hidden;
@@ -18,7 +22,7 @@
 	    &__action {
 	    	height: auto;
 	    	margin: 0 7px 0 0;
-	    	font-size: 18px;
+	    	font-size: 0.9375rem;
 			border: 0;
 		    /* ELEMENT */
 		    a, 
@@ -74,7 +78,7 @@
 		    &.select {
 		        .form-control__select {
 		            select {
-		            	font-size: 18px;
+		            	font-size: 0.9375rem;
 		            }
 		        }
 		    }

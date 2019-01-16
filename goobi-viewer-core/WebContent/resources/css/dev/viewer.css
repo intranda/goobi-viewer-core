@@ -4390,7 +4390,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* IMAGE */
   /* THUMBS */
   /* SIDEBAR */
-  /* SIDEBRA WORK TITLE */
+  /* SIDEBAR WORK TITLE */
   /* SIDEBAR ACCORDEON */
   /* MODIFICATION */
 }
@@ -4536,6 +4536,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .reading-mode__view-image-inner .view-object__image {
   padding: 0;
+  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
 }
 .reading-mode__view-image-thumbs-wrapper {
   display: none;
@@ -4545,6 +4546,7 @@ div[id*="-Modal"] .email-form .form-group {
   bottom: 0;
   left: 0;
   padding: 15px;
+  padding-top: 85px;
   background-color: #fff;
   overflow-y: auto;
   z-index: 10;
@@ -4598,25 +4600,19 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
   position: absolute;
   top: 75px;
-  right: -110px;
-  width: 150px;
+  right: 0;
   padding: 10px;
+  padding-top: 5px;
   background-color: #fff;
   transition: all .3s linear;
-  z-index: 20;
-}
-.reading-mode__view-sidebar-open:hover {
-  right: 0;
-}
-.reading-mode__view-sidebar-open:hover .btn {
-  padding-left: 20px;
+  z-index: 1030;
 }
 .reading-mode__view-sidebar-open .btn {
-  padding-left: 40px;
+  padding-left: 20px;
   color: #666;
   background-repeat: no-repeat;
-  background-position: left center;
-  background-size: 10px;
+  background-position: left 2px;
+  background-size: 9px;
   background-image: url("../../images/icons/readingmode/icon_rm-left.svg");
   overflow: hidden;
 }
@@ -4641,12 +4637,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 70px;
   background-color: rgba(255, 255, 255, 0.9);
   overflow-y: auto;
-  transition: all .3s linear;
   z-index: 1010;
-}
-.reading-mode__view-sidebar.closed {
-  right: -500px !important;
-  left: 100% !important;
 }
 .reading-mode__view-sidebar .ui-resizable-handle {
   left: 0;
@@ -4777,8 +4768,12 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode .image-controls {
   padding: 0;
   border: 0;
+  opacity: 1;
   /* DOCUMENT OPTIONS */
   /* ACTIONS */
+}
+.reading-mode .image-controls.faded {
+  opacity: 0;
 }
 .reading-mode .image-controls__options {
   display: none !important;
@@ -4787,7 +4782,7 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode .image-controls__action {
   height: auto;
   margin: 0 7px 0 0;
-  font-size: 18px;
+  font-size: 0.9375rem;
   border: 0;
   /* ELEMENT */
   /* ELEMENT */
@@ -4825,7 +4820,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: 12px;
 }
 .reading-mode .image-controls__action.select .form-control__select select {
-  font-size: 18px;
+  font-size: 0.9375rem;
 }
 .reading-mode .image-controls__action.forward a,
 .reading-mode .image-controls__action.forward span,

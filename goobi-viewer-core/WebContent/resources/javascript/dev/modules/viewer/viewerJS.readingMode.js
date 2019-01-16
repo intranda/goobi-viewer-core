@@ -22,17 +22,19 @@
  * @module viewImage.readingMode
  * @requires jQuery
  */
-var ImageView = ( function( imageView ) {
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
     var _fadeout;
+    var _sidebarWidth;
+    var _sidebarLeft;
     var _defaults = {
     	resizeSelector: '#readingModeViewSidebar',
     	msg: {}
     };
     
-    imageView.readingMode = {
+    viewer.readingMode = {
         /**
          * Method to initialize the viewer reading mode.
          * 
@@ -48,14 +50,9 @@ var ImageView = ( function( imageView ) {
             
             $.extend( true, _defaults, config );
             
-            // steer header on mousemove
+            // display header on mousemove
             $( '#readingModeViewImage, #readingModeViewSidebar' ).on( 'mousemove', function() {
-            	if ( $( '#readingModeViewSidebar' ).hasClass( 'closed' ) ) {
-            		$( '#readingModeHeader' ).show();
-            	}
-            	else {
-            		_hideHeader( true );
-            	}
+            	_hideHeader( true );
             } );
             $( '#readingModeViewSidebar' ).on( 'click', function() {
             	_hideHeader( false );
@@ -80,35 +77,79 @@ var ImageView = ( function( imageView ) {
             _setPanelStatus();
 
             // toggle sidebar
-            $( 'body' ).on( 'click', '[data-close="rm-sidebar"]', function() {
-            	$( '#readingModeViewSidebar' ).addClass( 'closed' );
+            $( '[data-close="rm-sidebar"]' ).on( 'click', function() {
+            	// set global variables
+            	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
+            	_sidebarLeft = $( '#readingModeViewSidebar' ).css( 'left' );
+            	
+            	// set sidebar left position
+            	$( '#readingModeViewSidebar' ).css( 'left', 'inherit' );
+            	
+            	// reset resizable
+            	if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+            		_unsetResizable( _defaults.resizeSelector );
+            	}
+            	
+            	// hide panel controls
             	$( '#readingModeSidebarPanelControls' ).addClass( 'hidden' );
-            	setTimeout( function() {
-            		$( '#viewSidebarOpen' ).fadeIn( 'fast' );
-            		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
-            			_unsetResizable( _defaults.resizeSelector );
-            		}
-            		
+            	
+            	// slide out sidebar
+            	$( '#readingModeViewSidebar' ).animate( {
+            		right: '-' + _sidebarWidth + 'px'
+            	}, 300, function() {
+            		// show sidebar open
+            		$( '#viewSidebarOpen' ).show();
+
+            		// save sidebar status
             		sessionStorage.setItem( 'rmSidebarStatus', false );
-            	}, 300 );
+            	} );
+            	
+            	if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+            		$( '.reading-mode__view-image-thumbs-wrapper' ).animate( {
+            			width: '100%'
+            		}, 300 );
+    			}
             } );
-            $( 'body' ).on( 'click', '[data-open="rm-sidebar"]', function() {
-            	$( '#readingModeViewSidebar' ).removeClass( 'closed' );
-            	setTimeout( function() {
-            		$( '#viewSidebarOpen' ).hide();
+            $( '[data-open="rm-sidebar"]' ).on( 'click', function() {
+            	// hide sidebar open
+            	$( '#viewSidebarOpen' ).hide();
+
+            	// slide in sidebar
+            	$( '#readingModeViewSidebar' ).animate( {
+            		right: 0
+            	}, 300, function() {
+            		// set sidebar left position
+            		$( '#readingModeViewSidebar' ).css( 'left', _sidebarLeft );
+            		
+            		// show panel controls
+            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
+
+            		// set resizable
             		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
             			_setResizable( _defaults.resizeSelector );
             		}
-
-            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
             		
+            		// save sidebar status
             		sessionStorage.setItem( 'rmSidebarStatus', true );
-            	}, 300 );
+            	} );
+            	
+            	if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+            		$( '.reading-mode__view-image-thumbs-wrapper' ).animate( {
+            			width: $( '#readingModeView' ).outerWidth() - _sidebarWidth
+            		}, 300 );
+    			}
             } );
             
-            // scroll resize handle
+            // scroll resize handle and hide panel controls
             $( '#readingModeViewSidebar' ).on( 'scroll', function() {
             	$( '.ui-resizable-handle' ).css( 'top', $( this ).scrollTop() );
+            	
+            	if ( $( this ).scrollTop() > 0 ) {
+            		$( '#readingModeSidebarPanelControls' ).addClass( 'hidden' );
+            	}
+            	else {
+            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
+            	}
             } );
             
             // toggle sidebar panels
@@ -191,6 +232,10 @@ var ImageView = ( function( imageView ) {
     	
     	var sidebarStatus;
     	
+    	// set global variables
+    	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
+    	
+    	
     	if ( sessionStorage.getItem( 'rmSidebarStatus' ) == undefined || sessionStorage.getItem( 'rmSidebarStatus' ) == '' ) {
     		sessionStorage.setItem( 'rmSidebarStatus', true );
     	}
@@ -198,8 +243,16 @@ var ImageView = ( function( imageView ) {
     		sidebarStatus = sessionStorage.getItem( 'rmSidebarStatus' );
     		
     		if ( sidebarStatus === 'false'  ) {
+    			// set sidebar left position
+    			$( '#readingModeViewSidebar' ).css( {
+    				'right': '-' + _sidebarWidth + 'px',
+    				'left': 'inherit'
+    			} );
+    			
+    			// show sidebar open
     			$( '#viewSidebarOpen' ).show();
-    			$( '#readingModeViewSidebar' ).addClass( 'closed' );
+    			
+    			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
     				_unsetResizable( _defaults.resizeSelector );
     			}
@@ -275,7 +328,14 @@ var ImageView = ( function( imageView ) {
     	$( selector ).resizable({
     		handles: 'w',
     		minWidth: 500,
-    		maxWidth: 900
+    		maxWidth: 900,
+    		resize: function( event, ui ) {
+    			if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+    				setTimeout( function() {
+    					$( '.reading-mode__view-image-thumbs-wrapper' ).outerWidth( $( '#readingModeView' ).outerWidth() - $( '#readingModeViewSidebar' ).outerWidth() );    					
+    				}, 325 );
+    			}
+    		}
     	});
     }
     
@@ -306,7 +366,7 @@ var ImageView = ( function( imageView ) {
     	if ( trigger ) {
     		if ( _fadeout ) {
     			clearTimeout( _fadeout );
-    			$( '#readingModeHeader' ).fadeIn( '1000' );
+    			$( '#readingModeHeader' ).show();
     		}
     		
     		_fadeout = setTimeout( function() {
@@ -319,8 +379,6 @@ var ImageView = ( function( imageView ) {
     	}
     }
     
-    return imageView;
+    return viewer;
     
-} )( ImageView );
-
-var viewImage = ImageView;
+} )( viewerJS );
