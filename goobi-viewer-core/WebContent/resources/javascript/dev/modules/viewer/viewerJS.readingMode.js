@@ -29,6 +29,7 @@ var viewerJS = ( function( viewer ) {
     var _fadeout;
     var _sidebarWidth;
     var _sidebarLeft;
+    var _sidebarId;
     var _defaults = {
     	resizeSelector: '#readingModeViewSidebar',
     	msg: {}
@@ -70,9 +71,14 @@ var viewerJS = ( function( viewer ) {
             }
             
             // set position on resize/orientationchange
-            $( window ).on( 'resize orientationchange', function() {
-            	$( 'body' ).hide();
-            	location.reload();
+            $( window ).on( 'resize orientationchange', function(e) {
+            	_sidebarId = $( '#readingModeViewSidebar' ).attr( 'id' );
+            	
+            	// check if sidebar is resizing
+            	if ( e.target['id'] != _sidebarId ) {
+	            	$( 'body' ).hide();
+	            	location.reload();            		
+            	}
             } );            
             
             // reset tooltips for sidebar
@@ -258,9 +264,6 @@ var viewerJS = ( function( viewer ) {
     				'left': 'inherit'
     			} );
     			
-    			// show sidebar open
-    			$( '#viewSidebarOpen' ).show();
-    			
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
     				_unsetResizable( _defaults.resizeSelector );
@@ -269,7 +272,7 @@ var viewerJS = ( function( viewer ) {
     	}
     	
     	// show sidebar
-    	$( '#readingModeViewSidebar' ).show();
+    	$( '.reading-mode__view-sidebar-inner' ).show();
     }
     
     /**

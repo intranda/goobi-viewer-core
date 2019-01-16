@@ -4636,7 +4636,6 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: none;
 }
 .reading-mode__view-sidebar {
-  display: none;
   position: fixed;
   top: 0;
   right: 0;
@@ -4674,6 +4673,7 @@ div[id*="-Modal"] .email-form .form-group {
   cursor: w-resize;
 }
 .reading-mode__view-sidebar-inner {
+  display: none;
   padding-left: 10px;
 }
 .reading-mode__view-sidebar-controls {
