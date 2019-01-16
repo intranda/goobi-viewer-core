@@ -22,7 +22,7 @@
  * @module viewImage.readingMode
  * @requires jQuery
  */
-var ImageView = ( function( imageView ) {
+var viewer = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -32,7 +32,7 @@ var ImageView = ( function( imageView ) {
     	msg: {}
     };
     
-    imageView.readingMode = {
+    viewer.readingMode = {
         /**
          * Method to initialize the viewer reading mode.
          * 
@@ -319,8 +319,6 @@ var ImageView = ( function( imageView ) {
     	}
     }
     
-    return imageView;
+    return viewer;
     
-} )( ImageView );
-
-var viewImage = ImageView;
+} )( viewerJS || {}, jQuery );
