@@ -6800,6 +6800,9 @@ div[id*="-Modal"] .email-form .form-group {
   height: 100vh;
   max-height: 100%;
 }
+.view-mirador .mirador-osd-annotation-controls {
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
