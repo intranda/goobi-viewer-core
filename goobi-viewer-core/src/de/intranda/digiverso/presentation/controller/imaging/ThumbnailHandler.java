@@ -66,7 +66,7 @@ public class ThumbnailHandler {
 
     public static final String[] REQUIRED_SOLR_FIELDS =
             { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL,
-                    SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED};
+                    SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;
     private final int thumbHeight;
@@ -88,7 +88,7 @@ public class ThumbnailHandler {
     }
 
     public URI getThumbnailPath(String filename) {
-        if(StringUtils.isBlank(filename)) {
+        if (StringUtils.isBlank(filename)) {
             return null;
         }
         URI uri;
@@ -536,9 +536,13 @@ public class ThumbnailHandler {
             if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
             } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
-                try {                    
+                try {
                     StructElement volume = doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS));
-                    thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
+                    if (volume != null) {
+                        thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
+                    } else {
+                        thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+                    }
                 } catch (PresentationException | IndexUnreachableException e) {
                     logger.error("Unable to retrieve first volume of " + doc + "from index", e);
                 }
