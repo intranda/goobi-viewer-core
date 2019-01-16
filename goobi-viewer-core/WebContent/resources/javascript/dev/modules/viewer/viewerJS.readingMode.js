@@ -19,7 +19,7 @@
  * Module which handles the viewer reading mode.
  * 
  * @version 3.4.0
- * @module viewImage.readingMode
+ * @module viewerJS.readingMode
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -43,9 +43,9 @@ var viewerJS = ( function( viewer ) {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'osViewer.readingMode.init' );
+                console.log( 'viewer.readingMode.init' );
                 console.log( '##############################' );
-                console.log( 'osViewer.readingMode.init: config - ', config );
+                console.log( 'viewer.readingMode.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
@@ -381,4 +381,4 @@ var viewerJS = ( function( viewer ) {
     
     return viewer;
     
-} )( viewerJS );
+} )( viewerJS || {}, jQuery );

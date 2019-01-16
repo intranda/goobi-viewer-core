@@ -26,20 +26,42 @@
             <div class="reading-mode__view-image-inner">
                 <!-- VIEW IMAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
-                    <ui:include src="/resources/includes/object/image.xhtml" />
-
-                    <!-- THUMBNAILS -->
-                    <div class="reading-mode__view-image-thumbs-wrapper">
-                        <rmThumbnails></rmThumbnails>
-                    </div>
-                    
-                    <!-- OPEN SIDEBAR -->
-                    <div id="viewSidebarOpen" class="reading-mode__view-sidebar-open">
-                        <button class="btn btn--clean" data-open="rm-sidebar">
-                            <span>#{msg.readingmode_openSidebar}</span>
-                        </button>                    
-                    </div>                    
+                    <ui:include src="/resources/includes/object/image.xhtml" />                   
                 </ui:fragment>
+                
+                <!-- VIEW VIDEO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
+                    <ui:insert name="viewVideo">
+                        <ui:include src="/resources/includes/object/video.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+
+                <!-- VIEW AUDIO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
+                    <ui:insert name="viewAudio">
+                        <ui:include src="/resources/includes/object/audio.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+                
+                <!-- VIEW 3D OBJECT -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
+                    <ui:insert name="viewObject3d">
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+                
+                <!-- THUMBNAILS -->
+                <div class="reading-mode__view-image-thumbs-wrapper">
+                    <rmThumbnails></rmThumbnails>
+                </div>
+                
+                <!-- OPEN SIDEBAR -->
+                <div id="viewSidebarOpen" class="reading-mode__view-sidebar-open">
+                    <button class="btn btn--clean" data-open="rm-sidebar">
+                        <span>#{msg.readingmode_openSidebar}</span>
+                    </button>                    
+                </div>
+                
             </div>
         </section>
 
