@@ -15,9 +15,18 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 
+import org.apache.poi.xwpf.converter.core.FileURIResolver;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -58,8 +67,23 @@ public class TEITools {
         return null;
     }
 
-    public static String convertDocxToTei(Path docxFile) {
+    /**
+     * 
+     * @param docxFile
+     * @return
+     * @throws IOException
+     * @should convert docx to tei correctly
+     */
+    public static String convertDocxToTei(Path docxFile) throws IOException {
+        if (docxFile == null) {
+            throw new IllegalArgumentException("docxFile may not be null");
+        }
 
-        return null;
+        XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
+        try (InputStream in = new FileInputStream(docxFile.toFile()); XWPFDocument document = new XWPFDocument(in);
+                OutputStream out = new ByteArrayOutputStream();) {
+            XHTMLConverter.getInstance().convert(document, out, options);
+            return out.toString();
+        }
     }
 }

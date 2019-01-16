@@ -31,7 +31,7 @@
     <ui:define name="content">
         <f:param name="currentPage" value="#{cmsBean.random}" />
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="templateSingleCollection" class="tpl-single-collection">
+            <div id="templateSingleCollection" class="tpl-single-collection #{cmsPage.wrapperElementClass}">
                 <!-- HEADER -->
                 <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
                     <!-- IMAGE -->

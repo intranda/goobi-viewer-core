@@ -418,6 +418,8 @@ public class Bookshelf implements Serializable {
             windowObjectItem.put("sidePanelVisible", false);
             windowObjectItem.put("bottomPanel", false);
             windowObjectItem.put("viewType", "ImageView");
+            windowObjectItem.put("annotationLayer", false);
+            windowObjectItem.put("annotationCreation", false);
             windowObjectsArray.add(windowObjectItem);
 
             //            col++;
