@@ -4496,14 +4496,6 @@ div[id*="-Modal"] .email-form .form-group {
   position: relative;
   transition: all .3s linear;
 }
-.reading-mode__view:before,
-.reading-mode__view:after {
-  content: " ";
-  display: table;
-}
-.reading-mode__view:after {
-  clear: both;
-}
 .reading-mode__view-sidebar-panel-controls {
   position: absolute;
   top: 85px;
