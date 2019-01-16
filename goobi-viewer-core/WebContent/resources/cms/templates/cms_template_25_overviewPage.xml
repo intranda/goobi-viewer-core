@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templateTags" version="2018-11-28">
+<cms_page_template id="templateOverviewPage" version="2018-11-28">
     <name>Overview page</name>
     <description>Overview page template.</description>
     <icon>cms_template_25_overviewPage.png</icon>
@@ -8,5 +8,6 @@
     <content>
         <item id="text" order="1" label="Text" type="HTML" />
         <item id="tags" order="2" label="Tags" type="TAGS" />
+        <item id="metadata" order="3" label="Metadata" type="METADATA" />
     </content>
 </cms_page_template>

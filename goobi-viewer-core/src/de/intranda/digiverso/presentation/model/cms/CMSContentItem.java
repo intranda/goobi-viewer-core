@@ -93,7 +93,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         SEARCH,
         GLOSSARY,
         COMPONENT,
-        TAGS;
+        TAGS,
+        METADATA;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -207,6 +208,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Column(name = "ignore_collections")
     private String ignoreCollections = null;
 
+    /** Comma separated list of metadata field names to display in overview pages **/
+    @Column(name = "metadataFields")
+    private String metadataFields = null;
+
     @Column(name = "toc_pi")
     private String tocPI = "";
 
@@ -236,13 +241,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Column(name = "component")
     private String component = null;
-    
+
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
-    
+
     @Column(name = "searchType")
     private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
-    
+
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -270,7 +275,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
-
 
     /**
      * Noop constructor for javax.persistence
@@ -317,6 +321,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.solrSortFields = blueprint.solrSortFields;
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
         this.setSearchType(blueprint.getSearchType());
+        this.setMetadataFields(blueprint.getMetadataFields());
 
     }
 
@@ -611,9 +616,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (nestedPages == null) {
             return loadNestedPages();
         }
-        List<CMSPage> pages =
-                nestedPages.stream().filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification)).collect(
-                        Collectors.toList());
+        List<CMSPage> pages = nestedPages.stream()
+                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .collect(Collectors.toList());
         return pages;
     }
 
@@ -973,8 +978,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
             List<String> ret = Arrays.stream(ignoreCollections.split(",")).collect(Collectors.toList());
-//            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
-//          List<String> ret = Arrays.asList(ignoreCollections.split(","));
+            //            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
+            //          List<String> ret = Arrays.asList(ignoreCollections.split(","));
 
             return ret;
         }
@@ -992,12 +997,57 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     }
 
     /**
+     * @return the metadataFields
+     */
+    public String getMetadataFields() {
+        return metadataFields;
+    }
+
+    /**
+     * @param metadataFields the metadataFields to set
+     */
+    public void setMetadataFields(String metadataFields) {
+        this.metadataFields = metadataFields;
+    }
+
+    public List<String> getMetadataFieldsAsList() {
+        if (StringUtils.isNotBlank(metadataFields)) {
+            List<String> ret = Arrays.stream(metadataFields.split(",")).collect(Collectors.toList());
+            return ret;
+        }
+        return new ArrayList<>();
+    }
+
+    public void setMetadataFieldsAsList(List<String> fields) {
+        if (fields == null || fields.isEmpty()) {
+            this.metadataFields = null;
+        } else {
+            this.metadataFields = StringUtils.join(fields, ",");
+        }
+    }
+
+    /**
+     * Get the list of metadata fields which may be displayed. This is the main metadata list
+     * 
+     * @return the main metadata list
+     */
+    public List<String> getAvailableMetadataFields() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getMainMetadataForTemplate(null)
+                .stream()
+                .map(md -> md.getLabel())
+                .collect(Collectors.toList());
+
+    }
+
+    /**
      * @return
      */
     public boolean isDisplayEmptySearchResults() {
         return this.displayEmptySearchResults;
     }
-    
+
     /**
      * @param displayEmptySearchResults the displayEmptySearchResults to set
      */
@@ -1011,22 +1061,22 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public int getSearchType() {
         return searchType;
     }
-    
+
     /**
      * @param searchType the searchType to set
      */
     public void setSearchType(int searchType) {
         this.searchType = searchType;
     }
-    
+
     public void setAdvancedSearch(boolean advanced) {
-        if(advanced) {
+        if (advanced) {
             this.searchType = SearchHelper.SEARCH_TYPE_ADVANCED;
         } else {
             this.searchType = SearchHelper.SEARCH_TYPE_REGULAR;
         }
     }
-    
+
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
     }
