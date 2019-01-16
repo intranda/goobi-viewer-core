@@ -150,6 +150,12 @@ public class CMSPage {
      */
     @Column(name = "may_contain_url_parameters")
     private boolean mayContainUrlParameters = true;
+    
+    /**
+     * A html class name to be applied to the DOM element containing the page html
+     */
+    @Column(name = "wrapper_element_class")
+    private String wrapperElementClass = "";
 
     @Transient
     private String sidebarElementString = null;
@@ -193,6 +199,7 @@ public class CMSPage {
         this.classifications = new ArrayList<>(original.classifications);
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
+        this.wrapperElementClass = original.wrapperElementClass;
 
         if (original.properties != null) {
             this.properties = new ArrayList<>(original.properties.size());
@@ -1169,6 +1176,20 @@ public class CMSPage {
             }
         }
         
+    }
+    
+    /**
+     * @return the {@link #wrapperElementClass}
+     */
+    public String getWrapperElementClass() {
+        return wrapperElementClass;
+    }
+    
+    /**
+     * @param wrapperElementClass the {@link #wrapperElementClass} to set
+     */
+    public void setWrapperElementClass(String wrapperElementClass) {
+        this.wrapperElementClass = wrapperElementClass;
     }
 
 }
