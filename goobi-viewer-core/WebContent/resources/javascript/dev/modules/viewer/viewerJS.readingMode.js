@@ -50,7 +50,7 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
-            // display header on mousemove
+            // display header on mousemove/touchmove
             $( '#readingModeViewImage, #readingModeViewSidebar' ).on( 'mousemove', function() {
             	_hideHeader( true );
             } );
@@ -60,6 +60,11 @@ var viewerJS = ( function( viewer ) {
             $( '#readingModeHeader' ).on( 'mousemove', function() {
             	_hideHeader( false );
             } );
+            $( '#imageContainerMobile' ).on( 'touchmove', function() {
+            	_hideHeader( true );
+            } ).on( 'touchend', function() {
+            	_hideHeader( true );
+            });
             
             // make elements resizable
             if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
