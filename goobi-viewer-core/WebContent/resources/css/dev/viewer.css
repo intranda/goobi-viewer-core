@@ -6778,6 +6778,10 @@ div[id*="-Modal"] .email-form .form-group {
 .fullscreen__header-brand img {
   max-height: 40px;
 }
+.fullscreen__header-brand span {
+  display: none !important;
+  visibility: hidden !important;
+}
 .fullscreen__header-controls {
   display: -ms-flexbox;
   display: flex;
