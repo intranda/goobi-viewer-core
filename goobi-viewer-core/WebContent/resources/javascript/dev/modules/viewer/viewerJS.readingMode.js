@@ -61,8 +61,8 @@ var viewerJS = ( function( viewer ) {
             $( '#readingModeHeader' ).on( 'mousemove', function() {
             	_hideHeader( false );
             } );
-            $( '#imageContainerMobile' ).on( 'touchmove touchend', function() {
-            	_hideHeader( true );
+            $( window ).on( 'touchstart touchend touchcancel touchmove', function() {
+            	_hideHeader( true, 1000 );
             } );
             
             // make elements resizable
@@ -97,11 +97,6 @@ var viewerJS = ( function( viewer ) {
             	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
             	_sidebarLeft = $( '#readingModeViewSidebar' ).css( 'left' );
             	
-            	// hide back and forward on small devices
-            	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-            		$( '.image-controls__action.back, .image-controls__action.forward' ).show();
-            	}
-            	
             	// set sidebar left position
             	$( '#readingModeViewSidebar' ).css( 'left', 'inherit' );
             	
@@ -109,16 +104,21 @@ var viewerJS = ( function( viewer ) {
             	if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
             		_unsetResizable( _defaults.resizeSelector );
             	}
-            	
+
             	// hide panel controls
-            	$( '#readingModeSidebarPanelControls' ).addClass( 'hidden' );
+            	$( '#readingModeSidebarPanelControls' ).hide();
             	
             	// slide out sidebar
             	$( '#readingModeViewSidebar' ).animate( {
             		right: '-' + _sidebarWidth + 'px'
-            	}, 300, function() {
+            	}, 300, function() {            		
             		// show sidebar open
             		$( '#viewSidebarOpen' ).show();
+            		
+            		// show back and forward on small devices
+                	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
+                		$( '.image-controls__action.back, .image-controls__action.forward' ).show();
+                	}
 
             		// save sidebar status
             		sessionStorage.setItem( 'rmSidebarStatus', false );
@@ -147,7 +147,7 @@ var viewerJS = ( function( viewer ) {
             		$( '#readingModeViewSidebar' ).css( 'left', _sidebarLeft );
             		
             		// show panel controls
-            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
+            		$( '#readingModeSidebarPanelControls' ).show();
 
             		// set resizable
             		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -274,6 +274,9 @@ var viewerJS = ( function( viewer ) {
     				'left': 'inherit'
     			} );
     			
+    			// hide panel controls
+    			$( '#readingModeSidebarPanelControls' ).hide();
+    			
     			// show sidebar open
     			$( '#viewSidebarOpen' ).show();
     			
@@ -385,11 +388,21 @@ var viewerJS = ( function( viewer ) {
      * @description Method to switch the view to fullscreen.
      * @method _hideHeader
      * @param {Boolean} trigger A boolean which enables/disables the fadeout.
+     * @param {Number} delay The delay when header is hiding. 
      * */
-    function _hideHeader( trigger ) {
+    function _hideHeader( trigger, delay ) {
     	if ( _debug ) {
     		console.log( 'EXECUTE: _hideHeader' );
-    	}  	
+    	}
+    	
+    	var delay;
+    	
+    	if ( delay != undefined ) {
+    		delay = delay;
+    	}
+    	else {
+    		delay = 5000;
+    	}
     	
     	if ( trigger ) {
     		if ( _fadeout ) {
@@ -399,7 +412,7 @@ var viewerJS = ( function( viewer ) {
     		
     		_fadeout = setTimeout( function() {
     			$( '#readingModeHeader' ).fadeOut( '1000' );
-    		}, 5000 );    		
+    		}, delay );    		
     	}
     	else {
     		clearTimeout( _fadeout );

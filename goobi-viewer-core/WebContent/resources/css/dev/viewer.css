@@ -4767,6 +4767,22 @@ div[id*="-Modal"] .email-form .form-group {
   .reading-mode__view-sidebar {
     width: 100%;
   }
+  .reading-mode__view-sidebar-open {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+  .reading-mode__view-sidebar-open .btn {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background-position: center center;
+  }
+  .reading-mode__view-sidebar-open .btn span {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
 /* ==============================================================
    View Reading Mode Image Controls 
