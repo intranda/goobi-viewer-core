@@ -324,8 +324,8 @@ public class ActivityCollectionBuilder {
     private SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes(false);
-        if (startDate != null) {
-            query += " AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
+        if (startDate != null && endDate != null) {
+            query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
         SolrDocumentList list =
                 DataManager.getInstance().getSearchIndex().search(query, getActivitiesPerPage(), null, Arrays.asList(SOLR_FIELDS));
