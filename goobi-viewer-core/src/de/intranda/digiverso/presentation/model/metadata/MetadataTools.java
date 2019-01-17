@@ -227,7 +227,7 @@ public class MetadataTools {
         // citation_volume
         if (structElement.getMetadataValue(SolrConstants.CURRENTNO) != null) {
             String value = StringEscapeUtils.escapeHtml(structElement.getMetadataValue(SolrConstants.CURRENTNO));
-            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\" /");
+            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\" />");
         }
         // citation_language
         if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
