@@ -166,8 +166,8 @@
 	    &.rotate-right {}
 	    &.reset {}
 	    &.fullscreen {}
-	    &.zoom-slider {
-	        width: 96px;
+	    &.zoom-slider-wrapper {
+	        width: 100px;
 	        border: none;
 	        .zoom-slider {
 	            height: 16px;
@@ -189,10 +189,11 @@
     /* MODIFICATION */
 	.labeltext {
 		padding: 0;
-		display: none;
+		display: none !important;
 	}
 }
 .tooltip_clipboard {
+	display: none;
 	position: absolute;
 	z-index: 10000;
 	background-color: rgb(68, 68, 68);
@@ -201,8 +202,6 @@
 	vertical-align: middle;
 	border-radius: 10px;
 	font-size: 12px;
-	display: none;
-	
 }
 
 /* FIREFOX CORRECTION */
@@ -215,7 +214,7 @@
 /* BREAKPOINT FOR LARGE DESKTOP */
 @media screen and (max-width: @largeBreakpoint) {} 
 
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
@@ -247,7 +246,7 @@
 			&.select {
 				width: 74px;
 			}
-			&.zoom-slider {
+			&.zoom-slider-wrapper {
 				.mx-hidden;
 			}
 		}

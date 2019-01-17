@@ -41,9 +41,9 @@
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
         		maxZoomLevel: 5,
         		controls : {
-        		    rotateLeft: '.image-rotate_left',
-        		    rotateRight: '.image-rotate_right',
-        		    reset: '.image-reset',
+        		    rotateLeft: '.rotate-left',
+        		    rotateRight: '.rotate-right',
+        		    reset: '.reset',
         		}
         	},
         	image: {
@@ -71,7 +71,12 @@
         		]
         	}
         };
-
+        
+        // check for readingmode and change container height
+        if ( $( '#readingMode' ).length > 0 ) {
+        	configViewer.global.adaptContainerHeight = false;
+        	configViewer.global.topMargin = $('#readingModeHeader').height();
+        }
                 
        	// desktop object view
        	if ( access && openSeadragonVisible ) {

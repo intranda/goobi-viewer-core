@@ -679,6 +679,23 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="ksw">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_kulturerbe/" />
+		<property name="server.url" value="https://haab-digital.klassik-stiftung.de/kulturerbe/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fkulturerbe%2Foai" />
+		<property name="customDataSource" value="true" />
+		<property name="jta-data-source" value="java:comp/env/kulturerbe" />
+		<property name="theme" value="reference" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="hlbw2">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />

@@ -1,0 +1,40 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- READINGMODE HEADER -->
+    <header id="readingModeHeader" class="reading-mode__header">
+        <!-- LOGO -->
+        <div class="reading-mode__header-brand">
+            <a href="#{request.contextPath}/">
+                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/readingmode_logo.png" alt="Readingmode Logo" />
+                <span>#{msg.readingmode_brandName}</span>
+            </a>
+        </div>
+        
+        <!-- CONTROLS -->
+        <div class="reading-mode__header-controls">            
+            <!-- CONTROLS -->
+            <viewerComponent:imageControls />
+            
+            <!-- TOGGLE THUMBNAILS -->
+            <button class="btn btn--clean" data-show="thumbs"></button>
+        </div>
+        
+        <!-- EXIT -->
+        <div class="reading-mode__header-exit">
+            <h:outputLink value="#{request.contextPath}#{navigationHelper.currentViewUrl}" title="#{msg.readingMode_leave}">
+                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                <f:passThroughAttribute name="data-placement" value="bottom" />
+            </h:outputLink>
+        </div>
+    </header>
+</ui:composition>

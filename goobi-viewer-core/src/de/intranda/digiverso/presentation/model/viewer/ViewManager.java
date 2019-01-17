@@ -310,7 +310,6 @@ public class ViewManager implements Serializable {
                 .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
                 .stream()
                 .mapToInt(string -> "max".equalsIgnoreCase(string) ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth() : Integer.parseInt(string))
-//                .mapToInt(string -> Integer.parseInt(string))
                 .max()
                 .orElse(800);
         return getCurrentImageUrl(view, size);

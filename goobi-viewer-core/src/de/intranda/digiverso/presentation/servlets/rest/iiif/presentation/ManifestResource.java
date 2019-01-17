@@ -60,6 +60,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.builder.Struct
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -217,9 +218,9 @@ public class ManifestResource extends AbstractResource {
      * @throws ContentNotFoundException If no document was found for the given pi
      */
     @GET
-    @Path("/{pi}/sequence/thumbnails")
+    @Path("/{pi}/{preferredView}/thumbnails")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Canvas> getThumbnailSequence(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+    public List<Canvas> getThumbnailSequence(@PathParam("preferredView") String preferredView, @PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
@@ -230,7 +231,11 @@ public class ManifestResource extends AbstractResource {
         if (manifest instanceof Collection) {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            getSequenceBuilder().setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            PageType pageType = PageType.getByName(preferredView);
+            if(pageType == null) {
+                pageType = PageType.viewImage;
+            }
+            getSequenceBuilder().setPreferredView(pageType).setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0).getCanvases();
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");

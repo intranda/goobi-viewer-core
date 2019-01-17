@@ -137,7 +137,7 @@
                                 </ui:fragment>
                                 <!-- SELECT -->
                                 <li class="image-controls__action select">
-                                    <div class="form-control__select">
+                                    <div class="form-control__select custom-control custom-control--select">
                                         <!-- Image view select -->
                                         <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
                                             onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
@@ -300,7 +300,7 @@
                             <!-- ZOMMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
-                                <li class="image-controls__action zoom-slider">
+                                <li class="image-controls__action zoom-slider-wrapper">
                                     <div class="zoom-slider">
                                         <span class="zoom-slider-handle"></span>
                                     </div>

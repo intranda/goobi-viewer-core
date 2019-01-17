@@ -23,4 +23,31 @@
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
         </f:view>
     </ui:define>
+    
+    <!-- CONTENT READINGMODE -->
+    <ui:define name="content-readingmode">
+        <f:view contentType="text/html" encoding="utf-8">
+            <!-- COinS -->
+            <span class="Z3988" title="#{activeDocumentBean.viewManager.contextObject}"></span>
+            
+            <!-- MESSAGES -->
+            <div class="messages">
+                <h:messages infoClass="alert alert-success" errorClass="alert alert-danger" />
+            </div>
+            
+            <!-- VIEW -->
+            <div class="reading-mode">
+                <!-- LAYOUT -->
+                <ui:include src="/resources/includes/readingmode/rm_layout.xhtml" />
+            </div>
+            
+            <script>
+                // mount riot tags
+	            var rmConfig = {
+                	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/#{navigationHelper.currentPage}/thumbnails/"
+                };
+                riot.mount( 'rmThumbnails, rmThumbnailImage', rmConfig );
+            </script>
+        </f:view>
+    </ui:define>
 </ui:composition>
