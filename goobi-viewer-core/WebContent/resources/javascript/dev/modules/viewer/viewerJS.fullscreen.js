@@ -51,6 +51,7 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
+            _hideHeader( true ,5000);
             // display header on mousemove/touchmove
             $( '#fullscreenViewImage, #fullscreenViewSidebar' ).on( 'mousemove', function() {
             	_hideHeader( true );
@@ -64,22 +65,34 @@ var viewerJS = ( function( viewer ) {
             $( window ).on( 'touchstart touchend touchcancel touchmove', function() {
             	_hideHeader( true, 1000 );
             } );
+            $( '#fullscreenViewImage, #fullscreenViewSidebar' ).on( 'touchstart touchend touchcancel touchmove', function() {
+                _hideHeader( true, 1000 );
+            } );
             
             // make elements resizable
             if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
             	_setResizable( _defaults.resizeSelector );
+            	
+                // set position on resize/orientationchange
+                $( window ).on( 'resize', function(e) {
+                    _sidebarId = $( '#fullscreenViewSidebar' ).attr( 'id' );
+                    
+                    // check if sidebar is resizing
+                    if ( e.target['id'] != _sidebarId ) {
+                        $( 'body' ).hide();
+                        window.location.href = window.location.href;                    
+                    }
+                } );   
+            	
+            } else {
+                // set position on resize/orientationchange
+                $( window ).on( 'orientationchange', function(e) {
+                        $( 'body' ).hide();
+                        window.location.href = window.location.href;                    
+                } );   
             }
             
-            // set position on resize/orientationchange
-            $( window ).on( 'resize orientationchange', function(e) {
-            	_sidebarId = $( '#fullscreenViewSidebar' ).attr( 'id' );
-            	
-            	// check if sidebar is resizing
-            	if ( e.target['id'] != _sidebarId ) {
-	            	$( 'body' ).hide();
-	            	window.location.href = window.location.href;            		
-            	}
-            } );            
+         
             
             // reset tooltips for sidebar
             $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'destroy' );
