@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +26,10 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -45,10 +41,12 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationM
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
+ * Builder for both {@link OrderedCollection} and {@link OrderedCollectionPage} of {@link Activity Acvitities}
+ * for the IIIF Discovery API.
+ * 
  * @author Florian Alpers
  *
  */
@@ -64,18 +62,36 @@ public class ActivityCollectionBuilder {
     private Integer numActivities = null;
     private Date startDate = null;
 
+    /**
+     * Constructs the builder from a {@link HttpServletRequest}
+     * @param request   The request to which to respond (for URI creation)
+     */
     public ActivityCollectionBuilder(HttpServletRequest request) {
         this.request = Optional.ofNullable(request);
         this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
         this.requestURI = URI.create(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
     }
 
+    /**
+     * Constructs the builder from specific URIs; used to testing
+     * 
+     * @param servletUri    The URI of the containing server
+     * @param requestURI    The URI called by the request
+     */
     public ActivityCollectionBuilder(URI servletUri, URI requestURI) {
         this.request = Optional.empty();
         this.servletURI = servletUri;
         this.requestURI = requestURI;
     }
 
+    /**
+     * Creates a An {@link OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained 
+     * {@link OrderedCollectionPage} as well as counting the total number of Activities
+     * 
+     * @return  An {@link OrderedCollection}
+     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws IndexUnreachableException   If the Solr index cannot be queried
+     */
     public OrderedCollection<Activity> buildCollection() throws PresentationException, IndexUnreachableException {
         OrderedCollection<Activity> collection = new OrderedCollection<>(getCollectionURI());
         collection.setTotalItems(getNumActivities());
@@ -85,14 +101,15 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * Creates An {@link OrderedCollection} of {@link Activity Acvitities}, i.e. a partial list of Activities.
+     * Which Activities are contained within the page depends on the given pageNo as well as the configured number of
+     * entries per page defined by {@link de.intranda.digiverso.presentation.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * 
+     * @param pageNo    The number of this page, beginning with 0
+     * @return  An {@link OrderedCollectionPage}
+     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws IndexUnreachableException   If the Solr index cannot be queried
      */
-    public int getLastPageNo() throws PresentationException, IndexUnreachableException {
-        return getNumActivities() / getActivitiesPerPage();
-    }
-
     public OrderedCollectionPage<Activity> buildPage(int pageNo) throws PresentationException, IndexUnreachableException {
 
         int first = pageNo * getActivitiesPerPage();
@@ -120,11 +137,80 @@ public class ActivityCollectionBuilder {
         return page;
 
     }
+    
+    /**
+     * Set the earliest date of Activities to be included in this collection.
+     * 
+     * @param startDate the earliest date of Activities to be included in this collection. If null, Activities are not filtered by date which is the default
+     * @return  The Builder itself
+     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws IndexUnreachableException   If the Solr index cannot be queried
+     */
+    public ActivityCollectionBuilder setStartDate(Date startDate) throws PresentationException, IndexUnreachableException {
+        this.startDate = startDate;
+        //reset numActivities because it is affected  by startDate
+        this.numActivities = null;
+        return this;
+    }
 
     /**
-     * @param docs
-     * @return
+     * Get the earliest date of Activities which may be contained in the collection
+     * 
+     * @return the earliest date of Activities which may be contained in the collection. May return null if no startDate is specified
      */
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Get the number of activities per page as defined by {@link de.intranda.digiverso.presentation.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     * 
+     * @return the number of activities per page as defined by {@link de.intranda.digiverso.presentation.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
+     */
+    public int getActivitiesPerPage() {
+        return activitiesPerPage;
+    }
+
+    /**
+     * Get the total number of {@link Activity Activities} in the collection
+     * 
+     * @return the total number of {@link Activity Activities} in the collection
+     * @throws PresentationException       If the contained Solr query is faulty (due to configuration errors)
+     * @throws IndexUnreachableException   If the Solr index cannot be queried
+     */
+    public int getNumActivities() throws PresentationException, IndexUnreachableException {
+        if (numActivities == null) {
+            numActivities = getNumberOfActivities(getStartDate());
+        }
+        return numActivities;
+    }
+
+    /**
+     * Get the URI for the collection request
+     * 
+     * @return the URI for the collection request
+     */
+    public URI getCollectionURI() {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities");
+        return URI.create(sb.toString());
+    }
+
+    /**
+     * Get the URI to request a specific collection page
+     * 
+     * @param no    the page number
+     * @return  the URI to request a specific collection page
+     */
+    public URI getPageURI(int no) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities/").append(no);
+        return URI.create(sb.toString());
+    }
+    
+
+    private int getLastPageNo() throws PresentationException, IndexUnreachableException {
+        return getNumActivities() / getActivitiesPerPage();
+    }
+
     private List<Activity> buildItems(SolrDocumentList docs, Long startDate, Long endDate) {
         List<Activity> activities = new ArrayList<>();
         for (SolrDocument doc : docs) {
@@ -158,10 +244,6 @@ public class ActivityCollectionBuilder {
         return activities;
     }
 
-    /**
-     * @param doc
-     * @return
-     */
     private IPresentationModelElement createObject(SolrDocument doc) {
         String pi = (String) doc.getFieldValue(SolrConstants.PI);
         URI uri = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
@@ -172,7 +254,7 @@ public class ActivityCollectionBuilder {
     /**
      * @return The requested url before any presentation specific parts. Generally the rest api url. Includes a trailing slash
      */
-    protected URI getBaseUrl() {
+    private URI getBaseUrl() {
 
         String request = requestURI.toString();
         if (!request.contains("/iiif/")) {
@@ -187,12 +269,6 @@ public class ActivityCollectionBuilder {
 
     }
 
-    /**
-     * @param earliestDate
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
     private int getNumberOfActivities(Date startDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes(false);
@@ -245,14 +321,6 @@ public class ActivityCollectionBuilder {
         }
     }
 
-    /**
-     * @param last
-     * @param first
-     * @param earliestDate
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
     private SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = "ISWORK:true";
         query += " " + SearchHelper.getAllSuffixes(false);
@@ -264,47 +332,5 @@ public class ActivityCollectionBuilder {
         return list;
     }
 
-    public ActivityCollectionBuilder setStartDate(Date startDate) throws PresentationException, IndexUnreachableException {
-        this.startDate = startDate;
-        //reset numActivities because it is affected  by startDate
-        this.numActivities = null;
-        return this;
-    }
-
-    /**
-     * @return the startDate
-     */
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    /**
-     * @return the activitiesPerPage
-     */
-    public int getActivitiesPerPage() {
-        return activitiesPerPage;
-    }
-
-    /**
-     * @return the numActivities
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public int getNumActivities() throws PresentationException, IndexUnreachableException {
-        if (numActivities == null) {
-            numActivities = getNumberOfActivities(getStartDate());
-        }
-        return numActivities;
-    }
-
-    public URI getCollectionURI() {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities");
-        return URI.create(sb.toString());
-    }
-
-    public URI getPageURI(int no) {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/discovery/activities/").append(no);
-        return URI.create(sb.toString());
-    }
 
 }

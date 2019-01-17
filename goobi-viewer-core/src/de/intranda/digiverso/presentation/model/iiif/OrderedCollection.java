@@ -42,57 +42,72 @@ public class OrderedCollection<T> {
     private OrderedCollectionPage<T> last;
     
     /**
-     * 
+     * Constructs a collection from the URI to the resource providing this object
      */
     public OrderedCollection(URI id) {
        this.id = id;
     }
     
     /**
-     * @return the id
+     * @return the URI to the resource providing this object
      */
     public URI getId() {
         return id;
     }
     
     /**
-     * @return the totalItems
+     * Get the total number of items contained in the collection
+     * 
+     * @return the total number of items contained in the collection
      */
     public long getTotalItems() {
         return totalItems;
     }
     /**
+     * Set the total number of items contained in the collection
+     * 
      * @param totalItems the totalItems to set
      */
     public void setTotalItems(long totalItems) {
         this.totalItems = totalItems;
     }
     /**
-     * @return the first
+     * Returns a reference to the first page of this collection
+     * 
+     * @return a reference to the first page of this collection
      */
     public OrderedCollectionPage<T> getFirst() {
         return first;
     }
     /**
-     * @param first the first to set
+     *Sets the first page of this collection
+     * 
+     * @param first the first page to set
      */
     public void setFirst(OrderedCollectionPage<T> first) {
         this.first = first;
     }
+    
     /**
-     * @return the last
+     * Returns a reference to the last page of this collection
+     * 
+     * @return a reference to the last page of this collection
      */
     public OrderedCollectionPage<T> getLast() {
         return last;
     }
     /**
-     * @param last the last to set
+     *Sets the last page of this collection
+     * 
+     * @param last the last page to set
      */
     public void setLast(OrderedCollectionPage<T> last) {
         this.last = last;
     }
     /**
-     * @return the context
+     * The JSON-LD context of the resource
+     * 
+     * @return The JSON-LD context of the resource
      */
     @JsonProperty("@context")    
     public String[] getContext() {
@@ -100,6 +115,8 @@ public class OrderedCollection<T> {
     }
     
     /**
+     * Set the JSON-LD context of the resource
+     * 
      * @param context the context to set
      */
     public void setContext(String[] context) {
@@ -107,6 +124,8 @@ public class OrderedCollection<T> {
     }
     
     /**
+     * The type of this resource. Always "OrderedCollection"
+     * 
      * @return the type
      */
     public String getType() {

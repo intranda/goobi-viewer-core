@@ -38,66 +38,85 @@ public class OrderedCollectionPage<T> {
     
     private String[] context;
     private final URI id;
-    private OrderedCollection partOf;
+    private OrderedCollection<T> partOf;
     private OrderedCollectionPage<T> prev;
     private OrderedCollectionPage<T> next;
     private List<T> orderedItems = new ArrayList<>();
     
+    /**
+     * Constructs a collection page from the URI to the resource providing this object
+     */
     public OrderedCollectionPage(URI id) {
         this.id = id;
     }
 
     /**
-     * @return the partOf
+     * Reference to the containing collection
+     * 
+     * @return the containing collection
      */
-    public OrderedCollection getPartOf() {
+    public OrderedCollection<T> getPartOf() {
         return partOf;
     }
 
     /**
-     * @param partOf the partOf to set
+     * Set the reference to the containing collection
+     * 
+     * @param partOf the containing collection
      */
-    public void setPartOf(OrderedCollection partOf) {
+    public void setPartOf(OrderedCollection<T> partOf) {
         this.partOf = partOf;
     }
 
     /**
-     * @return the prev
+     * Get the previous collection page
+     * 
+     * @return the previous collection page. May be null if no previous page exists
      */
-    public OrderedCollectionPage getPrev() {
+    public OrderedCollectionPage<T> getPrev() {
         return prev;
     }
 
     /**
-     * @param prev the prev to set
+     * Set the previous collection page
+     * 
+     * @param prev the page to set
      */
-    public void setPrev(OrderedCollectionPage prev) {
+    public void setPrev(OrderedCollectionPage<T> prev) {
         this.prev = prev;
     }
 
     /**
-     * @return the next
+     * Get the succeeding collection page
+     * 
+     * @return the succeeding collection page. May be null if no succeeding page exists
      */
-    public OrderedCollectionPage getNext() {
+    public OrderedCollectionPage<T> getNext() {
         return next;
     }
 
     /**
-     * @param next the next to set
+     * Set the succeeding collection page
+     * 
+     * @param next the page to set
      */
-    public void setNext(OrderedCollectionPage next) {
+    public void setNext(OrderedCollectionPage<T> next) {
         this.next = next;
     }
 
     /**
-     * @return the orderedItems
+     * Get the list of items on this page
+     * 
+     * @return the items
      */
     public List<T> getOrderedItems() {
         return orderedItems;
     }
 
     /**
-     * @param orderedItems the orderedItems to set
+     * Set the list of items for this page
+     * 
+     * @param orderedItems the items to set
      */
     public void setOrderedItems(List<T> orderedItems) {
         this.orderedItems = orderedItems;
@@ -112,13 +131,17 @@ public class OrderedCollectionPage<T> {
     }
     
     /**
-     * @param context the context to set
+     * The JSON-LD context of the resource
+     * 
+     * @return The JSON-LD context of the resource
      */
     public void setContext(String[] context) {
         this.context = context;
     }
 
     /**
+     * The type of this resource. Always "OrderedCollectionPage"
+     * 
      * @return the type
      */
     public String getType() {
@@ -126,7 +149,7 @@ public class OrderedCollectionPage<T> {
     }
 
     /**
-     * @return the id
+     * @return the URI to the resource providing this object
      */
     public URI getId() {
         return id;

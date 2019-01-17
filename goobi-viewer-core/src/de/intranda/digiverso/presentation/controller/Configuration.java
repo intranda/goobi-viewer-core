@@ -3174,6 +3174,8 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
+     * 
      * @return  The number of activities to display per collection page in the IIIF discovery api
      */
     public int getIIIFDiscoveryAvtivitiesPerPage() {

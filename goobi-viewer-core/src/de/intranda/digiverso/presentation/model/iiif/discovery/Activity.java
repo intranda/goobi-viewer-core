@@ -35,38 +35,50 @@ public class Activity {
     private IPresentationModelElement object;
     private Date endTime;
     /**
+     * The type of this Activity. One of UPDATE, CREATE and DELETE
+     * 
      * @return the type
      */
     public ActivityType getType() {
         return type;
     }
     /**
+     * Sets the type of this Activity. One of UPDATE, CREATE and DELETE
+     * 
      * @param type the type to set
      */
     public void setType(ActivityType type) {
         this.type = type;
     }
     /**
+     * Get the document changed by this Activity in the form of a IIIF manifest
+     * 
      * @return the object
      */
     public IPresentationModelElement getObject() {
         return object;
     }
     /**
+     * Set the document changed by this Activity in the form of a IIIF manifest
+     * 
      * @param object the object to set
      */
     public void setObject(IPresentationModelElement object) {
         this.object = object;
     }
     /**
-     * @return the endTime
+     * The update time
+     * 
+     * @return the update time
      */
     @JsonFormat(pattern = DATETIME_FORMAT)
     public Date getEndTime() {
         return endTime;
     }
     /**
-     * @param endTime the endTime to set
+     * Set the update time
+     * 
+     * @param endTime the updat time
      */
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
