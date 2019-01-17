@@ -58,6 +58,9 @@ var viewerJS = ( function() {
         $( '[data-toggle="tooltip"]' ).tooltip( {
             trigger : 'hover'
         } );
+        if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
+        	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
+        }
         
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
