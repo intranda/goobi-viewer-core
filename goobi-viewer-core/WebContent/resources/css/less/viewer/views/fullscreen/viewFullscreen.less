@@ -20,7 +20,7 @@
     	display: flex;
     	align-items: center;
     	height: 70px;
-    	border-bottom: 1px solid @rmMiddlegray;
+    	border-bottom: 1px solid @fsMiddlegray;
     	background-color: @white;
     	transition: all .3s linear;
     	opacity: 1;
@@ -35,11 +35,11 @@
     	padding-right: 15px;
     	padding-left: 15px;
     	a, button {
-    		color: @rmDarkgray;
+    		color: @fsDarkgray;
     		&:hover,
     		&:active,
     		&:focus {
-    			color: @rmDarkgray;
+    			color: @fsDarkgray;
     			text-decoration: none;
     		}
     	}
@@ -203,7 +203,7 @@
 		z-index: 1030;
 		.btn {
 			padding-left: 20px;
-			color: @rmDarkgray;
+			color: @fsDarkgray;
 			background-repeat: no-repeat;
 			background-position: left 2px;
 			background-size: 9px;
@@ -218,7 +218,7 @@
 			&.active:focus, 
 			&.focus, 
 			&:active.focus {
-	    		color: @rmDarkgray;
+	    		color: @fsDarkgray;
 	    		text-decoration: none;
 	    	}
 		}
@@ -235,7 +235,7 @@
 		z-index: 1010;
 		.ui-resizable-handle {
 			left: 0;
-			border-right: 1px solid @rmMiddlegray;
+			border-right: 1px solid @fsMiddlegray;
 			z-index: 998 !important;
 			&:before,
 			&:after {
@@ -246,7 +246,7 @@
 				width: 1px;
 				height: 40px;
 				margin-top: -20px;
-				background-color: @rmMiddlegray;
+				background-color: @fsMiddlegray;
 			}
 			&:before {
 				right: 2px;
@@ -294,7 +294,7 @@
 	}
 	/* SIDEBAR ACCORDEON */
 	&__view-sidebar-accordeon {
-		border-bottom: 1px solid @rmMiddlegray;
+		border-bottom: 1px solid @fsMiddlegray;
 	}
 	&__view-sidebar-accordeon-panel {
 		position: relative;
@@ -321,16 +321,16 @@
 		margin: 0;
 		padding: 10px 15px;
 		font-size: 1rem;
-		border-top: 1px solid @rmMiddlegray;
+		border-top: 1px solid @fsMiddlegray;
 		background-color: @white;
 		cursor: pointer;
 		z-index: 20;
 		&:hover {
-			background-color: @rmLightgray;
+			background-color: @fsLightgray;
 		}
 		span {}
 		&.in {
-			background-color: @rmLightgray;
+			background-color: @fsLightgray;
 		}
 	}
 	&__view-sidebar-accordeon-panel-body {
@@ -359,7 +359,7 @@
 		&__view-sidebar {
 			width: 50%;
 			padding-left: 0;
-			border-left: 1px solid @rmMiddlegray;
+			border-left: 1px solid @fsMiddlegray;
 		}
 	}
 }
