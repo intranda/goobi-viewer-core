@@ -76,7 +76,7 @@ public class DiscoveryResourceTest extends AbstractSolrEnabledTest {
         OrderedCollectionPage<Activity> page = resource.getPage(0);
         Assert.assertEquals("https://testServer:80/viewer/rest/iiif/discovery/activities/0", page.getId().toString());
         Assert.assertEquals("https://testServer:80/viewer/rest/iiif/discovery/activities/1", page.getNext().getId().toString());
-        Assert.assertEquals("https://testServer:80/viewer/rest/iiif/discovery/activities/", page.getPartOf().getId().toString());
+        Assert.assertEquals("https://testServer:80/viewer/rest/iiif/discovery/activities", page.getPartOf().getId().toString());
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage(), page.getOrderedItems().size());
     }
 
