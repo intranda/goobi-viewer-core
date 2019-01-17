@@ -231,13 +231,33 @@
 @media screen and (max-width: @xSmallBreakpoint) {
 	.reading-mode {
 		.image-controls__action.start,
-		.image-controls__action.back,
-		.image-controls__action.forward,
 		.image-controls__action.end {
 			display: none;
 		}
 		.image-controls__action.select {
 			width: 130px;
+		}
+		.image-controls__action.back,
+		.image-controls__action.forward {
+			position: fixed;
+			top: 50%;
+			width: 50px;
+		    height: 100px;
+		    margin: 0;
+		    margin-top: -50px;
+		    background-color: rgba(255,255,255,0.85);
+		    z-index: 1000;
+		    a {
+		    	width: 100%;
+		    	height: 100%;
+		    	background-size: 24px;
+		    }
+		}
+		.image-controls__action.back {
+			left: 0;
+		}
+		.image-controls__action.forward {
+			right: 0;
 		}
 	}
 }

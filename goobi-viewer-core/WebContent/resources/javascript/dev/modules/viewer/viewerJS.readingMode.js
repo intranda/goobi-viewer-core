@@ -97,6 +97,11 @@ var viewerJS = ( function( viewer ) {
             	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
             	_sidebarLeft = $( '#readingModeViewSidebar' ).css( 'left' );
             	
+            	// hide back and forward on small devices
+            	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
+            		$( '.image-controls__action.back, .image-controls__action.forward' ).show();
+            	}
+            	
             	// set sidebar left position
             	$( '#readingModeViewSidebar' ).css( 'left', 'inherit' );
             	
@@ -128,6 +133,11 @@ var viewerJS = ( function( viewer ) {
             $( '[data-open="rm-sidebar"]' ).on( 'click', function() {
             	// hide sidebar open
             	$( '#viewSidebarOpen' ).hide();
+            	
+            	// show back and forward on small devices
+            	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
+            		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
+            	}
 
             	// slide in sidebar
             	$( '#readingModeViewSidebar' ).animate( {
