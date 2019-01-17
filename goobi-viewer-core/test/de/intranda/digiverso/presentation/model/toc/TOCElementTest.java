@@ -68,7 +68,7 @@ public class TOCElementTest {
     public void getUrl_shouldConstructFullScreenUrlCorrectly() throws Exception {
         TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", "first", "123", "LOG_0001", 0, "PPN123", null, false, false, true,
                 "image", null, null);
-        Assert.assertEquals('/' + PageType.viewReadingMode.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewReadingMode.getName()));
+        Assert.assertEquals('/' + PageType.viewFullscreen.getName() + "/PPN123/1/LOG_0001/", tef.getUrl(PageType.viewFullscreen.getName()));
     }
 
     /**
