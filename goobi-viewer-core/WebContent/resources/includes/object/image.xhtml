@@ -14,10 +14,10 @@
     <div id="imageContainer" class="view-object__image">        
         <!-- MAP -->
         <div id="imageMap" class="view-object__image-map"></div>
-    </div>
 
-    <!-- MOBILE IMAGE VIEW -->
-    <div id="imageContainerMobile" class="view-object__image-mobile"></div>
+        <!-- MOBILE IMAGE OVERLAY -->
+        <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
+    </div>
 
     <!-- OPEN SEADRAGON -->
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
@@ -26,7 +26,6 @@
     <script type="text/javascript">
   		//<![CDATA[
     	var imageMap = $( "#imageMap" );
-        var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" );
         var imageUrl = "#{activeDocumentBean.viewManager.currentImageUrl}";
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
@@ -76,10 +75,11 @@
         if ( $( '#readingMode' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
         	configViewer.global.topMargin = $('#readingModeHeader').height();
+        	
         }
                 
        	// desktop object view
-       	if ( access && openSeadragonVisible ) {
+       	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
            	
            	viewImage.load().then( function( osViewer ) {} ).catch( function( error ) {
@@ -88,24 +88,19 @@
            		
            		// reload image footer in readingmode
            		if ( page === "readingmode" ) {
-                	$( window ).on( "resize", function() {
+                	$( window ).on( "resize orientationchange", function() {
                 		viewImage.loadFooter();                    		
                 	} );
                 }
            	} );
-        } else if ( openSeadragonVisible ) {
+        } 
+       	else {
        		imageMap.append( accessDeniedMessage );
        	}
 
-       	// mobile object view
-       	if ( $( "#imageContainerMobile" ).is( ":visible" ) ) {
-       		if ( access ) {
-       	        var staticImage = $( "<img />" ).attr( "src", imageUrl).attr( "alt", "current object" ).addClass( "img-responsive" );
-       			$( "#imageContainerMobile" ).append( staticImage );
-       		}
-       		else {
-       			$( "#imageContainerMobile" ).append( accessDeniedMessage );
-       		}
+       	// mobile overlay
+       	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'readingmode' ) {
+       		$( "#imageContainerMobileOverlay" ).show();
        	}
       	//]]>
     </script>
