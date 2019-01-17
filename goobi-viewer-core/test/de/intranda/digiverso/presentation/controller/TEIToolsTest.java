@@ -22,16 +22,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
+
 public class TEIToolsTest {
-    
+
     /**
-    * @see TEITools#convertDocxToTei(Path)
-    * @verifies convert docx to tei correctly
-    */
+     * @see TEITools#convertDocxToTei(Path)
+     * @verifies convert docx to tei correctly
+     */
     @Test
     public void convertDocxToTei_shouldConvertDocxToTeiCorrectly() throws Exception {
         String result = TEITools.convertDocxToTei(Paths.get("resources/test/data/example.docx"));
         Assert.assertTrue(StringUtils.isNotEmpty(result));
-        // System.out.println(result);
+//        System.out.println(result);
+        System.out.println(new TeiToHtmlConvert().convert(result));
     }
 }

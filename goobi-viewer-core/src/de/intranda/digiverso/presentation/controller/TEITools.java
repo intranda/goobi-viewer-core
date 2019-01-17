@@ -23,16 +23,32 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
-import org.apache.poi.xwpf.converter.core.FileURIResolver;
-import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
-import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMResult;
+import org.jdom2.transform.JDOMSource;
+import org.jdom2.transform.XSLTransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.opensagres.poi.xwpf.converter.core.FileURIResolver;
+import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLConverter;
+import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLOptions;
 
 public class TEITools {
+
+    private final static Logger logger = LoggerFactory.getLogger(TEITools.class);
 
     /**
      * Returns the full-text part of the given TEI document string.
@@ -79,11 +95,45 @@ public class TEITools {
             throw new IllegalArgumentException("docxFile may not be null");
         }
 
-        XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
-        try (InputStream in = new FileInputStream(docxFile.toFile()); XWPFDocument document = new XWPFDocument(in);
-                OutputStream out = new ByteArrayOutputStream();) {
-            XHTMLConverter.getInstance().convert(document, out, options);
-            return out.toString();
+        //        try (InputStream in = new FileInputStream(docxFile.toFile()); XWPFDocument document = new XWPFDocument(in);
+        //                OutputStream out = new ByteArrayOutputStream();) {
+        //
+        //                  XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
+        //                        XHTMLConverter.getInstance().convert(document, out, options);
+        //            
+        //    
+        //            return out.toString();
+        //        }
+
+        //      XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
+        //            XHTMLConverter.getInstance().convert(document, out, options);
+
+        
+        // TODO Unzip docxFile
+        try {
+            String wordDirectory = "C:/digiverso/viewer/temp/docx/";
+            Document docxDoc = XmlTools.readXmlFile(wordDirectory + "word/document.xml");
+            JDOMSource docFrom = new JDOMSource(docxDoc);
+            JDOMResult docTo = new JDOMResult();
+
+            Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer(
+                            new StreamSource(DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/docx/from/docxtotei.xsl"));
+            transformer.setParameter("word-directory", wordDirectory);
+            transformer.transform(docFrom, docTo);
+            return new XMLOutputter().outputString(docTo.getDocument());
+        } catch (XSLTransformException e) {
+            logger.error(e.getMessage(), e);
+        } catch (JDOMException e) {
+            logger.error(e.getMessage(), e);
+        } catch (TransformerConfigurationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (TransformerFactoryConfigurationError e) {
+            logger.error(e.getMessage(), e);
+        } catch (TransformerException e) {
+            logger.error(e.getMessage(), e);
         }
+
+        return null;
     }
 }
