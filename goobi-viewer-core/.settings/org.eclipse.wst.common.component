@@ -277,6 +277,10 @@
         <dependent-module archiveName="goobi-viewer-theme-iai.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-iai/goobi-viewer-theme-iai">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- VLB -->
+        <dependent-module archiveName="goobi-viewer-theme-vlb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-vlb/goobi-viewer-theme-vlb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>

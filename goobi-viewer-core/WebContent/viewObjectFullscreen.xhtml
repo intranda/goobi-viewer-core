@@ -7,12 +7,12 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateReadingMode.html">
+	template="/resources/themes/#{navigationHelper.theme}/templateFullscreen.html">
 
     <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('readingmode')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('fullscreen')}" />
         </f:metadata>
     </ui:define>
 
@@ -24,8 +24,8 @@
         </f:view>
     </ui:define>
     
-    <!-- CONTENT READINGMODE -->
-    <ui:define name="content-readingmode">
+    <!-- CONTENT FULLSCREEN -->
+    <ui:define name="content-fullscreen">
         <f:view contentType="text/html" encoding="utf-8">
             <!-- COinS -->
             <span class="Z3988" title="#{activeDocumentBean.viewManager.contextObject}"></span>
@@ -36,17 +36,17 @@
             </div>
             
             <!-- VIEW -->
-            <div class="reading-mode">
+            <div class="fullscreen">
                 <!-- LAYOUT -->
-                <ui:include src="/resources/includes/readingmode/rm_layout.xhtml" />
+                <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
             </div>
             
             <script>
                 // mount riot tags
-	            var rmConfig = {
+	            var fsConfig = {
                 	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/#{navigationHelper.currentPage}/thumbnails/"
                 };
-                riot.mount( 'rmThumbnails, rmThumbnailImage', rmConfig );
+                riot.mount( 'fsThumbnails, fsThumbnailImage', fsConfig );
             </script>
         </f:view>
     </ui:define>

@@ -1,8 +1,8 @@
 /* ==============================================================
-   View Reading Mode Image Controls 
+   View Fullscreen Image Controls 
    ==============================================================*/
-/* READING MODE IMAGE CONTROLS */
-.reading-mode {
+/* FULLSCREEN IMAGE CONTROLS */
+.fullscreen {
 	.image-controls {
 		padding: 0;
 		border: 0;
@@ -55,7 +55,7 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-start.svg");
+					background-image: url("@{images}/icons/icon_fs-start.svg");
 					background-size: 18px;
 				}
 		    }
@@ -68,7 +68,7 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-back.svg");
+					background-image: url("@{images}/icons/icon_fs-back.svg");
 					background-size: 12px;
 				}
 		    }
@@ -77,17 +77,17 @@
 		    }
 		    &.select {
 		    	width: 100px;
-		        .form-control__select {
+		        .fofs-control__select {
 		            select {
 		            	font-size: 0.9375rem;
 		            }
 		        }
 		        .custom-control--select {
 		        	select {
-		        		color: @rmDarkgray;
+		        		color: @fsDarkgray;
 		        	}
 		        	&:after {
-		        		border-top-color: @rmDarkgray;
+		        		border-top-color: @fsDarkgray;
 		        	}
 		        }
 		    }
@@ -95,7 +95,7 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-forward.svg");
+					background-image: url("@{images}/icons/icon_fs-forward.svg");
 					background-size: 12px;
 				}
 		    }
@@ -103,7 +103,7 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-end.svg");
+					background-image: url("@{images}/icons/icon_fs-end.svg");
 					background-size: 18px;
 				}
 		    }
@@ -116,14 +116,14 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-double-page.svg");
+					background-image: url("@{images}/icons/icon_fs-double-page.svg");
 				}
 		    }
 		    &.single-page-view {
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-single-page.svg");
+					background-image: url("@{images}/icons/icon_fs-single-page.svg");
 					background-size: 26px;
 				}
 		    }
@@ -131,7 +131,7 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-recto-verso.svg");
+					background-image: url("@{images}/icons/icon_fs-recto-verso.svg");
 					background-size: 32px;
 				}
 		    	svg {}
@@ -144,21 +144,21 @@
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-rotate-left.svg");
+					background-image: url("@{images}/icons/icon_fs-rotate-left.svg");
 				}
 		    }
 		    &.rotate-right {
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-rotate-right.svg");
+					background-image: url("@{images}/icons/icon_fs-rotate-right.svg");
 				}
 		    }
 		    &.reset {
 		    	a, 
 				span, 
 				button {
-					background-image: url("@{images}/icons/readingmode/icon_rm-reset.svg");
+					background-image: url("@{images}/icons/icon_fs-reset.svg");
 				}
 		    }
 		    &.fullscreen {
@@ -170,13 +170,13 @@
 		        .zoom-slider {
 		        	height: 2px;
 		        	margin-top: 0;
-		        	background-color: @rmDarkgray;
+		        	background-color: @fsDarkgray;
 		        }
 		        .zoom-slider-handle {
 		        	top: -12px;
 		        	width: 24px;
 		        	height: 24px;
-		        	border: 2px solid @rmDarkgray;
+		        	border: 2px solid @fsDarkgray;
 		        	border-radius: 100%;
 		        	background-color: @white;
 		        }
@@ -189,7 +189,7 @@
 @media screen and (max-width: @largeBreakpoint) {}
 
 @media screen and (max-width: 1030px) {
-	.reading-mode {
+	.fullscreen {
 		.image-controls__action.page-browse {
 			display: none;
 		}		
@@ -200,7 +200,7 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 @media screen and (max-width: 875px) {
-	.reading-mode {
+	.fullscreen {
 		.image-controls__action.zoom-slider-wrapper {
 			width: 75px;
 		}
@@ -208,7 +208,7 @@
 }
 
 @media screen and (max-width: 825px) {
-	.reading-mode {
+	.fullscreen {
 		.image-controls__action.zoom-slider-wrapper {
 			display: none;
 		}
@@ -217,7 +217,7 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		.image-controls__action.rotate-left,
 		.image-controls__action.rotate-right,
 		.image-controls__action.reset,
@@ -229,7 +229,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		.image-controls__action.start,
 		.image-controls__action.end {
 			display: none;

@@ -71,10 +71,10 @@
         	}
         };
         
-        // check for readingmode and change container height
-        if ( $( '#readingMode' ).length > 0 ) {
+        // check for fullscreen and change container height 
+        if ( $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
-        	configViewer.global.topMargin = $('#readingModeHeader').height();
+        	configViewer.global.topMargin = $('#fullscreenHeader').height();
         	
         }
                 
@@ -86,8 +86,8 @@
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
            		
-           		// reload image footer in readingmode
-           		if ( page === "readingmode" ) {
+           		// reload image footer in fullscreen
+           		if ( page === "fullscreen" ) {
                 	$( window ).on( "resize orientationchange", function() {
                 		viewImage.loadFooter();                    		
                 	} );
@@ -99,7 +99,7 @@
        	}
 
        	// mobile overlay
-       	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'readingmode' ) {
+       	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
        		$( "#imageContainerMobileOverlay" ).show();
        	}
       	//]]>

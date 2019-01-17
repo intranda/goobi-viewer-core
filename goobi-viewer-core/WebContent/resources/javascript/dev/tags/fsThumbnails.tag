@@ -1,16 +1,16 @@
-<rmThumbnails>
-    <div class="reading-mode__view-image-thumbs" ref="thumbnailWrapper">
+<fsThumbnails>
+    <div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper">
         <!-- THUMBNAIL -->
-        <div each={thumbnail in thumbnails} class="reading-mode__view-image-thumb">
+        <div each={thumbnail in thumbnails} class="fullscreen__view-image-thumb">
             <!-- THUMBNAIL IMAGE -->
-            <figure class="reading-mode__view-image-thumb-image">
+            <figure class="fullscreen__view-image-thumb-image">
                 <a href="{thumbnail.rendering['@id']}">
-                    <rmThumbnailImage thumbnail={thumbnail} observable={observable} root=".reading-mode__view-image-thumbs-wrapper" imgsrc={thumbnail.thumbnail['@id']}></rmThumbnailImage>
+                    <fsThumbnailImage thumbnail={thumbnail} observable={observable} root=".fullscreen__view-image-thumbs-wrapper" imgsrc={thumbnail.thumbnail['@id']}></fsThumbnailImage>
                 </a>
     
                 <figcaption>
                     <!-- THUMBNAIL IMAGE ORDER -->
-                    <div class="reading-mode__view-image-thumb-image-order {thumbnail.loaded ? 'in' : ''}">{thumbnail.label}</div>
+                    <div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? 'in' : ''}">{thumbnail.label}</div>
                 </figcaption>
             </figure>
         </div>
@@ -23,7 +23,7 @@
         
     	this.observable = new rmObservable();
         this.thumbnails = [];
-    	this.wrapper = document.getElementsByClassName( 'reading-mode__view-image-thumbs-wrapper' );
+    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
     	this.viewportWidth;
@@ -38,9 +38,9 @@
         		this.controls[0].classList.toggle( 'faded' );
         		
         		// set element widths
-            	this.viewportWidth = document.getElementById( 'readingMode' ).offsetWidth;
-            	this.sidebarWidth = document.getElementById( 'readingModeViewSidebar' ).offsetWidth;
-            	if ( sessionStorage.getItem( 'rmSidebarStatus' ) === 'false' ) {
+            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
                 	this.thumbsWidth = this.viewportWidth;            		
             	}
             	else {
@@ -73,4 +73,4 @@
     		this.update();
     	}.bind( this ) );
     </script>
-</rmThumbnails>
+</fsThumbnails>

@@ -11,82 +11,82 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW -->
-    <div id="readingModeView" class="reading-mode__view">
+    <div id="fullscreenView" class="fullscreen__view">
         <!-- SIDEBAR PANEL CONTROLS -->
-        <div id="readingModeSidebarPanelControls" class="reading-mode__view-sidebar-panel-controls">
+        <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
             <button class="btn btn--clean" data-close="all-tabs"></button>
             <button class="btn btn--clean" data-open="all-tabs"></button>
         </div>
         
         <!-- SIDEBAR -->
-        <aside id="readingModeViewSidebar" class="reading-mode__view-sidebar">        
-            <div class="reading-mode__view-sidebar-inner">            
+        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar">        
+            <div class="fullscreen__view-sidebar-inner">            
                 <!-- SIDEBAR CONTROLS -->
-                <div class="reading-mode__view-sidebar-controls">
-                    <button class="btn btn--clean" title="#{msg.readingmode_hideSidebar}" data-close="rm-sidebar" data-toggle="tooltip" data-placement="right"></button>
+                <div class="fullscreen__view-sidebar-controls">
+                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right"></button>
                 </div>
                 
                 <!-- SIDEBAR WORK TITLE -->
-                <div class="reading-mode__view-sidebar-work-title">
+                <div class="fullscreen__view-sidebar-work-title">
                     <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
                 
                 <!-- SIDEBAR ACCORDEON -->
-                <div class="reading-mode__view-sidebar-accordeon">
+                <div class="fullscreen__view-sidebar-accordeon">
                     <!-- METADATA -->
-                    <div id="panel-1" class="reading-mode__view-sidebar-accordeon-panel rm-metadata">
-                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                    <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                             <span>#{msg.sidebarBibData}</span>
                         </h3>
                         
-                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                         </div>
                     </div>
 
                     <!-- TOC -->
                     <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren()}">
-                        <div id="panel-2" class="reading-mode__view-sidebar-accordeon-panel rm-toc">
-                            <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                        <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.sidebarTocAnchor}</span>
                             </h3>
                             
-                            <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_toc />
                             </div>
                         </div>
                     </ui:fragment>
                     
                     <!-- FULLTEXT -->
-                    <div id="panel-3" class="reading-mode__view-sidebar-accordeon-panel rm-fulltext">
-                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                    <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                             <span>#{msg.fulltext}</span>
                         </h3>
 
-                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <ui:include src="/resources/includes/object/fulltext.xhtml" />
                         </div>
                     </div>
 
                     <!-- DOWNLOADS -->
-                    <div id="panel-4" class="reading-mode__view-sidebar-accordeon-panel rm-downloads">
-                        <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                    <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                             <span>#{msg.widgetUsage}</span>
                         </h3>
 
-                        <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_usage />
                         </div>
                     </div>
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div id="panel-5" class="reading-mode__view-sidebar-accordeon-panel rm-search-hit-navigation">
-                            <h3 class="reading-mode__view-sidebar-accordeon-panel-title">
+                        <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
                             
-                            <div class="reading-mode__view-sidebar-accordeon-panel-body">
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_searchResultNavigation />
                             </div>
                         </div>                    
@@ -95,12 +95,12 @@
             </div>
         </aside>
         
-        <!-- READINGMODE HEADER -->
-        <ui:include src="/resources/includes/readingmode/rm_header.xhtml" />
+        <!-- FULLSCREEN HEADER -->
+        <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
 
         <!-- IMAGE -->
-        <section id="readingModeViewImage" class="reading-mode__view-image">
-            <div class="reading-mode__view-image-inner">
+        <section id="fullscreenViewImage" class="fullscreen__view-image">
+            <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                     <ui:include src="/resources/includes/object/image.xhtml" />                   
@@ -128,14 +128,14 @@
                 </h:panelGroup>
                 
                 <!-- THUMBNAILS -->
-                <div class="reading-mode__view-image-thumbs-wrapper">
-                    <rmThumbnails></rmThumbnails>
+                <div class="fullscreen__view-image-thumbs-wrapper">
+                    <fsThumbnails></fsThumbnails>
                 </div>
                 
                 <!-- OPEN SIDEBAR -->
-                <div id="viewSidebarOpen" class="reading-mode__view-sidebar-open">
-                    <button class="btn btn--clean" data-open="rm-sidebar">
-                        <span>#{msg.readingmode_openSidebar}</span>
+                <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
+                    <button class="btn btn--clean" data-open="fs-sidebar">
+                        <span>#{msg.fullscreen_openSidebar}</span>
                     </button>                    
                 </div>
                 
