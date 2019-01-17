@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module which handles the viewer reading mode.
+ * Module which handles the fullscreen mode.
  * 
  * @version 3.4.0
- * @module viewerJS.readingMode
+ * @module viewerJS.fullscreen
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -31,34 +31,34 @@ var viewerJS = ( function( viewer ) {
     var _sidebarLeft;
     var _sidebarId;
     var _defaults = {
-    	resizeSelector: '#readingModeViewSidebar',
+    	resizeSelector: '#fullscreenViewSidebar',
     	msg: {}
     };
     
-    viewer.readingMode = {
+    viewer.fullscreen = {
         /**
-         * Method to initialize the viewer reading mode.
+         * Method to initialize the viewer fullscreen.
          * 
          * @method init
          */
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.readingMode.init' );
+                console.log( 'viewer.fullscreen.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.readingMode.init: config - ', config );
+                console.log( 'viewer.fullscreen.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
             
             // display header on mousemove/touchmove
-            $( '#readingModeViewImage, #readingModeViewSidebar' ).on( 'mousemove', function() {
+            $( '#fullscreenViewImage, #fullscreenViewSidebar' ).on( 'mousemove', function() {
             	_hideHeader( true );
             } );
-            $( '#readingModeViewSidebar' ).on( 'click', function() {
+            $( '#fullscreenViewSidebar' ).on( 'click', function() {
             	_hideHeader( false );
             } );
-            $( '#readingModeHeader' ).on( 'mousemove', function() {
+            $( '#fullscreenHeader' ).on( 'mousemove', function() {
             	_hideHeader( false );
             } );
             $( window ).on( 'touchstart touchend touchcancel touchmove', function() {
@@ -72,7 +72,7 @@ var viewerJS = ( function( viewer ) {
             
             // set position on resize/orientationchange
             $( window ).on( 'resize orientationchange', function(e) {
-            	_sidebarId = $( '#readingModeViewSidebar' ).attr( 'id' );
+            	_sidebarId = $( '#fullscreenViewSidebar' ).attr( 'id' );
             	
             	// check if sidebar is resizing
             	if ( e.target['id'] != _sidebarId ) {
@@ -92,13 +92,13 @@ var viewerJS = ( function( viewer ) {
             _setPanelStatus();
 
             // toggle sidebar
-            $( '[data-close="rm-sidebar"]' ).on( 'click', function() {
+            $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
             	// set global variables
-            	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
-            	_sidebarLeft = $( '#readingModeViewSidebar' ).css( 'left' );
+            	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
+            	_sidebarLeft = $( '#fullscreenViewSidebar' ).css( 'left' );
             	
             	// set sidebar left position
-            	$( '#readingModeViewSidebar' ).css( 'left', 'inherit' );
+            	$( '#fullscreenViewSidebar' ).css( 'left', 'inherit' );
             	
             	// reset resizable
             	if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -106,10 +106,10 @@ var viewerJS = ( function( viewer ) {
             	}
 
             	// hide panel controls
-            	$( '#readingModeSidebarPanelControls' ).hide();
+            	$( '#fullscreenSidebarPanelControls' ).hide();
             	
             	// slide out sidebar
-            	$( '#readingModeViewSidebar' ).animate( {
+            	$( '#fullscreenViewSidebar' ).animate( {
             		right: '-' + _sidebarWidth + 'px'
             	}, 300, function() {            		
             		// show sidebar open
@@ -121,16 +121,16 @@ var viewerJS = ( function( viewer ) {
                 	}
 
             		// save sidebar status
-            		sessionStorage.setItem( 'rmSidebarStatus', false );
+            		sessionStorage.setItem( 'fsSidebarStatus', false );
             	} );
             	
-            	if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
-            		$( '.reading-mode__view-image-thumbs-wrapper' ).animate( {
+            	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+            		$( '.fullscreen__view-image-thumbs-wrapper' ).animate( {
             			width: '100%'
             		}, 300 );
     			}
             } );
-            $( '[data-open="rm-sidebar"]' ).on( 'click', function() {
+            $( '[data-open="fs-sidebar"]' ).on( 'click', function() {
             	// hide sidebar open
             	$( '#viewSidebarOpen' ).hide();
             	
@@ -140,14 +140,14 @@ var viewerJS = ( function( viewer ) {
             	}
 
             	// slide in sidebar
-            	$( '#readingModeViewSidebar' ).animate( {
+            	$( '#fullscreenViewSidebar' ).animate( {
             		right: 0
             	}, 300, function() {
             		// set sidebar left position
-            		$( '#readingModeViewSidebar' ).css( 'left', _sidebarLeft );
+            		$( '#fullscreenViewSidebar' ).css( 'left', _sidebarLeft );
             		
             		// show panel controls
-            		$( '#readingModeSidebarPanelControls' ).show();
+            		$( '#fullscreenSidebarPanelControls' ).show();
 
             		// set resizable
             		if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -155,35 +155,35 @@ var viewerJS = ( function( viewer ) {
             		}
             		
             		// save sidebar status
-            		sessionStorage.setItem( 'rmSidebarStatus', true );
+            		sessionStorage.setItem( 'fsSidebarStatus', true );
             	} );
             	
-            	if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
-            		$( '.reading-mode__view-image-thumbs-wrapper' ).animate( {
-            			width: $( '#readingModeView' ).outerWidth() - _sidebarWidth
+            	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+            		$( '.fullscreen__view-image-thumbs-wrapper' ).animate( {
+            			width: $( '#fullscreenView' ).outerWidth() - _sidebarWidth
             		}, 300 );
     			}
             } );
             
             // scroll resize handle and hide panel controls
-            $( '#readingModeViewSidebar' ).on( 'scroll', function() {
+            $( '#fullscreenViewSidebar' ).on( 'scroll', function() {
             	$( '.ui-resizable-handle' ).css( 'top', $( this ).scrollTop() );
             	
             	if ( $( this ).scrollTop() > 0 ) {
-            		$( '#readingModeSidebarPanelControls' ).addClass( 'hidden' );
+            		$( '#fullscreenSidebarPanelControls' ).addClass( 'hidden' );
             	}
             	else {
-            		$( '#readingModeSidebarPanelControls' ).removeClass( 'hidden' );
+            		$( '#fullscreenSidebarPanelControls' ).removeClass( 'hidden' );
             	}
             } );
             
             // toggle sidebar panels
-            $( 'body' ).on( 'click', '.reading-mode__view-sidebar-accordeon-panel-title', function() {
+            $( 'body' ).on( 'click', '.fullscreen__view-sidebar-accordeon-panel-title', function() {
                 var parentPanelId = $( this ).parent().attr( 'id' );
                 var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
                 
                 // scroll sidebar to top
-                $( '#readingModeViewSidebar' ).scrollTop( 0 );
+                $( '#fullscreenViewSidebar' ).scrollTop( 0 );
                 
                 if ( $( this ).hasClass( 'in' ) ) {
                     $( this ).toggleClass( 'in' );
@@ -193,10 +193,10 @@ var viewerJS = ( function( viewer ) {
                     sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
                 }
                 else {                	
-                    $( '.reading-mode__view-sidebar-accordeon-panel-title' ).each( function() {
+                    $( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
                         $( this ).removeClass( 'in' );
                     } );
-                    $( '.reading-mode__view-sidebar-accordeon-panel-body' ).each( function() {
+                    $( '.fullscreen__view-sidebar-accordeon-panel-body' ).each( function() {
                         $( this ).slideUp( 'fast' );
                     } );
 
@@ -216,7 +216,7 @@ var viewerJS = ( function( viewer ) {
             $( 'body' ).on( 'click', '[data-close="all-tabs"]', function() {
             	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
             	
-            	$( '.reading-mode__view-sidebar-accordeon-panel-title' ).each( function() {
+            	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
             		$( this ).removeClass( 'in' );
                     $( this ).next().slideUp( 'fast' );
             	} );
@@ -232,7 +232,7 @@ var viewerJS = ( function( viewer ) {
             $( 'body' ).on( 'click', '[data-open="all-tabs"]', function() {
             	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
 
-            	$( '.reading-mode__view-sidebar-accordeon-panel-title' ).each( function() {
+            	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
             		$( this ).addClass( 'in' );
             		$( this ).next().slideDown( 'fast' );
             	} );
@@ -258,24 +258,24 @@ var viewerJS = ( function( viewer ) {
     	var sidebarStatus;
     	
     	// set global variables
-    	_sidebarWidth = $( '#readingModeViewSidebar' ).outerWidth();
+    	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
     	
     	
-    	if ( sessionStorage.getItem( 'rmSidebarStatus' ) == undefined || sessionStorage.getItem( 'rmSidebarStatus' ) == '' ) {
-    		sessionStorage.setItem( 'rmSidebarStatus', true );
+    	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) == '' ) {
+    		sessionStorage.setItem( 'fsSidebarStatus', true );
     	}
     	else {
-    		sidebarStatus = sessionStorage.getItem( 'rmSidebarStatus' );
+    		sidebarStatus = sessionStorage.getItem( 'fsSidebarStatus' );
     		
     		if ( sidebarStatus === 'false'  ) {
     			// set sidebar left position
-    			$( '#readingModeViewSidebar' ).css( {
+    			$( '#fullscreenViewSidebar' ).css( {
     				'right': '-' + _sidebarWidth + 'px',
     				'left': 'inherit'
     			} );
     			
     			// hide panel controls
-    			$( '#readingModeSidebarPanelControls' ).hide();
+    			$( '#fullscreenSidebarPanelControls' ).hide();
     			
     			// show sidebar open
     			$( '#viewSidebarOpen' ).show();
@@ -288,7 +288,7 @@ var viewerJS = ( function( viewer ) {
     	}
     	
     	// show sidebar
-    	$( '.reading-mode__view-sidebar-inner' ).show();
+    	$( '.fullscreen__view-sidebar-inner' ).show();
     }
     
     /**
@@ -306,7 +306,7 @@ var viewerJS = ( function( viewer ) {
     		panelStatus = {};
     		
     		// build panel status object
-    		$( '.reading-mode__view-sidebar-accordeon-panel' ).each( function() {
+    		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
     			
     			if ( !panelStatus.hasOwnProperty( currId ) ) {
@@ -318,8 +318,8 @@ var viewerJS = ( function( viewer ) {
 		    		
 		    		// show active panels
 		    		if ( panelStatus[ currId ] ) {
-		    			$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
-		    			$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-body' ).show();
+		    			$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
+		    			$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
 		    		}    			        	
     			}
     			else {
@@ -333,13 +333,13 @@ var viewerJS = ( function( viewer ) {
     	else {
     		panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
     		
-    		$( '.reading-mode__view-sidebar-accordeon-panel' ).each( function() {
+    		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
     			
     			// show active panels
     			if ( panelStatus[ currId ] ) {
-    				$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
-    				$( this ).find( '.reading-mode__view-sidebar-accordeon-panel-body' ).show();
+    				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
+    				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
     		} );
     	}
@@ -361,9 +361,9 @@ var viewerJS = ( function( viewer ) {
     		minWidth: 500,
     		maxWidth: 900,
     		resize: function( event, ui ) {
-    			if ( $( '.reading-mode__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
+    			if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
     				setTimeout( function() {
-    					$( '.reading-mode__view-image-thumbs-wrapper' ).outerWidth( $( '#readingModeView' ).outerWidth() - $( '#readingModeViewSidebar' ).outerWidth() );    					
+    					$( '.fullscreen__view-image-thumbs-wrapper' ).outerWidth( $( '#fullscreenView' ).outerWidth() - $( '#fullscreenViewSidebar' ).outerWidth() );    					
     				}, 325 );
     			}
     		}
@@ -407,16 +407,16 @@ var viewerJS = ( function( viewer ) {
     	if ( trigger ) {
     		if ( _fadeout ) {
     			clearTimeout( _fadeout );
-    			$( '#readingModeHeader' ).show();
+    			$( '#fullscreenHeader' ).show();
     		}
     		
     		_fadeout = setTimeout( function() {
-    			$( '#readingModeHeader' ).fadeOut( '1000' );
+    			$( '#fullscreenHeader' ).fadeOut( '1000' );
     		}, delay );    		
     	}
     	else {
     		clearTimeout( _fadeout );
-			$( '#readingModeHeader' ).show();
+			$( '#fullscreenHeader' ).show();
     	}
     }
     

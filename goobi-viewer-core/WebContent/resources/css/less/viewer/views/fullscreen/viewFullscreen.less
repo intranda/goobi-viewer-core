@@ -1,13 +1,13 @@
 /* ==============================================================
-   View Reading Mode
-   style declarations for viewReadingMode.xhtml 
+   Fullscreen
+   style declarations for viewObjectFullscreen.xhtml 
    ==============================================================*/
-/* READING MODE */
-#readingMode {
+/* FULLSCREEN */
+#fullscreen {
 	padding: 0;
     background-color: @white; 
 }
-.reading-mode {
+.fullscreen {
     position: relative;
     height: 100%;
     overflow: hidden;
@@ -59,12 +59,12 @@
     		width: 32px;
     		height: 32px;
     		margin-left: 10px;
-    		background-image: url("@{images}/icons/readingmode/icon_rm-thumbs.svg");
+    		background-image: url("@{images}/icons/icon_fs-thumbs.svg");
     		background-repeat: no-repeat;
     		background-position: center center;
     		background-size: 22px;
     		&.in {
-	    		background-image: url("@{images}/icons/readingmode/icon_rm-close.svg");    			
+	    		background-image: url("@{images}/icons/icon_fs-close.svg");    			
     		}
     	}
     }
@@ -74,7 +74,7 @@
     		display: inline-block;
     		width: 32px;
     		height: 32px;
-    		background-image: url("@{images}/icons/readingmode/icon_rm-exit.svg");
+    		background-image: url("@{images}/icons/icon_fs-exit.svg");
     		background-repeat: no-repeat;
     		background-position: center center;
     		background-size: 28px;
@@ -100,10 +100,10 @@
 			background-size: 14px;
 		}
 		[data-close="all-tabs"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
+			background-image: url("@{images}/icons/icon_fs-minus.svg");
 		}
 		[data-open="all-tabs"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
+			background-image: url("@{images}/icons/icon_fs-plus.svg");
 		}
 	}
 	/* IMAGE */
@@ -208,7 +208,7 @@
 			background-repeat: no-repeat;
 			background-position: left 2px;
 			background-size: 9px;
-			background-image: url("@{images}/icons/readingmode/icon_rm-left.svg");			
+			background-image: url("@{images}/icons/icon_fs-left.svg");			
 	    	overflow: hidden;
 			&:hover,
 			&:active,
@@ -277,8 +277,8 @@
 			background-position: center center;
 			background-size: 14px;
 		}
-		[data-close="rm-sidebar"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-right.svg");
+		[data-close="fs-sidebar"] {
+			background-image: url("@{images}/icons/icon_fs-right.svg");
 			background-size: 10px;
 		}
 	}
@@ -300,15 +300,15 @@
 	&__view-sidebar-accordeon-panel {
 		position: relative;
 		background-color: @white;
-		&.rm-metadata {}
-		&.rm-toc {
-			.reading-mode__view-sidebar-accordeon-panel-body {
+		&.fs-metadata {}
+		&.fs-toc {
+			.fullscreen__view-sidebar-accordeon-panel-body {
 				padding-top: 0;
 			}
 		}
-		&.rm-downloads {}
-		&.rm-fulltext {}
-		&.rm-search-hit-navigation {
+		&.fs-downloads {}
+		&.fs-fulltext {}
+		&.fs-search-hit-navigation {
 			.mx-hidden;
 		}
 		&:first-child {
@@ -356,7 +356,7 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		&__view-sidebar {
 			width: 50%;
 			padding-left: 0;
@@ -367,7 +367,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		&__header-brand {
 			span {
 				display: none;

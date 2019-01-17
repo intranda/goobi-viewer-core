@@ -177,7 +177,7 @@ var viewerJS = ( function() {
         
         // check for sidebar toc and set viewport position
         if ( viewer.localStoragePossible ) {
-            if ( $( '#image_container' ).length > 0 || currentPage === 'readingmode' ) {
+            if ( $( '#image_container' ).length > 0 ) {
                 if ( localStorage.getItem( 'currIdDoc' ) === null ) {
                     localStorage.setItem( 'currIdDoc', 'false' );
                 }
