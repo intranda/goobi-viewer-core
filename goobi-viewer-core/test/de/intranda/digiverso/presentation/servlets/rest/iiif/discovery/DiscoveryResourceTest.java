@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -34,7 +35,7 @@ import de.intranda.digiverso.presentation.model.iiif.discovery.Activity;
  * @author Florian Alpers
  *
  */
-public class DiscoveryResourceTest {
+public class DiscoveryResourceTest extends AbstractSolrEnabledTest {
 
     private DiscoveryResource resource = new DiscoveryResource();
     
@@ -43,7 +44,7 @@ public class DiscoveryResourceTest {
      */
     @Before
     public void setUp() throws Exception {
-        
+        super.setUp();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getScheme()).thenReturn("https");
         Mockito.when(request.getServerName()).thenReturn("testServer");
@@ -57,6 +58,7 @@ public class DiscoveryResourceTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
