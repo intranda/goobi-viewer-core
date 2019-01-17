@@ -355,7 +355,8 @@
 		<!-- TODO DOCUMENTATION-->
 		<drillDown>
 			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
-			<field initialElementNumber="3">DOCSTRCT</field>
+			<field initialElementNumber="3">DOCSTRCT_TOP</field>
+			<field initialElementNumber="3">DOCSTRCT_SUB</field>
 			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
 			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
 			<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
@@ -376,13 +377,14 @@
 				<field>OVERVIEWPAGE</field>
 				<field>PI_TOPSTRUCT</field>
 				<field hierarchical="true">DC</field>
-				<field>DOCSTRCT</field>
+				<field>DOCSTRCT_TOP</field>
+				<field>DOCSTRCT_SUB</field>
 				<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
 				<field>MD_YEARPUBLISH</field>
-				<field>MD_SHELFMARK</field>
+				<field untokenizeForPhraseSearch="true">MD_SHELFMARK</field>
 			</searchFields>
 		</advanced>
 
@@ -446,10 +448,12 @@
 			<!-- translateField: Fields in this list will be highlighted with their translated value rather than raw. -->
 			<translateField>DC</translateField>
 			<translateField>DOCSTRCT</translateField>
+			<translateField>DOCSTRCT_TOP</translateField>
+			<translateField>DOCSTRCT_SUB</translateField>
 		</displayAdditionalMetadata>
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
-		<staticQuerySuffix></staticQuerySuffix>
+        <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 
 	        <!-- versioning -->
 	        <versioning>
@@ -478,6 +482,7 @@
 
 
 	<collections>
+    
 		<collection field="DC">
 		
             <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
@@ -513,6 +518,9 @@
                         <defaultBrowseIcon></defaultBrowseIcon>
 
 		</collection>
+          
+        <!-- true if opening a collection containing only a single work should redirect to that work -->
+        <redirectToWork>true</redirectToWork>
 	</collections>
 
 
@@ -1123,7 +1131,7 @@
 		</sidebarToc>
 
 		<!-- Show or hide the widget including download links for record and page while viewing the object-->
-		<sidebarWidgetUsage display="false">
+		<sidebarWidgetUsage display="true">
 			<!-- You can specify any text at the top of the record links using the same mechanism as for metadata display-->
 			<licenseText>
 				<metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
@@ -1308,6 +1316,12 @@
 				<field>MD_CREATOR</field>
 				<!--field>MD_*</field-->
 			</metadataFields>
+            
+            <!-- A list of solr fieldnames which may serve as manifest description metadata. 
+            The first existing field is used to provide the medatada description -->
+            <descriptionFields>
+                <field>MD_CONTENTDESCRIPTION</field>
+            </descriptionFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
 			<navDateField>YEAR</navDateField>

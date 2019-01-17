@@ -180,7 +180,7 @@ public class TranskribusUtils {
         params.put("pw", password);
         String response = Helper.getWebContentPOST(sbUrl.toString(), params, null);
 
-        return FileTools.getDocumentFromString(response, Helper.DEFAULT_ENCODING);
+        return XmlTools.getDocumentFromString(response, Helper.DEFAULT_ENCODING);
     }
 
     //    public static Document oauth(String endpoint, String clientId) {

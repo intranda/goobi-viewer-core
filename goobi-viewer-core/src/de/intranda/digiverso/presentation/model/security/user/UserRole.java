@@ -164,4 +164,9 @@ public class UserRole {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "User '" + user + "' with the role '" + role + "' in group '" + userGroup + "'";
+    }
 }

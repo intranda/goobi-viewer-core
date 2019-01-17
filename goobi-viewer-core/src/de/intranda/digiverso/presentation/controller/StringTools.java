@@ -164,4 +164,12 @@ public class StringTools {
         text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
         return text;
     }
+    
+    public static String escapeQuotes(String s) {
+        if(s != null) {    
+            s = s.replaceAll("(?<!\\\\)'", "\\\\'");
+            s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
+        }
+        return s;
+    }
 }

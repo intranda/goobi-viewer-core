@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,6 +66,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -222,7 +224,7 @@ public class ContentResource {
 
         if (file != null && Files.isRegularFile(file)) {
             try {
-                Document doc = FileTools.readXmlFile(file);
+                Document doc = XmlTools.readXmlFile(file);
                 return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
@@ -327,7 +329,7 @@ public class ContentResource {
     @Path("/tei/{pi}/{filename}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getFulltextAsTEI(@PathParam("pi") String pi, @PathParam("filename") String filename, @PathParam("lang") String language)
-            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException, MalformedURLException, JDOMException {
+            throws PresentationException, ContentLibException, IndexUnreachableException, DAOException {
 
         setResponseHeader("");
         checkAccess(pi, filename, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -342,13 +344,16 @@ public class ContentResource {
             TEIHeaderBuilder header = createTEIHeader(solrDoc);
 
             TEIBuilder builder = new TEIBuilder();
-            Document xmlDoc = builder.build(header, text);
-            return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+            try {
+                Document xmlDoc = builder.build(header, text);
+                return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+            } catch (JDOMException e) {
+                throw new ContentLibException("Unable to parse xml from alto file " + pi + ", " + filename, e);
+            }
 
-        } else {
-            throw new ContentNotFoundException("No document found with pi " + pi);
         }
 
+        throw new ContentNotFoundException("No document found with pi " + pi);
     }
 
     /**
@@ -357,9 +362,8 @@ public class ContentResource {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException * @throws DAOException
-     * @throws ContentNotFoundException
      * @throws IOException
-     * @throws ServiceNotAllowedException
+     * @throws ContentLibException
      * @throws JDOMException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
@@ -367,8 +371,8 @@ public class ContentResource {
     @GET
     @Path("/tei/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
-    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException, JDOMException {
+    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
+            throws PresentationException, IndexUnreachableException, DAOException, IOException, ContentLibException {
 
         setResponseHeader("");
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -380,7 +384,7 @@ public class ContentResource {
         if (filePath != null && Files.isRegularFile(filePath)) {
 
             try {
-                Document doc = FileTools.readXmlFile(filePath);
+                Document doc = XmlTools.readXmlFile(filePath);
                 return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
@@ -402,14 +406,20 @@ public class ContentResource {
                     TEIHeaderBuilder header = createTEIHeader(solrDoc);
                     HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
 
-                    List<String> pages = fulltexts.values()
+                    List<String> pages = fulltexts.entrySet()
                             .stream()
-                            .filter(text -> StringUtils.isNotBlank(text))
+                            .sorted(Comparator.comparing(Map.Entry::getKey))
+                            .map(Map.Entry::getValue)
                             .map(textConverter::convert)
                             .collect(Collectors.toList());
 
-                    Document xmlDoc = builder.build(header, pages);
-                    return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                    try {
+                        Document xmlDoc = builder.build(header, pages);
+                        return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+                    } catch (JDOMException e) {
+                        throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
+                    }
+
                 }
 
             } else {
@@ -438,10 +448,10 @@ public class ContentResource {
     @Produces({ MediaType.APPLICATION_XML })
     public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
             throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException, ServiceNotAllowedException {
-        
+
         setResponseHeader("");
         checkAccess(pi, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        
+
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath =
@@ -451,7 +461,7 @@ public class ContentResource {
 
             if (Files.isRegularFile(filePath)) {
                 try {
-                    Document doc = FileTools.readXmlFile(filePath);
+                    Document doc = XmlTools.readXmlFile(filePath);
                     return new XMLOutputter().outputString(doc);
                 } catch (FileNotFoundException e) {
                     logger.debug(e.getMessage());
@@ -647,12 +657,12 @@ public class ContentResource {
     public TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
 
-        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
-                .map(Object::toString)
-                .map(Title::new)
-                .ifPresent(title -> header.setTitle(title));
+        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL)).map(Object::toString).map(Title::new).ifPresent(
+                title -> header.setTitle(title));
 
-        List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR")).orElse(Collections.emptyList()).stream().map(Object::toString).collect(Collectors.toList());
+        List<String> authors =
+                Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR")).orElse(Collections.emptyList()).stream().map(Object::toString).collect(
+                        Collectors.toList());
         for (String name : authors) {
             if (name.contains(",")) {
                 String[] parts = name.split(",");
@@ -662,10 +672,8 @@ public class ContentResource {
             }
         }
 
-        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI))
-                .map(Object::toString)
-                .map(Identifier::new)
-                .ifPresent(id -> header.addIdentifier(id));
+        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI)).map(Object::toString).map(Identifier::new).ifPresent(
+                id -> header.addIdentifier(id));
         return header;
     }
 
@@ -694,9 +702,8 @@ public class ContentResource {
         // Fallback to ISO-2
         if (ret == null) {
             try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
-                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml")).findFirst().orElse(
+                        null);
             }
         }
 
@@ -766,9 +773,8 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
             }
         }
         return filePath;
@@ -797,9 +803,8 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
             }
         }
         return filePath;

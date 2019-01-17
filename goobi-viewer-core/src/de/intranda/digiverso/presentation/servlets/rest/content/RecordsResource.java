@@ -25,7 +25,6 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -225,7 +224,8 @@ public class RecordsResource {
         }
 
         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-        String query = new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        String query =
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
         logger.trace("query: {}", query);
 
         int count = params.getCount();
@@ -301,7 +301,8 @@ public class RecordsResource {
             return ret.toJSONString();
         }
         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-        String query = new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, false)).toString();
+        String query =
+                new StringBuilder().append(params.getQuery()).append(SearchHelper.getAllSuffixes(servletRequest, true, true, false)).toString();
         logger.debug("q: {}", query);
         long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
         ret.put("count", count);

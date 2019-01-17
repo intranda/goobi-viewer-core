@@ -77,11 +77,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 
             switch (requestPath.getName(0).toString().toLowerCase()) {
+                case "readingmode":
                 case "fullscreen":
                     pageType = PageType.viewFullscreen;
-                    break;
-                case "readingmode":
-                    pageType = PageType.viewReadingMode;
                     break;
                 case "image":
                     pageType = PageType.viewImage;
@@ -228,7 +226,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 int size = Integer.parseInt(string);
                 sizes.add(size);
             } catch (NullPointerException | NumberFormatException e) {
-                logger.warn("Cannot parse " + string + " as int");
+//                logger.warn("Cannot parse " + string + " as int");
             }
         }
         return sizes;

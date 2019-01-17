@@ -37,7 +37,7 @@ public class TEITools {
             return null;
         }
 
-        Document doc = FileTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        Document doc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
         if (doc == null) {
             return null;
         }
@@ -50,7 +50,7 @@ public class TEITools {
                 for (Element ele : eleBody.getChildren()) {
                     eleNewRoot.addContent(ele.clone());
                 }
-                return FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                return XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
             }
         }
 

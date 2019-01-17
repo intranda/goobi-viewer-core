@@ -22,8 +22,6 @@ import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,60 +35,6 @@ public class FileToolsTest {
         if (tempDir.exists()) {
             FileUtils.deleteQuietly(tempDir);
         }
-    }
-
-    /**
-     * @see FileTools#readXmlFile(String)
-     * @verifies build document correctly
-     */
-    @Test
-    public void readXmlFile_shouldBuildDocumentCorrectly() throws Exception {
-        Document doc = FileTools.readXmlFile("resources/test/config_viewer.test.xml");
-        Assert.assertNotNull(doc);
-        Assert.assertNotNull(doc.getRootElement());
-    }
-
-    /**
-     * @see FileTools#readXmlFile(String)
-     * @verifies throw FileNotFoundException if file not found
-     */
-    @Test(expected = FileNotFoundException.class)
-    public void readXmlFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
-        FileTools.readXmlFile("notfound.xml");
-    }
-
-    /**
-     * @see FileTools#writeXmlFile(Document,String)
-     * @verifies write file correctly and return true
-     */
-    @Test
-    public void writeXmlFile_shouldWriteFileCorrectlyAndReturnTrue() throws Exception {
-        String filePath = "build/test.xml";
-        Document doc = new Document();
-        doc.setRootElement(new Element("root"));
-        Assert.assertTrue(FileTools.writeXmlFile(doc, "build/test.xml"));
-        File xmlFile = new File(filePath);
-        Assert.assertTrue(xmlFile.isFile());
-    }
-
-    /**
-     * @see FileTools#writeXmlFile(Document,String)
-     * @verifies throw FileNotFoundException if file is directory
-     */
-    @Test(expected = FileNotFoundException.class)
-    public void writeXmlFile_shouldThrowFileNotFoundExceptionIfFileIsDirectory() throws Exception {
-        Document doc = new Document();
-        doc.setRootElement(new Element("root"));
-        FileTools.writeXmlFile(doc, "build");
-    }
-
-    /**
-     * @see FileTools#writeXmlFile(Document,String)
-     * @verifies return false if doc is null
-     */
-    @Test
-    public void writeXmlFile_shouldReturnFalseIfDocIsNull() throws Exception {
-        Assert.assertFalse(FileTools.writeXmlFile(null, "build/test.xml"));
     }
 
     /**
@@ -157,73 +101,6 @@ public class FileToolsTest {
         File gzipFile = new File("notfound.tar.gz");
         Assert.assertFalse(gzipFile.exists());
         FileTools.decompressGzipFile(gzipFile, new File("build/target.bla"));
-    }
-
-    /**
-     * @see FileTools#getDocumentFromFile(File)
-     * @verifies build document correctly
-     */
-    @Test
-    public void getDocumentFromFile_shouldBuildDocumentCorrectly() throws Exception {
-        File file = new File("resources/test/data/sample_alto.xml");
-        Assert.assertTrue(file.isFile());
-        Document doc = FileTools.getDocumentFromFile(file);
-        Assert.assertNotNull(doc);
-        Assert.assertNotNull(doc.getRootElement());
-        Assert.assertEquals("alto", doc.getRootElement().getName());
-    }
-
-    /**
-     * @see FileTools#getDocumentFromString(String,String)
-     * @verifies build document correctly
-     */
-    @Test
-    public void getDocumentFromString_shouldBuildDocumentCorrectly() throws Exception {
-        String xml = "<root><child>child1</child><child>child2</child></root>";
-        Document doc = FileTools.getDocumentFromString(xml, null);
-        Assert.assertNotNull(doc);
-        Assert.assertNotNull(doc.getRootElement());
-        Assert.assertEquals("root", doc.getRootElement().getName());
-        Assert.assertNotNull(doc.getRootElement().getChildren("child"));
-        Assert.assertEquals(2, doc.getRootElement().getChildren("child").size());
-    }
-
-    /**
-     * @see FileTools#getStringFromElement(Object,String)
-     * @verifies return XML string correctly for documents
-     */
-    @Test
-    public void getStringFromElement_shouldReturnXMLStringCorrectlyForDocuments() throws Exception {
-        Document doc = new Document();
-        doc.setRootElement(new Element("root"));
-        String xml = FileTools.getStringFromElement(doc, null);
-        Assert.assertNotNull(xml);
-        Assert.assertTrue(xml.contains("<root></root>"));
-    }
-
-    /**
-     * @see FileTools#getStringFromElement(Object,String)
-     * @verifies return XML string correctly for elements
-     */
-    @Test
-    public void getStringFromElement_shouldReturnXMLStringCorrectlyForElements() throws Exception {
-        String xml = FileTools.getStringFromElement(new Element("root"), null);
-        Assert.assertNotNull(xml);
-        Assert.assertTrue(xml.contains("<root></root>"));
-    }
-
-    /**
-     * @see FileTools#getFileFromDocument(File,Document)
-     * @verifies write file correctly
-     */
-    @Test
-    public void getFileFromDocument_shouldWriteFileCorrectly() throws Exception {
-        Assert.assertTrue(tempDir.mkdirs());
-        Document doc = new Document();
-        doc.setRootElement(new Element("root"));
-        File file = new File(tempDir, "temp.xml");
-        FileTools.getFileFromDocument(file.getAbsolutePath(), doc);
-        Assert.assertTrue(file.isFile());
     }
 
     /**

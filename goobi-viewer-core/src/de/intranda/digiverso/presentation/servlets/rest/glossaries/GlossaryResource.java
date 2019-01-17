@@ -64,7 +64,7 @@ public class GlossaryResource {
     private HttpServletResponse servletResponse;
 
     @GET
-    @Path("/")
+    @Path("/list")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Glossary> listVocabularies() throws IOException {
         return new GlossaryManager().getGlossaries();

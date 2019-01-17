@@ -32,7 +32,7 @@ import org.junit.Test;
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -177,7 +177,7 @@ public class OverviewPageTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(user);
         op.saveAction(user, false);
 
-        Document config = FileTools.getDocumentFromString(op.getConfigXml(), "utf-8");
+        Document config = XmlTools.getDocumentFromString(op.getConfigXml(), "utf-8");
         Assert.assertNotNull(config);
         Assert.assertEquals("Goodbye, Overview", config.getRootElement().getChildText("description"));
     }
@@ -199,7 +199,7 @@ public class OverviewPageTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(user);
         op.saveAction(user, false);
 
-        Document config = FileTools.getDocumentFromString(op.getConfigXml(), "utf-8");
+        Document config = XmlTools.getDocumentFromString(op.getConfigXml(), "utf-8");
         Assert.assertNotNull(config);
         Assert.assertEquals("Goodbye, Overview", config.getRootElement().getChildText("description"));
     }

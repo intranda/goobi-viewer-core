@@ -43,6 +43,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +160,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getCurrentPage() {
-        return currentPage;
+        return StringTools.escapeQuotes(currentPage);
     }
 
     /**
@@ -660,6 +661,7 @@ public class NavigationHelper implements Serializable {
 
     public void resetTheme() {
         logger.trace("resetTheme");
+        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
@@ -700,8 +702,14 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
     }
 
+    /**
+     * 
+     * @return the reading mode url
+     * 
+     * @deprecated  renamed to fullscreen
+     */
     public String getReadingModeUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewReadingMode.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }
 
     /**
@@ -1103,25 +1111,31 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      *
-     * @param msgKey
+     * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.
-     * @return
+     * @return Translated, escaped key with parameter replacements
+     * @should escape quotation marks
      */
     public String getTranslationWithParams(String msgKey, String... params) {
-        String msg = Helper.getTranslation(msgKey, null);
-        if (params != null) {
-            for (int i = 0; i < params.length; ++i) {
-                msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
-            }
-        }
+        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
 
-        return msg;
+        // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
+        return StringEscapeUtils.escapeJava(msg);
     }
 
+    /**
+     * Returns a simple translation for the given language (or current language, if none given).
+     * 
+     * @param msgKey Message key to translate
+     * @param language Optional desired language
+     * @return Translated, escaped key
+     * @should escape quotation marks
+     */
     public String getTranslation(String msgKey, String language) {
-        String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
+        String msg = ViewerResourceBundle.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
 
-        return msg;
+        // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
+        return StringEscapeUtils.escapeJava(msg);
     }
 
     /**
@@ -1133,14 +1147,14 @@ public class NavigationHelper implements Serializable {
         if (this.currentPage == null) {
             return false;
         }
-        
+
         switch (this.currentPage) {
             case SEARCH_PAGE:
             case TAGS_PAGE:
             case SEARCH_TERM_LIST_PAGE:
                 return true;
         }
-        
+
         return false;
     }
 

@@ -194,9 +194,10 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if (getCurrentPage().getMimeType().startsWith("image")) {
+        if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
             return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
         }
+        
         return "{}";
     }
 
@@ -308,7 +309,7 @@ public class ViewManager implements Serializable {
                 .getConfiguration()
                 .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
                 .stream()
-                .mapToInt(string -> Integer.parseInt(string))
+                .mapToInt(string -> "max".equalsIgnoreCase(string) ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth() : Integer.parseInt(string))
                 .max()
                 .orElse(800);
         return getCurrentImageUrl(view, size);
@@ -591,7 +592,7 @@ public class ViewManager implements Serializable {
                     representativePage = pageLoader.getPageForFileName(thumbnailName);
                 }
                 if (representativePage == null) {
-                    representativePage = pageLoader.getPage(0);
+                    representativePage = pageLoader.getPage(pageLoader.getFirstPageOrder());
                 }
             }
         }
@@ -636,7 +637,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public void setCurrentImageNo(int currentImageNo) throws IndexUnreachableException, PresentationException {
-        logger.debug("setCurrentImageNo: {}", currentImageNo);
+        logger.trace("setCurrentImageNo: {}", currentImageNo);
         if (pageLoader != null) {
             if (currentImageNo < pageLoader.getFirstPageOrder()) {
                 currentImageNo = pageLoader.getFirstPageOrder();
@@ -2340,13 +2341,10 @@ public class ViewManager implements Serializable {
                     }
                 }
                 url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                url.append('/')
-                        .append(pageType.getName())
-                        .append('/')
-                        .append(getPi())
-                        .append('/')
-                        .append(getRepresentativePage().getOrder())
-                        .append('/');
+                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+                if (getRepresentativePage() != null) {
+                    url.append(getRepresentativePage().getOrder()).append('/');
+                }
                 return url.toString();
             }
         } else {

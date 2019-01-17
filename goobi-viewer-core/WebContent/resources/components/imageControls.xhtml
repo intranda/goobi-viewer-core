@@ -15,6 +15,33 @@
         <nav class="image-controls" role="navigation">            
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
+                <!-- DOCUMENT OPTIONS -->
+                <div class="image-controls__options">
+                    <ul>
+                        <!-- FULLTEXT -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                            <li class="image-controls__option fulltext">
+                                <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
+                                    title="#{msg.fulltext}" target="_blank">
+                                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="bottom" />
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                        
+                        <!-- ADD TO BOOKSHELF -->
+                        <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+                            <li class="image-controls__option add-to-bookshelf">
+                                <button type="button" class="btn btn--icon" title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
+                                    <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
+                                    <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                        </ui:fragment>
+                    </ul> 
+                </div>
+
                 <!-- ACTIONS -->
                 <div class="image-controls__actions">
                     <ul>
@@ -110,7 +137,7 @@
                                 </ui:fragment>
                                 <!-- SELECT -->
                                 <li class="image-controls__action select">
-                                    <div class="form-control__select">
+                                    <div class="form-control__select custom-control custom-control--select">
                                         <!-- Image view select -->
                                         <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
                                             onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
@@ -260,9 +287,9 @@
                                 </a>
                             </li>
                             <!-- FULLSCREEN -->
-                            <ui:fragment rendered="#{navigationHelper.currentPage != 'readingmode'}">
+                            <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action fullscreen">
-                                    <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.enterFullscreen}">
+                                    <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
                                         <i class="image-fullscreen"></i>
                                         <span class="labeltext">#{msg.enterFullscreen}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -273,7 +300,7 @@
                             <!-- ZOMMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
-                                <li class="image-controls__action zoom-slider">
+                                <li class="image-controls__action zoom-slider-wrapper">
                                     <div class="zoom-slider">
                                         <span class="zoom-slider-handle"></span>
                                     </div>

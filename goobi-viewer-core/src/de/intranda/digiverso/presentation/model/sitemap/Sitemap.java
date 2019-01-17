@@ -38,8 +38,9 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -358,7 +359,7 @@ public class Sitemap {
 
         // Write index file
         File indexFile = new File(outputDirPath, "sitemap_index.xml");
-        FileTools.writeXmlFile(docIndex, indexFile.getAbsolutePath());
+        XmlTools.writeXmlFile(docIndex, indexFile.getAbsolutePath());
 
         // Write sitemap files
         if (docListSitemap != null) {
@@ -367,7 +368,8 @@ public class Sitemap {
             for (Document docSitemap : docListSitemap) {
                 int index = docListSitemap.indexOf(docSitemap) + 1;
                 File file = new File(outputDirPath, "sitemap" + index + ".xml");
-                if (FileTools.writeXmlFile(docSitemap, file.getAbsolutePath())) {
+                file = XmlTools.writeXmlFile(docSitemap, file.getAbsolutePath());
+                if (file.exists()) {
                     Map<File, String> fileMap = new HashMap<>();
                     fileMap.put(file, "/");
                     File gzipFile = new File(outputDirPath, "sitemap" + index + ".xml.gz");
@@ -376,6 +378,7 @@ public class Sitemap {
                     logger.info("Sitemap: file {} written to '{}'", index, gzipFile.getAbsolutePath());
                     FileUtils.deleteQuietly(file);
                 }
+
             }
         } else {
             ret = new ArrayList<>(1);

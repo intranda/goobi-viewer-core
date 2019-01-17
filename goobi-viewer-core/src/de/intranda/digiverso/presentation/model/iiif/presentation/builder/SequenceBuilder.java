@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
@@ -70,6 +71,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
+    private PageType preferredView = PageType.viewImage;
 
     /**
      * @param request
@@ -211,7 +213,7 @@ public class SequenceBuilder extends AbstractBuilder {
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
 
-        LinkingContent viewerPage = new LinkingContent(new URI(getViewImageUrl(page)));
+        LinkingContent viewerPage = new LinkingContent(new URI(getViewUrl(page, getPreferredView())));
         viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
         canvas.addRendering(viewerPage);
 
@@ -236,7 +238,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     try {
                         imageInfo = imageDelivery.getImages().getImageInformation(page);
                         resource.setService(imageInfo);
-                    } catch (ContentLibException e) {
+                    } catch (NoClassDefFoundError | ContentLibException e) {
                         logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
                         //                        logger.error(e.getMessage(), e);
                         resource = new ImageContent(new URI(thumbnailUrl), true);
@@ -418,7 +420,11 @@ public class SequenceBuilder extends AbstractBuilder {
                 try {
                     ImageInformation info = imageDelivery.getImages().getImageInformation(page);
                     size.setSize(info.getWidth(), info.getHeight());
-                } catch (ContentLibException | URISyntaxException e) {
+                    /*
+                     * Catch NoClassDefFoundError which occurs if imageio-libs are missing. 
+                     * Currently this is true in a testing environment, so we just catch it here to pass the tests
+                     */
+                } catch (NoClassDefFoundError | ContentLibException | URISyntaxException e) {
                     logger.error("Unable to retrieve image size for {}: {}", page, e.toString());
                 }
             }
@@ -438,6 +444,21 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     public SequenceBuilder setBuildMode(BuildMode buildMode) {
         this.buildMode = buildMode;
+        return this;
+    }
+    
+    /**
+     * @return the preferredView
+     */
+    public PageType getPreferredView() {
+        return preferredView;
+    }
+    
+    /**
+     * @param preferredView the preferredView to set
+     */
+    public SequenceBuilder setPreferredView(PageType preferredView) {
+        this.preferredView = preferredView;
         return this;
     }
 

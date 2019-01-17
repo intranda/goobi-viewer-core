@@ -2331,4 +2331,9 @@ public class ConfigurationTest {
         Assert.assertEquals("test", DataManager.getInstance().getConfiguration().getWebApiToken());
 
     }
+
+    @Test
+    public void testAllowRedirectCollectionToWork() {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+    }
 }

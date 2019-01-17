@@ -4,12 +4,19 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/tools"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <dependent-module archiveName="normdataimporter-1.2.4.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/NormDataImporter/NormDataImporter">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
 <!--         <dependent-module archiveName="viewer-module-skeleton.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-skeleton/goobi-viewer-module-skeleton"> -->
 <!--             <dependency-type>uses</dependency-type> -->
 <!--         </dependent-module>  -->
+        <dependent-module archiveName="viewer-module-crowdsourcing.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-crowdsourcing/viewer-module-crowdsourcing">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-worldviews/goobi-viewer-module-worldviews">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="goobi-viewer-module-wienerlibrary.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-wienerlibrary/goobi-viewer-module-wienerlibrary">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <!-- AKWIEN -->
         <!-- BELVEDERE 2 -->
         <!-- BSH -->
@@ -76,6 +83,10 @@
         <!-- CHESTER BEATTY LIBRARY -->
         <!-- SULB -->
         <!-- IAI -->
+        <!-- VLB -->
+        <dependent-module archiveName="goobi-viewer-theme-vlb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-vlb/goobi-viewer-theme-vlb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="goobi-viewer-core"/>
     </wb-module>

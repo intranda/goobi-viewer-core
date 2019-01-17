@@ -1,0 +1,224 @@
+/* ==============================================================
+   View Image Fullscreen
+   style declarations for viewImageFullscreen.xhtml 
+   ==============================================================*/
+#fullscreenTemplate {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: @black;
+    overflow-y: hidden;
+    .fs-control {
+        display: block;
+        width: 48px;
+        height: 48px;
+        font-size: 48px;
+        text-align: center;
+        text-decoration: none;
+        color: @black;
+        background-color: rgba(192,192,192,0.25);
+    }
+}
+
+#fullscreenRotateControlsWrapper,
+#fullscreenZoomSliderWrapper,
+#fullscreenExitWrapper {
+        position: absolute;
+    top: 15px;
+    z-index: 2;
+}
+
+#fullscreenRotateControlsWrapper {
+    left: 15px;
+    a {
+        float: left;
+        margin-right: 5px;
+    }
+}
+
+#fullscreenZoomSliderWrapper {
+    left: 50%;
+    width: 17.5rem;
+    margin-left: -8.75rem;
+    #slider-id {
+        height: 2.25rem;
+        margin: 7px auto;
+        background-color: rgba(192,192,192,0.25);
+        .zoom-slider-handle {
+            position: absolute;
+            width: 1.125rem;
+            height: 2.25rem;
+            background-color: @gray;
+        }
+	}
+}
+
+#fullscreenExitWrapper {
+    right: 15px;
+}
+
+#fullscreenPrevWrapper, 
+#fullscreenNextWrapper {
+        position: absolute;
+        top: 50%;
+        width: 150px;
+        height: 200px;
+        margin-top: -100px;
+    background-color: rgba(192,192,192,0.25);
+        overflow: hidden;
+        z-index: 2;
+        a {
+            display: block;
+        height: 200px;
+            text-decoration: none;
+            color: @black;
+            span {
+                display: block;
+            height: 200px;
+            line-height: 200px;
+            font-size: 10.9375rem;
+            }
+        }
+    }
+
+#fullscreenPrevWrapper {
+        left: 0;
+        .fullscreen-controls-prev {}
+        a {
+            span {
+                margin-left: -15px;
+            }
+        }
+    }
+
+#fullscreenNextWrapper {
+        right: 0;
+        .fullscreen-controls-next {}
+        a {
+        span {
+            margin-left: -10px;
+        }
+        }
+    }
+
+#fullscreenImageContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 1;
+    #fullscreenMap {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        text-align: center;
+        .file-not-found {
+            position: absolute;
+            top: 40%;
+        }
+    	.ugcBox {
+	        &.focus {
+	            border: 2px solid red;
+	        }
+	        &.drawing {
+	            border: 2px solid blue;   
+	        }
+   		}
+   		.image-fragment {
+	    	background-color: rgba(255,255,255,0.3);
+	        border: solid @blue 3px;	        	
+	    }
+    }
+}
+
+/* LOGOS */
+#intrandaLogo, 
+#customerLogo {
+    display: none;
+    position: absolute;
+    bottom: 15px;
+    z-index: 3;
+}
+
+#intrandaLogo {
+    left: 15px;
+    opacity: 0.5;
+}
+
+#customerLogo {
+    right: 15px;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #fullscreenPrevWrapper, 
+    #fullscreenNextWrapper {
+        width: 100px;
+        height: 150px;
+        margin-top: -75px;
+            a {
+            height: 150px;
+            span {
+                height: 150px;
+                line-height: 150px;
+                font-size: 8.9375rem;
+            }
+        }
+        }
+    
+    #fullscreenPrevWrapper {
+        .fullscreen-controls-prev {}
+        a {
+            span {
+                margin-left: -25px;
+                }
+                }
+            }
+
+    #fullscreenNextWrapper {
+        .fullscreen-controls-next {}
+            a {
+                span {
+                margin-left: -20px;
+                }
+            }
+        }
+        }
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #fullscreenPrevWrapper, 
+    #fullscreenNextWrapper {
+        width: 60px;
+        a {
+            span {}
+        }
+}
+
+    #fullscreenPrevWrapper {
+            .fullscreen-controls-prev {}
+            a {
+                span {
+                margin-left: -42px;
+                }
+            }
+        }
+    
+    #fullscreenNextWrapper {
+            .fullscreen-controls-next {}
+            a {
+                span {
+                margin-left: -40px;
+            }
+        }
+    }
+}

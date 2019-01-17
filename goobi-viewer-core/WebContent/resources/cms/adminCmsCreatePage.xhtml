@@ -136,7 +136,7 @@
                                                                 <cmsComponent:cms_createPageContentTypeGlossary />
                                                                 
 															</ui:repeat>
-															
+                                                            
 															<!-- LOCALE -->
 															<h:panelGroup rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
 																<div class="form-group">
@@ -152,6 +152,14 @@
 																</div>
 															</h:panelGroup>
 															
+                                                                                                                        
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label">#{msg.cms_wrapperElementClass}:</label>
+                                                                <div class="col-sm-9">
+                                                                    <h:inputText value="#{cmsBean.selectedPage.wrapperElementClass}" styleClass="form-control content-input" />
+                                                                </div>
+                                                            </div>
+                                                            
 															<!-- PRETTY URL -->
 															<div class="edit-content-page__pretty-url">
 																<div class="form-group">

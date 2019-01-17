@@ -355,4 +355,9 @@ public class UserGroup implements ILicensee {
 
         return ret;
     }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
 }

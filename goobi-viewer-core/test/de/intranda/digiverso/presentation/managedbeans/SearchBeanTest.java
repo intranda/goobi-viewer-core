@@ -28,6 +28,7 @@ import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.search.Search;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
@@ -43,33 +44,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-    }
-
-    /**
-     * @see SearchBean#cleanUpSearchTerm(String)
-     * @verifies remove illegal chars correctly
-     */
-    @Test
-    public void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
-        Assert.assertEquals("a", SearchBean.cleanUpSearchTerm("(a)"));
-    }
-
-    /**
-     * @see SearchBean#cleanUpSearchTerm(String)
-     * @verifies preserve truncation
-     */
-    @Test
-    public void cleanUpSearchTerm_shouldPreserveTruncation() throws Exception {
-        Assert.assertEquals("*a*", SearchBean.cleanUpSearchTerm("*a*"));
-    }
-
-    /**
-     * @see SearchBean#cleanUpSearchTerm(String)
-     * @verifies preserve negation
-     */
-    @Test
-    public void cleanUpSearchTerm_shouldPreserveNegation() throws Exception {
-        Assert.assertEquals("-a", SearchBean.cleanUpSearchTerm("-a"));
     }
 
     /**
@@ -356,11 +330,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean sb = new SearchBean();
         Assert.assertNull(sb.getSearchUrl());
     }
-    
-    
-    
-    
-    
+
     /**
      * @see SearchBean#increaseCurrentHitIndex()
      * @verifies increase index correctly
@@ -467,13 +437,13 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.increaseCurrentHitIndex();
         Assert.assertEquals(0, sb.currentHitIndex);
     }
-    
+
     @Test
     public void testGetHierarchicalFacets() {
         String facetString = "DC:sonstiges.ocr.antiqua;;DOCSTRCT:monograph;;MD_TOPICS_UNTOKENIZED:schulbuch";
-        List<String> hierarchicalFacetFields = Arrays.asList(new String[]{"A", "MD_TOPICS","B", "DC", "C"});
-        
-        List<String> facets = SearchBean.getHierarchicalFacets(facetString, hierarchicalFacetFields);
+        List<String> hierarchicalFacetFields = Arrays.asList(new String[] { "A", "MD_TOPICS", "B", "DC", "C" });
+
+        List<String> facets = SearchFacets.getHierarchicalFacets(facetString, hierarchicalFacetFields);
         Assert.assertEquals(2, facets.size());
         Assert.assertEquals("sonstiges.ocr.antiqua", facets.get(1));
         Assert.assertEquals("schulbuch", facets.get(0));

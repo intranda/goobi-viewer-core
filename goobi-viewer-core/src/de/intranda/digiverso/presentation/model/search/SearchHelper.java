@@ -259,19 +259,22 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
+     * @param request
+     * @param addStaticQuerySuffix
      * @param addCollectionBlacklistSuffix
      * @param addDiscriminatorValueSuffix
      * @return
      * @throws IndexUnreachableException
      * @should add static suffix
+     * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addCollectionBlacklistSuffix, boolean addDiscriminatorValueSuffix)
-            throws IndexUnreachableException {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
         StringBuilder sbSuffix = new StringBuilder();
-        String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
-        if (StringUtils.isNotBlank(staticSuffix)) {
+        if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
+            String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
             if (staticSuffix.charAt(0) != ' ') {
                 sbSuffix.append(' ');
             }
@@ -304,7 +307,7 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      */
     public static String getAllSuffixes(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, true, addDiscriminatorValueSuffix);
+        return getAllSuffixes(null, true, true, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -315,7 +318,7 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      */
     public static String getAllSuffixesExceptCollectionBlacklist(boolean addDiscriminatorValueSuffix) throws IndexUnreachableException {
-        return getAllSuffixes(null, false, addDiscriminatorValueSuffix);
+        return getAllSuffixes(null, true, false, addDiscriminatorValueSuffix);
     }
 
     /**
@@ -343,7 +346,7 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
         finalQuery = buildFinalQuery(finalQuery, aggregateHits);
-        logger.debug("getBrowseElement final query: {}", finalQuery);
+        logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale)
                 : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale, request);
@@ -391,8 +394,14 @@ public final class SearchHelper {
             sbQuery.append(getDocstrctWhitelistFilterSuffix());
         }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-        sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(
-                value + separatorString + "*)");
+        sbQuery.append(" AND (")
+                .append(luceneField)
+                .append(":")
+                .append(value)
+                .append(" OR ")
+                .append(luceneField)
+                .append(":")
+                .append(value + separatorString + "*)");
         Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
@@ -651,8 +660,9 @@ public final class SearchHelper {
             throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
-                getFieldStatistics);
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount, getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -716,8 +726,9 @@ public final class SearchHelper {
                 }
                 sbQuery.append(getAllSuffixes(true));
                 logger.debug("Autocomplete query: {}", sbQuery.toString());
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 100, null,
-                        Collections.singletonList(SolrConstants.DEFAULT));
+                SolrDocumentList hits = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
                 for (SolrDocument doc : hits) {
                     String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
                     if (StringUtils.isNotEmpty(defaultValue)) {
@@ -838,7 +849,10 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @should construct subquery correctly
      * @should return empty string if discriminator value is empty or hyphen
+     * @deprecated Implicit filtering of queries by subtheme should not be neccessary anymore since it is now handled via CMS-Pages and their
+     *             components/widgets
      */
+    @Deprecated
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
         // logger.trace("nh null? {}", nh == null);
         logger.trace("discriminatorField: {}", discriminatorField);
@@ -952,7 +966,7 @@ public final class SearchHelper {
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches) {
-        logger.trace("truncateFulltext");
+        // logger.trace("truncateFulltext");
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
@@ -966,7 +980,7 @@ public final class SearchHelper {
                 if (searchTerm.length() == 0) {
                     continue;
                 }
-                logger.trace("term: {}", searchTerm);
+                //                logger.trace("term: {}", searchTerm);
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
                     for (String stopword : DataManager.getInstance().getConfiguration().getStopwords()) {
@@ -1180,8 +1194,8 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">").replace(PLACEHOLDER_HIGHLIGHTING_END,
-                "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
+                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
     }
 
     /**
@@ -1298,8 +1312,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("facetFieldName may not be null or empty");
         }
 
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                facetMinCount, facetPrefix, false);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName), facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
@@ -1689,11 +1704,10 @@ public final class SearchHelper {
         if (fieldName != null) {
             switch (fieldName) {
                 case SolrConstants.DC:
-                    return SolrConstants.FACET_DC;
                 case SolrConstants.DOCSTRCT:
-                    return "FACET_DOCSTRCT";
-                //                case SolrConstants.SUPERDOCSTRCT:
-                //                    return "FACET_SUPERDOCSTRCT";
+                case SolrConstants.DOCSTRCT_SUB:
+                case SolrConstants.DOCSTRCT_TOP:
+                    return "FACET_" + fieldName;
                 default:
                     if (fieldName.startsWith("MD_")) {
                         fieldName = fieldName.replace("MD_", "FACET_");
@@ -1715,11 +1729,10 @@ public final class SearchHelper {
         if (fieldName != null) {
             switch (fieldName) {
                 case SolrConstants.FACET_DC:
-                    return SolrConstants.DC;
-                case "FACET_DOCSTRCT":
-                    return SolrConstants.DOCSTRCT;
-                //                case "FACET_SUPERDOCSTRCT":
-                //                    return SolrConstants.SUPERDOCSTRCT;
+                case "FACET_" + SolrConstants.DOCSTRCT:
+                case "FACET_" + SolrConstants.DOCSTRCT_SUB:
+                case "FACET_" + SolrConstants.DOCSTRCT_TOP:
+                    return fieldName.substring(6);
                 default:
                     if (fieldName.startsWith("FACET_")) {
                         return fieldName.replace("FACET_", "MD_");
@@ -2159,5 +2172,45 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    /**
+     * Removes illegal characters from an individual search term. Do not use on whole queries!
+     *
+     * @param s The term to clean up.
+     * @return Cleaned up term.
+     * @should remove illegal chars correctly
+     * @should preserve truncation
+     * @should preserve negation
+     */
+    public static String cleanUpSearchTerm(String s) {
+        if (StringUtils.isNotEmpty(s)) {
+            boolean addNegation = false;
+            boolean addLeftTruncation = false;
+            boolean addRightTruncation = false;
+            if (s.charAt(0) == '-') {
+                addNegation = true;
+                s = s.substring(1);
+            } else if (s.charAt(0) == '*') {
+                addLeftTruncation = true;
+            }
+            if (s.endsWith("*")) {
+                addRightTruncation = true;
+            }
+            s = s.replace("*", "");
+            // s = s.replace(".", "");
+            s = s.replace("(", "");
+            s = s.replace(")", "");
+            if (addNegation) {
+                s = '-' + s;
+            } else if (addLeftTruncation) {
+                s = '*' + s;
+            }
+            if (addRightTruncation) {
+                s += '*';
+            }
+        }
+
+        return s;
     }
 }

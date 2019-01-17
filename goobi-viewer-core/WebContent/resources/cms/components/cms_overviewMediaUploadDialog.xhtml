@@ -107,7 +107,7 @@
 										<label class="col-sm-4 control-label">#{msg.cms_media_link_url}:</label>
 										<div class="col-sm-8">
 											<h:inputText id="linkUrlInput" styleClass="form-control"
-												value="#{cmsMediaBean.currentMediaItem.link}">
+												value="#{cmsMediaBean.currentMediaItem.link}" validator="URISyntaxValidator">
 												<f:ajax render="@this" />
 											</h:inputText>
 										</div>

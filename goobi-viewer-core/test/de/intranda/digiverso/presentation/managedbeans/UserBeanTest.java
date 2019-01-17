@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
-import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
@@ -50,6 +49,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
     String userSuspended_email = "3@users.org";
     String userSuspended_pwHash = "abcdef3";
     
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

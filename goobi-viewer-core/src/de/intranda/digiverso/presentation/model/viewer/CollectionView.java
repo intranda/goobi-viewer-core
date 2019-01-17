@@ -730,7 +730,7 @@ public class CollectionView {
             String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
             logger.trace("COLLETION new window url: {}", ret);
             return ret;
-        } else if (collection.getNumberOfVolumes() == 1) {
+        } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
                     + "/" + collection.getLuceneName() + "/";
@@ -776,4 +776,34 @@ public class CollectionView {
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
     }
+
+    /**
+     * Set the  {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
+     * 
+     * @param name  The collection name
+     * @param info  The info to apply
+     */
+    public void setCollectionInfo(String name, BrowseElementInfo info) {
+        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
+        .ifPresent(ele -> ele.setInfo(info));
+    }
+    
+
+    /**
+     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}  
+     * 
+     * @param name    The collection name
+     */
+    public void removeCollectionInfo(String name) {
+        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
+        .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+    }
+    
+    /**
+     * @return the field
+     */
+    public String getField() {
+        return field;
+    }
+
 }

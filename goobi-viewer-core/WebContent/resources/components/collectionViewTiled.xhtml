@@ -25,12 +25,12 @@
     										<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
     											<h:outputText
     												rendered="#{browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})"
-    												title="#{msg[browseDcElement.name]}" />
+    												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
+    												title="#{msg[browseDcElement.label]}" />
     											<h:outputText
     												rendered="#{!browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.name]}"
-    												title="#{msg[browseDcElement.name]}" />
+    												value="#{msg[browseDcElement.label]}"
+    												title="#{msg[browseDcElement.label]}" />
     											<f:ajax render="@form" />
     										</h:commandLink>
     									</div>
@@ -58,15 +58,15 @@
     	                            </h:panelGroup>
     	                            <h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
     	                                <div class="collection-tiled__header">
-    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.name]}">
+    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.label]}">
     	                                       <h:outputText
     												rendered="#{browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})"
-    												title="#{msg[browseDcElement.name]}" />
+    												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
+    												title="#{msg[browseDcElement.label]}" />
     											<h:outputText
     												rendered="#{!browseDcElement.displayNumberOfVolumes}"
-    												value="#{msg[browseDcElement.name]}"
-    												title="#{msg[browseDcElement.name]}" />
+    												value="#{msg[browseDcElement.label]}"
+    												title="#{msg[browseDcElement.label]}" />
     										</a>
     	                                </div>
     	                                <div class="collection-tiled__body">

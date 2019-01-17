@@ -36,6 +36,7 @@ var ImageView = ( function() {
                 adaptContainerHeight: false,
                 fitToContainer: true,
                 footerHeight: 0,
+                topMargin: 0,
                 rememberZoom: false,
                 rememberRotation: false,
                 panHomeOnZoomOut: true,
@@ -174,7 +175,7 @@ var ImageView = ( function() {
                          "token" : this.config.global.webApiToken
                      },
                      viewportMargins: {
-                         top: 0,
+                         top: this.config.global.topMargin,
                          left: 0,
                          right: 0,
                          bottom: this.config.global.footerHeight
@@ -880,7 +881,9 @@ var ImageView = ( function() {
          }
          
          if ( image.viewer != null ) {
-             image.viewer.viewport.setMargins( {bottom: sizes.footerHeight + sizes.calculateExcessHeight()} );
+             var margins = image.viewer.viewport.getMargins();
+             margins.bottom = sizes.footerHeight + sizes.calculateExcessHeight();
+             image.viewer.viewport.setMargins(margins);
          }
          
          if ( _debug ) {

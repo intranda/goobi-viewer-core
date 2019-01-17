@@ -127,7 +127,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
     }
-    
+
     public static Locale getDefaultLocale() {
         return defaultLocale != null ? defaultLocale : Locale.ENGLISH;
     }
@@ -210,8 +210,49 @@ public class ViewerResourceBundle extends ResourceBundle {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
+    /**
+     * 
+     * @param key
+     * @param locale
+     * @return
+     */
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true);
+    }
+
+    /**
+     * 
+     * @param key
+     * @param locale
+     * @param params One or more parameter values to replace the placeholders
+     * @return
+     */
+    public static String getTranslationWithParameters(final String key, final Locale locale, final String... params) {
+        String ret = getTranslation(key, locale);
+        if (params != null) {
+            ret = replaceParameters(ret, params);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param msg
+     * @param params
+     * @return
+     * @should return null if msg is null
+     * @should replace parameters correctly
+     */
+    static String replaceParameters(final String msg, String... params) {
+        String ret = msg;
+        if (ret != null && params != null) {
+            for (int i = 0; i < params.length; ++i) {
+                ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -415,41 +456,41 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (allLocales == null) {
 
             checkAndLoadDefaultResourceBundles();
-            Set<Locale> locales = new HashSet<Locale>();
+            Set<Locale> locales = new HashSet<>();
             locales.addAll(defaultBundles.keySet());
             locales.addAll(localBundles.keySet());
             allLocales = new ArrayList<>(locales);
 
             //deprecated?
-                Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-                try (Stream<Path> messageFiles =
-                        Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-                    allLocales.addAll(messageFiles.map(path -> StringTools
-                            .findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
-                            .filter(lang -> lang != null)
-                            .sorted((l1, l2) -> {
-                                if (l1.equals(l2)) {
-                                    return 0;
-                                }
-                                switch (l1) {
-                                    case "en":
-                                        return -1;
-                                    case "de":
-                                        return l2.equals("en") ? 1 : -1;
-                                    default:
-                                        switch (l2) {
-                                            case "en":
-                                            case "de":
-                                                return 1;
-                                        }
-                                }
-                                return l1.compareTo(l2);
-                            })
-                            .map(language -> Locale.forLanguageTag(language))
-                            .collect(Collectors.toList()));
-                } catch (IOException e) {
-                    logger.error("Error reading config directory " + configPath);
-                }
+            Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+            try (Stream<Path> messageFiles =
+                    Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
+                allLocales.addAll(messageFiles.map(
+                        path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
+                        .filter(lang -> lang != null)
+                        .sorted((l1, l2) -> {
+                            if (l1.equals(l2)) {
+                                return 0;
+                            }
+                            switch (l1) {
+                                case "en":
+                                    return -1;
+                                case "de":
+                                    return l2.equals("en") ? 1 : -1;
+                                default:
+                                    switch (l2) {
+                                        case "en":
+                                        case "de":
+                                            return 1;
+                                    }
+                            }
+                            return l1.compareTo(l2);
+                        })
+                        .map(language -> Locale.forLanguageTag(language))
+                        .collect(Collectors.toList()));
+            } catch (IOException e) {
+                logger.error("Error reading config directory " + configPath);
+            }
         }
 
         return allLocales;

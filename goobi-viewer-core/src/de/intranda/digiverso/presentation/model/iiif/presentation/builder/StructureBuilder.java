@@ -128,11 +128,7 @@ public class StructureBuilder extends AbstractBuilder {
         elements.stream().filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
         .map(element -> element.getLogid())
         .forEach(logId -> {
-            try {
                 range.addRange(new Range(getRangeURI(pi, logId)));
-            } catch (URISyntaxException e) {
-               logger.error("Error creating uri for range with pi={} and logId={}", pi, logId);
-            }
         });
         
     }

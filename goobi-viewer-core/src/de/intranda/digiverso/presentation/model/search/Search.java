@@ -225,7 +225,7 @@ public class Search implements Serializable {
             throw new IllegalArgumentException("facets may not be null");
         }
 
-        String currentQuery = SearchHelper.prepareQuery(query, SearchHelper.getDocstrctWhitelistFilterSuffix());
+        String currentQuery = SearchHelper.prepareQuery(this.query, SearchHelper.getDocstrctWhitelistFilterSuffix());
 
         // Collect regular and hierarchical facet field names and combine them into one list
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
@@ -237,19 +237,29 @@ public class Search implements Serializable {
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
 
         // Apply current facets
-        List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
-        for (String fq : facetFilterQueries) {
-            logger.trace("Facet query: {}", fq);
+        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
+        String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
+        if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+            subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
+        }
+        if (logger.isTraceEnabled()) {
+            for (String fq : activeFacetFilterQueries) {
+                logger.trace("Facet query: {}", fq);
+            }
+            logger.trace("Subelement facet query: {}", subElementQueryFilterSuffix);
         }
 
+        String finalQuery = query + subElementQueryFilterSuffix;
         if (hitsCount == 0) {
-            logger.trace("Final main query: {}", query);
+            logger.trace("Final main query: {}", finalQuery);
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
             List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
-            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, rangeFacetFields,
-                    Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries, params);
+            resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
+                            params);
             if (resp != null && resp.getFacetFields() != null) {
                 for (FacetField facetField : resp.getFacetFields()) {
                     if (rangeFacetFields.contains(facetField.getName())) {
@@ -268,8 +278,42 @@ public class Search implements Serializable {
                 }
             }
 
-            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields,
-                    Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
+            // Extra search for child element facet values
+            if (DataManager.getInstance().getConfiguration().isAggregateHits() && !facets.getConfiguredSubelementFacetFields().isEmpty()) {
+                String extraQuery =
+                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, false)).append(subElementQueryFilterSuffix).toString();
+                logger.trace("extra query: {}", extraQuery);
+                resp = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(extraQuery, 0, 0, null, facets.getConfiguredSubelementFacetFields(), Collections.singletonList(SolrConstants.IDDOC),
+                                activeFacetFilterQueries, params);
+                if (resp != null && resp.getFacetFields() != null) {
+                    //                    logger.trace("hits: {}", resp.getResults().getNumFound());
+                    for (FacetField facetField : resp.getFacetFields()) {
+                        Map<String, Long> facetResult = new TreeMap<>();
+                        for (Count count : facetField.getValues()) {
+                            if (StringUtils.isEmpty(count.getName())) {
+                                logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+                                continue;
+                            }
+                            facetResult.put(count.getName(), count.getCount());
+                        }
+                        // Use non-FACET_ field names outside of the actual faceting query
+                        String fieldName = SearchHelper.defacetifyField(facetField.getName());
+                        facets.getAvailableFacets()
+                                .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
+                                        locale));
+                        //                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
+                        allFacetFields.remove(facetField.getName());
+                    }
+                }
+
+            }
+
+            // Actual search
+            resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(finalQuery, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFacetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {
                 hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
@@ -296,7 +340,11 @@ public class Search implements Serializable {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                     continue;
                 }
-                // Skip language-specific facet fields if they don't match the given language
+                //                // Skip top element docstrct faceting if sub-element docstrct faceting is active
+                //                if (("FACET_" + SolrConstants.DOCSTRCT).equals(facetField.getName()) && subElementQueryFilterSuffix.contains(facetField.getName())) {
+                //                    continue;
+                //                }
+                //                // Skip language-specific facet fields if they don't match the given language
                 if (facetField.getName().contains(SolrConstants._LANG_)
                         && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
                     continue;
@@ -311,8 +359,9 @@ public class Search implements Serializable {
                 }
                 // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
-                facets.getAvailableFacets().put(fieldName,
-                        FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
+                facets.getAvailableFacets()
+                        .put(fieldName,
+                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
             }
 
             int lastPage = getLastPage(hitsPerPage);
@@ -324,21 +373,25 @@ public class Search implements Serializable {
             // Hits for the current page
             int from = (page - 1) * hitsPerPage;
 
+            // Search for child hits only if initial search query is not empty (empty query means collection listing)
             if (StringUtils.isNotEmpty(expandQuery)) {
-                logger.trace("Expand query: {}", expandQuery);
-                params.put(ExpandParams.EXPAND, "true");
-                params.put(ExpandParams.EXPAND_Q, expandQuery);
-                params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
-                params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
-                params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
-                params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
+                String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+                if (StringUtils.isNotEmpty(useExpandQuery)) {
+                    logger.trace("Expand query: {}", useExpandQuery);
+                    params.put(ExpandParams.EXPAND, "true");
+                    params.put(ExpandParams.EXPAND_Q, useExpandQuery);
+                    params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
+                    params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
+                    params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+                    params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
+                }
             }
 
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
-                    ? SearchHelper.searchWithAggregation(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
-                            BeanUtils.getLocale())
-                    : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
-                            BeanUtils.getLocale(), BeanUtils.getRequest());
+                    ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, sortFields, null, activeFacetFilterQueries, params,
+                            searchTerms, null, BeanUtils.getLocale())
+                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, sortFields, null, activeFacetFilterQueries, params, searchTerms,
+                            null, BeanUtils.getLocale(), BeanUtils.getRequest());
             this.hits.addAll(hits);
         }
     }
@@ -353,8 +406,9 @@ public class Search implements Serializable {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
         sbUrl.append('/').append(PageType.search.getName());
-        sbUrl.append('/').append(
-                (StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING) : "-"));
+        sbUrl.append('/')
+                .append((StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING)
+                        : "-"));
         sbUrl.append('/').append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-").append('/').append(page);
         sbUrl.append('/').append((StringUtils.isNotEmpty(sortString) ? sortString : "-"));
         sbUrl.append('/').append((StringUtils.isNotEmpty(facetString) ? URLEncoder.encode(facetString, SearchBean.URL_ENCODING) : "-")).append('/');

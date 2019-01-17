@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.XmlTools;
@@ -489,7 +488,12 @@ public class AdminBean implements Serializable {
      *
      */
     public void saveUserRoleAction() throws DAOException {
-        logger.debug(getCurrentUserRole().getUserGroup() + ", " + getCurrentUserRole().getUser() + ", " + getCurrentUserRole().getRole());
+        if (currentUserRole == null) {
+            logger.trace("currentUserRole not set");
+            return;
+        }
+        
+        logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
         if (getCurrentUserRole().getId() != null) {
             // existing
             if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
@@ -499,7 +503,7 @@ public class AdminBean implements Serializable {
             }
         } else {
             // new
-            if (DataManager.getInstance().getDao().addUserRole(getCurrentUserRole())) {
+            if (DataManager.getInstance().getDao().addUserRole(currentUserRole)) {
                 Messages.info("userGroup_memberAddSuccess");
             } else {
                 Messages.error("userGroup_memberAddFailure");
@@ -1016,7 +1020,7 @@ public class AdminBean implements Serializable {
                             .append(pi)
                             .append(".xml");
                 }
-                Document doc = FileTools.readXmlFile(sbFilePath.toString());
+                Document doc = XmlTools.readXmlFile(sbFilePath.toString());
                 if (doc == null || doc.getRootElement() == null) {
                     logger.error("Invalid METS file: {}", sbFilePath.toString());
                     return;
@@ -1054,7 +1058,7 @@ public class AdminBean implements Serializable {
                     }
                     // Write altered file into hotfolder
 
-                    FileTools.writeXmlFile(doc, DataManager.getInstance().getConfiguration().getHotfolder() + File.separator + pi + ".xml");
+                    XmlTools.writeXmlFile(doc, DataManager.getInstance().getConfiguration().getHotfolder() + File.separator + pi + ".xml");
 
                     Messages.info("admin_recordReExported");
                 } else {

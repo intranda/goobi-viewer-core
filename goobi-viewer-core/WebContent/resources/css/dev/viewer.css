@@ -16,7 +16,7 @@
 /* BUTTON COLORS */
 /* COLORS STATISTICS */
 /* COLORS NER */
-/* COLORS READING MODE */
+/* COLORS FULLSCREEN */
 /* MEDIA QUERY BREAK POINTS */
 /* ==============================================================
    LESS Mixins
@@ -138,15 +138,22 @@ table,
   width: 100%;
 }
 #ajaxloader_image {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  display: none;
+}
+#ajaxloader_image img {
   position: absolute;
   top: 50%;
   left: 50%;
-  padding-top: -15px;
-  padding-left: -15px;
-  display: none;
+  padding-top: -50px;
+  padding-left: -50px;
+  width: 100px;
+  height: 100px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -464,7 +471,7 @@ span[class*=" image-"] {
       grid-template-columns: repeat(12, 1fr);
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -483,8 +490,10 @@ span[class*=" image-"] {
   .grid--10,
   .grid--11,
   .grid--12 {
-    -ms-grid-columns: 1fr;
-        grid-template-columns: 1fr;
+    display: block;
+  }
+  .grid [class*="__col"] {
+    margin-bottom: 15px;
   }
 }
 /* ==============================================================
@@ -665,7 +674,7 @@ button {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -927,7 +936,7 @@ button {
   background-position: -166px -405px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1065,7 +1074,7 @@ button {
   color: rgba(0, 0, 0, 0.25);
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1173,7 +1182,12 @@ button {
 a.btn--icon {
   line-height: normal;
 }
-/* BREAKPOINT FOR DESKTOP */
+button.btn:active,
+button.btn:focus,
+button.btn:active:focus {
+  color: #fff;
+}
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1196,7 +1210,7 @@ a.btn--icon {
   margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* LAYOUT */
@@ -1328,7 +1342,7 @@ html.is-IE .support-overlay {
   visibility: visible !important;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWER COMPONENTS */
@@ -1602,7 +1616,7 @@ html.is-IE .support-overlay {
   background-image: url("../../images/icons/icon-bs-link.svg");
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -1772,7 +1786,7 @@ html.is-IE .support-overlay {
   padding: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .navigation {
@@ -1839,7 +1853,7 @@ html.is-IE .support-overlay {
   border-color: transparent transparent #eee transparent;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #mobileToggleWrapper {
@@ -1884,7 +1898,7 @@ html.is-IE .support-overlay {
   padding-left: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1911,7 +1925,7 @@ html.is-IE .support-overlay {
   margin: -0.125rem 0.25rem 0 0.25rem;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1950,7 +1964,7 @@ html.is-IE .support-overlay {
   padding: 5px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -1994,7 +2008,7 @@ html.is-IE .support-overlay {
 .alphabetic-paginator a:focus {
   background-color: #eee;
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2047,7 +2061,7 @@ html.is-IE .support-overlay {
   border: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -2151,7 +2165,7 @@ html.is-IE .support-overlay {
   color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #titleWrapper .title-body form .dl-horizontal dt {
@@ -2317,7 +2331,7 @@ html.is-IE .support-overlay {
   background: #6f6f6f;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2329,8 +2343,67 @@ html.is-IE .support-overlay {
 .image-controls {
   position: relative;
   padding: 15px 0;
+  /* ELEMENT */
+  /* DOCUMENT OPTIONS */
   /* ACTIONS */
   /* MODIFICATION */
+}
+.image-controls__options ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+}
+.image-controls__options li {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+.image-controls__option {
+  width: 21px;
+  height: 21px;
+}
+.image-controls__option a,
+.image-controls__option span,
+.image-controls__option button {
+  color: #6f6f6f;
+}
+.image-controls__option a:hover,
+.image-controls__option span:hover,
+.image-controls__option button:hover,
+.image-controls__option a:active,
+.image-controls__option span:active,
+.image-controls__option button:active,
+.image-controls__option a:focus,
+.image-controls__option span:focus,
+.image-controls__option button:focus {
+  color: #6f6f6f;
+}
+.image-controls__option a,
+.image-controls__option button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
+  background-image: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark-o {
+  display: inline-block;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark-o,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark-o {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
+  display: inline-block;
 }
 .image-controls__actions ul {
   display: -ms-flexbox;
@@ -2408,6 +2481,13 @@ html.is-IE .support-overlay {
 .image-controls__action.select .form-control__select select {
   background: none;
 }
+.image-controls__action.select .custom-control--select select {
+  padding-left: 5px;
+  color: #6f6f6f;
+}
+.image-controls__action.select .custom-control--select:after {
+  border-top-color: #6f6f6f;
+}
 .image-controls__action.double-page-view [class*="image-"],
 .image-controls__action.single-page-view [class*="image-"],
 .image-controls__action.switch-pages [class*="image-"] {
@@ -2423,16 +2503,16 @@ html.is-IE .support-overlay {
 .image-controls__action.rotate-right [class*="image-"] {
   top: 4px;
 }
-.image-controls__action.zoom-slider {
-  width: 96px;
+.image-controls__action.zoom-slider-wrapper {
+  width: 100px;
   border: none;
 }
-.image-controls__action.zoom-slider .zoom-slider {
+.image-controls__action.zoom-slider-wrapper .zoom-slider {
   height: 16px;
   margin-top: 8px;
   border: 1px solid #6f6f6f;
 }
-.image-controls__action.zoom-slider .zoom-slider-handle {
+.image-controls__action.zoom-slider-wrapper .zoom-slider-handle {
   position: relative;
   top: -9px;
   width: 15px;
@@ -2444,9 +2524,10 @@ html.is-IE .support-overlay {
 }
 .image-controls .labeltext {
   padding: 0;
-  display: none;
+  display: none !important;
 }
 .tooltip_clipboard {
+  display: none;
   position: absolute;
   z-index: 10000;
   background-color: #444444;
@@ -2455,7 +2536,6 @@ html.is-IE .support-overlay {
   vertical-align: middle;
   border-radius: 10px;
   font-size: 12px;
-  display: none;
 }
 /* FIREFOX CORRECTION */
 @-moz-document url-prefix() {
@@ -2464,7 +2544,7 @@ html.is-IE .support-overlay {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOP */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .image-controls__options {
@@ -2492,7 +2572,7 @@ html.is-IE .support-overlay {
   .image-controls__action.select {
     width: 74px;
   }
-  .image-controls__action.zoom-slider {
+  .image-controls__action.zoom-slider-wrapper {
     display: none !important;
     visibility: hidden !important;
   }
@@ -2519,7 +2599,7 @@ html.is-IE .support-overlay {
   background: #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2721,7 +2801,7 @@ html.is-IE .support-overlay {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2781,7 +2861,7 @@ html.is-IE .support-overlay {
   background-color: #507ebf;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -2952,7 +3032,7 @@ html.is-IE .support-overlay {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: 992px) {
   #responsiveColumnGallery .rcg-col.col-4 {
     width: 33.33333333%;
@@ -3026,7 +3106,7 @@ input[id*="cmdMoveTo"] {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3122,7 +3202,7 @@ input[id*="cmdMoveTo"] {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3295,7 +3375,7 @@ input[id*="cmdMoveTo"] {
   /*border-bottom: 1px dotted #4F3E22 !important;*/
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3332,7 +3412,7 @@ input[id*="cmdMoveTo"] {
   background-color: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3378,7 +3458,7 @@ input[id*="cmdMoveTo"] {
   margin: 1%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3419,7 +3499,7 @@ div[id*="-Modal"] .email-form .form-group {
   z-index: 999;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3612,7 +3692,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3713,7 +3793,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0.625rem 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
@@ -3722,7 +3802,7 @@ div[id*="-Modal"] .email-form .form-group {
    global style declarations for admin backend
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3816,7 +3896,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 4px 7px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3824,7 +3904,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for adminIpRange.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3842,7 +3922,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0 0 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3857,7 +3937,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3865,7 +3945,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for adminUserGroup.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -3907,7 +3987,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* COMMON VIEWS */
@@ -3976,7 +4056,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -4003,7 +4083,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4023,7 +4103,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4164,7 +4244,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4253,7 +4333,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4272,7 +4352,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4301,7 +4381,319 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 3px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* FULLSCREEN VIEWS / COMPONENTS */
+/* ==============================================================
+   View Fullscreen Image Controls 
+   ==============================================================*/
+/* FULLSCREEN IMAGE CONTROLS */
+.fullscreen .image-controls {
+  padding: 0;
+  border: 0;
+  opacity: 1;
+  /* DOCUMENT OPTIONS */
+  /* ACTIONS */
+}
+.fullscreen .image-controls.faded {
+  opacity: 0;
+}
+.fullscreen .image-controls__options {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .image-controls__action {
+  height: auto;
+  margin: 0 7px 0 0;
+  font-size: 0.9375rem;
+  border: 0;
+  /* ELEMENT */
+  /* ELEMENT */
+}
+.fullscreen .image-controls__action a,
+.fullscreen .image-controls__action span,
+.fullscreen .image-controls__action button {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  width: 32px;
+  height: 32px;
+  line-height: inherit;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 28px;
+}
+.fullscreen .image-controls__action [class*="image-"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .image-controls__action.start a,
+.fullscreen .image-controls__action.start span,
+.fullscreen .image-controls__action.start button {
+  background-image: url("../../images/icons/icon_fs-start.svg");
+  background-size: 18px;
+}
+.fullscreen .image-controls__action.back a,
+.fullscreen .image-controls__action.back span,
+.fullscreen .image-controls__action.back button {
+  background-image: url("../../images/icons/icon_fs-back.svg");
+  background-size: 12px;
+}
+.fullscreen .image-controls__action.select {
+  width: 100px;
+}
+.fullscreen .image-controls__action.select .fofs-control__select select {
+  font-size: 0.9375rem;
+}
+.fullscreen .image-controls__action.select .custom-control--select select {
+  color: #666;
+}
+.fullscreen .image-controls__action.select .custom-control--select:after {
+  border-top-color: #666;
+}
+.fullscreen .image-controls__action.forward a,
+.fullscreen .image-controls__action.forward span,
+.fullscreen .image-controls__action.forward button {
+  background-image: url("../../images/icons/icon_fs-forward.svg");
+  background-size: 12px;
+}
+.fullscreen .image-controls__action.end a,
+.fullscreen .image-controls__action.end span,
+.fullscreen .image-controls__action.end button {
+  background-image: url("../../images/icons/icon_fs-end.svg");
+  background-size: 18px;
+}
+.fullscreen .image-controls__action.double-page-view a,
+.fullscreen .image-controls__action.double-page-view span,
+.fullscreen .image-controls__action.double-page-view button {
+  background-image: url("../../images/icons/icon_fs-double-page.svg");
+}
+.fullscreen .image-controls__action.single-page-view a,
+.fullscreen .image-controls__action.single-page-view span,
+.fullscreen .image-controls__action.single-page-view button {
+  background-image: url("../../images/icons/icon_fs-single-page.svg");
+  background-size: 26px;
+}
+.fullscreen .image-controls__action.switch-pages a,
+.fullscreen .image-controls__action.switch-pages span,
+.fullscreen .image-controls__action.switch-pages button {
+  background-image: url("../../images/icons/icon_fs-recto-verso.svg");
+  background-size: 32px;
+}
+.fullscreen .image-controls__action.rotate-left a,
+.fullscreen .image-controls__action.rotate-left span,
+.fullscreen .image-controls__action.rotate-left button {
+  background-image: url("../../images/icons/icon_fs-rotate-left.svg");
+}
+.fullscreen .image-controls__action.rotate-right a,
+.fullscreen .image-controls__action.rotate-right span,
+.fullscreen .image-controls__action.rotate-right button {
+  background-image: url("../../images/icons/icon_fs-rotate-right.svg");
+}
+.fullscreen .image-controls__action.reset a,
+.fullscreen .image-controls__action.reset span,
+.fullscreen .image-controls__action.reset button {
+  background-image: url("../../images/icons/icon_fs-reset.svg");
+}
+.fullscreen .image-controls__action.fullscreen {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .image-controls__action.zoom-slider-wrapper {
+  width: 125px;
+  margin-left: 10px;
+}
+.fullscreen .image-controls__action.zoom-slider-wrapper .zoom-slider {
+  height: 2px;
+  margin-top: 0;
+  background-color: #666;
+}
+.fullscreen .image-controls__action.zoom-slider-wrapper .zoom-slider-handle {
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #666;
+  border-radius: 100%;
+  background-color: #fff;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: 1030px) {
+  .fullscreen .image-controls__action.page-browse {
+    display: none;
+  }
+}
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: 875px) {
+  .fullscreen .image-controls__action.zoom-slider-wrapper {
+    width: 75px;
+  }
+}
+@media screen and (max-width: 825px) {
+  .fullscreen .image-controls__action.zoom-slider-wrapper {
+    display: none;
+  }
+}
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .fullscreen .image-controls__action.rotate-left,
+  .fullscreen .image-controls__action.rotate-right,
+  .fullscreen .image-controls__action.reset,
+  .fullscreen .image-controls__action.double-page-view {
+    display: none;
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .fullscreen .image-controls__action.start,
+  .fullscreen .image-controls__action.end {
+    display: none;
+  }
+  .fullscreen .image-controls__action.select {
+    width: 130px;
+  }
+  .fullscreen .image-controls__action.back,
+  .fullscreen .image-controls__action.forward {
+    position: fixed;
+    top: 50%;
+    width: 50px;
+    height: 100px;
+    margin: 0;
+    margin-top: -50px;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: 1000;
+  }
+  .fullscreen .image-controls__action.back a,
+  .fullscreen .image-controls__action.forward a,
+  .fullscreen .image-controls__action.back button,
+  .fullscreen .image-controls__action.forward button,
+  .fullscreen .image-controls__action.back span,
+  .fullscreen .image-controls__action.forward span {
+    width: 100%;
+    height: 100%;
+    background-size: 24px;
+  }
+  .fullscreen .image-controls__action.back {
+    left: 0;
+  }
+  .fullscreen .image-controls__action.forward {
+    right: 0;
+  }
+}
+/* ==============================================================
+   View Fullscreen Metadata 
+   ==============================================================*/
+/* FULLSCREEN METADATA */
+.fullscreen .metadata {
+  margin: 0;
+  /* ELEMENTS / EVENTS */
+  /* ELEMENT */
+  /* EVENT */
+}
+.fullscreen .metadata__elements,
+.fullscreen .metadata__events {
+  margin-bottom: 15px;
+  padding: 0;
+  padding-bottom: 15px;
+  border: 0;
+  border-bottom: 1px solid #c6c6c6;
+}
+.fullscreen .metadata__elements:last-child,
+.fullscreen .metadata__events:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.fullscreen .metadata__element,
+.fullscreen .metadata__event {
+  margin-bottom: 10px;
+  border: 0;
+}
+.fullscreen .metadata__element-dl dt,
+.fullscreen .metadata__event-dl dt {
+  float: none;
+  width: 100%;
+  margin-bottom: 5px;
+}
+.fullscreen .metadata__element-dl dd,
+.fullscreen .metadata__event-dl dd {
+  width: 100%;
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Fullscreen Toc 
+   ==============================================================*/
+/* FULLSCREEN TOC */
+.fullscreen .widget-toc {
+  /* TITLE */
+  /* ELEMENTS */
+  /* LOADING */
+}
+.fullscreen .widget-toc__title {
+  background-color: #fff;
+}
+.fullscreen .widget-toc__title h3 {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .widget-toc__title-expand a {
+  color: #1a1a1a;
+}
+.fullscreen .widget-toc__title-expand a:hover,
+.fullscreen .widget-toc__title-expand a:active,
+.fullscreen .widget-toc__title-expand a:focus {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.fullscreen .widget-toc__elements {
+  max-height: inherit;
+  border: 0;
+}
+.fullscreen .widget-toc__elements ul {
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+}
+.fullscreen .widget-toc__element {
+  margin-bottom: 6px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Fullscreen Usage 
+   ==============================================================*/
+/* FULLSCREEN USAGE */
+.fullscreen .widget-usage {
+  /* LICENSE TEXT */
+  /* DOWNLOADS */
+  /* WORK DOWNLOADS */
+  /* PAGE DOWNLOADS */
+  /* CITE LINKS */
+  /* MODIFICATION */
+}
+.fullscreen .widget-usage__citelinks {
+  margin-bottom: 0;
+}
+.fullscreen .widget-usage .widget__title {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .widget-usage .widget__body {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* SEARCH VIEWS */
@@ -4413,7 +4805,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -4557,7 +4949,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .search-advanced__input-group input[type="text"],
@@ -4853,22 +5245,14 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: none;
   color: #1a1a1a;
 }
-.search-list a[data-toggle="hit-content"] .fa-caret-right,
-.search-list button[data-toggle="hit-content"] .fa-caret-right {
-  margin-right: 3px;
+.search-list a[data-toggle="hit-content"] .fa,
+.search-list button[data-toggle="hit-content"] .fa {
+  margin-right: 7px;
+  transition: all .2s linear;
 }
-.search-list a[data-toggle="hit-content"] .fa-caret-down,
-.search-list button[data-toggle="hit-content"] .fa-caret-down {
-  display: none;
-  margin-right: 4px;
-}
-.search-list a[data-toggle="hit-content"].in .fa-caret-right,
-.search-list button[data-toggle="hit-content"].in .fa-caret-right {
-  display: none;
-}
-.search-list a[data-toggle="hit-content"].in .fa-caret-down,
-.search-list button[data-toggle="hit-content"].in .fa-caret-down {
-  display: inline-block;
+.search-list a[data-toggle="hit-content"].in .fa,
+.search-list button[data-toggle="hit-content"].in .fa {
+  transform: rotate(90deg);
 }
 .search-list a[data-toggle="hit-content"] .search-list__loader,
 .search-list button[data-toggle="hit-content"] .search-list__loader {
@@ -4985,7 +5369,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -5097,7 +5481,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5134,7 +5518,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5255,7 +5639,7 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: bold;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5283,7 +5667,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .search-termlist__list ul {
@@ -5303,7 +5687,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for user backend tables
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5352,7 +5736,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5382,7 +5766,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5412,7 +5796,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5441,7 +5825,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: -15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -5481,7 +5865,7 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: normal;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5568,7 +5952,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5605,7 +5989,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5619,7 +6003,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: center;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5649,7 +6033,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5733,7 +6117,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 1.3125rem 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -5778,186 +6162,10 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWS */
-/* ==============================================================
-   View Image Fullscreen
-   style declarations for viewImageFullscreen.xhtml 
-   ==============================================================*/
-#fullscreenTemplate {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #1a1a1a;
-  overflow-y: hidden;
-}
-#fullscreenTemplate .fs-control {
-  display: block;
-  width: 48px;
-  height: 48px;
-  font-size: 48px;
-  text-align: center;
-  text-decoration: none;
-  color: #1a1a1a;
-  background-color: rgba(192, 192, 192, 0.25);
-}
-#fullscreenRotateControlsWrapper,
-#fullscreenZoomSliderWrapper,
-#fullscreenExitWrapper {
-  position: absolute;
-  top: 15px;
-  z-index: 2;
-}
-#fullscreenRotateControlsWrapper {
-  left: 15px;
-}
-#fullscreenRotateControlsWrapper a {
-  float: left;
-  margin-right: 5px;
-}
-#fullscreenZoomSliderWrapper {
-  left: 50%;
-  width: 17.5rem;
-  margin-left: -8.75rem;
-}
-#fullscreenZoomSliderWrapper #slider-id {
-  height: 2.25rem;
-  margin: 7px auto;
-  background-color: rgba(192, 192, 192, 0.25);
-}
-#fullscreenZoomSliderWrapper #slider-id .zoom-slider-handle {
-  position: absolute;
-  width: 1.125rem;
-  height: 2.25rem;
-  background-color: #6f6f6f;
-}
-#fullscreenExitWrapper {
-  right: 15px;
-}
-#fullscreenPrevWrapper,
-#fullscreenNextWrapper {
-  position: absolute;
-  top: 50%;
-  width: 150px;
-  height: 200px;
-  margin-top: -100px;
-  background-color: rgba(192, 192, 192, 0.25);
-  overflow: hidden;
-  z-index: 2;
-}
-#fullscreenPrevWrapper a,
-#fullscreenNextWrapper a {
-  display: block;
-  height: 200px;
-  text-decoration: none;
-  color: #1a1a1a;
-}
-#fullscreenPrevWrapper a span,
-#fullscreenNextWrapper a span {
-  display: block;
-  height: 200px;
-  line-height: 200px;
-  font-size: 10.9375rem;
-}
-#fullscreenPrevWrapper {
-  left: 0;
-}
-#fullscreenPrevWrapper a span {
-  margin-left: -15px;
-}
-#fullscreenNextWrapper {
-  right: 0;
-}
-#fullscreenNextWrapper a span {
-  margin-left: -10px;
-}
-#fullscreenImageContainer {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  z-index: 1;
-}
-#fullscreenImageContainer #fullscreenMap {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  text-align: center;
-}
-#fullscreenImageContainer #fullscreenMap .file-not-found {
-  position: absolute;
-  top: 40%;
-}
-#fullscreenImageContainer #fullscreenMap .ugcBox.focus {
-  border: 2px solid red;
-}
-#fullscreenImageContainer #fullscreenMap .ugcBox.drawing {
-  border: 2px solid blue;
-}
-#fullscreenImageContainer #fullscreenMap .image-fragment {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: solid #507ebf 3px;
-}
-/* LOGOS */
-#intrandaLogo,
-#customerLogo {
-  display: none;
-  position: absolute;
-  bottom: 15px;
-  z-index: 3;
-}
-#intrandaLogo {
-  left: 15px;
-  opacity: 0.5;
-}
-#customerLogo {
-  right: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #fullscreenPrevWrapper,
-  #fullscreenNextWrapper {
-    width: 100px;
-    height: 150px;
-    margin-top: -75px;
-  }
-  #fullscreenPrevWrapper a,
-  #fullscreenNextWrapper a {
-    height: 150px;
-  }
-  #fullscreenPrevWrapper a span,
-  #fullscreenNextWrapper a span {
-    height: 150px;
-    line-height: 150px;
-    font-size: 8.9375rem;
-  }
-  #fullscreenPrevWrapper a span {
-    margin-left: -25px;
-  }
-  #fullscreenNextWrapper a span {
-    margin-left: -20px;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  #fullscreenPrevWrapper,
-  #fullscreenNextWrapper {
-    width: 60px;
-  }
-  #fullscreenPrevWrapper a span {
-    margin-left: -42px;
-  }
-  #fullscreenNextWrapper a span {
-    margin-left: -40px;
-  }
-}
 /* ==============================================================
    View Fulltext
    style declarations for viewFulltext.xhtml 
@@ -5972,12 +6180,13 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   border-radius: 0;
   background-color: #eee;
+  white-space: pre-wrap;
 }
 .view-fulltext__box pre > br:first-child {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6035,7 +6244,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .metadata__element-dl dt,
@@ -6064,8 +6273,11 @@ div[id*="-Modal"] .email-form .form-group {
   height: 100vh;
   max-height: 100%;
 }
+.view-mirador .mirador-osd-annotation-controls {
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6406,7 +6618,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #298A08;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -6418,7 +6630,7 @@ div[id*="-Modal"] .email-form .form-group {
 .view-object {
   /* ELEMENT */
   /* IMAGE */
-  /* IMAGE MOBILE */
+  /* IMAGE MOBILE OVERLAY */
   /* VIDEO, AUDIO, TEXT */
   /* VIDEO */
   /* AUDIO */
@@ -6460,9 +6672,14 @@ div[id*="-Modal"] .email-form .form-group {
 .view-object__access-denied img {
   max-width: 100%;
 }
-.view-object__image-mobile {
-  display: none !important;
-  visibility: hidden !important;
+.view-object__image-mobile-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
 }
 .view-object__video,
 .view-object__audio,
@@ -6474,22 +6691,410 @@ div[id*="-Modal"] .email-form .form-group {
   background: #ffffff;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Fullscreen
+   style declarations for viewObjectFullscreen.xhtml 
+   ==============================================================*/
+/* FULLSCREEN */
+#fullscreen {
+  padding: 0;
+  background-color: #fff;
+}
+.fullscreen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  /* HEADER */
+  /* VIEW */
+  /* PANEL CONTROLS */
+  /* IMAGE */
+  /* THUMBS */
+  /* SIDEBAR */
+  /* SIDEBAR WORK TITLE */
+  /* SIDEBAR ACCORDEON */
+  /* MODIFICATION */
+}
+.fullscreen__header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  height: 70px;
+  border-bottom: 1px solid #c6c6c6;
+  background-color: #fff;
+  transition: all .3s linear;
+  opacity: 1;
+  z-index: 1050;
+}
+.fullscreen__header.fullscreen {
+  top: -70px;
+}
+.fullscreen__header-brand,
+.fullscreen__header-controls,
+.fullscreen__header-exit {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.fullscreen__header-brand a,
+.fullscreen__header-controls a,
+.fullscreen__header-exit a,
+.fullscreen__header-brand button,
+.fullscreen__header-controls button,
+.fullscreen__header-exit button {
+  color: #666;
+}
+.fullscreen__header-brand a:hover,
+.fullscreen__header-controls a:hover,
+.fullscreen__header-exit a:hover,
+.fullscreen__header-brand button:hover,
+.fullscreen__header-controls button:hover,
+.fullscreen__header-exit button:hover,
+.fullscreen__header-brand a:active,
+.fullscreen__header-controls a:active,
+.fullscreen__header-exit a:active,
+.fullscreen__header-brand button:active,
+.fullscreen__header-controls button:active,
+.fullscreen__header-exit button:active,
+.fullscreen__header-brand a:focus,
+.fullscreen__header-controls a:focus,
+.fullscreen__header-exit a:focus,
+.fullscreen__header-brand button:focus,
+.fullscreen__header-controls button:focus,
+.fullscreen__header-exit button:focus {
+  color: #666;
+  text-decoration: none;
+}
+.fullscreen__header-brand {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.fullscreen__header-brand img {
+  max-height: 40px;
+}
+.fullscreen__header-brand span {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen__header-controls {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.fullscreen__header-controls [data-show="thumbs"] {
+  width: 32px;
+  height: 32px;
+  margin-left: 10px;
+  background-image: url("../../images/icons/icon_fs-thumbs.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 22px;
+}
+.fullscreen__header-controls [data-show="thumbs"].in {
+  background-image: url("../../images/icons/icon_fs-close.svg");
+}
+.fullscreen__header-exit {
+  margin-left: auto;
+}
+.fullscreen__header-exit a {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-image: url("../../images/icons/icon_fs-exit.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 28px;
+}
+.fullscreen__view {
+  position: relative;
+  transition: all .3s linear;
+}
+.fullscreen__view-sidebar-panel-controls {
+  position: absolute;
+  top: 85px;
+  right: 15px;
+  z-index: 1020;
+}
+.fullscreen__view-sidebar-panel-controls [data-close="all-tabs"],
+.fullscreen__view-sidebar-panel-controls [data-open="all-tabs"] {
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 14px;
+}
+.fullscreen__view-sidebar-panel-controls [data-close="all-tabs"] {
+  background-image: url("../../images/icons/icon_fs-minus.svg");
+}
+.fullscreen__view-sidebar-panel-controls [data-open="all-tabs"] {
+  background-image: url("../../images/icons/icon_fs-plus.svg");
+}
+.fullscreen__view-image,
+.fullscreen__view-image-inner,
+.fullscreen .view-object__image-map {
+  height: 100vh;
+}
+.fullscreen__view-image img,
+.fullscreen__view-image-inner img,
+.fullscreen .view-object__image-map img {
+  display: block;
+  height: 100%;
+  margin: 0 auto;
+}
+.fullscreen__view-image-inner {
+  position: relative;
+}
+.fullscreen__view-image-inner .view-object__image {
+  padding: 0;
+  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
+}
+.fullscreen__view-image-thumbs-wrapper {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 15px;
+  padding-top: 85px;
+  background-color: #fff;
+  overflow-y: auto;
+  z-index: 10;
+}
+.fullscreen__view-image-thumbs {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: space-evenly;
+      justify-content: space-evenly;
+}
+.fullscreen__view-image-thumb {
+  position: relative;
+  width: 175px;
+  min-height: 250px;
+  margin: 10px;
+}
+.fullscreen__view-image-thumb-preloader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url("../../images/infinity_loader.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 64px;
+  z-index: 10;
+}
+.fullscreen__view-image-thumb-image img {
+  display: block;
+  margin: 0 auto;
+  max-height: 250px;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.fullscreen__view-image-thumb-image img.in {
+  opacity: 1;
+}
+.fullscreen__view-image-thumb-image-order {
+  padding: 5px;
+  text-align: center;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.fullscreen__view-image-thumb-image-order.in {
+  opacity: 1;
+}
+.fullscreen__view-sidebar-open {
+  display: none;
+  position: absolute;
+  top: 75px;
+  right: 0;
+  padding: 10px;
+  padding-top: 5px;
+  background-color: #fff;
+  transition: all .3s linear;
+  z-index: 1030;
+}
+.fullscreen__view-sidebar-open .btn {
+  padding-left: 20px;
+  color: #666;
+  background-repeat: no-repeat;
+  background-position: left 2px;
+  background-size: 9px;
+  background-image: url("../../images/icons/icon_fs-left.svg");
+  overflow: hidden;
+}
+.fullscreen__view-sidebar-open .btn:hover,
+.fullscreen__view-sidebar-open .btn:active,
+.fullscreen__view-sidebar-open .btn:focus,
+.fullscreen__view-sidebar-open .btn:active:focus,
+.fullscreen__view-sidebar-open .btn.active,
+.fullscreen__view-sidebar-open .btn.active.focus,
+.fullscreen__view-sidebar-open .btn.active:focus,
+.fullscreen__view-sidebar-open .btn.focus,
+.fullscreen__view-sidebar-open .btn:active.focus {
+  color: #666;
+  text-decoration: none;
+}
+.fullscreen__view-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 500px;
+  padding-top: 70px;
+  background-color: rgba(255, 255, 255, 0.9);
+  overflow-y: auto;
+  z-index: 1010;
+}
+.fullscreen__view-sidebar .ui-resizable-handle {
+  left: 0;
+  border-right: 1px solid #c6c6c6;
+  z-index: 998 !important;
+}
+.fullscreen__view-sidebar .ui-resizable-handle:before,
+.fullscreen__view-sidebar .ui-resizable-handle:after {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 50%;
+  width: 1px;
+  height: 40px;
+  margin-top: -20px;
+  background-color: #c6c6c6;
+}
+.fullscreen__view-sidebar .ui-resizable-handle:before {
+  right: 2px;
+}
+.fullscreen__view-sidebar .ui-resizable-handle:after {
+  right: 5px;
+}
+.fullscreen__view-sidebar .ui-resizable-w {
+  width: 10px;
+  cursor: w-resize;
+}
+.fullscreen__view-sidebar-inner {
+  display: none;
+  padding-left: 10px;
+}
+.fullscreen__view-sidebar-controls {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 15px;
+  background-color: #fff;
+}
+.fullscreen__view-sidebar-controls .btn {
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 14px;
+}
+.fullscreen__view-sidebar-controls [data-close="fs-sidebar"] {
+  background-image: url("../../images/icons/icon_fs-right.svg");
+  background-size: 10px;
+}
+.fullscreen__view-sidebar-work-title {
+  padding: 15px;
+  background-color: #fff;
+  word-break: break-word;
+}
+.fullscreen__view-sidebar-work-title h2 {
+  margin: 0;
+  line-height: 2rem;
+  font-size: 1.5rem;
+}
+.fullscreen__view-sidebar-accordeon {
+  border-bottom: 1px solid #c6c6c6;
+}
+.fullscreen__view-sidebar-accordeon-panel {
+  position: relative;
+  background-color: #fff;
+}
+.fullscreen__view-sidebar-accordeon-panel.fs-toc .fullscreen__view-sidebar-accordeon-panel-body {
+  padding-top: 0;
+}
+.fullscreen__view-sidebar-accordeon-panel.fs-search-hit-navigation {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen__view-sidebar-accordeon-panel:first-child h3 {
+  border-top: 0;
+}
+.fullscreen__view-sidebar-accordeon-panel-title {
+  position: relative;
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-top: 1px solid #c6c6c6;
+  background-color: #fff;
+  cursor: pointer;
+  z-index: 20;
+}
+.fullscreen__view-sidebar-accordeon-panel-title:hover {
+  background-color: #f6f6f6;
+}
+.fullscreen__view-sidebar-accordeon-panel-title.in {
+  background-color: #f6f6f6;
+}
+.fullscreen__view-sidebar-accordeon-panel-body {
+  display: none;
+  padding: 15px;
+  overflow-y: auto;
+}
+.fullscreen__view-sidebar-accordeon-panel-body > h2 {
+  display: none !important;
+  visibility: hidden !important;
+}
+.fullscreen .widget {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
-  .view-object {
-    /* ELEMENT */
-  }
-  .view-object__image {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  .view-object__image-mobile {
-    display: block !important;
-    visibility: visible !important;
+  .fullscreen__view-sidebar {
+    width: 50%;
+    padding-left: 0;
+    border-left: 1px solid #c6c6c6;
   }
 }
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .fullscreen__header-brand span {
+    display: none;
+  }
+  .fullscreen__view-sidebar {
+    width: 100%;
+  }
+  .fullscreen__view-sidebar-open {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+  .fullscreen__view-sidebar-open .btn {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background-position: center center;
+  }
+  .fullscreen__view-sidebar-open .btn span {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
 /* ==============================================================
    View Overview
    style declarations for viewOverview.xhtml 
@@ -6611,301 +7216,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   View Reading Mode
-   style declarations for viewReadingMode.xhtml 
-   ==============================================================*/
-/* READING MODE */
-#readingMode {
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a1a;
-}
-#readingModeImage {
-  position: relative;
-}
-#readingModeImage .image-fragment {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: solid #507ebf 3px;
-}
-/* BLOCK */
-.reading-mode {
-  position: relative;
-  height: 100%;
-  /* ELEMENT */
-  /* NAVIGATION */
-  /* CONTENT */
-}
-.reading-mode__navigation {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1fr 2fr 1fr;
-      grid-template-columns: 1fr 2fr 1fr;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  height: 70px;
-  background-color: #ccc;
-}
-.reading-mode__nav.logo {
-  padding-left: 15px;
-}
-.reading-mode__nav.logo a {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  font-size: 14px;
-  color: #1a1a1a;
-}
-.reading-mode__nav.logo a:hover,
-.reading-mode__nav.logo a:active,
-.reading-mode__nav.logo a:focus {
-  color: #1a1a1a;
-  text-decoration: none;
-}
-.reading-mode__nav.logo img {
-  display: inline-block;
-  max-width: 50px;
-  max-height: 70px;
-  margin-right: 10px;
-}
-.reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
-  display: none;
-  width: 100%;
-  padding: 0 20px;
-  font-size: 21px;
-  text-align: right;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls {
-  padding: 0;
-}
-.reading-mode__nav.controls .image-controls__options {
-  float: right;
-  margin-left: 75px;
-}
-.reading-mode__nav.controls .image-controls__option {
-  width: 21px;
-  height: 32px;
-  margin: 0 3px;
-}
-.reading-mode__nav.controls .image-controls__option a,
-.reading-mode__nav.controls .image-controls__option button {
-  display: block;
-  height: 30px;
-  line-height: 30px;
-  padding: 0;
-  text-align: center;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls__option a:hover,
-.reading-mode__nav.controls .image-controls__option button:hover,
-.reading-mode__nav.controls .image-controls__option a:active,
-.reading-mode__nav.controls .image-controls__option button:active,
-.reading-mode__nav.controls .image-controls__option a:focus,
-.reading-mode__nav.controls .image-controls__option button:focus {
-  text-decoration: none;
-  color: #6f6f6f;
-}
-.reading-mode__nav.controls .image-controls__option.add-to-bookshelf {
-  display: none !important;
-  visibility: hidden !important;
-}
-.reading-mode__nav.controls .image-controls__actions {
-  float: right;
-}
-.reading-mode__nav.back {
-  padding-right: 15px;
-  text-align: right;
-}
-.reading-mode__nav.back a {
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -ms-flex-pack: end;
-      justify-content: flex-end;
-  -ms-flex-align: center;
-      align-items: center;
-  font-size: 24px;
-  color: #6f6f6f;
-}
-.reading-mode__nav.back a:hover,
-.reading-mode__nav.back a:active,
-.reading-mode__nav.back a:focus {
-  color: #6f6f6f;
-  text-decoration: none;
-  outline: none;
-}
-.reading-mode__nav.back a .fa {
-  position: relative;
-  top: 2px;
-}
-.reading-mode__content-view,
-.reading-mode__content-sidebar {
-  float: left;
-}
-.reading-mode__content-view {
-  transition: all .3s linear;
-  width: 100%;
-}
-.reading-mode__content-view.in {
-  width: 70%;
-}
-.reading-mode__content-sidebar {
-  position: relative;
-  width: 0;
-  background-color: #ccc;
-  transition: all .3s linear;
-}
-.reading-mode__content-sidebar.in {
-  width: 30%;
-}
-.reading-mode__content-sidebar.in .reading-mode__content-sidebar-inner {
-  padding: 15px;
-}
-.reading-mode__content-sidebar-toggle {
-  position: absolute;
-  left: -32px;
-  margin-top: -32px;
-  width: 32px;
-  height: 64px;
-  line-height: 64px;
-  text-align: center;
-  background-color: #ccc;
-}
-.reading-mode__content-sidebar-toggle button {
-  width: 100%;
-  height: 64px;
-  padding-left: 5px;
-}
-.reading-mode__content-sidebar-toggle button .fa {
-  margin-left: -6px;
-}
-.reading-mode__content-sidebar-toggle button .fa-chevron-right {
-  display: none;
-}
-.reading-mode__content-sidebar-toggle button .fa-chevron-left {
-  display: inline-block;
-}
-.reading-mode__content-sidebar-toggle button.in .fa-chevron-right {
-  display: inline-block;
-}
-.reading-mode__content-sidebar-toggle button.in .fa-chevron-left {
-  display: none;
-}
-.reading-mode__content-sidebar-inner {
-  overflow-y: auto;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: 1430px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 3fr 1fr;
-        grid-template-columns: 1fr 3fr 1fr;
-  }
-  .reading-mode__nav.controls .image-controls__options {
-    margin-left: 0;
-  }
-  .reading-mode__nav.controls .image-controls__actions {
-    float: left;
-  }
-}
-@media screen and (max-width: 1200px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 4fr 1fr;
-        grid-template-columns: 1fr 4fr 1fr;
-  }
-}
-/* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: 1070px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 5fr 1fr;
-        grid-template-columns: 1fr 5fr 1fr;
-  }
-  .reading-mode__nav.logo span {
-    display: none !important;
-    visibility: hidden !important;
-  }
-}
-@media screen and (max-width: 992px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 6fr 1fr;
-        grid-template-columns: 1fr 6fr 1fr;
-  }
-}
-@media screen and (max-width: 950px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 7fr 1fr;
-        grid-template-columns: 1fr 7fr 1fr;
-  }
-}
-@media screen and (max-width: 918px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 8fr 1fr;
-        grid-template-columns: 1fr 8fr 1fr;
-  }
-}
-@media screen and (max-width: 893px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 9fr 1fr;
-        grid-template-columns: 1fr 9fr 1fr;
-  }
-}
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .reading-mode__navigation {
-    -ms-grid-columns: 1fr 10fr 1fr;
-        grid-template-columns: 1fr 10fr 1fr;
-  }
-  .reading-mode__nav.controls .image-controls__action.select {
-    width: 64px;
-  }
-  .reading-mode__nav.controls .image-controls__action.zoom-slider {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  .reading-mode__content-view.in {
-    width: 60%;
-  }
-  .reading-mode__content-sidebar.in {
-    width: 40%;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .reading-mode__navigation {
-    height: 50px;
-  }
-  .reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
-    display: inline-block;
-  }
-  .reading-mode__nav.controls .image-controls {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    padding: 15px;
-    border-bottom: 2px solid #507ebf;
-    background-color: #fff;
-    z-index: 999;
-  }
-  .reading-mode__nav.controls .image-controls__actions ul {
-    -ms-flex-pack: start;
-        justify-content: flex-start;
-  }
-  .reading-mode__nav.controls .image-controls__action {
-    margin: 0 3px 5px 3px;
-  }
-  .reading-mode__content-view.in {
-    width: 10%;
-  }
-  .reading-mode__content-sidebar.in {
-    width: 90%;
-  }
-}
 /* ==============================================================
    View Thumbs
    style declarations for viewThumbs.xhtml 
@@ -6950,7 +7263,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7126,7 +7439,7 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7260,7 +7573,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7297,7 +7610,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 10px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* WIDGETS */
@@ -7346,7 +7659,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 .widget__title.collapseable.in .fa-chevron-down {
-  transform: rotate(180deg);
+  transform: rotate(-180deg);
 }
 .widget__body {
   padding: 10px;
@@ -7355,7 +7668,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7363,7 +7676,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_admin.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7371,7 +7684,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_bookshelves.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7390,7 +7703,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7398,7 +7711,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_browsing.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7495,7 +7808,7 @@ div[id*="-Modal"] .email-form .form-group {
   cursor: pointer;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7503,7 +7816,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_cms.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7529,7 +7842,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow-y: auto;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7541,7 +7854,7 @@ div[id*="-Modal"] .email-form .form-group {
   visibility: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7549,7 +7862,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_crowdsourcing.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7557,7 +7870,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_custom.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7578,7 +7891,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_downloads.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7591,7 +7904,7 @@ div[id*="-Modal"] .email-form .form-group {
   overflow: hidden;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7599,7 +7912,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_mySearches.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7625,7 +7938,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7671,7 +7984,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7713,7 +8026,7 @@ div[id*="-Modal"] .email-form .form-group {
     top: 1px;
   }
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7756,7 +8069,7 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7788,7 +8101,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: -0.1875rem 0.1875rem 0 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7800,78 +8113,111 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0.25rem 0 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Widget Toc
    style declarations for widget_toc.xhtml
    ==============================================================*/
-#widgetToc {
+/* WIDGET TOC */
+.widget-toc {
   position: relative;
+  /* TITLE */
+  /* ELEMENTS */
+  /* LOADING */
 }
-#widgetToc #AJAXLoaderSidebarToc {
-  background-image: url("../../images/ajax_preloader.gif");
-  background-position: center center;
+.widget-toc__title {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.widget-toc__title h3 {
+  max-width: 90%;
+}
+.widget-toc__title-expand {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  margin-left: auto;
+  padding-right: 10px;
+}
+.widget-toc__title-expand a {
+  margin-left: 10px;
+}
+.widget-toc__title-expand a:first-child {
+  margin: 0;
+}
+.widget-toc__elements {
+  position: relative;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.widget-toc__element {
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 3px;
+}
+.widget-toc__element:hover {
+  background-color: #eee;
+}
+.widget-toc__element-expand {
+  max-width: 20px;
+}
+.widget-toc__element-link {
+  width: calc(100% - 20px);
+  padding-left: 5px;
+  margin-left: auto;
+}
+.widget-toc__element-link.has-pagenumber {
+  width: calc(100% - 65px);
+  padding-right: 5px;
+}
+.widget-toc__element-link.non-tree-view {
+  width: auto;
+  padding-left: 0;
+  margin-left: 0;
+}
+.widget-toc__element-link.non-tree-view.has-pagenumber {
+  width: calc(100% - 45px);
+  padding-right: 5px;
+}
+.widget-toc__element-link.active a {
+  font-weight: 700;
+}
+.widget-toc__element-pagenumber {
+  width: 45px;
+  text-align: right;
+}
+.widget-toc__loader,
+.widget-toc__overlay {
+  display: none;
+}
+.widget-toc__loader {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-top: 1px;
+  border-radius: 10px;
+  background-image: url("../../images/infinity_loader.svg");
   background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 85%;
+  z-index: 11;
 }
-#widgetToc .widget-toc-title {
-  position: relative;
-}
-#widgetToc .widget-toc-title .widget-toc-title-expand {
+.widget-toc__overlay {
   position: absolute;
   top: 0;
   right: 0;
-  border: none;
-}
-#widgetToc .widget-toc-title .widget-toc-title-expand li {
-  display: inline-block;
-  float: left;
-  margin-left: 7px;
-  padding: 0;
-  border: inherit;
-}
-#widgetToc .widget-toc-title .widget-toc-title-expand li a {
-  border: inherit;
-}
-#widgetToc .widget-toc-title .widget-toc-title-expand li a .fa-stack {
-  font-size: 10px;
-  line-height: 18px;
-}
-#widgetToc .widget-toc-elem-wrapp {
-  max-height: 25rem;
-  overflow: auto;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand {
-  float: left;
-  width: 16px;
-  min-height: 1px;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a {
-  display: block;
-  padding: 3px 0;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link {
-  float: left;
-  width: calc(100% - 16px);
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a {
-  display: block;
-  padding: 3px 5px 3px 15px;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:hover,
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:focus,
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:active {
-  text-decoration: none;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:hover {
-  background-color: #eee;
-}
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a.active {
-  font-weight: bold;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 10;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7903,7 +8249,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7911,7 +8257,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_user.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -7919,7 +8265,7 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_views.xhtml
    ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8262,7 +8608,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #298A08;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8276,7 +8622,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 5px 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8359,7 +8705,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS MODULES */
@@ -8445,7 +8791,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8493,7 +8839,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8527,7 +8873,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 60px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS TEMPLATES */
@@ -8561,7 +8907,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8608,7 +8954,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8643,7 +8989,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8659,7 +9005,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8682,7 +9028,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8698,7 +9044,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8715,7 +9061,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8732,7 +9078,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8748,7 +9094,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -8794,7 +9140,7 @@ div[id*="-Modal"] .email-form .form-group {
   content: "";
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
@@ -8892,7 +9238,7 @@ div[id*="-Modal"] .email-form .form-group {
     width: calc(31.33333333% + 9px);
   }
 }
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: 992px) {
   .tpl-masonry .grid-sizer,
   .tpl-masonry .grid-item {
@@ -8972,7 +9318,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9018,7 +9364,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9054,7 +9400,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9154,7 +9500,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9172,7 +9518,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-bottom: 1px solid #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9190,7 +9536,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-bottom: 1px solid #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9209,7 +9555,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9233,7 +9579,7 @@ div[id*="-Modal"] .email-form .form-group {
   resize: vertical;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9274,7 +9620,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-right: 3px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9330,7 +9676,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 20px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9343,39 +9689,31 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   CMS Template "Search Standard"
-   style declarations for cms_template_23_searchStandard.xhtml
+   CMS Template "Search"
+   style declarations for cms_template_23_search.xhtml
    ==============================================================*/
-/* SEARCH STANDARD */
+/* SEARCH */
 /* BLOCK */
-.tpl-search-standard {
+.tpl-search {
   /* ELEMENT */
 }
-.tpl-search-standard__text {
+.tpl-search__content .search-list__options {
+  margin-bottom: 15px;
+}
+.tpl-search__content .search-advanced {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-search__text {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Search Advanced"
-   style declarations for cms_template_24_searchAdvanced.xhtml
-   ==============================================================*/
-/* SEARCH ADVANCED */
-/* BLOCK */
-.tpl-search-advanced {
-  /* ELEMENT */
-}
-.tpl-search-advanced__text {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -9391,7 +9729,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
@@ -9885,7 +10223,7 @@ div[id*="-Modal"] .email-form .form-group {
   background: #eee;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10099,7 +10437,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10158,7 +10496,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10217,7 +10555,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #507ebf;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
@@ -10257,7 +10595,7 @@ img.cms-static-pages__page-language--complete {
   opacity: 1;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================

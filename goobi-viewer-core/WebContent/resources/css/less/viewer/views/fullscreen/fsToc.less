@@ -1,0 +1,72 @@
+/* ==============================================================
+   View Fullscreen Toc 
+   ==============================================================*/
+/* FULLSCREEN TOC */
+.fullscreen {
+	.widget-toc {
+		/* TITLE */
+		&__title {
+			background-color: @white;
+			h3 {
+				.mx-hidden;
+			}
+		}
+		&__title-expand {
+			a {
+				color: @black;
+				&:hover,
+				&:active,
+				&:focus {
+					color: @black;
+					text-decoration: none;
+				}
+				&:first-child {}
+			}
+		}
+		/* ELEMENTS */
+		&__elements {
+			max-height: inherit;
+			border: 0;
+			ul {
+				padding-right: 0;
+				padding-bottom: 0;
+				padding-left: 0;
+			}
+		}
+		&__element {
+			margin-bottom: 6px;
+			&:hover {}
+			&.parent {}
+			&.child {}
+			&.active {}
+		}
+		&__element-expand {}
+		&__element-link {
+			&.has-pagenumber {}
+			&.non-tree-view {
+				&.has-pagenumber {}			
+			}
+			&.active {
+				a {}
+			}
+		}
+		&__element-pagenumber {}
+		/* LOADING */
+		&__loader,
+		&__overlay {}
+		&__loader {}
+		&__overlay {}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+ 
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -27,4 +27,16 @@ describe( 'ViewerJS Helper Tests', function() {
             } );
         } );
     } );
+    
+    describe ( 'ViewerJSHelper: getMetadataValue', function() {
+        it( 'should return the value of a iiif metadata object for a specified language', function() {
+            var meta = {
+                    "de" : ["Titel"],
+                    "es" : ["Titulo"],
+                    "en" : ["Title"],
+            };
+            
+            expect(viewerJS.getMetadataValue(meta, "es")).toEqual("Titulo");
+        } )
+    })
 } );

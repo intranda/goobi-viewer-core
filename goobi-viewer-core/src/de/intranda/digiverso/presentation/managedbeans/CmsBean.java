@@ -35,7 +35,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -871,8 +870,19 @@ public class CmsBean implements Serializable {
                     //                    setSearchType();
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
+                        searchBean.setActiveSearchType(item.getSearchType());
+                    }                        
+                    if(StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
+                        searchBean.setShowReducedSearchOptions(true);
+                        return searchAction(item);
+                    } else if(item.isDisplayEmptySearchResults()) {
+                        String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "*:*";
+                        searchBean.setExactSearchString(searchString);
+                        searchBean.setShowReducedSearchOptions(false);
+                        return searchAction(item);
+                    } else {
+                        searchBean.setShowReducedSearchOptions(false);
                     }
-                    return searchAction(item);
                 } else if (item != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
                     getCollection(item.getItemId(), currentPage).reset(true);
                 }
@@ -935,27 +945,12 @@ public class CmsBean implements Serializable {
                 searchBean.setSortString(item.getSolrSortFields());
             }
             return searchBean.search();
-        }
-        if (item == null) {
+        }else if (item == null) {
             logger.error("Cannot search: item is null");
             searchBean.resetSearchResults();
             return "";
         }
-        if (StringUtils.isBlank(item.getSolrQuery())) {
-            searchBean.resetSearchResults();
-            return "";
-        }
         return "";
-        //        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-        //        searchBean.setHitsPerPage(item.getElementsPerPage());
-        //        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-        //        searchBean.setCurrentPage(item.getListPage());
-        //        if (item.getSolrSortFields() != null) {
-        //            searchBean.setSortString(item.getSolrSortFields());
-        //        }
-        //        //            searchBean.getFacets().setCurrentFacetString();
-        //        //            searchBean.getFacets().setCurrentCollection();
-        //        return searchBean.search();
     }
 
     public boolean hasSearchResults() {
@@ -987,13 +982,31 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Calculates the number of pages needed for the paginator. The value is taken directly from
+     * {@link Search#getLastPage(int)}
+     * 
+     * @return  The number of pages to display in the paginator
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public long getQueryResultCount() throws PresentationException, IndexUnreachableException {
+        if (searchBean != null && searchBean.getCurrentSearch() != null) {
+            return searchBean.getCurrentSearch().getLastPage(searchBean.getHitsPerPage());
+        }
+        return 0;
+    }
+
+    
+    /**
      * Calcs number of paginator pages for the query result.
      * 
      * @param item
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated  use {@link #getQueryResultCount()} instead
      */
+    @Deprecated
     public long getQueryResultCount(CMSContentItem item) throws PresentationException, IndexUnreachableException {
         if (item == null) {
             return 0;
@@ -1081,10 +1094,12 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Get the {@link CollectionView} of the given content item in the given page. If the view hasn't been initialized yet, do so and 
+     * add it to the Bean's CollectionView map
      * 
-     * @param id
-     * @param page
-     * @return
+     * @param id    The ContentItemId of the ContentItem to look for
+     * @param page  The page containing the collection ContentItem
+     * @return  The CollectionView or null if no matching ContentItem was found
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1100,7 +1115,27 @@ public class CmsBean implements Serializable {
         }
         return collection;
     }
+    
+    /**
+     * get a list of all {@link CollectionView}s with the given solr field which are already loaded via {@link #getCollection(CMSPage)}
+     * or {@link #getCollection(String, CMSPage)
+     * 
+     * @param field     The solr field the colleciton is based on
+     * @return
+     */
+    public List<CollectionView> getCollections(String field) {
+        return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());
+    }
 
+    /**
+     * Get the first available {@link CollectionView} from any {@link CMSContentItem} of the given {@link CMSPage page}. 
+     * The CollectionView is added to the Bean's internal collection map
+     * 
+     * @param page  The CMSPage to provide the collection
+     * @return  The CollectionView or null if none was found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
         Optional<CMSContentItem> collectionItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
@@ -1186,7 +1221,7 @@ public class CmsBean implements Serializable {
 //        }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
-            CMSStaticPage newPage = new CMSStaticPage(pageType.name());
+            CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
             if (!staticPages.contains(newPage)) {
                 staticPages.add(newPage);
             }
@@ -1247,9 +1282,12 @@ public class CmsBean implements Serializable {
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {
             try {
-                if (page.getId() != null) {
+                //delete static pages with no mapped cms page to remove deprecated pages
+                if(page.getId() != null && !page.isHasCmsPage()) {
+                    DataManager.getInstance().getDao().deleteStaticPage(page);
+                } else if (page.getId() != null) {
                     DataManager.getInstance().getDao().updateStaticPage(page);
-                } else {
+                } else if(page.isHasCmsPage()) {
                     DataManager.getInstance().getDao().addStaticPage(page);
                 }
             } catch (DAOException e) {
@@ -1257,6 +1295,7 @@ public class CmsBean implements Serializable {
                 return;
             }
         }
+        this.staticPages = null;
         Messages.info("cms_staticPagesSaved");
     }
 

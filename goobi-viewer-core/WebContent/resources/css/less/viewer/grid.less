@@ -36,7 +36,7 @@
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
-/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
@@ -57,6 +57,9 @@
 		&--9,
 		&--10,
 		&--11,
-		&--12 { grid-template-columns: 1fr; }
+		&--12 { display: block; }
+		& [class*="__col"] {
+			margin-bottom: 15px;
+		}
 	}
 }

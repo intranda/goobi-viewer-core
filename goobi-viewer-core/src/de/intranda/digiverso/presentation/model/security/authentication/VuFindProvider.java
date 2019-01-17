@@ -54,8 +54,8 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 public class VuFindProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
-    private static final String DEFAULT_EMAIL = "{username}@nomail.com";
-    public static final String TYPE_USER_PASSWORD = "userPassword";
+    protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
+    protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String USER_GROUP_ROLE_MEMBER = "member";
     
     private VuAuthenticationResponse authenticationResponse;

@@ -1,0 +1,86 @@
+/* ==============================================================
+   View Fullscreen Metadata 
+   ==============================================================*/
+/* FULLSCREEN METADATA */
+.fullscreen {
+	.metadata {
+		margin: 0;
+	    .fa {}
+		/* ELEMENTS / EVENTS */
+		&__elements,
+		&__events {
+			margin-bottom: 15px;
+			padding: 0;
+			padding-bottom: 15px;
+			border: 0;
+			border-bottom: 1px solid @fsMiddlegray;
+			&:last-child {
+				margin-bottom: 0;
+				padding-bottom: 0;
+				border-bottom: 0;
+			}
+		}
+		&__element,
+		&__event {
+			margin-bottom: 10px;
+			border: 0;
+		}
+		&__element-dl,
+		&__event-dl {
+			dt {
+				float: none;
+				width: 100%;
+				margin-bottom: 5px;			
+			}
+			dd {
+				width: 100%;
+				margin: 0;			
+			}
+		}
+		&__element-value,
+		&__event-value {
+			&:last-child {}
+		}
+		/* ELEMENT */
+		&__elements {
+			&.level-0 {}
+	        &.level-1 {}
+	        &.level-2 {}
+	        &.level-3 {}
+	        &.level-4 {}
+	        &.level-5 {}
+	        &.level-6 {}
+	        &.level-7 {}
+	        &.level-8 {}
+	        &.level-9 {}
+		}
+		&__elements-h3 {}
+		&__element-wrapper {}
+		&__element {}
+		&__element-dl {
+			dt {}
+			dd {}
+		}
+		&__element-value {}
+		/* EVENT */
+		&__events {}
+		&__event {}
+		&__event-dl {
+			dt {}
+			dd {}
+		}
+		&__event-value {}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+ 
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

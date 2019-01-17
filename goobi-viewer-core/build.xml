@@ -174,7 +174,7 @@
 			<formatter type="xml" usefile="true" />
 			<batchtest todir="${dir.tests.report}">
 				<!--fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*" /-->
-				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/ContentResourceTest*, de/intranda/digiverso/**/ManifestResourceTest*, de/intranda/digiverso/**/SitelinkBeanTest*, de/intranda/digiverso/**/SearchFacetsTest*, de/intranda/digiverso/**/BookshelfTest*, de/intranda/digiverso/**/JsonToolsTest*" />
+				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/ContentResourceTest*, de/intranda/digiverso/**/ManifestResourceTest*, de/intranda/digiverso/**/SitelinkBeanTest*, de/intranda/digiverso/**/SearchFacetsTest*, de/intranda/digiverso/**/BookshelfTest*, de/intranda/digiverso/**/JsonToolsTest*, de/intranda/digiverso/**/DiscoveryResourceTest*" />
 			</batchtest>
 		</junit>
 		<mkdir dir="${dir.tests.htmlreport}"/>
@@ -679,6 +679,23 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="ksw">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_kulturerbe/" />
+		<property name="server.url" value="https://haab-digital.klassik-stiftung.de/kulturerbe/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fkulturerbe%2Foai" />
+		<property name="customDataSource" value="true" />
+		<property name="jta-data-source" value="java:comp/env/kulturerbe" />
+		<property name="theme" value="reference" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="hlbw2">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
@@ -759,9 +776,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digital.iai.spk-berlin.de/viewer/" />
+		<property name="server.url" value="https://digital.iai.spk-berlin.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.iai.spk-berlin.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigital.iai.spk-berlin.de%2Fviewer%2Foai" />
 		<property name="theme" value="iai" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
@@ -911,9 +928,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digi.landesbibliothek.at/viewer/" />
+		<property name="server.url" value="https://digi.landesbibliothek.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigi.landesbibliothek.at%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigi.landesbibliothek.at%2Fviewer%2Foai" />
 		<property name="theme" value="oolbib" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="171" />

@@ -56,6 +56,7 @@ import de.intranda.digiverso.presentation.model.security.authentication.IAuthent
 import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.XServiceProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.DcSortingList;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -1065,7 +1066,7 @@ public final class Configuration extends AbstractConfiguration {
 
         return false;
     }
-    
+
     /**
      * 
      * @param field
@@ -1313,8 +1314,8 @@ public final class Configuration extends AbstractConfiguration {
             myConfigToUse = configLocal;
         }
 
-        List<IAuthenticationProvider> providers = new ArrayList<>();
         int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
+        List<IAuthenticationProvider> providers = new ArrayList<>(max + 1);
         for (int i = 0; i <= max; i++) {
             String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
@@ -1334,6 +1335,10 @@ public final class Configuration extends AbstractConfiguration {
                         switch (name.toLowerCase()) {
                             case "vufind":
                                 providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
+                                break;
+                            case "x-service":
+                            case "xservice":
+                                providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
                                 break;
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
@@ -1863,7 +1868,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings("static-method")
     public List<String> getRangeFacetFields() {
-        // TODO more fields than just YEAR
         return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
     }
 
@@ -3169,6 +3173,15 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("webapi.iiif.metadataFields.field", Collections.emptyList());
     }
 
+    /**
+     * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
+     * 
+     * @return  The number of activities to display per collection page in the IIIF discovery api
+     */
+    public int getIIIFDiscoveryAvtivitiesPerPage() {
+        return getLocalInt("webapi.iiif.discovery.activitiesPerPage", 100);
+    }
+    
     public String getIIIFLogo() {
         return getLocalString("webapi.iiif.logo", null);
     }
@@ -3184,6 +3197,14 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalString("webapi.iiif.attribution", "provided by Goobi viewer");
     }
 
+    /**
+     * @return
+     */
+    public List<String> getIIIFDescriptionFields() {
+        return getLocalList("webapi.iiif.descriptionFields.field", Collections.singletonList("MD_CONTENTDESCRIPTION"));
+
+    }
+    
     /**
      * @return
      * @should return correct value
@@ -3212,5 +3233,17 @@ public final class Configuration extends AbstractConfiguration {
         String token = getLocalString("webapi.authorization.token", "");
         return token;
     }
+
+    /**
+     * @return true if opening a collection containing only a single work should redirect to that work
+     */
+    public boolean isAllowRedirectCollectionToWork() {
+        boolean redirect = getLocalBoolean("collections.redirectToWork", true);
+        return redirect;
+    }
+
+
+
+
 
 }

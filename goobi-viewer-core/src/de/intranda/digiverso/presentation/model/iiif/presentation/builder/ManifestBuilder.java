@@ -121,7 +121,8 @@ public class ManifestBuilder extends AbstractBuilder {
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         manifest.setAttribution(getAttribution());
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
-
+        getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
+        
         addMetadata(manifest, ele);
 
         try {

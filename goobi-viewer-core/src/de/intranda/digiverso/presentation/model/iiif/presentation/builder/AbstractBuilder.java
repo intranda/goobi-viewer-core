@@ -156,8 +156,15 @@ public abstract class AbstractBuilder {
      * @return viewer image view url for the given page
      */
     public String getViewImageUrl(PhysicalElement ele) {
+        return getViewUrl(ele, PageType.viewImage);
+    }
+    
+    /**
+     * @return viewer url for the given page in the given {@link PageType}
+     */
+    public String getViewUrl(PhysicalElement ele, PageType pageType) {
         try {
-            return getServletURI() + "/" + PageType.viewImage.getName() + ele.getPurlPart();
+            return getServletURI() + "/" + pageType.getName() + ele.getPurlPart();
         } catch (Exception e) {
             logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
             Messages.error("errGetCurrUrl");
@@ -195,7 +202,8 @@ public abstract class AbstractBuilder {
      */
     public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
         for (String field : getMetadataFields(ele)) {
-            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+            if (displayFields.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
                         .ifPresent(md -> {
@@ -331,6 +339,7 @@ public abstract class AbstractBuilder {
         if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
             fields.add(navDateField);
         }
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
         return fields;
     }
 
@@ -345,6 +354,20 @@ public abstract class AbstractBuilder {
         return IMetadataValue.getTranslations(message);
     }
 
+    protected Optional<IMetadataValue> getDescription(StructElement ele) {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        for (String field : fields) {
+            Optional<IMetadataValue> optional = IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+                md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                return md;
+            });
+            if (optional.isPresent()) {
+                return optional;
+            }
+        }
+        return Optional.empty();
+    }
+
     /**
      * @return the request
      */
@@ -352,63 +375,66 @@ public abstract class AbstractBuilder {
         return request;
     }
 
-    public URI getCollectionURI(String collectionField, String baseCollectionName) throws URISyntaxException {
+    public URI getCollectionURI(String collectionField, String baseCollectionName) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/").append(collectionField);
         if (StringUtils.isNotBlank(baseCollectionName)) {
             sb.append("/").append(baseCollectionName);
         }
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getManifestURI(String pi) throws URISyntaxException {
+    public URI getManifestURI(String pi) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/manifest");
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getRangeURI(String pi, String logId) throws URISyntaxException {
+    public URI getRangeURI(String pi, String logId)  {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/range/").append(logId);
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getSequenceURI(String pi, String label) throws URISyntaxException {
+    public URI getSequenceURI(String pi, String label) {
         if (StringUtils.isBlank(label)) {
             label = "basic";
         }
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/sequence/").append(label);
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getCanvasURI(String pi, int pageNo) throws URISyntaxException {
+    public URI getCanvasURI(String pi, int pageNo) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(pageNo);
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb =
-                new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(pageNo).append("/").append(
-                        type.name());
-        return new URI(sb.toString());
+    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type)  {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/")
+                .append(pi)
+                .append("/list/")
+                .append(pageNo)
+                .append("/")
+                .append(type.name());
+        return URI.create(sb.toString());
     }
 
-    public URI getAnnotationListURI(String pi, AnnotationType type) throws URISyntaxException {
+    public URI getAnnotationListURI(String pi, AnnotationType type) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(type.name());
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getLayerURI(String pi, AnnotationType type) throws URISyntaxException {
+    public URI getLayerURI(String pi, AnnotationType type) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer");
         sb.append("/").append(type.name());
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getLayerURI(String pi, String logId) throws URISyntaxException {
+    public URI getLayerURI(String pi, String logId) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer");
         if (StringUtils.isNotBlank(logId)) {
             sb.append("/").append(logId);
         } else {
             sb.append("/base");
         }
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
     /**
@@ -417,10 +443,10 @@ public abstract class AbstractBuilder {
      * @return
      * @throws URISyntaxException
      */
-    public URI getImageAnnotationURI(String pi, int order) throws URISyntaxException {
+    public URI getImageAnnotationURI(String pi, int order) {
         StringBuilder sb =
                 new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(order).append("/image/1");
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
@@ -432,13 +458,13 @@ public abstract class AbstractBuilder {
                 .append(type.name())
                 .append("/")
                 .append(annoNum);
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
-    public URI getAnnotationURI(String pi, AnnotationType type, int annoNum) throws URISyntaxException {
+    public URI getAnnotationURI(String pi, AnnotationType type, int annoNum) {
         StringBuilder sb =
                 new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append(type.name()).append("/").append(annoNum);
-        return new URI(sb.toString());
+        return URI.create(sb.toString());
     }
 
 }

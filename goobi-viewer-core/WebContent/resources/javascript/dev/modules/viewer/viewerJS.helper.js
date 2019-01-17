@@ -395,7 +395,7 @@ var viewerJS = ( function( viewer ) {
             // Edge 20+
             var isEdge = !isIE && !!window.StyleMedia;
             // Chrome 1+
-            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            var isChrome = !!window.chrome;
             // Blink engine detection
             // var isBlink = ( isChrome || isOpera ) && !!window.CSS;
             
@@ -421,6 +421,29 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
+    
+    viewer.getMetadataValue = function(object, language) {
+        return viewer.getOrElse([language, 0], object);
+    }    
+    
+    viewer.getOrElse = function(p, o) {  
+        var reducer = function(xs, x) {
+            return (xs && xs[x]) ? xs[x] : ((xs && xs[Object.keys(xs)[0]]) ? xs[Object.keys(xs)[0]] : null);
+        }
+        return p.reduce(reducer , o);
+    };
+    
+    if(!Array.prototype.includes) {
+        Array.prototype.includes = function(element) {
+            for ( var int = 0; int < this.length; int++ ) {
+                var listEle = this[int];
+                if(listEle == element) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
     
     return viewer;
     

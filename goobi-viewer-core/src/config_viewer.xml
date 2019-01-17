@@ -110,12 +110,6 @@
                 clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
             <provider type="local" name="Goobi viewer"/>
         </authenticationProviders>
-		<openIdConnect show="true">
-			<provider name="Google" endpoint="https://accounts.google.com/o/oauth2/auth"
-				clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-			<provider name="Facebook" endpoint="https://www.facebook.com/dialog/oauth"
-				clientId="CHANGEME" clientSecret="CHANGEME" image="facebook.png" />
-		</openIdConnect>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 
 			and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory 
 			and have no default value. -->
@@ -471,6 +465,7 @@
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
 	<collections>
+
 		<collection field="DC">
 		
             <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
@@ -512,6 +507,10 @@
                         No text means that no image is rendered for the collection -->
 			<defaultBrowseIcon></defaultBrowseIcon>
 		</collection>
+            
+        <!-- true if opening a collection containing only a single work should redirect to that work -->
+        <redirectToWork>true</redirectToWork>
+        
 	</collections>
 
 	<metadata>
@@ -1316,6 +1315,11 @@
 				<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
 			</metadataFields>
+            <!-- A list of solr fieldnames which may serve as manifest description metadata. 
+            The first existing field is used to provide the medatada description -->
+            <descriptionFields>
+                <field>MD_CONTENTDESCRIPTION</field>
+            </descriptionFields>
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
 			<navDateField>YEAR</navDateField>
 			<!-- The String to provide as attribution in IIIF manifests. If it is 

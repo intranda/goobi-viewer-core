@@ -23,7 +23,7 @@
                         <!-- DRILL DOWN -->
                         <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
                             <h:panelGroup id="collectionDrillDownPanelGroup_#{status.index}"
-                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and (searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
+                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
                                 <div class="widget widget-search-drilldown__collection">
                                     <h3>#{msg[field.key.concat('_DD')]}</h3>
 
