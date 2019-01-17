@@ -4525,14 +4525,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .fullscreen__view-image,
 .fullscreen__view-image-inner,
-.fullscreen .view-object__image-map,
-.fullscreen .view-object__image-mobile {
+.fullscreen .view-object__image-map {
   height: 100vh;
 }
 .fullscreen__view-image img,
 .fullscreen__view-image-inner img,
-.fullscreen .view-object__image-map img,
-.fullscreen .view-object__image-mobile img {
+.fullscreen .view-object__image-map img {
   display: block;
   height: 100%;
   margin: 0 auto;
