@@ -57,18 +57,12 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 public abstract class AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
-
-    private static final List<String> HIDDEN_SOLR_FIELDS =
-            Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE,
-                    SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.PI_PARENT, SolrConstants.LOGID,
-                    SolrConstants.ISWORK, SolrConstants.FILENAME_TEI, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNOSORT,
-                    SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES });
-
+    
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
-            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES, SolrConstants.DATAREPOSITORY };
+            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES, SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
     private final URI servletURI;
     private final URI requestURI;
@@ -150,6 +144,19 @@ public abstract class AbstractBuilder {
             Messages.error("errGetCurrUrl");
         }
         return getServletURI() + "/metsresolver?id=" + 0;
+    }
+    
+    /**
+     * @return LIDO resolver link for the DFG Viewer
+     */
+    public String getLidoResolverUrl(StructElement ele) {
+        try {
+            return getServletURI() + "/lidoresolver?id=" + ele.getPi();
+        } catch (Exception e) {
+            logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/lidoresolver?id=" + 0;
     }
 
     /**

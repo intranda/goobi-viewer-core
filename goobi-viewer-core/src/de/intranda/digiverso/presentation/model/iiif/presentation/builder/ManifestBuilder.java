@@ -158,15 +158,28 @@ public class ManifestBuilder extends AbstractBuilder {
                 }
             }
 
-            /*METS/MODS*/
-            try {
-                LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
-                metsResolver.setFormat(Format.TEXT_XML);
-                metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
-                manifest.addSeeAlso(metsResolver);
-            } catch (URISyntaxException e) {
-                logger.error("Unable to retrieve mets resolver url for {}", ele);
+            if(ele.isLidoRecord()) {
+                /*LIDO*/
+                try {
+                    LinkingContent resolver = new LinkingContent(new URI(getLidoResolverUrl(ele)));
+                    resolver.setFormat(Format.TEXT_XML);
+                    resolver.setLabel(new SimpleMetadataValue("LIDO"));
+                    manifest.addSeeAlso(resolver);
+                } catch (URISyntaxException e) {
+                    logger.error("Unable to retrieve lido resolver url for {}", ele);
+                }
+            } else {                
+                /*METS/MODS*/
+                try {
+                    LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
+                    metsResolver.setFormat(Format.TEXT_XML);
+                    metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
+                    manifest.addSeeAlso(metsResolver);
+                } catch (URISyntaxException e) {
+                    logger.error("Unable to retrieve mets resolver url for {}", ele);
+                }
             }
+            
 
             /*VIEWER*/
             try {
