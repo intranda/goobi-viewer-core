@@ -203,6 +203,11 @@
 			define the size of the image display, in pixel set the attribute "tileImage" 
 			to true to use tiled images if possible (only possible when type=openlayers) -->
 
+	   <zoomImageView type="openSeadragon" tileImage="true"
+            footerHeight="0">
+            <useFor><view>fullscreen</view></useFor>
+       </zoomImageView>
+
 		<zoomImageView type="openSeadragon" tileImage="true"
 			footerHeight="50">
 			<scale>600</scale>

@@ -289,4 +289,22 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return Optional.ofNullable(jsonResponse);
     }
 
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
+     */
+    @Override
+    public boolean allowsNicknameChange() {
+        return true;
+    }
+
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
+     */
+    @Override
+    public boolean allowsEmailChange() {
+        return false;
+    }
+
 }

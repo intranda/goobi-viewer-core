@@ -76,4 +76,14 @@ public interface IAuthenticationProvider {
      * @return  The type of the provider
      */
     public String getType();
+
+    /**
+     * @return  true if the nickname may be changed and is not essential for user identification
+     */
+    public boolean allowsNicknameChange();
+
+    /**
+     * @return  true if the email may be changed and is not essential for user identification
+     */
+    public boolean allowsEmailChange();
 }

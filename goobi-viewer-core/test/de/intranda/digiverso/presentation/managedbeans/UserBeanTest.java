@@ -91,6 +91,16 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             public boolean allowsPasswordChange() {
                 return false;
             }
+
+            @Override
+            public boolean allowsNicknameChange() {
+                return true;
+            }
+
+            @Override
+            public boolean allowsEmailChange() {
+                return false;
+            }
         });
     }
 

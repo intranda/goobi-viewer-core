@@ -34,39 +34,41 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 /**
  * Syntax validator for e-mail addresses.
  */
-@FacesValidator("emailValidator")
-public class EmailValidator implements Validator<String> {
+@FacesValidator("nicknameValidator")
+public class NicknameValidator implements Validator<String> {
 
-    private static final String REGEX =
-            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
-    private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-            if (!validateEmailAddress(value)) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errlnvalid", null), "");
+        try {
+            if (!validateNicknameUniqueness(value)) {
+                FacesMessage msg = new FacesMessage(Helper.getTranslation("nickname_errExists", null), "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
+        } catch (DAOException e) {
+            FacesMessage msg = new FacesMessage(Helper.getTranslation("login_internalerror", null), "");
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
     }
-
 
     /**
-     *
      * @param email
-     * @return
-     * @should match correct email addresses
-     * @should match entire email address only
-     * @should not match invalid addresses
+     * @return  true if the given email is not already assigned to a user except a possibly currently logged in user in this session
+     * @throws DAOException 
      */
-    protected static boolean validateEmailAddress(String email) {
-        if (email == null) {
-            return false;
+    private boolean validateNicknameUniqueness(String nick) throws DAOException {
+        User user = DataManager.getInstance().getDao().getUserByNickname(nick);
+        User currentUser = BeanUtils.getUserBean().getUser();
+        if(user != null) {
+            return currentUser != null && user.getId().equals(currentUser.getId());
+        } else {
+            return true;
         }
-        Matcher m = PATTERN.matcher(email.toLowerCase());
-        return m.find();
     }
+
 }
