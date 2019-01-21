@@ -319,33 +319,33 @@ public final class SolrSearchIndex {
     }
 
     /**
-    *  Retrieves the first document found by the given query
-    *
-    * @param query
-    * @param fieldList
-    * @param sortFields 
-    * @return The first hit returned by the query
-    * @throws PresentationException
-    * @throws IndexUnreachableException
-    * @should return correct doc
-    */
-   public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
-       return getFirstDoc(query, fieldList, null);
-   }
-    
+     * Retrieves the first document found by the given query
+     *
+     * @param query
+     * @param fieldList
+     * @param sortFields
+     * @return The first hit returned by the query
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct doc
+     */
+    public SolrDocument getFirstDoc(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+        return getFirstDoc(query, fieldList, null);
+    }
 
-   /**
-    * 
-    * Retrieves the first document found by the given query
-    * 
-    * @param query      The query to search
-    * @param fieldList  The fields retrieved
-    * @param sortFields Sorting - the first volume according to this sorting is returned
-    * @return   The first hit returned by the query
-    * @throws PresentationException
-    * @throws IndexUnreachableException
-    */
-    public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields) throws PresentationException, IndexUnreachableException {
+    /**
+     * 
+     * Retrieves the first document found by the given query
+     * 
+     * @param query The query to search
+     * @param fieldList The fields retrieved
+     * @param sortFields Sorting - the first volume according to this sorting is returned
+     * @return The first hit returned by the query
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
+            throws PresentationException, IndexUnreachableException {
         logger.trace("getFirstDoc: {}", query);
         SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
@@ -1130,15 +1130,15 @@ public final class SolrSearchIndex {
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string")
-                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong")) {
+            if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
+                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
                 list.add(name);
             }
         }
 
         return list;
     }
-    
+
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
@@ -1253,26 +1253,32 @@ public final class SolrSearchIndex {
     /**
      * Catches the filename of the page with the given order under the given ip
      * 
-     * @param pi        The topstruct pi
-     * @param order     The page order (1-based
-     * @return  An optíonal containing the filename of the page with the given order under the given ip.
-     *          Or an empty optional if no matching page was found.
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @param pi The topstruct pi
+     * @param order The page order (1-based
+     * @return An optíonal containing the filename of the page with the given order under the given ip. Or an empty optional if no matching page was
+     *         found.
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public Optional<String> getFilename(String pi, int order) throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.DOCTYPE).append(":").append("PAGE")
-        .append(" AND ")
-        .append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi)
-        .append(" AND ")
-        .append(SolrConstants.ORDER).append(":").append(order);
-        
+        sbQuery.append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append("PAGE")
+                .append(" AND ")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(":")
+                .append(order);
+
         SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
         if (hits.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.ofNullable((String)(hits.get(0).getFirstValue(SolrConstants.FILENAME)));
+            return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
         }
     }
 }
