@@ -74,6 +74,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     public static final String CONTENT_TYPE_TEI = "application/tei+xml";
+    public static final String CONTENT_TYPE_HTML = "text/html";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -215,6 +216,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         switch (extension) {
             case "docx":
                 return CONTENT_TYPE_DOCX;
+            case "htm":
+            case "html":
+            case "xhtml":
+                return CONTENT_TYPE_HTML;
             default:
                 return "";
         }

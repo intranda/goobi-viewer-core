@@ -35,13 +35,16 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -50,6 +53,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
+import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
 @Named
 @SessionScoped
@@ -113,7 +117,8 @@ public class CmsMediaBean implements Serializable {
             case "image/jpeg":
             case "image/jp2":
             case "image/png":
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
+                //            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
                 return true;
             default:
                 return false;
@@ -193,14 +198,45 @@ public class CmsMediaBean implements Serializable {
 
         String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
         switch (extension) {
-            case "docx":
-                return BeanUtils.getImageDeliveryBean().getStaticImagesURI() + "thumbnail_tei.png";
+            case "htm":
+            case "html":
+            case "xhtml":
+                StringBuilder sbUri = new StringBuilder();
+                sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+                return sbUri.toString();
             default:
                 return BeanUtils.getImageDeliveryBean()
                         .getThumbs()
                         .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
                                 StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
         }
+    }
+
+    /**
+     * 
+     * @param item
+     * @return
+     * @throws ViewerConfigurationException
+     */
+    public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
+        if (item == null || StringUtils.isEmpty(item.getFileName())) {
+            return "";
+        }
+
+        StringBuilder sbUri = new StringBuilder();
+        sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+        try {
+            String ret = Helper.getWebContentGET(sbUri.toString());
+            return ret;
+        } catch (ClientProtocolException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (HTTPException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return "";
     }
 
     public static String getMediaPreviewUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {

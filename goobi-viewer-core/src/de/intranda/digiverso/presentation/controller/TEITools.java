@@ -15,12 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 
 import javax.xml.transform.Transformer;
@@ -30,7 +25,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -41,10 +35,6 @@ import org.jdom2.transform.JDOMSource;
 import org.jdom2.transform.XSLTransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import fr.opensagres.poi.xwpf.converter.core.FileURIResolver;
-import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLConverter;
-import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLOptions;
 
 public class TEITools {
 

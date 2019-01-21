@@ -43,6 +43,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class CMSPage {
      */
     @Column(name = "may_contain_url_parameters")
     private boolean mayContainUrlParameters = true;
-    
+
     /**
      * A html class name to be applied to the DOM element containing the page html
      */
@@ -762,12 +763,12 @@ public class CMSPage {
     }
 
     public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
-        logger.trace("Getting content " + itemId + " from page " + getId());
+        logger.trace("Getting content {} from page {}", itemId, getId());
         CMSContentItem item;
         try {
             item = getContentItem(itemId);
         } catch (CmsElementNotFoundException e1) {
-            logger.error("No content item of id " + itemId + " found in page " + this.getId());
+            logger.error("No content item of id {} found in page {}", itemId, this.getId());
             return "";
         }
         String contentString = "";
@@ -779,7 +780,18 @@ public class CMSPage {
                 contentString = CMSContentResource.getContentUrl(item);
                 break;
             case MEDIA:
-                contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                String extension = item.getMediaItem() != null ? FilenameUtils.getExtension(item.getMediaItem().getFileName()) : "";
+                switch (extension) {
+                    case "htm":
+                    case "html":
+                    case "xhtml":
+                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        break;
+                    default:
+                        // Images
+                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                }
+
                 break;
             case COMPONENT:
                 contentString = item.getComponent();
@@ -794,7 +806,7 @@ public class CMSPage {
             default:
                 contentString = "";
         }
-        logger.trace("Got content as string: " + contentString);
+        // logger.trace("Got content as string: {}", contentString);
         return contentString;
     }
 
@@ -889,7 +901,6 @@ public class CMSPage {
             }
         }
     }
-
 
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
@@ -1161,30 +1172,29 @@ public class CMSPage {
     public boolean hasLanguageVersion(Locale locale) {
         return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
     }
-    
+
     /**
-     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no 
-     * language versions already exist
+     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no language versions already exist
      * 
      * @param page
      * @param locales
      */
-    public void createMissingLangaugeVersions( List<Locale> locales) {
+    public void createMissingLangaugeVersions(List<Locale> locales) {
         for (Locale locale : locales) {
-            if(!hasLanguageVersion(locale)) {
+            if (!hasLanguageVersion(locale)) {
                 addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
             }
         }
-        
+
     }
-    
+
     /**
      * @return the {@link #wrapperElementClass}
      */
     public String getWrapperElementClass() {
         return wrapperElementClass;
     }
-    
+
     /**
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */

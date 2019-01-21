@@ -18,6 +18,13 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.text.Normalizer;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -171,5 +178,30 @@ public class StringTools {
             s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
         }
         return s;
+    }
+    
+    /**
+     * Converts a <code>String</code> from one given encoding to the other.
+     * 
+     * @param string The string to convert.
+     * @param from Source encoding.
+     * @param to Destination encoding.
+     * @return The converted string.
+     */
+    public static String convertStringEncoding(String string, String from, String to) {
+        try {
+            Charset charsetFrom = Charset.forName(from);
+            Charset charsetTo = Charset.forName(to);
+            CharsetEncoder encoder = charsetFrom.newEncoder();
+            CharsetDecoder decoder = charsetTo.newDecoder();
+            decoder.onMalformedInput(CodingErrorAction.REPLACE);
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(string));
+            CharBuffer cbuf = decoder.decode(bbuf);
+            return cbuf.toString();
+        } catch (CharacterCodingException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return string;
     }
 }
