@@ -1265,4 +1265,8 @@ public class NavigationHelper implements Serializable {
         }
         return currentTheme;
     }
+    
+    public boolean isSubthemeSelected() throws IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().isSubthemesEnabled() && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
+    }
 }
