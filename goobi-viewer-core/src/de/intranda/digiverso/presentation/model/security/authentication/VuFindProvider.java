@@ -95,15 +95,6 @@ public class VuFindProvider extends HttpAuthenticationProvider {
         }
     }
 
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
-    @Override
-    public boolean allowsPasswordChange() {
-        return false;
-    }
-
     protected VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) throws WebApplicationException{
         Client client = ClientBuilder.newClient();
         try {            
@@ -200,6 +191,30 @@ public class VuFindProvider extends HttpAuthenticationProvider {
             throw new AuthenticationProviderException(e);
         }
         return Optional.ofNullable(user);
+    }
+    
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
+     */
+    @Override
+    public boolean allowsPasswordChange() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
+     */
+    @Override
+    public boolean allowsNicknameChange() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
+     */
+    @Override
+    public boolean allowsEmailChange() {
+        return true;
     }
 
 }

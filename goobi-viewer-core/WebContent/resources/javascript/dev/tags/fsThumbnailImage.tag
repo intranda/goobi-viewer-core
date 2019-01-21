@@ -1,5 +1,5 @@
-<rmThumbnailImage>
-    <div class="reading-mode__view-image-thumb-preloader" if={preloader}></div>
+<fsThumbnailImage>
+    <div class="fullscreen__view-image-thumb-preloader" if={preloader}></div>
     <img ref="image" alt="Thumbnail Image" />
 
     <script>
@@ -38,4 +38,4 @@
     		} );
     	}
     </script>
-</rmThumbnailImage>
+</fsThumbnailImage>

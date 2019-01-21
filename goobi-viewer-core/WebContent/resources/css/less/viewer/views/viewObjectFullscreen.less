@@ -1,13 +1,13 @@
 /* ==============================================================
-   View Reading Mode
-   style declarations for viewReadingMode.xhtml 
+   Fullscreen
+   style declarations for viewObjectFullscreen.xhtml 
    ==============================================================*/
-/* READING MODE */
-#readingMode {
+/* FULLSCREEN */
+#fullscreen {
 	padding: 0;
     background-color: @white; 
 }
-.reading-mode {
+.fullscreen {
     position: relative;
     height: 100%;
     overflow: hidden;
@@ -20,7 +20,7 @@
     	display: flex;
     	align-items: center;
     	height: 70px;
-    	border-bottom: 1px solid @rmMiddlegray;
+    	border-bottom: 1px solid @fsMiddlegray;
     	background-color: @white;
     	transition: all .3s linear;
     	opacity: 1;
@@ -35,11 +35,11 @@
     	padding-right: 15px;
     	padding-left: 15px;
     	a, button {
-    		color: @rmDarkgray;
+    		color: @fsDarkgray;
     		&:hover,
     		&:active,
     		&:focus {
-    			color: @rmDarkgray;
+    			color: @fsDarkgray;
     			text-decoration: none;
     		}
     	}
@@ -50,7 +50,9 @@
     	img {
     		max-height: 40px;
     	}
-    	span {}
+    	span {
+    		.mx-hidden;
+    	}
     }
     &__header-controls {
     	display: flex;
@@ -59,12 +61,12 @@
     		width: 32px;
     		height: 32px;
     		margin-left: 10px;
-    		background-image: url("@{images}/icons/readingmode/icon_rm-thumbs.svg");
+    		background-image: url("@{images}/icons/icon_fs-thumbs.svg");
     		background-repeat: no-repeat;
     		background-position: center center;
     		background-size: 22px;
     		&.in {
-	    		background-image: url("@{images}/icons/readingmode/icon_rm-close.svg");    			
+	    		background-image: url("@{images}/icons/icon_fs-close.svg");    			
     		}
     	}
     }
@@ -74,7 +76,7 @@
     		display: inline-block;
     		width: 32px;
     		height: 32px;
-    		background-image: url("@{images}/icons/readingmode/icon_rm-exit.svg");
+    		background-image: url("@{images}/icons/icon_fs-exit.svg");
     		background-repeat: no-repeat;
     		background-position: center center;
     		background-size: 28px;
@@ -100,17 +102,16 @@
 			background-size: 14px;
 		}
 		[data-close="all-tabs"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-minus.svg");
+			background-image: url("@{images}/icons/icon_fs-minus.svg");
 		}
 		[data-open="all-tabs"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-plus.svg");
+			background-image: url("@{images}/icons/icon_fs-plus.svg");
 		}
 	}
 	/* IMAGE */
     &__view-image,
 	&__view-image-inner,
-	.view-object__image-map,
-	.view-object__image-mobile {
+	.view-object__image-map {
 		height: 100vh;
 		img {
 		    display: block;
@@ -204,11 +205,11 @@
 		z-index: 1030;
 		.btn {
 			padding-left: 20px;
-			color: @rmDarkgray;
+			color: @fsDarkgray;
 			background-repeat: no-repeat;
 			background-position: left 2px;
 			background-size: 9px;
-			background-image: url("@{images}/icons/readingmode/icon_rm-left.svg");			
+			background-image: url("@{images}/icons/icon_fs-left.svg");			
 	    	overflow: hidden;
 			&:hover,
 			&:active,
@@ -219,7 +220,7 @@
 			&.active:focus, 
 			&.focus, 
 			&:active.focus {
-	    		color: @rmDarkgray;
+	    		color: @fsDarkgray;
 	    		text-decoration: none;
 	    	}
 		}
@@ -236,7 +237,7 @@
 		z-index: 1010;
 		.ui-resizable-handle {
 			left: 0;
-			border-right: 1px solid @rmMiddlegray;
+			border-right: 1px solid @fsMiddlegray;
 			z-index: 998 !important;
 			&:before,
 			&:after {
@@ -247,7 +248,7 @@
 				width: 1px;
 				height: 40px;
 				margin-top: -20px;
-				background-color: @rmMiddlegray;
+				background-color: @fsMiddlegray;
 			}
 			&:before {
 				right: 2px;
@@ -277,8 +278,8 @@
 			background-position: center center;
 			background-size: 14px;
 		}
-		[data-close="rm-sidebar"] {
-			background-image: url("@{images}/icons/readingmode/icon_rm-right.svg");
+		[data-close="fs-sidebar"] {
+			background-image: url("@{images}/icons/icon_fs-right.svg");
 			background-size: 10px;
 		}
 	}
@@ -295,20 +296,20 @@
 	}
 	/* SIDEBAR ACCORDEON */
 	&__view-sidebar-accordeon {
-		border-bottom: 1px solid @rmMiddlegray;
+		border-bottom: 1px solid @fsMiddlegray;
 	}
 	&__view-sidebar-accordeon-panel {
 		position: relative;
 		background-color: @white;
-		&.rm-metadata {}
-		&.rm-toc {
-			.reading-mode__view-sidebar-accordeon-panel-body {
+		&.fs-metadata {}
+		&.fs-toc {
+			.fullscreen__view-sidebar-accordeon-panel-body {
 				padding-top: 0;
 			}
 		}
-		&.rm-downloads {}
-		&.rm-fulltext {}
-		&.rm-search-hit-navigation {
+		&.fs-downloads {}
+		&.fs-fulltext {}
+		&.fs-search-hit-navigation {
 			.mx-hidden;
 		}
 		&:first-child {
@@ -322,16 +323,16 @@
 		margin: 0;
 		padding: 10px 15px;
 		font-size: 1rem;
-		border-top: 1px solid @rmMiddlegray;
+		border-top: 1px solid @fsMiddlegray;
 		background-color: @white;
 		cursor: pointer;
 		z-index: 20;
 		&:hover {
-			background-color: @rmLightgray;
+			background-color: @fsLightgray;
 		}
 		span {}
 		&.in {
-			background-color: @rmLightgray;
+			background-color: @fsLightgray;
 		}
 	}
 	&__view-sidebar-accordeon-panel-body {
@@ -356,18 +357,18 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		&__view-sidebar {
 			width: 50%;
 			padding-left: 0;
-			border-left: 1px solid @rmMiddlegray;
+			border-left: 1px solid @fsMiddlegray;
 		}
 	}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.reading-mode {
+	.fullscreen {
 		&__header-brand {
 			span {
 				display: none;
@@ -375,6 +376,21 @@
 		}
 		&__view-sidebar {
 			width: 100%;
+		}
+		&__view-sidebar-open {
+			width: 32px;
+			height: 32px;
+			padding: 0;
+			.btn {
+				display: block;
+				width: 100%;
+				height: 100%;
+				padding: 0;
+				background-position: center center;
+				span {
+					.mx-hidden;
+				}
+			}
 		}
 	}
 }

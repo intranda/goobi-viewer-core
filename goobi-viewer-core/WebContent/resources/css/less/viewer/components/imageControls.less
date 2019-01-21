@@ -136,6 +136,15 @@
 	                background: none;
 	            }
 	        }
+	        .custom-control--select {
+	        	select {
+	        		padding-left: 5px;
+	        		color: @gray;
+	        	}
+	        	&:after {
+	        		border-top-color: @gray;
+	        	}
+	        }
 	    }
 	    &.forward {}
 	    &.end {}
@@ -165,7 +174,7 @@
 	    &.rotate-left {}
 	    &.rotate-right {}
 	    &.reset {}
-	    &.fullscreen {}
+	    &.enter-fullscreen {}
 	    &.zoom-slider-wrapper {
 	        width: 100px;
 	        border: none;

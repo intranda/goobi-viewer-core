@@ -34,8 +34,8 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 /**
  * Syntax validator for e-mail addresses.
  */
-@FacesValidator("emailValidator")
-public class EmailValidator implements Validator<String> {
+@FacesValidator("emailAvailableValidator")
+public class EmailAvailableValidator implements Validator<String> {
 
     private static final String REGEX =
             "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
@@ -46,13 +46,33 @@ public class EmailValidator implements Validator<String> {
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-            if (!validateEmailAddress(value)) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errlnvalid", null), "");
+        try {
+            if (!validateEmailUniqueness(value)) {
+                FacesMessage msg = new FacesMessage(Helper.getTranslation("email_errExists", null), "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
+        } catch (DAOException e) {
+            FacesMessage msg = new FacesMessage(Helper.getTranslation("login_internalerror", null), "");
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
     }
 
+    /**
+     * @param email
+     * @return  true if the given email is not already assigned to a user except a possibly currently logged in user in this session
+     * @throws DAOException 
+     */
+    private boolean validateEmailUniqueness(String email) throws DAOException {
+        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User currentUser = BeanUtils.getUserBean().getUser();
+        if(user != null) {
+            return currentUser != null && user.getId().equals(currentUser.getId());
+        } else {
+            return true;
+        }
+    }
 
     /**
      *

@@ -1,4 +1,4 @@
-riot.tag2('rmthumbnailimage', '<div class="reading-mode__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
+riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 
     	this.on('mount', function() {
@@ -34,14 +34,14 @@ riot.tag2('rmthumbnailimage', '<div class="reading-mode__view-image-thumb-preloa
     		} );
     	}.bind(this)
 });
-riot.tag2('rmthumbnails', '<div class="reading-mode__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="reading-mode__view-image-thumb"><figure class="reading-mode__view-image-thumb-image"><a href="{thumbnail.rendering[\'@id\']}"><rmthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".reading-mode__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></rmThumbnailImage></a><figcaption><div class="reading-mode__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
+riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{thumbnail.rendering[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
         function rmObservable() {
     		riot.observable( this );
     	}
 
     	this.observable = new rmObservable();
         this.thumbnails = [];
-    	this.wrapper = document.getElementsByClassName( 'reading-mode__view-image-thumbs-wrapper' );
+    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
     	this.viewportWidth;
@@ -54,9 +54,9 @@ riot.tag2('rmthumbnails', '<div class="reading-mode__view-image-thumbs" ref="thu
 
         		this.controls[0].classList.toggle( 'faded' );
 
-            	this.viewportWidth = document.getElementById( 'readingMode' ).offsetWidth;
-            	this.sidebarWidth = document.getElementById( 'readingModeViewSidebar' ).offsetWidth;
-            	if ( sessionStorage.getItem( 'rmSidebarStatus' ) === 'false' ) {
+            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
                 	this.thumbsWidth = this.viewportWidth;
             	}
             	else {

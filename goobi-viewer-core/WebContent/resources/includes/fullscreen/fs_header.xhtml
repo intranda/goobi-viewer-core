@@ -11,17 +11,17 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- READINGMODE HEADER -->
-    <header id="readingModeHeader" class="reading-mode__header">
+    <header id="fullscreenHeader" class="fullscreen__header">
         <!-- LOGO -->
-        <div class="reading-mode__header-brand">
+        <div class="fullscreen__header-brand">
             <a href="#{request.contextPath}/">
-                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/readingmode_logo.png" alt="Readingmode Logo" />
-                <span>#{msg.readingmode_brandName}</span>
+                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png" alt="Fullscreen Logo" />
+                <span>#{msg.fullscreen_brandName}</span>
             </a>
         </div>
         
         <!-- CONTROLS -->
-        <div class="reading-mode__header-controls">            
+        <div class="fullscreen__header-controls">            
             <!-- CONTROLS -->
             <viewerComponent:imageControls />
             
@@ -30,8 +30,8 @@
         </div>
         
         <!-- EXIT -->
-        <div class="reading-mode__header-exit">
-            <h:outputLink value="#{request.contextPath}#{navigationHelper.currentViewUrl}" title="#{msg.readingMode_leave}">
+        <div class="fullscreen__header-exit">
+            <h:outputLink value="#{request.contextPath}#{navigationHelper.currentViewUrl}" title="#{msg.fullscreen_exit}">
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />
             </h:outputLink>

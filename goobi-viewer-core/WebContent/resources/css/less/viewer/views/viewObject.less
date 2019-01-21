@@ -46,9 +46,15 @@
 			max-width: 100%;
 		}
 	}
-	/* IMAGE MOBILE */
-	&__image-mobile {
-		.mx-hidden;
+	/* IMAGE MOBILE OVERLAY */
+	&__image-mobile-overlay {
+		display: none;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 10;
 	}
 	/* VIDEO, AUDIO, TEXT */
 	&__video,
@@ -76,17 +82,7 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.view-object {
-		/* ELEMENT */
-		&__image {
-			.mx-hidden;
-		}
-		&__image-mobile {
-			.mx-visible;
-		}
-	}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

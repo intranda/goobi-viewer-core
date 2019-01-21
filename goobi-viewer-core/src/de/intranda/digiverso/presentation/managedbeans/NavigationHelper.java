@@ -702,8 +702,14 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
     }
 
+    /**
+     * 
+     * @return the reading mode url
+     * 
+     * @deprecated  renamed to fullscreen
+     */
     public String getReadingModeUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewReadingMode.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }
 
     /**
@@ -1258,5 +1264,9 @@ public class NavigationHelper implements Serializable {
             logger.error("Cannot read current subtheme", e);
         }
         return currentTheme;
+    }
+    
+    public boolean isSubthemeSelected() throws IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().isSubthemesEnabled() || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch() && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
 }

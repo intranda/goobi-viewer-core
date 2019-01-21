@@ -350,8 +350,6 @@ public class TOCElement implements Serializable {
                         return urlPrefix + PageType.viewFullscreen.getName() + urlSuffix;
                     }
                     break;
-                case viewReadingMode:
-                    return urlPrefix + PageType.viewReadingMode.getName() + urlSuffix;
                 case viewImage:
                     return urlPrefix + PageType.viewImage.getName() + urlSuffix;
                 default:
@@ -371,9 +369,11 @@ public class TOCElement implements Serializable {
 
     /**
      * @return the fullscreenUrl
+     * @deprecated renamed to fullscreen
      */
+    @Deprecated
     public String getReadingModeUrl() {
-        return getUrl(PageType.viewReadingMode.name());
+        return getFullscreenUrl();
     }
 
     public boolean isVisible() {

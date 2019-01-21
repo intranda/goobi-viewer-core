@@ -394,30 +394,6 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
-	<!-- READING MODE -->
-	<url-mapping id="readingmode2">
-		<pattern value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-		<view-id value="/viewReadingMode.xhtml" />
-		<action onPostback="false">#{activeDocumentBean.open}</action>
-	</url-mapping>
-	<url-mapping id="readingmode3">
-		<pattern value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewReadingMode.xhtml" />
-		<action onPostback="false">#{activeDocumentBean.open}</action>
-	</url-mapping>
-	<url-mapping id="readingmode3active">
-		<pattern value="/!readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewReadingMode.xhtml" />
-		<action onPostback="false">#{navigationHelper.setPreferredView('readingmode')}</action>
-		<action onPostback="false">#{activeDocumentBean.open}</action>
-	</url-mapping>
-	<url-mapping id="readingmode4">
-		<pattern
-			value="/readingmode/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewReadingMode.xhtml" />
-		<action onPostback="false">#{activeDocumentBean.open}</action>
-	</url-mapping>
-
 	<!-- PREVIEW -->
 	<url-mapping id="preview2">
 		<pattern value="/preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
@@ -546,17 +522,17 @@
 	<!-- FULLSCREEN -->
 	<url-mapping id="fullscreen4">
 		<pattern value="/fullscreen/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewImageFullscreen.xhtml" />
+		<view-id value="/viewObjectFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="fullscreen3">
 		<pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewImageFullscreen.xhtml" />
+		<view-id value="/viewObjectFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="fullscreen2">
 		<pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-		<view-id value="/viewImageFullscreen.xhtml" />
+		<view-id value="/viewObjectFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 

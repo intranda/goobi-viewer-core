@@ -135,8 +135,10 @@ public class ImageHandler {
                     sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
                 }
                 sbUrl.append(page.getDataRepository()).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
+            } else {                
+                sbUrl.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/");
             }
-            sbUrl.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/").append(page.getPi()).append('/').append(page.getFilepath());
+            sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
             url = Paths.get(sbUrl.toString()).toUri().toString();
         }
 

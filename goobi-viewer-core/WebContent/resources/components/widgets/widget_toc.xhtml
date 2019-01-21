@@ -68,13 +68,13 @@
     													</div>
     												</ui:fragment>
     	
-    												<!-- READINGMODE LINK -->
-                                                    <ui:fragment rendered="#{navigationHelper.currentView == 'readingmode'}">
+    												<!-- FULLSCREEN LINK -->
+                                                    <ui:fragment rendered="#{navigationHelper.currentView == 'fullscreen'}">
         												<div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
         													<h:outputLink 
         														rendered="#{tocElement.label != null and tocElement.visible}" 
         														title="#{tocElement.label}"
-        														value="#{tocElement.getUrl('readingmode')}"
+        														value="#{tocElement.getUrl('fullscreen')}"
         														styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
         														#{tocElement.label}
         													</h:outputLink>
@@ -82,7 +82,7 @@
                                                     </ui:fragment>
                                                     
                                                     <!-- LINK -->
-                                                    <ui:fragment rendered="#{navigationHelper.currentView != 'readingmode'}">
+                                                    <ui:fragment rendered="#{navigationHelper.currentView != 'fullscreen'}">
                                                         <div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
                                                             <h:outputLink 
                                                                 rendered="#{tocElement.label != null and tocElement.visible}" 

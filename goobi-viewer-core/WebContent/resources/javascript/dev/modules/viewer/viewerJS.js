@@ -58,6 +58,9 @@ var viewerJS = ( function() {
         $( '[data-toggle="tooltip"]' ).tooltip( {
             trigger : 'hover'
         } );
+        if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
+        	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
+        }
         
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
@@ -174,7 +177,7 @@ var viewerJS = ( function() {
         
         // check for sidebar toc and set viewport position
         if ( viewer.localStoragePossible ) {
-            if ( $( '#image_container' ).length > 0 || currentPage === 'readingmode' ) {
+            if ( $( '#image_container' ).length > 0 ) {
                 if ( localStorage.getItem( 'currIdDoc' ) === null ) {
                     localStorage.setItem( 'currIdDoc', 'false' );
                 }

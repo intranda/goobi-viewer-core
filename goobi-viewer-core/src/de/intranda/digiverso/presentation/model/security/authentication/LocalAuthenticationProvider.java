@@ -109,4 +109,20 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     protected void setBcrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
+     */
+    @Override
+    public boolean allowsNicknameChange() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
+     */
+    @Override
+    public boolean allowsEmailChange() {
+        return false;
+    }
 }
