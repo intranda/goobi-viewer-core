@@ -163,7 +163,7 @@ public class IdentifierResolver extends HttpServlet {
 
             // Deleted record check
             if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
-                logger.debug("Record '{}' has been deleted, trace document found.", pi);
+                logger.debug("Record '{}' has been deleted, trace document found.", targetDoc.getFieldValue(SolrConstants.PI));
                 redirectToError(HttpServletResponse.SC_GONE, fieldValue, request, response);
                 return;
             }
