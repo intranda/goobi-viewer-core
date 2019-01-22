@@ -37,18 +37,6 @@
             <div class="cms-module__option-label">
                 <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
             </div>
-            <div class="cms-module__option-help">
-                <ui:fragment rendered="#{cc.attrs.help != ''}">
-                    <button
-                        type="button"
-                        class="btn btn--clean"
-                        data-toggle="helptext">
-                        <i
-                            class="fa fa-question-circle"
-                            aria-hidden="true"></i>
-                    </button>
-                </ui:fragment>
-            </div>
             <div class="cms-module__option-control">
                 <h:selectManyMenu
                     id="input"
@@ -64,13 +52,19 @@
                         itemLabel="#{cc.attrs.itemLabel}" />
                     <f:ajax render="#{cc.attrs.render}" />
                 </h:selectManyMenu>
-            </div>
-            <div class="cms-module__option-control">
-                <h:inputText
-                    id="input"
-                    value="#{cc.attrs.field}"
-                    styleClass="form-control" />
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
+            </div>
+            <div class="cms-module__option-help">
+                <ui:fragment rendered="#{cc.attrs.help != ''}">
+                    <button
+                        type="button"
+                        class="btn btn--clean"
+                        data-toggle="helptext">
+                        <i
+                            class="fa fa-question-circle"
+                            aria-hidden="true"></i>
+                    </button>
+                </ui:fragment>
             </div>
         </div>
 

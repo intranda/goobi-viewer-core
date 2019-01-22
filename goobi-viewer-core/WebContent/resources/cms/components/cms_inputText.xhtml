@@ -25,6 +25,13 @@
             <div class="cms-module__option-label">
                 <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
             </div>
+            <div class="cms-module__option-control">
+                <h:inputText
+                    id="input"
+                    value="#{cc.attrs.field}"
+                    styleClass="form-control" />
+                <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
+            </div>
             <div class="cms-module__option-help">
                 <ui:fragment rendered="#{cc.attrs.help != ''}">
                     <button
@@ -36,13 +43,6 @@
                             aria-hidden="true"></i>
                     </button>
                 </ui:fragment>
-            </div>
-            <div class="cms-module__option-control">
-                <h:inputText
-                    id="input"
-                    value="#{cc.attrs.field}"
-                    styleClass="form-control" />
-                <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
         </div>
 
