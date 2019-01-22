@@ -109,8 +109,8 @@ public class CMSMediaResource {
                 java.nio.file.Path filePath = Paths.get(sbUri.toString());
                 if (Files.isRegularFile(filePath)) {
                     try {
-                        // TODO fix encoding
-                        String ret = FileTools.getStringFromFile(filePath.toFile(), null, Helper.DEFAULT_ENCODING);
+                        String encoding = "windows-1252";
+                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
                         return ret;
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());

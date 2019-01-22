@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -111,7 +113,7 @@ public class FileTools {
                 encoding = Helper.DEFAULT_ENCODING;
             }
         }
-
+        
         StringBuilder text = new StringBuilder();
         String ls = System.getProperty("line.separator");
         try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, encoding)) {
@@ -122,7 +124,7 @@ public class FileTools {
 
         String ret = text.toString();
         // Convert to target encoding
-        logger.trace(encoding + " -> " + convertToEncoding);
+        // logger.trace(encoding + " -> " + convertToEncoding);
         if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(encoding)) {
             ret = StringTools.convertStringEncoding(ret, encoding, convertToEncoding);
         }

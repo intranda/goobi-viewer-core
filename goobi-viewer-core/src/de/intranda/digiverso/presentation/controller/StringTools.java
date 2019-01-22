@@ -124,8 +124,11 @@ public class StringTools {
             replaceWith = "";
         }
 
-        return s.replace("\r\n", replaceWith).replace("\n", replaceWith).replaceAll("\r", replaceWith).replaceAll("<br>", replaceWith).replaceAll(
-                "<br\\s*/>", replaceWith);
+        return s.replace("\r\n", replaceWith)
+                .replace("\n", replaceWith)
+                .replaceAll("\r", replaceWith)
+                .replaceAll("<br>", replaceWith)
+                .replaceAll("<br\\s*/>", replaceWith);
     }
 
     /**
@@ -171,15 +174,15 @@ public class StringTools {
         text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
         return text;
     }
-    
+
     public static String escapeQuotes(String s) {
-        if(s != null) {    
+        if (s != null) {
             s = s.replaceAll("(?<!\\\\)'", "\\\\'");
             s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
         }
         return s;
     }
-    
+
     /**
      * Converts a <code>String</code> from one given encoding to the other.
      * 
@@ -194,7 +197,7 @@ public class StringTools {
             Charset charsetTo = Charset.forName(to);
             CharsetEncoder encoder = charsetFrom.newEncoder();
             CharsetDecoder decoder = charsetTo.newDecoder();
-            decoder.onMalformedInput(CodingErrorAction.REPLACE);
+            // decoder.onMalformedInput(CodingErrorAction.IGNORE);
             ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(string));
             CharBuffer cbuf = decoder.decode(bbuf);
             return cbuf.toString();
