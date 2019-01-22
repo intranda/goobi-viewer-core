@@ -2174,6 +2174,9 @@ html.is-IE .support-overlay {
   #titleWrapper .title-body form .dl-horizontal dd {
     margin-left: 0;
   }
+  #titleWrapper .title-body form .dl-horizontal dd .title-value {
+    display: inline-block;
+  }
 }
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
