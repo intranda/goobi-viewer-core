@@ -62,6 +62,10 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.misc.Harvestable;
@@ -673,22 +677,61 @@ public class OverviewPage implements Harvestable, Serializable {
     /**
      *
      * @param configXml
-     * @return true if sucessful; false otherwise
+     * @return true if successful; false otherwise
      * @throws DAOException
      */
-    public boolean migrateToDB(String configXml, String pi) throws DAOException {
-        if (configXml == null) {
-            throw new IllegalArgumentException("configXml may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        this.pi = pi;
-        this.configXml = configXml;
+    public boolean migrateToCMS() throws DAOException {
+        logger.info("Migrating overview page for '{}' to CMS...", pi);
         loadConfig(configXml);
         parseConfig(config);
 
-        return save();
+        CMSPage cmsPage = new CMSPage();
+        cmsPage.setTemplateId("templateOverviewPageLegacy");
+        cmsPage.setRelatedPI(pi);
+        cmsPage.setDateCreated(dateUpdated);
+        cmsPage.setDateUpdated(dateUpdated);
+        cmsPage.setUseDefaultSidebar(true);
+        cmsPage.setPublished(true);
+
+        String[] languages = { "global", "en", "de", "es", "fr" };
+
+        for (String lang : languages) {
+            CMSPageLanguageVersion langVersion = new CMSPageLanguageVersion(lang);
+            cmsPage.addLanguageVersion(langVersion);
+
+            // Metadata
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
+                langVersion.addContentItem(item);
+                item.setItemId("metadata");
+                item.setItemLabel("metadata");
+                List<String> mdFieldNames = new ArrayList<>(metadata.size());
+                for (Metadata md : metadata) {
+                    mdFieldNames.add(md.getLabel());
+                }
+                item.setMetadataFieldsAsList(mdFieldNames);
+            }
+
+            // Description
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                langVersion.addContentItem(item);
+                item.setItemId("description");
+                item.setItemLabel("description");
+                item.setHtmlFragment(description);
+            }
+
+            // Publication text
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                langVersion.addContentItem(item);
+                item.setItemId("literature");
+                item.setItemLabel("literature");
+                item.setHtmlFragment(publicationText);
+            }
+        }
+
+        return DataManager.getInstance().getDao().addCMSPage(cmsPage);
     }
 
     /**

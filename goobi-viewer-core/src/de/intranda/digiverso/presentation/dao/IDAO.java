@@ -268,6 +268,8 @@ public interface IDAO {
 
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException;
 
+    public List<CMSPage> getCMSPagesForRecord(String pi) throws DAOException;
+
     public CMSPage getCMSPage(long id) throws DAOException;
 
     long getCMSPagesCount(Map<String, String> filters) throws DAOException;
@@ -348,22 +350,26 @@ public interface IDAO {
     /**
      * @param pi
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     List<Integer> getPagesWithComments(String pi) throws DAOException;
 
     /**
      * @param solrField
-     * @return 
-     * @throws DAOException 
+     * @return
+     * @throws DAOException
      */
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException;
+
     public boolean addCMSCollection(CMSCollection collection) throws DAOException;
+
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
+
     public boolean deleteCMSCollection(CMSCollection collection) throws DAOException;
+
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
+
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
-
 
 }

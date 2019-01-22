@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -49,10 +48,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ocpsoft.pretty.faces.el.LazyBeanNameFinder;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.CmsEditException;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;

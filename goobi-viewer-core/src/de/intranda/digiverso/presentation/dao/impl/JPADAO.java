@@ -2158,7 +2158,7 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        try {            
+        try {
             synchronized (cmsRequestLock) {
                 preQuery();
                 Query q = em.createQuery("SELECT o FROM CMSPage o");
@@ -2166,7 +2166,7 @@ public class JPADAO implements IDAO {
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
             }
-        } catch(PersistenceException e) {
+        } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
             return new ArrayList<>();
         }
@@ -2206,15 +2206,15 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         synchronized (cmsRequestLock) {
-            try {                
+            try {
                 preQuery();
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
                 StringBuilder order = new StringBuilder();
-                
+
                 Map<String, String> params = new HashMap<>();
-                
+
                 String filterString = createFilterQuery(filters, params);
-                
+
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
@@ -2222,7 +2222,7 @@ public class JPADAO implements IDAO {
                     }
                 }
                 sbQuery.append(filterString).append(order);
-                
+
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
@@ -2230,10 +2230,10 @@ public class JPADAO implements IDAO {
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                
+
                 List<CMSPage> list = q.getResultList();
                 return list;
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2243,9 +2243,9 @@ public class JPADAO implements IDAO {
     /**
      * Builds a query string to filter a query across several tables
      * 
-     * @param filters   The filters to use
-     * @param params    Empty map which will be filled with the used query parameters. These to be added to the query
-     * @return  A string consisting of a WHERE and possibly JOIN clause of a query
+     * @param filters The filters to use
+     * @param params Empty map which will be filled with the used query parameters. These to be added to the query
+     * @return A string consisting of a WHERE and possibly JOIN clause of a query
      */
     public String createFilterQuery(Map<String, String> filters, Map<String, String> params) {
         StringBuilder join = new StringBuilder();
@@ -2282,18 +2282,12 @@ public class JPADAO implements IDAO {
                             where.append(" OR ");
                         }
                         if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                            where.append("UPPER(" + tableKey + ".")
-                                    .append(keyPart)
-                                    .append(") LIKE :")
-                                    .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
                         } else if ("classifications".equals(joinTable)) {
                             where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
 
                         } else {
-                            where.append("UPPER(" + tableKey + ".")
-                            .append(keyPart)
-                            .append(") LIKE :")
-                            .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                            where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
                         }
                         keyPartCount++;
                     }
@@ -2340,7 +2334,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
         synchronized (cmsRequestLock) {
-            try {                
+            try {
                 preQuery();
                 StringBuilder sbQuery = new StringBuilder(70);
                 sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
@@ -2348,7 +2342,29 @@ public class JPADAO implements IDAO {
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
+                return new ArrayList<>();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getCMSPagesForRecord(String pi) throws DAOException {
+        synchronized (cmsRequestLock) {
+            try {
+                preQuery();
+                StringBuilder sbQuery = new StringBuilder(70);
+                sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
+                Query q = em.createQuery(sbQuery.toString());
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2543,13 +2559,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException {
         synchronized (cmsRequestLock) {
-            try {                
+            try {
                 preQuery();
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2565,13 +2581,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException {
         synchronized (cmsRequestLock) {
-            try {                
+            try {
                 preQuery();
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2673,7 +2689,7 @@ public class JPADAO implements IDAO {
         synchronized (cmsRequestLock) {
 
             List<CMSPage> ownerList = new ArrayList<>();
-            try {                
+            try {
                 preQuery();
                 Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
                 q.setParameter("media", item);
@@ -2691,7 +2707,7 @@ public class JPADAO implements IDAO {
                     }
                 }
                 return ownerList;
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2708,14 +2724,14 @@ public class JPADAO implements IDAO {
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
         preQuery();
         synchronized (cmsRequestLock) {
-            try {                
+            try {
                 Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
                 q.setHint("javax.persistence.cache.storeMode", "REFRESH");
                 q.setFlushMode(FlushModeType.COMMIT);
                 List<CMSNavigationItem> list = q.getResultList();
                 Collections.sort(list);
                 return list;
-            } catch(PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
                 return new ArrayList<>();
             }
@@ -2996,32 +3012,32 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
         Map<String, String> params = new HashMap<>();
         String filterQuery = createFilterQuery(filters, params);
-//        StringBuilder sbFilterQuery = null;
-//        if (filters != null && !filters.isEmpty()) {
-//            sbFilterQuery = new StringBuilder();
-//            for (String key : filters.keySet()) {
-//                if (StringUtils.isEmpty(filters.get(key))) {
-//                    continue;
-//                } else if (sbFilterQuery.length() == 0) {
-//                    sbFilterQuery.append(" WHERE ");
-//                } else {
-//                    sbFilterQuery.append(" AND ");
-//                }
-//                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
-//                int keyPartCount = 0;
-//                sbFilterQuery.append(" ( ");
-//                for (String keyPart : keyParts) {
-//                    if (keyPartCount > 0) {
-//                        sbFilterQuery.append(" OR ");
-//                    }
-//
-//                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
-//                    keyPartCount++;
-//                }
-//                sbFilterQuery.append(" ) ");
-//            }
-//            sbQuery.append(sbFilterQuery.toString());
-//        }
+        //        StringBuilder sbFilterQuery = null;
+        //        if (filters != null && !filters.isEmpty()) {
+        //            sbFilterQuery = new StringBuilder();
+        //            for (String key : filters.keySet()) {
+        //                if (StringUtils.isEmpty(filters.get(key))) {
+        //                    continue;
+        //                } else if (sbFilterQuery.length() == 0) {
+        //                    sbFilterQuery.append(" WHERE ");
+        //                } else {
+        //                    sbFilterQuery.append(" AND ");
+        //                }
+        //                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
+        //                int keyPartCount = 0;
+        //                sbFilterQuery.append(" ( ");
+        //                for (String keyPart : keyParts) {
+        //                    if (keyPartCount > 0) {
+        //                        sbFilterQuery.append(" OR ");
+        //                    }
+        //
+        //                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
+        //                    keyPartCount++;
+        //                }
+        //                sbFilterQuery.append(" ) ");
+        //            }
+        //            sbQuery.append(sbFilterQuery.toString());
+        //        }
         Query q = em.createQuery(sbQuery.append(filterQuery).toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
@@ -3128,9 +3144,8 @@ public class JPADAO implements IDAO {
         q.setParameter("id", page.getId());
         return q.getResultList();
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-//        return getSingleResult(q);
+        //        return getSingleResult(q);
     }
-
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getStaticPageForTypeType(de.intranda.digiverso.presentation.dao.PageType)
@@ -3164,7 +3179,6 @@ public class JPADAO implements IDAO {
             return Optional.ofNullable((T) results.get(0));
         }
     }
-    
 
     /**
      * Helper method to get the first result of the given query if any results are returned, or an empty Optional otherwise
@@ -3222,7 +3236,7 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(collection);
             em.getTransaction().commit();
-         // Refresh the object from the DB so that any new licenses etc. have IDs
+            // Refresh the object from the DB so that any new licenses etc. have IDs
             if (this.em.contains(collection)) {
                 this.em.refresh(collection);
             }
