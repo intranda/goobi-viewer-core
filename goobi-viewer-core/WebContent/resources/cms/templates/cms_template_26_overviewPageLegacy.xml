@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateOverviewPageLegacy" version="2018-11-28">
+	<name>Overview page</name>
+	<description>Overview page template.</description>
+	<icon>cms_template_25_overviewPage.png</icon>
+	<html>cms_template_25_overviewPage.xhtml</html>
+
+	<content>
+		<item id="metadata" order="1" label="Metadata" type="METADATA" />
+		<item id="literature" order="2" label="Literature" type="HTML" />
+		<item id="description" order="3" label="Description" type="HTML" />
+	</content>
+</cms_page_template>
