@@ -51,38 +51,13 @@ public class MetadataBean {
     private ActiveDocumentBean activeDocumentBean;
 
     /** Metadata blocks (one per structure element) */
-    private List<MetadataElement> metadataElementList;
+    private List<MetadataElement> metadataElementList = null;
     /** Events. */
     private List<EventElement> events = new ArrayList<>();
 
     /** Empty constructor. */
     public MetadataBean() {
         // the emptiness inside
-    }
-
-    /**
-     * @throws IndexUnreachableException
-     *
-     */
-    @PostConstruct
-    public void init() {
-        // PostConstruct methods may not throw exceptions
-        resetMetadata();
-//        try {
-////            loadMetadata();
-//        } catch (IndexUnreachableException e) {
-//            logger.debug("IndexUnreachableException thrown here");
-//        } catch (DAOException e) {
-//            logger.debug("DAOException thrown here");
-//        }
-    }
-
-    /**
-     * 
-     */
-    private void resetMetadata() {
-        this.metadataElementList = null;
-        
     }
 
     /**
