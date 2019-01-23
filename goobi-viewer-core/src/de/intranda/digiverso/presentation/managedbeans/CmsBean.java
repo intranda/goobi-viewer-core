@@ -1457,5 +1457,18 @@ public class CmsBean implements Serializable {
         //        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
         return sortFields;
     }
+    
+    /**
+     * 
+     * @return The {@link CMSPage#getWrapperElementClass()} of the current CMSPage. 
+     * If no current page is set or {@link NavigationHelper#isCmsPage()} returns false, an empty String is returned
+     */
+    public String getCssClass() {
+        if(BeanUtils.getNavigationHelper().isCmsPage() && getCurrentPage() != null) {
+            return getCurrentPage().getWrapperElementClass();
+        } else {
+            return "";
+        }
+    }
 
 }

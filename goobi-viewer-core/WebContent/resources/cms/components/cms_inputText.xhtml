@@ -1,0 +1,50 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface>
+        <composite:attribute
+            name="field"
+            required="true" />
+        <composite:attribute
+            name="label"
+            required="true" />
+        <composite:attribute
+            name="help"
+            required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <div class="cms-module__option-group">
+            <div class="cms-module__option-label">
+                <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
+            </div>
+            <div class="cms-module__option-control">
+                <h:inputText
+                    id="input"
+                    value="#{cc.attrs.field}"
+                    styleClass="form-control" />
+                <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
+            </div>
+            <div class="cms-module__option-help">
+                <ui:fragment rendered="#{cc.attrs.help != ''}">
+                    <button
+                        type="button"
+                        class="btn btn--clean"
+                        data-toggle="helptext">
+                        <i
+                            class="fa fa-question-circle"
+                            aria-hidden="true"></i>
+                    </button>
+                </ui:fragment>
+            </div>
+        </div>
+
+    </composite:implementation>
+</ui:composition>

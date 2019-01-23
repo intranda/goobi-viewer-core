@@ -51,29 +51,13 @@ public class MetadataBean {
     private ActiveDocumentBean activeDocumentBean;
 
     /** Metadata blocks (one per structure element) */
-    private List<MetadataElement> metadataElementList;
+    private List<MetadataElement> metadataElementList = null;
     /** Events. */
     private List<EventElement> events = new ArrayList<>();
 
     /** Empty constructor. */
     public MetadataBean() {
         // the emptiness inside
-    }
-
-    /**
-     * @throws IndexUnreachableException
-     *
-     */
-    @PostConstruct
-    public void init() {
-        // PostConstruct methods may not throw exceptions
-        try {
-            loadMetadata();
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here");
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here");
-        }
     }
 
     /**
@@ -134,24 +118,29 @@ public class MetadataBean {
     public void setMetadataElementList(List<MetadataElement> metadataElementList) {
         this.metadataElementList = metadataElementList;
     }
-
+    
     /**
      * @return the metadataElementList
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public List<MetadataElement> getMetadataElementList() throws IndexUnreachableException, DAOException {
+    public List<MetadataElement> getMetadataElementList(){
         if (metadataElementList == null) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
-            loadMetadata();
+            try {
+                loadMetadata();
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error("Error loading metadatalist ", e);
+                return Collections.EMPTY_LIST;
+            }
 
         }
         return metadataElementList;
     }
 
     public MetadataElement getTopMetadataElement() {
-        if (metadataElementList != null && !metadataElementList.isEmpty()) {
-            return metadataElementList.get(0);
+        if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
+            return getMetadataElementList().get(0);
         }
 
         return null;
@@ -165,13 +154,13 @@ public class MetadataBean {
      * @return
      */
     public MetadataElement getBottomMetadataElement() {
-        if (metadataElementList != null && !metadataElementList.isEmpty()) {
-            int index = metadataElementList.size() - 1;
-            while (!metadataElementList.get(index).isHasSidebarMetadata() && index > 0) {
+        if (getMetadataElementList() != null && !getMetadataElementList().isEmpty()) {
+            int index = getMetadataElementList().size() - 1;
+            while (!getMetadataElementList().get(index).isHasSidebarMetadata() && index > 0) {
                 index--;
             }
             // logger.debug("index: " + index);
-            return metadataElementList.get(index);
+            return getMetadataElementList().get(index);
         }
 
         return null;

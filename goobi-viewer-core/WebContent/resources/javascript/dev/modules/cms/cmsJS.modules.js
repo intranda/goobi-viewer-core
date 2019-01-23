@@ -44,10 +44,12 @@ var cmsJS = ( function( cms ) {
             // toggle input helptext
             $( '[data-toggle="helptext"]' ).on( 'click', function() {
             	$( this ).toggleClass( 'in' );
-            	$( this ).parent().prev().toggleClass( 'in' );
-            	$( this ).parent().prev().find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
+            	
+            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control' );
+            	$input.toggleClass( 'in' );
+            	$input.find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
             	// focus input
-            	$( this ).parent().prev().find( '.form-control' ).focus();
+            	$input.find( '.form-control' ).focus();
             } );
             
             // toggle add new item accordeon
