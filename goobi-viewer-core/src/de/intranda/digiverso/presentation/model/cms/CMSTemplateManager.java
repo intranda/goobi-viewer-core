@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
@@ -47,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 public final class CMSTemplateManager {
 
@@ -114,11 +114,12 @@ public final class CMSTemplateManager {
     private CMSTemplateManager(String filesystemPath, String themeRootPath) throws PresentationException {
         ServletContext servletContext = null;
         String webContentRoot = "";
-        if (filesystemPath == null && FacesContext.getCurrentInstance() != null) {
+        if (filesystemPath == null) {
+            if (FacesContext.getCurrentInstance() == null) {
+                throw new PresentationException("No faces context found");
+            }
             servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             webContentRoot = servletContext.getContextPath();
-        } else if (filesystemPath == null) {
-            throw new PresentationException("No faces context found");
         }
 
         //check if the themeFolderPath contains any xml files
@@ -172,6 +173,8 @@ public final class CMSTemplateManager {
             }
         } catch (IOException e) {
             logger.error(e.toString(), e);
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
         }
 
         updateTemplates(coreFolderPath, themeFolderPath);
@@ -197,9 +200,10 @@ public final class CMSTemplateManager {
      * @return
      * @throws MalformedURLException
      * @throws UnsupportedEncodingException
+     * @throws URISyntaxException
      */
     public static Optional<URL> getCoreTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
-            throws MalformedURLException, UnsupportedEncodingException {
+            throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
             String basePath = servletContext.getRealPath("/");
@@ -213,10 +217,7 @@ public final class CMSTemplateManager {
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
         } else if (filesystemPath != null) {
             String templateFolderPath = filesystemPath + templateFolderUrl;
-//            if (!templateFolderPath.startsWith("file:/")) {
-//                templateFolderPath = "file:/" + templateFolderPath;
-//            }
-            Path path = Paths.get(URLDecoder.decode(new URL(templateFolderPath).getPath(), "utf-8"));
+            Path path = PathConverter.getPath(PathConverter.toURI(templateFolderPath));
             if (Files.exists(path)) {
                 fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
             } else {
@@ -249,7 +250,7 @@ public final class CMSTemplateManager {
         } else if (servletContext != null) {
             coreFolderUrl = Optional.ofNullable(servletContext.getResource(templateFolderUrl));
         } else {
-            Path path = Paths.get(filesystemPath + templateFolderUrl);
+            Path path = PathConverter.getPath(PathConverter.toURI(filesystemPath + templateFolderUrl));
             if (Files.isDirectory(path)) {
                 coreFolderUrl = Optional.of(path.toUri().toURL());
             }
@@ -303,8 +304,10 @@ public final class CMSTemplateManager {
                 logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
             }
             themePath.map(path -> loadTemplates(path))
-                    .ifPresent(map -> map.entrySet().stream().peek(entry -> entry.getValue().setThemeTemplate(true)).forEach(
-                            entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
+                    .ifPresent(map -> map.entrySet()
+                            .stream()
+                            .peek(entry -> entry.getValue().setThemeTemplate(true))
+                            .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
             int size = templates.size();
             logger.debug("Loaded {} THEME CMS templates", size);
 
@@ -415,9 +418,9 @@ public final class CMSTemplateManager {
         if (StringUtils.isNotBlank(templateId)) {
             CMSPageTemplate template = getTemplate(templateId);
             return getTemplateIconUrl(template);
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     /**
