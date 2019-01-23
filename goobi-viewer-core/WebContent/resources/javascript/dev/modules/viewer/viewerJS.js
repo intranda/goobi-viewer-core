@@ -195,6 +195,7 @@ var viewerJS = ( function() {
         } );
         
         viewer.loadThumbnails();
+        viewer.initFragmentNavigation();     
          
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
@@ -409,6 +410,24 @@ var viewerJS = ( function() {
         }
     };
     
+    viewer.initFragmentNavigation = function() {
+        if(window.location.hash) {
+            $(document).ready(function() {                
+                var hash = window.location.hash.substring(1);
+                
+                var $hashedElement = $("#" + hash);
+                if($hashedElement.length > 0) {                    
+                    $hashedElement.get(0).scrollIntoView();
+                }
+                
+                var $hashedCollapsible = $("#" + hash + ".collapse");
+                if($hashedCollapsible.length > 0) {
+                    $(".collapse").collapse('hide');
+                    $hashedCollapsible.collapse('show');
+                } 
+            })
+        }
+    }
 
     
     // global object for tinymce config
