@@ -98,6 +98,29 @@
                 <div class="tpl-simple__text">
                     <ui:include src="#{cmsPage.getContent('description')}" />
                 </div>
+                
+                <!-- HISTORY -->
+                <h:panelGroup rendered="#{userBean.admin}">
+                    <div class="overview__history">
+                        <h3>#{msg.viewOverviewHistory_heading}</h3>
+    
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#{msg.viewOverviewHistory_date}</th>
+                                    <th>#{msg.viewOverviewHistory_user}</th>
+                                    <th>#{msg.viewOverviewHistory_changes}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ui:repeat var="update" value="#{activeDocumentBean.overviewPage.history}">
+                                    <ui:include src="#{cmsPage.getContent('history')}" />
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </h:panelGroup>
+            
             </div>
         </f:view>
     </ui:define>

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -33,14 +34,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.viewer.cache.JobManager;
@@ -142,6 +147,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                             output.write(("No overview pages found").getBytes(Charset.forName("utf-8")));
                             return;
                         }
+                        output.write(("Found " + total + " legacy overview pages<br />").getBytes(Charset.forName("utf-8")));
                         int first = 0;
                         int pageSize = 10;
                         while (first < total) {
@@ -149,13 +155,29 @@ public class ToolServlet extends HttpServlet implements Serializable {
                             for (OverviewPage op : pages) {
                                 List<CMSPage> existingPages = DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi());
                                 if (!existingPages.isEmpty()) {
-                                    output.write(("!!! CMS overview page already exists for " + op.getPi()).getBytes(Charset.forName("utf-8")));
+                                    output.write(("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
                                     continue;
                                 }
                                 if (op.migrateToCMS()) {
-                                    output.write(("Migrated overview page for " + op.getPi()).getBytes(Charset.forName("utf-8")));
+                                    output.write(("Migrated overview page for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
                                     migratedToCMS++;
-                                    Helper.reIndexRecord(op.getPi(), null, op);
+                                    try {
+                                        SolrDocument doc = DataManager.getInstance()
+                                                .getSearchIndex()
+                                                .getFirstDoc(SolrConstants.PI + ":" + op.getPi(),
+                                                        Collections.singletonList(SolrConstants.SOURCEDOCFORMAT));
+                                        if (doc != null) {
+                                            String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+                                            Helper.reIndexRecord(op.getPi(), sourceFormat, op);
+                                        } else {
+                                            output.write((op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));
+                                        }
+                                    } catch (PresentationException e) {
+                                        logger.error(e.getMessage(), e);
+                                    } catch (IndexUnreachableException e) {
+                                        logger.error(e.getMessage(), e);
+                                    }
+
                                 }
                             }
 

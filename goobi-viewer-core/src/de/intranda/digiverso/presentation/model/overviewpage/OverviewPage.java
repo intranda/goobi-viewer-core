@@ -62,6 +62,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -74,9 +75,12 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Data and methods for the overview page view.
+ * 
+ * @deprecated Overview page functionality is now part of CMS
  */
 @Entity
 @Table(name = "overview_pages")
+@Deprecated
 public class OverviewPage implements Harvestable, Serializable {
 
     private static final long serialVersionUID = -8613810925005476807L;
@@ -687,6 +691,9 @@ public class OverviewPage implements Harvestable, Serializable {
         CMSPage cmsPage = new CMSPage();
         cmsPage.setTemplateId("templateOverviewPageLegacy");
         cmsPage.setRelatedPI(pi);
+        if (dateUpdated == null) {
+            dateUpdated = new Date();
+        }
         cmsPage.setDateCreated(dateUpdated);
         cmsPage.setDateUpdated(dateUpdated);
         cmsPage.setUseDefaultSidebar(true);
@@ -696,12 +703,13 @@ public class OverviewPage implements Harvestable, Serializable {
 
         for (String lang : languages) {
             CMSPageLanguageVersion langVersion = new CMSPageLanguageVersion(lang);
+            langVersion.setTitle(pi + " overview page");
+            langVersion.setMenuTitle("overviewPage");
             cmsPage.addLanguageVersion(langVersion);
 
             // Metadata
             {
                 CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
-                langVersion.addContentItem(item);
                 item.setItemId("metadata");
                 item.setItemLabel("metadata");
                 List<String> mdFieldNames = new ArrayList<>(metadata.size());
@@ -709,25 +717,61 @@ public class OverviewPage implements Harvestable, Serializable {
                     mdFieldNames.add(md.getLabel());
                 }
                 item.setMetadataFieldsAsList(mdFieldNames);
+                langVersion.addContentItem(item);
             }
 
             // Description
             {
                 CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                langVersion.addContentItem(item);
                 item.setItemId("description");
                 item.setItemLabel("description");
                 item.setHtmlFragment(description);
+                langVersion.addContentItem(item);
             }
 
             // Publication text
             {
                 CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                langVersion.addContentItem(item);
                 item.setItemId("literature");
                 item.setItemLabel("literature");
                 item.setHtmlFragment(publicationText);
+                langVersion.addContentItem(item);
             }
+        }
+
+        // History
+        List<OverviewPageUpdate> updates = DataManager.getInstance().getDao().getOverviewPageUpdatesForRecord(pi);
+        if (!updates.isEmpty()) {
+            CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+            item.setItemId("history");
+            item.setItemLabel("history");
+            StringBuilder sb = new StringBuilder();
+            for (OverviewPageUpdate update : updates) {
+                sb.append("<tr><td>")
+                        .append(update.getDateUpdated())
+                        .append("</td><td>")
+                        .append(update.getUpdatedBy().getDisplayName())
+                        .append("</td><td>");
+                StringBuilder sbChanges = new StringBuilder();
+                if (update.isMetadataChanged()) {
+                    sbChanges.append("metadata");
+                }
+                if (update.isDescriptionChanged()) {
+                    if (sbChanges.length() > 0) {
+                        sbChanges.append(", ");
+                    }
+                    sb.append("description");
+                }
+                if (update.isPublicationTextChanged()) {
+                    if (sbChanges.length() > 0) {
+                        sbChanges.append(", ");
+                    }
+                    sb.append("literature");
+                }
+                sb.append(sbChanges.toString()).append("</td></tr>");
+            }
+            item.setHtmlFragment(sb.toString());
+            cmsPage.addContentItem(item);
         }
 
         return DataManager.getInstance().getDao().addCMSPage(cmsPage);
