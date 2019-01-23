@@ -505,6 +505,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
 
-        return allLocales;
+        return allLocales.stream().distinct().collect(Collectors.toList());
     }
 }
