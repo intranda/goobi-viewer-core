@@ -196,7 +196,7 @@ public class CmsBean implements Serializable {
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
         list.add(ViewerResourceBundle.getDefaultLocale());
-        if(FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {            
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
             Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
             while (iter.hasNext()) {
                 Locale locale = iter.next();
@@ -220,7 +220,6 @@ public class CmsBean implements Serializable {
         return ViewerResourceBundle.getDefaultLocale();
     }
 
-
     public static Locale getCurrentLocale() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
             return FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -235,8 +234,8 @@ public class CmsBean implements Serializable {
 
     public void loadTemplates() {
         logger.trace("loadTemplates");
-        CMSTemplateManager.getInstance().updateTemplates(CMSTemplateManager.getInstance().getCoreFolderPath(),
-                CMSTemplateManager.getInstance().getThemeFolderPath());
+        CMSTemplateManager.getInstance()
+                .updateTemplates(CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
     }
 
     public List<CMSPageTemplate> getTemplates() {
@@ -414,7 +413,7 @@ public class CmsBean implements Serializable {
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        for (String  classification : item.getPageClassification()) {            
+        for (String classification : item.getPageClassification()) {
             if (!StringUtils.isEmpty(classification)) {
                 for (CMSPage cmsPage : cmsPages) {
                     if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
@@ -435,7 +434,7 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        List<CMSPage> pages =  DataManager.getInstance().getDao().getAllCMSPages();
+        List<CMSPage> pages = DataManager.getInstance().getDao().getAllCMSPages();
         pages.forEach(page -> {
             PageValidityStatus validityStatus = isPageValid(page);
             page.setValidityStatus(validityStatus);
@@ -452,8 +451,8 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public CMSPage getCMSPage(Long pageId) throws DAOException {
-          Optional<CMSPage> page = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(pageId));
-//        Optional<CMSPage> page = getAllCMSPages().stream().filter(p -> p.getId().equals(pageId)).findFirst();
+        Optional<CMSPage> page = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(pageId));
+        //        Optional<CMSPage> page = getAllCMSPages().stream().filter(p -> p.getId().equals(pageId)).findFirst();
         if (page.isPresent()) {
             PageValidityStatus validityStatus = isPageValid(page.get());
             page.get().setValidityStatus(validityStatus);
@@ -471,7 +470,7 @@ public class CmsBean implements Serializable {
         }
         return CMSSidebarManager.getDefaultSidebarElements();
     }
-    
+
     public CMSSidebarElement getSidebarElement(String type) {
         return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
     }
@@ -509,9 +508,9 @@ public class CmsBean implements Serializable {
             if (success) {
                 Messages.info("cms_pageSaveSuccess");
                 logger.trace("reload cms page");
-//                selectedPage = getCMSPage(selectedPage.getId());
+                //                selectedPage = getCMSPage(selectedPage.getId());
                 setSelectedPage(selectedPage);
-//                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+                //                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
                 logger.trace("update pages");
                 lazyModelPages.update();
             } else {
@@ -539,7 +538,7 @@ public class CmsBean implements Serializable {
         }
 
     }
-    
+
     public void invalidate() {
         collections = new HashMap<>();
     }
@@ -658,9 +657,20 @@ public class CmsBean implements Serializable {
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
             String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
-            List<CMSNavigationItem> items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme)) || currentTheme.equalsIgnoreCase( item.getAssociatedTheme())).collect(Collectors.toList());
-            if(items.isEmpty()) {
-                items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems().stream().filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)).collect(Collectors.toList());
+            List<CMSNavigationItem> items = DataManager.getInstance()
+                    .getDao()
+                    .getAllTopCMSNavigationItems()
+                    .stream()
+                    .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
+                            || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
+                    .collect(Collectors.toList());
+            if (items.isEmpty()) {
+                items = DataManager.getInstance()
+                        .getDao()
+                        .getAllTopCMSNavigationItems()
+                        .stream()
+                        .filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme))
+                        .collect(Collectors.toList());
             }
             return items;
         } catch (DAOException e) {
@@ -716,7 +726,7 @@ public class CmsBean implements Serializable {
     }
 
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
-        if(currentPage != null) {            
+        if (currentPage != null) {
             if (currentPage.getId() != null) {
                 this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
             } else {
@@ -730,8 +740,6 @@ public class CmsBean implements Serializable {
         }
 
     }
-
-
 
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
@@ -871,11 +879,11 @@ public class CmsBean implements Serializable {
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                         searchBean.setActiveSearchType(item.getSearchType());
-                    }                        
-                    if(StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
+                    }
+                    if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                         searchBean.setShowReducedSearchOptions(true);
                         return searchAction(item);
-                    } else if(item.isDisplayEmptySearchResults()) {
+                    } else if (item.isDisplayEmptySearchResults()) {
                         String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "*:*";
                         searchBean.setExactSearchString(searchString);
                         searchBean.setShowReducedSearchOptions(false);
@@ -940,12 +948,12 @@ public class CmsBean implements Serializable {
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-//            searchBean.setCurrentPage(item.getListPage());
+            //            searchBean.setCurrentPage(item.getListPage());
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
             return searchBean.search();
-        }else if (item == null) {
+        } else if (item == null) {
             logger.error("Cannot search: item is null");
             searchBean.resetSearchResults();
             return "";
@@ -982,10 +990,9 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Calculates the number of pages needed for the paginator. The value is taken directly from
-     * {@link Search#getLastPage(int)}
+     * Calculates the number of pages needed for the paginator. The value is taken directly from {@link Search#getLastPage(int)}
      * 
-     * @return  The number of pages to display in the paginator
+     * @return The number of pages to display in the paginator
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -996,7 +1003,6 @@ public class CmsBean implements Serializable {
         return 0;
     }
 
-    
     /**
      * Calcs number of paginator pages for the query result.
      * 
@@ -1004,7 +1010,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @deprecated  use {@link #getQueryResultCount()} instead
+     * @deprecated use {@link #getQueryResultCount()} instead
      */
     @Deprecated
     public long getQueryResultCount(CMSContentItem item) throws PresentationException, IndexUnreachableException {
@@ -1094,12 +1100,12 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the {@link CollectionView} of the given content item in the given page. If the view hasn't been initialized yet, do so and 
-     * add it to the Bean's CollectionView map
+     * Get the {@link CollectionView} of the given content item in the given page. If the view hasn't been initialized yet, do so and add it to the
+     * Bean's CollectionView map
      * 
-     * @param id    The ContentItemId of the ContentItem to look for
-     * @param page  The page containing the collection ContentItem
-     * @return  The CollectionView or null if no matching ContentItem was found
+     * @param id The ContentItemId of the ContentItem to look for
+     * @param page The page containing the collection ContentItem
+     * @return The CollectionView or null if no matching ContentItem was found
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1115,12 +1121,12 @@ public class CmsBean implements Serializable {
         }
         return collection;
     }
-    
+
     /**
-     * get a list of all {@link CollectionView}s with the given solr field which are already loaded via {@link #getCollection(CMSPage)}
-     * or {@link #getCollection(String, CMSPage)
+     * get a list of all {@link CollectionView}s with the given solr field which are already loaded via {@link #getCollection(CMSPage)} or
+     * {@link #getCollection(String, CMSPage)
      * 
-     * @param field     The solr field the colleciton is based on
+     * @param field The solr field the colleciton is based on
      * @return
      */
     public List<CollectionView> getCollections(String field) {
@@ -1128,11 +1134,11 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the first available {@link CollectionView} from any {@link CMSContentItem} of the given {@link CMSPage page}. 
-     * The CollectionView is added to the Bean's internal collection map
+     * Get the first available {@link CollectionView} from any {@link CMSContentItem} of the given {@link CMSPage page}. The CollectionView is added
+     * to the Bean's internal collection map
      * 
-     * @param page  The CMSPage to provide the collection
-     * @return  The CollectionView or null if none was found
+     * @param page The CMSPage to provide the collection
+     * @return The CollectionView or null if none was found
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1211,14 +1217,14 @@ public class CmsBean implements Serializable {
     private List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
-//        if (staticPages == null || staticPages.isEmpty()) {
-//            //resore from old schema
-//            staticPages = getAllCMSPages().stream()
-//                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
-//                    .map(cmsPage -> new CMSStaticPage(cmsPage))
-//                    .distinct()
-//                    .collect(Collectors.toList());
-//        }
+        //        if (staticPages == null || staticPages.isEmpty()) {
+        //            //resore from old schema
+        //            staticPages = getAllCMSPages().stream()
+        //                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
+        //                    .map(cmsPage -> new CMSStaticPage(cmsPage))
+        //                    .distinct()
+        //                    .collect(Collectors.toList());
+        //        }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.getName());
@@ -1283,11 +1289,11 @@ public class CmsBean implements Serializable {
         for (CMSStaticPage page : getStaticPages()) {
             try {
                 //delete static pages with no mapped cms page to remove deprecated pages
-                if(page.getId() != null && !page.isHasCmsPage()) {
+                if (page.getId() != null && !page.isHasCmsPage()) {
                     DataManager.getInstance().getDao().deleteStaticPage(page);
                 } else if (page.getId() != null) {
                     DataManager.getInstance().getDao().updateStaticPage(page);
-                } else if(page.isHasCmsPage()) {
+                } else if (page.isHasCmsPage()) {
                     DataManager.getInstance().getDao().addStaticPage(page);
                 }
             } catch (DAOException e) {
@@ -1375,7 +1381,7 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getRelatedPages(String pi) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getAllCMSPages()
+                .getCMSPagesForRecord(pi)
                 .stream()
                 .filter(page -> pi.equals(page.getRelatedPI()))
                 .filter(page -> page.isPublished())
@@ -1392,9 +1398,9 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getAllCMSPages()
+                .getCMSPagesForRecord(pi)
                 .stream()
-                .filter(page -> pi.equals(page.getRelatedPI()))
+                //                .filter(page -> pi.equals(page.getRelatedPI()))
                 .filter(page -> page.getClassifications().contains(classification))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
@@ -1424,8 +1430,11 @@ public class CmsBean implements Serializable {
 
     public String getRepresentativeImageForQuery(CMSPage page, int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        CMSContentItem contentItem =
-                page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.SOLRQUERY.equals(item.getType())).findAny().orElseThrow(
+        CMSContentItem contentItem = page.getGlobalContentItems()
+                .stream()
+                .filter(item -> CMSContentItemType.SOLRQUERY.equals(item.getType()))
+                .findAny()
+                .orElseThrow(
                         () -> new IllegalStateException("The page does not contain content items of type '" + CMSContentItemType.SOLRQUERY + "'"));
         return getRepresentativeImageForQuery(contentItem, width, height);
     }
@@ -1442,10 +1451,10 @@ public class CmsBean implements Serializable {
         }
         throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
     }
-    
+
     public List<String> getPossibleSortFields() throws PresentationException, IndexUnreachableException, SolrServerException, IOException {
         List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
-//        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
+        //        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
         return sortFields;
     }
 

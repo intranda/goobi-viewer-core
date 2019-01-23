@@ -6,7 +6,6 @@
 	<html>cms_template_25_overviewPage.xhtml</html>
 
 	<content>
-<!-- 	    <item id="thumbnail" order="0" label="Thumbnail" type="THUMBNAIL" /> -->
 		<item id="metadata" order="1" label="Metadata" type="METADATA" />
 		<item id="literature" order="2" label="Literature" type="MEDIA" />
 		<item id="description" order="3" label="Description" type="MEDIA" />

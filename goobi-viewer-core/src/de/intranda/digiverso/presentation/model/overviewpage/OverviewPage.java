@@ -676,7 +676,6 @@ public class OverviewPage implements Harvestable, Serializable {
 
     /**
      *
-     * @param configXml
      * @return true if successful; false otherwise
      * @throws DAOException
      */

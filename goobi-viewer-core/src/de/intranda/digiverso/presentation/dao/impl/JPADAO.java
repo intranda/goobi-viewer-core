@@ -2349,8 +2349,9 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
+    /**
      * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String)
+     * @should return all pages with the given related pi
      */
     @SuppressWarnings("unchecked")
     @Override
