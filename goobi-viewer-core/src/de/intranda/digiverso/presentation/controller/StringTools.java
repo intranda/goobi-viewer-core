@@ -24,7 +24,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
+import java.nio.charset.MalformedInputException;
 import java.text.Normalizer;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -201,6 +201,8 @@ public class StringTools {
             ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(string));
             CharBuffer cbuf = decoder.decode(bbuf);
             return cbuf.toString();
+        } catch (MalformedInputException e) {
+            logger.warn(e.getMessage());
         } catch (CharacterCodingException e) {
             logger.error(e.getMessage(), e);
         }
