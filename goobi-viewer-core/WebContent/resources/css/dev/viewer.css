@@ -7506,12 +7506,18 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .toc__mv-element {
   padding: 15px 0;
-  border-bottom: 1px solid #ccc;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  background-color: #fff;
 }
 .toc__mv-element:hover {
   background-color: #eee;
 }
+.toc__mv-element:last-child {
+  border-bottom: 1px solid #ccc;
+}
 .toc__mv-element.level-0 {
+  border: 0;
   background-color: transparent;
 }
 .toc__mv-element.level-0 h4 {
