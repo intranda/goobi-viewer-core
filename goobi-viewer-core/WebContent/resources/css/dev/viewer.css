@@ -8281,6 +8281,17 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-usage__citelinks .label-default {
   display: inline-block;
 }
+.widget-usage__work-downloads .label-default:hover,
+.widget-usage__page-downloads .label-default:hover,
+.widget-usage__citelinks .label-default:hover,
+.widget-usage__work-downloads .label-default:active,
+.widget-usage__page-downloads .label-default:active,
+.widget-usage__citelinks .label-default:active,
+.widget-usage__work-downloads .label-default:focus,
+.widget-usage__page-downloads .label-default:focus,
+.widget-usage__citelinks .label-default:focus {
+  background-color: #5e5e5e;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
