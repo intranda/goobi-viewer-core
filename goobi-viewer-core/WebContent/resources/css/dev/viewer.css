@@ -6887,7 +6887,7 @@ div[id*="-Modal"] .email-form .form-group {
   left: 0;
   padding: 15px;
   padding-top: 85px;
-  background-color: #fff;
+  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
   overflow-y: auto;
   z-index: 10;
 }
@@ -6930,6 +6930,7 @@ div[id*="-Modal"] .email-form .form-group {
 .fullscreen__view-image-thumb-image-order {
   padding: 5px;
   text-align: center;
+  color: #fff;
   opacity: 0;
   transition: all 0.3s ease-in;
 }

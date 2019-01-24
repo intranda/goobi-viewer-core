@@ -143,7 +143,13 @@
 		left: 0;
 		padding: 15px;
 		padding-top: 85px;
-		background-color: @white;
+		background: repeating-linear-gradient(
+			-55deg,
+			#222,
+			#222 10px,
+			#333 10px,
+			#333 20px
+		);
 		overflow-y: auto;
 		z-index: 10;
 	}
@@ -186,6 +192,7 @@
 	&__view-image-thumb-image-order {
 		padding: 5px;
 		text-align: center;
+		color: @white;
 		opacity: 0;
 		transition: all 0.3s ease-in;
 		&.in {
