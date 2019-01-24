@@ -11,7 +11,7 @@
     
 	<composite:implementation>
         <f:view contentType="text/html" encoding="utf-8">
-            <nav id="metaMusealWrapper">
+            <nav id="metaMusealWrapper" class="meta-museal">
                 <ul id="metadataTabs" class="nav nav-tabs">
                     <c:forEach items="#{metadataBean.metadataElementList}" var="metadataElement">
                         <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
