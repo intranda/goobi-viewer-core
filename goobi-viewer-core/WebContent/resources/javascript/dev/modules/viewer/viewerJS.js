@@ -120,7 +120,7 @@ var viewerJS = ( function() {
         } );
         
         // toggle collapseable widgets
-        $( '.widget__title.collapseable' ).on( 'click', function() {
+        $( 'body' ).off().on( 'click', '.widget__title.collapseable', function() {        	
     		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
     	} );
         
