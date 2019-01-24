@@ -9651,6 +9651,14 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid transparent;
   border-radius: 0;
 }
+.tpl-faq__list .panel-heading__fragment-link {
+  padding-left: 10px;
+  font-size: 0.9rem;
+  opacity: 0.2;
+}
+.tpl-faq__list .panel-heading__fragment-link:hover {
+  opacity: 1;
+}
 .tpl-faq__list .panel-title {
   text-transform: uppercase;
   font-size: 1.1rem;
