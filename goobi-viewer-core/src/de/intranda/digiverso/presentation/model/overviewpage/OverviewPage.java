@@ -55,6 +55,7 @@ import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -771,7 +772,12 @@ public class OverviewPage implements Harvestable, Serializable {
                 sb.append(sbChanges.toString()).append("</td></tr>");
             }
             item.setHtmlFragment(sb.toString());
-            cmsPage.addContentItem(item);
+            try {
+                cmsPage.getLanguageVersion("global").addContentItem(item);
+            } catch (CmsElementNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+            //            cmsPage.addContentItem(item);
         }
 
         return DataManager.getInstance().getDao().addCMSPage(cmsPage);
