@@ -2346,10 +2346,19 @@ html.is-IE .support-overlay {
 .image-controls {
   position: relative;
   padding: 15px 0;
-  /* ELEMENT */
   /* DOCUMENT OPTIONS */
   /* ACTIONS */
   /* MODIFICATION */
+}
+.image-controls form {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.image-controls__options {
+  margin-left: auto;
+  padding: 0 10px;
 }
 .image-controls__options ul {
   display: -ms-flexbox;
@@ -2365,8 +2374,9 @@ html.is-IE .support-overlay {
       align-self: center;
 }
 .image-controls__option {
-  width: 21px;
-  height: 21px;
+  width: 32px;
+  height: 32px;
+  margin: 0 3px 6px 3px;
 }
 .image-controls__option a,
 .image-controls__option span,
@@ -2407,6 +2417,9 @@ html.is-IE .support-overlay {
 .image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
 .image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
+}
+.image-controls__actions {
+  padding: 0 15px;
 }
 .image-controls__actions ul {
   display: -ms-flexbox;
@@ -2550,17 +2563,12 @@ html.is-IE .support-overlay {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
+  .image-controls form {
+    -ms-flex-align: start;
+        align-items: flex-start;
+  }
   .image-controls__options {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  .image-controls__option {
-    width: 32px;
-    height: 32px;
-  }
-  .image-controls__option a,
-  .image-controls__option button {
-    line-height: 32px;
+    margin-left: inherit;
   }
 }
 /* BREAKPOINT FOR SMARTPHONES */
