@@ -975,6 +975,10 @@ public class CMSPage {
         return "cms/" + getId() + "/";
     }
 
+    /**
+     * TODO HTML/text content items are only added to the last language version in the list, not all of them
+     * @param item
+     */
     public void addContentItem(CMSContentItem item) {
         synchronized (languageVersions) {
             List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());

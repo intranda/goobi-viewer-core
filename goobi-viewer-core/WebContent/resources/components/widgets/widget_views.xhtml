@@ -25,11 +25,11 @@
 				<ul>
 					<!-- Overview page -->
 					<h:panelGroup
-						rendered="#{configurationBean.sidebarOverviewLinkVisible and activeDocumentBean.overviewPage != null}">
+						rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
 						<li
 							class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
 							<h:outputLink
-								value="#{navigationHelper.overviewActiveUrl}#{activeDocumentBean.logPart}">
+								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi, 'overviewpage').get(0).pageUrl}">
 								<h:outputText value="#{msg.viewOverview}" />
 							</h:outputLink>
 						</li>
