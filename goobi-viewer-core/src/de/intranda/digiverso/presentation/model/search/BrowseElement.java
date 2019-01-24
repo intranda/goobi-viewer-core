@@ -166,7 +166,7 @@ public class BrowseElement implements Serializable {
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        this.metadataList = Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+        this.metadataList = metadataList;
         this.locale = locale;
         this.fulltext = fulltext;
 
@@ -999,6 +999,14 @@ public class BrowseElement implements Serializable {
 
     public List<Metadata> getMetadataList() {
         return metadataList;
+    }
+    
+    public List<Metadata> getMetadataListForLocale(Locale locale) {
+        return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+    }
+    
+    public List<Metadata> getMetadataListForCurrentLocale() {
+        return getMetadataListForLocale(BeanUtils.getLocale());
     }
 
     public void setMetadataList(List<Metadata> metadataList) {

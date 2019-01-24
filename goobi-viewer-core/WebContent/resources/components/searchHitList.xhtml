@@ -87,7 +87,7 @@
                                         </h:panelGroup>
 
                                         <!-- VALUES -->
-                                        <ui:repeat value="#{hit.browseElement.metadataList}" var="browseElementMetadata">
+                                        <ui:repeat value="#{hit.browseElement.metadataListForCurrentLocale}" var="browseElementMetadata">
                                             <h:panelGroup rendered="#{!browseElementMetadata.blank}">
                                                 <div class="search-list__hit-text">
                                                     <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" rendered="#{!browseElementMetadata.blank}"

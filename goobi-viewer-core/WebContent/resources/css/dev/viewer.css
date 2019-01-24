@@ -9654,7 +9654,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-faq__list .panel-heading__fragment-link {
   padding-left: 10px;
   font-size: 0.9rem;
-  opacity: 0.2;
+  opacity: 0.1;
 }
 .tpl-faq__list .panel-heading__fragment-link:hover {
   opacity: 1;
