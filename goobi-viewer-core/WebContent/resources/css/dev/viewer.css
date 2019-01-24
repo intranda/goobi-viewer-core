@@ -6920,6 +6920,8 @@ div[id*="-Modal"] .email-form .form-group {
 .fullscreen__view-image-thumb-image img {
   display: block;
   margin: 0 auto;
+  max-width: 100%;
+  height: auto;
   max-height: 250px;
   opacity: 0;
   transition: all 0.3s ease-in;
