@@ -101,6 +101,7 @@
                 
                 <!-- HISTORY -->
                 <h:panelGroup rendered="#{userBean.admin}">
+                <div class="col-xs-12 col-sm-6">
                     <div class="overview__history">
                         <h3>#{msg.viewOverviewHistory_heading}</h3>
     
@@ -113,12 +114,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <ui:repeat var="update" value="#{activeDocumentBean.overviewPage.history}">
-                                    <ui:include src="#{cmsPage.getContent('history')}" />
-                                </ui:repeat>
+                                <ui:include src="#{cmsPage.getContent('history')}" />
                             </tbody>
                         </table>
                     </div>
+                </div>
                 </h:panelGroup>
             
             </div>
