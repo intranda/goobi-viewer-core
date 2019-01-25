@@ -63,7 +63,6 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -722,22 +721,24 @@ public class OverviewPage implements Harvestable, Serializable {
                 langVersion.addContentItem(item);
             }
 
-            // Description
-            {
-                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                item.setItemId("description");
-                item.setItemLabel("description");
-                item.setHtmlFragment(description);
-                langVersion.addContentItem(item);
-            }
+            if (!"global".equals(lang)) {
+                // Description
+                {
+                    CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                    item.setItemId("description");
+                    item.setItemLabel("description");
+                    item.setHtmlFragment(description);
+                    langVersion.addContentItem(item);
+                }
 
-            // Publication text
-            {
-                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                item.setItemId("literature");
-                item.setItemLabel("literature");
-                item.setHtmlFragment(publicationText);
-                langVersion.addContentItem(item);
+                // Publication text
+                {
+                    CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                    item.setItemId("literature");
+                    item.setItemLabel("literature");
+                    item.setHtmlFragment(publicationText);
+                    langVersion.addContentItem(item);
+                }
             }
         }
 
