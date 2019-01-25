@@ -44,7 +44,11 @@
             <script>
                 // mount riot tags
 	            var fsConfig = {
-                	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/#{navigationHelper.currentPage}/thumbnails/"
+                	thumbnailUrl: "#{request.contextPath}" + "/rest/iiif/manifests/#{activeDocumentBean.persistentIdentifier}/#{navigationHelper.currentPage}/thumbnails/",
+                	msg: {
+                		showThumbs: "#{msg.fullscreen_showThumbs}",
+                		hideThumbs: "#{msg.fullscreen_hideThumbs}"
+                	}
                 };
                 riot.mount( 'fsThumbnails, fsThumbnailImage', fsConfig );
             </script>

@@ -30,9 +30,17 @@
     	this.sidebarWidth;
     	this.thumbsWidth;
     	
-    	this.on( 'mount', function() {
+    	this.on( 'mount', function() {    		
         	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
         		e.currentTarget.classList.toggle('in');
+        		
+        		// change tooltip
+        		if ( e.currentTarget.classList.contains( 'in' ) ) {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
+        		}
+        		else {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
+        		}
         		
         		// hide image controls
         		this.controls[0].classList.toggle( 'faded' );
