@@ -6843,7 +6843,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   top: 85px;
   right: 15px;
-  z-index: 1020;
+  z-index: 1040;
 }
 .fullscreen__view-sidebar-panel-controls [data-close="all-tabs"],
 .fullscreen__view-sidebar-panel-controls [data-open="all-tabs"] {
@@ -6940,15 +6940,19 @@ div[id*="-Modal"] .email-form .form-group {
   opacity: 1;
 }
 .fullscreen__view-sidebar-open {
-  display: none;
   position: absolute;
   top: 75px;
-  right: 0;
+  right: -130px;
   padding: 10px;
   padding-top: 5px;
   background-color: #fff;
+  opacity: 0;
   transition: all .3s linear;
-  z-index: 1030;
+  z-index: 1010;
+}
+.fullscreen__view-sidebar-open.in {
+  right: 0;
+  opacity: 1;
 }
 .fullscreen__view-sidebar-open .btn {
   padding-left: 20px;
@@ -6980,7 +6984,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 70px;
   background-color: rgba(255, 255, 255, 0.9);
   overflow-y: auto;
-  z-index: 1010;
+  z-index: 1030;
 }
 .fullscreen__view-sidebar .ui-resizable-handle {
   left: 0;

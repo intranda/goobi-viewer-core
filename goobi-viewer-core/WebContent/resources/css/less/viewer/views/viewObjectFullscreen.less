@@ -92,7 +92,7 @@
 		position: absolute;
 		top: 85px;
 		right: 15px;
-		z-index: 1020;
+		z-index: 1040;
 		[data-close="all-tabs"],
 		[data-open="all-tabs"] {
 			width: 28px;
@@ -203,15 +203,19 @@
 	}
 	/* SIDEBAR */
 	&__view-sidebar-open {
-		display: none;
 		position: absolute;
 		top: 75px;
-		right: 0;
+		right: -130px;
 		padding: 10px;
 		padding-top: 5px;
 		background-color: @white;
+		opacity: 0;
 		transition: all .3s linear;
-		z-index: 1030;
+		z-index: 1010;
+		&.in {
+			right: 0;
+			opacity: 1;
+		}
 		.btn {
 			padding-left: 20px;
 			color: @fsDarkgray;
@@ -243,7 +247,7 @@
 		padding-top: 70px;
 		background-color: rgba(255,255,255,0.9);
 		overflow-y: auto;
-		z-index: 1010;
+		z-index: 1030;
 		.ui-resizable-handle {
 			left: 0;
 			border-right: 1px solid @fsMiddlegray;
