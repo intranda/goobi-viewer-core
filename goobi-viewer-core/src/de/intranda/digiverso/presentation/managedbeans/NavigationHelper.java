@@ -182,10 +182,12 @@ public class NavigationHelper implements Serializable {
      * @param currentPage
      */
     public void setCurrentPage(String currentPage) {
+        logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, false, false);
     }
 
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
+        logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
@@ -323,6 +325,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public void resetCurrentPage() {
+        logger.trace("resetCurrentPage");
         setCurrentPage(null, true, true);
     }
 
@@ -662,7 +665,8 @@ public class NavigationHelper implements Serializable {
 
     public void resetTheme() {
         logger.trace("resetTheme");
-        resetCurrentPage();
+        // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
+        //        resetCurrentPage();
         theme = DataManager.getInstance().getConfiguration().getTheme();
         if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
