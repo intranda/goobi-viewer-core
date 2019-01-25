@@ -1,0 +1,100 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @description Module which handles the cookie banner. 
+ * @version 3.4.0
+ * @module viewerJS.cookieBanner
+ * @requires jQuery
+ * 
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    // variables
+    var _debug = true;
+    var _bannerStatus = true;
+    var _defaults = {
+    	whiteList: [],
+    };
+    
+    viewer.cookieBanner = {
+        /**
+         * Method to initialize the cookie banner.
+         * 
+         * @method init
+         */
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.cookieBanner.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.cookieBanner.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            _bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
+            
+            // TODO: check white listed pages
+//            if ( _defaults.whiteList.length > 0 ) {
+//            	for ( var i = 0; i <= _defaults.whiteList.length; i++ ) {
+//            		if ( $( '.' + _defaults.whiteList[i] ).length > 0 ) {
+//            			$( '#cookieBanner' ).hide();
+//            		}
+//            	}
+//            }
+//            else {
+            	// get/set banner status
+            	if ( _bannerStatus == undefined || _bannerStatus == '' ) {
+            		localStorage.setItem( 'cookieBannerStatus', true );
+            		$( '#cookieBanner' ).show();
+            		_hideBanner();
+            	}
+            	else {
+            		if ( _bannerStatus === 'true' ) {
+            			$( '#cookieBanner' ).show();
+            			_hideBanner();            		
+            		}
+            		else {
+            			$( '#cookieBanner' ).hide();            	
+            		}            	
+            	}            	
+//            }            
+        }
+    };
+    
+    /**
+     * @description Method to hide the banner.
+     * @method _hideBanner
+     * */
+    function _hideBanner() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _hideBanner' );
+    	}
+    	
+    	$( '[data-set="cookie-banner"]' ).on( 'click', function() {
+			$( '.cookie-banner__info' ).slideUp( function() {
+				$( '#cookieBanner' ).fadeOut( 'fast' );
+				localStorage.setItem( 'cookieBannerStatus', false );
+			} );            			
+		} );
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
