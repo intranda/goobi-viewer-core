@@ -122,15 +122,17 @@
 	&__view-image {}
 	&__view-image-inner {
 		position: relative;
+		background: repeating-linear-gradient(
+			-55deg,
+			#222,
+			#222 10px,
+			#333 10px,
+			#333 20px
+		);
 		.view-object__image {
 			padding: 0;
-			background: repeating-linear-gradient(
-				-55deg,
-				#222,
-				#222 10px,
-				#333 10px,
-				#333 20px
-			);
+			border: 0;
+			background-color: transparent;
 		}
 	}
 	/* THUMBS */
@@ -143,13 +145,6 @@
 		left: 0;
 		padding: 15px;
 		padding-top: 85px;
-		background: repeating-linear-gradient(
-			-55deg,
-			#222,
-			#222 10px,
-			#333 10px,
-			#333 20px
-		);
 		overflow-y: auto;
 		z-index: 10;
 	}

@@ -6873,10 +6873,12 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .fullscreen__view-image-inner {
   position: relative;
+  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
 }
 .fullscreen__view-image-inner .view-object__image {
   padding: 0;
-  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
+  border: 0;
+  background-color: transparent;
 }
 .fullscreen__view-image-thumbs-wrapper {
   display: none;
@@ -6887,7 +6889,6 @@ div[id*="-Modal"] .email-form .form-group {
   left: 0;
   padding: 15px;
   padding-top: 85px;
-  background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
   overflow-y: auto;
   z-index: 10;
 }
