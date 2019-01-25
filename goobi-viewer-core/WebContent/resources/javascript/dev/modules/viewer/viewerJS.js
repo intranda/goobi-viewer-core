@@ -120,7 +120,7 @@ var viewerJS = ( function() {
         } );
         
         // toggle collapseable widgets
-        $( 'body' ).off().on( 'click', '.widget__title.collapseable', function() {        	
+        $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
     		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
     	} );
         
@@ -279,6 +279,11 @@ var viewerJS = ( function() {
                         	$( '[data-toggle="tooltip"]' ).tooltip( {
                                 trigger : 'hover'
                             } );
+                        	
+                        	// toggle collapseable widgets
+                            $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
+                        		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
+                        	} );
                             
                             // set content height to sidebar height
                             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
