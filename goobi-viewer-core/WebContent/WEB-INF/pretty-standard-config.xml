@@ -293,6 +293,7 @@
 	</url-mapping>
 
 	<!-- OVERVIEW -->
+	<!--
 	<url-mapping id="overview2">
 		<pattern value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewOverview.xhtml" />
@@ -320,6 +321,7 @@
 		<view-id value="/viewOverview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+	-->
 
 	<!-- IMAGE -->
 	<url-mapping id="image2">

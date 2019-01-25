@@ -821,7 +821,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return
      * @throws IndexUnreachableException
-     * @deprecated  renamed to fullscreen
+     * @deprecated renamed to fullscreen
      */
     public String getReadingModeUrl() throws IndexUnreachableException {
         return getFullscreenImageUrl();
@@ -1349,8 +1349,7 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         // Skip prev/next links for non-paginated views
-        if (PageType.viewOverview.equals(currentPageType) || PageType.viewMetadata.equals(currentPageType)
-                || PageType.viewToc.equals(currentPageType)) {
+        if (PageType.viewMetadata.equals(currentPageType) || PageType.viewToc.equals(currentPageType)) {
             return "";
         }
 

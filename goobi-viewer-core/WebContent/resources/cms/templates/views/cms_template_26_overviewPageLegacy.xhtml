@@ -126,6 +126,7 @@
     </ui:define>
     
     <!-- SIDEBAR -->
+    <!--
 	<ui:define name="sidebar">
     	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
     		<widgetComponent:widget_custom widget="#{element}"/>
@@ -141,5 +142,35 @@
             <widgetComponent:widget_cmsPageLinks widget="#{element}" />
             <widgetComponent:widget_geoLocations widget="#{element}" />
     	</c:forEach>
+    </ui:define>
+    -->
+    <ui:define name="sidebar">
+        <widgetComponent:widget_views pageType="overview" />
+        
+        <widgetComponent:widget_searchInCurrentItem />
+        
+        <widgetComponent:widget_nerFacetting />
+        
+        <widgetComponent:widget_searchResultNavigation />
+        
+        <widgetComponent:widget_metadata />
+        
+        <widgetComponent:widget_usage />
+        
+        <widgetComponent:widget_download />
+        
+        <widgetComponent:widget_versionHistory />
+
+        <widgetComponent:widget_bookshelfList />
+        
+        <widgetComponent:widget_mySearches />
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
     </ui:define>
 </ui:composition>

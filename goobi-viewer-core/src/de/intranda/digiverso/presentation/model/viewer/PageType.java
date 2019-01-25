@@ -35,7 +35,7 @@ public enum PageType {
     viewThumbs("thumbs"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
-    viewOverview("overview"),
+//    viewOverview("overview"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
@@ -113,7 +113,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-            case viewOverview:
+//            case viewOverview:
             case viewThumbs:
             case viewToc:
                 return true;
@@ -136,7 +136,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-            case viewOverview:
+//            case viewOverview:
             case viewThumbs:
             case viewToc:
             case viewObject:
@@ -245,7 +245,6 @@ public enum PageType {
      * @param preferOverviewPage Use the overview page type, if not a page resolver URL
      * @param pageResolverUrl If this page type is for a page resover url, ignore certain preferences
      * @return
-     * @should return overview page type if preferOverviewPage true
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
      * @should return toc page type for anchors
@@ -255,9 +254,9 @@ public enum PageType {
     public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
             boolean preferOverviewPage, boolean pageResolverUrl) {
         // Prefer the overview page, if available (and not a page URL)
-        if (preferOverviewPage && !pageResolverUrl) {
-            return PageType.viewOverview;
-        }
+//        if (preferOverviewPage && !pageResolverUrl) {
+//            return PageType.viewOverview;
+//        }
         // Determine preferred target for the docstruct
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {

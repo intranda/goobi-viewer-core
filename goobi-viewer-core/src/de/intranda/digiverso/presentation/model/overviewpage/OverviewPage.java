@@ -692,6 +692,7 @@ public class OverviewPage implements Harvestable, Serializable {
         cmsPage.setTemplateId("templateOverviewPageLegacy");
         cmsPage.setRelatedPI(pi);
         cmsPage.addClassification("overviewpage");
+        cmsPage.setPersistentUrl("overview/" + pi + "/1");
         if (dateUpdated == null) {
             dateUpdated = new Date();
         }

@@ -32,15 +32,6 @@ public class PageTypeTest {
 
     /**
      * @see PageType#determinePageType(String,String,String,boolean,boolean,boolean,boolean)
-     * @verifies return overview page type if preferOverviewPage true
-     */
-    @Test
-    public void determinePageType_shouldReturnOverviewPageTypeIfPreferOverviewPageTrue() throws Exception {
-        Assert.assertEquals(PageType.viewOverview, PageType.determinePageType("Catalogue", null, false, true, true, false));
-    }
-
-    /**
-     * @see PageType#determinePageType(String,String,String,boolean,boolean,boolean,boolean)
      * @verifies return configured page type correctly
      */
     @Test

@@ -683,13 +683,13 @@ public class NavigationHelper implements Serializable {
         return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
     }
 
-    public String getOverviewUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewOverview.getName();
-    }
-
-    public String getOverviewActiveUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
-    }
+    //    public String getOverviewUrl() {
+    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewOverview.getName();
+    //    }
+    //
+    //    public String getOverviewActiveUrl() {
+    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
+    //    }
 
     public String getObjectUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewObject.getName();
@@ -707,7 +707,7 @@ public class NavigationHelper implements Serializable {
      * 
      * @return the reading mode url
      * 
-     * @deprecated  renamed to fullscreen
+     * @deprecated renamed to fullscreen
      */
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
@@ -1266,8 +1266,10 @@ public class NavigationHelper implements Serializable {
         }
         return currentTheme;
     }
-    
+
     public boolean isSubthemeSelected() throws IndexUnreachableException {
-        return DataManager.getInstance().getConfiguration().isSubthemesEnabled() || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch() && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
+        return DataManager.getInstance().getConfiguration().isSubthemesEnabled()
+                || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()
+                        && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
 }
