@@ -268,30 +268,24 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'EXECUTE: _setSidebarStatus' );
     	}
     	
-    	var sidebarStatus;
-    	
     	// set global variables
     	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
     	
-    	
     	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) == '' ) {
-    		sessionStorage.setItem( 'fsSidebarStatus', true );
+    		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
+    			sessionStorage.setItem( 'fsSidebarStatus', false );
+    			
+    			// hide sidebar
+    			_hideSidebar( _sidebarWidth );
+    		}
+    		else {
+    			sessionStorage.setItem( 'fsSidebarStatus', true );    			
+    		}
     	}
     	else {
-    		sidebarStatus = sessionStorage.getItem( 'fsSidebarStatus' );
-    		
-    		if ( sidebarStatus === 'false'  ) {
-    			// set sidebar left position
-    			$( '#fullscreenViewSidebar' ).css( {
-    				'right': '-' + _sidebarWidth + 'px',
-    				'left': 'inherit'
-    			} );
-    			
-    			// hide panel controls
-    			$( '#fullscreenSidebarPanelControls' ).hide();
-    			
-    			// show sidebar open
-    			$( '#viewSidebarOpen' ).addClass( 'in' );
+    		if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false'  ) {
+    			// hide sidebar
+    			_hideSidebar( _sidebarWidth );
     			
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -302,6 +296,30 @@ var viewerJS = ( function( viewer ) {
     	
     	// show sidebar
     	$( '.fullscreen__view-sidebar-inner' ).show();
+    }
+    
+    /**
+     * @description Method which hides the sidebar.
+     * @method _hideSidebar
+     * @param {Number} width The current sidebar width.
+     * */
+    function _hideSidebar( width ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _hideSidebar' );
+    		console.log( 'width: ', width );
+    	}
+    	
+    	// set sidebar left position
+		$( '#fullscreenViewSidebar' ).css( {
+			'right': '-' + width + 'px',
+			'left': 'inherit'
+		} );
+		
+		// hide panel controls
+		$( '#fullscreenSidebarPanelControls' ).hide();
+		
+		// show sidebar open
+		$( '#viewSidebarOpen' ).addClass( 'in' );
     }
     
     /**
