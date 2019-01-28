@@ -281,7 +281,7 @@ public class MetadataElement {
     }
 
     /**
-     * Returns the first instance of a Metadata object whose label matches the given field name. If a langauge is given, a localized field name will
+     * Returns the first instance of a Metadata object whose label matches the given field name. If a language is given, a localized field name will
      * be used.
      * 
      * @param name
@@ -291,39 +291,39 @@ public class MetadataElement {
      * @should fall back to non language field if language field not found
      */
     public Metadata getMetadata(String name, String language) {
-        if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
-            String fullFieldName = name;
-            String fullFieldNameDe = name + SolrConstants._LANG_ + "DE";
-            String fullFieldNameEn = name + SolrConstants._LANG_ + "EN";
-            if (StringUtils.isNotEmpty(language)) {
-                fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
-            }
-            Metadata fallback = null;
-            Metadata fallbackDe = null;
-            Metadata fallbackEn = null;
-            for (Metadata md : metadataList) {
-                if (md.getLabel().equals(fullFieldName)) {
-                    // logger.trace("{}: {}", fullFieldName, md.getValues().size());
-                    return md;
-                } else if (md.getLabel().equals(fullFieldNameDe)) {
-                    fallbackDe = md;
-                } else if (md.getLabel().equals(fullFieldNameEn)) {
-                    fallbackEn = md;
-                } else if (md.getLabel().equals(name)) {
-                    fallback = md;
-                }
-            }
+        if (StringUtils.isEmpty(name) || metadataList.isEmpty()) {
+            return null;
+        }
 
-            if (fallbackEn != null) {
-                return fallbackEn;
-            } else if (fallbackDe != null) {
-                return fallbackDe;
-            } else {
-                return fallback;
+        String fullFieldName = name;
+        String fullFieldNameDe = name + SolrConstants._LANG_ + "DE";
+        String fullFieldNameEn = name + SolrConstants._LANG_ + "EN";
+        if (StringUtils.isNotEmpty(language)) {
+            fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
+        }
+        Metadata fallback = null;
+        Metadata fallbackDe = null;
+        Metadata fallbackEn = null;
+        for (Metadata md : metadataList) {
+            if (md.getLabel().equals(fullFieldName)) {
+                // logger.trace("{}: {}", fullFieldName, md.getValues().size());
+                return md;
+            } else if (md.getLabel().equals(fullFieldNameDe)) {
+                fallbackDe = md;
+            } else if (md.getLabel().equals(fullFieldNameEn)) {
+                fallbackEn = md;
+            } else if (md.getLabel().equals(name)) {
+                fallback = md;
             }
         }
 
-        return null;
+        if (fallbackEn != null) {
+            return fallbackEn;
+        } else if (fallbackDe != null) {
+            return fallbackDe;
+        } else {
+            return fallback;
+        }
     }
 
     /**

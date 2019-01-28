@@ -56,7 +56,7 @@
                                 <h:form id="overviewMetadataForm" prependId="false">
                                     <div class="overview__metadata">
                                        <h:panelGroup rendered="true">
-                                            <ui:repeat value="#{metadataBean.topElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList())}" var="metadata" varStatus="status">
+                                            <ui:repeat value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}" var="metadata" varStatus="status">
                                                 <h:panelGroup rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
                                                     <dl class="dl-horizontal #{userBean.user.mayEditOverviewPage ? 'edit-metadata' : ''}">
                                                         <dt>
