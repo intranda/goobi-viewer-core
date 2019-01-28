@@ -39,6 +39,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.dbunit.database.statement.IPreparedBatchStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -345,7 +346,23 @@ public class AccessConditionUtils {
     public static Map<String, Boolean> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
+        
+        String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeName + "_" + identifier;
         Map<String, Boolean> ret = new HashMap<>();
+        if (request != null && request.getSession() != null) {
+            try {
+                ret = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+                if (ret != null) {
+                    return ret;
+                } else  {
+                    ret = new HashMap<>();
+                }
+            } catch (ClassCastException e) {
+                logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
+            }
+        }
+
+        
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(SolrConstants.PI_TOPSTRUCT)
@@ -370,6 +387,8 @@ public class AccessConditionUtils {
                         }
                     }
 
+                    long start = System.nanoTime();
+                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes();
                     for (SolrDocument doc : results) {
                         Set<String> requiredAccessConditions = new HashSet<>();
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -382,15 +401,20 @@ public class AccessConditionUtils {
 
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
-                            ret.put(logid, checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(),
+                            ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes,
                                     requiredAccessConditions, privilegeName, user, Helper.getIpAddress(request), sbQuery.toString()));
                         }
                     }
+                    long end = System.nanoTime();
                 }
 
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
+        }
+        
+        if(request != null && request.getSession() != null) {
+            request.getSession().setAttribute(attributeName, ret);
         }
 
         logger.trace("Found access permisstions for {} elements.", ret.size());

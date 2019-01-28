@@ -413,10 +413,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
             logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
-
-//        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
-//            return true;
-//        }
+        //always allow access if the only condition is open access and there is no special licence configured for it
+        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE) && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
+            return true;
+        }
 
         Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
         for (String accessCondition : conditionList) {
