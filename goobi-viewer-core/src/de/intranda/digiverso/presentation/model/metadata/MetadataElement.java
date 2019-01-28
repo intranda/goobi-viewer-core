@@ -327,6 +327,27 @@ public class MetadataElement {
     }
 
     /**
+     * 
+     * @param fields
+     * @return List of Metadata objects that match the given field names
+     */
+    public List<Metadata> getMetadata(List<String> fields) {
+        if (fields == null || fields.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Metadata> ret = new ArrayList<>(fields.size());
+        for (String field : fields) {
+            Metadata md = getMetadata(field);
+            if (md != null) {
+                ret.add(md);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * @param metadataList the metadataList to set
      */
     public void setMetadataList(List<Metadata> metadataList) {

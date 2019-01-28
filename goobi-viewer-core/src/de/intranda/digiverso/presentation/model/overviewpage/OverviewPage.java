@@ -709,20 +709,20 @@ public class OverviewPage implements Harvestable, Serializable {
             langVersion.setMenuTitle("overviewPage");
             cmsPage.addLanguageVersion(langVersion);
 
-            // Metadata
-            {
-                CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
-                item.setItemId("metadata");
-                item.setItemLabel("metadata");
-                List<String> mdFieldNames = new ArrayList<>(metadata.size());
-                for (Metadata md : metadata) {
-                    mdFieldNames.add(md.getLabel());
-                }
-                item.setMetadataFieldsAsList(mdFieldNames);
-                langVersion.addContentItem(item);
-            }
-
             if (!"global".equals(lang)) {
+                // Metadata TODO fix
+                {
+                    CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
+                    item.setItemId("metadata");
+                    item.setItemLabel("metadata");
+                    List<String> mdFieldNames = new ArrayList<>(metadata.size());
+                    for (Metadata md : metadata) {
+                        mdFieldNames.add(md.getLabel());
+                        logger.trace("Added metadata field: {}", md.getLabel());
+                    }
+                    item.setMetadataFieldsAsList(mdFieldNames);
+                    langVersion.addContentItem(item);
+                }
                 // Description
                 {
                     CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
