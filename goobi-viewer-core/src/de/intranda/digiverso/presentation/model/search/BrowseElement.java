@@ -503,7 +503,7 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (fieldValue.equals(label)) {
+                            if (fieldValue.equals(label.getValue().get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
