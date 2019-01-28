@@ -110,7 +110,7 @@ public class FileServlet extends HttpServlet implements Serializable {
         // Check access conditions, if an actual document with a PI is involved
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkContentFileAccessPermission(pi, request);
+            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, null).containsValue(Boolean.FALSE);
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

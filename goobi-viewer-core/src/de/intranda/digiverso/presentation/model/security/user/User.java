@@ -414,9 +414,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
             return true;
         }
 
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
-            return true;
-        }
+//        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
+//            return true;
+//        }
 
         Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
         for (String accessCondition : conditionList) {
