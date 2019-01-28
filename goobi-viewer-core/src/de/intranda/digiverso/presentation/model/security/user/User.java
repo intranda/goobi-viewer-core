@@ -146,17 +146,17 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMaySetRepresentativeImage;
+    private Set<String> recordsForWhichUserMaySetRepresentativeImage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMayEditOverviewPage;
+    private Set<String> recordsForWhichUserMayEditOverviewPage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMayDeleteOcrPage;
+    private Set<String> recordsForWhichUserMayDeleteOcrPage = new HashSet<>();
 
     @Transient
     @XStreamOmitField

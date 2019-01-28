@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -1605,8 +1606,8 @@ public class ViewManager implements Serializable {
                 if (sourceFileDir.isDirectory()) {
                     List<Path> files = Files.list(sourceFileDir.toPath()).collect(Collectors.toList());
                     if (!files.isEmpty()) {
-                        return !AccessConditionUtils.checkContentFileAccessPermission(pi,
-                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files).containsKey(Boolean.FALSE);
+                        return AccessConditionUtils.checkContentFileAccessPermission(pi,
+                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files).containsValue(Boolean.TRUE);
                     } else {
                         return false;
                     }
@@ -1660,11 +1661,14 @@ public class ViewManager implements Serializable {
                 if (sourcesArray != null && sourcesArray.length > 0) {
                     List<File> sourcesList = Arrays.asList(sourcesArray);
                     Collections.sort(sourcesList, filenameComparator);
+                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(
+                            getPi(),
+                            BeanUtils.getRequest(),
+                            sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
                     for (File file : sourcesList) {
                         if (file.isFile()) {
-                            boolean access= !AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                                    Collections.singletonList(file.toPath())).containsKey(Boolean.FALSE);
-                            if (access) {
+                            Boolean access= fileAccess.get(file.toPath().toString());
+                            if (access != null && access) {
                                 String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
                                         + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
                                 ret.add(new LabeledLink(file.getName(), url, 0));
@@ -1730,11 +1734,13 @@ public class ViewManager implements Serializable {
         }
         if (sourceFileDir.isDirectory()) {
             try {
-                for (File file : sourceFileDir.listFiles()) {
+                List<File> files = Arrays.asList(sourceFileDir.listFiles());
+                Map<String, Boolean> fileAccessMap = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
+                        files.stream().map(File::toPath).collect(Collectors.toList()));
+                for (File file : files) {
                     if (file.isFile()) {
-                        boolean access = !AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                                Collections.singletonList(file.toPath())).containsKey(Boolean.FALSE);
-                        if (access) {
+                        Boolean access = fileAccessMap.get(file.toPath().toString());
+                        if (access != null && access) {
                             String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/file?pi=")
                                     .append(getPi())
                                     .append("&page=")

@@ -140,6 +140,19 @@
 		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
 			superuser access. Default is false. -->
 		<fullAccessForLocalhost>false</fullAccessForLocalhost>
+        <licenseTypes>
+            <licenseType>
+                <name>Internal PDFs</name>
+                <condition>FILENAME_REGEX:(save|secret).*</condition>
+                <privileges>
+                    <privilege>DOWNLOAD_ORIGINAL_CONTENT</privilege>
+                </privileges>
+                <accessibleBy>
+                    <ipRange>lokal</ipRange>
+                    <userGroup>testGroup</userGroup>
+                </accessibleBy>
+            </licenseType>
+        </licenseTypes>
 	</accessConditions>
 
 	<reCaptcha show="true">

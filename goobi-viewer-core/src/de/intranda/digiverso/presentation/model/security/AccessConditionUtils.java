@@ -26,12 +26,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -395,8 +397,41 @@ public class AccessConditionUtils {
         return ret;
     }
 
+    /**
+     * Checks access conditions for all files in the given files list. If possible the conditions are stored in the request's session as a session
+     * attribute. Access is checked for general access, ip-range access, user access for both the given PI and the individual filenames if the
+     * relevant {@link LicenseType}s define a 'FILENAME' condition
+     * 
+     * @param identifier The PI of the work to check
+     * @param request The HttpRequest which may provide a {@link HttpSession} to store the access map
+     * @param files The files to check access for. Must be non-empty
+     * @return A map of filePaths and their corresponding access rights
+     * @throws IndexUnreachableException If the index could not be queried for the identifier's access conditions
+     * @throws DAOException If the database could not be queried for existing licenses
+     * @throws SecurityException if no or an empty file list is given
+     */
     public static Map<String, Boolean> checkContentFileAccessPermission(String identifier, HttpServletRequest request, List<Path> files)
             throws IndexUnreachableException, DAOException {
+
+        if (files == null || files.isEmpty()) {
+            throw new SecurityException("Must provide list of file to check access for");
+        }
+
+        String attributeName = IPrivilegeHolder._PRIV_PREFIX + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
+        Map<String, Boolean> accessMap = new HashMap<>();
+        if (request != null && request.getSession() != null) {
+            try {
+                accessMap = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+                if (accessMap != null && accessMap.keySet().containsAll(files.stream().map(Path::toString).collect(Collectors.toList()))) {
+                    return accessMap;
+                } else if (accessMap == null) {
+                    accessMap = new HashMap<>();
+                }
+            } catch (ClassCastException e) {
+                logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
+            }
+        }
+
         // logger.trace("checkContentFileAccessPermission({})", identifier);
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
@@ -426,14 +461,19 @@ public class AccessConditionUtils {
                     }
                 }
 
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString(), files);
+                Map<String, Boolean> lokalAccessMap =
+                        checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
+                                IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString(), files);
+                accessMap.putAll(lokalAccessMap);
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
         }
-
-        return Collections.singletonMap("", Boolean.FALSE);
+        if (request != null && request.getSession() != null) {
+            request.getSession().setAttribute(attributeName, accessMap);
+        }
+        //return only the access status for the relevant files
+        return accessMap.entrySet().stream().filter(entry -> files.contains(Paths.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     /**
@@ -723,16 +763,19 @@ public class AccessConditionUtils {
         }
 
         Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap);
+        if (licenseMap.isEmpty()) {
+            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+        } else {
 
-        for (String key : licenseMap.keySet()) {
-            List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
-            requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
-            if (relevantLicenseTypes.isEmpty()) {
-                logger.trace("No relevant license types.");
-                accessMap.put(key, Boolean.TRUE);
-            }
+            for (String key : licenseMap.keySet()) {
+                List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
+                requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
+                if (relevantLicenseTypes.isEmpty()) {
+                    logger.trace("No relevant license types.");
+                    accessMap.put(key, Boolean.TRUE);
+                }
 
-            // If all relevant license types allow the requested privilege by default, allow access
+                // If all relevant license types allow the requested privilege by default, allow access
                 boolean licenseTypeAllowsPriv = true;
                 // Check whether *all* relevant license types allow the requested privilege by default
                 for (LicenseType licenseType : relevantLicenseTypes) {
@@ -748,40 +791,41 @@ public class AccessConditionUtils {
                     accessMap.put(key, Boolean.TRUE);
                 }
 
-            // Check IP range
-            if (StringUtils.isNotEmpty(remoteAddress)) {
-                if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
-                    if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                        logger.debug("Access granted to localhost");
-                        accessMap.put(key, Boolean.TRUE);
-
-                    }
-                } else {
-                    // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                    Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
-                    for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                        // logger.debug("ip range: " + ipRange.getSubnetMask());
-                        if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                            logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                // Check IP range
+                if (StringUtils.isNotEmpty(remoteAddress)) {
+                    if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
+                        if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                            logger.debug("Access granted to localhost");
                             accessMap.put(key, Boolean.TRUE);
+
+                        }
+                    } else {
+                        // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                        for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                            // logger.debug("ip range: " + ipRange.getSubnetMask());
+                            if (ipRange.matchIp(remoteAddress)
+                                    && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                                logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                                accessMap.put(key, Boolean.TRUE);
+                            }
                         }
                     }
                 }
-            }
 
-            // If not within an allowed IP range, check the current user's satisfied access conditions
+                // If not within an allowed IP range, check the current user's satisfied access conditions
 
-            if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                accessMap.put(key, Boolean.TRUE);
+                if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                    accessMap.put(key, Boolean.TRUE);
+                }
             }
         }
 
         // logger.trace("not allowed");
         return accessMap;
     }
-    
-    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String query) throws IndexUnreachableException, PresentationException {
+
+    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
+            throws IndexUnreachableException, PresentationException {
         Map<String, Boolean> accessMap = new HashMap<>();
         accessMap.put("", Boolean.FALSE);
         return getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap).get("");

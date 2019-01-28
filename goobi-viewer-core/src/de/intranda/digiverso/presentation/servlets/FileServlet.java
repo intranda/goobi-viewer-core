@@ -24,6 +24,7 @@ import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -110,7 +111,44 @@ public class FileServlet extends HttpServlet implements Serializable {
         // Check access conditions, if an actual document with a PI is involved
         boolean access = false;
         try {
-            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, null).containsValue(Boolean.FALSE);
+            Path path = getFile(pi, fileName, page);
+            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path)).containsValue(Boolean.FALSE);
+            if (access) {
+                    if (Files.isRegularFile(path)) {
+                        try {
+                            String contentType = Files.probeContentType(path);
+                            logger.trace("content type: {}", contentType);
+                            if (contentType == null) {
+                                contentType = "application/pdf";
+                            }
+                            response.setContentType(contentType);
+                            response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName).toString());
+                            response.setHeader("Content-Length", String.valueOf(Files.size(path)));
+                            response.flushBuffer();
+                            OutputStream os = response.getOutputStream();
+                            try (FileInputStream fis = new FileInputStream(path.toFile())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead = 0;
+                                while ((bytesRead = fis.read(buffer)) != -1) {
+                                    os.write(buffer, 0, bytesRead);
+                                }
+                            }
+                            // os.flush();
+                        } catch (ClientAbortException | SocketException e) {
+                            logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    } else {
+                        logger.error("File not found: {}", path.toAbsolutePath().toString());
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName().toString());
+                        return;
+                    }
+            } else {
+                logger.debug("Access condition for download not met for '{}'.", pi);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -119,71 +157,41 @@ public class FileServlet extends HttpServlet implements Serializable {
             logger.debug("DAOException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             return;
-        }
-
-        if (access) {
-            try {
-                String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-                StringBuilder sbFilePath = new StringBuilder();
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
-                            File.separator);
-                } else {
-                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
-                }
-                sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
-                sbFilePath.append(File.separator).append(pi).append(File.separator);
-
-                if (page != null) {
-                    sbFilePath.append(page).append(File.separator);
-                }
-                sbFilePath.append(fileName);
-                Path path = Paths.get(sbFilePath.toString());
-                if (Files.isRegularFile(path)) {
-                    try {
-                        String contentType = Files.probeContentType(path);
-                        logger.trace("content type: {}", contentType);
-                        if (contentType == null) {
-                            contentType = "application/pdf";
-                        }
-                        response.setContentType(contentType);
-                        response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName).toString());
-                        response.setHeader("Content-Length", String.valueOf(Files.size(path)));
-                        response.flushBuffer();
-                        OutputStream os = response.getOutputStream();
-                        try (FileInputStream fis = new FileInputStream(path.toFile())) {
-                            byte[] buffer = new byte[1024];
-                            int bytesRead = 0;
-                            while ((bytesRead = fis.read(buffer)) != -1) {
-                                os.write(buffer, 0, bytesRead);
-                            }
-                        }
-                        // os.flush();
-                    } catch (ClientAbortException | SocketException e) {
-                        logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                } else {
-                    logger.error("File not found: {}", path.toAbsolutePath().toString());
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName().toString());
-                    return;
-                }
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
-            }
-        } else {
-            logger.debug("Access condition for download not met for '{}'.", pi);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             return;
         }
 
+
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @param page
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        StringBuilder sbFilePath = new StringBuilder();
+        if (StringUtils.isNotEmpty(dataRepository)) {
+            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
+                    File.separator);
+        } else {
+            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
+        }
+        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        sbFilePath.append(File.separator).append(pi).append(File.separator);
+
+        if (page != null) {
+            sbFilePath.append(page).append(File.separator);
+        }
+        sbFilePath.append(fileName);
+        Path path = Paths.get(sbFilePath.toString());
+        return path;
     }
 
     /**
