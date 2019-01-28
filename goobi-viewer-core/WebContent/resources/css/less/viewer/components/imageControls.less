@@ -7,9 +7,14 @@
 .image-controls {
 	position: relative;
 	padding: 15px 0;
-    /* ELEMENT */
+	form {
+		display: flex;
+		align-items: center;
+	}
 	/* DOCUMENT OPTIONS */
 	&__options {
+		margin-left: auto;
+		padding: 0 10px;
 		ul {
 			display: flex;
 			flex-wrap: wrap;
@@ -20,8 +25,9 @@
 	    }
 	}
 	&__option {
-		width: 21px;
-		height: 21px;
+		width: 32px;
+		height: 32px;
+		margin: 0 3px 6px 3px;
 		a, 
 		span, 
 		button {
@@ -62,6 +68,7 @@
 	}
     /* ACTIONS */
     &__actions {
+    	padding: 0 15px;
     	ul {
 			display: flex;
 			flex-wrap: wrap;
@@ -229,15 +236,11 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.image-controls {
-		&__options {
-			.mx-hidden;
+		form {
+			align-items: flex-start;
 		}
-		&__option {
-			width: 32px;
-			height: 32px;
-			a, button {
-				line-height: 32px;
-			}
+		&__options {
+			margin-left: inherit;
 		}
 	}
 }

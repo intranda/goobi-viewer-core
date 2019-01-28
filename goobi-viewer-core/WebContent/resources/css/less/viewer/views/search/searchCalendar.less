@@ -5,43 +5,28 @@
 /* BLOCK */
 .search-calendar {
     /* ELEMENT */
-    .btn {
-        margin: 0 0 0 5px;
-    }
     &__title {
         h2 {}
     }
-    &__toggle {
-        &.btn {
-            margin: 0 0 21px 0;
-        }
-        &:active,
-        &:focus {
-            outline: none;
-        }
-    }
     &__input {
         padding: 21px;
-        border-top: 1px solid @middlegray;
-        background-color: @lightgray;
+        border: 1px solid @middlegray;
+        background-color: @white;
         input {
             box-shadow: none;
         }
         .form-horizontal {}
-        .form-group {}
+        .form-group {
+        	margin: 0;
+        }
         .col-sm-4 {}
         .col-sm-8 {}
         .control-label {}
         .form-control {}
     }
-    &__reset {
-        text-align: right;
-        .btn {}
-    }
     &__months {
         margin-bottom: 21px;
         padding: 21px 0;
-        border-top: 1px solid @middlegray;
         border-bottom: 1px solid @middlegray;
     }
     &__month {
@@ -79,6 +64,7 @@
         button {
             display: block;
             padding: 5px 10px;
+            line-height: 19px;
         }
         a,
         button {

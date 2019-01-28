@@ -18,7 +18,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="searchTimeline">
+            <div id="searchCalendar">
                 <h:form id="searchCalendarForm" prependId="false">
                     <div class="search-calendar">
                         <!-- SEARCH CALENDAR TITLE -->
@@ -112,7 +112,7 @@
 													                content: "#{day.hits} #{msg.currentHitsForDay}",
 													                trigger: "hover",
 													                viewport: {
-													                    selector: "#searchTimeline"
+													                    selector: "#searchCalendar"
 													                },
 													                html: true
 													            } );

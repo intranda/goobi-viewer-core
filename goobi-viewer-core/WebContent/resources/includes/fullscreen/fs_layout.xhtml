@@ -58,15 +58,17 @@
                     </ui:fragment>
                     
                     <!-- FULLTEXT -->
-                    <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
-                            <span>#{msg.fulltext}</span>
-                        </h3>
-
-                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.fulltextAvailable}">
+                        <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
+                                <span>#{msg.fulltext}</span>
+                            </h3>
+    
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                            </div>
                         </div>
-                    </div>
+                    </ui:fragment>
 
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">

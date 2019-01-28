@@ -36,11 +36,17 @@
     }
 	&__mv-element {
 		padding: 15px 0;
-		border-bottom: 1px solid @middlegray;
+		border: 1px solid @middlegray;
+		border-bottom: 0;
+		background-color: @white;
 		&:hover {
 			background-color: @lightgray;
 		}
+		&:last-child {
+			border-bottom: 1px solid @middlegray;
+		}
 		&.level-0 {
+			border: 0;
 			background-color: transparent;
 			h4 {
 				display: none;

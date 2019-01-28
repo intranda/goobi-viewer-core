@@ -39,6 +39,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -225,6 +226,24 @@ public abstract class AbstractBuilder {
     }
 
     /**
+     * @param displayFields
+     * @param allLocales
+     * @return
+     */
+    private List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
+        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
+    }
+
+    private List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
+        List<String> fields = new ArrayList<>();
+        if(includeSelf) {
+            fields.add(field);
+        }
+        fields.addAll(locales.stream().map(Locale::getLanguage).map(String::toUpperCase).map(string -> field.concat("_LANG_").concat(string)).collect(Collectors.toList()));
+        return fields;
+    }
+    
+    /**
      * @param ele
      * @return
      */
@@ -296,7 +315,8 @@ public abstract class AbstractBuilder {
         String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
+        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
         List<StructElement> eles = new ArrayList<>();
         if (docs != null) {
             for (SolrDocument doc : docs) {

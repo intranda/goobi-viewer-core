@@ -597,7 +597,11 @@ public class CMSPage {
         return metadata == null ? "" : metadata.getDescription();
     }
 
-    private CMSMediaItemMetadata getMediaMetadata(String itemId) {
+    /**
+     * @param itemId
+     * @return  The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no such item exists
+     */
+    public CMSMediaItemMetadata getMediaMetadata(String itemId) {
         CMSContentItem item;
         try {
             item = getContentItem(itemId);
@@ -606,6 +610,23 @@ public class CMSPage {
         }
         if (item != null && item.getMediaItem() != null) {
             return item.getMediaItem().getCurrentLanguageMetadata();
+        }
+        return null;
+    }
+    
+    /**
+     * @param itemId
+     * @return  The media item associated with the contentItem with the given itemId. May return null if no such item exists
+     */
+    public CMSMediaItem getMedia(String itemId) {
+        CMSContentItem item;
+        try {
+            item = getContentItem(itemId);
+        } catch (CmsElementNotFoundException e1) {
+            item = null;
+        }
+        if (item != null && item.getMediaItem() != null) {
+            return item.getMediaItem();
         }
         return null;
     }
@@ -1201,5 +1222,6 @@ public class CMSPage {
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
     }
+
 
 }

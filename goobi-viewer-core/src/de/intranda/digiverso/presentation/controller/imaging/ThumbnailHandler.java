@@ -546,6 +546,8 @@ public class ThumbnailHandler {
                 } catch (PresentationException | IndexUnreachableException e) {
                     logger.error("Unable to retrieve first volume of " + doc + "from index", e);
                 }
+            } else {
+                logger.error("Unknown value in viewer.anchorThumbnailMode: " + this.anchorThumbnailMode + ". No thumbnail can be rendered for " + doc);
             }
         } else {
             DocType docType = getDocType(doc).orElse(DocType.DOCSTRCT);

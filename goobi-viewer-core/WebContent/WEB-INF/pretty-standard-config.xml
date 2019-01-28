@@ -150,14 +150,6 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
-	<url-mapping id="searchtimeline">
-		<pattern value="/searchtimeline/" />
-		<view-id value="/searchTimeline.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
-		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(2)}</action>
-	</url-mapping>
 	<url-mapping id="searchcalendar">
 		<pattern value="/searchcalendar/" />
 		<view-id value="/searchCalendar.xhtml" />

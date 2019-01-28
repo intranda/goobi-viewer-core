@@ -45,10 +45,14 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
@@ -68,9 +72,9 @@ public class BrowseElement implements Serializable {
     private String fulltext;
     private String fulltextForHtml;
     /** Element label (usually the title). */
-    private final String label;
+    private final IMetadataValue label;
     /** Truncated and highlighted variant of the label. */
-    private String labelShort;
+    private IMetadataValue labelShort = new SimpleMetadataValue();
     /** Type of the index document. */
     private DocType docType;
     /** Type of grouped metadata document (person, etc.) */
@@ -140,7 +144,7 @@ public class BrowseElement implements Serializable {
     BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale, String dataRepository) {
         this.pi = pi;
         this.imageNo = imageNo;
-        this.label = label;
+        this.label = new SimpleMetadataValue(label);
         this.fulltext = fulltext;
         this.useOverviewPage = useOverviewPage;
         this.locale = locale;
@@ -166,7 +170,7 @@ public class BrowseElement implements Serializable {
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        this.metadataList = Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+        this.metadataList = metadataList;
         this.locale = locale;
         this.fulltext = fulltext;
 
@@ -321,14 +325,9 @@ public class BrowseElement implements Serializable {
         dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
 
         if (DocType.GROUP.equals(docType)) {
-            label = docType.getLabel(null);
+            label = new SimpleMetadataValue(docType.getLabel(null));
         } else {
-            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
-            String subtitle = structElement.getMetadataValue(SolrConstants.SUBTITLE);
-            if (StringUtils.isNotEmpty(subtitle)) {
-                sbLabel.append(" : ").append(subtitle);
-            }
-            label = Helper.intern(sbLabel.toString());
+            label = createMultiLanguageLabel(structElement);
         }
 
         pi = structElement.getTopStruct().getPi();
@@ -426,6 +425,25 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @param structElement
+     * @param locale
+     */
+    public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
+
+        MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
+            String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, locale.getLanguage());
+            if (StringUtils.isNotEmpty(subtitle)) {
+                sbLabel.append(" : ").append(subtitle);
+            }
+            value.setValue(sbLabel.toString(), locale);
+        }
+        
+        return value;
+    }
+
+    /**
      * Adds metadata fields that aren't configured in <code>metadataList</code> but match give search terms. Applies highlighting to matched terms.
      * 
      * @param structElement
@@ -485,7 +503,7 @@ public class BrowseElement implements Serializable {
                         List<String> fieldValues = structElement.getMetadataFields().get(docFieldName);
                         for (String fieldValue : fieldValues) {
                             // Skip values that are equal to the hit label
-                            if (fieldValue.equals(label)) {
+                            if (fieldValue.equals(label.getValue().get())) {
                                 continue;
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
@@ -685,6 +703,14 @@ public class BrowseElement implements Serializable {
      * @return the label
      */
     public String getLabel() {
+        return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
+    }
+    
+    public String getLabel(Locale locale) {
+        return label.getValue(locale).orElse("");
+    }
+    
+    public IMetadataValue getLabelAsMetadataValue() {
         return label;
     }
 
@@ -692,16 +718,16 @@ public class BrowseElement implements Serializable {
      * @return the labelShort
      */
     public String getLabelShort() {
-        return labelShort;
+        return labelShort.getValue(BeanUtils.getLocale()).orElse(labelShort.getValue().orElse(""));
     }
 
     /**
      * @param labelShort the labelShort to set
      */
-    public void setLabelShort(String labelShort) {
+    public void setLabelShort(IMetadataValue labelShort) {
         this.labelShort = labelShort;
     }
-
+    
     /**
      * @return the type
      */
@@ -999,6 +1025,14 @@ public class BrowseElement implements Serializable {
 
     public List<Metadata> getMetadataList() {
         return metadataList;
+    }
+    
+    public List<Metadata> getMetadataListForLocale(Locale locale) {
+        return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
+    }
+    
+    public List<Metadata> getMetadataListForCurrentLocale() {
+        return getMetadataListForLocale(BeanUtils.getLocale());
     }
 
     public void setMetadataList(List<Metadata> metadataList) {

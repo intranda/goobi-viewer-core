@@ -180,6 +180,18 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         return locale;
     }
+    
+    /**
+     * Loads resource bundles for all supported locales and reloads them if the locales has since changed.
+     * 
+     * @param inLocale
+     * @return The selected locale
+     */
+    private static void checkAndLoadResourceBundles() {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(ViewerResourceBundle::checkAndLoadResourceBundles);
+        }
+    }
 
     /**
      * 
@@ -455,7 +467,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static List<Locale> getAllLocales() {
         if (allLocales == null) {
 
-            checkAndLoadDefaultResourceBundles();
+            checkAndLoadResourceBundles();
             Set<Locale> locales = new HashSet<>();
             locales.addAll(defaultBundles.keySet());
             locales.addAll(localBundles.keySet());
@@ -493,6 +505,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         }
 
-        return allLocales;
+        return allLocales.stream().distinct().collect(Collectors.toList());
     }
 }

@@ -54,6 +54,8 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -267,19 +269,26 @@ public class SearchHit implements Comparable<SearchHit> {
         if (searchTerms == null) {
             return;
         }
-        String labelShort = browseElement.getLabel();
-
-        if (searchTerms.get(SolrConstants.DEFAULT) != null) {
-            labelShort = SearchHelper.applyHighlightingToPhrase(labelShort, searchTerms.get(SolrConstants.DEFAULT));
-        } else if (searchTerms.get("MD_TITLE") != null) {
-            labelShort = SearchHelper.applyHighlightingToPhrase(labelShort, searchTerms.get("MD_TITLE"));
+        
+        IMetadataValue labelShort = new MultiLanguageMetadataValue();
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            
+            String label = browseElement.getLabel(locale);
+            
+            if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                label = SearchHelper.applyHighlightingToPhrase(label, searchTerms.get(SolrConstants.DEFAULT));
+            } else if (searchTerms.get("MD_TITLE") != null) {
+                label = SearchHelper.applyHighlightingToPhrase(label, searchTerms.get("MD_TITLE"));
+            }
+            
+            // Escape HTML tags
+            label = StringEscapeUtils.escapeHtml(label);
+            
+            // Then replace highlighting placeholders with HTML tags
+            label = SearchHelper.replaceHighlightingPlaceholders(label);
+            
+            labelShort.setValue(label, locale);
         }
-
-        // Escape HTML tags
-        labelShort = StringEscapeUtils.escapeHtml(labelShort);
-
-        // Then replace highlighting placeholders with HTML tags
-        labelShort = SearchHelper.replaceHighlightingPlaceholders(labelShort);
 
         browseElement.setLabelShort(labelShort);
     }

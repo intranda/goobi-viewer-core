@@ -52,6 +52,13 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
         	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
         		e.currentTarget.classList.toggle('in');
 
+        		if ( e.currentTarget.classList.contains( 'in' ) ) {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
+        		}
+        		else {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( 'fixTitle' ).tooltip( 'show' );
+        		}
+
         		this.controls[0].classList.toggle( 'faded' );
 
             	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
