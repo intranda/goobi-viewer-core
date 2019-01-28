@@ -268,7 +268,7 @@ public interface IDAO {
 
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException;
 
-    public List<CMSPage> getCMSPagesForRecord(String pi) throws DAOException;
+    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
 

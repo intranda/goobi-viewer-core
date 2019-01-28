@@ -73,7 +73,9 @@ public class CMSPage {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
+    
     public static final String GLOBAL_LANGUAGE = "global";
+    public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

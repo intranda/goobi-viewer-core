@@ -1213,8 +1213,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    @SuppressWarnings("deprecation")
-    private List<CMSStaticPage> createStaticPageList() throws DAOException {
+    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
         //        if (staticPages == null || staticPages.isEmpty()) {
@@ -1381,7 +1380,7 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getRelatedPages(String pi) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getCMSPagesForRecord(pi)
+                .getCMSPagesForRecord(pi, null)
                 .stream()
                 //                .filter(page -> pi.equals(page.getRelatedPI()))
                 .filter(page -> page.isPublished())
@@ -1398,10 +1397,10 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getCMSPagesForRecord(pi)
+                .getCMSPagesForRecord(pi, classification)
                 .stream()
                 //                .filter(page -> pi.equals(page.getRelatedPI()))
-                .filter(page -> page.getClassifications().contains(classification))
+                //                .filter(page -> page.getClassifications().contains(classification))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }
@@ -1452,7 +1451,7 @@ public class CmsBean implements Serializable {
         throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
     }
 
-    public List<String> getPossibleSortFields() throws PresentationException, IndexUnreachableException, SolrServerException, IOException {
+    public List<String> getPossibleSortFields() throws SolrServerException, IOException {
         List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
         //        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
         return sortFields;
@@ -1466,9 +1465,9 @@ public class CmsBean implements Serializable {
     public String getCssClass() {
         if (BeanUtils.getNavigationHelper().isCmsPage() && getCurrentPage() != null) {
             return getCurrentPage().getWrapperElementClass();
-        } else {
-            return "";
         }
+
+        return "";
     }
 
 }

@@ -181,6 +181,7 @@
     <cms_page_classifications page_id="1" classification="news" />
     <cms_page_classifications page_id="1" classification="other" />
     <cms_page_classifications page_id="2" classification="news" />
+    <cms_page_classifications page_id="3" classification="overviewpage" />
     
     <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     

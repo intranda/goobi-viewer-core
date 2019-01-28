@@ -92,6 +92,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.modules.IModule;
 
@@ -505,6 +506,10 @@ public class Helper {
         // TODO Export overview page contents
         if (overviewPage == null) {
             overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
+            List<CMSPage> overviewPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+            if(!overviewPages.isEmpty()) {
+                
+            }
         }
         if (overviewPage != null) {
             try {

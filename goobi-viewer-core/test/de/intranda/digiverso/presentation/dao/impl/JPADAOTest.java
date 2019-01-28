@@ -1496,7 +1496,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1").size());
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", CMSPage.CLASSIFICATION_OVERVIEWPAGE).size());
     }
 
     /**

@@ -153,9 +153,11 @@ public class ToolServlet extends HttpServlet implements Serializable {
                         while (first < total) {
                             List<OverviewPage> pages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, null, null);
                             for (OverviewPage op : pages) {
-                                List<CMSPage> existingPages = DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi());
+                                List<CMSPage> existingPages =
+                                        DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi(), CMSPage.CLASSIFICATION_OVERVIEWPAGE);
                                 if (!existingPages.isEmpty()) {
-                                    output.write(("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
+                                    output.write(
+                                            ("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
                                     continue;
                                 }
                                 if (op.migrateToCMS()) {
@@ -170,7 +172,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
                                             String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
                                             Helper.reIndexRecord(op.getPi(), sourceFormat, op);
                                         } else {
-                                            output.write((op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));
+                                            output.write(
+                                                    (op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));
                                         }
                                     } catch (PresentationException e) {
                                         logger.error(e.getMessage(), e);

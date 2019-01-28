@@ -2327,7 +2327,7 @@ public class JPADAO implements IDAO {
 
     /**
      * @throws DAOException
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByClassification()
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByClassification(java.lang.String)
      * @should return all pages with given classification
      */
     @SuppressWarnings("unchecked")
@@ -2350,17 +2350,20 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, java.lang.String)
      * @should return all pages with the given related pi
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesForRecord(String pi) throws DAOException {
+    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
                 StringBuilder sbQuery = new StringBuilder(70);
                 sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
+                if (StringUtils.isNotEmpty(pageClassification)) {
+                    sbQuery.append("AND '").append(pageClassification).append("' MEMBER OF o.classifications");
+                }
                 Query q = em.createQuery(sbQuery.toString());
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
