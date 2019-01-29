@@ -515,6 +515,26 @@ public class CmsBean implements Serializable {
                 //                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
                 logger.trace("update pages");
                 lazyModelPages.update();
+
+                // Re-index record, if this is an overview page
+                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI()) && selectedPage.getTemplateId().startsWith("templateOverviewPage")) {
+                    try {
+                        SolrDocument doc = DataManager.getInstance()
+                                .getSearchIndex()
+                                .getFirstDoc(SolrConstants.PI + ":" + selectedPage.getRelatedPI(),
+                                        Collections.singletonList(SolrConstants.SOURCEDOCFORMAT));
+                        if (doc != null) {
+                            String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+                            Helper.reIndexRecord(selectedPage.getRelatedPI(), sourceFormat, selectedPage);
+                        } else {
+                            logger.error("Record '{}' not found in index, cannot re-index.", selectedPage.getRelatedPI());
+                        }
+                    } catch (PresentationException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (IndexUnreachableException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
             } else {
                 Messages.error("cms_pageSaveFailure");
             }

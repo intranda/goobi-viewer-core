@@ -84,6 +84,7 @@ import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import de.intranda.digiverso.presentation.Version;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -92,7 +93,9 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.modules.IModule;
 
@@ -424,7 +427,7 @@ public class Helper {
      * @return
      * @throws ModuleMissingException
      */
-    public static void triggerReIndexRecord(String pi, String recordType, OverviewPage overviewPage) {
+    public static void triggerReIndexRecord(String pi, String recordType, CMSPage overviewPage) {
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
@@ -458,7 +461,7 @@ public class Helper {
      * @throws DAOException
      * @should write overview page data
      */
-    public static synchronized boolean reIndexRecord(String pi, String recordType, OverviewPage overviewPage) throws DAOException {
+    public static synchronized boolean reIndexRecord(String pi, String recordType, CMSPage overviewPage) throws DAOException {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
@@ -482,7 +485,6 @@ public class Helper {
         }
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
-        // TODO remove crowdsourcing constants
         File fulltextDir =
                 new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
         File altoDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
@@ -504,23 +506,27 @@ public class Helper {
         }
 
         // TODO Export overview page contents
-        if (overviewPage == null) {
-            overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
-            List<CMSPage> overviewPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, CMSPage.CLASSIFICATION_OVERVIEWPAGE);
-            if(!overviewPages.isEmpty()) {
-                
+        //        List<CMSPage> overviewPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+
+        //            CMSPage overviewPage = overviewPages.get(0);
+        try {
+            if (overviewPage != null && overviewPage.getDefaultLanguage() != null && !overviewPage.getDefaultLanguage().getContentItems().isEmpty()) {
+                for (CMSContentItem item : overviewPage.getDefaultLanguage().getContentItems()) {
+                    if (CMSContentItemType.HTML.equals(item.getType())) {
+                        item.exportHtmlFragment(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
+                    }
+                }
             }
-        }
-        if (overviewPage != null) {
-            try {
-                overviewPage.exportTextData(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (CmsElementNotFoundException e) {
+            logger.error(e.getMessage(), e);
         }
 
         // Module augmentations
-        for (IModule module : DataManager.getInstance().getModules()) {
+        for (
+
+        IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, sbNamingScheme.toString());
             } catch (Exception e) {
@@ -575,8 +581,10 @@ public class Helper {
                 .append(':')
                 .append(DocType.PAGE.name())
                 .toString();
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Arrays
-                .asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query, Arrays.asList(
+                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);

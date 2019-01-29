@@ -709,37 +709,39 @@ public class OverviewPage implements Harvestable, Serializable {
             langVersion.setMenuTitle("overviewPage");
             cmsPage.addLanguageVersion(langVersion);
 
-            if (!"global".equals(lang)) {
-                // Metadata TODO fix
-                {
-                    CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
-                    item.setItemId("metadata");
-                    item.setItemLabel("metadata");
-                    List<String> mdFieldNames = new ArrayList<>(metadata.size());
-                    for (Metadata md : metadata) {
-                        mdFieldNames.add(md.getLabel());
-                        logger.trace("Added metadata field: {}", md.getLabel());
-                    }
-                    item.setMetadataFieldsAsList(mdFieldNames);
-                    langVersion.addContentItem(item);
+            if ("global".equals(lang)) {
+                continue;
+            }
+            
+            // Metadata
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
+                item.setItemId("metadata");
+                item.setItemLabel("metadata");
+                List<String> mdFieldNames = new ArrayList<>(metadata.size());
+                for (Metadata md : metadata) {
+                    mdFieldNames.add(md.getLabel());
+                    logger.trace("Added metadata field: {}", md.getLabel());
                 }
-                // Description
-                {
-                    CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                    item.setItemId("description");
-                    item.setItemLabel("description");
-                    item.setHtmlFragment(description);
-                    langVersion.addContentItem(item);
-                }
+                item.setMetadataFieldsAsList(mdFieldNames);
+                langVersion.addContentItem(item);
+            }
+            // Description
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                item.setItemId("description");
+                item.setItemLabel("description");
+                item.setHtmlFragment(description);
+                langVersion.addContentItem(item);
+            }
 
-                // Publication text
-                {
-                    CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
-                    item.setItemId("literature");
-                    item.setItemLabel("literature");
-                    item.setHtmlFragment(publicationText);
-                    langVersion.addContentItem(item);
-                }
+            // Publication text
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                item.setItemId("literature");
+                item.setItemLabel("literature");
+                item.setHtmlFragment(publicationText);
+                langVersion.addContentItem(item);
             }
         }
 
@@ -924,7 +926,7 @@ public class OverviewPage implements Harvestable, Serializable {
             }
 
             // Re-index record
-            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), this);
+            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), null);
         }
 
         resetEditModes();

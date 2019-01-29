@@ -113,7 +113,6 @@ public class ActiveDocumentBean implements Serializable {
     private int tocCurrentPage = 1;
 
     private ViewManager viewManager;
-    private OverviewPage overviewPage;
     private boolean anchor = false;
     private boolean volume = false;
     private boolean group = false;
@@ -184,7 +183,6 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (this) {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             viewManager = null;
-            overviewPage = null;
             topDocumentIddoc = 0;
             toc = null;
             titleBarMetadata.clear();
@@ -304,8 +302,6 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                overviewPage = OverviewPage.loadOverviewPage(topDocument, BeanUtils.getLocale());
-                logger.trace("Overview page found: {}", overviewPage != null);
                 toc = new TOC();
                 toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
             }
@@ -1055,7 +1051,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String reIndexRecordAction() throws IndexUnreachableException, DAOException {
         if (viewManager != null) {
-            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), overviewPage)) {
+            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), null)) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -1066,43 +1062,18 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @return
-     * @throws IndexUnreachableException
-     * @throws IllegalArgumentException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @should create new config document
-     * @should set forced to true
-     * @should set displayLink to true
-     * @should save the config document
-     */
-    public String forceOverviewPage() throws IllegalArgumentException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        synchronized (this) {
-            logger.debug("forceOverviewPage");
-            overviewPage = new OverviewPage();
-            overviewPage.init(viewManager.getTopDocument(), BeanUtils.getLocale());
-            UserBean ub = BeanUtils.getUserBean();
-            if (ub != null) {
-                return overviewPage.saveAction(ub.getUser(), true);
-            }
-            return overviewPage.saveAction(null, true);
-        }
-    }
-
-    /**
      * @return the overviewPage
      */
+    @Deprecated
     public OverviewPage getOverviewPage() {
-        return overviewPage;
+        return null;
     }
 
     /**
      * @param overviewPage the overviewPage to set
      */
+    @Deprecated
     public void setOverviewPage(OverviewPage overviewPage) {
-        synchronized (this) {
-            this.overviewPage = overviewPage;
-        }
     }
 
     public int getCurrentThumbnailPage() {

@@ -170,7 +170,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                                                         Collections.singletonList(SolrConstants.SOURCEDOCFORMAT));
                                         if (doc != null) {
                                             String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                                            Helper.reIndexRecord(op.getPi(), sourceFormat, op);
+                                            Helper.reIndexRecord(op.getPi(), sourceFormat, null);
                                         } else {
                                             output.write(
                                                     (op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));

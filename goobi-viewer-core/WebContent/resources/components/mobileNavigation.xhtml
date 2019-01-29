@@ -214,13 +214,6 @@
                                                 </h:commandLink>
                                             </li>
                                         </h:panelGroup>
-                                        <h:panelGroup rendered="#{activeDocumentBean.overviewPage == null and userBean.user.mayEditOverviewPage}">
-                                            <li>
-                                                <h:commandLink action="#{activeDocumentBean.forceOverviewPage}">
-                                                    #{msg.forceOverviewPage}
-                                                </h:commandLink>
-                                            </li>
-                                        </h:panelGroup>
                                         <li class="mobile-navigation__user-login #{navigationHelper.currentPage == 'user' ? 'menu-active' : ''}">
                                             <h:outputLink value="#{navigationHelper.applicationUrl}user/">#{msg.userCP}</h:outputLink>
                                         </li>

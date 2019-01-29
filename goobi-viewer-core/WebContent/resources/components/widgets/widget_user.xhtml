@@ -26,13 +26,6 @@
     			                        </h:commandLink>
                                     </li>
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{activeDocumentBean.overviewPage == null and userBean.user.mayEditOverviewPage}">
-                                    <li>
-                                        <h:commandLink action="#{activeDocumentBean.forceOverviewPage}">
-                                            #{msg.forceOverviewPage}
-    								    </h:commandLink>
-                                    </li>
-                                </h:panelGroup>
                                 <h:panelGroup rendered="#{userBean.admin}">
                                     <li>
                                         <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">
@@ -132,14 +125,6 @@
                                         <li>
                                             <h:commandLink action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
                                                 #{msg.setRepresentativeImage}
-                                            </h:commandLink>
-                                        </li>
-                                    </h:panelGroup>
-
-                                    <h:panelGroup rendered="#{activeDocumentBean.overviewPage == null and userBean.user.mayEditOverviewPage}">
-                                        <li>
-                                            <h:commandLink action="#{activeDocumentBean.forceOverviewPage}">
-                                                #{msg.forceOverviewPage}
                                             </h:commandLink>
                                         </li>
                                     </h:panelGroup>

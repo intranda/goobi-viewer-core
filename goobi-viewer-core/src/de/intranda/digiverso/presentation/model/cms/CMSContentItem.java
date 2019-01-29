@@ -15,7 +15,11 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.ParseException;
@@ -40,11 +44,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -1079,5 +1085,36 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
+    }
+
+    /**
+     * Writes HTML fragment value as file for re-indexing.
+     * 
+     * @param hotfolder
+     * @param namingScheme
+     * @throws IOException
+     * @should write files correctly
+     */
+    public void exportHtmlFragment(String hotfolderPath, String namingScheme) throws IOException {
+        if (StringUtils.isEmpty(hotfolderPath)) {
+            throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
+        }
+        if (StringUtils.isEmpty(namingScheme)) {
+            throw new IllegalArgumentException("namingScheme may not be null or empty");
+        }
+
+        Path overviewPageDir = Paths.get(hotfolderPath, namingScheme + "_overview");
+        if (!Files.isDirectory(overviewPageDir)) {
+            Files.createDirectory(overviewPageDir);
+            logger.trace("Created overview page subdirectory: {}", overviewPageDir.toAbsolutePath().toString());
+        }
+        if (StringUtils.isNotEmpty(htmlFragment)) {
+            File file = new File(overviewPageDir.toFile(), itemId + ".xml");
+            try {
+                FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        }
     }
 }
