@@ -926,7 +926,7 @@ public final class SearchHelper {
                         continue;
                     }
                 }
-                if (licenseType.getConditions() != null) {
+                if (licenseType.getProcessedConditions() != null) {
                     String processedConditions = licenseType.getProcessedConditions();
                     // Do not append empty subquery
                     if (StringUtils.isNotBlank(processedConditions)) {
