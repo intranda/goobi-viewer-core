@@ -23,19 +23,7 @@
 			<h:form id="widgetViewsForm">
 				<h3>#{msg.view}</h3>
 				<ul>
-					<!-- Overview page -->
-					<h:panelGroup
-						rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
-						<li
-							class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
-							<h:outputLink
-								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi, 'overviewpage').get(0).pageUrl}">
-								<h:outputText value="#{msg.viewOverview}" />
-							</h:outputLink>
-						</li>
-					</h:panelGroup>
-
-					<!-- Image -->
+					<!-- Object -->
 					<h:panelGroup
 						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
 						<li
@@ -143,6 +131,20 @@
 							target="_blank"> #{msg.externalRepository} </a>
 						</li>
 					</h:panelGroup>
+					
+                    <!-- Related CMS pages -->
+                    <h:panelGroup
+                        rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
+                        <li
+                            class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
+                            <ui:repeat var="cmsPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
+                            <h:outputLink value="#{cmsPage.pageUrl}">
+                                <h:outputText value="#{msg[cmsPage.menuTitle]}" />
+                            </h:outputLink>
+                            </ui:repeat>
+                        </li>
+                    </h:panelGroup>
+
 
 				</ul>
 			</h:form>
