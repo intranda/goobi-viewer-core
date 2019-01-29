@@ -57,8 +57,8 @@ public class LicenseType implements IPrivilegeHolder {
     private static final String LICENSE_TYPE_FORCE_OVERVIEW_PAGE_DESCRIPTION = "licenseType_forceOverviewPage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
     
-    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
-    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*?)\\}";
+//    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
+    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
 
 
     @Id
@@ -216,7 +216,7 @@ public class LicenseType implements IPrivilegeHolder {
         
         
 
-        return conditions;
+        return conditions.trim();
     }
     
     public String getFilenameConditions() {
@@ -231,8 +231,8 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     private String getQueryConditions(String conditions) {
-        String queryConditions = getMatch(conditions, CONDITIONS_QUERY);
-        String filenameConditions =getMatch(conditions, CONDITIONS_FILENAME);
+        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
+        String queryConditions = conditions.replaceAll(CONDITIONS_FILENAME, "");
         if(StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
             return conditions == null ? "" : conditions;
         } else {
