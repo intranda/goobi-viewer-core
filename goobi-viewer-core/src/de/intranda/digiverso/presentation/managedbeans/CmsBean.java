@@ -526,6 +526,7 @@ public class CmsBean implements Serializable {
                         if (doc != null) {
                             String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
                             Helper.reIndexRecord(selectedPage.getRelatedPI(), sourceFormat, selectedPage);
+                            Messages.info("admin_recordReExported");
                         } else {
                             logger.error("Record '{}' not found in index, cannot re-index.", selectedPage.getRelatedPI());
                         }
