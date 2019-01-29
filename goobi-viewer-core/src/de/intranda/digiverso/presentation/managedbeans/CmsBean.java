@@ -50,6 +50,8 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.RecordDeletedException;
+import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -893,6 +895,22 @@ public class CmsBean implements Serializable {
                     }
                 } else if (item != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
                     getCollection(item.getItemId(), currentPage).reset(true);
+                }
+            }
+
+            // If the page is related to a record, load that record
+            if (StringUtils.isNotEmpty(currentPage.getRelatedPI())) {
+                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+                if (adb != null && !currentPage.getRelatedPI().equals(adb.getPersistentIdentifier())) {
+                    logger.trace("Loading related record: {}", currentPage.getRelatedPI());
+                    try {
+                        adb.setPersistentIdentifier(currentPage.getRelatedPI());
+                        adb.update();
+                    } catch (RecordNotFoundException e) {
+                        logger.warn(e.getMessage());
+                    } catch (RecordDeletedException e) {
+                        logger.warn(e.getMessage());
+                    }
                 }
             }
         }
