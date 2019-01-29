@@ -146,17 +146,17 @@ public class User implements ILicensee, HttpSessionBindingListener {
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMaySetRepresentativeImage;
+    private Set<String> recordsForWhichUserMaySetRepresentativeImage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMayEditOverviewPage;
+    private Set<String> recordsForWhichUserMayEditOverviewPage = new HashSet<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     @XStreamOmitField
-    private Set<String> recordsForWhichUserMayDeleteOcrPage;
+    private Set<String> recordsForWhichUserMayDeleteOcrPage = new HashSet<>();
 
     @Transient
     @XStreamOmitField
@@ -413,8 +413,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
             logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
-
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
+        //always allow access if the only condition is open access and there is no special licence configured for it
+        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE) && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
             return true;
         }
 
