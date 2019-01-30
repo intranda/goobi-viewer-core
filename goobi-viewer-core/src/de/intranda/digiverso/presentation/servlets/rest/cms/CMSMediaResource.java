@@ -42,7 +42,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -101,6 +100,7 @@ public class CMSMediaResource {
             case "htm":
             case "html":
             case "xhtml":
+            case "xml":
                 StringBuilder sbUri = new StringBuilder();
                 sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
                         .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())

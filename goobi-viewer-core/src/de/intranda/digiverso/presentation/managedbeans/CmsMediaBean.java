@@ -53,7 +53,6 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
-import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
 @Named
 @SessionScoped
@@ -112,6 +111,7 @@ public class CmsMediaBean implements Serializable {
      * @should return true for docx
      */
     private static boolean isValidMediaType(String contentType) {
+        logger.trace("isValidMediaType: {}", contentType);
         switch (contentType) {
             case "image/tiff":
             case "image/jpeg":
@@ -119,6 +119,7 @@ public class CmsMediaBean implements Serializable {
             case "image/png":
                 //            case CMSMediaItem.CONTENT_TYPE_DOCX:
             case CMSMediaItem.CONTENT_TYPE_HTML:
+            case CMSMediaItem.CONTENT_TYPE_XML:
                 return true;
             default:
                 return false;
@@ -200,10 +201,17 @@ public class CmsMediaBean implements Serializable {
         switch (extension) {
             case "htm":
             case "html":
-            case "xhtml":
+            case "xhtml": {
                 StringBuilder sbUri = new StringBuilder();
                 sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
                 return sbUri.toString();
+            }
+            case "xml": {
+                StringBuilder sbUri = new StringBuilder();
+                sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+                String ret = sbUri.toString();
+                return ret;
+            }
             default:
                 return BeanUtils.getImageDeliveryBean()
                         .getThumbs()

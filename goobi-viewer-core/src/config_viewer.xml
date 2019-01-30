@@ -1262,6 +1262,7 @@
 			<classification>collection</classification>
 			<classification>news</classification>
 			<classification>team</classification>
+			<classification>overviewpage</classification>
 		</classifications>
 
 		<mediaDisplayWidth>0</mediaDisplayWidth>

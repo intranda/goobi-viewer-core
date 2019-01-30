@@ -45,10 +45,14 @@ import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -73,7 +77,7 @@ public class CMSPage {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
-    
+
     public static final String GLOBAL_LANGUAGE = "global";
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
 
@@ -601,7 +605,8 @@ public class CMSPage {
 
     /**
      * @param itemId
-     * @return  The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no such item exists
+     * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
+     *         such item exists
      */
     public CMSMediaItemMetadata getMediaMetadata(String itemId) {
         CMSContentItem item;
@@ -615,10 +620,10 @@ public class CMSPage {
         }
         return null;
     }
-    
+
     /**
      * @param itemId
-     * @return  The media item associated with the contentItem with the given itemId. May return null if no such item exists
+     * @return The media item associated with the contentItem with the given itemId. May return null if no such item exists
      */
     public CMSMediaItem getMedia(String itemId) {
         CMSContentItem item;
@@ -805,6 +810,22 @@ public class CMSPage {
                     case "html":
                     case "xhtml":
                         contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        break;
+                    case "xml":
+                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        try {
+                            String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
+                            if (format != null) {
+                                switch (format.toLowerCase()) {
+                                    case "tei":
+                                        contentString = new TeiToHtmlConvert().convert(contentString);
+                                        break;
+                                }
+
+                            }
+                        } catch (JDOMException | IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
                         break;
                     default:
                         // Images
@@ -1000,6 +1021,7 @@ public class CMSPage {
 
     /**
      * TODO HTML/text content items are only added to the last language version in the list, not all of them
+     * 
      * @param item
      */
     public void addContentItem(CMSContentItem item) {
@@ -1224,6 +1246,5 @@ public class CMSPage {
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
     }
-
 
 }

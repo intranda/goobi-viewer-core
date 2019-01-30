@@ -73,7 +73,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
 
     public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    public static final String CONTENT_TYPE_TEI = "application/tei+xml";
+    public static final String CONTENT_TYPE_XML = "text/xml";
     public static final String CONTENT_TYPE_HTML = "text/html";
 
     @Id
@@ -220,6 +220,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
             case "html":
             case "xhtml":
                 return CONTENT_TYPE_HTML;
+            case "xml":
+                return CONTENT_TYPE_XML;
             default:
                 return "";
         }

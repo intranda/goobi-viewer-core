@@ -36,7 +36,7 @@
                     </div>
                 </h:panelGroup>
                 
-                       <!-- OVERVIEW METADATA -->
+                      <!-- OVERVIEW METADATA -->
                         <div class="row">
                             <div class="col-xs-12 col-sm-4 hidden-xs">
                                 <!-- THUMBNAIL -->
@@ -55,6 +55,97 @@
                                 <!-- METADATA -->
                                 <h:form id="overviewMetadataForm" prependId="false">
                                     <div class="overview__metadata">
+                                       <h:panelGroup rendered="true">
+                                            <ui:repeat value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}" var="metadata" varStatus="status">
+                                                <h:panelGroup rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
+                                                    <dl class="dl-horizontal #{userBean.user.mayEditOverviewPage ? 'edit-metadata' : ''}">
+                                                        <dt>
+                                                            <span class="overview__metadata-label" data-toggle="tooltip" data-placement="top" title="#{msg[metadata.label]}">
+                                                                <h:outputText value="#{msg[metadata.label]}: " escape="false" />
+                                                            </span>
+                                                        </dt>
+                                                        <h:panelGroup rendered="#{metadata.group}">
+
+                                                            <dd>
+                                                                 <ui:repeat value="#{metadata.values}" var="val">
+                                                                     <span class="overview__metadata-value">
+                                                                         <h:outputFormat
+                                                                            value="#{msg[val.masterValue]}" escape="false">
+                                                                            <f:param value="#{val.getParamLabelWithColon(0)}" />
+                                                                            <f:param value="#{val.getComboValueShort(0)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(1)}" />
+                                                                            <f:param value="#{val.getComboValueShort(1)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(2)}" />
+                                                                            <f:param value="#{val.getComboValueShort(2)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(3)}" />
+                                                                            <f:param value="#{val.getComboValueShort(3)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(4)}" />
+                                                                            <f:param value="#{val.getComboValueShort(4)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(5)}" />
+                                                                            <f:param value="#{val.getComboValueShort(5)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(6)}" />
+                                                                            <f:param value="#{val.getComboValueShort(6)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(7)}" />
+                                                                            <f:param value="#{val.getComboValueShort(7)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(8)}" />
+                                                                            <f:param value="#{val.getComboValueShort(8)}" />
+                                                                            <f:param value="#{val.getParamLabelWithColon(9)}" />
+                                                                            <f:param value="#{val.getComboValueShort(9)}" />
+                                                                        </h:outputFormat>
+                                                                    </span>
+                                                                
+                                                                     <!-- DELETE -->
+                                                                     <h:commandLink
+                                                                         styleClass="overview__metadata-delete pull-right" 
+                                                                         title="#{msg.viewOverviewMetadata_remove}" 
+                                                                         rendered="#{userBean.user.mayEditOverviewPage}"
+                                                                         action="#{activeDocumentBean.overviewPage.removeMetadataFieldAction(status.index)}">
+                                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                                         <f:passThroughAttribute name="data-placement" value="top" />
+                                                                     </h:commandLink>
+                                                                
+                                                                     <div class="clearfix"></div>
+                                                                 </ui:repeat>
+                                                            </dd>
+                                                        </h:panelGroup>
+                                                        <h:panelGroup rendered="#{!metadata.group}">
+                                                            <dd>
+                                                                <ui:repeat value="#{metadata.values}" var="val">
+                                                                    <span class="overview__metadata-value">
+                                                                        <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                                            <f:param value="#{val.getComboValueShort(0)}" />
+                                                                            <f:param value="#{val.getComboValueShort(1)}" />
+                                                                            <f:param value="#{val.getComboValueShort(2)}" />
+                                                                            <f:param value="#{val.getComboValueShort(3)}" />
+                                                                            <f:param value="#{val.getComboValueShort(4)}" />
+                                                                            <f:param value="#{val.getComboValueShort(5)}" />
+                                                                            <f:param value="#{val.getComboValueShort(6)}" />
+                                                                            <f:param value="#{val.getComboValueShort(7)}" />
+                                                                            <f:param value="#{val.getComboValueShort(8)}" />
+                                                                            <f:param value="#{val.getComboValueShort(9)}" />
+                                                                        </h:outputFormat>
+                                                                    </span>
+                                                                    
+                                                                    <!-- DELETE -->
+                                                                    <h:commandLink
+                                                                        styleClass="overview__metadata-delete pull-right" 
+                                                                        title="#{msg.viewOverviewMetadata_remove}" 
+                                                                        rendered="#{userBean.user.mayEditOverviewPage}"
+                                                                        action="#{activeDocumentBean.overviewPage.removeMetadataFieldAction(status.index)}">
+                                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                                        <f:passThroughAttribute name="data-placement" value="top" />
+                                                                    </h:commandLink>
+                                                                
+                                                                    <div class="clearfix"></div>
+                                                                </ui:repeat>
+                                                            </dd>
+                                                        </h:panelGroup>
+                                                    </dl>
+                                                </h:panelGroup>
+                                            </ui:repeat>
+                                        </h:panelGroup>
                                         <!-- PURL -->
                                         <dl class="dl-horizontal">
                                             <dt>
@@ -63,9 +154,7 @@
                                             </dt>
                                             <dd>
                                                 <span class="overview__metadata-value"> 
-<!--                                                     <a href="#{navigationHelper.currentPrettyUrl}" title="#{navigationHelper.currentPrettyUrl}">  -->
-<!--                                                         <h:outputText value="#{fn:replace(navigationHelper.currentPrettyUrl, '!', '')}" /> -->
-<!--                                                     </a> -->
+
                                                     <c:set var="purl" value="#{fn:replace(activeDocumentBean.viewManager.getPersistentUrl(null), '/image/', '/overview/')}" />
                                                     <a href="#{purl}">
                                                         <h:outputText value="#{purl}" />

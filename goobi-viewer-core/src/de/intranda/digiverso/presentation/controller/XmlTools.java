@@ -218,4 +218,43 @@ public class XmlTools {
         return xpath.evaluate(parent);
 
     }
+
+    public static String determineFileFormat(String xml, String encoding) throws JDOMException, IOException {
+        if (xml == null) {
+            return null;
+        }
+        Document doc = getDocumentFromString(xml, encoding);
+        return determineFileFormat(doc);
+    }
+
+    /**
+     * Determines the format of the given XML file by checking for namespaces.
+     * 
+     * @param path
+     * @return
+     * @should detect mets files correctly
+     * @should detect lido files correctly
+     * @should detect abbyy files correctly
+     * @should detect tei files correctly
+     */
+    public static String determineFileFormat(Document doc) {
+        if (doc == null || doc.getRootElement() == null) {
+            return null;
+        }
+
+        if (doc.getRootElement().getNamespace("mets") != null) {
+            return "METS";
+        }
+        if (doc.getRootElement().getNamespace("lido") != null) {
+            return "LIDO";
+        }
+        if (doc.getRootElement().getNamespace().getURI().contains("abbyy")) {
+            return "ABBYYXML";
+        }
+        if (doc.getRootElement().getName().equals("TEI") || doc.getRootElement().getName().equals("TEI.2")) {
+            return "TEI";
+        }
+
+        return null;
+    }
 }
