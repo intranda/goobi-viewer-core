@@ -232,7 +232,7 @@ public class LicenseType implements IPrivilegeHolder {
      */
     private String getQueryConditions(String conditions) {
         String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
-        String queryConditions = conditions.replaceAll(CONDITIONS_FILENAME, "");
+        String queryConditions = conditions == null ? "" : conditions.replaceAll(CONDITIONS_FILENAME, "");
         if(StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
             return conditions == null ? "" : conditions;
         } else {
@@ -264,7 +264,7 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     private String getFilenameConditions(String conditions) {
-        String filenameConditions =getMatch(conditions, CONDITIONS_FILENAME);
+        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
         return filenameConditions;
     }
 
