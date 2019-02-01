@@ -23,21 +23,21 @@ The layout of the Goobi viewer is based on a sophisticated templating engine wit
 ### Some of the main features
 These are some of the main functionalities that are provided:
 
-  - Any graphics format conversions
-  - Zoom and rotation at any level based on the IIIF standard
-  - Integration of watermarks in images (e.g. for copyright notices)
-  - On-the-fly generation of PDF/A files with cover sheet, table of contents and pagination sequences for individual structural elements or entire works
-  - Delivery of PDF files containing stored full texts from an OCR
-  - Live generation of thumbnail views of entire works
-  - No need to keep multiple image derivatives on the hard drive
-  - Display images and statistics
-  - Reproduce audio and video files
-  - Present and manage metadata
-  - Flexible and highly configurable searching and browsing mechanisms based on an Apache Solr search index
-  - Handling of embedded Named Entities
-  - Offer a range of downloads with no image display (e.g. PDF files, „Viewer without image“)
-  - Embedded content management to create individual pages
-  - Various interfaces (SRU, JSON, OAI-PMH)
+- Any graphics format conversions
+- Zoom and rotation at any level based on the IIIF standard
+- Integration of watermarks in images (e.g. for copyright notices)
+- On-the-fly generation of PDF/A files with cover sheet, table of contents and pagination sequences for individual structural elements or entire works
+- Delivery of PDF files containing stored full texts from an OCR
+- Live generation of thumbnail views of entire works
+- No need to keep multiple image derivatives on the hard drive
+- Display images and statistics
+- Reproduce audio and video files
+- Present and manage metadata
+- Flexible and highly configurable searching and browsing mechanisms based on an Apache Solr search index
+- Handling of embedded Named Entities
+- Offer a range of downloads with no image display (e.g. PDF files, „Viewer without image“)
+- Embedded content management to create individual pages
+- Various interfaces (SRU, JSON, OAI-PMH)
 
 ## Documentation
 A complete documentation of the Goobi viewer can be found using this URL:  
@@ -46,24 +46,23 @@ A complete documentation of the Goobi viewer can be found using this URL:
 Please notice that the Goobi viewer was formerly known as proprietary software under the name 'intranda viewer' and is released under an open source license since June 2017. Lots of our documentation and description sites still have to be updated to represent the new product name 'Goobi viewer'.
 
 You can find technical documentation for backend and frontend developers here:
-  - [Javadoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/javadoc/index.html)
-  - [JSDoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/jsdoc/index.html)
+- [Javadoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/javadoc/index.html)
+- [JSDoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/jsdoc/index.html)
 
 You can find a HTML output of the latest unit test runs here:
-  - [JUnit](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-html/)
-  - [Jasmine](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-karma/)
+- [JUnit](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-html/)
+- [Jasmine](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-karma/)
 
 ## Technical background
 
 The Goobi viewer consists of multiple packages which all have to be installed and configured properly:
 
-| Package | Function |
-| ------ | ------ |
-| [Goobi viewer core](https://github.com/intranda/goobi-viewer-core) | Core functionality of the viewer application|
-| [Goobi viewer indexer](https://github.com/intranda/goobi-viewer-indexer) | Indexing application to fill the Solr search index with metadata information |
-| [Goobi viewer connector](https://github.com/intranda/goobi-viewer-connector) | Connectors for different use cases (incl. OAI-PMH, SRU)|
-| [Goobi viewer Theme Reference](https://github.com/intranda/goobi-viewer-theme-reference) | Reference Theme for the styling of the web pages for the user interface |
-
+| Package                                                                                  | Function                                                                     |
+| ------                                                                                   | ------                                                                       |
+| [Goobi viewer core](https://github.com/intranda/goobi-viewer-core)                       | Core functionality of the viewer application                                 |
+| [Goobi viewer indexer](https://github.com/intranda/goobi-viewer-indexer)                 | Indexing application to fill the Solr search index with metadata information |
+| [Goobi viewer connector](https://github.com/intranda/goobi-viewer-connector)             | Connectors for different use cases (incl. OAI-PMH, SRU)                      |
+| [Goobi viewer Theme Reference](https://github.com/intranda/goobi-viewer-theme-reference) | Reference Theme for the styling of the web pages for the user interface      |
 
 ## Installation
 The installation can be done on any operating system as the software is based on Java. A detailed explanation how to install the viewer will follow later on. In the mean time please get in touch with us via <info@intranda.com>
@@ -101,4 +100,3 @@ Please see ``LICENSE`` for more information.
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-
