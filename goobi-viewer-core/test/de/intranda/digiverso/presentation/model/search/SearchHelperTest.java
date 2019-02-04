@@ -123,7 +123,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(1), collections.get(key));
                     break;
                 case ("alle"):
-                    Assert.assertEquals(Long.valueOf(28), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(32), collections.get(key));
                     break;
                 case ("mehrbaendigeswerk"):
                     Assert.assertEquals(Long.valueOf(2), collections.get(key));
@@ -141,7 +141,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(3), collections.get(key));
                     break;
                 case ("ocr.fraktur"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
                     break;
                 case ("paedagogik"):
                     Assert.assertEquals(Long.valueOf(1), collections.get(key));
