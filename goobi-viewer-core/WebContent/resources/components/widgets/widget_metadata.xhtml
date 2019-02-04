@@ -84,38 +84,38 @@
 					</ui:repeat>
 				</dl>
 
-				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
+				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0 and fn:length(event.sidebarMetadata) > 0}">
 					<dl>
 						<c:forEach items="#{metadataBean.events}" var="event">
 						    <h:panelGroup rendered="#{fn:length(event.sidebarMetadata) > 0}">
-							<dt>
-								<h:outputText value="#{msg[event.label]}" escape="false" />
-							</dt>
-							<ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-								<h:panelGroup rendered="#{!metadata.blank}">
-									<dd>
-										<h:outputText value="#{msg[metadata.label]}:" escape="false" />
-									</dd>
-									<h:panelGroup>
-										<dd>
-											<ui:repeat value="#{metadata.values}" var="val">
-												<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <f:param value="#{val.getComboValueShort(0)}" />
-                                                    <f:param value="#{val.getComboValueShort(1)}" />
-                                                    <f:param value="#{val.getComboValueShort(2)}" />
-                                                    <f:param value="#{val.getComboValueShort(3)}" />
-                                                    <f:param value="#{val.getComboValueShort(4)}" />
-                                                    <f:param value="#{val.getComboValueShort(5)}" />
-                                                    <f:param value="#{val.getComboValueShort(6)}" />
-                                                    <f:param value="#{val.getComboValueShort(7)}" />
-                                                    <f:param value="#{val.getComboValueShort(8)}" />
-                                                    <f:param value="#{val.getComboValueShort(9)}" />
-												</h:outputFormat>
-											</ui:repeat>
-										</dd>
-									</h:panelGroup>
-								</h:panelGroup>
-							</ui:repeat>
+    							<dt>
+    								<h:outputText value="#{msg[event.label]}" escape="false" />
+    							</dt>
+    							<ui:repeat value="#{event.sidebarMetadata}" var="metadata">
+    								<h:panelGroup rendered="#{!metadata.blank}">
+    									<dd>
+    										<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+    									</dd>
+    									<h:panelGroup>
+    										<dd>
+    											<ui:repeat value="#{metadata.values}" var="val">
+    												<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                        <f:param value="#{val.getComboValueShort(0)}" />
+                                                        <f:param value="#{val.getComboValueShort(1)}" />
+                                                        <f:param value="#{val.getComboValueShort(2)}" />
+                                                        <f:param value="#{val.getComboValueShort(3)}" />
+                                                        <f:param value="#{val.getComboValueShort(4)}" />
+                                                        <f:param value="#{val.getComboValueShort(5)}" />
+                                                        <f:param value="#{val.getComboValueShort(6)}" />
+                                                        <f:param value="#{val.getComboValueShort(7)}" />
+                                                        <f:param value="#{val.getComboValueShort(8)}" />
+                                                        <f:param value="#{val.getComboValueShort(9)}" />
+    												</h:outputFormat>
+    											</ui:repeat>
+    										</dd>
+    									</h:panelGroup>
+    								</h:panelGroup>
+    							</ui:repeat>
 							</h:panelGroup>
 						</c:forEach>
 					</dl>
