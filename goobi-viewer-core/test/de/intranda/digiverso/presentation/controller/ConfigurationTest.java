@@ -2342,6 +2342,6 @@ public class ConfigurationTest {
      */
     @Test
     public void getDocstrctWhitelistFilterSuffix_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterSuffix());
+        Assert.assertEquals("ISWORK:true OR ISANCHOR:true", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery());
     }
 }

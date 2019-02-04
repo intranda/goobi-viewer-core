@@ -101,7 +101,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TIMELINE = 2;
     public static final int SEARCH_TYPE_CALENDAR = 3;
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
-    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_SUFFIX = " AND NOT(IDDOC_PARENT:*)";
+    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = "(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)";
 
     private static final Object lock = new Object();
 
@@ -344,7 +344,7 @@ public final class SearchHelper {
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
+        String finalQuery = prepareQuery(query);
         finalQuery = buildFinalQuery(finalQuery, aggregateHits);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
@@ -390,9 +390,9 @@ public final class SearchHelper {
         if (filterForWorks || filterForAnchors) {
             sbQuery.append(")");
         }
-        if (filterForWhitelist) {
-            sbQuery.append(getDocstrctWhitelistFilterSuffix());
-        }
+//        if (filterForWhitelist) {
+//            sbQuery.append(getDocstrctWhitelistFilterQuery());
+//        }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
         sbQuery.append(" AND (")
                 .append(luceneField)
@@ -492,9 +492,9 @@ public final class SearchHelper {
             if (filterForWorks || filterForAnchors) {
                 sbQuery.append(")");
             }
-            if (filterForWhitelist) {
-                sbQuery.append(getDocstrctWhitelistFilterSuffix());
-            }
+//            if (filterForWhitelist) {
+//                sbQuery.append(getDocstrctWhitelistFilterQuery());
+//            }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
@@ -756,10 +756,10 @@ public final class SearchHelper {
     }
 
     /**
-     * @return docstrctWhitelistFilterSuffix
+     * @return Filter query for record listing
      */
-    public static String getDocstrctWhitelistFilterSuffix() {
-        return DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterSuffix();
+    static String getDocstrctWhitelistFilterQuery() {
+        return DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery();
     }
 
     /**
@@ -1980,6 +1980,29 @@ public final class SearchHelper {
 
         return ret;
     }
+    
+    /**
+     * 
+     * @param query
+     * @return
+     */
+    public static String prepareQuery(String query) {
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotEmpty(query)) {
+            sbQuery.append('(').append(query).append(')');
+        } else {
+            // Collection browsing (no search query)
+            String docstructWhitelistFilterQuery = getDocstrctWhitelistFilterQuery();
+            if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
+                sbQuery.append(docstructWhitelistFilterQuery);
+            } else {
+                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            }
+
+        }
+
+        return sbQuery.toString();
+    }
 
     /**
      * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
@@ -1990,15 +2013,16 @@ public final class SearchHelper {
      * @should prepare non-empty queries correctly
      * @should prepare empty queries correctly
      */
-    public static String prepareQuery(String query, String docstructWhitelistFilterSuffix) {
+    public static String prepareQuery(String query, String docstructWhitelistFilterQuery) {
         StringBuilder sbQuery = new StringBuilder();
         if (StringUtils.isNotEmpty(query)) {
             sbQuery.append('(').append(query).append(')');
         } else {
             // Collection browsing (no search query)
-            sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
-            if (docstructWhitelistFilterSuffix != null) {
-                sbQuery.append(docstructWhitelistFilterSuffix);
+            if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
+                sbQuery.append(docstructWhitelistFilterQuery);
+            } else {
+                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             }
 
         }

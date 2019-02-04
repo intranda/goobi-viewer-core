@@ -225,7 +225,7 @@ public class Search implements Serializable {
             throw new IllegalArgumentException("facets may not be null");
         }
 
-        String currentQuery = SearchHelper.prepareQuery(this.query, SearchHelper.getDocstrctWhitelistFilterSuffix());
+        String currentQuery = SearchHelper.prepareQuery(this.query);
 
         // Collect regular and hierarchical facet field names and combine them into one list
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();

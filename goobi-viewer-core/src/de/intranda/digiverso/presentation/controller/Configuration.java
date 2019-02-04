@@ -698,8 +698,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getDocstrctWhitelistFilterSuffix() {
-        return getLocalString("search.docstrctWhitelistFilterSuffix", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_SUFFIX);
+    public String getDocstrctWhitelistFilterQuery() {
+        return getLocalString("search.docstrctWhitelistFilterQuery", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY);
     }
 
     /**

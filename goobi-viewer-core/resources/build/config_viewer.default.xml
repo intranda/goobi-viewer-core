@@ -452,9 +452,9 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 		
-        <!-- docstrctWhitelistFilterSuffix: Optional custom filter query suffix for including or excluding document types
+        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
-        <docstrctWhitelistFilterSuffix> AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterSuffix>
+        <docstrctWhitelistFilterSuffix>(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterSuffix>
 
 	        <!-- versioning -->
 	        <versioning>
