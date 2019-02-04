@@ -8,6 +8,10 @@
     border-bottom: none;
 }
 .nav-tabs {
+	& > li > a:hover {
+		border-color: @middlegray @middlegray @middlegray;
+		background-color: @white;
+	}
 	li {
 		a {
 			border-bottom: 1px solid @middlegray;
@@ -33,6 +37,9 @@
 			}
 		}
 	}
+}
+.tab-content {
+	background-color: @white;
 }
 .tab-pane {
 	padding: 10px;
@@ -64,6 +71,10 @@
 }
 .table > tbody > tr > td {
 	word-break: break-word;
+}
+/* LABELS */
+.label-default {
+	background-color: @labelGray;
 }
 /* BS GRID RESETS */
 .row {
