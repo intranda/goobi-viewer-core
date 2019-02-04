@@ -505,6 +505,10 @@ span[class*=" image-"] {
   margin: 0;
   border-bottom: none;
 }
+.nav-tabs > li > a:hover {
+  border-color: #ccc #ccc #ccc;
+  background-color: #fff;
+}
 .nav-tabs li a {
   border-bottom: 1px solid #ccc;
   background-color: #eee;
