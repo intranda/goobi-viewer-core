@@ -67,6 +67,30 @@ public class TEITools {
 
     /**
      * 
+     * @param tei
+     * @return HTML conversion of the TEI
+     * @throws IOException
+     * @throws JDOMException
+     * @should convert tei to html correctly
+     */
+    public static String convertTeiToHtml(String tei) throws IOException, JDOMException {
+        if (tei == null) {
+            return null;
+        }
+
+        Document teiDoc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
+        System.out.println(new XMLOutputter().outputString(teiDoc));
+        Document htmlDoc = XmlTools.transformViaXSLT(teiDoc,
+                DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/html5/html5.xsl", null);
+        if (htmlDoc != null) {
+            return new XMLOutputter().outputString(htmlDoc);
+        }
+
+        return null;
+    }
+
+    /**
+     * 
      * @param docxFile
      * @return
      * @throws IOException

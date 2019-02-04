@@ -19,12 +19,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
-
 public class TEIToolsTest {
+
+    /**
+     * @see TEITools#convertTeiToHtml(String)
+     * @verifies convert tei to html correctly
+     */
+    @Test
+    public void convertTeiToHtml_shouldConvertTeiToHtmlCorrectly() throws Exception {
+        Document doc = XmlTools.readXmlFile(Paths.get("resources/test/data/sample_tei.xml"));
+        String result = TEITools.convertTeiToHtml(XmlTools.getStringFromElement(doc, Helper.DEFAULT_ENCODING));
+        Assert.assertTrue(StringUtils.isNotEmpty(result));
+        System.out.println(result);
+    }
 
     /**
      * @see TEITools#convertDocxToTei(Path)
@@ -34,7 +45,7 @@ public class TEIToolsTest {
     public void convertDocxToTei_shouldConvertDocxToTeiCorrectly() throws Exception {
         String result = TEITools.convertDocxToTei(Paths.get("resources/test/data/example.docx"));
         Assert.assertTrue(StringUtils.isNotEmpty(result));
-//        System.out.println(result);
-        System.out.println(new TeiToHtmlConvert().convert(result));
+        //        System.out.println(result);
     }
+
 }

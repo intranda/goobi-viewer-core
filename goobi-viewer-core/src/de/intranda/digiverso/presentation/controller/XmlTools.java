@@ -48,6 +48,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.transform.JDOMResult;
 import org.jdom2.transform.JDOMSource;
+import org.jdom2.transform.XSLTransformException;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
@@ -288,9 +289,7 @@ public class XmlTools {
             JDOMSource docFrom = new JDOMSource(doc);
             JDOMResult docTo = new JDOMResult();
 
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer(
-                            new StreamSource(DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/docx/from/docxtotei.xsl"));
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(stylesheetPath));
             if (params != null && !params.isEmpty()) {
                 for (String param : params.keySet()) {
                     transformer.setParameter(param, params.get(param));

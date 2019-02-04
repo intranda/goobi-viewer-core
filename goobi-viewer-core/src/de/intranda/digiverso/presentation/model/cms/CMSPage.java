@@ -49,9 +49,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.tei.convert.TeiToHtmlConvert;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -818,7 +818,8 @@ public class CMSPage {
                             if (format != null) {
                                 switch (format.toLowerCase()) {
                                     case "tei":
-                                        contentString = new TeiToHtmlConvert().convert(contentString);
+                                        // contentString = new TeiToHtmlConvert().convert(contentString);
+                                        contentString = TEITools.convertTeiToHtml(contentString);
                                         break;
                                 }
 
