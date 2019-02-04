@@ -15,6 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,9 +45,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.dbunit.database.statement.IPreparedBatchStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.management.UnixOperatingSystemMXBean;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -932,5 +939,18 @@ public class AccessConditionUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * Testing
+     * @return
+     */
+    private static long getNumberOfOpenFiles() {
+        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+        if(os instanceof UnixOperatingSystemMXBean){
+            return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
+        } else {
+            return -1;
+        }
     }
 }

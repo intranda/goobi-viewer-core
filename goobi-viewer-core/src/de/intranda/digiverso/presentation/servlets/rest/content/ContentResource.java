@@ -609,23 +609,26 @@ public class ContentResource {
         List<java.nio.file.Path> files = new ArrayList<>();
 
         if (folder != null && Files.isDirectory(folder)) {
-            files = Files.list(folder)
+            try (Stream<java.nio.file.Path> paths = Files.list(folder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
-                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                    .collect(Collectors.toList());
+                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
+                files = paths.collect(Collectors.toList());
+            }
         }
 
         if (altFolder != null && Files.isDirectory(altFolder)) {
-            List<java.nio.file.Path> altFiles = Files.list(altFolder)
+            try (Stream<java.nio.file.Path> paths = Files.list(altFolder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
-                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                    .collect(Collectors.toList());
+                    .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
+                List<java.nio.file.Path> altFiles = paths.collect(Collectors.toList());
 
-            files = new ArrayList<>(Stream.of(files, altFiles)
-                    .flatMap(List::stream)
-                    .collect(Collectors.toMap(java.nio.file.Path::getFileName, path -> path,
-                            (java.nio.file.Path path1, java.nio.file.Path path2) -> path1 == null ? path2 : path1))
-                    .values());
+                files = new ArrayList<>(Stream.of(files, altFiles)
+                        .flatMap(List::stream)
+                        .collect(Collectors.toMap(java.nio.file.Path::getFileName, path -> path,
+                                (java.nio.file.Path path1, java.nio.file.Path path2) -> path1 == null ? path2 : path1))
+                        .values());
+            }
+
         }
         return files;
     }
@@ -657,12 +660,16 @@ public class ContentResource {
     public TEIHeaderBuilder createTEIHeader(SolrDocument solrDoc) {
         TEIHeaderBuilder header = new TEIHeaderBuilder();
 
-        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL)).map(Object::toString).map(Title::new).ifPresent(
-                title -> header.setTitle(title));
+        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.LABEL))
+                .map(Object::toString)
+                .map(Title::new)
+                .ifPresent(title -> header.setTitle(title));
 
-        List<String> authors =
-                Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR")).orElse(Collections.emptyList()).stream().map(Object::toString).collect(
-                        Collectors.toList());
+        List<String> authors = Optional.ofNullable(solrDoc.getFieldValues("MD_AUTHOR"))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
         for (String name : authors) {
             if (name.contains(",")) {
                 String[] parts = name.split(",");
@@ -672,8 +679,10 @@ public class ContentResource {
             }
         }
 
-        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI)).map(Object::toString).map(Identifier::new).ifPresent(
-                id -> header.addIdentifier(id));
+        Optional.ofNullable(solrDoc.getFieldValue(SolrConstants.PI))
+                .map(Object::toString)
+                .map(Identifier::new)
+                .ifPresent(id -> header.addIdentifier(id));
         return header;
     }
 
@@ -702,8 +711,9 @@ public class ContentResource {
         // Fallback to ISO-2
         if (ret == null) {
             try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
-                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml")).findFirst().orElse(
-                        null);
+                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
 
@@ -773,8 +783,9 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
         return filePath;
@@ -803,8 +814,9 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
         return filePath;
