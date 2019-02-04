@@ -296,6 +296,7 @@
 			<!-- <_DEFAULT>metadata</_DEFAULT> -->
 			<MultiVolumeWork>toc</MultiVolumeWork>
 			<Periodical>toc</Periodical>
+			<newspaper>calendar</newspaper>
 		</docstructTargetPageTypes>
 		
 		<!-- If a record's percentage of pages having full-Text/ALTO documents
