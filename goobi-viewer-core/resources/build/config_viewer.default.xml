@@ -93,10 +93,10 @@
 		<!-- List of authentication providers. Each <provider> element defines an authentication provider. 
 		     Possible attributes for providers are: type, show, name, endpoint (auth URL), clientId, clientSecret, image, timeout. -->
 	        <authenticationProviders>
-	            <provider type="local" show="true" name="Goobi viewer"/>
-	            <provider type="openId" show="true" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
-		    <provider type="openId" show="false" ame="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
-		    <provider type="userPassword" show="false" name="VuFind" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000"/>
+	        	<provider type="local" show="true" name="Goobi viewer"/>
+	        	<provider type="openId" show="true" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="CHANGEME" clientSecret="CHANGEME" image="google.png" />
+			<provider type="openId" show="false" ame="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="" clientSecret="" image="facebook.png" />
+			<provider type="userPassword" show="false" name="VuFind" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000"/>
 	        </authenticationProviders>
 
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress')
@@ -132,7 +132,6 @@
 	<reCaptcha show="false">
 		<provider name="Google" siteKey="TODO" />
 	</reCaptcha>
-
 
 
 	<pdf>
@@ -270,11 +269,10 @@
 		<!-- set solr field that is used to define different watermark configuration ids -->
 		<watermarkIdField>MD_GEIFOOTERID</watermarkIdField>
 		
-        <!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
-            Values that are not among the following allowed variables will be displayed 
-            as-is.
-            Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
-        <pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat> 
+		<!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
+		     Values that are not among the following allowed variables will be displayed as-is.
+		     Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
+		<pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat> 
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
 		     Custom URL names must be mapped in the faces config, too. -->
@@ -300,19 +298,19 @@
 			<Periodical>toc</Periodical>
 		</docstructTargetPageTypes>
 		
-		<!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
-		falls below the configured value, a warning will be displayed for that record. -->
+		<!-- If a record's percentage of pages having full-Text/ALTO documents
+		     falls below the configured value, a warning will be displayed for that record. -->
 		<fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
         
 		<!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
-		also change the preferred language for record metadata. Default is false. -->
+		     also change the preferred language for record metadata. Default is false. -->
 		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="false">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
-			mechanism needs the root path of the theme. The path must be defined down 
-			to the /themes folder, just above the folder named like the theme. -->
+			     mechanism needs the root path of the theme. The path must be defined down 
+			     to the /themes folder, just above the folder named like the theme. -->
 			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
 	</viewer>
@@ -393,15 +391,14 @@
 			<enabled>true</enabled>
 
 			<!-- TODO DOCUMENTATION-->
-			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch
-				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert
-				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert
-				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
+			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch Minus) sowie fuer Startjahr weiter der Wert MIN 
+			     und fuer Endjahr der Wert MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert genommen, 
+			     bei MAX das groesste verfuegbare als Endjahr -->
 			<startyear>1500</startyear>
-			<endyear>2013</endyear>
+			<endyear>2019</endyear>
 
 			<!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
-		        maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
+			     maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
 			<hits>108</hits>
 		</timeline>
 
@@ -453,7 +450,7 @@
 		</displayAdditionalMetadata>
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
-        <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 
 	        <!-- versioning -->
 	        <versioning>
@@ -485,8 +482,8 @@
     
 		<collection field="DC">
 		
-            <!-- splitingCharacter: defines symbol that splits collections into subcollections -->
-            <splittingCharacter>.</splittingCharacter>
+			<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
+			<splittingCharacter>.</splittingCharacter>
 		
 			<!-- In the following section you can define an index field that is used for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
@@ -514,20 +511,20 @@
 			<displayDepthForSearch>-1</displayDepthForSearch>
 
                         <!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
-                        No text means that no image is rendered for the collection -->
+			     No text means that no image is rendered for the collection -->
                         <defaultBrowseIcon></defaultBrowseIcon>
 
 		</collection>
           
-        <!-- true if opening a collection containing only a single work should redirect to that work -->
-        <redirectToWork>true</redirectToWork>
+		<!-- true if opening a collection containing only a single work should redirect to that work -->
+		<redirectToWork>true</redirectToWork>
 	</collections>
 
 
 	<metadata>
 		<!-- mainMetadataList: whitelist with metadata fields, that are displayed
-			in the Goobi viewer. The order of this files defines the order of the
-			fields in the bibliographic data as well. -->
+		     in the Goobi viewer. The order of this files defines the order of the
+		     fields in the bibliographic data as well. -->
 		<mainMetadataList>
 			<template name="_DEFAULT">
 				<!-- <metadata> </metadata> defines a single metadata element label=""
@@ -811,10 +808,10 @@
 
 		<!-- titleBarMetadataList: defines metadata that is displayed above an image. The syntax is the same as in mainMetadataList -->
 		<titleBarMetadataList>
-			<metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
+			<!--metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
 				<param type="field" key="MD_CREATOR" />
 				<param type="wikipersonfield" key="MD_CREATOR" />
-			</metadata>
+			</metadata-->
 		</titleBarMetadataList>
 
 		<!-- searchHitMetadataList: defines metadata that is displayed in the search hitlist. The syntax is the same as in mainMetadataList -->
@@ -942,19 +939,9 @@
 			</template>
 		</normdataList>
 
-
 		<!-- calendarDocstructTypes: the list of structure elements allowed to be shown in calendar view -->
 		<calendarDocstructTypes>
-			<docStruct>Monograph</docStruct>
-			<docStruct>Volume</docStruct>
-			<docStruct>PeriodicalVolume</docStruct>
-			<docStruct>Issue</docStruct>
-			<docStruct>Manuscript</docStruct>
-			<docStruct>SingleMap</docStruct>
-			<docStruct>Incunable</docStruct>
-			<docStruct>SingleLetter</docStruct>
-			<docStruct>Picture</docStruct>
-			<docStruct>Casualia</docStruct>
+			<docStruct>newspaper</docStruct>
 		</calendarDocstructTypes>
 
 		<!-- browsingMenu: configuration of the browsing section (Stoebern) -->
@@ -993,11 +980,11 @@
 		<multiVolumeThumbnailsEnabled>true</multiVolumeThumbnailsEnabled>
 
 		<!-- volumeSortFields: Solr fields by which the volumes in an anchor TOC
-		    shall be sorted. Custom templates can be defined for anchor docstruc types,
-		    otherwise "_DEFAULT" is used. Optional "order" attribute (default is "asc").
-		    Optional attribute "groupBy" by which the volumes in an anchor
-		    TOC shall be grouped. If sorting of the groups is desired, the field should
-		    also be defined as the first <field> entry. -->
+		     shall be sorted. Custom templates can be defined for anchor docstruc types,
+		     otherwise "_DEFAULT" is used. Optional "order" attribute (default is "asc").
+		     Optional attribute "groupBy" by which the volumes in an anchor
+		     TOC shall be grouped. If sorting of the groups is desired, the field should
+		     also be defined as the first <field> entry. -->
 		<volumeSortFields>
 			<template name="_DEFAULT">
 				<field order="asc">CURRENTNOSORT</field>
@@ -1024,7 +1011,7 @@
 		<tocAnchorGroupElementsPerPage>50</tocAnchorGroupElementsPerPage>
 
 		<!-- recordGroupIdentifierFields: Contains definitions of GROUPID_ fields used in the index.
-		    This is needed so the fields can be added to the whitelist of fields to return.  -->
+		     This is needed so the fields can be added to the whitelist of fields to return.  -->
 		<recordGroupIdentifierFields>
 			<field>GROUPID_SERIES</field>
 		</recordGroupIdentifierFields>
@@ -1065,7 +1052,7 @@
 	</urnresolver>
 
 
-	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
+	<!-- Show or hide sections in the sidebar globally -->
 	<sidebar>
     
 		<!-- overview: if false, the image view is hidden -->
@@ -1144,7 +1131,7 @@
 	</sidebar>
 
 
-	<!-- ##### VARIOUS OPTIONS ##### -->
+	<!-- Various options -->
 	<webGuiDisplay>
 		<!-- collectionBrowsing: if false, the collections section is hidden -->
 		<collectionBrowsing>true</collectionBrowsing>
@@ -1168,8 +1155,7 @@
 		<breadcrumbsClipping>50</breadcrumbsClipping>
 
 		<!-- displayTitleBreadcrumbs: if true, the document structure is displayed in the title component in breadcrumb form -->
-		<displayTitleBreadcrumbs maxTitleLength="40"
-			includeAnchor="false">false</displayTitleBreadcrumbs>
+		<displayTitleBreadcrumbs maxTitleLength="40" includeAnchor="false">false</displayTitleBreadcrumbs>
 
 		<!-- displayTitlePURL: if true, a PURL to the current page in the title component. Default is true. -->
 		<displayTitlePURL>true</displayTitlePURL>
@@ -1271,7 +1257,7 @@
 	</transkribus>
 
 
-	<!-- ##### CONTENT UPLOAD SETTINGS (CURRENTLY DISABLED) ##### -->
+	<!-- Content upload settings (currently not in use) -->
 	<content>
 		<ruleset>/opt/digiverso/viewer/config/gdz.xml</ruleset>
 		<defaultCollection>Varia</defaultCollection>
@@ -1291,6 +1277,7 @@
 		<!-- Piwik site ID -->
 		<siteID>1</siteID>
 	</piwik>
+
 	
 	<sitemap>
 		<!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
@@ -1298,13 +1285,14 @@
 		<!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
 		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
 	</sitemap>
+
 	
 	<!-- Web API configuration -->
 	<webapi>
 		<!-- fields: Custom JSON fields. Each <field> element must contain the
-		    attributes 'jsonField' (name of the field for JSON datasets) and 'luceneField'
-		    (source index field name). An optional attribute 'multivalue' can be set
-		    to 'true' to return a list with all found values in JSON. -->
+		     attributes 'jsonField' (name of the field for JSON datasets) and 'luceneField'
+		     (source index field name). An optional attribute 'multivalue' can be set
+		     to 'true' to return a list with all found values in JSON. -->
 		<fields>
 			<field jsonField="persons" luceneField="MD_CREATOR" multivalue="true" />
 		</fields>
@@ -1318,11 +1306,10 @@
 				<!--field>MD_*</field-->
 			</metadataFields>
             
-            <!-- A list of solr fieldnames which may serve as manifest description metadata. 
-            The first existing field is used to provide the medatada description -->
-            <descriptionFields>
-                <field>MD_CONTENTDESCRIPTION</field>
-            </descriptionFields>
+			<!-- A list of solr fieldnames which may serve as manifest description metadata. The first existing field is used to provide the medatada description -->
+			<descriptionFields>
+				<field>MD_CONTENTDESCRIPTION</field>
+			</descriptionFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
 			<navDateField>YEAR</navDateField>

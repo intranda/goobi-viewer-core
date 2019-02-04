@@ -1604,7 +1604,7 @@ public class ViewManager implements Serializable {
                 }
 
                 if (sourceFileDir.isDirectory()) {
-                    List<Path> files = Files.list(sourceFileDir.toPath()).collect(Collectors.toList());
+                    List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
                     if (!files.isEmpty()) {
                         return AccessConditionUtils.checkContentFileAccessPermission(pi,
                                 (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files).containsValue(Boolean.TRUE);
@@ -1617,8 +1617,6 @@ public class ViewManager implements Serializable {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
-        } catch (IOException e) {
-            logger.debug("IOException thrown here: {}", e.getMessage());
         }
 
         return false;

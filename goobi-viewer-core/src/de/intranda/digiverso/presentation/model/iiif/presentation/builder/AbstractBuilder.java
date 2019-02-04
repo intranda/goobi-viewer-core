@@ -211,7 +211,7 @@ public abstract class AbstractBuilder {
     public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
         for (String field : getMetadataFields(ele)) {
             List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-            if (displayFields.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
                         .ifPresent(md -> {
@@ -223,6 +223,18 @@ public abstract class AbstractBuilder {
                 //                manifest.addMetadata(new Metadata(IMetadataValue.getTranslations(field), mdValue));
             }
         }
+    }
+
+    /**
+     * Return true if the field is contained in displayFields, accounting for wildcard characters
+     * 
+     * @param field
+     * @param displayFields
+     * @return
+     */
+    private boolean contained(String field, List<String> displayFields) {
+        
+        return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.contains(displayField));
     }
 
     /**
