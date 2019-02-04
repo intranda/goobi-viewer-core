@@ -17,21 +17,13 @@ package de.intranda.digiverso.presentation.controller;
 
 import java.io.IOException;
 import java.nio.file.Path;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.stream.StreamSource;
+import java.util.Collections;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.output.XMLOutputter;
-import org.jdom2.transform.JDOMResult;
-import org.jdom2.transform.JDOMSource;
 import org.jdom2.transform.XSLTransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,29 +90,20 @@ public class TEITools {
         //      XHTMLOptions options = XHTMLOptions.create().URIResolver(new FileURIResolver(new File("word/media")));
         //            XHTMLConverter.getInstance().convert(document, out, options);
 
-        
         // TODO Unzip docxFile
         try {
             String wordDirectory = "C:/digiverso/viewer/temp/docx/";
             Document docxDoc = XmlTools.readXmlFile(wordDirectory + "word/document.xml");
-            JDOMSource docFrom = new JDOMSource(docxDoc);
-            JDOMResult docTo = new JDOMResult();
 
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer(
-                            new StreamSource(DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/docx/from/docxtotei.xsl"));
-            transformer.setParameter("word-directory", wordDirectory);
-            transformer.transform(docFrom, docTo);
-            return new XMLOutputter().outputString(docTo.getDocument());
+            Document teiDoc = XmlTools.transformViaXSLT(docxDoc,
+                    DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/docx/from/docxtotei.xsl",
+                    Collections.singletonMap("word-directory", wordDirectory));
+            if (teiDoc != null) {
+                return new XMLOutputter().outputString(teiDoc);
+            }
         } catch (XSLTransformException e) {
             logger.error(e.getMessage(), e);
         } catch (JDOMException e) {
-            logger.error(e.getMessage(), e);
-        } catch (TransformerConfigurationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (TransformerFactoryConfigurationError e) {
-            logger.error(e.getMessage(), e);
-        } catch (TransformerException e) {
             logger.error(e.getMessage(), e);
         }
 
