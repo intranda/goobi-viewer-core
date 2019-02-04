@@ -1381,7 +1381,6 @@ public class ConfigurationTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(SolrConstants.DC));
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical("MD_TITLE"));
     }
-    
 
     /**
      * @see Configuration#isAdvancedSearchFieldUntokenizeForPhraseSearch(String)
@@ -2335,5 +2334,14 @@ public class ConfigurationTest {
     @Test
     public void testAllowRedirectCollectionToWork() {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+    }
+
+    /**
+     * @see Configuration#getDocstrctWhitelistFilterSuffix()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDocstrctWhitelistFilterSuffix_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterSuffix());
     }
 }

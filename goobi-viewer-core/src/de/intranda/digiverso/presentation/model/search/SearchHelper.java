@@ -101,6 +101,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TIMELINE = 2;
     public static final int SEARCH_TYPE_CALENDAR = 3;
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_SUFFIX = " AND NOT(IDDOC_PARENT:*)";
 
     private static final Object lock = new Object();
 
@@ -108,7 +109,6 @@ public final class SearchHelper {
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
 
     /** Filter subquery for collection listing (no volumes). */
-    static final String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
     static volatile String collectionBlacklistFilterSuffix = null;
 
     /**
@@ -759,7 +759,7 @@ public final class SearchHelper {
      * @return docstrctWhitelistFilterSuffix
      */
     public static String getDocstrctWhitelistFilterSuffix() {
-        return docstrctWhitelistFilterSuffix;
+        return DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterSuffix();
     }
 
     /**

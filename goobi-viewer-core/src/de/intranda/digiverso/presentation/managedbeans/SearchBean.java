@@ -1442,7 +1442,8 @@ public class SearchBean implements SearchInterface, Serializable {
         //        } else {
         String facetString = facets.getCurrentFacetString();
         facetString = StringTools.decodeUrl(facetString);
-        List<String> facets = SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
+        List<String> facets =
+                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
         if (facets.size() > 0) {
             String facet = facets.get(0);
             facets = SearchFacets.splitHierarchicalFacet(facet);
@@ -1454,9 +1455,6 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         //        }
     }
-
-
-
 
     /**
      * Adds a new breadcrumb for the current Pretty URL.
@@ -1751,24 +1749,24 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getRssUrl() {
         if (searchString != null) {
-            String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
-            try {
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                        .append(NavigationHelper.URL_RSS)
-                        .append("?q=")
-                        .append(URLEncoder.encode(currentQuery, URL_ENCODING))
-                        .toString();
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("Could not encode query '{}' for URL", currentQuery);
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                        .append(NavigationHelper.URL_RSS)
-                        .append("?q=")
-                        .append(currentQuery)
-                        .toString();
-            }
+            return null;
         }
-
-        return null;
+        
+        String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
+        try {
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+                    .append(NavigationHelper.URL_RSS)
+                    .append("?q=")
+                    .append(URLEncoder.encode(currentQuery, URL_ENCODING))
+                    .toString();
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Could not encode query '{}' for URL", currentQuery);
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+                    .append(NavigationHelper.URL_RSS)
+                    .append("?q=")
+                    .append(currentQuery)
+                    .toString();
+        }
     }
 
     /**
