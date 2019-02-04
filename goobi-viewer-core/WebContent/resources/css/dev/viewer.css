@@ -13,6 +13,7 @@
 /* FONTS */
 /* COLORS BASIC */
 /* MESSAGE COLORS */
+/* LABELS */
 /* BUTTON COLORS */
 /* COLORS STATISTICS */
 /* COLORS NER */
@@ -530,6 +531,9 @@ span[class*=" image-"] {
   border-bottom: 1px solid #fff;
   background-color: #fff;
 }
+.tab-content {
+  background-color: #fff;
+}
 .tab-pane {
   padding: 10px;
   border-right: 1px solid #ccc;
@@ -554,6 +558,10 @@ span[class*=" image-"] {
 }
 .table > tbody > tr > td {
   word-break: break-word;
+}
+/* LABELS */
+.label-default {
+  background-color: #444;
 }
 /* BS GRID RESETS */
 .row.no-margin {
@@ -9970,6 +9978,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper {
   border: 2px solid #eee;
+  background-color: #fff;
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item {
   padding: 14px 7px;
