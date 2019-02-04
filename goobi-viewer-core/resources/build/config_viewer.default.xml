@@ -454,7 +454,7 @@
 		
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
-        <docstrctWhitelistFilterSuffix>(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterSuffix>
+        <docstrctWhitelistFilterQuery>(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterQuery>
 
 	        <!-- versioning -->
 	        <versioning>
