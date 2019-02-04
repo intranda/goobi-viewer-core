@@ -361,8 +361,6 @@ public final class SearchHelper {
      * 
      * @param luceneField
      * @param value
-     * @param filterForWorks
-     * @param filterForAnchors
      * @param filterForWhitelist
      * @param filterForBlacklist
      * @param separatorString
@@ -371,28 +369,15 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWorks, boolean filterForAnchors,
-            boolean filterForWhitelist, boolean filterForBlacklist, String separatorString, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWhitelist, boolean filterForBlacklist,
+            String separatorString, Locale locale) throws IndexUnreachableException, PresentationException {
         StringBuilder sbQuery = new StringBuilder();
-        if (filterForWorks || filterForAnchors) {
-            sbQuery.append("(");
+        if (filterForWhitelist) {
+            if (sbQuery.length() > 0) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
-        if (filterForWorks) {
-            sbQuery.append(SolrConstants.ISWORK).append(":true");
-        }
-        if (filterForWorks && filterForAnchors) {
-            sbQuery.append(" OR ");
-        }
-        if (filterForAnchors) {
-            sbQuery.append(SolrConstants.ISANCHOR).append(":true");
-        }
-        if (filterForWorks || filterForAnchors) {
-            sbQuery.append(")");
-        }
-//        if (filterForWhitelist) {
-//            sbQuery.append(getDocstrctWhitelistFilterQuery());
-//        }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
         sbQuery.append(" AND (")
                 .append(luceneField)
@@ -459,42 +444,27 @@ public final class SearchHelper {
      * @param filterQuery An addition solr-query to filer collections by
      * @param filterForWhitelist
      * @param filterForBlacklist
-     * @param filterForWorks
-     * @param filterForAnchors
      * @param splittingChar
      * @return
      * @throws IndexUnreachableException
      * @should find all collections
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
-            boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors, String splittingChar) throws IndexUnreachableException {
+            boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
 
             if (StringUtils.isNotBlank(filterQuery)) {
-                sbQuery.append(filterQuery).append(" AND ");
+                sbQuery.append(filterQuery);
             }
-
-            if (filterForWorks || filterForAnchors) {
-                sbQuery.append("(");
+            if (filterForWhitelist) {
+                if (sbQuery.length() > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
-            if (filterForWorks) {
-                sbQuery.append(SolrConstants.ISWORK).append(":true");
-            }
-            if (filterForWorks && filterForAnchors) {
-                sbQuery.append(" OR ");
-            }
-            if (filterForAnchors) {
-                sbQuery.append(SolrConstants.ISANCHOR).append(":true");
-            }
-            if (filterForWorks || filterForAnchors) {
-                sbQuery.append(")");
-            }
-//            if (filterForWhitelist) {
-//                sbQuery.append(getDocstrctWhitelistFilterQuery());
-//            }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
             Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
@@ -552,6 +522,7 @@ public final class SearchHelper {
             // Iterate over record hits instead of using facets to determine the size of the parent collections
             {
                 logger.debug("query: {}", sbQuery.toString());
+                System.out.println(sbQuery.toString());
                 // No faceting needed when fetching field names manually (faceting adds to the total execution time)
                 SolrDocumentList results =
                         DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), Collections.singletonList(luceneField));
@@ -1980,7 +1951,7 @@ public final class SearchHelper {
 
         return ret;
     }
-    
+
     /**
      * 
      * @param query
