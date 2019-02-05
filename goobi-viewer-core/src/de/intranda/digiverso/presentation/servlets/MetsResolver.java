@@ -62,7 +62,7 @@ public class MetsResolver extends HttpServlet {
         URI p = URI.create(s);
         System.out.println(p + " is absolute: " + p.isAbsolute());
     }
-    
+
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      * @should return METS file correctly via pi
@@ -114,9 +114,9 @@ public class MetsResolver extends HttpServlet {
                 String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
                 String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    dataRepository = dataRepository.replace("file://", ""); //turn url to path if neccessary
+                    dataRepository = dataRepository.replace("file://", ""); //turn url to path if necessary
                     String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    if (StringUtils.isNotEmpty(dataRepositoriesHome) && !Paths.get(dataRepositoriesHome).isAbsolute()) {
+                    if (StringUtils.isNotEmpty(dataRepositoriesHome) && !Paths.get(dataRepository).isAbsolute()) {
                         sbPath.append(dataRepositoriesHome).append('/');
                     }
                     if (format != null) {

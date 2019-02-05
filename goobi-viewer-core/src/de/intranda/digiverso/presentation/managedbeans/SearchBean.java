@@ -594,7 +594,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchString);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
-        String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
+        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (StringUtils.isEmpty(sortString)) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
@@ -781,12 +781,7 @@ public class SearchBean implements SearchInterface, Serializable {
         inSearchString = inSearchString.trim();
         if (StringUtils.isNotEmpty(inSearchString)) {
             if ("*".equals(inSearchString)) {
-                searchString = new StringBuilder("(").append(SolrConstants.ISWORK)
-                        .append(":true OR ")
-                        .append(SolrConstants.ISANCHOR)
-                        .append(":true)")
-                        .append(SearchHelper.getDocstrctWhitelistFilterSuffix())
-                        .toString();
+                searchString = SearchHelper.prepareQuery("");
                 return;
             }
 
@@ -1442,7 +1437,8 @@ public class SearchBean implements SearchInterface, Serializable {
         //        } else {
         String facetString = facets.getCurrentFacetString();
         facetString = StringTools.decodeUrl(facetString);
-        List<String> facets = SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
+        List<String> facets =
+                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
         if (facets.size() > 0) {
             String facet = facets.get(0);
             facets = SearchFacets.splitHierarchicalFacet(facet);
@@ -1454,9 +1450,6 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         //        }
     }
-
-
-
 
     /**
      * Adds a new breadcrumb for the current Pretty URL.
@@ -1505,10 +1498,6 @@ public class SearchBean implements SearchInterface, Serializable {
     @Deprecated
     public void setCurrentQuery(String query) {
         setSearchString(query);
-    }
-
-    public String getDocstrctWhitelistFilterSuffix() {
-        return SearchHelper.getDocstrctWhitelistFilterSuffix().substring(5);
     }
 
     /**
@@ -1751,24 +1740,24 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getRssUrl() {
         if (searchString != null) {
-            String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
-            try {
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                        .append(NavigationHelper.URL_RSS)
-                        .append("?q=")
-                        .append(URLEncoder.encode(currentQuery, URL_ENCODING))
-                        .toString();
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("Could not encode query '{}' for URL", currentQuery);
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                        .append(NavigationHelper.URL_RSS)
-                        .append("?q=")
-                        .append(currentQuery)
-                        .toString();
-            }
+            return null;
         }
 
-        return null;
+        String currentQuery = SearchHelper.prepareQuery(searchString);
+        try {
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+                    .append(NavigationHelper.URL_RSS)
+                    .append("?q=")
+                    .append(URLEncoder.encode(currentQuery, URL_ENCODING))
+                    .toString();
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Could not encode query '{}' for URL", currentQuery);
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+                    .append(NavigationHelper.URL_RSS)
+                    .append("?q=")
+                    .append(currentQuery)
+                    .toString();
+        }
     }
 
     /**
@@ -1903,7 +1892,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
-            String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
+            String currentQuery = SearchHelper.prepareQuery(searchString);
             final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
             Map<String, String> params = SearchHelper.generateQueryParams();
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, currentSearch.getSortFields(),

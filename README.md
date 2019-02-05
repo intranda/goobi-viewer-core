@@ -57,13 +57,12 @@ You can find a HTML output of the latest unit test runs here:
 
 The Goobi viewer consists of multiple packages which all have to be installed and configured properly:
 
-| Package | Function |
-| ------ | ------ |
-| [Goobi viewer core](https://github.com/intranda/goobi-viewer-core) | Core functionality of the viewer application|
-| [Goobi viewer indexer](https://github.com/intranda/goobi-viewer-indexer) | Indexing application to fill the Solr search index with metadata information |
-| [Goobi viewer connector](https://github.com/intranda/goobi-viewer-connector) | Connectors for different use cases (incl. OAI-PMH, SRU)|
-| [Goobi viewer Theme Reference](https://github.com/intranda/goobi-viewer-theme-reference) | Reference Theme for the styling of the web pages for the user interface |
-
+| Package                                                                                  | Function                                                                     |
+| ------                                                                                   | ------                                                                       |
+| [Goobi viewer core](https://github.com/intranda/goobi-viewer-core)                       | Core functionality of the viewer application                                 |
+| [Goobi viewer indexer](https://github.com/intranda/goobi-viewer-indexer)                 | Indexing application to fill the Solr search index with metadata information |
+| [Goobi viewer connector](https://github.com/intranda/goobi-viewer-connector)             | Connectors for different use cases (incl. OAI-PMH, SRU)                      |
+| [Goobi viewer Theme Reference](https://github.com/intranda/goobi-viewer-theme-reference) | Reference Theme for the styling of the web pages for the user interface      |
 
 ## Installation
 The installation can be done on any operating system as the software is based on Java. A detailed explanation how to install the viewer will follow later on. In the mean time please get in touch with us via <info@intranda.com>
@@ -81,13 +80,13 @@ Germany
 ## Contact us
 If you would like to get in touch with the developers please use the following contact details:
 
-| Contact |Address |
-| ------ | ------ |
-| Website | <http://www.intranda.com> |
-| Mail | <info@intranda.com> |
+| Contact          |Address                        |
+| ------           | ------                        |
+| Website          | <http://www.intranda.com>     |
+| Mail             | <info@intranda.com>           |
 | Twitter intranda | <http://twitter.com/intranda> |
-| Twitter Goobi | <http://twitter.com/goobi> |
-| Github | <https://github.com/intranda> |
+| Twitter Goobi    | <http://twitter.com/goobi>    |
+| Github           | <https://github.com/intranda> |
 
 ## Licence
 The Goobi viewer is released under the license GPL2 or later.  
@@ -101,4 +100,3 @@ Please see ``LICENSE`` for more information.
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-

@@ -602,6 +602,7 @@ public class NavigationHelper implements Serializable {
                         subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
                         if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                             logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
+                            statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
                             return subThemeDiscriminatorValue;
                         }
                     }
@@ -1264,5 +1265,9 @@ public class NavigationHelper implements Serializable {
             logger.error("Cannot read current subtheme", e);
         }
         return currentTheme;
+    }
+    
+    public boolean isSubthemeSelected() throws IndexUnreachableException {
+        return DataManager.getInstance().getConfiguration().isSubthemesEnabled() || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch() && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
 }

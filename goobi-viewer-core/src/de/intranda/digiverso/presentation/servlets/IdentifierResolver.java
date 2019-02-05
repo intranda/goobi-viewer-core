@@ -40,6 +40,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -163,7 +164,7 @@ public class IdentifierResolver extends HttpServlet {
 
             // Deleted record check
             if (targetDoc.getFieldValue(SolrConstants.DATEDELETED) != null) {
-                logger.debug("Record '{}' has been deleted, trace document found.", pi);
+                logger.debug("Record '{}' has been deleted, trace document found.", targetDoc.getFieldValue(SolrConstants.PI));
                 redirectToError(HttpServletResponse.SC_GONE, fieldValue, request, response);
                 return;
             }
@@ -331,19 +332,18 @@ public class IdentifierResolver extends HttpServlet {
     private static void redirectToError(int code, String identifier, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = "/error/";
-        //        FacesContext.getCurrentInstance().getExternalContext().getFlash();
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordNotFoundMsg", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_GONE:
                 request.setAttribute("type", "recordDeleted");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordDeletedMsg", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_CONFLICT:
                 request.setAttribute("type", "general");
-                request.setAttribute("errMsg", Helper.getTranslation("errMultiMatch", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
         }
         request.setAttribute("sourceUrl", NavigationHelper.getFullRequestUrl(request, null));

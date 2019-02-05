@@ -26,7 +26,9 @@
             <viewerComponent:imageControls />
             
             <!-- TOGGLE THUMBNAILS -->
-            <button class="btn btn--clean" data-show="thumbs"></button>
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 1}">
+                <button class="btn btn--clean" title="#{msg.fullscreen_showThumbs}" data-show="thumbs" data-toggle="tooltip" data-placement="bottom"></button>
+            </ui:fragment>
         </div>
         
         <!-- EXIT -->

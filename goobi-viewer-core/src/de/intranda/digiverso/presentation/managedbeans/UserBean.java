@@ -352,6 +352,7 @@ public class UserBean implements Serializable {
 
             try {
                 BeanUtils.getCmsBean().invalidate();
+                BeanUtils.getActiveDocumentBean().resetAccess();
             } catch (Throwable e) {
             }
 
@@ -900,4 +901,15 @@ public class UserBean implements Serializable {
     public boolean isAllowPasswordChange() {
         return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
     }
+    
+    public boolean isAllowNickNameChange() {
+        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsNicknameChange();
+
+    }
+    
+    public boolean isAllowEmailChange() {
+        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsEmailChange();
+
+    }
 }
+

@@ -282,7 +282,7 @@ public class ALTOTools {
                             neLabelMap.put(id, label);
                             neUriMap.put(id, uri);
                         } else if (TEXTLINE.equals(parser.getLocalName())) {
-                            strings.append("<br />\n");
+                            strings.append("\n");
                         }
                         break;
 

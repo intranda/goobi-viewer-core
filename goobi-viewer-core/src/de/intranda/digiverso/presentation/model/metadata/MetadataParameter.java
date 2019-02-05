@@ -34,11 +34,7 @@ public class MetadataParameter implements Serializable {
         UNESCAPEDFIELD("unescapedfield"),
         URLESCAPEDFIELD("urlescapedfield"),
         HIERARCHICALFIELD("hierarchicalfield"),
-        NORMDATAURI("normdatauri"),
-        /**
-         * Same as field but needs to be queried for all indexed languages
-         */
-        MULTILANGUAGEFIELD("multilanguagefield");
+        NORMDATAURI("normdatauri");
 
         private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
 
@@ -50,7 +46,7 @@ public class MetadataParameter implements Serializable {
 
         public static MetadataParameterType getByKey(String key) {
             for (MetadataParameterType o : MetadataParameterType.values()) {
-                if (o.getKey().equals(key)) {
+                if (o.getKey().equals(key) || FIELD.equals(o) && "multilanguagefield".equals(key)) {
                     return o;
                 }
             }

@@ -430,6 +430,9 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
 		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
+            (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
+        <docstrctWhitelistFilterQuery>ISWORK:true OR ISANCHOR:true</docstrctWhitelistFilterQuery>
 		<!-- versioning -->
 		<versioning>
 			<!-- previousVersionIdentifierField' defines the Solr field that contains 

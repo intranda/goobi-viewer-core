@@ -39,6 +39,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -57,18 +58,12 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 public abstract class AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
-
-    private static final List<String> HIDDEN_SOLR_FIELDS =
-            Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE,
-                    SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.PI_PARENT, SolrConstants.LOGID,
-                    SolrConstants.ISWORK, SolrConstants.FILENAME_TEI, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNOSORT,
-                    SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES });
-
+    
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
-            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES, SolrConstants.DATAREPOSITORY };
+            SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES, SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
     private final URI servletURI;
     private final URI requestURI;
@@ -151,6 +146,19 @@ public abstract class AbstractBuilder {
         }
         return getServletURI() + "/metsresolver?id=" + 0;
     }
+    
+    /**
+     * @return LIDO resolver link for the DFG Viewer
+     */
+    public String getLidoResolverUrl(StructElement ele) {
+        try {
+            return getServletURI() + "/lidoresolver?id=" + ele.getPi();
+        } catch (Exception e) {
+            logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
+            Messages.error("errGetCurrUrl");
+        }
+        return getServletURI() + "/lidoresolver?id=" + 0;
+    }
 
     /**
      * @return viewer image view url for the given page
@@ -203,7 +211,7 @@ public abstract class AbstractBuilder {
     public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
         for (String field : getMetadataFields(ele)) {
             List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-            if (displayFields.contains(field) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(IMetadataValue.getTranslations(field), value))
                         .ifPresent(md -> {
@@ -217,6 +225,36 @@ public abstract class AbstractBuilder {
         }
     }
 
+    /**
+     * Return true if the field is contained in displayFields, accounting for wildcard characters
+     * 
+     * @param field
+     * @param displayFields
+     * @return
+     */
+    private boolean contained(String field, List<String> displayFields) {
+        
+        return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.contains(displayField));
+    }
+
+    /**
+     * @param displayFields
+     * @param allLocales
+     * @return
+     */
+    private List<String> addLanguageFields(List<String> displayFields, List<Locale> locales) {
+        return displayFields.stream().flatMap(field -> getLanguageFields(field, locales, true).stream()).collect(Collectors.toList());
+    }
+
+    private List<String> getLanguageFields(String field, List<Locale> locales, boolean includeSelf) {
+        List<String> fields = new ArrayList<>();
+        if(includeSelf) {
+            fields.add(field);
+        }
+        fields.addAll(locales.stream().map(Locale::getLanguage).map(String::toUpperCase).map(string -> field.concat("_LANG_").concat(string)).collect(Collectors.toList()));
+        return fields;
+    }
+    
     /**
      * @param ele
      * @return
@@ -289,7 +327,8 @@ public abstract class AbstractBuilder {
         String anchorQuery = "(ISWORK:* AND PI_PARENT:" + pi + ") OR (ISANCHOR:* AND PI:" + pi + ")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
+        List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
         List<StructElement> eles = new ArrayList<>();
         if (docs != null) {
             for (SolrDocument doc : docs) {

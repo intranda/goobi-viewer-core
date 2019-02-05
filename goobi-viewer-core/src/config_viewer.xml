@@ -140,6 +140,19 @@
 		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
 			superuser access. Default is false. -->
 		<fullAccessForLocalhost>false</fullAccessForLocalhost>
+        <licenseTypes>
+            <licenseType>
+                <name>Internal PDFs</name>
+                <condition>FILENAME_REGEX:(save|secret).*</condition>
+                <privileges>
+                    <privilege>DOWNLOAD_ORIGINAL_CONTENT</privilege>
+                </privileges>
+                <accessibleBy>
+                    <ipRange>lokal</ipRange>
+                    <userGroup>testGroup</userGroup>
+                </accessibleBy>
+            </licenseType>
+        </licenseTypes>
 	</accessConditions>
 
 	<reCaptcha show="true">
@@ -202,6 +215,11 @@
 			the "type" attribute are: classic and openlayers "Width" and "height" attributes 
 			define the size of the image display, in pixel set the attribute "tileImage" 
 			to true to use tiled images if possible (only possible when type=openlayers) -->
+
+	   <zoomImageView type="openSeadragon" tileImage="true"
+            footerHeight="0">
+            <useFor><view>fullscreen</view></useFor>
+       </zoomImageView>
 
 		<zoomImageView type="openSeadragon" tileImage="true"
 			footerHeight="50">
@@ -433,6 +451,11 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
 		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		
+        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
+            (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
+        <docstrctWhitelistFilterQuery>(ISWORK:true OR ISANCHOR:true OR DOCSTRCT:PeriodicalVolume) AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterQuery>
+        
 		<!-- versioning -->
 		<versioning>
 			<!-- previousVersionIdentifierField' defines the Solr field that contains 

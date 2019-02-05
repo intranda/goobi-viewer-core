@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -103,8 +104,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void findAllCollectionsFromField_shouldFindAllCollections() throws Exception {
         // First, make sure the collection blacklist always comes from the same config file;
-        Map<String, Long> collections =
-                SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, true, true, ".");
+        Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, null, true, true, ".");
         Assert.assertEquals(32, collections.size());
         List<String> keys = new ArrayList<>(collections.keySet());
         // Collections.sort(keys);
@@ -123,28 +123,28 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                     Assert.assertEquals(Long.valueOf(1), collections.get(key));
                     break;
                 case ("alle"):
-                    Assert.assertEquals(Long.valueOf(28), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(32), collections.get(key));
                     break;
                 case ("mehrbaendigeswerk"):
-                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
                     break;
                 case ("monographie"):
-                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(5), collections.get(key));
                     break;
                 case ("multimedia"):
                     Assert.assertEquals(Long.valueOf(3), collections.get(key));
                     break;
                 case ("ocr"):
-                    Assert.assertEquals(Long.valueOf(6), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(7), collections.get(key));
                     break;
                 case ("ocr.antiqua"):
                     Assert.assertEquals(Long.valueOf(3), collections.get(key));
                     break;
                 case ("ocr.fraktur"):
-                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
                     break;
                 case ("paedagogik"):
-                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
                     break;
                 case ("sonstiges"):
                     Assert.assertEquals(Long.valueOf(11), collections.get(key));
@@ -968,7 +968,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
-        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup", SearchHelper.prepareQuery(null, " AND BLA:blup"));
+        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup",
+                SearchHelper.prepareQuery(null, "(ISWORK:true OR ISANCHOR:true) AND BLA:blup"));
+        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true)", SearchHelper.prepareQuery(null, ""));
     }
 
     /**

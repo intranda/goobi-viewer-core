@@ -101,6 +101,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TIMELINE = 2;
     public static final int SEARCH_TYPE_CALENDAR = 3;
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
+    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = "(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)";
 
     private static final Object lock = new Object();
 
@@ -108,7 +109,6 @@ public final class SearchHelper {
     public static Pattern patternPhrase = Pattern.compile("[\\w]+:" + Helper.REGEX_QUOTATION_MARKS);
 
     /** Filter subquery for collection listing (no volumes). */
-    static final String docstrctWhitelistFilterSuffix = " AND NOT(IDDOC_PARENT:*)";
     static volatile String collectionBlacklistFilterSuffix = null;
 
     /**
@@ -344,7 +344,7 @@ public final class SearchHelper {
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
+        String finalQuery = prepareQuery(query);
         finalQuery = buildFinalQuery(finalQuery, aggregateHits);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
@@ -361,8 +361,6 @@ public final class SearchHelper {
      * 
      * @param luceneField
      * @param value
-     * @param filterForWorks
-     * @param filterForAnchors
      * @param filterForWhitelist
      * @param filterForBlacklist
      * @param separatorString
@@ -371,27 +369,14 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWorks, boolean filterForAnchors,
-            boolean filterForWhitelist, boolean filterForBlacklist, String separatorString, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    public static String getFirstWorkUrlWithFieldValue(String luceneField, String value, boolean filterForWhitelist, boolean filterForBlacklist,
+            String separatorString, Locale locale) throws IndexUnreachableException, PresentationException {
         StringBuilder sbQuery = new StringBuilder();
-        if (filterForWorks || filterForAnchors) {
-            sbQuery.append("(");
-        }
-        if (filterForWorks) {
-            sbQuery.append(SolrConstants.ISWORK).append(":true");
-        }
-        if (filterForWorks && filterForAnchors) {
-            sbQuery.append(" OR ");
-        }
-        if (filterForAnchors) {
-            sbQuery.append(SolrConstants.ISANCHOR).append(":true");
-        }
-        if (filterForWorks || filterForAnchors) {
-            sbQuery.append(")");
-        }
         if (filterForWhitelist) {
-            sbQuery.append(getDocstrctWhitelistFilterSuffix());
+            if (sbQuery.length() > 0) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
         sbQuery.append(" AND (")
@@ -459,41 +444,26 @@ public final class SearchHelper {
      * @param filterQuery An addition solr-query to filer collections by
      * @param filterForWhitelist
      * @param filterForBlacklist
-     * @param filterForWorks
-     * @param filterForAnchors
      * @param splittingChar
      * @return
      * @throws IndexUnreachableException
      * @should find all collections
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, String filterQuery, boolean filterForWhitelist,
-            boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors, String splittingChar) throws IndexUnreachableException {
+            boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
         logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
 
             if (StringUtils.isNotBlank(filterQuery)) {
-                sbQuery.append(filterQuery).append(" AND ");
-            }
-
-            if (filterForWorks || filterForAnchors) {
-                sbQuery.append("(");
-            }
-            if (filterForWorks) {
-                sbQuery.append(SolrConstants.ISWORK).append(":true");
-            }
-            if (filterForWorks && filterForAnchors) {
-                sbQuery.append(" OR ");
-            }
-            if (filterForAnchors) {
-                sbQuery.append(SolrConstants.ISANCHOR).append(":true");
-            }
-            if (filterForWorks || filterForAnchors) {
-                sbQuery.append(")");
+                sbQuery.append(filterQuery);
             }
             if (filterForWhitelist) {
-                sbQuery.append(getDocstrctWhitelistFilterSuffix());
+                if (sbQuery.length() > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
             }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
             Set<String> blacklist = new HashSet<>();
@@ -756,10 +726,10 @@ public final class SearchHelper {
     }
 
     /**
-     * @return docstrctWhitelistFilterSuffix
+     * @return Filter query for record listing
      */
-    public static String getDocstrctWhitelistFilterSuffix() {
-        return docstrctWhitelistFilterSuffix;
+    static String getDocstrctWhitelistFilterQuery() {
+        return DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery();
     }
 
     /**
@@ -926,7 +896,7 @@ public final class SearchHelper {
                         continue;
                     }
                 }
-                if (licenseType.getConditions() != null) {
+                if (licenseType.getProcessedConditions() != null) {
                     String processedConditions = licenseType.getProcessedConditions();
                     // Do not append empty subquery
                     if (StringUtils.isNotBlank(processedConditions)) {
@@ -1982,6 +1952,29 @@ public final class SearchHelper {
     }
 
     /**
+     * 
+     * @param query
+     * @return
+     */
+    public static String prepareQuery(String query) {
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotEmpty(query)) {
+            sbQuery.append('(').append(query).append(')');
+        } else {
+            // Collection browsing (no search query)
+            String docstructWhitelistFilterQuery = getDocstrctWhitelistFilterQuery();
+            if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
+                sbQuery.append(docstructWhitelistFilterQuery);
+            } else {
+                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            }
+
+        }
+
+        return sbQuery.toString();
+    }
+
+    /**
      * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
      * 
      * @param query
@@ -1990,15 +1983,16 @@ public final class SearchHelper {
      * @should prepare non-empty queries correctly
      * @should prepare empty queries correctly
      */
-    public static String prepareQuery(String query, String docstructWhitelistFilterSuffix) {
+    public static String prepareQuery(String query, String docstructWhitelistFilterQuery) {
         StringBuilder sbQuery = new StringBuilder();
         if (StringUtils.isNotEmpty(query)) {
             sbQuery.append('(').append(query).append(')');
         } else {
             // Collection browsing (no search query)
-            sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
-            if (docstructWhitelistFilterSuffix != null) {
-                sbQuery.append(docstructWhitelistFilterSuffix);
+            if (StringUtils.isNotEmpty(docstructWhitelistFilterQuery)) {
+                sbQuery.append(docstructWhitelistFilterQuery);
+            } else {
+                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             }
 
         }

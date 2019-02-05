@@ -218,7 +218,9 @@
                                         <label for="userCreateAccountNick" class="col-xs-12 col-sm-5 control-label">#{msg.nameNick}:</label>
                                         <div class="col-xs-12 col-sm-7">
                                             <h:inputText id="userCreateAccountNick" styleClass="form-control" value="#{userBean.nickName}" required="true"
-                                                requiredMessage="#{msg.loginEnterNickName}" />
+                                                requiredMessage="#{msg.loginEnterNickName}">
+                                                <f:validator validatorId="nicknameValidator" />
+                                            </h:inputText>
                                         </div>
                                     </div>
 
@@ -228,6 +230,7 @@
                                             <h:inputText id="userCreateAccountEMail" styleClass="form-control" value="#{userBean.email}" required="true"
                                                 requiredMessage="#{msg.loginEnterEmail}">
                                                 <f:validator validatorId="emailValidator" />
+                                                <f:validator validatorId="emailAvailableValidator"></f:validator>
                                             </h:inputText>
                                         </div>
                                     </div>

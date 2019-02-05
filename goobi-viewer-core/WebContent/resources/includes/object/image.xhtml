@@ -28,7 +28,8 @@
     	var imageMap = $( "#imageMap" );
         var imageUrl = "#{activeDocumentBean.viewManager.currentImageUrl}";
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
+        var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
+        var accessDeniedImageWrapper = $( "<div />" ).addClass( "view-object__access-denied" ).html( '<img src="' + accessDeniedImagePath + '" />' );
         var page = "#{navigationHelper.currentPage}";
         var configViewer = {
         	global: {
@@ -95,7 +96,7 @@
            	} );
         } 
        	else {
-       		imageMap.append( accessDeniedMessage );
+       		imageMap.append( accessDeniedImageWrapper );
        	}
 
        	// mobile overlay

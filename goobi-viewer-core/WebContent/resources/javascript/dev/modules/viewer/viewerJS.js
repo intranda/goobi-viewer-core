@@ -120,7 +120,7 @@ var viewerJS = ( function() {
         } );
         
         // toggle collapseable widgets
-        $( '.widget__title.collapseable' ).on( 'click', function() {
+        $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
     		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
     	} );
         
@@ -172,6 +172,11 @@ var viewerJS = ( function() {
             $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-up' ).addClass( 'fa-arrow-down' );
         } );
         
+        $( ' [data-collapse-show] ' ).on("click", function() {
+            var href = $( this ).data("collapse-show");
+            $( href ).collapse("show"); 
+        });
+        
         // scroll page animated
         this.pageScroll.init( _defaults.pageScrollSelector, _defaults.pageScrollAnchor );
         
@@ -195,6 +200,7 @@ var viewerJS = ( function() {
         } );
         
         viewer.loadThumbnails();
+        viewer.initFragmentNavigation();     
          
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
@@ -273,6 +279,11 @@ var viewerJS = ( function() {
                         	$( '[data-toggle="tooltip"]' ).tooltip( {
                                 trigger : 'hover'
                             } );
+                        	
+                        	// toggle collapseable widgets
+                            $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
+                        		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
+                        	} );
                             
                             // set content height to sidebar height
                             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
@@ -409,6 +420,26 @@ var viewerJS = ( function() {
         }
     };
     
+    viewer.initFragmentNavigation = function() {
+        if(window.location.hash) {
+            $(document).ready(function() {                
+                var hash = window.location.hash.substring(1);
+                var $hashedElement = $("#" + hash);
+                if($hashedElement.length > 0) {           
+                    $hashedElement.get(0).scrollIntoView();
+                   
+                    var $hashedCollapsible = $hashedElement.find(".collapse");
+                    if($hashedCollapsible.length > 0) {
+                       $hashedCollapsible.collapse("show");
+                    } 
+                }
+                
+                
+                
+
+            })
+        }
+    }
 
     
     // global object for tinymce config

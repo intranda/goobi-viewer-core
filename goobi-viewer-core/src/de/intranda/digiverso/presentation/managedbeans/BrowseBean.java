@@ -586,7 +586,7 @@ public class BrowseBean implements Serializable {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true,
+        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
         url = url.replace("http://localhost:8082/viewer/", "");
         return "pretty:" + url;
@@ -630,7 +630,7 @@ public class BrowseBean implements Serializable {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, true, true,
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }

@@ -236,13 +236,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Column(name = "component")
     private String component = null;
-    
+
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
-    
+
     @Column(name = "searchType")
     private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
-    
+
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -270,7 +270,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
-
 
     /**
      * Noop constructor for javax.persistence
@@ -611,9 +610,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (nestedPages == null) {
             return loadNestedPages();
         }
-        List<CMSPage> pages =
-                nestedPages.stream().filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification)).collect(
-                        Collectors.toList());
+        List<CMSPage> pages = nestedPages.stream()
+                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .collect(Collectors.toList());
         return pages;
     }
 
@@ -733,8 +732,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
-                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
         Collections.sort(list);
@@ -751,8 +750,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
-                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
@@ -813,8 +812,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true, true,
-                        true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
         });
@@ -973,8 +972,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
             List<String> ret = Arrays.stream(ignoreCollections.split(",")).collect(Collectors.toList());
-//            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
-//          List<String> ret = Arrays.asList(ignoreCollections.split(","));
+            //            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
+            //          List<String> ret = Arrays.asList(ignoreCollections.split(","));
 
             return ret;
         }
@@ -997,7 +996,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public boolean isDisplayEmptySearchResults() {
         return this.displayEmptySearchResults;
     }
-    
+
     /**
      * @param displayEmptySearchResults the displayEmptySearchResults to set
      */
@@ -1011,22 +1010,22 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public int getSearchType() {
         return searchType;
     }
-    
+
     /**
      * @param searchType the searchType to set
      */
     public void setSearchType(int searchType) {
         this.searchType = searchType;
     }
-    
+
     public void setAdvancedSearch(boolean advanced) {
-        if(advanced) {
+        if (advanced) {
             this.searchType = SearchHelper.SEARCH_TYPE_ADVANCED;
         } else {
             this.searchType = SearchHelper.SEARCH_TYPE_REGULAR;
         }
     }
-    
+
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
     }

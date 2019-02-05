@@ -51,7 +51,9 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
-            _hideHeader( true ,5000);
+            // hide header
+            _hideHeader( true, 5000 );
+            
             // display header on mousemove/touchmove
             $( '#fullscreenViewImage, #fullscreenViewSidebar' ).on( 'mousemove', function() {
             	_hideHeader( true );
@@ -82,17 +84,15 @@ var viewerJS = ( function( viewer ) {
                         $( 'body' ).hide();
                         window.location.href = window.location.href;                    
                     }
-                } );   
-            	
-            } else {
+                } );
+            } 
+            else {
                 // set position on resize/orientationchange
                 $( window ).on( 'orientationchange', function(e) {
                         $( 'body' ).hide();
                         window.location.href = window.location.href;                    
                 } );   
             }
-            
-         
             
             // reset tooltips for sidebar
             $( '.widget-toc__title-expand [data-toggle="tooltip"]' ).tooltip( 'destroy' );
@@ -126,7 +126,7 @@ var viewerJS = ( function( viewer ) {
             		right: '-' + _sidebarWidth + 'px'
             	}, 300, function() {            		
             		// show sidebar open
-            		$( '#viewSidebarOpen' ).show();
+            		$( '#viewSidebarOpen' ).addClass( 'in' );
             		
             		// show back and forward on small devices
                 	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
@@ -145,7 +145,7 @@ var viewerJS = ( function( viewer ) {
             } );
             $( '[data-open="fs-sidebar"]' ).on( 'click', function() {
             	// hide sidebar open
-            	$( '#viewSidebarOpen' ).hide();
+            	$( '#viewSidebarOpen' ).removeClass( 'in' );
             	
             	// show back and forward on small devices
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
@@ -191,7 +191,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // toggle sidebar panels
-            $( 'body' ).on( 'click', '.fullscreen__view-sidebar-accordeon-panel-title', function() {
+            $( '.fullscreen__view-sidebar-accordeon-panel-title' ).on( 'click', function() {
                 var parentPanelId = $( this ).parent().attr( 'id' );
                 var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
                 
@@ -226,7 +226,7 @@ var viewerJS = ( function( viewer ) {
             } );
 
             // hide all panels
-            $( 'body' ).on( 'click', '[data-close="all-tabs"]', function() {
+            $( '[data-close="all-tabs"]' ).on( 'click', function() {
             	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
             	
             	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
@@ -242,7 +242,7 @@ var viewerJS = ( function( viewer ) {
             } );
 
             // show all panels
-            $( 'body' ).on( 'click', '[data-open="all-tabs"]', function() {
+            $( '[data-open="all-tabs"]' ).on( 'click', function() {
             	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
 
             	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
@@ -268,30 +268,24 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'EXECUTE: _setSidebarStatus' );
     	}
     	
-    	var sidebarStatus;
-    	
     	// set global variables
     	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
     	
-    	
     	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) == '' ) {
-    		sessionStorage.setItem( 'fsSidebarStatus', true );
+    		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
+    			sessionStorage.setItem( 'fsSidebarStatus', false );
+    			
+    			// hide sidebar
+    			_hideSidebar( _sidebarWidth );
+    		}
+    		else {
+    			sessionStorage.setItem( 'fsSidebarStatus', true );    			
+    		}
     	}
     	else {
-    		sidebarStatus = sessionStorage.getItem( 'fsSidebarStatus' );
-    		
-    		if ( sidebarStatus === 'false'  ) {
-    			// set sidebar left position
-    			$( '#fullscreenViewSidebar' ).css( {
-    				'right': '-' + _sidebarWidth + 'px',
-    				'left': 'inherit'
-    			} );
-    			
-    			// hide panel controls
-    			$( '#fullscreenSidebarPanelControls' ).hide();
-    			
-    			// show sidebar open
-    			$( '#viewSidebarOpen' ).show();
+    		if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false'  ) {
+    			// hide sidebar
+    			_hideSidebar( _sidebarWidth );
     			
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -302,6 +296,30 @@ var viewerJS = ( function( viewer ) {
     	
     	// show sidebar
     	$( '.fullscreen__view-sidebar-inner' ).show();
+    }
+    
+    /**
+     * @description Method which hides the sidebar.
+     * @method _hideSidebar
+     * @param {Number} width The current sidebar width.
+     * */
+    function _hideSidebar( width ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _hideSidebar' );
+    		console.log( 'width: ', width );
+    	}
+    	
+    	// set sidebar left position
+		$( '#fullscreenViewSidebar' ).css( {
+			'right': '-' + width + 'px',
+			'left': 'inherit'
+		} );
+		
+		// hide panel controls
+		$( '#fullscreenSidebarPanelControls' ).hide();
+		
+		// show sidebar open
+		$( '#viewSidebarOpen' ).addClass( 'in' );
     }
     
     /**

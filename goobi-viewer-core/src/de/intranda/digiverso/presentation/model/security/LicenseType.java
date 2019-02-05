@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.security;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -54,6 +56,10 @@ public class LicenseType implements IPrivilegeHolder {
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_FORCE_OVERVIEW_PAGE_DESCRIPTION = "licenseType_forceOverviewPage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
+    
+//    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
+    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -200,12 +206,66 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public String getProcessedConditions() {
         String conditions = this.conditions;
+        
+        conditions = getQueryConditions(conditions);
+        
         if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
             conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         }
+        
+        
 
-        return conditions;
+        return conditions.trim();
+    }
+    
+    public String getFilenameConditions() {
+        return getFilenameConditions(this.conditions);
+    }
+
+    /**
+     * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: 
+     * or the entire string if neither QUERY:{...} nor FILENAME:{...} is part of the  given string
+     * 
+     * @param conditions
+     * @return
+     */
+    private String getQueryConditions(String conditions) {
+        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
+        String queryConditions = conditions == null ? "" : conditions.replaceAll(CONDITIONS_FILENAME, "");
+        if(StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
+            return conditions == null ? "" : conditions;
+        } else {
+            return queryConditions;
+        }
+    }
+
+    /**
+     * @param conditions
+     * @return
+     */
+    public String getMatch(String conditions, String pattern) {
+        if(StringUtils.isBlank(conditions)) {
+            return "";
+        }
+        Matcher matcher = Pattern.compile(pattern).matcher(conditions);
+        if(matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "";
+        }
+    }
+    
+    /**
+     * Get the conditions referring to filename matching. This is either the substring in {} after FILENAME: 
+     * or null if neither QUERY:{...} nor FILENAME:{...} is part of the  given string
+     * 
+     * @param conditions
+     * @return
+     */
+    private String getFilenameConditions(String conditions) {
+        String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
+        return filenameConditions;
     }
 
     /**
