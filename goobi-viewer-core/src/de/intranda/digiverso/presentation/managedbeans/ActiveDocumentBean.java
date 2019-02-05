@@ -1367,4 +1367,15 @@ public class ActiveDocumentBean implements Serializable {
 
         return sb.toString();
     }
+
+	/**
+	 * resets the access rights for user comments and pdf download stored in {@link ViewManager}.
+	 * After reset, the access rights will be evaluated again on being called
+	 */
+	public void resetAccess() {
+		if(getViewManager() != null) {
+			getViewManager().resetAccessPermissionPdf();
+			getViewManager().resetAllowUserComments();
+		}
+	}
 }

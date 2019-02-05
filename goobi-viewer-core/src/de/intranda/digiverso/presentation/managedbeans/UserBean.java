@@ -352,6 +352,7 @@ public class UserBean implements Serializable {
 
             try {
                 BeanUtils.getCmsBean().invalidate();
+                BeanUtils.getActiveDocumentBean().resetAccess();
             } catch (Throwable e) {
             }
 
