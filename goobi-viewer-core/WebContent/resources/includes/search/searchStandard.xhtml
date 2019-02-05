@@ -70,19 +70,20 @@
                         </label>
                     </ui:repeat>
                     <script>
-                                $('.search-standard__filter-radio input[type="radio"]').on("change", function() {
-                                    var currValue = $(this).val();
-                                    console.log(currValue);
-                                    $('#hiddenSearchFilterString').val(currValue).change();	//$('[id*=":hiddenSearchFilterString"]').val(currValue).change();
-                                });
+						$('.search-standard__filter-radio input[type="radio"]').on("change", function() {
+                        	var currValue = $(this).val();
+                        	$('#hiddenSearchFilterString').val(currValue).change();
+                        });
                 	</script>
                 </div>
                 <ui:fragment rendered="#{!searchBean.showReducedSearchOptions}">
                     <div class="search-standard__filter-link">
-                        <h:commandLink value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
-                            <f:ajax render="searchArea"></f:ajax>
+                        <h:commandLink rendered="#{navigationHelper.cmsPage}" value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}">
+                            <f:ajax render="searchArea" />
                         </h:commandLink>
-    <!--                     <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a> -->
+                        <ui:fragment rendered="#{!navigationHelper.cmsPage}">
+                            <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
+                        </ui:fragment>
                     </div>
                 </ui:fragment>
             </div>
