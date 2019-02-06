@@ -683,7 +683,7 @@ public class Metadata implements Serializable {
         Set<Metadata> toRemove = new HashSet<>();
         String languageCode = recordLanguage.toUpperCase();
         for (Metadata md : metadataList) {
-            if (md.getLabel().contains(SolrConstants._LANG_)) {
+            if (StringUtils.isNotBlank(md.getLabel()) && md.getLabel().contains(SolrConstants._LANG_)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
                 String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
                 // logger.trace("{}, {}", md.getLabel(), lang);
