@@ -964,16 +964,10 @@ public class OverviewPage implements Harvestable, Serializable {
         logger.debug("deleteAction: {}", this.getId());
         if (id != null) {
             if (DataManager.getInstance().getDao().deleteOverviewPage(this)) {
-                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                adb.setOverviewPage(null);
                 logger.info("Overview page for {} deleted.", pi);
                 Messages.info("viewOverviewDeletePageSuccess");
                 return ""; // TODO redirect to different record view?
             }
-        } else {
-            logger.warn("Current overview page has no ID, so it probably is not persisted. Removing the current session object instead.");
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            adb.setOverviewPage(null);
         }
 
         Messages.error("viewOverviewDeletePagefailure");

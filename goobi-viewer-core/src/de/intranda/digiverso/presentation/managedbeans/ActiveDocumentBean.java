@@ -60,7 +60,6 @@ import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
 import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -1102,21 +1101,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return "";
-    }
-
-    /**
-     * @return the overviewPage
-     */
-    @Deprecated
-    public OverviewPage getOverviewPage() {
-        return null;
-    }
-
-    /**
-     * @param overviewPage the overviewPage to set
-     */
-    @Deprecated
-    public void setOverviewPage(OverviewPage overviewPage) {
     }
 
     public int getCurrentThumbnailPage() {

@@ -94,17 +94,6 @@
                                                                         </h:outputFormat>
                                                                     </span>
                                                                 
-                                                                     <!-- DELETE -->
-                                                                     <h:commandLink
-                                                                         styleClass="overview__metadata-delete pull-right" 
-                                                                         title="#{msg.viewOverviewMetadata_remove}" 
-                                                                         rendered="#{userBean.user.mayEditOverviewPage}"
-                                                                         action="#{activeDocumentBean.overviewPage.removeMetadataFieldAction(status.index)}">
-                                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                                         <f:passThroughAttribute name="data-placement" value="top" />
-                                                                     </h:commandLink>
-                                                                
                                                                      <div class="clearfix"></div>
                                                                  </ui:repeat>
                                                             </dd>
@@ -126,17 +115,6 @@
                                                                             <f:param value="#{val.getComboValueShort(9)}" />
                                                                         </h:outputFormat>
                                                                     </span>
-                                                                    
-                                                                    <!-- DELETE -->
-                                                                    <h:commandLink
-                                                                        styleClass="overview__metadata-delete pull-right" 
-                                                                        title="#{msg.viewOverviewMetadata_remove}" 
-                                                                        rendered="#{userBean.user.mayEditOverviewPage}"
-                                                                        action="#{activeDocumentBean.overviewPage.removeMetadataFieldAction(status.index)}">
-                                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                                        <f:passThroughAttribute name="data-placement" value="top" />
-                                                                    </h:commandLink>
                                                                 
                                                                     <div class="clearfix"></div>
                                                                 </ui:repeat>
