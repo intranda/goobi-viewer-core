@@ -555,10 +555,11 @@ public class Metadata implements Serializable {
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
                 //            logger.debug(params.toString());
-                if (metadataMap.get(param.getKey()) == null) {
+                List<String> mdValues = getMetadata(metadataMap, param.getKey(), locale);
+                if (mdValues == null) {
                     continue;
                 }
-                for (String mdValue : metadataMap.get(param.getKey())) {
+                for (String mdValue : mdValues) {
                     //                logger.debug(param.toString() + " (" + indexOfParam + ")");
                     if (count >= number && number != -1) {
                         break;
@@ -606,6 +607,28 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * Return all values from the given map for either the given key, or - preferably - the given key
+     * suffixed by "_LANG_{locale.language}", i.e. the language specific values for that key ( = metadata field)
+     * The return value may be null if neither the key nor the suffix key is in the map
+     * 
+	 * @param metadataMap
+	 * @param key
+     * @param locale 
+	 * @return
+	 */
+	private List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
+		List<String> mdValues = null;
+		if(locale != null) {
+			String langKey = key + "_LANG_" + locale.getLanguage().toUpperCase();
+			mdValues = metadataMap.get(langKey);
+		}
+		if(mdValues == null) {
+			mdValues = metadataMap.get(key);
+		}
+		return mdValues;
+	}
+
+	/**
      * Converts aggregated person/corporation metadata to just the displayable name.
      *
      * @param aggregatedMetadata
