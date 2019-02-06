@@ -43,7 +43,7 @@ public class SingleWorkCollectionRedirect {
     public Response redirectToWork(@PathParam("luceneField") String field, @PathParam("fieldValue") String value, @Context HttpServletRequest request,
             @Context HttpServletResponse response) {
         try {
-            String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true, true, true,
+            String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true,
                     DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field), Locale.getDefault());
             URI uri = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + url);
             HttpServletResponse httpResponse = response;

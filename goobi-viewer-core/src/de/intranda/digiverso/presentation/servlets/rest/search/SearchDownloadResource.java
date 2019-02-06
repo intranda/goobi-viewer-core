@@ -96,7 +96,7 @@ public class SearchDownloadResource {
     public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request)
             throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
-        String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString(), SearchHelper.getDocstrctWhitelistFilterSuffix());
+        String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString());
         List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 

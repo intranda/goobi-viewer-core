@@ -20,13 +20,13 @@
 				var="filterLink">
 				<div class="men_elem_wrapp">
 					<h:outputLink
-						value="#{navigationHelper.searchUrl}/#{filterLink.escapedLink}/(ISWORK:true OR ISANCHOR:true)#{searchBean.docstrctWhitelistFilterSuffix} AND PARTNERID:#{cc.attrs.partnerId}/1/-/-/"
+						value="#{navigationHelper.searchUrl}/#{filterLink.escapedLink}/#{searchBean.docstrctWhitelistFilterQuery} AND PARTNERID:#{cc.attrs.partnerId}/1/-/-/"
 						rendered="#{cc.attrs.partnerId != null}">
 						<h:outputText
 							value="#{msg[filterLink.label]} (#{filterLink.count})" />
 					</h:outputLink>
 					<h:outputLink
-						value="#{navigationHelper.searchUrl}/#{filterLink.escapedLink}/(ISWORK:true OR ISANCHOR:true)#{searchBean.docstrctWhitelistFilterSuffix}/1/-/-/"
+						value="#{navigationHelper.searchUrl}/#{filterLink.escapedLink}/#{searchBean.docstrctWhitelistFilterQuery}/1/-/-/"
 						rendered="#{cc.attrs.partnerId == null}">
 						<h:outputText
 							value="#{msg[filterLink.label]} (#{filterLink.count})" />

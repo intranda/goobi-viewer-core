@@ -502,10 +502,10 @@
 	<target name="akwien">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
-		<property name="server.url" value="https://emedien.arbeiterkammer.at/viewer2/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="https://emedien.arbeiterkammer.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer2%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer%2Foai" />
 		<property name="theme" value="akwien" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="190" />
@@ -688,7 +688,7 @@
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fkulturerbe%2Foai" />
 		<property name="customDataSource" value="true" />
 		<property name="jta-data-source" value="java:comp/env/kulturerbe" />
-		<property name="theme" value="reference" />
+		<property name="theme" value="ksw-kulturportal" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />

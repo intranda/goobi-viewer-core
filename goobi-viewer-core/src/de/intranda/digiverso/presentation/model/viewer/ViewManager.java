@@ -1124,6 +1124,13 @@ public class ViewManager implements Serializable {
         return firstPdfPage <= lastPdfPage;
     }
 
+    /**
+     * Reset the pdf access permissions. They will be evaluated again on the next call to {@link #isAccessPermissionPdf()}
+     */
+    public void resetAccessPermissionPdf() {
+    	this.accessPermissionPdf = null;
+    }
+    
     public boolean isAccessPermissionPdf() {
         try {
             if (topDocument == null || !topDocument.isWork() || !isHasPages()) {
@@ -1154,6 +1161,13 @@ public class ViewManager implements Serializable {
         return accessPermissionPdf;
     }
 
+    /**
+     * Reset the permissions for writing user comments. They will be evaluated again on the next call to {@link #isAllowUserComments()}
+     */
+    public void resetAllowUserComments() {
+    	this.allowUserComments = null;
+    }
+    
     /**
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *

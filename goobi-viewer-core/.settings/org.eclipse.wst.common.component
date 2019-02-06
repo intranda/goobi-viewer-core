@@ -16,269 +16,133 @@
         <dependent-module archiveName="goobi-viewer-module-wienerlibrary.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-wienerlibrary/goobi-viewer-module-wienerlibrary">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- AKWIEN --> 
-        <dependent-module archiveName="viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- BELVEDERE 2 -->
-        <dependent-module archiveName="viewer-theme-belvedere2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-belvedere2/goobi-viewer-theme-belvedere2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- BSH -->
-        <dependent-module archiveName="viewer-theme-bsh.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsh/goobi-viewer-theme-bsh">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- BUW -->
-        <dependent-module archiveName="viewer-theme-buw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-buw/goobi-viewer-theme-buw">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- DIPF 3 -->
-        <dependent-module archiveName="viewer-theme-dipf3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf3/goobi-viewer-theme-dipf3">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!--  HAAB 2 -->
-        <dependent-module archiveName="viewer-theme-haab2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haab2/goobi-viewer-theme-haab2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- HLBW 2 -->
-        <dependent-module archiveName="viewer-theme-hlbw2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hlbw2/goobi-viewer-theme-hlbw2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- IAI -->
-        <dependent-module archiveName="viewer-theme-iai.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-iai/goobi-viewer-theme-iai">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- IKFN -->
-        <dependent-module archiveName="viewer-theme-ikfn.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ikfn/goobi-viewer-theme-ikfn">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- IKFN 2 -->
-        <dependent-module archiveName="viewer-theme-ikfn2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ikfn2/goobi-viewer-theme-ikfn2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- KHZ -->
-        <dependent-module archiveName="viewer-theme-khz.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-khz/goobi-viewer-theme-khz">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- KUNI -->
-        <dependent-module archiveName="viewer-theme-kuni.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-kuni/goobi-viewer-theme-kuni">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- LIE -->
-        <!-- MVP 3 -->
-        <dependent-module archiveName="viewer-theme-mvp3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mvp3/goobi-viewer-theme-mvp3">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- OOLBIB -->
         <dependent-module archiveName="goobi-viewer-theme-oolbib.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oolbib/goobi-viewer-theme-oolbib">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- REFERENCE -->
         <dependent-module archiveName="goobi-viewer-theme-reference.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-reference/goobi-viewer-theme-reference">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- SBLUE -->
-        <dependent-module archiveName="viewer-theme-sblue.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sblue/goobi-viewer-theme-sblue">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- SIM -->
-        <dependent-module archiveName="viewer-theme-sim.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sim/goobi-viewer-theme-sim">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- SULB -->
-        <dependent-module archiveName="viewer-theme-sulb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sulb/goobi-viewer-theme-sulb">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- BOILERPLATE -->
         <dependent-module archiveName="goobi-viewer-theme-boilerplate.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-boilerplate/goobi-viewer-theme-boilerplate">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- TIB 2 -->
-        <dependent-module archiveName="viewer-theme-tib2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-tib2/goobi-viewer-theme-tib2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- TWL -->
-        <dependent-module archiveName="viewer-theme-twl.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-twl/goobi-viewer-theme-twl">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- UBKASSEL -->
-        <dependent-module archiveName="viewer-theme-ubkassel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubkassel/goobi-viewer-theme-ubkassel">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- UBKIEL -->
-        <dependent-module archiveName="viewer-theme-ubkiel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubkiel/goobi-viewer-theme-ubkiel">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- UBS -->
-        <dependent-module archiveName="viewer-theme-ubs.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubs/goobi-viewer-theme-ubs">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- UBWIEN -->
-        <dependent-module archiveName="viewer-theme-ubwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubwien/goobi-viewer-theme-ubwien">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- UNISAMMLUNGEN -->
-        <dependent-module archiveName="viewer-theme-unisammlungen.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-unisammlungen/goobi-viewer-theme-unisammlungen">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- ZLB 2 -->
-        <dependent-module archiveName="viewer-theme-zlb2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zlb2/goobi-viewer-theme-zlb2">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <!-- WU WIEN -->
         <dependent-module archiveName="goobi-viewer-theme-wuw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wuw/goobi-viewer-theme-wuw">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HLBF -->
         <dependent-module archiveName="goobi-viewer-theme-hlbf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hlbf/goobi-viewer-theme-hlbf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- GEI WordViews -->
         <dependent-module archiveName="goobi-viewer-theme-geiwv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-geiwv/goobi-viewer-theme-geiwv">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- ZBW -->
         <dependent-module archiveName="goobi-viewer-theme-zbw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zbw/goobi-viewer-theme-zbw">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- MVP -->
         <dependent-module archiveName="goobi-viewer-theme-mvp.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mvp/goobi-viewer-theme-mvp">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- ORKA -->
         <dependent-module archiveName="goobi-viewer-theme-orka.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-orka/goobi-viewer-theme-orka">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- GRIMM -->
         <dependent-module archiveName="goobi-viewer-theme-grimm.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-grimm/goobi-viewer-theme-grimm">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HAAB -->
         <dependent-module archiveName="goobi-viewer-theme-haab.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haab/goobi-viewer-theme-haab">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HUB -->
         <dependent-module archiveName="goobi-viewer-theme-hub.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub/goobi-viewer-theme-hub">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- BSZ -->
         <dependent-module archiveName="goobi-viewer-theme-bsz.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsz/goobi-viewer-theme-bsz">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- UNI-SAMMLUNGEN -->
         <dependent-module archiveName="goobi-viewer-theme-gaugsammlungen.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gaugsammlungen/goobi-viewer-theme-gaugsammlungen">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- MAK -->
         <dependent-module archiveName="goobi-viewer-theme-mak.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mak/goobi-viewer-theme-mak">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- MNHA -->
         <dependent-module archiveName="goobi-viewer-theme-mnha.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mnha/goobi-viewer-theme-mnha">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- OEADW -->
         <dependent-module archiveName="goobi-viewer-theme-oeadw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oeadw/goobi-viewer-theme-oeadw">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- SUDAN MEMORIES -->
         <dependent-module archiveName="goobi-viewer-theme-sudanmemories.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sudanmemories/goobi-viewer-theme-sudanmemories">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- LIE -->
         <dependent-module archiveName="goobi-viewer-theme-lie.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lie/goobi-viewer-theme-lie">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- UB KIEL -->
         <dependent-module archiveName="goobi-viewer-theme-ubkiel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubkiel/goobi-viewer-theme-ubkiel">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- WIENER LIBRARY NOVEMBERPOGROM -->
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-novemberpogrom.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-novemberpogrom/goobi-viewer-theme-wienerlibrary-novemberpogrom">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- TWL TESTIFYING TO THE TRUTH -->
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-testifyingtothetruth.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-testifyingtothetruth/goobi-viewer-theme-wienerlibrary-testifyingtothetruth">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- ZLB -->
         <dependent-module archiveName="goobi-viewer-theme-zlb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zlb/goobi-viewer-theme-zlb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- KUEPO -->
         <dependent-module archiveName="goobi-viewer-theme-kuepo.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-kuepo/goobi-viewer-theme-kuepo">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- SUDAN MEMORY -->
         <dependent-module archiveName="goobi-viewer-theme-sudanmemory.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sudanmemory/goobi-viewer-theme-sudanmemory">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- GACACA -->
         <dependent-module archiveName="goobi-viewer-theme-gacaca.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gacaca/goobi-viewer-theme-gacaca">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- UB WIEN -->
         <dependent-module archiveName="goobi-viewer-theme-ubwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubwien/goobi-viewer-theme-ubwien">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- BSH -->
         <dependent-module archiveName="goobi-viewer-theme-bsh.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsh/goobi-viewer-theme-bsh">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- DLA MARBACH -->
         <dependent-module archiveName="goobi-viewer-theme-dlam.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dlam/goobi-viewer-theme-dlam">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- PLAYGROUND -->
         <dependent-module archiveName="goobi-viewer-theme-playground.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-playground/goobi-viewer-theme-playground">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HUB ARCHIVE -->
         <dependent-module archiveName="goobi-viewer-theme-hu-archiv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hu-archiv/goobi-viewer-theme-hu-archiv">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- DIPF -->
         <dependent-module archiveName="goobi-viewer-theme-dipf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf/goobi-viewer-theme-dipf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- LMH -->
         <dependent-module archiveName="goobi-viewer-theme-lamuhalle.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lamuhalle/goobi-viewer-theme-lamuhalle">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- AK WIEN -->
         <dependent-module archiveName="goobi-viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- UB WEIMAR -->
         <dependent-module archiveName="goobi-viewer-theme-ubweimar.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubweimar/goobi-viewer-theme-ubweimar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HUB EVIFA -->
         <dependent-module archiveName="goobi-viewer-theme-hub-evifa.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub-evifa/goobi-viewer-theme-hub-evifa">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- ALBERTINA -->
         <dependent-module archiveName="goobi-viewer-theme-albertina.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-albertina/goobi-viewer-theme-albertina">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- HAENDEL -->
         <dependent-module archiveName="goobi-viewer-theme-haendel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haendel/goobi-viewer-theme-haendel">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- CHESTER BEATTY LIBRARY -->
         <dependent-module archiveName="goobi-viewer-theme-cbl.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-cbl/goobi-viewer-theme-cbl">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- SULB -->
         <dependent-module archiveName="goobi-viewer-theme-sulb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sulb/goobi-viewer-theme-sulb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- IAI -->
         <dependent-module archiveName="goobi-viewer-theme-iai.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-iai/goobi-viewer-theme-iai">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- VLB -->
         <dependent-module archiveName="goobi-viewer-theme-vlb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-vlb/goobi-viewer-theme-vlb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-ksw-kulturportal.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ksw-kulturportal/goobi-viewer-theme-ksw-kulturportal">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>

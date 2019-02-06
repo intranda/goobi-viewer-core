@@ -695,6 +695,15 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return
+     * @should return correct value
+     */
+    public String getDocstrctWhitelistFilterQuery() {
+        return getLocalString("search.docstrctWhitelistFilterQuery", SearchHelper.DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY);
+    }
+
+    /**
+     * 
      * @param field
      * @return
      * @should return correct value
@@ -3176,12 +3185,12 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
      * 
-     * @return  The number of activities to display per collection page in the IIIF discovery api
+     * @return The number of activities to display per collection page in the IIIF discovery api
      */
     public int getIIIFDiscoveryAvtivitiesPerPage() {
         return getLocalInt("webapi.iiif.discovery.activitiesPerPage", 100);
     }
-    
+
     public String getIIIFLogo() {
         return getLocalString("webapi.iiif.logo", null);
     }
@@ -3204,7 +3213,7 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("webapi.iiif.descriptionFields.field", Collections.singletonList("MD_CONTENTDESCRIPTION"));
 
     }
-    
+
     /**
      * @return
      * @should return correct value
@@ -3241,9 +3250,5 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
-
-
-
-
 
 }

@@ -744,8 +744,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
-                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list.add(0, "");
         Collections.sort(list);
@@ -762,8 +762,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
         }
-        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true, true,
-                true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, getSearchPrefix(), true, true,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
@@ -824,8 +824,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
             @Override
             public Map<String, Long> getData() throws IndexUnreachableException {
-                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true, true,
-                        true, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, filterQuery, true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
                 return dcStrings;
             }
         });
