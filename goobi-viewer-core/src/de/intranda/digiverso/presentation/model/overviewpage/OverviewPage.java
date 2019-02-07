@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -184,18 +183,6 @@ public class OverviewPage implements Harvestable, Serializable {
      * @throws IndexUnreachableException
      */
     private static boolean isAllowed(String pi) throws IndexUnreachableException, PresentationException {
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()) {
-            String overviewPageCondition = DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition();
-            if (StringUtils.isNotBlank(overviewPageCondition)) {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI).append(':').append(pi).append(" AND (").append(overviewPageCondition).append(')');
-                logger.trace("Evaluating condition: {}", sbQuery.toString());
-                if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    return false;
-                }
-            }
-        }
-
         return true;
     }
 
@@ -496,12 +483,12 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
-     * Returns whether the sidebar overview linkis visible (= overview pages are enabled at all).
+     * Returns whether the sidebar overview link is visible (= overview pages are enabled at all).
      *
      * @should return the value in sidenbarOverviewLinkVisible
      */
     public boolean isEnabled() {
-        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
+        return false;
     }
 
     public boolean isDisplayImage() {

@@ -433,14 +433,6 @@ public class ConfigurationBean implements Serializable {
      * @return
      * @should return correct value
      */
-    public boolean isSidebarOverviewLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
     public boolean isSidebarPageLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
     }

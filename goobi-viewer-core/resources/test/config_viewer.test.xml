@@ -25,8 +25,8 @@
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
 	<origContentFolder>src</origContentFolder>
-	<!-- overviewFolder: contains the configuration file for overview pages -->
-	<overviewFolder>overview</overviewFolder>
+    <!-- cmsTextFolder: contains extracted CMS page texts for indexing-->
+    <cmsTextFolder>cms</cmsTextFolder>
 	<!-- altoFolder: contains ALTO files -->
 	<altoFolder>alto</altoFolder>
 	<!-- abbyyFolder: contains ABBYY XML files -->
@@ -815,15 +815,7 @@
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
                 </licenseText>
-            </sidebarWidgetUsage>
-
-		<!-- overview: if false, the image view is hidden -->
-		<overview>
-			<visible>false</visible>
-			<!-- condition: Optional Solr subquery. Only records that match the given 
-				query will have the overview page displayed. -->
-			<condition>condition_value</condition>
-		</overview>
+        </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->
 		<page>

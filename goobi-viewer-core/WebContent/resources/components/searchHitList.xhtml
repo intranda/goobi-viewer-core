@@ -178,29 +178,29 @@
                             <!-- GET CHILD HITS -->
                             <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
                                 <i class="fa fa-caret-right" aria-hidden="true"></i>
-                                <h:outputFormat rendered="#{hit.overviewPageHitCount > 0}" value="#{msg.searchChildOverviewPageHitCount}">
-                                    <f:param value="#{hit.overviewPageHitCount}" />
+                                <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
+                                    <f:param value="#{hit.cmsPageHitCount}" />
                                 </h:outputFormat>
                                 <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0}" value=", " />
+                                    <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
                                     <f:param value="#{hit.docstructHitCount}" />
                                 </h:outputFormat>
                                 <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                    <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
                                     <f:param value="#{hit.pageHitCount}" />
                                 </h:outputFormat>
                                 <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                    <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
                                     <f:param value="#{hit.metadataHitCount}" />
                                 </h:outputFormat>
                                 <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}"
+                                    <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}"
                                         value=", " />
                                     <f:param value="#{hit.eventHitCount}" />
                                 </h:outputFormat>
                                 <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
                                     <h:outputText
-                                        rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                        rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
                                         value=", " />
                                     <f:param value="#{hit.ugcHitCount}" />
                                 </h:outputFormat>

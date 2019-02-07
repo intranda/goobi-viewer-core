@@ -231,7 +231,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
-            hit.addOverviewPageChild();
+            hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
             logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
@@ -752,39 +752,6 @@ public final class SearchHelper {
         }
 
         return suffix;
-    }
-
-    /**
-     *
-     * @param docstructList
-     * @return Solr query suffix for docstruct filtering
-     * @should construct suffix correctly
-     * @should return empty string if only docstruct is asterisk
-     */
-    @Deprecated
-    protected static String generateDocstrctWhitelistFilterSuffix(List<String> docstructList) {
-        if (docstructList == null) {
-            throw new IllegalArgumentException("docstructList may not be null");
-        }
-        logger.debug("Generating docstruct whitelist suffix...");
-        if (!docstructList.isEmpty()) {
-            if (docstructList.size() == 1 && "*".equals(docstructList.get(0))) {
-                return "";
-            }
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(" AND (");
-            for (String s : docstructList) {
-                if (StringUtils.isNotBlank(s)) {
-                    String escapedS = s.trim();
-                    sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(escapedS).append(" OR ");
-                }
-            }
-            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            sbQuery.append(')');
-            return sbQuery.toString();
-        }
-
-        return "";
     }
 
     /**
@@ -1896,11 +1863,8 @@ public final class SearchHelper {
                                 if (!ret.contains(SolrConstants.UGCTERMS)) {
                                     ret.add(SolrConstants.UGCTERMS);
                                 }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_DESCRIPTION)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                                }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                                if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                                    ret.add(SolrConstants.CMS_TEXT_ALL);
                                 }
                             } else if (SolrConstants.DEFAULT.equals(item.getField())
                                     || SolrConstants.SUPERDEFAULT.equals(item.getField()) && !ret.contains(SolrConstants.DEFAULT)) {
@@ -1908,13 +1872,8 @@ public final class SearchHelper {
                             } else if (SolrConstants.FULLTEXT.equals(item.getField())
                                     || SolrConstants.SUPERFULLTEXT.equals(item.getField()) && !ret.contains(SolrConstants.FULLTEXT)) {
                                 ret.add(SolrConstants.FULLTEXT);
-                            } else if (SolrConstants.OVERVIEWPAGE.equals(item.getField())) {
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_DESCRIPTION)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                                }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
-                                }
+                            } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                                ret.add(SolrConstants.CMS_TEXT_ALL);
                             } else if (!ret.contains(item.getField())) {
                                 ret.add(item.getField());
                             }
@@ -1939,8 +1898,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.FULLTEXT);
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
-                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                    ret.add(SolrConstants.CMS_TEXT_ALL);
                     ret.add(SolrConstants._CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());

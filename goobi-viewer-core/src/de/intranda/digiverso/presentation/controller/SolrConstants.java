@@ -97,6 +97,7 @@ public class SolrConstants {
 
     public static final String ACCESSCONDITION = "ACCESSCONDITION";
     //    public static final String ALTO = "ALTO";
+    public static final String CMS_TEXT_ALL = "CMS_TEXT_ALL";
     public static final String CURRENTNO = "CURRENTNO";
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
     public static final String DATAREPOSITORY = "DATAREPOSITORY";
@@ -148,9 +149,6 @@ public class SolrConstants {
     public static final String OPACURL = "OPACURL";
     public static final String ORDER = "ORDER";
     public static final String ORDERLABEL = "ORDERLABEL";
-    public static final String OVERVIEWPAGE = "OVERVIEWPAGE";
-    public static final String OVERVIEWPAGE_DESCRIPTION = "OVERVIEWPAGE_DESCRIPTION";
-    public static final String OVERVIEWPAGE_PUBLICATIONTEXT = "OVERVIEWPAGE_PUBLICATIONTEXT";
     public static final String PERSON_ONEFIELD = "MD_CREATOR";
     public static final String PHYSID = "PHYSID";
     public static final String PI = "PI";

@@ -47,16 +47,18 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -77,7 +79,7 @@ public class SearchHit implements Comparable<SearchHit> {
         COMMENT, // UGC comment
         EVENT, // LIDO event
         GROUP, // convolute/series
-        OVERVIEWPAGE; // overview page type for search hits
+        CMS; // CMS page type for search hits
 
         public static HitType getByName(String name) {
             if (name != null) {
@@ -90,8 +92,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         return PAGE;
                     case "EVENT":
                         return EVENT;
+                    case "CMS":
                     case "OVERVIEWPAGE":
-                        return OVERVIEWPAGE;
+                        return CMS;
                     case "UGC":
                         return UGC;
                     case "METADATA":
@@ -269,24 +272,24 @@ public class SearchHit implements Comparable<SearchHit> {
         if (searchTerms == null) {
             return;
         }
-        
+
         IMetadataValue labelShort = new MultiLanguageMetadataValue();
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            
+
             String label = browseElement.getLabel(locale);
-            
+
             if (searchTerms.get(SolrConstants.DEFAULT) != null) {
                 label = SearchHelper.applyHighlightingToPhrase(label, searchTerms.get(SolrConstants.DEFAULT));
             } else if (searchTerms.get("MD_TITLE") != null) {
                 label = SearchHelper.applyHighlightingToPhrase(label, searchTerms.get("MD_TITLE"));
             }
-            
+
             // Escape HTML tags
             label = StringEscapeUtils.escapeHtml(label);
-            
+
             // Then replace highlighting placeholders with HTML tags
             label = SearchHelper.replaceHighlightingPlaceholders(label);
-            
+
             labelShort.setValue(label, locale);
         }
 
@@ -294,65 +297,69 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * Creates a child hit element for the overview page, if overview page texts were also searched.
+     * Creates a child hit element for each hit matching a CMS page text, if CMS page texts were also searched.
+     * 
+     * @throws DAOException
      */
-    public void addOverviewPageChild() {
-        if (searchTerms == null) {
+    public void addCMSPageChildren() throws DAOException {
+        if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
             return;
         }
-        if (searchTerms.containsKey(SolrConstants.OVERVIEWPAGE_DESCRIPTION) || searchTerms.containsKey(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)) {
-            try {
-                OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(browseElement.getPi(), null, null);
-                if (overviewPage != null) {
-                    List<String> descriptionTexts = null;
-                    if (overviewPage.getDescription() != null) {
-                        String value = Jsoup.parse(overviewPage.getDescription()).text();
-                        String highlightedValue =
-                                SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION));
-                        if (!highlightedValue.equals(value)) {
-                            descriptionTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION),
-                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true);
 
-                        }
+        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesForRecord(browseElement.getPi(), null);
+        if (cmsPages.isEmpty()) {
+            return;
+        }
+
+        Map<String, List<String>> texts = new HashMap<>();
+        try {
+            // Collect relevant texts
+            for (CMSPage page : cmsPages) {
+                if (page.getDefaultLanguage() == null || page.getDefaultLanguage().getContentItems().isEmpty()) {
+                    continue;
+                }
+                for (CMSContentItem item : page.getDefaultLanguage().getContentItems()) {
+                    if (!searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
+                        continue;
                     }
-                    List<String> publicationTexts = null;
-                    if (overviewPage.getPublicationText() != null) {
-                        String value = Jsoup.parse(overviewPage.getPublicationText()).text();
-                        String highlightedValue =
-                                SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT));
-                        if (!highlightedValue.equals(value)) {
-                            publicationTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
-                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true);
-                        }
+                    if (StringUtils.isEmpty(item.getHtmlFragment())) {
+                        continue;
                     }
-                    if ((descriptionTexts != null && !descriptionTexts.isEmpty()) || (publicationTexts != null && !publicationTexts.isEmpty())) {
-                        int count = 0;
-                        SearchHit overviewPageHit = new SearchHit(HitType.METADATA,
-                                new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("overviewPage", locale), null, true, locale, null),
-                                searchTerms, locale);
-                        children.add(overviewPageHit);
-                        if (descriptionTexts != null && !descriptionTexts.isEmpty()) {
-                            for (String descriptionText : descriptionTexts) {
-                                overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE,
-                                        new BrowseElement(browseElement.getPi(), 1, "viewOverviewDescription", descriptionText, true, locale, null),
-                                        searchTerms, locale));
-                                count++;
-                            }
+                    String value = Jsoup.parse(item.getHtmlFragment()).text();
+                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
+                    if (!highlightedValue.equals(value)) {
+                        List<String> truncatedStrings = texts.get(page.getMenuTitle());
+                        if (truncatedStrings == null) {
+                            truncatedStrings = new ArrayList<>();
+                            texts.put(page.getMenuTitle(), truncatedStrings);
                         }
-                        if (publicationTexts != null && !publicationTexts.isEmpty()) {
-                            for (String publicationText : publicationTexts) {
-                                overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                        "viewOverviewPublication_publication", publicationText, true, locale, null), searchTerms, locale));
-                                count++;
-                            }
-                        }
-                        hitTypeCounts.put(HitType.OVERVIEWPAGE, count);
-                        logger.trace("Added {} overview page child hits", count);
+                        truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true));
+
                     }
                 }
-            } catch (DAOException e) {
-                logger.error(e.getMessage(), e);
             }
+
+            // Add hits
+            if (!texts.isEmpty()) {
+                for (String key : texts.keySet()) {
+                    int count = 0;
+                    SearchHit cmsPageHit = new SearchHit(HitType.METADATA,
+                            new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(key, locale), null, locale, null), searchTerms, locale);
+                    children.add(cmsPageHit);
+                    for (String text : texts.get(key)) {
+
+                        cmsPageHit.getChildren()
+                                .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "cmsPage_" + key, text, locale, null),
+                                        searchTerms, locale));
+                        count++;
+                    }
+                    hitTypeCounts.put(HitType.CMS, count);
+                    logger.trace("Added {} CMS page child hits", count);
+                }
+            }
+        } catch (CmsElementNotFoundException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -403,11 +410,11 @@ public class SearchHit implements Comparable<SearchHit> {
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
-                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, false, locale, null), searchTerms,
-                        locale);
+                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, locale, null), searchTerms, locale);
                 for (String fragment : fulltextFragments) {
-                    hit.getChildren().add(new SearchHit(HitType.PAGE,
-                            new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, false, locale, null), searchTerms, locale));
+                    hit.getChildren()
+                            .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, locale, null), searchTerms,
+                                    locale));
                     count++;
                 }
                 children.add(hit);
@@ -439,33 +446,33 @@ public class SearchHit implements Comparable<SearchHit> {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         populateChildren(number, 0, locale, request);
     }
-        
-        /**
-         * 
-         * @param number
-         * @param locale
-         * @param request
-         * @throws PresentationException
-         * @throws IndexUnreachableException
-         * @throws DAOException
-         * @throws ViewerConfigurationException
-         */
-   public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
-                throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
+    /**
+     * 
+     * @param number
+     * @param locale
+     * @param request
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public void populateChildren(int number, int skip, Locale locale, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
         // Create child hits
         String pi = browseElement.getPi();
         if (pi != null && childDocs != null) {
             logger.trace("{} child hits found for {}", childDocs.size(), pi);
-            if (number+skip > childDocs.size()) {
-                number = childDocs.size()-skip;
+            if (number + skip > childDocs.size()) {
+                number = childDocs.size() - skip;
             }
             Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
             Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
             List<SolrDocument> ugcDocs = null;
             for (int i = 0; i < number; ++i) {
-                SolrDocument childDoc = childDocs.get(i+skip);
+                SolrDocument childDoc = childDocs.get(i + skip);
                 String fulltext = null;
                 DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                 if (docType == null) {
@@ -794,9 +801,9 @@ public class SearchHit implements Comparable<SearchHit> {
         return false;
     }
 
-    public int getOverviewPageHitCount() {
-        if (hitTypeCounts.get(HitType.OVERVIEWPAGE) != null) {
-            return hitTypeCounts.get(HitType.OVERVIEWPAGE);
+    public int getCmsPageHitCount() {
+        if (hitTypeCounts.get(HitType.CMS) != null) {
+            return hitTypeCounts.get(HitType.CMS);
         }
 
         return 0;

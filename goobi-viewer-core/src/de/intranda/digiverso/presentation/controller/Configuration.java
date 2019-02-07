@@ -1206,8 +1206,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getOverviewFolder() {
-        return getLocalString("overviewFolder");
+    public String getCmsTextFolder() {
+        return getLocalString("cmsTextFolder");
     }
 
     /**
@@ -1501,24 +1501,6 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarOverviewLinkVisible() {
-        return getLocalBoolean("sidebar.overview.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarOverviewLinkCondition() {
-        return getLocalString("sidebar.overview.condition");
     }
 
     /**
