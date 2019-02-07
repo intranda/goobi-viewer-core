@@ -989,10 +989,11 @@ public class CMSPage {
         return "cms/" + getId() + "/";
     }
 
-    public void addContentItem(CMSContentItem item) {
+    public void addContentItem(CMSContentItem templateItem) {
         synchronized (languageVersions) {
             List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
             for (CMSPageLanguageVersion language : languages) {
+            	CMSContentItem item = new CMSContentItem(templateItem, null);
                 if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
                     if (!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                         language.addContentItem(item);
@@ -1212,6 +1213,21 @@ public class CMSPage {
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
     }
+
+	/**
+	 * @param itemId
+	 */
+	public void removeContentItem(String itemId) {
+		for (CMSPageLanguageVersion languageVersion : languageVersions) {
+			CMSContentItem item;
+			try {
+				item = languageVersion.getContentItem(itemId);
+				languageVersion.removeContentItem(item);
+			} catch (CmsElementNotFoundException e) {
+				//continue
+			}
+		}
+	}
 
 
 }
