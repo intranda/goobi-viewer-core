@@ -94,9 +94,8 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
-import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -115,10 +114,10 @@ public class Helper {
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    // TODO remove constants
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
+    public static final String SUFFIX_CMS = "_cms";
 
     private static final int HTTP_TIMEOUT = 10000;
 
@@ -505,15 +504,18 @@ public class Helper {
             logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
         }
 
-        // TODO Export overview page contents
-        //        List<CMSPage> overviewPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, CMSPage.CLASSIFICATION_OVERVIEWPAGE);
-
-        //            CMSPage overviewPage = overviewPages.get(0);
+        // Export related CMS page contents
         try {
-            if (overviewPage != null && overviewPage.getDefaultLanguage() != null && !overviewPage.getDefaultLanguage().getContentItems().isEmpty()) {
-                for (CMSContentItem item : overviewPage.getDefaultLanguage().getContentItems()) {
-                    if (CMSContentItemType.HTML.equals(item.getType())) {
-                        item.exportHtmlFragment(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
+            List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, null);
+            if (!cmsPages.isEmpty()) {
+                for (CMSPage page : cmsPages) {
+                    if (page.getDefaultLanguage() == null || page.getDefaultLanguage().getContentItems().isEmpty()) {
+                        continue;
+                    }
+                    for (CMSContentItem item : page.getDefaultLanguage().getContentItems()) {
+                        if (CMSContentItemType.HTML.equals(item.getType())) {
+                            item.exportHtmlFragment(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
+                        }
                     }
                 }
             }
@@ -524,9 +526,7 @@ public class Helper {
         }
 
         // Module augmentations
-        for (
-
-        IModule module : DataManager.getInstance().getModules()) {
+        for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, sbNamingScheme.toString());
             } catch (Exception e) {

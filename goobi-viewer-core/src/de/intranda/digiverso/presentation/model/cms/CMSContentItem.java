@@ -1103,13 +1103,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             throw new IllegalArgumentException("namingScheme may not be null or empty");
         }
 
-        Path overviewPageDir = Paths.get(hotfolderPath, namingScheme + "_overview");
-        if (!Files.isDirectory(overviewPageDir)) {
-            Files.createDirectory(overviewPageDir);
-            logger.trace("Created overview page subdirectory: {}", overviewPageDir.toAbsolutePath().toString());
+        Path cmsDataDir = Paths.get(hotfolderPath, namingScheme + Helper.SUFFIX_CMS);
+        if (!Files.isDirectory(cmsDataDir)) {
+            Files.createDirectory(cmsDataDir);
+            logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
         }
         if (StringUtils.isNotEmpty(htmlFragment)) {
-            File file = new File(overviewPageDir.toFile(), itemId + ".xml");
+            File file = new File(cmsDataDir.toFile(), itemId + ".xml");
             try {
                 FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
