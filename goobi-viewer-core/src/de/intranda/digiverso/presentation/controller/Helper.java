@@ -513,7 +513,7 @@ public class Helper {
                         continue;
                     }
                     for (CMSContentItem item : page.getDefaultLanguage().getContentItems()) {
-                        if (CMSContentItemType.HTML.equals(item.getType())) {
+                        if (CMSContentItemType.HTML.equals(item.getType()) || CMSContentItemType.TEXT.equals(item.getType())) {
                             item.exportHtmlFragment(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
                         }
                     }
