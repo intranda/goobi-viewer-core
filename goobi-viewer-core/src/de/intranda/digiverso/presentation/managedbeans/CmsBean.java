@@ -701,27 +701,27 @@ public class CmsBean implements Serializable {
         }
     }
 
+    /**
+     * Action method for deleting selectedPage from the database.
+     * 
+     * @return Return view
+     * @throws DAOException
+     */
     public String deleteSelectedPage() throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        if (dao != null && selectedPage != null && selectedPage.getId() != null) {
-            logger.debug("deleting page " + selectedPage);
-            if (dao.deleteCMSPage(selectedPage)) {
-                selectedPage = null;
-                lazyModelPages.update();
-                Messages.info("cms_deletePage_success");
-            } else {
-                logger.error("Failed to delete page");
-                Messages.error("cms_deletePage_failure");
-            }
-        }
-
+        deletePage(selectedPage);
         return "cmsOverview";
     }
 
+    /**
+     * Deletes given CMS page from the database.
+     * 
+     * @param page Page to delete
+     * @throws DAOException
+     */
     public void deletePage(CMSPage page) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        if (dao != null && page != null && page.getId() != null) {
-            if (dao.deleteCMSPage(page)) {
+        if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
+            logger.debug("Deleting CMS page: {}", selectedPage);
+            if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
                 lazyModelPages.update();
                 Messages.info("cms_deletePage_success");
             } else {
@@ -729,6 +729,7 @@ public class CmsBean implements Serializable {
                 Messages.error("cms_deletePage_failure");
             }
         }
+
         selectedPage = null;
     }
 
