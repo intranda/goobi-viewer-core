@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -297,7 +299,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * Creates a child hit element for each hit matching a CMS page text, if CMS page texts were also searched.
+     * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      * 
      * @throws DAOException
      */
@@ -311,7 +313,7 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
 
-        Map<String, List<String>> texts = new HashMap<>();
+        SortedMap<CMSPage, List<String>> hitPages = new TreeMap<>();
         try {
             // Collect relevant texts
             for (CMSPage page : cmsPages) {
@@ -328,10 +330,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     String value = Jsoup.parse(item.getHtmlFragment()).text();
                     String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
                     if (!highlightedValue.equals(value)) {
-                        List<String> truncatedStrings = texts.get(page.getMenuTitle());
+                        List<String> truncatedStrings = hitPages.get(page);
                         if (truncatedStrings == null) {
                             truncatedStrings = new ArrayList<>();
-                            texts.put(page.getMenuTitle(), truncatedStrings);
+                            hitPages.put(page, truncatedStrings);
                         }
                         truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
                                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true));
@@ -340,17 +342,17 @@ public class SearchHit implements Comparable<SearchHit> {
                 }
             }
 
-            // Add hits
-            if (!texts.isEmpty()) {
-                for (String key : texts.keySet()) {
+            // Add hits (one for each page)
+            if (!hitPages.isEmpty()) {
+                for (CMSPage page : hitPages.keySet()) {
                     int count = 0;
-                    SearchHit cmsPageHit = new SearchHit(HitType.METADATA,
-                            new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(key, locale), null, locale, null), searchTerms, locale);
+                    SearchHit cmsPageHit = new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1,
+                            Helper.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()), searchTerms, locale);
                     children.add(cmsPageHit);
-                    for (String text : texts.get(key)) {
-
+                    for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
-                                .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "cmsPage_" + key, text, locale, null),
+                                .add(new SearchHit(HitType.PAGE,
+                                        new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null, page.getRelativeUrlPath()),
                                         searchTerms, locale));
                         count++;
                     }
@@ -410,11 +412,12 @@ public class SearchHit implements Comparable<SearchHit> {
             int count = 0;
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
-                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, locale, null), searchTerms, locale);
+                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, locale, null, null), searchTerms,
+                        locale);
                 for (String fragment : fulltextFragments) {
                     hit.getChildren()
-                            .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, locale, null), searchTerms,
-                                    locale));
+                            .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, locale, null, null),
+                                    searchTerms, locale));
                     count++;
                 }
                 children.add(hit);

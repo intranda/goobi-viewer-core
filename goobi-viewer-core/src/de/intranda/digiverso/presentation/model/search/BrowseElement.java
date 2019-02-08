@@ -135,20 +135,26 @@ public class BrowseElement implements Serializable {
      * Constructor for unit tests and special instances.
      * 
      * @param pi
+     * @param imageNo
      * @param label
-     * @param locale
      * @param fulltext
-     * @param useOverviewPage
+     * @param locale
+     * @param dataRepository
+     * @param url Injected URL, overrides URL generation
+     * 
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository) {
+    BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = new SimpleMetadataValue(label);
         this.fulltext = fulltext;
         this.locale = locale;
         this.metadataList = new ArrayList<>();
-        this.url = generateUrl();
+        this.url = url;
+        if (this.url == null) {
+            this.url = generateUrl();
+        }
         this.dataRepository = dataRepository;
     }
 

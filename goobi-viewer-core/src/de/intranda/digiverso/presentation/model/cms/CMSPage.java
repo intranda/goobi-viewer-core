@@ -73,7 +73,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage {
+public class CMSPage implements Comparable<CMSPage> {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
@@ -177,6 +177,21 @@ public class CMSPage {
     private String staticPageName;
 
     public CMSPage() {
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(CMSPage o) {
+        if (o == null || o.getId() == null) {
+            return -1;
+        }
+        if (id == null) {
+            return 1;
+        }
+
+        return id.compareTo(o.getId());
     }
 
     /**
@@ -1247,5 +1262,4 @@ public class CMSPage {
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
     }
-
 }
