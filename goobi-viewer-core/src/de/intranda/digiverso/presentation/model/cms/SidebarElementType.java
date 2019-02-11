@@ -70,6 +70,7 @@ public enum SidebarElementType {
         switch (this.type) {
             case fieldQuery:
                 element = new CMSSidebarElementWithQuery();
+                element.setLinkedPages(new PageList());
                 break;
             case search:
                 element = new CMSSidebarElementWithSearch();

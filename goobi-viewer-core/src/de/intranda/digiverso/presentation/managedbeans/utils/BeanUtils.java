@@ -118,7 +118,6 @@ public class BeanUtils {
         if (context != null && context.getExternalContext() != null) {
             return (ServletContext) context.getExternalContext().getContext();
         }
-
         return null;
     }
 
