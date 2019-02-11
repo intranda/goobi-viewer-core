@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -117,8 +118,11 @@ public class StringTools {
             replaceWith = "";
         }
 
-        return s.replace("\r\n", replaceWith).replace("\n", replaceWith).replaceAll("\r", replaceWith).replaceAll("<br>", replaceWith).replaceAll(
-                "<br\\s*/>", replaceWith);
+        return s.replace("\r\n", replaceWith)
+                .replace("\n", replaceWith)
+                .replaceAll("\r", replaceWith)
+                .replaceAll("<br>", replaceWith)
+                .replaceAll("<br\\s*/>", replaceWith);
     }
 
     /**
@@ -164,12 +168,42 @@ public class StringTools {
         text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
         return text;
     }
-    
+
     public static String escapeQuotes(String s) {
-        if(s != null) {    
+        if (s != null) {
             s = s.replaceAll("(?<!\\\\)'", "\\\\'");
             s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
         }
         return s;
+    }
+
+    /**
+     * 
+     * @param url
+     * @return
+     * @should return true for image urls
+     */
+    public static boolean isImageUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return false;
+        }
+
+        String extension = FilenameUtils.getExtension(url);
+        if (StringUtils.isNotEmpty(extension)) {
+            switch (extension.toLowerCase()) {
+                case "tif":
+                case "tiff":
+                case "jpg":
+                case "jpeg":
+                case "gif":
+                case "png":
+                case "jp2":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        return false;
     }
 }
