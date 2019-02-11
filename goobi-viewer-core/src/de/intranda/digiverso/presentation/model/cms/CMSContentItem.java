@@ -215,7 +215,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private String ignoreCollections = null;
 
     /** Comma separated list of metadata field names to display in overview pages **/
-    @Column(name = "metadataFields")
+    @Column(name = "metadataFields", columnDefinition = "LONGTEXT")
     private String metadataFields = null;
 
     @Column(name = "toc_pi")
