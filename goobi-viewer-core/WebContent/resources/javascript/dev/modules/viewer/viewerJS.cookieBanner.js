@@ -26,7 +26,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _bannerStatus = true;
     var _bannerHash = '';
     var _isWhitelisted = false;
@@ -49,17 +49,13 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'viewer.cookieBanner.init: config - ', config );
             }
             
-            // TODO:
-            // white list durchgehen und schauen, ob der banner angezeigt wird
-            // HASH aus page ids bauen und im local storage speichern -> #{cmsBean.getLastEditedTimestamp(pageId)}
-            // prüfen, ob sich der HASH verändert hat, wenn ja, banner wieder anzeigen
-            
             $.extend( true, _defaults, config );
             
+            // set global variables
             _bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
             _bannerHash = localStorage.getItem( 'cookieBannerHash' );
             
-            // save last edit hash
+            // set last edit hash
             if ( _bannerHash == undefined || _bannerHash == '' ) {
             	localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
             	_bannerHash = localStorage.getItem( 'cookieBannerHash' );
@@ -84,17 +80,23 @@ var viewerJS = ( function( viewer ) {
             		_hideBanner();
             	}
             	else {
+            		// check last edited hash
             		if ( _defaults.lastEditedHash === _bannerHash ) {
-            			
-            		}
-            		
-            		if ( _bannerStatus === 'true' ) {
-            			$( '#cookieBanner' ).show();
-            			_hideBanner();            		
+            			// check banner status
+            			if ( _bannerStatus === 'true' ) {
+            				$( '#cookieBanner' ).show();
+            				_hideBanner();
+            			}
+            			else {
+            				$( '#cookieBanner' ).hide();            	
+            			}            			
             		}
             		else {
-            			$( '#cookieBanner' ).hide();            	
-            		}            	
+            			localStorage.setItem( 'cookieBannerStatus', true );
+            			$( '#cookieBanner' ).show();
+        				_hideBanner();
+            		}
+            		
             	}            	
             }
         }
