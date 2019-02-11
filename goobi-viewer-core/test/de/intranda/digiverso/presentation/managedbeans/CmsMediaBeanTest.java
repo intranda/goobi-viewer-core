@@ -63,11 +63,20 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testGetMediaItems() throws DAOException {
-        bean.setSelectedTag("");
-        Assert.assertEquals(4, bean.getMediaItems().size());
-        bean.setSelectedTag("tag1");
-        Assert.assertEquals(3, bean.getMediaItems().size());
-        bean.setSelectedTag("");
+        Assert.assertEquals(4, bean.getMediaItems("", "").size());
+        Assert.assertEquals(3, bean.getMediaItems("tag1", "").size());
+        Assert.assertEquals(4, bean.getMediaItems("", bean.getImageFilter()).size());
+        Assert.assertEquals(0, bean.getMediaItems("", ".*\\.xml").size());
+    }
+    
+    @Test
+    public void testGetImageFilter() {
+    	String file1 = "image.jpg";
+    	String file2 = "image.JPEG";
+    	String file3 = "image.xml";
+    	Assert.assertTrue(file1.matches(bean.getImageFilter()));
+    	Assert.assertTrue(file2.matches(bean.getImageFilter()));
+    	Assert.assertFalse(file3.matches(bean.getImageFilter()));
     }
 
 }

@@ -66,7 +66,7 @@
 
                             <!-- MEDIA ITEMS -->
                             <div class="row">
-                                <ui:repeat value="#{cmsMediaBean.getMediaItems()}" var="media">
+                                <ui:repeat value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media">
                                     <div class="col-xs-12 col-md-4">
                                         <h:panelGroup id="media-gallery-item-#{media.id}">
                                             <div class="media-gallery__item">

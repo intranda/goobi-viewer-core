@@ -107,6 +107,7 @@ public class CMSPageTemplate {
                     item.setItemLabel(eleContentItem.getAttributeValue("label"));
                     item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
                     item.setMode(ContentItemMode.get(eleContentItem.getAttributeValue("mode")));
+                    item.setMediaFilter(eleContentItem.getAttributeValue("filter"));
                     if (eleContentItem.getAttribute("order") != null) {
                         try {
                             int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
@@ -327,8 +328,8 @@ public class CMSPageTemplate {
         return contentItems;
     }
 
-    public CMSContentItem getContentItem(String itemId) {
-        for (CMSContentItem item : contentItems) {
+    public CMSContentItemTemplate getContentItem(String itemId) {
+        for (CMSContentItemTemplate item : contentItems) {
             if(item.getItemId().equals(itemId)) {
                 return item;
             }

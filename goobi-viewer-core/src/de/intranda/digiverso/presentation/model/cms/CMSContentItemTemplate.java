@@ -15,10 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
-import javax.persistence.Transient;
-
-import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
-
 /**
  * A contentItem to be used in a CMSPage template. Stores a value for 
  * content item mode
@@ -27,10 +23,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentIte
  *
  */
 public class CMSContentItemTemplate extends CMSContentItem {
-    /**
-     * 
-     */
-    @Transient
+	
+	private String mediaFilter = "";
+
     private ContentItemMode mode = ContentItemMode.simple;
     
     /**
@@ -53,4 +48,17 @@ public class CMSContentItemTemplate extends CMSContentItem {
     public ContentItemMode getMode() {
         return mode;
     }
+
+    @Override
+    public String getMediaFilter() {
+    	return mediaFilter;
+    }
+
+    /**
+	 * @param mediaFilter the mediaFilter to set
+	 */
+	public void setMediaFilter(String mediaFilter) {
+		this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
+	}
 }
+

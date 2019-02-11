@@ -24,15 +24,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -81,9 +83,12 @@ public class CmsMediaBean implements Serializable {
                     setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
                     logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
                     filePart.write(mediaFile.getAbsolutePath());
-                    setUploadProgress(100);
-
-                    saveMedia();
+                    if(!validate(mediaFile, filePart.getContentType())) {
+                    	Messages.error("cms_errIllegalMediaContent");
+                    } else {                    	
+                    	setUploadProgress(100);
+                    	saveMedia();
+                    }
                 } catch (IOException | DAOException e) {
                     logger.error("Failed to upload media file:{}", e.getMessage());
                     if (mediaFile != null && mediaFile.isFile()) {
@@ -97,7 +102,22 @@ public class CmsMediaBean implements Serializable {
         return "cmsMedia";
     }
 
-    public boolean isNewMedia() {
+    /**
+	 * @param mediaFile2
+	 * @param contentType
+	 * @return	false if the content type is html or xml and the file contains the string "<script" (case insensitive)
+     * @throws IOException 
+	 */
+	private boolean validate(File file, String contentType) throws IOException {
+		if(CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
+			String content = FileUtils.readFileToString(file);
+			return !content.toLowerCase().contains("<script");
+		} else {
+			return true;
+		}
+	}
+
+	public boolean isNewMedia() {
         return currentMediaItem != null && currentMediaItem.getId() == null;
     }
 
@@ -167,18 +187,16 @@ public class CmsMediaBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCMSMediaItems();
     }
 
-    public List<CMSMediaItem> getMediaItems() throws DAOException {
-        List<CMSMediaItem> items = getAllMedia();
-        if (StringUtils.isNotBlank(getSelectedTag())) {
-            ListIterator<CMSMediaItem> iter = items.listIterator();
-            while (iter.hasNext()) {
-                CMSMediaItem item = iter.next();
-                if (!item.getTags().contains(getSelectedTag())) {
-                    iter.remove();
-                }
-            }
+    public List<CMSMediaItem> getMediaItems(String tag, String filenameFilter) throws DAOException {
+        Stream<CMSMediaItem> items = getAllMedia().stream();
+        if (StringUtils.isNotBlank(tag)) {
+        	items = items.filter(item -> item.getTags().contains(tag));
         }
-        return items;
+        if(StringUtils.isNotBlank(filenameFilter)) {
+        	items = items.filter(item -> item.getFileName().matches(filenameFilter));
+        }
+        List<CMSMediaItem> list = items.collect(Collectors.toList());
+        return list;
     }
 
     public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
@@ -543,6 +561,14 @@ public class CmsMediaBean implements Serializable {
      */
     public void setSelectedLocale(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
+    }
+    
+    /**
+     * 
+     * @return a regex matching only filenames ending with one of the supported image format suffixes
+     */
+    public String getImageFilter() {
+    	return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
     }
 
 }

@@ -1086,6 +1086,22 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
     }
+    
+    /**
+     * 
+     * @return a regex to be used as a filter for listing available media items. If empty, no filtering should be applied
+     */
+    public String getMediaFilter() {
+    	CMSContentItemTemplate template = getTemplateItem();
+    	return template.getMediaFilter();
+    }
+
+	/**
+	 * 
+	 */
+	private CMSContentItemTemplate getTemplateItem() {
+		return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+	}
 
     /**
      * Writes HTML fragment value as file for re-indexing.
