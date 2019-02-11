@@ -57,7 +57,14 @@
 																    <h:commandLink action="#{cmsBean.setSelectedMediaItem(media)}"
                                                                         onclick="setSelected($(this).parent())">
     																	<div class="edit-content-page-media-gallery-item-image">
+    																	
+    																	<ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
     																		<img src="#{cmsMediaBean.getMediaPreviewUrl(media)}" class="img-responsive" alt="Media Item" />
+																		</ui:fragment>
+																		<ui:fragment rendered="#{cmsMediaBean.isText(media)}">
+																		    <img src="#{request.contextPath}/resources/cms/images/text_media_placeholder.png" class="img-responsive" alt="Media Item" />
+																		</ui:fragment>
+    																	
     																	</div>
     																	<div class="edit-content-page-media-gallery-item-title">
     																		<h:outputText 
@@ -108,7 +115,14 @@
 								<div class="edit-content-page-media-preview">
 									<div class="row">
 										<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-											<img alt="#{contentItem.mediaItem.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(contentItem.mediaItem)}" />
+											
+											<ui:fragment rendered="#{cmsMediaBean.isImage(contentItem.mediaItem)}">
+												<img alt="#{contentItem.mediaItem.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(contentItem.mediaItem)}" />
+											</ui:fragment>
+											<ui:fragment rendered="#{cmsMediaBean.isText(contentItem.mediaItem)}">
+												<img alt="#{contentItem.mediaItem.fileName}" src="#{request.contextPath}/resources/cms/images/text_media_placeholder.png" />
+											</ui:fragment>
+											
 										</div>
 										<div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
 											<h5>#{contentItem.mediaItem.getMetadataForLocale(locale).name}</h5>

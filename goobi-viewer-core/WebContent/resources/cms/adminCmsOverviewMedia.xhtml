@@ -75,8 +75,12 @@
                                                     <button type="button" class="btn btn--clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" title="#{msg.cms_media_copyUrlToClipboard}">
                                                         <i class="fa fa-clipboard" aria-hidden="true"></i>
                                                     </button>
-
-                                                    <img class="image" alt="#{media.fileName}" title="#{media.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(media)}" />
+													<ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
+	                                                    <img class="image" alt="#{media.fileName}" title="#{media.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(media)}" />
+													</ui:fragment>
+													<ui:fragment rendered="#{cmsMediaBean.isText(media)}">
+	                                                    <img class="image" alt="#{media.fileName}" title="#{media.fileName}" src="#{request.contextPath}/resources/cms/images/text_media_placeholder.png" />
+													</ui:fragment>
                                                 </div>
                                                 <div class="row media-gallery__item-action-wrap">
                                                     <div class="col-xs-8">

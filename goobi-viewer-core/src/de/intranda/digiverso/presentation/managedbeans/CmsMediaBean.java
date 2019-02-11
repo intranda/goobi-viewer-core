@@ -267,13 +267,17 @@ public class CmsMediaBean implements Serializable {
 
     public static String getMediaPreviewUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
         if (item != null && item.getFileName() != null) {
-
-            StringBuilder urlBuilder = new StringBuilder(getMediaUrl(item, null, "160"));
-            //	    logger.trace("Getting media preview url " + urlBuilder.toString());
-
-            return urlBuilder.toString();
+            return getMediaUrl(item, null, "160");
         }
         return "";
+    }
+    
+    public boolean isImage(CMSMediaItem item) {
+    	return item.getFileName().matches(getImageFilter());
+    }
+    
+    public boolean isText(CMSMediaItem item) {
+    	return !item.getFileName().matches(getImageFilter());
     }
 
     public CMSMediaItem getCurrentMediaItem() {
@@ -567,7 +571,7 @@ public class CmsMediaBean implements Serializable {
      * 
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
-    public String getImageFilter() {
+    public static String getImageFilter() {
     	return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
     }
 
