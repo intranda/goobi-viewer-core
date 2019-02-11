@@ -59,6 +59,7 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
 import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -437,13 +438,18 @@ public class ActiveDocumentBean implements Serializable {
             try {
                 update();
                 if (navigationHelper != null && viewManager != null) {
-                    String name = viewManager.getTopDocument().getLabel();
+                    IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
                     HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                     URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-                    if (name != null && name.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                        name = new StringBuilder(name.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                                .append("...")
-                                .toString();
+                    
+                    for(String language : name.getLanguages()) {
+                    	String translation = name.getValue(language).orElse("");
+                    	if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                    		translation = new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
+                    				.append("...")
+                    				.toString();
+                    		name.setValue(translation, language);
+                    	}
                     }
                     // TODO move breadcrumb to HTML?
                     if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {

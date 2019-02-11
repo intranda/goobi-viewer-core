@@ -82,6 +82,7 @@
                                     </li>
                                 </ui:fragment>
                             </ui:fragment>
+                          </ui:fragment>
                             <!-- BACK -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
                                 <li class="image-controls__action back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
@@ -145,68 +146,71 @@
                                     </ui:fragment>                                    
                                 </li>
                             </ui:fragment>
-                            <!-- PAGE BROWSE FORWARD -->
-                            <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
-                                <ui:fragment rendered="#{configurationBean.pageBrowseStep1Visible}">
-                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1)}">
-                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep1)}" title="#{configurationBean.pageBrowseStep1} #{msg.stepForward}">
-            	                                +#{configurationBean.pageBrowseStep1}
-            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="bottom" />
-                                            </h:outputLink>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1)}">
-                                            <span>+#{configurationBean.pageBrowseStep1}</span>
-                                        </ui:fragment>                                    
-                                    </li>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{configurationBean.pageBrowseStep2Visible}">
-                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'inactive' : ''}">
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2)}">
-                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep2)}" title="#{configurationBean.pageBrowseStep2} #{msg.stepForward}">
-            	                                +#{configurationBean.pageBrowseStep2}
-            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="bottom" />
-                                            </h:outputLink>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2)}">
-                                            <span>+#{configurationBean.pageBrowseStep2}</span>
-                                        </ui:fragment>
-                                    </li>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{configurationBean.pageBrowseStep3Visible}">
-                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'inactive' : ''}">
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3)}">
-                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep3)}" title="#{configurationBean.pageBrowseStep3} #{msg.stepForward}">
-            	                                +#{configurationBean.pageBrowseStep3}
-            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="bottom" />
-                                            </h:outputLink>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3)}">
-                                            <span>+#{configurationBean.pageBrowseStep3}</span>
-                                        </ui:fragment>                                        
-                                    </li>
-                                </ui:fragment>
-                            </ui:fragment>
-                            <!-- END -->
-                            <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold) and activeDocumentBean.viewManager.imagesCount gt 2}">
-                                <li class="image-controls__action end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
-                                    <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
-                                        <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
-                                            <i class="image-end"></i>
-                                            <span class="labeltext">#{msg.lastImage}</span>
-                                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                            <f:passThroughAttribute name="data-placement" value="bottom" />
-                                        </h:outputLink>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount}">
-                                        <span>
-                                            <i class="image-end"></i>
-                                        </span>
-                                    </ui:fragment>                                    
-                                </li>
+                             
+							<ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount gt 2}">
+	                            <!-- PAGE BROWSE FORWARD -->
+	                            <ui:fragment rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
+	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep1Visible}">
+	                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1)}">
+	                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep1)}" title="#{configurationBean.pageBrowseStep1} #{msg.stepForward}">
+	            	                                +#{configurationBean.pageBrowseStep1}
+	            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                                            </h:outputLink>
+	                                        </ui:fragment>
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1)}">
+	                                            <span>+#{configurationBean.pageBrowseStep1}</span>
+	                                        </ui:fragment>                                    
+	                                    </li>
+	                                </ui:fragment>
+	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep2Visible}">
+	                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'inactive' : ''}">
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2)}">
+	                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep2)}" title="#{configurationBean.pageBrowseStep2} #{msg.stepForward}">
+	            	                                +#{configurationBean.pageBrowseStep2}
+	            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                                            </h:outputLink>
+	                                        </ui:fragment>
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2)}">
+	                                            <span>+#{configurationBean.pageBrowseStep2}</span>
+	                                        </ui:fragment>
+	                                    </li>
+	                                </ui:fragment>
+	                                <ui:fragment rendered="#{configurationBean.pageBrowseStep3Visible}">
+	                                    <li class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'inactive' : ''}">
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow le (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3)}">
+	                                            <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep3)}" title="#{configurationBean.pageBrowseStep3} #{msg.stepForward}">
+	            	                                +#{configurationBean.pageBrowseStep3}
+	            	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                                            </h:outputLink>
+	                                        </ui:fragment>
+	                                        <ui:fragment rendered="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3)}">
+	                                            <span>+#{configurationBean.pageBrowseStep3}</span>
+	                                        </ui:fragment>                                        
+	                                    </li>
+	                                </ui:fragment>
+	                            </ui:fragment>
+	                            <!-- END -->
+	                            <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold) and activeDocumentBean.viewManager.imagesCount gt 2}">
+	                                <li class="image-controls__action end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+	                                    <ui:fragment rendered="#{activeDocumentBean.imageToShow != activeDocumentBean.viewManager.imagesCount}">
+	                                        <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
+	                                            <i class="image-end"></i>
+	                                            <span class="labeltext">#{msg.lastImage}</span>
+	                                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                            <f:passThroughAttribute name="data-placement" value="bottom" />
+	                                        </h:outputLink>
+	                                    </ui:fragment>
+	                                    <ui:fragment rendered="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount}">
+	                                        <span>
+	                                            <i class="image-end"></i>
+	                                        </span>
+	                                    </ui:fragment>                                    
+	                                </li>
+	                            </ui:fragment>
                             </ui:fragment>
                             <!-- DOUBLEPAGEVIEW -->
                             <ui:fragment rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
@@ -237,7 +241,6 @@
                                     </h:commandLink>
                                 </li>
                             </ui:fragment>
-                        </ui:fragment>
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">

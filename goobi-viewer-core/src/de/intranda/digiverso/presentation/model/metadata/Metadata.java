@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
@@ -274,8 +275,9 @@ public class Metadata implements Serializable {
         if (!inValues.isEmpty()) {
             for (String value : inValues) {
                 value = value.trim();
-                if (params.get(paramIndex).getType() != null) {
-                    switch (params.get(paramIndex).getType()) {
+                MetadataParameter param = params.get(paramIndex);
+                if (param.getType() != null) {
+                    switch (param.getType()) {
                         case WIKIFIELD:
                         case WIKIPERSONFIELD:
                             if (value.contains(",")) {
@@ -288,7 +290,7 @@ public class Metadata implements Serializable {
                                     m = p.matcher(value);
                                 }
                                 // Revert the name around the comma (persons only)
-                                if (params.get(paramIndex).getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
+                                if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
                                     String[] valueSplit = value.split("[,]");
                                     if (valueSplit.length > 1) {
                                         value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
@@ -326,10 +328,15 @@ public class Metadata implements Serializable {
                         case NORMDATAURI:
                             if (StringUtils.isNotEmpty(value)) {
                                 NavigationHelper nh = BeanUtils.getNavigationHelper();
+                                String normDataType = MetadataGroupType.OTHER.name();
+                                // Use the last part of NORM_URI_* field name as the normdata type
+                                if (param.getKey() != null && param.getKey().startsWith("NORM_URI_")) {
+                                    normDataType = param.getKey().replace("NORM_URI_", "");
+                                }
                                 String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
                                         .replace("{0}", nh.getApplicationUrl())
                                         .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                        .replace("{2}", groupType)
+                                        .replace("{2}", normDataType)
                                         .replace("{3}", nh.getLocaleString())
                                         .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
                                         .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
@@ -555,10 +562,11 @@ public class Metadata implements Serializable {
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
                 //            logger.debug(params.toString());
-                if (metadataMap.get(param.getKey()) == null) {
+                List<String> mdValues = getMetadata(metadataMap, param.getKey(), locale);
+                if (mdValues == null) {
                     continue;
                 }
-                for (String mdValue : metadataMap.get(param.getKey())) {
+                for (String mdValue : mdValues) {
                     //                logger.debug(param.toString() + " (" + indexOfParam + ")");
                     if (count >= number && number != -1) {
                         break;
@@ -606,6 +614,28 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * Return all values from the given map for either the given key, or - preferably - the given key
+     * suffixed by "_LANG_{locale.language}", i.e. the language specific values for that key ( = metadata field)
+     * The return value may be null if neither the key nor the suffix key is in the map
+     * 
+	 * @param metadataMap
+	 * @param key
+     * @param locale 
+	 * @return
+	 */
+	private List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
+		List<String> mdValues = null;
+		if(locale != null) {
+			String langKey = key + "_LANG_" + locale.getLanguage().toUpperCase();
+			mdValues = metadataMap.get(langKey);
+		}
+		if(mdValues == null) {
+			mdValues = metadataMap.get(key);
+		}
+		return mdValues;
+	}
+
+	/**
      * Converts aggregated person/corporation metadata to just the displayable name.
      *
      * @param aggregatedMetadata
@@ -660,7 +690,7 @@ public class Metadata implements Serializable {
         Set<Metadata> toRemove = new HashSet<>();
         String languageCode = recordLanguage.toUpperCase();
         for (Metadata md : metadataList) {
-            if (md.getLabel().contains(SolrConstants._LANG_)) {
+            if (StringUtils.isNotBlank(md.getLabel()) && md.getLabel().contains(SolrConstants._LANG_)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
                 String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
                 // logger.trace("{}, {}", md.getLabel(), lang);

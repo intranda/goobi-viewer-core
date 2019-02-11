@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public class MultiLanguageMetadataValue implements IMetadataValue {
 
-    public static final String DEFAULT_LANGUAGE = "_DEFAULT";
+    public static final String DEFAULT_LANGUAGE = "_default";
 
     private final Map<String, String> values;
 
@@ -74,7 +74,7 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
             for (String language : metadataValuesForLanguage.keySet()) {
                 List<String> langValues = (List<String>) metadataValuesForLanguage.get(language);
                 if (valueIndex < langValues.size()) {
-                    this.values.put(language, langValues.get(valueIndex));
+                    this.values.put(language.toLowerCase(), langValues.get(valueIndex));
                 }
             }
         } else {
@@ -92,7 +92,7 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
             for (String language : metadataValuesForLanguage.keySet()) {
                 List<String> langValues = (List<String>) metadataValuesForLanguage.get(language);
                 try {                    
-                    this.values.put(language, langValues.stream().reduce((v1, v2) -> combiner.apply(v1, v2)).orElseThrow(() -> new NullPointerException()));
+                    this.values.put(language.toLowerCase(), langValues.stream().reduce((v1, v2) -> combiner.apply(v1, v2)).orElseThrow(() -> new NullPointerException()));
                 } catch(NullPointerException e) {
                     //no value present. skip
                 }
@@ -127,7 +127,7 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
         if (value == null) {
             value = "";
         }
-        this.values.put(locale, value);
+        this.values.put(locale.toLowerCase(), value);
         if (this.values.get(DEFAULT_LANGUAGE) == null) {
             setValue(value);
         }
@@ -146,7 +146,7 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
      */
     @Override
     public Optional<String> getValue(String language) {
-        return Optional.ofNullable(this.values.get(language));
+        return Optional.ofNullable(this.values.get(language.toLowerCase()));
     }
 
     /* (non-Javadoc)
