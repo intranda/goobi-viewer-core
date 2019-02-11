@@ -88,6 +88,7 @@ public class TocMaker {
             for (MetadataParameter param : metadataList.get(0).getParams()) {
                 if (StringUtils.isNotEmpty(param.getKey())) {
                     ret.add(param.getKey());
+                    ret.add(param.getKey() + "_LANG_" + "*");
                 }
             }
         }
@@ -728,15 +729,15 @@ public class TocMaker {
                     String suffix = Helper.getTranslation(param.getSuffix(), null);
                     value.addSuffix(suffix);
                 }
+                Set<String> languages = new HashSet<>(value.getLanguages());
+                languages.addAll(label.getLanguages());
                 if (MetadataParameterType.FIELD.equals(param.getType())) {
-                    for (String language : value.getLanguages()) {
+                    for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder,
                                 value.getValue(language).orElse(value.getValue().orElse("")));
                         label.setValue(langValue, language);
                     }
                 } else {
-                    Set<String> languages = new HashSet<>(value.getLanguages());
-                    languages.addAll(label.getLanguages());
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
                         langValue = langValue.replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));

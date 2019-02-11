@@ -12,7 +12,6 @@
 	<composite:interface>
 		<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
 	</composite:interface>
-
 	<composite:implementation>
 		<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
     		<h:form id="customDrillDownForm" prependId="false">

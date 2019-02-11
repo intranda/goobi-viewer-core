@@ -295,7 +295,7 @@ public final class CMSTemplateManager {
         return templates;
     }
 
-    public void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
+    public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
         templates = new HashMap<>();
         //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
         try {

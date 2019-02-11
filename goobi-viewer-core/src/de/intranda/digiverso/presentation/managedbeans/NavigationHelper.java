@@ -802,7 +802,7 @@ public class NavigationHelper implements Serializable {
         //If we are on a cms-page, return the cms page url
         try {
             Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
-            if (oView.isPresent()) {
+            if (oView.isPresent() && oView.get().isCmsPage() && oView.get().getCmsPage().hasSearchFunctionality()) {
                 String path =
                         BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
                 return path;

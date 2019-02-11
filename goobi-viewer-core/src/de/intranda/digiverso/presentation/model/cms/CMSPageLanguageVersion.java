@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
 
 /**
  * Content instance of a CMS page for a particular language.
@@ -309,5 +308,12 @@ public class CMSPageLanguageVersion {
         item.setOwnerPageLanguageVersion(this);
         contentItems.add(item);
         generateCompleteContentItemList();
+    }
+
+    /**
+     * @param itemId
+     */
+    public void removeContentItem(CMSContentItem item) {
+        contentItems.remove(item);
     }
 }

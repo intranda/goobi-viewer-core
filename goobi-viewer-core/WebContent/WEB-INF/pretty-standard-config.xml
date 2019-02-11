@@ -698,6 +698,7 @@
 		<pattern value="/adminCmsOverview/" />
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsMedia">
 		<pattern value="/adminCmsMedia/" />
@@ -708,6 +709,7 @@
 		<pattern value="/adminCmsSelectTemplate/" />
 		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsCreatePage">
 		<pattern value="/adminCmsCreatePage/" />

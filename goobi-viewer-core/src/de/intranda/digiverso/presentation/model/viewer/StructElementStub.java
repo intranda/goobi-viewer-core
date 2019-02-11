@@ -464,6 +464,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         return Collections.emptyList();
     }
 
+
     /**
      * Generates a ContextObject (for a COinS <span> element) containing metadata from this <code>StructElement</code>.
      *

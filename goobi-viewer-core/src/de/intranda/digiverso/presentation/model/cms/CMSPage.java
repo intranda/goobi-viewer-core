@@ -533,7 +533,8 @@ public class CMSPage implements Comparable<CMSPage> {
         throw new CmsElementNotFoundException("No language version for " + language);
         //        synchronized (languageVersions) {
         //            try {
-        //                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
+        // CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this,
+        // language);
         //                this.languageVersions.add(version);
         //                return version;
         //            } catch (NullPointerException | IllegalStateException e) {
@@ -1040,10 +1041,11 @@ public class CMSPage implements Comparable<CMSPage> {
      * 
      * @param item
      */
-    public void addContentItem(CMSContentItem item) {
+    public void addContentItem(CMSContentItem templateItem) {
         synchronized (languageVersions) {
             List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
             for (CMSPageLanguageVersion language : languages) {
+                CMSContentItem item = new CMSContentItem(templateItem, null);
                 if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
                     if (!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                         language.addContentItem(item);
@@ -1055,7 +1057,8 @@ public class CMSPage implements Comparable<CMSPage> {
                 }
             }
 
-            //                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
+            // getLanguageVersions().stream().filter(lang ->
+            // !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
             //                        lang -> lang.addContentItem(item));
             //            } else {
             //                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
@@ -1093,6 +1096,13 @@ public class CMSPage implements Comparable<CMSPage> {
         }
         logger.warn("Did not find search functionality in page " + this);
         return new SearchFunctionality("", getPageUrl());
+    }
+
+    public boolean hasSearchFunctionality() {
+        Optional<CMSContentItem> searchItem =
+                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
+        return searchItem.isPresent();
+
     }
 
     public boolean isHasSidebarElements() {
@@ -1150,7 +1160,8 @@ public class CMSPage implements Comparable<CMSPage> {
     }
 
     //    /**
-    //     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+    // * @return true if this page's template is configured to follow urls which
+    // contain additional parameters (e.g. search parameters)
     //     */
     //    public boolean mayContainURLParameters() {
     //        try {
@@ -1198,7 +1209,9 @@ public class CMSPage implements Comparable<CMSPage> {
         return property;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -1261,5 +1274,20 @@ public class CMSPage implements Comparable<CMSPage> {
      */
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
+    }
+
+    /**
+     * @param itemId
+     */
+    public void removeContentItem(String itemId) {
+        for (CMSPageLanguageVersion languageVersion : languageVersions) {
+            CMSContentItem item;
+            try {
+                item = languageVersion.getContentItem(itemId);
+                languageVersion.removeContentItem(item);
+            } catch (CmsElementNotFoundException e) {
+                // continue
+            }
+        }
     }
 }

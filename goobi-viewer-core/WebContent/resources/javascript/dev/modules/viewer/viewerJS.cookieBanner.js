@@ -26,10 +26,13 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _bannerStatus = true;
+    var _bannerHash = '';
+    var _isWhitelisted = false;
     var _defaults = {
     	whiteList: [],
+    	lastEditedHash: '',
     };
     
     viewer.cookieBanner = {
@@ -48,17 +51,28 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
+            // set global variables
             _bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
+            _bannerHash = localStorage.getItem( 'cookieBannerHash' );
             
-            // TODO: check white listed pages
-//            if ( _defaults.whiteList.length > 0 ) {
-//            	for ( var i = 0; i <= _defaults.whiteList.length; i++ ) {
-//            		if ( $( '.' + _defaults.whiteList[i] ).length > 0 ) {
-//            			$( '#cookieBanner' ).hide();
-//            		}
-//            	}
-//            }
-//            else {
+            // set last edit hash
+            if ( _bannerHash == undefined || _bannerHash == '' ) {
+            	localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
+            	_bannerHash = localStorage.getItem( 'cookieBannerHash' );
+            }
+            
+            // hide banner if page is on whitelist
+            for ( var i = 0; i < _defaults.whiteList.length; i++ ) {            	
+            	if ( $( '.' + _defaults.whiteList[i] ).length > 0 ) {
+            		_isWhitelisted = true;
+            		$( '#cookieBanner' ).hide();
+            		
+            		break;
+            	}
+            }
+            
+            // check if page is whitelisted
+            if ( !_isWhitelisted ) {
             	// get/set banner status
             	if ( _bannerStatus == undefined || _bannerStatus == '' ) {
             		localStorage.setItem( 'cookieBannerStatus', true );
@@ -66,15 +80,25 @@ var viewerJS = ( function( viewer ) {
             		_hideBanner();
             	}
             	else {
-            		if ( _bannerStatus === 'true' ) {
-            			$( '#cookieBanner' ).show();
-            			_hideBanner();            		
+            		// check last edited hash
+            		if ( _defaults.lastEditedHash === _bannerHash ) {
+            			// check banner status
+            			if ( _bannerStatus === 'true' ) {
+            				$( '#cookieBanner' ).show();
+            				_hideBanner();
+            			}
+            			else {
+            				$( '#cookieBanner' ).hide();            	
+            			}            			
             		}
             		else {
-            			$( '#cookieBanner' ).hide();            	
-            		}            	
+            			localStorage.setItem( 'cookieBannerStatus', true );
+            			$( '#cookieBanner' ).show();
+        				_hideBanner();
+            		}
+            		
             	}            	
-//            }            
+            }
         }
     };
     
@@ -87,7 +111,7 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'EXECUTE: _hideBanner' );
     	}
     	
-    	$( '[data-set="cookie-banner"]' ).on( 'click', function() {
+    	$( '[data-set="cookie-banner"]' ).off().on( 'click', function() {
 			$( '.cookie-banner__info' ).slideUp( function() {
 				$( '#cookieBanner' ).fadeOut( 'fast' );
 				localStorage.setItem( 'cookieBannerStatus', false );
