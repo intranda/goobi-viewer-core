@@ -83,6 +83,7 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
  * CMS functions.
@@ -119,6 +120,7 @@ public class CmsBean implements Serializable {
     private boolean editMode = false;
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
+    private String currentWorkPi = "";
 
     @PostConstruct
     public void init() {
@@ -816,10 +818,21 @@ public class CmsBean implements Serializable {
      *
      * @param id
      * @throws DAOException
+     * @throws ContentNotFoundException 
      */
-    public void setCurrentPageId(String id) throws DAOException {
+    public void setCurrentPageId(String id) throws DAOException, ContentNotFoundException {
         logger.trace("setCurrentPageId: {}", id);
-        setCurrentPage(findPage(id));
+        CMSPage page = findPage(id);
+        setCurrentPage(page);
+    }
+    
+    public void checkRelatedWork() throws ContentNotFoundException {
+    	CMSPage page = getCurrentPage();
+        //if we have both a cmsPage and a currentWorkPi set, they must be the same
+        //the currentWorkPi is set via pretty mapping
+        if(page != null && StringUtils.isNotBlank(getCurrentWorkPi()) && !getCurrentWorkPi().equals(page.getRelatedPI())) {
+        	throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
+        }
     }
 
     public Locale getSelectedLocale() {
@@ -1528,5 +1541,23 @@ public class CmsBean implements Serializable {
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
     	return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
     }
+    
+    /**
+	 * @return the currentWorkPi
+	 */
+	public String getCurrentWorkPi() {
+		return currentWorkPi;
+	}
+	
+	/**
+	 * @param currentWorkPi the currentWorkPi to set
+	 */
+	public void setCurrentWorkPi(String currentWorkPi) {
+		this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;
+	}
+	
+	public void resetCurrentWorkPi() {
+		this.currentWorkPi = "";
+	}
 
 }

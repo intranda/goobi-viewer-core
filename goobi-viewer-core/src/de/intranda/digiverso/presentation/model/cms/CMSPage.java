@@ -1033,7 +1033,11 @@ public class CMSPage implements Comparable<CMSPage> {
                 logger.error(e.toString(), e);
             }
         }
-        return "cms/" + getId() + "/";
+        if(StringUtils.isNotBlank(getRelatedPI())) {
+        	return "page/" + getRelatedPI() + "/" + getId() + "/";
+        } else {        	
+        	return "cms/" + getId() + "/";
+        }
     }
 
     /**
