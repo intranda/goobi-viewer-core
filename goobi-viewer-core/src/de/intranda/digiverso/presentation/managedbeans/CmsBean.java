@@ -1473,5 +1473,9 @@ public class CmsBean implements Serializable {
             return "";
         }
     }
+    
+    public Long getLastEditedTimestamp(long pageId) throws DAOException {
+    	return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
+    }
 
 }
