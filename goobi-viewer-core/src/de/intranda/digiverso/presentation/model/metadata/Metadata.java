@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
@@ -274,8 +275,9 @@ public class Metadata implements Serializable {
         if (!inValues.isEmpty()) {
             for (String value : inValues) {
                 value = value.trim();
-                if (params.get(paramIndex).getType() != null) {
-                    switch (params.get(paramIndex).getType()) {
+                MetadataParameter param = params.get(paramIndex);
+                if (param.getType() != null) {
+                    switch (param.getType()) {
                         case WIKIFIELD:
                         case WIKIPERSONFIELD:
                             if (value.contains(",")) {
@@ -288,7 +290,7 @@ public class Metadata implements Serializable {
                                     m = p.matcher(value);
                                 }
                                 // Revert the name around the comma (persons only)
-                                if (params.get(paramIndex).getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
+                                if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
                                     String[] valueSplit = value.split("[,]");
                                     if (valueSplit.length > 1) {
                                         value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
@@ -326,10 +328,15 @@ public class Metadata implements Serializable {
                         case NORMDATAURI:
                             if (StringUtils.isNotEmpty(value)) {
                                 NavigationHelper nh = BeanUtils.getNavigationHelper();
+                                String normDataType = MetadataGroupType.OTHER.name();
+                                // Use the last part of NORM_URI_* field name as the normdata type
+                                if (param.getKey() != null && param.getKey().startsWith("NORM_URI_")) {
+                                    normDataType = param.getKey().replace("NORM_URI_", "");
+                                }
                                 String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
                                         .replace("{0}", nh.getApplicationUrl())
                                         .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                        .replace("{2}", groupType)
+                                        .replace("{2}", normDataType)
                                         .replace("{3}", nh.getLocaleString())
                                         .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
                                         .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
