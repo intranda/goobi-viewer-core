@@ -51,7 +51,7 @@ public class StringToolsTest {
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
         Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
     }
-    
+
     @Test
     public void testEscapeQuotes() {
         String original = "Das ist ein 'String' mit \"Quotes\".";
@@ -59,8 +59,18 @@ public class StringToolsTest {
 
         String escaped = StringTools.escapeQuotes(original);
         Assert.assertEquals(reference, escaped);
-        
+
         escaped = StringTools.escapeQuotes(reference);
         Assert.assertEquals(reference, escaped);
+    }
+
+    /**
+     * @see StringTools#isImageUrl(String)
+     * @verifies return true for image urls
+     */
+    @Test
+    public void isImageUrl_shouldReturnTrueForImageUrls() throws Exception {
+        Assert.assertTrue(StringTools.isImageUrl("https://example.com/default.jpg"));
+        Assert.assertTrue(StringTools.isImageUrl("https://example.com/MASTER.TIFF"));
     }
 }
