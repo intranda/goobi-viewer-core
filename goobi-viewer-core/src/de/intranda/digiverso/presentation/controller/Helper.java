@@ -90,6 +90,7 @@ import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
@@ -450,24 +451,50 @@ public class Helper {
     }
 
     /**
-     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
-     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * Legacy method signature; TODO update the crowdsourcing module and remove
      * 
      * @param pi
      * @param recordType
      * @param overviewPage
      * @return
      * @throws DAOException
+     */
+    public static synchronized boolean reIndexRecord(String pi, @Deprecated String recordType, @Deprecated CMSPage overviewPage) throws DAOException {
+        try {
+            return reIndexRecord(pi);
+        } catch (RecordNotFoundException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
+     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws RecordNotFoundException
      * @should write overview page data
      */
-    public static synchronized boolean reIndexRecord(String pi, String recordType, CMSPage overviewPage) throws DAOException {
+    public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
 
         String dataRepository = null;
+        String recordType = null;
         try {
-            dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(SolrConstants.PI + ":" + pi,
+                            Arrays.asList(new String[] { SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT }));
+            if (doc == null) {
+                throw new RecordNotFoundException(pi);
+            }
+            dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+            recordType = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             return false;

@@ -1303,22 +1303,25 @@ public class CMSPage implements Comparable<CMSPage> {
 
     /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
+     * 
+     * @return Number of deleted files
      */
-    public void deleteExportedTextFiles() {
+    public int deleteExportedTextFiles() {
         if (StringUtils.isEmpty(relatedPI)) {
             logger.trace("No related PI - nothing to delete");
-            return;
+            return 0;
         }
 
+        int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            String dataRepository = DataManager.getInstance().getSearchIndex().getDataRepositoryForRecord(relatedPI);
+            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(relatedPI);
             Path cmsTextFolder =
                     Paths.get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getCmsTextFolder(), relatedPI);
             logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(cmsTextFolder)) {
                 logger.trace("CMS text folder not found - nothing to delete");
-                return;
+                return 0;
             }
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
@@ -1334,6 +1337,7 @@ public class CMSPage implements Comparable<CMSPage> {
                 for (Path file : filesToDelete) {
                     try {
                         Files.delete(file);
+                        count++;
                         logger.info("CMS text file deleted: {}", file.getFileName().toString());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
@@ -1348,8 +1352,7 @@ public class CMSPage implements Comparable<CMSPage> {
                     logger.info("Empty CMS text folder deleted: {}", cmsTextFolder.toAbsolutePath());
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         } catch (PresentationException e) {
             logger.error(e.getMessage(), e);
@@ -1357,5 +1360,6 @@ public class CMSPage implements Comparable<CMSPage> {
             logger.error(e.getMessage(), e);
         }
 
+        return count;
     }
 }

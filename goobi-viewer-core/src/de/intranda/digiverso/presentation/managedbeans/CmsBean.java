@@ -17,22 +17,17 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -739,7 +734,14 @@ public class CmsBean implements Serializable {
             logger.info("Deleting CMS page: {}", selectedPage);
             if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
-                page.deleteExportedTextFiles();
+                if (page.deleteExportedTextFiles() > 0) {
+                    try {
+                        Helper.reIndexRecord(page.getRelatedPI());
+                        logger.debug("Re-indexing record: {}", page.getRelatedPI());
+                    } catch (RecordNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
                 lazyModelPages.update();
                 Messages.info("cms_deletePage_success");
             } else {
