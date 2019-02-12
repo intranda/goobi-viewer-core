@@ -145,6 +145,9 @@
         <dependent-module archiveName="goobi-viewer-theme-ksw-kulturportal.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ksw-kulturportal/goobi-viewer-theme-ksw-kulturportal">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-ubs.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubs/goobi-viewer-theme-ubs">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>

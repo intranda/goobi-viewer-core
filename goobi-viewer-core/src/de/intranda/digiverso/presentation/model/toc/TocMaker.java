@@ -88,6 +88,7 @@ public class TocMaker {
             for (MetadataParameter param : metadataList.get(0).getParams()) {
                 if (StringUtils.isNotEmpty(param.getKey())) {
                     ret.add(param.getKey());
+                    ret.add(param.getKey() + "_LANG_" + "*");
                 }
             }
         }
@@ -691,7 +692,7 @@ public class TocMaker {
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
-                if (MetadataParameterType.MULTILANGUAGEFIELD.equals(param.getType())) {
+                if (MetadataParameterType.FIELD.equals(param.getType())) {
                     value = createMultiLanguageValue(doc, param.getKey());
                 } else {
                     value = new SimpleMetadataValue();
@@ -700,7 +701,7 @@ public class TocMaker {
                 }
                 // Special case: If LABEL is missing, use MD_TITLE. If MD_TITLE is missing, use DOCSTRCT.
                 if (StringUtils.isEmpty(value.toString()) && SolrConstants.LABEL.equals(param.getKey())) {
-                    if (MetadataParameterType.MULTILANGUAGEFIELD.equals(param.getType())) {
+                    if (MetadataParameterType.FIELD.equals(param.getType())) {
                         value = createMultiLanguageValue(doc, SolrConstants.TITLE);
                     } else {
                         value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
@@ -728,15 +729,15 @@ public class TocMaker {
                     String suffix = Helper.getTranslation(param.getSuffix(), null);
                     value.addSuffix(suffix);
                 }
-                if (MetadataParameterType.MULTILANGUAGEFIELD.equals(param.getType())) {
-                    for (String language : value.getLanguages()) {
+                Set<String> languages = new HashSet<>(value.getLanguages());
+                languages.addAll(label.getLanguages());
+                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                    for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder,
                                 value.getValue(language).orElse(value.getValue().orElse("")));
                         label.setValue(langValue, language);
                     }
                 } else {
-                    Set<String> languages = new HashSet<>(value.getLanguages());
-                    languages.addAll(label.getLanguages());
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
                         langValue = langValue.replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));

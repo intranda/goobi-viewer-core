@@ -358,7 +358,7 @@ public class MetadataElement {
      * @return the sidebarMetadataList
      */
     public List<Metadata> getSidebarMetadataList() {
-        return sidebarMetadataList;
+    	return Metadata.filterMetadataByLanguage(this.sidebarMetadataList, selectedRecordLanguage);
     }
 
     /**

@@ -19,32 +19,47 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+
 public class LabeledLink implements Serializable {
 
     private static final long serialVersionUID = -2546718627110716169L;
 
-    protected String name;
+    protected IMetadataValue name;
     protected String url;
     protected int weight;
 
     public LabeledLink(String name, String url, int weight) {
+        this.name = new SimpleMetadataValue(name);
+        this.url = url;
+        this.weight = weight;
+    }
+    
+    public LabeledLink(IMetadataValue name, String url, int weight) {
         this.name = name;
         this.url = url;
         this.weight = weight;
     }
 
+
     /**
      * @return the name
      */
     public String getName() {
-        return name;
+        return name.getValue(BeanUtils.getLocale()).orElse("");
     }
 
     /**
      * @param name the name to set
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = new SimpleMetadataValue(name);
+    }
+    
+    public void setName(IMetadataValue name) {
+    	this.name = name;
     }
 
     /**

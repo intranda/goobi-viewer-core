@@ -455,7 +455,9 @@
 		
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
-        <docstrctWhitelistFilterQuery>(ISWORK:true OR ISANCHOR:true) AND NOT(IDDOC_PARENT:*)</docstrctWhitelistFilterQuery>
+        <!-- Example query for also including periodical volumes:
+            ((ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
+        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*</docstrctWhitelistFilterQuery>
 
 	        <!-- versioning -->
 	        <versioning>

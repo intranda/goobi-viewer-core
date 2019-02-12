@@ -522,7 +522,6 @@ public final class SearchHelper {
             // Iterate over record hits instead of using facets to determine the size of the parent collections
             {
                 logger.debug("query: {}", sbQuery.toString());
-                System.out.println(sbQuery.toString());
                 // No faceting needed when fetching field names manually (faceting adds to the total execution time)
                 SolrDocumentList results =
                         DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), Collections.singletonList(luceneField));

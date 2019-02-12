@@ -259,16 +259,24 @@ public class CmsBean implements Serializable {
      * @return
      */
     private static PageValidityStatus isPageValid(CMSPage page) {
-        if (page.getTemplate() == null) {
+        CMSPageTemplate template = page.getTemplate();
+    	if (template == null) {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
         }
-        //remove page with content items that don't match the template's content items
-        for (CMSContentItem templateItem : page.getTemplate().getContentItems()) {
+        //check if all page content items exist in templage
+        List<CMSContentItem> allPageItems = page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
+        for (CMSContentItem pageItem : allPageItems) {
+        	if(template.getContentItem(pageItem.getItemId()) == null) {
+        		//if not, remove them
+        		page.removeContentItem(pageItem.getItemId());
+        	}
+		}
+        //check if app template content items exist in page
+        for (CMSContentItem templateItem : template.getContentItems()) {
             if (!page.hasContentItem(templateItem.getItemId())) {
-                page.addContentItem(new CMSContentItem(templateItem, null));
-                //                    logger.warn("Found template item that doesn't exists in page");
-                //                    pageValid = false;
+            	//if not, add them
+                page.addContentItem(templateItem);
             }
         }
         return PageValidityStatus.VALID;
@@ -722,7 +730,11 @@ public class CmsBean implements Serializable {
             } else {
                 this.selectedPage = currentPage;
             }
-            this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            PageValidityStatus validityStatus = isPageValid(this.selectedPage);
+            this.selectedPage.setValidityStatus(validityStatus);
+            if (validityStatus.isValid()) {
+            	this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+            }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
         } else {
@@ -1460,6 +1472,10 @@ public class CmsBean implements Serializable {
         } else {
             return "";
         }
+    }
+    
+    public Long getLastEditedTimestamp(long pageId) throws DAOException {
+    	return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
     }
 
 }

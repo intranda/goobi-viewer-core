@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,10 +61,10 @@ public class RSSFeed {
 
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
-    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE,
-            SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.IDDOC_PARENT,
+    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED,
+            SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PERSON_ONEFIELD,
-            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.TITLE,
+            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER,
             SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
@@ -81,6 +82,15 @@ public class RSSFeed {
         return createRss(rootPath, query, null);
     }
 
+    public static List<String> getFieldsWithTranslation(Locale locale) {
+    	List<String> allFields = new ArrayList<>();
+    	for (String string : FIELDS) {
+			allFields.add(string);
+			allFields.add(string + "_LANG_" + locale.getLanguage().toUpperCase());
+		}
+    	return allFields;
+    }
+    
     public static SyndFeed createRss(String rootPath, String query, String language)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String feedType = "rss_2.0";
@@ -114,7 +124,7 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        Arrays.asList(FIELDS))
+                        getFieldsWithTranslation(locale))
                 .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
@@ -179,6 +189,8 @@ public class RSSFeed {
 
                 for (String field : FIELDS) {
                     Object value = doc.getFirstValue(field);
+                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                    value = translatedValue.orElse(value);
                     // If the doc has no field value, try the owner doc (in case of pages)
                     if (value == null && ownerDoc != null) {
                         value = ownerDoc.getFirstValue(field);
@@ -363,7 +375,7 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        Arrays.asList(FIELDS))
+                		 getFieldsWithTranslation(locale))
                 .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
@@ -430,10 +442,11 @@ public class RSSFeed {
                 PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
                 entry.setDocType(Helper.getTranslation(docStructType, locale));
 
-                
-                
+
                 for (String field : FIELDS) {
                     Object value = doc.getFirstValue(field);
+                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                    value = translatedValue.orElse(value);
                     // If the doc has no field value, try the owner doc (in case of pages)
                     if (value == null && ownerDoc != null) {
                         value = ownerDoc.getFirstValue(field);

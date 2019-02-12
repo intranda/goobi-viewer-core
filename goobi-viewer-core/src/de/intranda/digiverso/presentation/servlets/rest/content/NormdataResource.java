@@ -42,6 +42,7 @@ import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -193,7 +194,7 @@ public class NormdataResource {
             if (value.getIdentifier() != null) {
                 valueMap.put("identifier", value.getIdentifier());
             }
-            if (value.getUrl() != null) {
+            if (value.getUrl() != null && !StringTools.isImageUrl(value.getUrl())) {
                 valueMap.put("url", value.getUrl());
             }
             valueList.add(valueMap);
