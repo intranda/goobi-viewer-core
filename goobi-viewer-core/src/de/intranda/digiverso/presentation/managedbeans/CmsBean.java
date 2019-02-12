@@ -17,17 +17,22 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -263,22 +268,23 @@ public class CmsBean implements Serializable {
      */
     private static PageValidityStatus isPageValid(CMSPage page) {
         CMSPageTemplate template = page.getTemplate();
-    	if (template == null) {
+        if (template == null) {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
         }
         //check if all page content items exist in templage
-        List<CMSContentItem> allPageItems = page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
+        List<CMSContentItem> allPageItems =
+                page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
-        	if(template.getContentItem(pageItem.getItemId()) == null) {
-        		//if not, remove them
-        		page.removeContentItem(pageItem.getItemId());
-        	}
-		}
+            if (template.getContentItem(pageItem.getItemId()) == null) {
+                //if not, remove them
+                page.removeContentItem(pageItem.getItemId());
+            }
+        }
         //check if app template content items exist in page
         for (CMSContentItem templateItem : template.getContentItems()) {
             if (!page.hasContentItem(templateItem.getItemId())) {
-            	//if not, add them
+                //if not, add them
                 page.addContentItem(templateItem);
             }
         }
@@ -732,10 +738,9 @@ public class CmsBean implements Serializable {
         if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", selectedPage);
             if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
+                // Delete files matching content item IDs of the deleted page and re-index record
+                page.deleteExportedTextFiles();
                 lazyModelPages.update();
-                // TODO delete files matching content item IDs of the deleted page and re-index record
-                if (StringUtils.isNotEmpty(page.getRelatedPI())) {
-                }
                 Messages.info("cms_deletePage_success");
             } else {
                 logger.error("Failed to delete page");
@@ -744,6 +749,7 @@ public class CmsBean implements Serializable {
         }
 
         selectedPage = null;
+
     }
 
     public CMSPage getPage(CMSPage page) {
@@ -772,7 +778,7 @@ public class CmsBean implements Serializable {
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
-            	this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
             }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
@@ -818,20 +824,20 @@ public class CmsBean implements Serializable {
      *
      * @param id
      * @throws DAOException
-     * @throws ContentNotFoundException 
+     * @throws ContentNotFoundException
      */
     public void setCurrentPageId(String id) throws DAOException, ContentNotFoundException {
         logger.trace("setCurrentPageId: {}", id);
         CMSPage page = findPage(id);
         setCurrentPage(page);
     }
-    
+
     public void checkRelatedWork() throws ContentNotFoundException {
-    	CMSPage page = getCurrentPage();
+        CMSPage page = getCurrentPage();
         //if we have both a cmsPage and a currentWorkPi set, they must be the same
         //the currentWorkPi is set via pretty mapping
-        if(page != null && StringUtils.isNotBlank(getCurrentWorkPi()) && !getCurrentWorkPi().equals(page.getRelatedPI())) {
-        	throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
+        if (page != null && StringUtils.isNotBlank(getCurrentWorkPi()) && !getCurrentWorkPi().equals(page.getRelatedPI())) {
+            throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
         }
     }
 
@@ -1537,27 +1543,27 @@ public class CmsBean implements Serializable {
 
         return "";
     }
-    
+
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
-    	return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
+        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
     }
-    
+
     /**
-	 * @return the currentWorkPi
-	 */
-	public String getCurrentWorkPi() {
-		return currentWorkPi;
-	}
-	
-	/**
-	 * @param currentWorkPi the currentWorkPi to set
-	 */
-	public void setCurrentWorkPi(String currentWorkPi) {
-		this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;
-	}
-	
-	public void resetCurrentWorkPi() {
-		this.currentWorkPi = "";
-	}
+     * @return the currentWorkPi
+     */
+    public String getCurrentWorkPi() {
+        return currentWorkPi;
+    }
+
+    /**
+     * @param currentWorkPi the currentWorkPi to set
+     */
+    public void setCurrentWorkPi(String currentWorkPi) {
+        this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;
+    }
+
+    public void resetCurrentWorkPi() {
+        this.currentWorkPi = "";
+    }
 
 }

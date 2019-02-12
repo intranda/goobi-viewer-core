@@ -1277,8 +1277,28 @@ public final class SolrSearchIndex {
         SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
         if (hits.isEmpty()) {
             return Optional.empty();
-        } else {
-            return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
         }
+
+        return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
+    }
+
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getDataRepositoryForRecord(String pi) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isEmpty(pi)) {
+            return "";
+        }
+
+        SolrDocument doc = getFirstDoc(SolrConstants.PI + ":" + pi, Collections.singletonList(SolrConstants.DATAREPOSITORY));
+        if (doc != null && doc.containsKey(SolrConstants.DATAREPOSITORY)) {
+            return (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+        }
+
+        return "";
     }
 }

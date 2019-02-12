@@ -16,7 +16,6 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,8 +24,8 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -345,6 +344,18 @@ public class FileTools {
         int len;
         while ((len = input.read(buf)) > 0) {
             output.write(buf, 0, len);
+        }
+    }
+    
+    /**
+     * 
+     * @param folder
+     * @return true if folder empty; false otherwise
+     * @throws IOException
+     */
+    public static boolean isFolderEmpty(final Path folder) throws IOException {
+        try(DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
+            return !ds.iterator().hasNext();
         }
     }
 
