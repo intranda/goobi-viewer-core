@@ -97,6 +97,7 @@ import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -427,19 +428,19 @@ public class Helper {
      * @return
      * @throws ModuleMissingException
      */
-    public static void triggerReIndexRecord(String pi, String recordType, CMSPage overviewPage) {
+    public static void triggerReIndexRecord(String pi, String recordType, OverviewPage overviewPage) {
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    if (!Helper.reIndexRecord(pi, recordType, overviewPage)) {
+                    if (!Helper.reIndexRecord(pi)) {
                         logger.error("Failed to re-index  record {}", pi);
                         Messages.error("reIndexRecordFailure");
                     } else {
                         Messages.info("reIndexRecordSuccess");
                     }
-                } catch (DAOException e) {
+                } catch (DAOException | RecordNotFoundException e) {
                     logger.error("Failed to reindex record " + pi + ": " + e.getMessage(), e);
                     Messages.error("reIndexRecordFailure");
                 }
@@ -459,7 +460,8 @@ public class Helper {
      * @return
      * @throws DAOException
      */
-    public static synchronized boolean reIndexRecord(String pi, @Deprecated String recordType, @Deprecated CMSPage overviewPage) throws DAOException {
+    @Deprecated
+    public static synchronized boolean reIndexRecord(String pi, String recordType, OverviewPage overviewPage) throws DAOException {
         try {
             return reIndexRecord(pi);
         } catch (RecordNotFoundException e) {
