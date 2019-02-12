@@ -135,14 +135,14 @@
                     <!-- Related CMS pages -->
                     <h:panelGroup
                         rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
-                        <li
-                            class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
-                            <ui:repeat var="cmsPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
-                            <h:outputLink value="#{cmsPage.pageUrl}">
-                                <h:outputText value="#{msg[cmsPage.menuTitle]}" />
-                            </h:outputLink>
-                            </ui:repeat>
-                        </li>
+                        <ui:repeat var="cmsPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
+	                        <li
+	                            class="#{navigationHelper.currentPage == cmsPage.title ? 'active' : ''}">
+	                            <h:outputLink value="#{cmsPage.pageUrl}">
+	                                <h:outputText value="#{msg[cmsPage.menuTitle]}" />
+	                            </h:outputLink>
+	                        </li>
+                       </ui:repeat>
                     </h:panelGroup>
 
 

@@ -89,21 +89,80 @@
     </ui:define>
 
     <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-		<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
-			<widgetComponent:widget_chronology widget="#{element}" />
-			<widgetComponent:widget_custom widget="#{element}" />
-			<widgetComponent:widget_customDrillDown widget="#{element}" />
-			<widgetComponent:widget_searchDrillDown widget="#{element}" />
-			<widgetComponent:widget_searchField widget="#{element}" />
-			<widgetComponent:widget_browsing widget="#{element}" />
-			<widgetComponent:widget_bookshelfList widget="#{element}" />
-			<widgetComponent:widget_mySearches widget="#{element}" />
-			<widgetComponent:widget_user widget="#{element}" />
-			<widgetComponent:widget_rssFeed widget="#{element}" />
-			<widgetComponent:widget_workCount widget="#{element}" />
-			<widgetComponent:widget_cmsPageLinks widget="#{element}" />
-			<widgetComponent:widget_geoLocations widget="#{element}" />
-		</c:forEach>
-	</ui:define>
+	<ui:define name="sidebar">
+	
+	<!-- CUSTOM SIDEBAR -->
+	<ui:fragment rendered="#{!cmsPage.useDefaultSidebar}">
+	    	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
+	    		<widgetComponent:widget_custom widget="#{element}"/>
+	    		<widgetComponent:widget_customDrillDown widget="#{element}"/>
+	    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
+	            <widgetComponent:widget_searchField widget="#{element}"/>
+	            <widgetComponent:widget_browsing widget="#{element}"/>            
+	            <widgetComponent:widget_bookshelfList widget="#{element}"/>
+	            <widgetComponent:widget_mySearches widget="#{element}"/>
+	            <widgetComponent:widget_user widget="#{element}"/>
+	            <widgetComponent:widget_rssFeed widget="#{element}" />
+	            <widgetComponent:widget_workCount widget="#{element}" />
+	            <widgetComponent:widget_cmsPageLinks widget="#{element}" />
+	            <widgetComponent:widget_geoLocations widget="#{element}" />
+	    	</c:forEach>
+    	</ui:fragment>
+    	
+    	<!-- DEFAULT SIDEBAR -->
+    	<ui:fragment rendered="#{cmsPage.useDefaultSidebar and !cmsBean.relatedWorkLoaded}">
+	    	<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+	            <widgetComponent:widget_browsing />
+	        </h:panelGroup>
+	        
+	        <widgetComponent:widget_bookshelfList />
+	        
+	        <widgetComponent:widget_mySearches />
+	        
+	        <c:forEach var="module" items="#{configurationBean.modules}">
+	            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+	                <ui:include src="/#{contribution}" />
+	            </c:forEach>
+	        </c:forEach>
+	        
+        	<widgetComponent:widget_user />   
+    	</ui:fragment>
+    	
+    	<!-- WORK SIDEBAR -->
+    	<ui:fragment rendered="#{cmsPage.useDefaultSidebar and cmsBean.relatedWorkLoaded}">
+    	
+	    	<widgetComponent:widget_views pageType="image" />
+	        <widgetComponent:widget_searchInCurrentItem />
+	                
+	        <widgetComponent:widget_nerFacetting />
+	        
+	        <widgetComponent:widget_searchResultNavigation />
+	
+	        <widgetComponent:widget_metadata />
+	        
+	        <widgetComponent:widget_usage />
+	
+	        <widgetComponent:widget_convolutes />
+	        
+	        <widgetComponent:widget_toc />
+	
+	        <widgetComponent:widget_download />
+	
+	        <widgetComponent:widget_versionHistory />
+	
+	        <widgetComponent:widget_bookshelfList />
+	        
+	        <widgetComponent:widget_mySearches />
+	        
+	        <c:forEach var="module" items="#{configurationBean.modules}">
+	            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+	                <ui:include src="/#{contribution}" />
+	            </c:forEach>
+	        </c:forEach>
+	        
+	        <widgetComponent:widget_user />   
+    	
+    	</ui:fragment>
+    	
+    </ui:define>
 </ui:composition>
