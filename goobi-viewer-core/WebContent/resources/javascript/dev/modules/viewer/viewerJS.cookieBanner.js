@@ -76,6 +76,7 @@ var viewerJS = ( function( viewer ) {
             	// get/set banner status
             	if ( _bannerStatus == undefined || _bannerStatus == '' ) {
             		localStorage.setItem( 'cookieBannerStatus', true );
+            		_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
             		$( '#cookieBanner' ).show();
             		_hideBanner();
             	}
@@ -115,6 +116,9 @@ var viewerJS = ( function( viewer ) {
 			$( '.cookie-banner__info' ).slideUp( function() {
 				$( '#cookieBanner' ).fadeOut( 'fast' );
 				localStorage.setItem( 'cookieBannerStatus', false );
+				localStorage.setItem( 'cookieBannerHash', _defaults.lastEditedHash );
+				_bannerStatus = localStorage.getItem( 'cookieBannerStatus' );
+				_bannerHash = localStorage.getItem( 'cookieBannerHash' );
 			} );            			
 		} );
     }

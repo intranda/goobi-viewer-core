@@ -16,13 +16,18 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -50,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.controller.XmlTools;
@@ -1033,11 +1039,11 @@ public class CMSPage implements Comparable<CMSPage> {
                 logger.error(e.toString(), e);
             }
         }
-        if(StringUtils.isNotBlank(getRelatedPI())) {
-        	return "page/" + getRelatedPI() + "/" + getId() + "/";
-        } else {        	
-        	return "cms/" + getId() + "/";
+        if (StringUtils.isNotBlank(getRelatedPI())) {
+            return "page/" + getRelatedPI() + "/" + getId() + "/";
         }
+
+        return "cms/" + getId() + "/";
     }
 
     /**
@@ -1293,5 +1299,67 @@ public class CMSPage implements Comparable<CMSPage> {
                 // continue
             }
         }
+    }
+
+    /**
+     * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
+     * 
+     * @return Number of deleted files
+     */
+    public int deleteExportedTextFiles() {
+        if (StringUtils.isEmpty(relatedPI)) {
+            logger.trace("No related PI - nothing to delete");
+            return 0;
+        }
+
+        int count = 0;
+        try {
+            Set<Path> filesToDelete = new HashSet<>();
+            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(relatedPI);
+            Path cmsTextFolder =
+                    Paths.get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getCmsTextFolder(), relatedPI);
+            logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
+            if (!Files.isDirectory(cmsTextFolder)) {
+                logger.trace("CMS text folder not found - nothing to delete");
+                return 0;
+            }
+            for (CMSPageLanguageVersion lv : getLanguageVersions()) {
+                for (CMSContentItem ci : lv.getContentItems()) {
+                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())) {
+                        Path file = Paths.get(cmsTextFolder.toAbsolutePath().toString(), ci.getItemId() + ".xml");
+                        if (Files.isRegularFile(file)) {
+                            filesToDelete.add(file);
+                        }
+                    }
+                }
+            }
+            if (!filesToDelete.isEmpty()) {
+                for (Path file : filesToDelete) {
+                    try {
+                        Files.delete(file);
+                        count++;
+                        logger.info("CMS text file deleted: {}", file.getFileName().toString());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+
+            // Delete folder if empty
+            try {
+                if (FileTools.isFolderEmpty(cmsTextFolder)) {
+                    Files.delete(cmsTextFolder);
+                    logger.info("Empty CMS text folder deleted: {}", cmsTextFolder.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return count;
     }
 }

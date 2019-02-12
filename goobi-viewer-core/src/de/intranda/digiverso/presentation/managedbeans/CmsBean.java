@@ -263,22 +263,23 @@ public class CmsBean implements Serializable {
      */
     private static PageValidityStatus isPageValid(CMSPage page) {
         CMSPageTemplate template = page.getTemplate();
-    	if (template == null) {
+        if (template == null) {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
         }
         //check if all page content items exist in templage
-        List<CMSContentItem> allPageItems = page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
+        List<CMSContentItem> allPageItems =
+                page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
-        	if(template.getContentItem(pageItem.getItemId()) == null) {
-        		//if not, remove them
-        		page.removeContentItem(pageItem.getItemId());
-        	}
-		}
+            if (template.getContentItem(pageItem.getItemId()) == null) {
+                //if not, remove them
+                page.removeContentItem(pageItem.getItemId());
+            }
+        }
         //check if app template content items exist in page
         for (CMSContentItem templateItem : template.getContentItems()) {
             if (!page.hasContentItem(templateItem.getItemId())) {
-            	//if not, add them
+                //if not, add them
                 page.addContentItem(templateItem);
             }
         }
@@ -536,24 +537,13 @@ public class CmsBean implements Serializable {
                 logger.trace("update pages");
                 lazyModelPages.update();
 
-                // Re-index record, if this is an overview page
-                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI()) && selectedPage.getTemplateId().startsWith("templateOverviewPage")) {
+                // Re-index related record
+                if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
                     try {
-                        SolrDocument doc = DataManager.getInstance()
-                                .getSearchIndex()
-                                .getFirstDoc(SolrConstants.PI + ":" + selectedPage.getRelatedPI(),
-                                        Collections.singletonList(SolrConstants.SOURCEDOCFORMAT));
-                        if (doc != null) {
-                            String sourceFormat = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                            Helper.reIndexRecord(selectedPage.getRelatedPI(), sourceFormat, selectedPage);
-                            Messages.info("admin_recordReExported");
-                        } else {
-                            logger.error("Record '{}' not found in index, cannot re-index.", selectedPage.getRelatedPI());
-                        }
-                    } catch (PresentationException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (IndexUnreachableException e) {
-                        logger.error(e.getMessage(), e);
+                        Helper.reIndexRecord(selectedPage.getRelatedPI());
+                        Messages.info("admin_recordReExported");
+                    } catch (RecordNotFoundException e) {
+                        logger.error(e.getMessage());
                     }
                 }
             } else {
@@ -742,10 +732,16 @@ public class CmsBean implements Serializable {
         if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", selectedPage);
             if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
-                lazyModelPages.update();
-                // TODO delete files matching content item IDs of the deleted page and re-index record
-                if (StringUtils.isNotEmpty(page.getRelatedPI())) {
+                // Delete files matching content item IDs of the deleted page and re-index record
+                if (page.deleteExportedTextFiles() > 0) {
+                    try {
+                        Helper.reIndexRecord(page.getRelatedPI());
+                        logger.debug("Re-indexing record: {}", page.getRelatedPI());
+                    } catch (RecordNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
+                lazyModelPages.update();
                 Messages.info("cms_deletePage_success");
             } else {
                 logger.error("Failed to delete page");
@@ -754,6 +750,7 @@ public class CmsBean implements Serializable {
         }
 
         selectedPage = null;
+
     }
 
     public CMSPage getPage(CMSPage page) {
@@ -782,7 +779,7 @@ public class CmsBean implements Serializable {
             PageValidityStatus validityStatus = isPageValid(this.selectedPage);
             this.selectedPage.setValidityStatus(validityStatus);
             if (validityStatus.isValid()) {
-            	this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
+                this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
             }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
@@ -828,20 +825,20 @@ public class CmsBean implements Serializable {
      *
      * @param id
      * @throws DAOException
-     * @throws ContentNotFoundException 
+     * @throws ContentNotFoundException
      */
     public void setCurrentPageId(String id) throws DAOException, ContentNotFoundException {
         logger.trace("setCurrentPageId: {}", id);
         CMSPage page = findPage(id);
         setCurrentPage(page);
     }
-    
+
     public void checkRelatedWork() throws ContentNotFoundException {
-    	CMSPage page = getCurrentPage();
+        CMSPage page = getCurrentPage();
         //if we have both a cmsPage and a currentWorkPi set, they must be the same
         //the currentWorkPi is set via pretty mapping
-        if(page != null && StringUtils.isNotBlank(getCurrentWorkPi()) && !getCurrentWorkPi().equals(page.getRelatedPI())) {
-        	throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
+        if (page != null && StringUtils.isNotBlank(getCurrentWorkPi()) && !getCurrentWorkPi().equals(page.getRelatedPI())) {
+            throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
         }
     }
 
@@ -1547,27 +1544,27 @@ public class CmsBean implements Serializable {
 
         return "";
     }
-    
+
     public Long getLastEditedTimestamp(long pageId) throws DAOException {
-    	return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
+        return Optional.ofNullable(getCMSPage(pageId)).map(CMSPage::getDateUpdated).map(Date::getTime).orElse(null);
     }
-    
+
     /**
-	 * @return the currentWorkPi
-	 */
-	public String getCurrentWorkPi() {
-		return currentWorkPi;
-	}
-	
-	/**
-	 * @param currentWorkPi the currentWorkPi to set
-	 */
-	public void setCurrentWorkPi(String currentWorkPi) {
-		this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;
-	}
-	
-	public void resetCurrentWorkPi() {
-		this.currentWorkPi = "";
-	}
+     * @return the currentWorkPi
+     */
+    public String getCurrentWorkPi() {
+        return currentWorkPi;
+    }
+
+    /**
+     * @param currentWorkPi the currentWorkPi to set
+     */
+    public void setCurrentWorkPi(String currentWorkPi) {
+        this.currentWorkPi = currentWorkPi == null ? "" : currentWorkPi;
+    }
+
+    public void resetCurrentWorkPi() {
+        this.currentWorkPi = "";
+    }
 
 }
