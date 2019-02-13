@@ -81,23 +81,7 @@ module.exports = function(grunt) {
 					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js'
 				],
 				dest : '<%=src.jsDistFolder%>viewer.min.js'
-			},
-			distViewImage : {
-				src : [
-					'<%=src.jsDevFolderModules %>imageView/imageView.image.js',
-					'<%=src.jsDevFolderModules %>imageView/imageView.controls.js',
-					'<%=src.jsDevFolderModules %>imageView/imageView.overlay.js',
-					'<%=src.jsDevFolderModules %>imageView/imageView.*.js'
-				],
-				dest : '<%=src.jsDistFolder%>viewImage.min.js'
-			},
-			distViewObject : {
-                src : [
-                    '<%=src.jsDevFolderModules %>objectView/*Loader.js',
-                    '<%=src.jsDevFolderModules %>objectView/WorldGenerator.js',
-                ],
-                dest : '<%=src.jsDistFolder%>objectView.min.js'
-            },
+			}
 		},
 		watch : {
 			configFiles : {
