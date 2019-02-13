@@ -162,19 +162,7 @@
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="tpl-overviewpage-legacy__history">
                         <h3>#{msg.viewOverviewHistory_heading}</h3>
-
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>#{msg.viewOverviewHistory_date}</th>
-                                    <th>#{msg.viewOverviewHistory_user}</th>
-                                    <th>#{msg.viewOverviewHistory_changes}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ui:include src="#{cmsPage.getContent('history')}" />
-                            </tbody>
-                        </table>
+                        <ui:include src="#{cmsPage.getContent('history')}" />
                     </div>
                 </ui:fragment>
             </div>

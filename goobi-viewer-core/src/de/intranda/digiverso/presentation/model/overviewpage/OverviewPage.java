@@ -699,7 +699,7 @@ public class OverviewPage implements Harvestable, Serializable {
             if ("global".equals(lang)) {
                 continue;
             }
-            
+
             // Metadata
             {
                 CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
@@ -739,6 +739,12 @@ public class OverviewPage implements Harvestable, Serializable {
             item.setItemId("history");
             item.setItemLabel("history");
             StringBuilder sb = new StringBuilder();
+            sb.append("<table class=\"table\"><thead><tr>")
+                    .append("<th>#{msg.viewOverviewHistory_date}</th>")
+                    .append("<th>#{msg.viewOverviewHistory_user}</th>")
+                    .append("<th>#{msg.viewOverviewHistory_changes}</th>")
+                    .append("</tr></thead><tbody>");
+
             for (OverviewPageUpdate update : updates) {
                 sb.append("<tr><td>")
                         .append(update.getDateUpdated())
@@ -763,6 +769,7 @@ public class OverviewPage implements Harvestable, Serializable {
                 }
                 sb.append(sbChanges.toString()).append("</td></tr>");
             }
+            sb.append("</tbody></table>");
             item.setHtmlFragment(sb.toString());
             try {
                 cmsPage.getLanguageVersion("global").addContentItem(item);
