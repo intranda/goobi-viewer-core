@@ -5189,30 +5189,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
-.search-list__hit-thumbnail [data-link="related-page"] {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  right: 30px;
-  height: auto !important;
-  padding: 0 5px;
-  text-align: center;
-  color: #fff;
-  border-radius: 3px;
-  background-color: #507ebf;
-}
-.search-list__hit-thumbnail [data-link="related-page"]:before {
-  content: "";
-  position: absolute;
-  display: block;
-  right: 3px;
-  bottom: -8px;
-  width: 0;
-  height: 0;
-  border-width: 4px;
-  border-style: solid;
-  border-color: #507ebf transparent transparent transparent;
-}
 .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   position: absolute;
   top: 0;
@@ -5501,9 +5477,6 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__hits.grid .search-list__hit-thumbnail a {
   display: block;
   height: 175px;
-}
-.search-list__hits.grid .search-list__hit-thumbnail [data-link="related-page"] {
-  top: 5px;
 }
 .search-list__hits.grid .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   top: 0;
