@@ -473,6 +473,9 @@ var viewerJS = ( function( viewer ) {
             case 'COMMENT':
                 hitSetChildrenDt.append( '<i class="fa fa-comment" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
+            case 'CMS':
+                hitSetChildrenDt.append( '<i class="fa fa-file-text-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
+                break;
             case 'EVENT':
                 hitSetChildrenDt.append( '<i class="fa fa-calendar" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;

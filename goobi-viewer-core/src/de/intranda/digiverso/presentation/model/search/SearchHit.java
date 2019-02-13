@@ -351,7 +351,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     children.add(cmsPageHit);
                     for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
-                                .add(new SearchHit(HitType.PAGE,
+                                .add(new SearchHit(HitType.CMS,
                                         new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null, page.getRelativeUrlPath()),
                                         searchTerms, locale));
                         count++;
