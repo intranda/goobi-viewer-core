@@ -486,6 +486,7 @@ var viewerJS = ( function( viewer ) {
         hitSetChildrenDd = $( '<dd />' );
         hitSetChildrenLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
+            case 'CMS':
             case 'PAGE':
             case 'ACCESSDENIED':
                 hitSetChildrenLink.append( data.fulltextForHtml );
