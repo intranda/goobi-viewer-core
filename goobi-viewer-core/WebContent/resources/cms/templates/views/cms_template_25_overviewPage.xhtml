@@ -172,33 +172,7 @@
     </ui:define>
     
     <!-- SIDEBAR -->
-    <ui:define name="sidebar">
-        <widgetComponent:widget_views pageType="overview" />
-        
-        <widgetComponent:widget_searchInCurrentItem />
-        
-        <widgetComponent:widget_nerFacetting />
-        
-        <widgetComponent:widget_searchResultNavigation />
-        
-        <widgetComponent:widget_metadata />
-        
-        <widgetComponent:widget_usage />
-        
-        <widgetComponent:widget_download />
-        
-        <widgetComponent:widget_versionHistory />
-
-        <widgetComponent:widget_bookshelfList />
-        
-        <widgetComponent:widget_mySearches />
-        
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-        
-        <widgetComponent:widget_user />
+	<ui:define name="sidebar">
+		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
     </ui:define>
 </ui:composition>

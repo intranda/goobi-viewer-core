@@ -487,6 +487,16 @@ public class CmsBean implements Serializable {
     public CMSSidebarElement getSidebarElement(String type) {
         return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
     }
+    
+    public boolean isRelatedWorkLoaded() throws IndexUnreachableException {
+    	if(getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
+    		ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+    		if(adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier()) && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
