@@ -101,6 +101,7 @@
             <provider show="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000"/>
+            <provider type="userPassword" name="littera" endpoint="https://littera.example/externauth" image="vufind.png" timeout="7000"/>
                 
             <provider type="local" name="Goobi viewer"/>
         </authenticationProviders>

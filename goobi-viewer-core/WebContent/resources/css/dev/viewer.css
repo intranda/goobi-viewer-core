@@ -5740,10 +5740,15 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELMENTS */
 }
 .user-login__external .user-login__options li {
+  height: 50px;
   text-align: right;
+  margin-top: 10px;
 }
 .user-login__external .user-login__options li .provider-logo {
   float: left;
+}
+.user-login__external .user-login__options li .btn {
+  margin-top: 8px;
 }
 .user-login__external .user-login__options img {
   max-height: 50px;

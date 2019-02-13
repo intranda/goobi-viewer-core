@@ -51,6 +51,15 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
 /**
+ * External authentication provider for the LITTERA reader authentication api (www.littera.eu).
+ * This provider requests requests authentication from the configured url and an 'id' and 'pw' provided as query parameters.
+ * The response is a text/xml document containing a root element <Response> with an attribute "authenticationSuccessful" 
+ * which is either true or false depending on the validity of the passed query params.
+ * If the authentication is successful, an existing viewer user is newly created is required with the nickname of the login id and
+ * an email of {id}@nomail.com.
+ * The user may still be suspended, given admin rights ect. as any other viewer user
+ * 
+ * 
  * @author Florian Alpers
  *
  */
@@ -92,7 +101,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
         } catch(WebApplicationException e) {
-            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
+            throw new AuthenticationProviderException("Error requesting authorisation for user " + loginName, e);
         }
     }
 
@@ -101,7 +110,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
         try {            
             client.property(ClientProperties.CONNECT_TIMEOUT, (int)getTimeoutMillis());
             client.property(ClientProperties.READ_TIMEOUT, (int)getTimeoutMillis());
-            UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
+            url = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
             WebTarget target = client.target(url);
             LitteraAuthenticationResponse response = target.request().accept(MediaType.TEXT_XML).get(LitteraAuthenticationResponse.class);
             return response;

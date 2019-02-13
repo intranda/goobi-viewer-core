@@ -19,6 +19,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Representation of the Littera authentication response which is delivered as xml. It only contains 
+ * the single information if a login attempt succeeded or not
+ * 
  * @author florian
  *
  */
