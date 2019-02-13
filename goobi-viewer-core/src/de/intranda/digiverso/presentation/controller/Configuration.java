@@ -53,6 +53,7 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.Metad
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LitteraProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
@@ -1349,6 +1350,8 @@ public final class Configuration extends AbstractConfiguration {
                             case "xservice":
                                 providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
                                 break;
+                            case "littera":
+                            	providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
