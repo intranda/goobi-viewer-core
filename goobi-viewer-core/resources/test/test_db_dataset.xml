@@ -113,29 +113,6 @@
 		page="1" date_updated="2013-07-15 12:00:00.000000000"
 	    new_hits_notification="0" />
 		
-	<overview_pages overview_page_id="1" pi="PI 1" publication_text="pub"
-	   date_updated="2015-06-22 00:00:00.000000000"
-	   config_xml="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;overviewPage&gt;&lt;metadata&gt;&lt;metadata label=&quot;URN&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;URN&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;PI&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;PI&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_TITLE&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;MD_TITLE&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_CREATOR&quot; value=&quot;&quot;&gt;&lt;param type=&quot;entityfield&quot; key=&quot;MD_CREATOR&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;DOCSTRCT&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;DOCSTRCT&quot; /&gt;&lt;/metadata&gt;&lt;/metadata&gt;&lt;description&gt;Hello, Overview&lt;/description&gt;&lt;publicationText&gt;pub&lt;/publicationText&gt;&lt;/overviewPage&gt;" />
-    <overview_pages overview_page_id="2" pi="PI 2" publication_text="pub"
-       date_updated="2015-01-01 00:00:00.000000000"
-       config_xml="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;overviewPage&gt;&lt;metadata&gt;&lt;metadata label=&quot;URN&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;URN&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;PI&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;PI&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_TITLE&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;MD_TITLE&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_CREATOR&quot; value=&quot;&quot;&gt;&lt;param type=&quot;entityfield&quot; key=&quot;MD_CREATOR&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;DOCSTRCT&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;DOCSTRCT&quot; /&gt;&lt;/metadata&gt;&lt;/metadata&gt;&lt;description&gt;Hello, Overview&lt;/description&gt;&lt;/overviewPage&gt;" />
-    <overview_pages overview_page_id="3" pi="134997743" publication_text="pub"
-       date_updated="2014-03-10 00:00:00.000000000"
-       config_xml="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;overviewPage&gt;&lt;metadata&gt;&lt;metadata label=&quot;URN&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;URN&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;PI&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;PI&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_TITLE&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;MD_TITLE&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;MD_CREATOR&quot; value=&quot;&quot;&gt;&lt;param type=&quot;entityfield&quot; key=&quot;MD_CREATOR&quot; /&gt;&lt;/metadata&gt;&lt;metadata label=&quot;DOCSTRCT&quot; value=&quot;&quot;&gt;&lt;param type=&quot;field&quot; key=&quot;DOCSTRCT&quot; /&gt;&lt;/metadata&gt;&lt;/metadata&gt;&lt;description&gt;Hello, Overview&lt;/description&gt;&lt;/overviewPage&gt;" />
-
-	<overview_page_updates overview_page_update_id="1" pi="PI 1"
-		date_updated="2015-01-01 00:00:00.000000000" updated_by="1" config="&lt;xml /&gt;"
-		metadataChanged="true" descriptionChanged="true" publicationTextChanged="true" />
-	<overview_page_updates overview_page_update_id="2" pi="PI 1"
-        date_updated="2015-03-03 00:00:00.000000000" updated_by="1" config="&lt;xml /&gt;"
-        metadataChanged="true" descriptionChanged="false" publicationTextChanged="false" />
-    <overview_page_updates overview_page_update_id="3" pi="PI 1"
-        date_updated="2015-06-22 00:00:00.000000000" updated_by="1" config="&lt;xml /&gt;"
-        metadataChanged="false" descriptionChanged="true" publicationTextChanged="false" />
-    <overview_page_updates overview_page_update_id="4" pi="PI 2"
-        date_updated="2015-01-01 00:00:00.000000000" updated_by="1" config="&lt;xml /&gt;"
-        metadataChanged="true" descriptionChanged="true" publicationTextChanged="true" />
-		
 	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
     <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
     <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
