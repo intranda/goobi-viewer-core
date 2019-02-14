@@ -112,7 +112,7 @@ public class FileTools {
                 encoding = Helper.DEFAULT_ENCODING;
             }
         }
-        
+
         StringBuilder text = new StringBuilder();
         String ls = System.getProperty("line.separator");
         try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, encoding)) {
@@ -128,7 +128,7 @@ public class FileTools {
             ret = StringTools.convertStringEncoding(ret, encoding, convertToEncoding);
         }
 
-        return ret;
+        return ret.trim();
     }
 
     /**
@@ -346,7 +346,7 @@ public class FileTools {
             output.write(buf, 0, len);
         }
     }
-    
+
     /**
      * 
      * @param folder
@@ -354,7 +354,7 @@ public class FileTools {
      * @throws IOException
      */
     public static boolean isFolderEmpty(final Path folder) throws IOException {
-        try(DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
             return !ds.iterator().hasNext();
         }
     }
