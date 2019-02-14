@@ -214,30 +214,42 @@ public interface IDAO {
 
     // Overview page
 
+    @Deprecated
     public long getOverviewPageCount(Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public List<OverviewPage> getOverviewPages(int first, int pageSize, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public OverviewPage getOverviewPage(long id) throws DAOException;
 
+    @Deprecated
     public OverviewPage getOverviewPageForRecord(String pi, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public boolean addOverviewPage(OverviewPage overviewPage) throws DAOException;
 
+    @Deprecated
     public boolean updateOverviewPage(OverviewPage overviewPage) throws DAOException;
 
+    @Deprecated
     public boolean deleteOverviewPage(OverviewPage overviewPage) throws DAOException;
 
     // Overview page updates
 
+    @Deprecated
     public List<OverviewPageUpdate> getOverviewPageUpdatesForRecord(String pi) throws DAOException;
 
+    @Deprecated
     public boolean isOverviewPageHasUpdates(String pi, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public OverviewPageUpdate getOverviewPageUpdate(long id) throws DAOException;
 
+    @Deprecated
     public boolean addOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
 
+    @Deprecated
     public boolean deleteOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
 
     // Download jobs
