@@ -79,7 +79,6 @@ public class TEITools {
         }
 
         Document teiDoc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
-        System.out.println(new XMLOutputter().outputString(teiDoc));
         Document htmlDoc = XmlTools.transformViaXSLT(teiDoc,
                 DataManager.getInstance().getConfiguration().getViewerHome() + "resources/TEI/html5/html5.xsl", null);
         if (htmlDoc != null) {
