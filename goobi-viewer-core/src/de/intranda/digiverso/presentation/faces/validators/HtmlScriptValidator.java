@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.digiverso.presentation.controller.Helper;
 
 /**
- * Validates that any input text has no <script> tags
+ * Validates that any input text has no "script" tags
  * 
  * @author Florian Alpers
  *
