@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<project name="Goobi viewer 3.2" default="fritz.ci" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="Goobi viewer 3.4" default="fritz.ci" xmlns:jacoco="antlib:org.jacoco.ant">
 
 	<!-- Distribution specific settings. -->
 	<property name="dist.name" value="viewer" />
-	<property name="dist.version" value="3.2" />
+	<property name="dist.version" value="3.4" />
 
 	<!-- Directory settings -->
 	<property name="dir.build" location="./build" />
