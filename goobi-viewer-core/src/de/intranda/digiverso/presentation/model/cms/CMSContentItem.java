@@ -1108,13 +1108,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * Writes HTML fragment value as file for re-indexing.
      * 
+     * @param pageId ID of the owning CMS page
      * @param hotfolder
      * @param namingScheme
      * @throws IOException
      * @throws ViewerConfigurationException
      * @should write files correctly
      */
-    public void exportHtmlFragment(String hotfolderPath, String namingScheme) throws IOException {
+    public void exportHtmlFragment(long pageId, String hotfolderPath, String namingScheme) throws IOException {
         if (StringUtils.isEmpty(hotfolderPath)) {
             throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
         }
@@ -1132,7 +1133,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         }
         // Export HTML fragment
         if (StringUtils.isNotEmpty(htmlFragment)) {
-            File file = new File(cmsDataDir.toFile(), itemId + ".xml");
+            File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".xml");
             try {
                 FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
                 logger.debug("Wrote HTML fragment: {}", file.getName());
@@ -1145,7 +1146,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             try {
                 String html = CmsMediaBean.getMediaFileAsString(mediaItem);
                 if (StringUtils.isNotEmpty(html)) {
-                    File file = new File(cmsDataDir.toFile(), itemId + ".html");
+                    File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
                     FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
                     logger.debug("Wrote media content: {}", file.getName());
                 }

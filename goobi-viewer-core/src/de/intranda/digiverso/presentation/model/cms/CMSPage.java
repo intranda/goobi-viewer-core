@@ -1327,7 +1327,7 @@ public class CMSPage implements Comparable<CMSPage> {
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
                     if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())) {
-                        Path file = Paths.get(cmsTextFolder.toAbsolutePath().toString(), ci.getItemId() + ".xml");
+                        Path file = Paths.get(cmsTextFolder.toAbsolutePath().toString(), id + "-" + ci.getItemId() + ".xml");
                         if (Files.isRegularFile(file)) {
                             filesToDelete.add(file);
                         }
@@ -1398,9 +1398,9 @@ public class CMSPage implements Comparable<CMSPage> {
      * @param item
      * @param hotfolderPath
      * @param namingScheme
-     * @throws IOException 
+     * @throws IOException
      */
-    private static void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {
+    private void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {
         if (item.getType() == null) {
             return;
         }
@@ -1408,7 +1408,7 @@ public class CMSPage implements Comparable<CMSPage> {
             case MEDIA:
             case HTML:
             case TEXT:
-                item.exportHtmlFragment(hotfolderPath, namingScheme);
+                item.exportHtmlFragment(id, hotfolderPath, namingScheme);
                 break;
             default:
                 break;
