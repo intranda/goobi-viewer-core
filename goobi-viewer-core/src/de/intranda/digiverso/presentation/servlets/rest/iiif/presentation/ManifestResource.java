@@ -169,6 +169,36 @@ public class ManifestResource extends AbstractResource {
         return manifest;
 
     }
+    
+    /**
+     * Returns the entire IIIF manifest for the given pi. If the given pi points to an anchor, a IIIF collection is returned instead
+     * 
+     * @param pi
+     * @return The manifest or collection
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If no object with the given pi was found in the index
+     */
+    @GET
+    @Path("/{pi}/manifest/simple")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public IPresentationModelElement getManifestSimple(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
+            URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
+
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+       StructElement doc = getManifestBuilder().getDocument(pi);
+        if (doc == null) {
+            throw new ContentNotFoundException("No document found for pi " + pi);
+        }
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
+
+        return manifest;
+
+    }
 
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi

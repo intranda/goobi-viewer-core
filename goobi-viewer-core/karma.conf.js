@@ -43,6 +43,7 @@ module.exports = function(config) {
 	      'tests/spec/viewImage.controls-spec.js',
 	      'tests/spec/viewImage.controls.persistence-spec.js',
 	      'tests/spec/viewImage.tileSourceResolver-spec.js',
+	      'spec/viewImage.coordinateConversion-spec.js',
 
 	      'tests/spec/javascripts/fixtures/paginatorTest.html',
       ],
