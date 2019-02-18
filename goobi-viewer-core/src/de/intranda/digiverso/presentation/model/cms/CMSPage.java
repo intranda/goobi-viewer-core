@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -1324,12 +1325,27 @@ public class CMSPage implements Comparable<CMSPage> {
                 logger.trace("CMS text folder not found - nothing to delete");
                 return 0;
             }
+            List<Path> cmsPageFiles = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(cmsTextFolder, id + "-*.*")) {
+                for (Path file : stream) {
+                    if (Files.isRegularFile(file)) {
+                        cmsPageFiles.add(file);
+                    }
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+
+            // Collect files that match the page-contentid name pattern
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
-                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())) {
-                        Path file = Paths.get(cmsTextFolder.toAbsolutePath().toString(), id + "-" + ci.getItemId() + ".xml");
-                        if (Files.isRegularFile(file)) {
-                            filesToDelete.add(file);
+                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
+                            || CMSContentItemType.MEDIA.equals(ci.getType())) {
+                        String baseFileName = id + "-" + ci.getItemId() + ".";
+                        for (Path file : cmsPageFiles) {
+                            if (file.getFileName().toString().startsWith(baseFileName)) {
+                                filesToDelete.add(file);
+                            }
                         }
                     }
                 }
