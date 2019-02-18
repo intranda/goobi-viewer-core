@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.utils;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,9 +75,17 @@ public class SessionResource {
 
         StringBuilder sb = new StringBuilder();
         Map<String, String> sessionMap = DataManager.getInstance().getSessionMap().get(servletRequest.getSession().getId());
+//        Date dateCreated = new Date(servletRequest.getSession().getCreationTime());
+        long lastAccessed = servletRequest.getSession().getLastAccessedTime();
+        Date dateLastAccessed = new Date(lastAccessed);
+//        long now = new Date().getTime();
+//        long maxInactiveInterval = servletRequest.getSession().getMaxInactiveInterval() * 1000l; //ms
         if (sessionMap == null) {
             return "Session " + servletRequest.getSession().getId() + " not found";
         }
+//        sb.append("Session start").append(": ").append(dateCreated).append('\n');
+        sb.append("Last access").append(": ").append(dateLastAccessed).append('\n');
+//        sb.append("Max. idle time").append(": ").append(maxInactiveInterval).append("s\n");
         for (String key : sessionMap.keySet()) {
             sb.append(key).append(": ").append(sessionMap.get(key)).append('\n');
         }
