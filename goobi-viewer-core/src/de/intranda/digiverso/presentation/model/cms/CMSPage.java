@@ -16,10 +16,12 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -878,7 +880,7 @@ public class CMSPage implements Comparable<CMSPage> {
         try {
             defaultVersion = getLanguageVersion(GLOBAL_LANGUAGE);
         } catch (CmsElementNotFoundException e) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         List<CMSContentItem> items = defaultVersion.getContentItems();
         return items;
@@ -1323,12 +1325,27 @@ public class CMSPage implements Comparable<CMSPage> {
                 logger.trace("CMS text folder not found - nothing to delete");
                 return 0;
             }
+            List<Path> cmsPageFiles = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(cmsTextFolder, id + "-*.*")) {
+                for (Path file : stream) {
+                    if (Files.isRegularFile(file)) {
+                        cmsPageFiles.add(file);
+                    }
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+
+            // Collect files that match the page-contentid name pattern
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
-                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())) {
-                        Path file = Paths.get(cmsTextFolder.toAbsolutePath().toString(), ci.getItemId() + ".xml");
-                        if (Files.isRegularFile(file)) {
-                            filesToDelete.add(file);
+                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
+                            || CMSContentItemType.MEDIA.equals(ci.getType())) {
+                        String baseFileName = id + "-" + ci.getItemId() + ".";
+                        for (Path file : cmsPageFiles) {
+                            if (file.getFileName().toString().startsWith(baseFileName)) {
+                                filesToDelete.add(file);
+                            }
                         }
                     }
                 }
@@ -1361,5 +1378,56 @@ public class CMSPage implements Comparable<CMSPage> {
         }
 
         return count;
+    }
+
+    /**
+     * Exports text/html fragments from this page's content items for indexing.
+     * 
+     * @param hotfolderPath
+     * @param namingScheme
+     * @throws IOException
+     */
+    public void exportTexts(String hotfolderPath, String namingScheme) throws IOException {
+        try {
+            // Default language items
+            CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
+            if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
+                for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
+                    exportItemText(item, hotfolderPath, namingScheme);
+                }
+            }
+
+        } catch (CmsElementNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        }
+        // Global language items
+        List<CMSContentItem> globalContentItems = getGlobalContentItems();
+        if (!globalContentItems.isEmpty()) {
+            for (CMSContentItem item : globalContentItems) {
+                exportItemText(item, hotfolderPath, namingScheme);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param item
+     * @param hotfolderPath
+     * @param namingScheme
+     * @throws IOException
+     */
+    private void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {
+        if (item.getType() == null) {
+            return;
+        }
+        switch (item.getType()) {
+            case MEDIA:
+            case HTML:
+            case TEXT:
+                item.exportHtmlFragment(id, hotfolderPath, namingScheme);
+                break;
+            default:
+                break;
+        }
     }
 }

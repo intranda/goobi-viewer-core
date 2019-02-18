@@ -21,27 +21,35 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+
 public class BrowsingMenuFieldConfig implements Serializable {
 
     private static final long serialVersionUID = 3986773493941416989L;
 
-    private String field;
-    private String sortField;
-    private List<String> docstructFilters = new ArrayList<>();
-    private boolean recordsAndAnchorsOnly = false;
+    private final String field;
+    private final String sortField;
+    private final List<String> filterQueries = new ArrayList<>(3);
 
-    public BrowsingMenuFieldConfig(String field, String sortField, String docstructFilterString, boolean recordsAndAnchorsOnly) {
+    /**
+     * Constructor.
+     * 
+     * @param field
+     * @param sortField
+     * @param filterQuery
+     * @param docstructFilterString
+     * @param recordsAndAnchorsOnly
+     */
+    public BrowsingMenuFieldConfig(String field, String sortField, String filterQuery, @Deprecated String docstructFilterString,
+            @Deprecated boolean recordsAndAnchorsOnly) {
         this.field = field;
         this.sortField = sortField;
-        if (StringUtils.isNotEmpty(docstructFilterString)) {
-            String[] docstrcutFilterStringSplit = docstructFilterString.split(";");
-            for (String filter : docstrcutFilterStringSplit) {
-                if (StringUtils.isNotEmpty(filter)) {
-                    docstructFilters.add(filter.trim());
-                }
-            }
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            filterQueries.add(filterQuery);
         }
-        this.recordsAndAnchorsOnly = recordsAndAnchorsOnly;
+
+        setDocstructFilterString(docstructFilterString);
+        setRecordsAndAnchorsOnly(recordsAndAnchorsOnly);
     }
 
     /**
@@ -59,16 +67,39 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * @return the docstructFilters
+     * @return the filterQueries
      */
-    public List<String> getDocstructFilters() {
-        return docstructFilters;
+    public List<String> getFilterQueries() {
+        return filterQueries;
     }
 
     /**
-     * @return the recordsAndAnchorsOnly
+     * 
+     * @param docstructFilterString
+     * @should create filter query correctly
      */
-    public boolean isRecordsAndAnchorsOnly() {
-        return recordsAndAnchorsOnly;
+    void setDocstructFilterString(String docstructFilterString) {
+        if (StringUtils.isNotEmpty(docstructFilterString)) {
+            String[] docstrcutFilterStringSplit = docstructFilterString.split(";");
+            StringBuilder sb = new StringBuilder();
+            for (String filter : docstrcutFilterStringSplit) {
+                if (StringUtils.isNotEmpty(filter)) {
+                    sb.append(SolrConstants.DOCSTRCT).append(':').append(filter).append(' ');
+                }
+            }
+            filterQueries.add(sb.toString().trim());
+        }
+    }
+
+    /**
+     * 
+     * @param recordsAndAnchorsOnly
+     * @should create filter query correctly
+     */
+    void setRecordsAndAnchorsOnly(boolean recordsAndAnchorsOnly) {
+        if (recordsAndAnchorsOnly) {
+            filterQueries
+                    .add(new StringBuilder().append(SolrConstants.ISWORK).append(":true ").append(SolrConstants.ISANCHOR).append(":true").toString());
+        }
     }
 }

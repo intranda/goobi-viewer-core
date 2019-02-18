@@ -320,7 +320,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference"
+		<theme subTheme="false" mainTheme="iai"
 			discriminatorField="" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
@@ -450,7 +450,7 @@
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
-		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
 		
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->

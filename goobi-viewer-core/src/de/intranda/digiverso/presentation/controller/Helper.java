@@ -84,7 +84,6 @@ import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import de.intranda.digiverso.presentation.Version;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
-import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -94,8 +93,6 @@ import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
-import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
-import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -538,22 +535,12 @@ public class Helper {
             List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, null);
             if (!cmsPages.isEmpty()) {
                 for (CMSPage page : cmsPages) {
-                    if (page.getDefaultLanguage() == null || page.getDefaultLanguage().getContentItems().isEmpty()) {
-                        continue;
-                    }
-                    for (CMSContentItem item : page.getDefaultLanguage().getContentItems()) {
-                        if (CMSContentItemType.HTML.equals(item.getType()) || CMSContentItemType.TEXT.equals(item.getType())) {
-                            item.exportHtmlFragment(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
-                        }
-                    }
+                    page.exportTexts(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
                 }
             }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
-        } catch (CmsElementNotFoundException e) {
-            logger.error(e.getMessage(), e);
         }
-
         // Module augmentations
         for (IModule module : DataManager.getInstance().getModules()) {
             try {

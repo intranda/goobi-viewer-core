@@ -1548,7 +1548,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
                 advancedSearchSelectItems.put(key, ret);
             } else {
-                new BrowsingMenuFieldConfig(field, null, null, false);
+                new BrowsingMenuFieldConfig(field, null, null, null, false);
                 String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
 
                 List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);

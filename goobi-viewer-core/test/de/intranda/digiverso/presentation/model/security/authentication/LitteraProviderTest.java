@@ -15,7 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.core.MediaType;
@@ -38,8 +40,8 @@ import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
  * @author florian
  *
  */
-public class LitteraProviderTest extends AbstractDatabaseEnabledTest{
-	
+public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
+
     private static String user_id = "test";
     private static String user_id_invalid = "blub";
     private static String user_pw = "test";
@@ -47,10 +49,10 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest{
 
     private static final int SERVERPORT = 1080;
     private static final String SERVERURL = "127.0.0.1";
-    private static final String RESPONSE_USER_VALID = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-    		"<Response authenticationSuccessful=\"true\" />";
-    private static final String RESPONSE_USER_INVALID = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-    		"<Response authenticationSuccessful=\"false\" />";
+    private static final String RESPONSE_USER_VALID =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<Response authenticationSuccessful=\"true\" />";
+    private static final String RESPONSE_USER_INVALID =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<Response authenticationSuccessful=\"false\" />";
 
     private LitteraProvider provider;
 
@@ -63,40 +65,21 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest{
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
 
         serverClient = new MockServerClient(SERVERURL, SERVERPORT);
-        
+
         //active user
         serverClient
-                .when(HttpRequest.request()
-                        .withPath("/externauth")
-                        .withQueryStringParameter("id", user_id)
-                        .withQueryStringParameter("pw", user_pw)
-                     )
-                .respond(HttpResponse.response()
-                        .withHeader(new Header("Content-Type", MediaType.TEXT_XML))
-                        .withBody(RESPONSE_USER_VALID));
-        
-      //wrong login name
-        serverClient
-                .when(HttpRequest.request()
-                        .withPath("/externauth")
-                        .withQueryStringParameter("id", user_id_invalid)
-                        .withQueryStringParameter("pw", user_pw)
-                     )
-                .respond(HttpResponse.response()
-                        .withHeader(new Header("Content-Type", MediaType.TEXT_XML))
-                        .withBody(RESPONSE_USER_INVALID));
-        
-      //wrong password
-        serverClient
-                .when(HttpRequest.request()
-                        .withPath("/externauth")
-                        .withQueryStringParameter("id", user_id)
-                        .withQueryStringParameter("pw", user_pw_invalid)
-                     )
-                .respond(HttpResponse.response()
-                        .withHeader(new Header("Content-Type", MediaType.TEXT_XML))
-                        .withBody(RESPONSE_USER_INVALID));
+                .when(HttpRequest.request().withPath("/externauth").withQueryStringParameter("id", user_id).withQueryStringParameter("pw", user_pw))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.TEXT_XML)).withBody(RESPONSE_USER_VALID));
 
+        //wrong login name
+        serverClient.when(
+                HttpRequest.request().withPath("/externauth").withQueryStringParameter("id", user_id_invalid).withQueryStringParameter("pw", user_pw))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.TEXT_XML)).withBody(RESPONSE_USER_INVALID));
+
+        //wrong password
+        serverClient.when(
+                HttpRequest.request().withPath("/externauth").withQueryStringParameter("id", user_id).withQueryStringParameter("pw", user_pw_invalid))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.TEXT_XML)).withBody(RESPONSE_USER_INVALID));
 
     }
 
@@ -104,20 +87,24 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest{
     public static void stopProxy() throws Exception {
         serverClient.stop();
         mockServer.stop();
+        Path logFile = Paths.get("mockserver.log");
+        if (Files.isRegularFile(logFile)) {
+            Files.delete(logFile);
+        }
     }
-    
+
+    @Override
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
+        super.setUp();
         provider = new LitteraProvider("external", "http://" + SERVERURL + ":" + SERVERPORT + "/externauth", "", 1000l);
     }
 
-	
-	@Test
-	public void testLogin() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-		Assert.assertFalse(provider.login(user_id, user_pw).get().isRefused());
-		Assert.assertTrue(provider.login(user_id_invalid, user_pw).get().isRefused());
-		Assert.assertTrue(provider.login(user_id, user_pw_invalid).get().isRefused());
-	}
+    @Test
+    public void testLogin() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+        Assert.assertFalse(provider.login(user_id, user_pw).get().isRefused());
+        Assert.assertTrue(provider.login(user_id_invalid, user_pw).get().isRefused());
+        Assert.assertTrue(provider.login(user_id, user_pw_invalid).get().isRefused());
+    }
 
 }

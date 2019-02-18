@@ -54,9 +54,11 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -317,17 +319,47 @@ public class SearchHit implements Comparable<SearchHit> {
         try {
             // Collect relevant texts
             for (CMSPage page : cmsPages) {
-                if (page.getDefaultLanguage() == null || page.getDefaultLanguage().getContentItems().isEmpty()) {
+                if (page.getDefaultLanguage() == null) {
                     continue;
                 }
-                for (CMSContentItem item : page.getDefaultLanguage().getContentItems()) {
-                    if (!searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
+
+                // Iterate over all default and global language version items
+                List<CMSContentItem> items = page.getDefaultLanguage().getContentItems();
+                items.addAll(page.getGlobalContentItems());
+                if (items.isEmpty()) {
+                    continue;
+                }
+                for (CMSContentItem item : items) {
+                    if (item.getType() == null) {
                         continue;
                     }
-                    if (StringUtils.isEmpty(item.getHtmlFragment())) {
+                    String value = null;
+                    switch (item.getType()) {
+                        case HTML:
+                        case TEXT:
+                            if (StringUtils.isEmpty(item.getHtmlFragment())) {
+                                continue;
+                            }
+                            value = item.getHtmlFragment();
+                            break;
+                        case MEDIA:
+                            if (item.getMediaItem() == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(item.getMediaItem().getContentType())) {
+                                continue;
+                            }
+                            try {
+                                value = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                            } catch (ViewerConfigurationException e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                            break;
+                        default:
+                            continue;
+                    }
+                    if (StringUtils.isEmpty(value)) {
                         continue;
                     }
-                    String value = Jsoup.parse(item.getHtmlFragment()).text();
+
+                    value = Jsoup.parse(value).text();
                     String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
                     if (!highlightedValue.equals(value)) {
                         List<String> truncatedStrings = hitPages.get(page);
@@ -351,9 +383,8 @@ public class SearchHit implements Comparable<SearchHit> {
                     children.add(cmsPageHit);
                     for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
-                                .add(new SearchHit(HitType.CMS,
-                                        new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null, page.getRelativeUrlPath()),
-                                        searchTerms, locale));
+                                .add(new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null,
+                                        page.getRelativeUrlPath()), searchTerms, locale));
                         count++;
                     }
                     hitTypeCounts.put(HitType.CMS, count);

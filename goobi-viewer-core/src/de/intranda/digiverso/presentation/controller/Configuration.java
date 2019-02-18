@@ -684,10 +684,12 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
                 String field = sub.getString(".");
                 String sortField = sub.getString("[@sortField]");
+                String filterQuery = sub.getString("[@filterQuery]");
                 String docstructFilterString = sub.getString("[@docstructFilters]");
                 boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-                BrowsingMenuFieldConfig bmf = new BrowsingMenuFieldConfig(field, sortField, docstructFilterString, recordsAndAnchorsOnly);
-                ret.add(bmf);
+                BrowsingMenuFieldConfig bmfc =
+                        new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+                ret.add(bmfc);
             }
         }
 
@@ -1351,7 +1353,7 @@ public final class Configuration extends AbstractConfiguration {
                                 providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
                                 break;
                             case "littera":
-                            	providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
+                                providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }

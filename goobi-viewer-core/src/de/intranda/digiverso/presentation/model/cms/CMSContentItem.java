@@ -54,6 +54,8 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -1086,37 +1088,42 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
     }
-    
+
     /**
      * 
      * @return a regex to be used as a filter for listing available media items. If empty, no filtering should be applied
      */
     public String getMediaFilter() {
-    	CMSContentItemTemplate template = getTemplateItem();
-    	return template.getMediaFilter();
+        CMSContentItemTemplate template = getTemplateItem();
+        return template.getMediaFilter();
     }
 
-	/**
-	 * 
-	 */
-	private CMSContentItemTemplate getTemplateItem() {
-		return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
-	}
+    /**
+     * 
+     */
+    private CMSContentItemTemplate getTemplateItem() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+    }
 
     /**
      * Writes HTML fragment value as file for re-indexing.
      * 
+     * @param pageId ID of the owning CMS page
      * @param hotfolder
      * @param namingScheme
      * @throws IOException
+     * @throws ViewerConfigurationException
      * @should write files correctly
      */
-    public void exportHtmlFragment(String hotfolderPath, String namingScheme) throws IOException {
+    public void exportHtmlFragment(long pageId, String hotfolderPath, String namingScheme) throws IOException {
         if (StringUtils.isEmpty(hotfolderPath)) {
             throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
         }
         if (StringUtils.isEmpty(namingScheme)) {
             throw new IllegalArgumentException("namingScheme may not be null or empty");
+        }
+        if (StringUtils.isEmpty(htmlFragment) && (mediaItem == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType()))) {
+            return;
         }
 
         Path cmsDataDir = Paths.get(hotfolderPath, namingScheme + Helper.SUFFIX_CMS);
@@ -1124,12 +1131,27 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             Files.createDirectory(cmsDataDir);
             logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
         }
+        // Export HTML fragment
         if (StringUtils.isNotEmpty(htmlFragment)) {
-            File file = new File(cmsDataDir.toFile(), itemId + ".xml");
+            File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".xml");
             try {
                 FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
+                logger.debug("Wrote HTML fragment: {}", file.getName());
             } catch (IOException e) {
                 logger.error(e.getMessage());
+            }
+        }
+        // Export media item HTML content
+        if (mediaItem != null && CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType())) {
+            try {
+                String html = CmsMediaBean.getMediaFileAsString(mediaItem);
+                if (StringUtils.isNotEmpty(html)) {
+                    File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
+                    FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                    logger.debug("Wrote media content: {}", file.getName());
+                }
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }

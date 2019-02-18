@@ -1287,6 +1287,7 @@ public final class SearchHelper {
         fields.add(bmfc.getField());
 
         StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append('+');
         // Only search via the sorting field if not doing a wildcard search
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
@@ -1300,24 +1301,10 @@ public final class SearchHelper {
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
-        if (!bmfc.getDocstructFilters().isEmpty()) {
-            //            sbQuery.append(" AND (");
-            StringBuilder sbDocstructFilter = new StringBuilder();
-            for (String docstruct : bmfc.getDocstructFilters()) {
-                sbDocstructFilter.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
-                //                sbDocstructFilter.append(docstruct).append(" OR ");
-            }
-            //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            //            sbQuery.append(')');
-            if (sbDocstructFilter.length() > 4) {
-                sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
-            }
-            filterQueries.add(sbDocstructFilter.toString());
-        }
-        if (bmfc.isRecordsAndAnchorsOnly()) {
-            filterQueries.add(
-                    new StringBuilder().append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true").toString());
 
+        // Add configured filter queries
+        if (!bmfc.getFilterQueries().isEmpty()) {
+            filterQueries.addAll(bmfc.getFilterQueries());
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false);

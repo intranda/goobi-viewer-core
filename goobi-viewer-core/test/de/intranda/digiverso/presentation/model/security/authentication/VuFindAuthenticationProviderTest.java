@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -72,50 +75,29 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
         String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userActive_pwHash);
         String requestBody_invalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userSuspended_pwHash);
-        String requestBody_unknown = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname + "test").replace("{password}", userActive_pwHash);
-        String requestBody_suspended = REQUEST_BODY_TEMPLATE.replace("{username}", userSuspended_nickname).replace("{password}", userSuspended_pwHash);
+        String requestBody_unknown =
+                REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname + "test").replace("{password}", userActive_pwHash);
+        String requestBody_suspended =
+                REQUEST_BODY_TEMPLATE.replace("{username}", userSuspended_nickname).replace("{password}", userSuspended_pwHash);
 
         serverClient = new MockServerClient(SERVERURL, SERVERPORT);
-        
+
         //active user
-        serverClient
-                .when(HttpRequest.request()
-                        .withPath("/user/auth")
-                        .withBody(requestBody_valid)
-                     )
-                .respond(HttpResponse.response()
-                        .withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON))
-                        .withBody(RESPONSE_USER_VALID));
-        
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_valid))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_VALID));
+
         //wrong password
-        serverClient
-        .when(HttpRequest.request()
-                .withPath("/user/auth")
-                .withBody(requestBody_invalid)
-             )
-        .respond(HttpResponse.response()
-                .withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON))
-                .withBody(RESPONSE_USER_INVALID));
-        
-      //unknown user
-        serverClient
-        .when(HttpRequest.request()
-                .withPath("/user/auth")
-                .withBody(requestBody_unknown)
-             )
-        .respond(HttpResponse.response()
-                .withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON))
-                .withBody(RESPONSE_USER_UNKNOWN));
-        
-      //suspended user
-        serverClient
-        .when(HttpRequest.request()
-                .withPath("/user/auth")
-                .withBody(requestBody_suspended)
-             )
-        .respond(HttpResponse.response()
-                .withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON))
-                .withBody(RESPONSE_USER_SUSPENDED));
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_invalid))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_INVALID));
+
+        //unknown user
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_unknown))
+                .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_UNKNOWN));
+
+        //suspended user
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_suspended))
+                .respond(
+                        HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_SUSPENDED));
 
     }
 
@@ -123,6 +105,10 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     public static void stopProxy() throws Exception {
         serverClient.stop();
         mockServer.stop();
+        Path logFile = Paths.get("mockserver.log");
+        if (Files.isRegularFile(logFile)) {
+            Files.delete(logFile);
+        }
     }
 
     /**
