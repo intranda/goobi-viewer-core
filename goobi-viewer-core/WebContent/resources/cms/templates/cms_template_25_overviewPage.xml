@@ -7,6 +7,6 @@
 
 	<content>
 		<item id="metadata" order="1" label="Metadata" type="METADATA" />
-		<item id="literature" order="2" label="Dokument" type="MEDIA" filter=".*\.html"/>
+		<item id="literature" order="2" label="Dokument" type="MEDIA" filter=".*\.x?html?"/>
 	</content>
 </cms_page_template>
