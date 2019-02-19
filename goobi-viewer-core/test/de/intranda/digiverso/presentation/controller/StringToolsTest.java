@@ -1,9 +1,14 @@
 package de.intranda.digiverso.presentation.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class StringToolsTest {
+
     /**
      * @see StringTools#escapeHtmlChars(String)
      * @verifies escape all characters correctly
@@ -73,4 +78,31 @@ public class StringToolsTest {
         Assert.assertTrue(StringTools.isImageUrl("https://example.com/default.jpg"));
         Assert.assertTrue(StringTools.isImageUrl("https://example.com/MASTER.TIFF"));
     }
+
+    /**
+     * @see StringTools#convertFileToHtml(Path)
+     * @verifies convert docx file correctly
+     */
+    @Test
+    public void convertFileToHtml_shouldConvertDocxFileCorrectly() throws Exception {
+        Path rtfFile = Paths.get("resources/test/data/example.docx");
+        Assert.assertTrue(Files.isRegularFile(rtfFile));
+        String html = StringTools.convertFileToHtml(rtfFile);
+        Assert.assertNotNull(html);
+        //                FileTools.getFileFromString(html, "resources/test/data/433 SR (docx).htm", Helper.DEFAULT_ENCODING, false);
+    }
+
+    /**
+     * @see StringTools#convertFileToHtml(Path)
+     * @verifies convert rtf file correctly
+     */
+    @Test
+    public void convertFileToHtml_shouldConvertRtfFileCorrectly() throws Exception {
+        Path rtfFile = Paths.get("resources/test/data/example.rtf");
+        Assert.assertTrue(Files.isRegularFile(rtfFile));
+        String html = StringTools.convertFileToHtml(rtfFile);
+        Assert.assertNotNull(html);
+        //                FileTools.getFileFromString(html, "resources/test/data/433 SR (rtf).htm", Helper.DEFAULT_ENCODING, false);
+    }
+
 }

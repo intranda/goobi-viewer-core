@@ -320,7 +320,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="iai"
+		<theme subTheme="false" mainTheme="reference"
 			discriminatorField="" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
@@ -1062,7 +1062,7 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
     
-            <sidebarWidgetUsage display="false">
+            <sidebarWidgetUsage display="true">
                 <licenseText>
                     <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
                         <param type="field" key="LABEL" />
