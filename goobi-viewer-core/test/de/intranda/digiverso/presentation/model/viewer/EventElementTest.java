@@ -19,12 +19,21 @@ import java.util.Locale;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 
 public class EventElementTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see EventElement#EventElement(SolrDocument,Locale)
