@@ -17,8 +17,7 @@ package de.intranda.digiverso.presentation.filters;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,7 +66,7 @@ public class SessionCounterFilter implements Filter {
 		String id = req.getSession().getId();
 		Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
 		if (metadataMap == null) {
-			metadataMap = new HashMap<>();
+			metadataMap = new LinkedHashMap<>();
 			DataManager.getInstance().getSessionMap().put(id, metadataMap);
 			metadataMap.put("id", id);
 			metadataMap.put("created", new Date().toString());
@@ -75,7 +74,8 @@ public class SessionCounterFilter implements Filter {
 		metadataMap.put("address", req.getRemoteAddr());
 		metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
 		Date now = new Date();
-		metadataMap.put("last", now.toString());
+		metadataMap.put("last request", now.toString());
+		metadataMap.put("previous request", new Date(req.getSession().getLastAccessedTime()).toString());
 		metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
 
 //       Enumeration<String> sessionAttributes = req.getSession().getAttributeNames();

@@ -16,7 +16,7 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public final class DataManager {
 
     private final List<IModule> modules = new ArrayList<>();
 
-    private final Map<String, Map<String, String>> sessionMap = new HashMap<>();
+    private final Map<String, Map<String, String>> sessionMap = new LinkedHashMap<>();
 
     private Configuration configuration;
 
