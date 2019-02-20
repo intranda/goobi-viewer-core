@@ -45,6 +45,7 @@ public class CMSContentItemTemplate extends CMSContentItem {
     /**
      * @return the mode
      */
+    @Override
     public ContentItemMode getMode() {
         return mode;
     }

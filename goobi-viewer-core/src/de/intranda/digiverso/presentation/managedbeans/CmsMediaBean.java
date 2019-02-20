@@ -75,54 +75,59 @@ public class CmsMediaBean implements Serializable {
 
     public String uploadMedia() {
         logger.trace("uploadMedia");
-        if (filePart != null && isValidMediaType(filePart.getContentType())) {
-            if (isUploadComplete()) {
-                logger.debug("Media file has already been uploaded");
-            } else {
-                try {
-                    setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
-                    logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
-                    filePart.write(mediaFile.getAbsolutePath());
-                    if(!validate(mediaFile, filePart.getContentType())) {
-                    	Messages.error("cms_errIllegalMediaContent");
-                    } else {                    	
-                    	setUploadProgress(100);
-                    	saveMedia();
-                    }
-                } catch (IOException | DAOException e) {
-                    logger.error("Failed to upload media file:{}", e.getMessage());
-                    if (mediaFile != null && mediaFile.isFile()) {
-                        mediaFile.delete();
-                    }
-                }
-            }
-        } else {
+        if (filePart == null || !isValidMediaType(filePart.getContentType(), null)) {
             Messages.error("cms_errIllegalMediaFileFormat");
+            return "cmsMedia";
         }
+
+        if (isUploadComplete()) {
+            logger.debug("Media file has already been uploaded");
+            return "cmsMedia";
+        }
+
+        try {
+            setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
+            logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
+            filePart.write(mediaFile.getAbsolutePath());
+            if (!validate(mediaFile, filePart.getContentType())) {
+                Messages.error("cms_errIllegalMediaContent");
+            } else {
+                setUploadProgress(100);
+                saveMedia();
+                Messages.info("cms_media_upload_success");
+            }
+        } catch (IOException | DAOException e) {
+            logger.error("Failed to upload media file:{}", e.getMessage());
+            if (mediaFile != null && mediaFile.isFile()) {
+                mediaFile.delete();
+            }
+        }
+
         return "cmsMedia";
     }
 
     /**
-	 * @param mediaFile2
-	 * @param contentType
-	 * @return	false if the content type is html or xml and the file contains the string "<script" (case insensitive)
-     * @throws IOException 
-	 */
-	private boolean validate(File file, String contentType) throws IOException {
-		if(CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
-			String content = FileUtils.readFileToString(file);
-			return !content.toLowerCase().contains("<script");
-		} else {
-			return true;
-		}
-	}
+     * @param mediaFile2
+     * @param contentType
+     * @return false if the content type is html or xml and the file contains the string "<script" (case insensitive)
+     * @throws IOException
+     */
+    private static boolean validate(File file, String contentType) throws IOException {
+        if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
+            String content = FileUtils.readFileToString(file);
+            return !content.toLowerCase().contains("<script");
+        }
 
-	public boolean isNewMedia() {
+        return true;
+    }
+
+    public boolean isNewMedia() {
         return currentMediaItem != null && currentMediaItem.getId() == null;
     }
 
     /**
      * @param contentType
+     * @param fileName
      * @return true if supported; false otherwise
      * @should return true for tiff
      * @should return true for jpeg
@@ -130,18 +135,24 @@ public class CmsMediaBean implements Serializable {
      * @should return true for png
      * @should return true for docx
      */
-    private static boolean isValidMediaType(String contentType) {
-        logger.trace("isValidMediaType: {}", contentType);
+    private static boolean isValidMediaType(String contentType, String fileName) {
+        logger.trace("isValidMediaType: {} - {}", contentType, fileName);
         switch (contentType) {
             case "image/tiff":
             case "image/jpeg":
             case "image/jp2":
             case "image/png":
-                //            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_DOC: // RTF 
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
             case CMSMediaItem.CONTENT_TYPE_HTML:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_RTF2:
+            case CMSMediaItem.CONTENT_TYPE_RTF3:
+            case CMSMediaItem.CONTENT_TYPE_RTF4:
             case CMSMediaItem.CONTENT_TYPE_XML:
                 return true;
             default:
+                logger.warn("Unsupported media type: {}", contentType);
                 return false;
         }
     }
@@ -190,10 +201,10 @@ public class CmsMediaBean implements Serializable {
     public List<CMSMediaItem> getMediaItems(String tag, String filenameFilter) throws DAOException {
         Stream<CMSMediaItem> items = getAllMedia().stream();
         if (StringUtils.isNotBlank(tag)) {
-        	items = items.filter(item -> item.getTags().contains(tag));
+            items = items.filter(item -> item.getTags().contains(tag));
         }
-        if(StringUtils.isNotBlank(filenameFilter)) {
-        	items = items.filter(item -> item.getFileName().matches(filenameFilter));
+        if (StringUtils.isNotBlank(filenameFilter)) {
+            items = items.filter(item -> item.getFileName().matches(filenameFilter));
         }
         List<CMSMediaItem> list = items.collect(Collectors.toList());
         return list;
@@ -215,21 +226,14 @@ public class CmsMediaBean implements Serializable {
             return "";
         }
 
-        String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
-        switch (extension) {
-            case "htm":
-            case "html":
-            case "xhtml": {
+        switch (item.getContentType()) {
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_XML:
                 StringBuilder sbUri = new StringBuilder();
                 sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
                 return sbUri.toString();
-            }
-            case "xml": {
-                StringBuilder sbUri = new StringBuilder();
-                sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
-                String ret = sbUri.toString();
-                return ret;
-            }
             default:
                 return BeanUtils.getImageDeliveryBean()
                         .getThumbs()
@@ -271,13 +275,13 @@ public class CmsMediaBean implements Serializable {
         }
         return "";
     }
-    
+
     public boolean isImage(CMSMediaItem item) {
-    	return item.getFileName().matches(getImageFilter());
+        return item.getFileName().matches(getImageFilter());
     }
-    
+
     public boolean isText(CMSMediaItem item) {
-    	return !item.getFileName().matches(getImageFilter());
+        return !item.getFileName().matches(getImageFilter());
     }
 
     public CMSMediaItem getCurrentMediaItem() {
@@ -566,13 +570,13 @@ public class CmsMediaBean implements Serializable {
     public void setSelectedLocale(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
     }
-    
+
     /**
      * 
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
     public static String getImageFilter() {
-    	return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
+        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
     }
 
 }

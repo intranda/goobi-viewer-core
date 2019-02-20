@@ -828,14 +828,14 @@ public class CMSPage implements Comparable<CMSPage> {
                 contentString = CMSContentResource.getContentUrl(item);
                 break;
             case MEDIA:
-                String extension = item.getMediaItem() != null ? FilenameUtils.getExtension(item.getMediaItem().getFileName()) : "";
-                switch (extension) {
-                    case "htm":
-                    case "html":
-                    case "xhtml":
+                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
+                switch (type) {
+                    case CMSMediaItem.CONTENT_TYPE_DOCX:
+                    case CMSMediaItem.CONTENT_TYPE_HTML:
+                    case CMSMediaItem.CONTENT_TYPE_RTF:
                         contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                         break;
-                    case "xml":
+                    case CMSMediaItem.CONTENT_TYPE_XML:
                         contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
                         try {
                             String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
