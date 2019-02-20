@@ -51,7 +51,7 @@ public class StructElementComparator implements Comparator<StructElement> {
         } else if(ds2.isWork()) {
             return 1;
         }
-        
+                
         return ds1.getLogid().compareTo(ds2.getLogid());
     }
 

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -39,6 +40,8 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.ConfigurationNode;
+import org.apache.commons.configuration.tree.ExpressionEngine;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -3170,6 +3173,44 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return the list of all configured event fields for IIIF manifests
+     * All fields must contain a "/" to separate the event type and the actual field name
+     * If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from all events
+     */
+	public List<String> getIIIFEventFields() {
+        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", Collections.emptyList());	
+        fields = fields.stream().map(field -> field.contains("/") ? field : "/" + field).collect(Collectors.toList());
+        return fields;
+	}
+	
+	/**
+	 * @param field	the value of the field
+	 * @return	The attribute "label" of any children of webapi.iiif.metadataFields
+	 */
+	public String getIIIFMetadataLabel(String field) {
+		ExpressionEngine defaultEngine = config.getExpressionEngine();
+		config.setExpressionEngine(new XPathExpressionEngine());
+		ExpressionEngine defaultEngineLocal = null;
+		if(configLocal != null) {	
+			defaultEngineLocal = configLocal.getExpressionEngine();
+			configLocal.setExpressionEngine(new XPathExpressionEngine());
+		}
+
+		try {
+			
+			return getLocalString("webapi/iiif/metadataFields/*[.='" + field + "']/@label", "");
+			
+		} finally {
+			config.setExpressionEngine(defaultEngine);
+			if(configLocal != null) {			
+				configLocal.setExpressionEngine(defaultEngineLocal);
+			}			
+		}
+		
+	
+	}
+
+    /**
      * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
      * 
      * @return The number of activities to display per collection page in the IIIF discovery api
@@ -3237,5 +3278,8 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
+
+
+
 
 }
