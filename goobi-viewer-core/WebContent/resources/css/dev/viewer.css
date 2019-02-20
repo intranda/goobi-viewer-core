@@ -65,6 +65,8 @@
 html {
   height: auto;
   font-size: 100%;
+  margin-left: calc(100vw - 100%);
+  /* prefents page shifting if page has no scrollbar */
 }
 body {
   height: 100%;
