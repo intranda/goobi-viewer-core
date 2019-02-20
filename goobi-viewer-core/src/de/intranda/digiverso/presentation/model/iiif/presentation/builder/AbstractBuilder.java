@@ -373,7 +373,7 @@ public abstract class AbstractBuilder {
 		for (String string : eventStrings) {
 			String event, field;
 			int separatorIndex = string.indexOf("/");
-			if (separatorIndex > 0) {
+			if (separatorIndex > -1) {
 				event = string.substring(0, separatorIndex);
 				field = string.substring(separatorIndex + 1);
 			} else {
