@@ -191,6 +191,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      * @throws JDOMException
      */
     public void processMediaFile(File mediaFile) {
+        if (mediaFile == null) {
+            return;
+        }
+
         if (CONTENT_TYPE_DOCX.equals(getContentType())) {
             try {
                 // TODO convert to TEI

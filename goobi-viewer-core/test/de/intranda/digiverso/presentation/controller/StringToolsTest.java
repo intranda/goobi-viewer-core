@@ -1,3 +1,18 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.intranda.digiverso.presentation.controller;
 
 import java.nio.file.Files;
@@ -80,29 +95,23 @@ public class StringToolsTest {
     }
 
     /**
-     * @see StringTools#convertFileToHtml(Path)
-     * @verifies convert docx file correctly
+     * @see StringTools#renameIncompatibleCSSClasses(String)
+     * @verifies rename classes correctly
      */
     @Test
-    public void convertFileToHtml_shouldConvertDocxFileCorrectly() throws Exception {
-        Path rtfFile = Paths.get("resources/test/data/example.docx");
-        Assert.assertTrue(Files.isRegularFile(rtfFile));
-        String html = StringTools.convertFileToHtml(rtfFile);
-        Assert.assertNotNull(html);
-        //                FileTools.getFileFromString(html, "resources/test/data/433 SR (docx).htm", Helper.DEFAULT_ENCODING, false);
+    public void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
+      Path file = Paths.get("resources/test/data/text_example_bad_classes.htm");
+      Assert.assertTrue(Files.isRegularFile(file));
+      
+      String html = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+      Assert.assertNotNull(html);
+      Assert.assertTrue(html.contains(".20Formatvorlage"));
+      Assert.assertTrue(html.contains("class=\"20Formatvorlage"));
+      
+      html = StringTools.renameIncompatibleCSSClasses(html);
+      Assert.assertFalse(html.contains(".20Formatvorlage"));
+      Assert.assertFalse(html.contains("class=\"20Formatvorlage"));
+      Assert.assertTrue(html.contains(".Formatvorlage20"));
+      Assert.assertTrue(html.contains("class=\"Formatvorlage20"));
     }
-
-    /**
-     * @see StringTools#convertFileToHtml(Path)
-     * @verifies convert rtf file correctly
-     */
-    @Test
-    public void convertFileToHtml_shouldConvertRtfFileCorrectly() throws Exception {
-        Path rtfFile = Paths.get("resources/test/data/example.rtf");
-        Assert.assertTrue(Files.isRegularFile(rtfFile));
-        String html = StringTools.convertFileToHtml(rtfFile);
-        Assert.assertNotNull(html);
-        //                FileTools.getFileFromString(html, "resources/test/data/433 SR (rtf).htm", Helper.DEFAULT_ENCODING, false);
-    }
-
 }

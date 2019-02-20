@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.digiverso.presentation.controller.ConversionTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -117,7 +118,7 @@ public class CMSMediaResource {
                     try {
                         String encoding = "windows-1252";
                         String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
-                        return ret;
+                        return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());
                     } catch (IOException e) {
@@ -125,9 +126,18 @@ public class CMSMediaResource {
                     }
                     break;
                 case CMSMediaItem.CONTENT_TYPE_DOCX:
+                    try {
+                        String ret = ConversionTools.convertDocxToHtml(filePath);
+                        return StringTools.renameIncompatibleCSSClasses(ret);
+                    } catch (FileNotFoundException e) {
+                        logger.debug(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 case CMSMediaItem.CONTENT_TYPE_RTF:
                     try {
-                        return StringTools.convertFileToHtml(filePath);
+                        String ret = ConversionTools.convertFileToHtml(filePath);
+                        return StringTools.renameIncompatibleCSSClasses(ret);
                     } catch (FileNotFoundException e) {
                         logger.debug(e.getMessage());
                     } catch (IOException e) {

@@ -357,7 +357,7 @@ public class CmsMediaBean implements Serializable {
     public void saveMedia() throws DAOException {
         if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
-            currentMediaItem.processMediaFile(mediaFile);
+            //            currentMediaItem.processMediaFile(mediaFile);
             DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
             //            setCurrentMediaItem(null);
         } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
