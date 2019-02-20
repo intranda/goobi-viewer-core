@@ -72,6 +72,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     public static final String CONTENT_TYPE_DOC = "application/msword";
     public static final String CONTENT_TYPE_RTF = "application/rtf";
+    public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
+    public static final String CONTENT_TYPE_RTF3 = "text/rtf";
+    public static final String CONTENT_TYPE_RTF4 = "text/richtext";
     public static final String CONTENT_TYPE_XML = "text/xml";
     public static final String CONTENT_TYPE_HTML = "text/html";
 
@@ -205,6 +208,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
         String extension = FilenameUtils.getExtension(fileName);
         switch (extension) {
+            case "doc":
+                return CONTENT_TYPE_DOC;
             case "docx":
                 return CONTENT_TYPE_DOCX;
             case "htm":
