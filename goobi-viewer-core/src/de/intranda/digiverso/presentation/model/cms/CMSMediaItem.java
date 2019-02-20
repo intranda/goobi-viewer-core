@@ -45,17 +45,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.TEITools;
-import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -73,6 +70,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
 
     public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    public static final String CONTENT_TYPE_DOC = "application/msword";
+    public static final String CONTENT_TYPE_RTF = "application/rtf";
     public static final String CONTENT_TYPE_XML = "text/xml";
     public static final String CONTENT_TYPE_HTML = "text/html";
 
@@ -193,14 +192,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
             try {
                 // TODO convert to TEI
                 String tei = TEITools.convertDocxToTei(mediaFile.toPath());
-                //  write new file
-                Document teiDoc = XmlTools.getDocumentFromString(tei, Helper.DEFAULT_ENCODING);
-                File newFile = XmlTools.writeXmlFile(teiDoc, mediaFile.getAbsolutePath());
-                if (newFile.isFile()) {
-                    setFileName(newFile.getName());
-                }
-            } catch (JDOMException e) {
-                logger.error(e.getMessage(), e);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -222,6 +213,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
                 return CONTENT_TYPE_HTML;
             case "xml":
                 return CONTENT_TYPE_XML;
+            case "rtf":
+                return CONTENT_TYPE_RTF;
             default:
                 return "";
         }
