@@ -94,6 +94,7 @@ public class CmsMediaBean implements Serializable {
             } else {
                 setUploadProgress(100);
                 saveMedia();
+                Messages.info("cms_media_upload_success");
             }
         } catch (IOException | DAOException e) {
             logger.error("Failed to upload media file:{}", e.getMessage());
@@ -141,16 +142,15 @@ public class CmsMediaBean implements Serializable {
             case "image/jpeg":
             case "image/jp2":
             case "image/png":
+            case CMSMediaItem.CONTENT_TYPE_DOC: // RTF 
             case CMSMediaItem.CONTENT_TYPE_DOCX:
             case CMSMediaItem.CONTENT_TYPE_HTML:
             case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_RTF2:
+            case CMSMediaItem.CONTENT_TYPE_RTF3:
+            case CMSMediaItem.CONTENT_TYPE_RTF4:
             case CMSMediaItem.CONTENT_TYPE_XML:
                 return true;
-            case CMSMediaItem.CONTENT_TYPE_DOC:
-                if (fileName != null && "rtf".equals(FilenameUtils.getExtension(fileName))) {
-                    return true;
-                }
-                return false;
             default:
                 logger.warn("Unsupported media type: {}", contentType);
                 return false;
