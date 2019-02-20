@@ -682,13 +682,12 @@ public class TocMaker {
      * @should build configured label correctly
      */
     static IMetadataValue buildLabel(SolrDocument doc, String template) {
-        IMetadataValue label = new MultiLanguageMetadataValue();
         // logger.trace("buildLabel: {}", template);
         List<Metadata> labelConfigList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration(template);
+        IMetadataValue label = new MultiLanguageMetadataValue();
         if (labelConfigList != null && !labelConfigList.isEmpty()) {
             // Configurable label layout
             Metadata labelConfig = labelConfigList.get(0);
-            label.setValue(labelConfig.getMasterValue());
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
@@ -730,17 +729,18 @@ public class TocMaker {
                     value.addSuffix(suffix);
                 }
                 Set<String> languages = new HashSet<>(value.getLanguages());
+                
                 languages.addAll(label.getLanguages());
                 if (MetadataParameterType.FIELD.equals(param.getType())) {
                     for (String language : languages) {
-                        String langValue = label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder,
+                        String langValue = label.getValue(language).orElse(labelConfig.getMasterValue()).replace(placeholder,
                                 value.getValue(language).orElse(value.getValue().orElse("")));
                         label.setValue(langValue, language);
                     }
                 } else {
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
+                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
                         //                        String langValue =
                         //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
                         label.setValue(langValue, language);
