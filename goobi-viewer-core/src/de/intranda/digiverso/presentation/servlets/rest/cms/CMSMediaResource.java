@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -87,6 +88,13 @@ public class CMSMediaResource {
         return new MediaList(items);
     }
 
+    /**
+     * 
+     * @param id
+     * @return File contents as HTML
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     */
     @GET
     @Path("/get/item/{id}")
     @Produces({ MediaType.TEXT_HTML })
@@ -96,18 +104,16 @@ public class CMSMediaResource {
             throw new ContentNotFoundException("Resource not found");
         }
         String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
-        switch (extension) {
-            case "htm":
-            case "html":
-            case "xhtml":
-            case "xml":
-                StringBuilder sbUri = new StringBuilder();
-                sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                        .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())
-                        .append('/')
-                        .append(item.getFileName());
-                java.nio.file.Path filePath = Paths.get(sbUri.toString());
-                if (Files.isRegularFile(filePath)) {
+        StringBuilder sbUri = new StringBuilder();
+        sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())
+                .append('/')
+                .append(item.getFileName());
+        java.nio.file.Path filePath = Paths.get(sbUri.toString());
+        if (Files.isRegularFile(filePath)) {
+            switch (item.getContentType()) {
+                case CMSMediaItem.CONTENT_TYPE_HTML:
+                case CMSMediaItem.CONTENT_TYPE_XML:
                     try {
                         String encoding = "windows-1252";
                         String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
@@ -117,9 +123,19 @@ public class CMSMediaResource {
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
                     }
-                }
+                    break;
+                case CMSMediaItem.CONTENT_TYPE_DOCX:
+                case CMSMediaItem.CONTENT_TYPE_RTF:
+                    try {
+                        return StringTools.convertFileToHtml(filePath);
+                    } catch (FileNotFoundException e) {
+                        logger.debug(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    break;
+            }
         }
-
         throw new ContentNotFoundException("Resource not found");
     }
 
