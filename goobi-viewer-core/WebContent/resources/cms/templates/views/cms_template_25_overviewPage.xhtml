@@ -143,32 +143,25 @@
                     </div>
 
                     <div class="tpl-overviewpage__description-text">
-                    	<h:outputText escape="false" value="#{cmsPage.getContent('literature')}"></h:outputText>
+                    	<h:outputText id="literature" escape="false"></h:outputText>
+                    	<script>
+                    	     $('#literature').html()
+                    	</script>
+                    	
+                <script type="text/javascript">
+                    $.ajax( {
+                        url: "#{cmsPage.getContent('literature')}",
+                        type: "GET",
+                        datatype: "HTML"
+                    } ).then( function( data ) {
+                       	 $('#literature').html(data);
+                            
+                        cmsJS.masonry.init( masonryConfig, data );
+                    } );
+                </script>
                     </div>
                 </div>
 
-                
-                <!-- HISTORY -->
-                <!--
-                <ui:fragment rendered="#{userBean.admin}">
-                    <div class="tpl-overviewpage__history">
-                        <h3>#{msg.viewOverviewHistory_heading}</h3>
-
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>#{msg.viewOverviewHistory_date}</th>
-                                    <th>#{msg.viewOverviewHistory_user}</th>
-                                    <th>#{msg.viewOverviewHistory_changes}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ui:include src="#{cmsPage.getContent('history')}" />
-                            </tbody>
-                        </table>
-                    </div>
-                </ui:fragment>
-                -->
             </div>
         </f:view>
     </ui:define>

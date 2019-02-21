@@ -49,7 +49,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.comparators.NullComparator;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.jdom2.JDOMException;
@@ -833,7 +832,8 @@ public class CMSPage implements Comparable<CMSPage> {
                     case CMSMediaItem.CONTENT_TYPE_DOCX:
                     case CMSMediaItem.CONTENT_TYPE_HTML:
                     case CMSMediaItem.CONTENT_TYPE_RTF:
-                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
                         break;
                     case CMSMediaItem.CONTENT_TYPE_XML:
                         contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
@@ -842,7 +842,6 @@ public class CMSPage implements Comparable<CMSPage> {
                             if (format != null) {
                                 switch (format.toLowerCase()) {
                                     case "tei":
-                                        // contentString = new TeiToHtmlConvert().convert(contentString);
                                         contentString = TEITools.convertTeiToHtml(contentString);
                                         break;
                                 }
@@ -874,6 +873,51 @@ public class CMSPage implements Comparable<CMSPage> {
         // logger.trace("Got content as string: {}", contentString);
         return contentString;
     }
+
+    //    public String getContentItemUrl(String itemId, String width, String height) throws ViewerConfigurationException 
+    //        logger.trace("getContentItemUrl: {}", itemId);
+    //        CMSContentItem item;
+    //        try {
+    //            item = getContentItem(itemId);
+    //        } catch (CmsElementNotFoundException e1) {
+    //            logger.error("No content item of id {} found in page {}", itemId, this.getId());
+    //            return "";
+    //        }
+    //        switch (item.getType()) {
+    //            case TEXT:
+    //                contentString = item.getHtmlFragment();
+    //                break;
+    //            case HTML:
+    //                contentString = CMSContentResource.getContentUrl(item);
+    //                break;
+    //            case MEDIA:
+    //                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
+    //                switch (type) {
+    //                    case CMSMediaItem.CONTENT_TYPE_DOCX:
+    //                    case CMSMediaItem.CONTENT_TYPE_HTML:
+    //                    case CMSMediaItem.CONTENT_TYPE_RTF:
+    //                    case CMSMediaItem.CONTENT_TYPE_XML:
+    //                        return CmsMediaBean.getMediaUrl(item, width, height);
+    //                    default:
+    //                        // Images
+    //                        return CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+    //                }
+    //
+    //                break;
+    //            case COMPONENT:
+    //                contentString = item.getComponent();
+    //                break;
+    //            case GLOSSARY:
+    //                try {
+    //                    contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+    //                } catch (ContentNotFoundException | IOException e) {
+    //                    logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+    //                }
+    //                break;
+    //            default:
+    //                contentString = "";
+    //        }
+    //    }
 
     public List<CMSContentItem> getGlobalContentItems() {
         CMSPageLanguageVersion defaultVersion;
