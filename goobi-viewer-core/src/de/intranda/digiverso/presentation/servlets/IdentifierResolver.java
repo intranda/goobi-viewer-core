@@ -41,7 +41,6 @@ import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -198,7 +197,7 @@ public class IdentifierResolver extends HttpServlet {
                 return;
             }
 
-            String result = constructUrl(targetDoc, false, DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible());
+            String result = constructUrl(targetDoc, false);
             logger.trace("URL: {}", result);
 
             // 5. redirect or forward using the target field value
@@ -304,20 +303,20 @@ public class IdentifierResolver extends HttpServlet {
         }
 
         // A.5 Form a result url by inserting the target field of the document and the in A.4 determined value into the target page url
-        try {
-            String result = constructUrl(targetDoc, true, DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible());
-            logger.debug("URL: {}", result);
-            // A.6 redirect or forward to this newly created url
-            if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
-                response.sendRedirect(result);
-            } else {
-                getServletContext().getRequestDispatcher(result).forward(request, response);
-            }
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+        //        try {
+        String result = constructUrl(targetDoc, true);
+        logger.debug("URL: {}", result);
+        // A.6 redirect or forward to this newly created url
+        if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
+            response.sendRedirect(result);
+        } else {
+            getServletContext().getRequestDispatcher(result).forward(request, response);
         }
+        //        } catch (DAOException e) {
+        //            logger.debug("DAOException thrown here: {}", e.getMessage());
+        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        //            return;
+        //        }
     }
 
     /**
@@ -358,17 +357,15 @@ public class IdentifierResolver extends HttpServlet {
      *
      * @param targetDoc
      * @param pageResolverUrl
-     * @param allowOverviewPage
      * @return
      * @should construct url correctly
      * @should construct anchor url correctly
      * @should construct group url correctly
      * @should construct page url correctly
-     * @should construct overview page url correctly
      * @should construct preferred view url correctly
      * @should construct application mime type url correctly
      */
-    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl, boolean allowOverviewPage) throws DAOException {
+    static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         StringBuilder sb = new StringBuilder("/");
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
@@ -377,15 +374,8 @@ public class IdentifierResolver extends HttpServlet {
                 || DocType.GROUP.toString().equals(targetDoc.getFieldValue(SolrConstants.DOCTYPE));
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
-        boolean overviewPageFound = false;
-        if (!pageResolverUrl && allowOverviewPage) {
-            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(topstructPi, null, null);
-            if (overviewPage != null) {
-                overviewPageFound = true;
-            }
-        }
 
-        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, overviewPageFound, pageResolverUrl);
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false, pageResolverUrl);
         sb.append(pageType.getName()).append('/').append(topstructPi).append('/');
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO) && (Integer) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO) > 1) {
             sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO))).append('/');

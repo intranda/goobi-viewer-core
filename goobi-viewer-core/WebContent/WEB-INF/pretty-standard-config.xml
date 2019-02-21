@@ -285,6 +285,7 @@
 	</url-mapping>
 
 	<!-- OVERVIEW -->
+	<!--
 	<url-mapping id="overview2">
 		<pattern value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewOverview.xhtml" />
@@ -312,6 +313,7 @@
 		<view-id value="/viewOverview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+	-->
 
 	<!-- IMAGE -->
 	<url-mapping id="image2">
@@ -617,6 +619,16 @@
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
         <action onPostback="false">#{searchBean.resetSearchFilter}</action>
 	</url-mapping>
+	<!-- CMS -->
+	<url-mapping id="cmsOpenPageInWork">
+		<pattern value="/page/#{pi:cmsBean.currentWorkPi}/#{page:cmsBean.currentPageId}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+        <action onPostback="false">#{cmsBean.checkRelatedWork}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+        <action onPostback="false">#{searchBean.resetSearchFilter}</action>
+	</url-mapping>
 	<url-mapping id="cmsOpenPage2">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -696,6 +708,7 @@
 		<pattern value="/adminCmsOverview/" />
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsMedia">
 		<pattern value="/adminCmsMedia/" />
@@ -706,6 +719,7 @@
 		<pattern value="/adminCmsSelectTemplate/" />
 		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsCreatePage">
 		<pattern value="/adminCmsCreatePage/" />

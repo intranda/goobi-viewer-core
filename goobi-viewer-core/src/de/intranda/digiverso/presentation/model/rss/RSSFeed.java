@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,11 +61,11 @@ public class RSSFeed {
 
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
-    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE,
-            SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.IDDOC_PARENT,
+    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
+            SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PERSON_ONEFIELD,
-            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.TITLE,
-            SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
+            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
+            SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
      *
@@ -79,6 +80,15 @@ public class RSSFeed {
     public static SyndFeed createRss(String rootPath, String query)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return createRss(rootPath, query, null);
+    }
+
+    public static List<String> getFieldsWithTranslation(Locale locale) {
+        List<String> allFields = new ArrayList<>();
+        for (String string : FIELDS) {
+            allFields.add(string);
+            allFields.add(string + "_LANG_" + locale.getLanguage().toUpperCase());
+        }
+        return allFields;
     }
 
     public static SyndFeed createRss(String rootPath, String query, String language)
@@ -114,7 +124,7 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        Arrays.asList(FIELDS))
+                        getFieldsWithTranslation(locale))
                 .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
@@ -169,16 +179,12 @@ public class RSSFeed {
                 boolean hasImages = isHasImages(doc);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                // If the document has an overview page, use the overview view
-                boolean hasOverviewPage = false;
-                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()
-                        && DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null) != null) {
-                    hasOverviewPage = true;
-                }
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
 
                 for (String field : FIELDS) {
                     Object value = doc.getFirstValue(field);
+                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                    value = translatedValue.orElse(value);
                     // If the doc has no field value, try the owner doc (in case of pages)
                     if (value == null && ownerDoc != null) {
                         value = ownerDoc.getFirstValue(field);
@@ -195,9 +201,10 @@ public class RSSFeed {
                                 break;
                             case SolrConstants.IDDOC_PARENT:
                                 // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
-                                        new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
-                                        Collections.singletonList(SolrConstants.LABEL));
+                                SolrDocumentList hits = DataManager.getInstance()
+                                        .getSearchIndex()
+                                        .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                                Collections.singletonList(SolrConstants.LABEL));
                                 if (hits != null && hits.getNumFound() > 0) {
                                     SolrDocument parent = hits.get(0);
                                     Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
@@ -363,7 +370,7 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        Arrays.asList(FIELDS))
+                        getFieldsWithTranslation(locale))
                 .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
@@ -415,25 +422,19 @@ public class RSSFeed {
                 String urnLink = "";
                 String bookSeries = "";
                 String shelfmark = "";
-                
+
                 int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
                 boolean hasImages = isHasImages(doc);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                // If the document has an overview page, use the overview view
-                boolean hasOverviewPage = false;
-                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()
-                        && DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null) != null) {
-                    hasOverviewPage = true;
-                }
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
                 entry.setDocType(Helper.getTranslation(docStructType, locale));
 
-                
-                
                 for (String field : FIELDS) {
                     Object value = doc.getFirstValue(field);
+                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                    value = translatedValue.orElse(value);
                     // If the doc has no field value, try the owner doc (in case of pages)
                     if (value == null && ownerDoc != null) {
                         value = ownerDoc.getFirstValue(field);
@@ -450,9 +451,10 @@ public class RSSFeed {
                                 break;
                             case SolrConstants.IDDOC_PARENT:
                                 // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
-                                        new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
-                                        Collections.singletonList(SolrConstants.LABEL));
+                                SolrDocumentList hits = DataManager.getInstance()
+                                        .getSearchIndex()
+                                        .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                                Collections.singletonList(SolrConstants.LABEL));
                                 if (hits != null && hits.getNumFound() > 0) {
                                     SolrDocument parent = hits.get(0);
                                     Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
@@ -516,12 +518,12 @@ public class RSSFeed {
 
                 description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
 
-                if(modified != null) {
+                if (modified != null) {
                     SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_STRING);
                     String imported = format.format(new Date(modified));
                     description.addMetadata(new RssMetadata(Helper.getTranslation("DATECREATED", locale), imported));
                 }
-                
+
                 if (StringUtils.isNotBlank(placeAndTime)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
                 }

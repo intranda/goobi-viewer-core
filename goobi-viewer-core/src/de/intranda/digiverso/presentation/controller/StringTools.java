@@ -18,11 +18,21 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.MalformedInputException;
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -117,8 +127,11 @@ public class StringTools {
             replaceWith = "";
         }
 
-        return s.replace("\r\n", replaceWith).replace("\n", replaceWith).replaceAll("\r", replaceWith).replaceAll("<br>", replaceWith).replaceAll(
-                "<br\\s*/>", replaceWith);
+        return s.replace("\r\n", replaceWith)
+                .replace("\n", replaceWith)
+                .replaceAll("\r", replaceWith)
+                .replaceAll("<br>", replaceWith)
+                .replaceAll("<br\\s*/>", replaceWith);
     }
 
     /**
@@ -164,12 +177,110 @@ public class StringTools {
         text = text.replace("\r\n", "<br/>").replace("\r", "<br/>").replace("\n", "<br/>");
         return text;
     }
-    
+
     public static String escapeQuotes(String s) {
-        if(s != null) {    
+        if (s != null) {
             s = s.replaceAll("(?<!\\\\)'", "\\\\'");
             s = s.replaceAll("(?<!\\\\)\"", "\\\\\"");
         }
         return s;
+    }
+
+    /**
+     * Converts a <code>String</code> from one given encoding to the other.
+     * 
+     * @param string The string to convert.
+     * @param from Source encoding.
+     * @param to Destination encoding.
+     * @return The converted string.
+     */
+    public static String convertStringEncoding(String string, String from, String to) {
+        try {
+            Charset charsetFrom = Charset.forName(from);
+            Charset charsetTo = Charset.forName(to);
+            CharsetEncoder encoder = charsetFrom.newEncoder();
+            CharsetDecoder decoder = charsetTo.newDecoder();
+            // decoder.onMalformedInput(CodingErrorAction.IGNORE);
+            ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(string));
+            CharBuffer cbuf = decoder.decode(bbuf);
+            return cbuf.toString();
+        } catch (MalformedInputException e) {
+            logger.warn(e.getMessage());
+        } catch (CharacterCodingException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return string;
+    }
+
+    /**
+     * 
+     * @param url
+     * @return
+     * @should return true for image urls
+     */
+    public static boolean isImageUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return false;
+        }
+
+        String extension = FilenameUtils.getExtension(url);
+        if (StringUtils.isNotEmpty(extension)) {
+            switch (extension.toLowerCase()) {
+                case "tif":
+                case "tiff":
+                case "jpg":
+                case "jpeg":
+                case "gif":
+                case "png":
+                case "jp2":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Renames CSS classes that start with digits in the given html code due to Chrome ignoring such classes.
+     * 
+     * @param html
+     * @return
+     * @should rename classes correctly
+     */
+    public static String renameIncompatibleCSSClasses(String html) {
+        if (html == null) {
+            return null;
+        }
+
+        Pattern p = Pattern.compile("\\.([0-9]+[A-Za-z]+) \\{.*\\}");
+        Matcher m = p.matcher(html);
+        Map<String, String> replacements = new HashMap<>();
+        // Collect bad class names
+        while (m.find()) {
+            if (m.groupCount() > 0) {
+                String oldName = m.group(1);
+                StringBuilder sbMain = new StringBuilder();
+                StringBuilder sbNum = new StringBuilder();
+                for (char c : oldName.toCharArray()) {
+                    if (Character.isDigit(c)) {
+                        sbNum.append(c);
+                    } else {
+                        sbMain.append(c);
+                    }
+                }
+                replacements.put(oldName, sbMain.toString() + sbNum.toString());
+            }
+        }
+        // Replace in HTML
+        if (!replacements.isEmpty()) {
+            for (String key : replacements.keySet()) {
+                html = html.replace(key, replacements.get(key));
+            }
+        }
+
+        return html;
     }
 }

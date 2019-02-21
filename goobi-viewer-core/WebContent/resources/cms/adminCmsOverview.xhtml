@@ -30,9 +30,7 @@
                     <h2>#{msg.cms_overview}</h2>
 
                     <div id="cmsOverviewWrapper" class="sortable-table-wrapper">
-                        <h:form id="cmsOverviewForm" prependId="false">
-                            <script type="text/javascript" src="#{request.contextPath}/resources/javascript/jquery.metadata.js?v=#{navigationHelper.version}"></script>
-                            
+                        <h:form id="cmsOverviewForm" prependId="false">                            
                             <!-- paginator -->
                             <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
 

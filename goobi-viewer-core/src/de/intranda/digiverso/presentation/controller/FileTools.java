@@ -25,7 +25,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +85,20 @@ public class FileTools {
      * @should throw FileNotFoundException if file not found
      */
     public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
+        return getStringFromFile(file, encoding, null);
+    }
+
+    /**
+     * Read a text file and return content as String
+     *
+     * @param file
+     * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
+     * @param convertToEncoding Optional target encoding for conversion
+     * @return
+     * @throws IOException in case of errors
+     * @throws FileNotFoundException if file not found
+     */
+    public static String getStringFromFile(File file, String encoding, String convertToEncoding) throws FileNotFoundException, IOException {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
@@ -91,7 +106,7 @@ public class FileTools {
         if (encoding == null) {
             try (FileInputStream fis = new FileInputStream(file)) {
                 encoding = getCharset(fis);
-                logger.trace("{} encoding detected: {}", file.getName(), encoding);
+                logger.trace("'{}' encoding detected: {}", file.getName(), encoding);
             }
             if (encoding == null) {
                 encoding = Helper.DEFAULT_ENCODING;
@@ -106,7 +121,14 @@ public class FileTools {
             }
         }
 
-        return text.toString().trim();
+        String ret = text.toString();
+        // Convert to target encoding
+        // logger.trace(encoding + " -> " + convertToEncoding);
+        if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(encoding)) {
+            ret = StringTools.convertStringEncoding(ret, encoding, convertToEncoding);
+        }
+
+        return ret.trim();
     }
 
     /**
@@ -322,6 +344,18 @@ public class FileTools {
         int len;
         while ((len = input.read(buf)) > 0) {
             output.write(buf, 0, len);
+        }
+    }
+
+    /**
+     * 
+     * @param folder
+     * @return true if folder empty; false otherwise
+     * @throws IOException
+     */
+    public static boolean isFolderEmpty(final Path folder) throws IOException {
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(folder)) {
+            return !ds.iterator().hasNext();
         }
     }
 

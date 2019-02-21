@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -39,6 +40,8 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.ConfigurationNode;
+import org.apache.commons.configuration.tree.ExpressionEngine;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -53,6 +56,7 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.Metad
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LitteraProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.LocalAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.VuFindProvider;
@@ -683,10 +687,12 @@ public final class Configuration extends AbstractConfiguration {
                 HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
                 String field = sub.getString(".");
                 String sortField = sub.getString("[@sortField]");
+                String filterQuery = sub.getString("[@filterQuery]");
                 String docstructFilterString = sub.getString("[@docstructFilters]");
                 boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-                BrowsingMenuFieldConfig bmf = new BrowsingMenuFieldConfig(field, sortField, docstructFilterString, recordsAndAnchorsOnly);
-                ret.add(bmf);
+                BrowsingMenuFieldConfig bmfc =
+                        new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+                ret.add(bmfc);
             }
         }
 
@@ -1206,8 +1212,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getOverviewFolder() {
-        return getLocalString("overviewFolder");
+    public String getCmsTextFolder() {
+        return getLocalString("cmsTextFolder");
     }
 
     /**
@@ -1349,6 +1355,8 @@ public final class Configuration extends AbstractConfiguration {
                             case "xservice":
                                 providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
                                 break;
+                            case "littera":
+                                providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
@@ -1501,24 +1509,6 @@ public final class Configuration extends AbstractConfiguration {
 
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarOverviewLinkVisible() {
-        return getLocalBoolean("sidebar.overview.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarOverviewLinkCondition() {
-        return getLocalString("sidebar.overview.condition");
     }
 
     /**
@@ -3183,6 +3173,44 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return the list of all configured event fields for IIIF manifests
+     * All fields must contain a "/" to separate the event type and the actual field name
+     * If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from all events
+     */
+	public List<String> getIIIFEventFields() {
+        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", Collections.emptyList());	
+        fields = fields.stream().map(field -> field.contains("/") ? field : "/" + field).collect(Collectors.toList());
+        return fields;
+	}
+	
+	/**
+	 * @param field	the value of the field
+	 * @return	The attribute "label" of any children of webapi.iiif.metadataFields
+	 */
+	public String getIIIFMetadataLabel(String field) {
+		ExpressionEngine defaultEngine = config.getExpressionEngine();
+		config.setExpressionEngine(new XPathExpressionEngine());
+		ExpressionEngine defaultEngineLocal = null;
+		if(configLocal != null) {	
+			defaultEngineLocal = configLocal.getExpressionEngine();
+			configLocal.setExpressionEngine(new XPathExpressionEngine());
+		}
+
+		try {
+			
+			return getLocalString("webapi/iiif/metadataFields/*[.='" + field + "']/@label", "");
+			
+		} finally {
+			config.setExpressionEngine(defaultEngine);
+			if(configLocal != null) {			
+				configLocal.setExpressionEngine(defaultEngineLocal);
+			}			
+		}
+		
+	
+	}
+
+    /**
      * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
      * 
      * @return The number of activities to display per collection page in the IIIF discovery api
@@ -3250,5 +3278,8 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
+
+
+
 
 }

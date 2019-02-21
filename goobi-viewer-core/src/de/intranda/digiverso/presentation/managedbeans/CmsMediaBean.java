@@ -24,25 +24,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.dbunit.util.concurrent.SynchronousChannel;
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -71,27 +75,50 @@ public class CmsMediaBean implements Serializable {
 
     public String uploadMedia() {
         logger.trace("uploadMedia");
-        if (filePart != null && isValidImageType(filePart.getContentType())) {
-            if (isUploadComplete()) {
-                logger.debug("Media file has already been uploaded");
-            } else {
-                try {
-                    setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
-                    logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
-                    filePart.write(mediaFile.getAbsolutePath());
-                    setUploadProgress(100);
-                    saveMedia();
-                } catch (IOException | DAOException e) {
-                    logger.error("Failed to upload media file:{}", e.getMessage());
-                    if (mediaFile != null && mediaFile.isFile()) {
-                        mediaFile.delete();
-                    }
-                }
-            }
-        } else {
+        if (filePart == null || !isValidMediaType(filePart.getContentType(), null)) {
             Messages.error("cms_errIllegalMediaFileFormat");
+            return "cmsMedia";
         }
+
+        if (isUploadComplete()) {
+            logger.debug("Media file has already been uploaded");
+            return "cmsMedia";
+        }
+
+        try {
+            setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
+            logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
+            filePart.write(mediaFile.getAbsolutePath());
+            if (!validate(mediaFile, filePart.getContentType())) {
+                Messages.error("cms_errIllegalMediaContent");
+            } else {
+                setUploadProgress(100);
+                saveMedia();
+                Messages.info("cms_media_upload_success");
+            }
+        } catch (IOException | DAOException e) {
+            logger.error("Failed to upload media file:{}", e.getMessage());
+            if (mediaFile != null && mediaFile.isFile()) {
+                mediaFile.delete();
+            }
+        }
+
         return "cmsMedia";
+    }
+
+    /**
+     * @param mediaFile2
+     * @param contentType
+     * @return false if the content type is html or xml and the file contains the string "<script" (case insensitive)
+     * @throws IOException
+     */
+    private static boolean validate(File file, String contentType) throws IOException {
+        if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
+            String content = FileUtils.readFileToString(file);
+            return !content.toLowerCase().contains("<script");
+        }
+
+        return true;
     }
 
     public boolean isNewMedia() {
@@ -100,16 +127,32 @@ public class CmsMediaBean implements Serializable {
 
     /**
      * @param contentType
-     * @return
+     * @param fileName
+     * @return true if supported; false otherwise
+     * @should return true for tiff
+     * @should return true for jpeg
+     * @should return true for jpeg 2000
+     * @should return true for png
+     * @should return true for docx
      */
-    private static boolean isValidImageType(String contentType) {
+    private static boolean isValidMediaType(String contentType, String fileName) {
+        logger.trace("isValidMediaType: {} - {}", contentType, fileName);
         switch (contentType) {
             case "image/tiff":
             case "image/jpeg":
             case "image/jp2":
             case "image/png":
+            case CMSMediaItem.CONTENT_TYPE_DOC: // RTF 
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_RTF2:
+            case CMSMediaItem.CONTENT_TYPE_RTF3:
+            case CMSMediaItem.CONTENT_TYPE_RTF4:
+            case CMSMediaItem.CONTENT_TYPE_XML:
                 return true;
             default:
+                logger.warn("Unsupported media type: {}", contentType);
                 return false;
         }
     }
@@ -155,18 +198,16 @@ public class CmsMediaBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCMSMediaItems();
     }
 
-    public List<CMSMediaItem> getMediaItems() throws DAOException {
-        List<CMSMediaItem> items = getAllMedia();
-        if (StringUtils.isNotBlank(getSelectedTag())) {
-            ListIterator<CMSMediaItem> iter = items.listIterator();
-            while (iter.hasNext()) {
-                CMSMediaItem item = iter.next();
-                if (!item.getTags().contains(getSelectedTag())) {
-                    iter.remove();
-                }
-            }
+    public List<CMSMediaItem> getMediaItems(String tag, String filenameFilter) throws DAOException {
+        Stream<CMSMediaItem> items = getAllMedia().stream();
+        if (StringUtils.isNotBlank(tag)) {
+            items = items.filter(item -> item.getTags().contains(tag));
         }
-        return items;
+        if (StringUtils.isNotBlank(filenameFilter)) {
+            items = items.filter(item -> item.getFileName().matches(filenameFilter));
+        }
+        List<CMSMediaItem> list = items.collect(Collectors.toList());
+        return list;
     }
 
     public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
@@ -175,28 +216,72 @@ public class CmsMediaBean implements Serializable {
 
     /**
      * @param item
+     * @param width
+     * @param height
      * @return
      * @throws ViewerConfigurationException
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) throws ViewerConfigurationException {
-        if (item != null && item.getFileName() != null) {
-
-            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(Optional.ofNullable(item),
-                    StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
-
+        if (item == null || StringUtils.isEmpty(item.getFileName())) {
+            return "";
         }
+
+        switch (item.getContentType()) {
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_XML:
+                StringBuilder sbUri = new StringBuilder();
+                sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+                return sbUri.toString();
+            default:
+                return BeanUtils.getImageDeliveryBean()
+                        .getThumbs()
+                        .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
+                                StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+        }
+    }
+
+    /**
+     * 
+     * @param item
+     * @return
+     * @throws ViewerConfigurationException
+     */
+    public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
+        if (item == null || StringUtils.isEmpty(item.getFileName())) {
+            return "";
+        }
+
+        StringBuilder sbUri = new StringBuilder();
+        sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+        try {
+            String ret = Helper.getWebContentGET(sbUri.toString());
+            return ret;
+        } catch (ClientProtocolException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (HTTPException e) {
+            logger.error(e.getMessage(), e);
+        }
+
         return "";
     }
 
     public static String getMediaPreviewUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
         if (item != null && item.getFileName() != null) {
-
-            StringBuilder urlBuilder = new StringBuilder(getMediaUrl(item, null, "160"));
-            //	    logger.trace("Getting media preview url " + urlBuilder.toString());
-
-            return urlBuilder.toString();
+            return getMediaUrl(item, null, "160");
         }
         return "";
+    }
+
+    public boolean isImage(CMSMediaItem item) {
+        return item.getFileName().matches(getImageFilter());
+    }
+
+    public boolean isText(CMSMediaItem item) {
+        return !item.getFileName().matches(getImageFilter());
     }
 
     public CMSMediaItem getCurrentMediaItem() {
@@ -272,11 +357,13 @@ public class CmsMediaBean implements Serializable {
     public void saveMedia() throws DAOException {
         if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
+            //            currentMediaItem.processMediaFile(mediaFile);
             DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
-//            setCurrentMediaItem(null);
+            //            setCurrentMediaItem(null);
         } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
+            currentMediaItem.processMediaFile(mediaFile);
             DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
-//            setCurrentMediaItem(null);
+            //            setCurrentMediaItem(null);
         }
     }
 
@@ -286,10 +373,10 @@ public class CmsMediaBean implements Serializable {
 
     protected void setUploadProgress(int uploadProgress) {
         if (uploadProgress == 100) {
-            logger.info("File upload finished");
+            logger.debug("File upload finished");
             currentMediaItem.setFileName(mediaFile.getName());
         } else {
-            logger.trace("Upload progress: " + uploadProgress + "%");
+            logger.trace("Upload progress: {}%", uploadProgress);
         }
         this.uploadProgress = uploadProgress;
     }
@@ -469,19 +556,27 @@ public class CmsMediaBean implements Serializable {
         Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
         return sizes;
     }
-    
+
     /**
      * @return the selectedLanguage
      */
     public Locale getSelectedLocale() {
         return selectedLocale;
     }
-    
+
     /**
      * @param selectedLanguage the selectedLanguage to set
      */
     public void setSelectedLocale(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
+    }
+
+    /**
+     * 
+     * @return a regex matching only filenames ending with one of the supported image format suffixes
+     */
+    public static String getImageFilter() {
+        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
     }
 
 }

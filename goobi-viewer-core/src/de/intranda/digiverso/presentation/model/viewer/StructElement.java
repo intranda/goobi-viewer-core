@@ -602,9 +602,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     public IMetadataValue getMultiLanguageDisplayLabel() {
-        IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.LABEL);
+        IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.TITLE);
         if (label.isEmpty()) {
-            label = getMultiLanguageMetadataValue(SolrConstants.TITLE);
+            label = getMultiLanguageMetadataValue(SolrConstants.LABEL);
             if (label.isEmpty()) {
                 label = IMetadataValue.getTranslations(getDocStructType());
             }

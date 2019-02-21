@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,19 +33,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.viewer.cache.JobManager;
 import de.intranda.viewer.cache.JobManager.Status;
@@ -136,62 +133,49 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 }
                     break;
                 case "migrateOverviewPages": {
-                    int migratedToDB = 0;
-                    int deletedXmlFiles = 0;
                     response.setContentType("text/html");
                     ServletOutputStream output = response.getOutputStream();
+
+                    int migratedToCMS = 0;
                     try {
-                        String[] fields = { SolrConstants.OVERVIEWPAGE, SolrConstants.PI, SolrConstants.SOURCEDOCFORMAT };
-                        SolrDocumentList docs =
-                                DataManager.getInstance().getSearchIndex().search(SolrConstants.ISWORK + ":true", Arrays.asList(fields));
-                        for (SolrDocument doc : docs) {
-                            String overviewPageField = (String) doc.getFieldValue(SolrConstants.OVERVIEWPAGE);
-                            if (overviewPageField == null) {
-                                continue;
-                            }
-                            String pi = (String) doc.getFieldValue(SolrConstants.PI);
-                            String msg = "Found record '" + pi + "' with an overview page in Solr... ";
-                            output.write(msg.getBytes(Charset.forName("utf-8")));
-                            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
-                            if (overviewPage == null) {
-                                overviewPage = new OverviewPage();
-                                if (overviewPage.migrateToDB(overviewPageField, pi)) {
-                                    migratedToDB++;
-                                    msg = "migrated to the database<br />";
-                                    output.write(msg.getBytes(Charset.forName("utf-8")));
-                                    //                                    msg = deleteOverviewPageFile(pi);
-                                    //                                    if (msg != null) {
-                                    //                                        output.write(msg.getBytes(Charset.forName("utf-8")));
-                                    //                                    }
-                                    Helper.reIndexRecord(pi, (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT), overviewPage);
-                                }
-                            } else {
-                                // Record already in DB but also in Solr
-                                msg = "already in the database<br />";
-                                output.write((msg).getBytes(Charset.forName("utf-8")));
-                                //                                msg = deleteOverviewPageFile(pi);
-                                //                                if (msg != null) {
-                                //                                    output.write(msg.getBytes(Charset.forName("utf-8")));
-                                //                                }
-                                Helper.reIndexRecord(pi, (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT), overviewPage);
-                            }
+                        long total = DataManager.getInstance().getDao().getOverviewPageCount(null, null);
+                        if (total == 0) {
+                            output.write(("No overview pages found").getBytes(Charset.forName("utf-8")));
+                            return;
                         }
-                        String msg = "Migrated " + migratedToDB + " overview pages to the database. " + deletedXmlFiles
-                                + " overview page configurations were removed from the file system and the records are currently being re-indexed.";
-                        output.write((msg + "<br />").getBytes(Charset.forName("utf-8")));
-                    } catch (PresentationException e) {
-                        logger.trace("PresentationException thrown here: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        return;
-                    } catch (IndexUnreachableException e) {
-                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        return;
+                        output.write(("Found " + total + " legacy overview pages<br />").getBytes(Charset.forName("utf-8")));
+                        int first = 0;
+                        int pageSize = 10;
+                        while (first < total) {
+                            List<OverviewPage> pages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, null, null);
+                            for (OverviewPage op : pages) {
+                                List<CMSPage> existingPages =
+                                        DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi(), CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+                                if (!existingPages.isEmpty()) {
+                                    output.write(
+                                            ("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
+                                    continue;
+                                }
+                                if (op.migrateToCMS()) {
+                                    output.write(("Migrated overview page for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
+                                    migratedToCMS++;
+                                    try {
+                                        Helper.reIndexRecord(op.getPi());
+                                    } catch (RecordNotFoundException e) {
+                                        output.write((op.getPi() + " not found in index, cannot re-index<br />").getBytes(Charset.forName("utf-8")));
+                                    }
+
+                                }
+                            }
+
+                            first += pageSize;
+                        }
                     } catch (DAOException e) {
-                        logger.debug("DAOException thrown here: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        return;
+                        logger.error(e.getMessage(), e);
                     }
+
+                    String msg = "Migrated " + migratedToCMS + " overview pages to CMS.";
+                    output.write((msg + "<br />").getBytes(Charset.forName("utf-8")));
                 }
                     break;
                 default:
@@ -214,9 +198,9 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
             }
         } else if (parameterMap.containsKey("status")) {
-            StringBuilder sbAnswer =
-                    new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus()).append("\n\n").append(
-                            cacheFiller.getDetailedGeneratorStatus());
+            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus())
+                    .append("\n\n")
+                    .append(cacheFiller.getDetailedGeneratorStatus());
             return sbAnswer.toString();
         } else if (parameterMap.containsKey("resetTrace")) {
             File traceFile = cacheFiller.getConfiguredTraceFile();

@@ -645,16 +645,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
-                SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT });
+                SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
         searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "two", "three" })));
         searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
         searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
-        searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
-        searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
         Assert.assertEquals(
-                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
+                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
+                        + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
                 SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
@@ -665,7 +665,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateExpandQuery_shouldReturnEmptyStringIfNoFieldsMatch() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
-                SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT });
+                SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
 
@@ -679,17 +679,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateExpandQuery_shouldSkipReservedFields() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
-                SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT,
-                SolrConstants.PI_TOPSTRUCT, SolrConstants.DC, SolrConstants.DOCSTRCT });
+                SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.DC, SolrConstants.DOCSTRCT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
         searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "two", "three" })));
         searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
         searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
-        searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
-        searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
         Assert.assertEquals(
-                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
+                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
+                        + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
                 SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
@@ -991,26 +990,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void removeHighlightingTags_shouldRemoveHtmlTags() throws Exception {
         Assert.assertEquals("foo bar", SearchHelper
                 .removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
-    }
-
-    /**
-     * @see SearchHelper#generateDocstrctWhitelistFilterSuffix(List)
-     * @verifies construct suffix correctly
-     */
-    @Test
-    public void generateDocstrctWhitelistFilterSuffix_shouldConstructSuffixCorrectly() throws Exception {
-        String[] docstructs = new String[] { "monograph", "manuscript" };
-        Assert.assertEquals(" AND (" + SolrConstants.DOCSTRCT + ":monograph OR " + SolrConstants.DOCSTRCT + ":manuscript)",
-                SearchHelper.generateDocstrctWhitelistFilterSuffix(Arrays.asList(docstructs)));
-    }
-
-    /**
-     * @see SearchHelper#generateDocstrctWhitelistFilterSuffix(List)
-     * @verifies return empty string if only docstruct is asterisk
-     */
-    @Test
-    public void generateDocstrctWhitelistFilterSuffix_shouldReturnEmptyStringIfOnlyDocstructIsAsterisk() throws Exception {
-        Assert.assertEquals("", SearchHelper.generateDocstrctWhitelistFilterSuffix(Collections.singletonList("*")));
     }
 
     /**

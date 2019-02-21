@@ -1,0 +1,83 @@
+/* ==============================================================
+   CMS Template "Overview Page"
+   style declarations for cms_template_25_overviewPage.xhtml
+   ==============================================================*/
+/* OVERVIEW PAGE */
+.tpl-overviewpage {
+	/* OVERVIEW */
+	&__overview {
+		display: flex;
+		margin-bottom: 30px;
+	}
+	&__overview-thumbnail {
+		max-width: 25%;
+		margin-right: 30px;
+		img {}
+	}
+	&__overview-metadata {
+		flex-grow: 1;
+		margin-left: auto;
+		dl {
+			margin-bottom: 10px;
+		}
+		dt {
+			text-align: left;
+		}
+		dd {
+			word-break: break-word;
+		}
+	}
+	&__overview-metadata-label {}
+	&__overview-metadata-value {}
+	/* DESCRIPTION / LITERATURE / HISTORY */
+	&__description,
+	&__literature,
+	&__history {
+		margin-bottom: 30px;
+		padding: 15px;
+		border: 1px solid @middlegray;
+		background-color: @white;
+	}
+	/* DESCRIPTION */
+	&__description {}
+	&__description-title {}
+	&__description-text {}
+	/* LITERATURE */
+	&__literature {}
+	&__literature-title {}
+	&__literature-text {}
+	/* HISTORY */
+	&__history {
+		h3 {}
+		table {
+			margin: 0;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.tpl-overviewpage {
+		&__overview {
+			flex-wrap: wrap;
+		}
+		&__overview-thumbnail {
+			flex-grow: 1;
+			max-width: inherit;
+			margin-right: 0;
+			margin-bottom: 15px;
+			img {
+				margin: 0 auto;
+			}
+		}
+	}
+}

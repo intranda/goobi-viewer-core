@@ -15,7 +15,11 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
@@ -39,15 +43,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -93,7 +101,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         SEARCH,
         GLOSSARY,
         COMPONENT,
-        TAGS;
+        TAGS,
+        METADATA;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -207,6 +216,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Column(name = "ignore_collections")
     private String ignoreCollections = null;
 
+    /** Comma separated list of metadata field names to display in overview pages **/
+    @Column(name = "metadataFields", columnDefinition = "LONGTEXT")
+    private String metadataFields = null;
+
     @Column(name = "toc_pi")
     private String tocPI = "";
 
@@ -316,6 +329,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.solrSortFields = blueprint.solrSortFields;
         this.setDisplayEmptySearchResults(blueprint.isDisplayEmptySearchResults());
         this.setSearchType(blueprint.getSearchType());
+        this.setMetadataFields(blueprint.getMetadataFields());
 
     }
 
@@ -991,6 +1005,51 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     }
 
     /**
+     * @return the metadataFields
+     */
+    public String getMetadataFields() {
+        return metadataFields;
+    }
+
+    /**
+     * @param metadataFields the metadataFields to set
+     */
+    public void setMetadataFields(String metadataFields) {
+        this.metadataFields = metadataFields;
+    }
+
+    public List<String> getMetadataFieldsAsList() {
+        if (StringUtils.isNotBlank(metadataFields)) {
+            List<String> ret = Arrays.stream(metadataFields.split(",")).collect(Collectors.toList());
+            return ret;
+        }
+        return new ArrayList<>();
+    }
+
+    public void setMetadataFieldsAsList(List<String> fields) {
+        if (fields == null || fields.isEmpty()) {
+            this.metadataFields = null;
+        } else {
+            this.metadataFields = StringUtils.join(fields, ",");
+        }
+    }
+
+    /**
+     * Get the list of metadata fields which may be displayed. This is the main metadata list
+     * 
+     * @return the main metadata list
+     */
+    public List<String> getAvailableMetadataFields() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getMainMetadataForTemplate(null)
+                .stream()
+                .map(md -> md.getLabel())
+                .collect(Collectors.toList());
+
+    }
+
+    /**
      * @return
      */
     public boolean isDisplayEmptySearchResults() {
@@ -1028,5 +1087,72 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     public boolean isAdvancedSearch() {
         return SearchHelper.SEARCH_TYPE_ADVANCED == this.searchType;
+    }
+
+    /**
+     * 
+     * @return a regex to be used as a filter for listing available media items. If empty, no filtering should be applied
+     */
+    public String getMediaFilter() {
+        CMSContentItemTemplate template = getTemplateItem();
+        return template.getMediaFilter();
+    }
+
+    /**
+     * 
+     */
+    private CMSContentItemTemplate getTemplateItem() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+    }
+
+    /**
+     * Writes HTML fragment value as file for re-indexing.
+     * 
+     * @param pageId ID of the owning CMS page
+     * @param hotfolder
+     * @param namingScheme
+     * @throws IOException
+     * @throws ViewerConfigurationException
+     * @should write files correctly
+     */
+    public void exportHtmlFragment(long pageId, String hotfolderPath, String namingScheme) throws IOException {
+        if (StringUtils.isEmpty(hotfolderPath)) {
+            throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
+        }
+        if (StringUtils.isEmpty(namingScheme)) {
+            throw new IllegalArgumentException("namingScheme may not be null or empty");
+        }
+        if (StringUtils.isEmpty(htmlFragment) && (mediaItem == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType()))) {
+            return;
+        }
+
+        Path cmsDataDir = Paths.get(hotfolderPath, namingScheme + Helper.SUFFIX_CMS);
+        if (!Files.isDirectory(cmsDataDir)) {
+            Files.createDirectory(cmsDataDir);
+            logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
+        }
+        // Export HTML fragment
+        if (StringUtils.isNotEmpty(htmlFragment)) {
+            File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".xml");
+            try {
+                FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
+                logger.debug("Wrote HTML fragment: {}", file.getName());
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        }
+        // Export media item HTML content
+        if (mediaItem != null && CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType())) {
+            try {
+                String html = CmsMediaBean.getMediaFileAsString(mediaItem);
+                if (StringUtils.isNotEmpty(html)) {
+                    File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
+                    FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                    logger.debug("Wrote media content: {}", file.getName());
+                }
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 }

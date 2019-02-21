@@ -26,8 +26,8 @@
 	<!-- sourceContentFolder: contains born-digital material that was uploaded in the Goobi viewer (see <content> also) -->
 	<origContentFolder>source</origContentFolder>
 
-	<!-- overviewFolder: contains the configuration file for overview pages -->
-	<overviewFolder>overview</overviewFolder>
+	<!-- cmsTextFolder: contains extracted CMS page texts for indexing -->
+	<cmsTextFolder>cms</cmsTextFolder>
 
 	<!-- altoFolder: contains ALTO files -->
 	<altoFolder>alto</altoFolder>
@@ -331,7 +331,7 @@
 			<filter>filter_FULLTEXT</filter>
 			<!-- <filter>filter_NORMDATATERMS</filter> -->
 			<!-- <filter>filter_UGCTERMS</filter> -->
-			<!-- <filter>filter_OVERVIEWPAGE</filter> -->
+			<!-- <filter>filter_CMS_TEXT_ALL</filter> -->
 		</filters>
 
 		<sorting>
@@ -373,7 +373,7 @@
 			<searchFields>
 				<field>DEFAULT</field>
 				<field>FULLTEXT</field>
-				<field>OVERVIEWPAGE</field>
+				<field>CMS_TEXT_ALL</field>
 				<field>PI_TOPSTRUCT</field>
 				<field hierarchical="true">DC</field>
 				<field>DOCSTRCT_TOP</field>
@@ -1234,6 +1234,7 @@
 			<classification>collection</classification>
 			<classification>news</classification>
 			<classification>team</classification>
+			<classification>overviewpage</classification>
 		</classifications>
 
 		<!-- TODO DOCUMENTATION -->

@@ -144,5 +144,14 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
                 && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle())
                 && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
     }
+    
+    @Override
+    public PageList getLinkedPages() {
+        if(super.getLinkedPages() == null) {
+            setLinkedPages(new PageList());
+        }
+        return super.getLinkedPages();
+    }
+
 
 }

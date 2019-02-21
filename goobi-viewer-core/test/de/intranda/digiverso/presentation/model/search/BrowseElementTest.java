@@ -50,7 +50,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "label", null, false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR"));
@@ -86,7 +86,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
@@ -105,7 +105,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
@@ -125,7 +125,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
@@ -145,7 +145,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, Locale.ENGLISH, null, null);
         be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
 
         StructElement se = new StructElement();
@@ -167,7 +167,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
-        BrowseElement be = new BrowseElement("PPN123", 1, null, null, false, Locale.GERMAN, null);
+        BrowseElement be = new BrowseElement("PPN123", 1, null, null, Locale.GERMAN, null, null);
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
@@ -180,7 +180,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
-        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", false, Locale.ENGLISH, null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", Locale.ENGLISH, null, null);
         Assert.assertEquals("foo bar", be.getFulltextForHtml());
 
     }
@@ -192,7 +192,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     @Test
     public void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
-                "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", false, Locale.ENGLISH, null);
+                "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
         Assert.assertEquals("foo  bar", be.getFulltextForHtml());
     }
 

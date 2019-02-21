@@ -12,7 +12,7 @@
 	</ui:define>
 
 	<composite:interface>
-		<composite:attribute name="pageType" required="false" />
+		<composite:attribute name="pageType" required="false" default=""/>
 		<composite:attribute name="widget"
 			type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement"
 			required="true" />
@@ -23,19 +23,7 @@
 			<h:form id="widgetViewsForm">
 				<h3>#{msg.view}</h3>
 				<ul>
-					<!-- Overview page -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarOverviewLinkVisible and activeDocumentBean.overviewPage != null}">
-						<li
-							class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
-							<h:outputLink
-								value="#{navigationHelper.overviewActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText value="#{msg.viewOverview}" />
-							</h:outputLink>
-						</li>
-					</h:panelGroup>
-
-					<!-- Image -->
+					<!-- Object -->
 					<h:panelGroup
 						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
 						<li
@@ -143,6 +131,20 @@
 							target="_blank"> #{msg.externalRepository} </a>
 						</li>
 					</h:panelGroup>
+					
+                    <!-- Related CMS pages -->
+                    <h:panelGroup
+                        rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
+                        <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
+	                        <li
+	                            class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''}">
+	                            <h:outputLink value="#{relatedPage.pageUrl}">
+	                                <h:outputText value="#{msg[relatedPage.menuTitle]}" />
+	                            </h:outputLink>
+	                        </li>
+                       </ui:repeat>
+                    </h:panelGroup>
+
 
 				</ul>
 			</h:form>

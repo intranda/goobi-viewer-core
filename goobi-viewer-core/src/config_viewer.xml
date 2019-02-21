@@ -25,8 +25,8 @@
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the Goobi viewer (see <content> also) -->
 	<origContentFolder>source</origContentFolder>
-	<!-- overviewFolder: contains the configuration file for overview pages -->
-	<overviewFolder>overview</overviewFolder>
+	<!-- cmsTextFolder: contains extracted CMS page texts for indexing -->
+	<cmsTextFolder>cms</cmsTextFolder>
 	<!-- altoFolder: contains ALTO files -->
 	<altoFolder>alto</altoFolder>
 	<!-- abbyyFolder: contains ABBYY XML files -->
@@ -346,7 +346,7 @@
 			<filter>filter_FULLTEXT</filter>
 			<!-- <filter>filter_NORMDATATERMS</filter> -->
 			<!-- <filter>filter_UGCTERMS</filter> -->
-			<filter>filter_OVERVIEWPAGE</filter>
+			<filter>filter_CMS_TEXT_ALL</filter>
 		</filters>
 		<sorting>
 			<!-- enabled: if false, the option to sort search hits is hidden (since 
@@ -384,7 +384,7 @@
 				<field>DEFAULT</field>
 				<field>FULLTEXT</field>
 				<field>UGCTERMS</field>
-				<field>OVERVIEWPAGE</field>
+				<field>CMS_TEXT_ALL</field>
 				<field>PI_TOPSTRUCT</field>
 				<field hierarchical="true">DC</field>
 				<field>DOCSTRCT</field>
@@ -450,7 +450,7 @@
 		</displayAdditionalMetadata>
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
-		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
 		
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
@@ -1062,7 +1062,7 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
     
-            <sidebarWidgetUsage display="false">
+            <sidebarWidgetUsage display="true">
                 <licenseText>
                     <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
                         <param type="field" key="LABEL" />
@@ -1086,14 +1086,6 @@
 			<item type="dfg"></item>
 			<item type="opac"></item>
 		</workNavItems>
-
-		<!-- overview: if false, the image view is hidden -->
-		<overview>
-			<visible>true</visible>
-			<!-- condition: Optional Solr subquery. Only records that match the given 
-				query will have the overview page displayed. -->
-			<condition></condition>
-		</overview>
 
 		<!-- page: if false, the image view is hidden -->
 		<page>
@@ -1267,6 +1259,7 @@
 			<classification>collection</classification>
 			<classification>news</classification>
 			<classification>team</classification>
+			<classification>overviewpage</classification>
 		</classifications>
 
 		<mediaDisplayWidth>0</mediaDisplayWidth>

@@ -2,7 +2,7 @@
 <config>
 
 	<!-- Path to local config file -->
-	<localConfigPath value="/opt/digiverso/contentServer/config/config_contentServer.xml" />
+	<localConfigPath value="c:/digiverso/contentServer/config/config_contentServer.xml" />
 
 
 	<!-- Default resolution for results of image processing, default is 600 -->

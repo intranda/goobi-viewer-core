@@ -42,11 +42,15 @@
 		<Logger
 			name="de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig"
 			level="ERROR" additivity="true" />
+        <Logger
+            name="de.unigoettingen.sub.commons.contentlib.servlet.rest"
+            level="INFO" additivity="true" />
 		<Logger name="httpclient" level="ERROR" additivity="true" />
 		<Logger name="java.net.SocketOutputStream" level="ERROR"
 			additivity="true" />
 		<Logger name="net.sf.ehcache" level="ERROR" additivity="true" />
 		<Logger name="org.apache" level="ERROR" additivity="true" />
+        <Logger name="org.docx4j" level="ERROR" additivity="true" />
 		<Logger name="org.jboss.weld" level="WARN" additivity="true" />
 		<Logger name="ugh" level="ERROR" additivity="true" />
 		<Root level="info">

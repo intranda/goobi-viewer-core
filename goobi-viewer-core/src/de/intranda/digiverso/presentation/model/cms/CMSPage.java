@@ -16,14 +16,20 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -45,13 +51,15 @@ import javax.persistence.Transient;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ocpsoft.pretty.faces.el.LazyBeanNameFinder;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.CmsEditException;
+import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.TEITools;
+import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -72,11 +80,13 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage {
+public class CMSPage implements Comparable<CMSPage> {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
+
     public static final String GLOBAL_LANGUAGE = "global";
+    public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -150,7 +160,7 @@ public class CMSPage {
      */
     @Column(name = "may_contain_url_parameters")
     private boolean mayContainUrlParameters = true;
-    
+
     /**
      * A html class name to be applied to the DOM element containing the page html
      */
@@ -174,6 +184,21 @@ public class CMSPage {
     private String staticPageName;
 
     public CMSPage() {
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(CMSPage o) {
+        if (o == null || o.getId() == null) {
+            return -1;
+        }
+        if (id == null) {
+            return 1;
+        }
+
+        return id.compareTo(o.getId());
     }
 
     /**
@@ -515,7 +540,8 @@ public class CMSPage {
         throw new CmsElementNotFoundException("No language version for " + language);
         //        synchronized (languageVersions) {
         //            try {
-        //                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
+        // CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this,
+        // language);
         //                this.languageVersions.add(version);
         //                return version;
         //            } catch (NullPointerException | IllegalStateException e) {
@@ -602,7 +628,8 @@ public class CMSPage {
 
     /**
      * @param itemId
-     * @return  The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no such item exists
+     * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
+     *         such item exists
      */
     public CMSMediaItemMetadata getMediaMetadata(String itemId) {
         CMSContentItem item;
@@ -616,10 +643,10 @@ public class CMSPage {
         }
         return null;
     }
-    
+
     /**
      * @param itemId
-     * @return  The media item associated with the contentItem with the given itemId. May return null if no such item exists
+     * @return The media item associated with the contentItem with the given itemId. May return null if no such item exists
      */
     public CMSMediaItem getMedia(String itemId) {
         CMSContentItem item;
@@ -783,12 +810,12 @@ public class CMSPage {
     }
 
     public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
-        logger.trace("Getting content " + itemId + " from page " + getId());
+        logger.trace("Getting content {} from page {}", itemId, getId());
         CMSContentItem item;
         try {
             item = getContentItem(itemId);
         } catch (CmsElementNotFoundException e1) {
-            logger.error("No content item of id " + itemId + " found in page " + this.getId());
+            logger.error("No content item of id {} found in page {}", itemId, this.getId());
             return "";
         }
         String contentString = "";
@@ -800,7 +827,35 @@ public class CMSPage {
                 contentString = CMSContentResource.getContentUrl(item);
                 break;
             case MEDIA:
-                contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
+                switch (type) {
+                    case CMSMediaItem.CONTENT_TYPE_DOCX:
+                    case CMSMediaItem.CONTENT_TYPE_HTML:
+                    case CMSMediaItem.CONTENT_TYPE_RTF:
+                        //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
+                        break;
+                    case CMSMediaItem.CONTENT_TYPE_XML:
+                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                        try {
+                            String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
+                            if (format != null) {
+                                switch (format.toLowerCase()) {
+                                    case "tei":
+                                        contentString = TEITools.convertTeiToHtml(contentString);
+                                        break;
+                                }
+
+                            }
+                        } catch (JDOMException | IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                        break;
+                    default:
+                        // Images
+                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                }
+
                 break;
             case COMPONENT:
                 contentString = item.getComponent();
@@ -815,16 +870,61 @@ public class CMSPage {
             default:
                 contentString = "";
         }
-        logger.trace("Got content as string: " + contentString);
+        // logger.trace("Got content as string: {}", contentString);
         return contentString;
     }
+
+    //    public String getContentItemUrl(String itemId, String width, String height) throws ViewerConfigurationException 
+    //        logger.trace("getContentItemUrl: {}", itemId);
+    //        CMSContentItem item;
+    //        try {
+    //            item = getContentItem(itemId);
+    //        } catch (CmsElementNotFoundException e1) {
+    //            logger.error("No content item of id {} found in page {}", itemId, this.getId());
+    //            return "";
+    //        }
+    //        switch (item.getType()) {
+    //            case TEXT:
+    //                contentString = item.getHtmlFragment();
+    //                break;
+    //            case HTML:
+    //                contentString = CMSContentResource.getContentUrl(item);
+    //                break;
+    //            case MEDIA:
+    //                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
+    //                switch (type) {
+    //                    case CMSMediaItem.CONTENT_TYPE_DOCX:
+    //                    case CMSMediaItem.CONTENT_TYPE_HTML:
+    //                    case CMSMediaItem.CONTENT_TYPE_RTF:
+    //                    case CMSMediaItem.CONTENT_TYPE_XML:
+    //                        return CmsMediaBean.getMediaUrl(item, width, height);
+    //                    default:
+    //                        // Images
+    //                        return CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+    //                }
+    //
+    //                break;
+    //            case COMPONENT:
+    //                contentString = item.getComponent();
+    //                break;
+    //            case GLOSSARY:
+    //                try {
+    //                    contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+    //                } catch (ContentNotFoundException | IOException e) {
+    //                    logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+    //                }
+    //                break;
+    //            default:
+    //                contentString = "";
+    //        }
+    //    }
 
     public List<CMSContentItem> getGlobalContentItems() {
         CMSPageLanguageVersion defaultVersion;
         try {
             defaultVersion = getLanguageVersion(GLOBAL_LANGUAGE);
         } catch (CmsElementNotFoundException e) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         List<CMSContentItem> items = defaultVersion.getContentItems();
         return items;
@@ -911,7 +1011,6 @@ public class CMSPage {
         }
     }
 
-
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
         NullComparator nullComparator = new NullComparator(true);
@@ -986,13 +1085,23 @@ public class CMSPage {
                 logger.error(e.toString(), e);
             }
         }
+        if (StringUtils.isNotBlank(getRelatedPI())) {
+            return "page/" + getRelatedPI() + "/" + getId() + "/";
+        }
+
         return "cms/" + getId() + "/";
     }
 
-    public void addContentItem(CMSContentItem item) {
+    /**
+     * TODO HTML/text content items are only added to the last language version in the list, not all of them
+     * 
+     * @param item
+     */
+    public void addContentItem(CMSContentItem templateItem) {
         synchronized (languageVersions) {
             List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
             for (CMSPageLanguageVersion language : languages) {
+                CMSContentItem item = new CMSContentItem(templateItem, null);
                 if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
                     if (!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                         language.addContentItem(item);
@@ -1004,7 +1113,8 @@ public class CMSPage {
                 }
             }
 
-            //                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
+            // getLanguageVersions().stream().filter(lang ->
+            // !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
             //                        lang -> lang.addContentItem(item));
             //            } else {
             //                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
@@ -1042,6 +1152,13 @@ public class CMSPage {
         }
         logger.warn("Did not find search functionality in page " + this);
         return new SearchFunctionality("", getPageUrl());
+    }
+
+    public boolean hasSearchFunctionality() {
+        Optional<CMSContentItem> searchItem =
+                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
+        return searchItem.isPresent();
+
     }
 
     public boolean isHasSidebarElements() {
@@ -1099,7 +1216,8 @@ public class CMSPage {
     }
 
     //    /**
-    //     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+    // * @return true if this page's template is configured to follow urls which
+    // contain additional parameters (e.g. search parameters)
     //     */
     //    public boolean mayContainURLParameters() {
     //        try {
@@ -1147,7 +1265,9 @@ public class CMSPage {
         return property;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -1182,30 +1302,29 @@ public class CMSPage {
     public boolean hasLanguageVersion(Locale locale) {
         return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
     }
-    
+
     /**
-     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no 
-     * language versions already exist
+     * Adds {@link CMSPageLanguageVersion}s for all given {@link Locale}s for which no language versions already exist
      * 
      * @param page
      * @param locales
      */
-    public void createMissingLangaugeVersions( List<Locale> locales) {
+    public void createMissingLangaugeVersions(List<Locale> locales) {
         for (Locale locale : locales) {
-            if(!hasLanguageVersion(locale)) {
+            if (!hasLanguageVersion(locale)) {
                 addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
             }
         }
-        
+
     }
-    
+
     /**
      * @return the {@link #wrapperElementClass}
      */
     public String getWrapperElementClass() {
         return wrapperElementClass;
     }
-    
+
     /**
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
@@ -1213,5 +1332,146 @@ public class CMSPage {
         this.wrapperElementClass = wrapperElementClass;
     }
 
+    /**
+     * @param itemId
+     */
+    public void removeContentItem(String itemId) {
+        for (CMSPageLanguageVersion languageVersion : languageVersions) {
+            CMSContentItem item;
+            try {
+                item = languageVersion.getContentItem(itemId);
+                languageVersion.removeContentItem(item);
+            } catch (CmsElementNotFoundException e) {
+                // continue
+            }
+        }
+    }
 
+    /**
+     * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
+     * 
+     * @return Number of deleted files
+     */
+    public int deleteExportedTextFiles() {
+        if (StringUtils.isEmpty(relatedPI)) {
+            logger.trace("No related PI - nothing to delete");
+            return 0;
+        }
+
+        int count = 0;
+        try {
+            Set<Path> filesToDelete = new HashSet<>();
+            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(relatedPI);
+            Path cmsTextFolder =
+                    Paths.get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getCmsTextFolder(), relatedPI);
+            logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
+            if (!Files.isDirectory(cmsTextFolder)) {
+                logger.trace("CMS text folder not found - nothing to delete");
+                return 0;
+            }
+            List<Path> cmsPageFiles = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(cmsTextFolder, id + "-*.*")) {
+                for (Path file : stream) {
+                    if (Files.isRegularFile(file)) {
+                        cmsPageFiles.add(file);
+                    }
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+
+            // Collect files that match the page-contentid name pattern
+            for (CMSPageLanguageVersion lv : getLanguageVersions()) {
+                for (CMSContentItem ci : lv.getContentItems()) {
+                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
+                            || CMSContentItemType.MEDIA.equals(ci.getType())) {
+                        String baseFileName = id + "-" + ci.getItemId() + ".";
+                        for (Path file : cmsPageFiles) {
+                            if (file.getFileName().toString().startsWith(baseFileName)) {
+                                filesToDelete.add(file);
+                            }
+                        }
+                    }
+                }
+            }
+            if (!filesToDelete.isEmpty()) {
+                for (Path file : filesToDelete) {
+                    try {
+                        Files.delete(file);
+                        count++;
+                        logger.info("CMS text file deleted: {}", file.getFileName().toString());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+
+            // Delete folder if empty
+            try {
+                if (FileTools.isFolderEmpty(cmsTextFolder)) {
+                    Files.delete(cmsTextFolder);
+                    logger.info("Empty CMS text folder deleted: {}", cmsTextFolder.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return count;
+    }
+
+    /**
+     * Exports text/html fragments from this page's content items for indexing.
+     * 
+     * @param hotfolderPath
+     * @param namingScheme
+     * @throws IOException
+     */
+    public void exportTexts(String hotfolderPath, String namingScheme) throws IOException {
+        try {
+            // Default language items
+            CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
+            if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
+                for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
+                    exportItemText(item, hotfolderPath, namingScheme);
+                }
+            }
+
+        } catch (CmsElementNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        }
+        // Global language items
+        List<CMSContentItem> globalContentItems = getGlobalContentItems();
+        if (!globalContentItems.isEmpty()) {
+            for (CMSContentItem item : globalContentItems) {
+                exportItemText(item, hotfolderPath, namingScheme);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param item
+     * @param hotfolderPath
+     * @param namingScheme
+     * @throws IOException
+     */
+    private void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {
+        if (item.getType() == null) {
+            return;
+        }
+        switch (item.getType()) {
+            case MEDIA:
+            case HTML:
+            case TEXT:
+                item.exportHtmlFragment(id, hotfolderPath, namingScheme);
+                break;
+            default:
+                break;
+        }
+    }
 }

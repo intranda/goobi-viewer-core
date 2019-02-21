@@ -1277,8 +1277,8 @@ public final class SolrSearchIndex {
         SolrDocumentList hits = search(sbQuery.toString(), Collections.singletonList(SolrConstants.FILENAME));
         if (hits.isEmpty()) {
             return Optional.empty();
-        } else {
-            return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
         }
+
+        return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
 }

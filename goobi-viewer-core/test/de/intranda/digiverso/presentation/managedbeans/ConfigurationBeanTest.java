@@ -75,15 +75,6 @@ public class ConfigurationBeanTest {
     }
 
     /**
-     * @see ConfigurationBean#isSidebarOverviewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarOverviewLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, bean.isSidebarOverviewLinkVisible());
-    }
-
-    /**
      * @see ConfigurationBean#isSidebarPageLinkVisible()
      * @verifies return correct value
      */

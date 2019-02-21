@@ -207,19 +207,6 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param baseUrl2
-     * @param manifest
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public void addVolumes(Collection anchor, long iddoc) throws PresentationException, IndexUnreachableException {
-        List<StructElement> volumes =
-                getChildDocs(iddoc).stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).collect(Collectors.toList());
-
-        addVolumes(anchor, volumes);
-    }
-
-    /**
      * @param anchor
      * @param volumes
      */
@@ -253,29 +240,6 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.addWithin(new Collection(getManifestURI(anchorPI)));
         }
 
-    }
-
-    /**
-     * @param anchor
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    private List<StructElement> getChildDocs(long iddocParent) throws PresentationException, IndexUnreachableException {
-        String query = SolrConstants.IDDOC_PARENT + ":" + iddocParent;
-        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
-        if (solrDocs != null) {
-            return solrDocs.stream().filter(doc -> doc.getFieldValue(SolrConstants.IDDOC) != null).map(doc -> {
-                try {
-                    return new StructElement(Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-                } catch (NumberFormatException | IndexUnreachableException e) {
-                    logger.error("Failed to create struct element from " + doc);
-                    return null;
-                }
-            }).filter(ele -> ele != null).collect(Collectors.toList());
-        }
-
-        return Collections.emptyList();
     }
 
     /**
