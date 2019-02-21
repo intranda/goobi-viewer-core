@@ -343,7 +343,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             value = item.getHtmlFragment();
                             break;
                         case MEDIA:
-                            if (item.getMediaItem() == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(item.getMediaItem().getContentType())) {
+                            if (item.getMediaItem() == null || !item.getMediaItem().isHasExportableText()) {
                                 continue;
                             }
                             try {

@@ -1122,7 +1122,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isEmpty(namingScheme)) {
             throw new IllegalArgumentException("namingScheme may not be null or empty");
         }
-        if (StringUtils.isEmpty(htmlFragment) && (mediaItem == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType()))) {
+        if (StringUtils.isEmpty(htmlFragment) && mediaItem == null) {
             return;
         }
 
@@ -1142,18 +1142,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         }
         // Export media item HTML content
-        if (mediaItem != null && mediaItem.getContentType() != null) {
+        if (mediaItem != null && mediaItem.isHasExportableText()) {
             String html = null;
-            switch (mediaItem.getContentType()) {
-                case CMSMediaItem.CONTENT_TYPE_DOCX:
-                case CMSMediaItem.CONTENT_TYPE_RTF:
-                case CMSMediaItem.CONTENT_TYPE_HTML:
-                    try {
-                        html = CmsMediaBean.getMediaFileAsString(mediaItem);
-                    } catch (ViewerConfigurationException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    break;
+            try {
+                html = CmsMediaBean.getMediaFileAsString(mediaItem);
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.getMessage(), e);
             }
             if (StringUtils.isNotEmpty(html)) {
                 File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");

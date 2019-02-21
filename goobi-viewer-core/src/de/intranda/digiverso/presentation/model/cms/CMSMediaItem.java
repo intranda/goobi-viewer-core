@@ -228,6 +228,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
                 return "";
         }
     }
+    
+    /**
+     * 
+     * @return true if item content types allows for text export; false otherwise
+     */
+    public boolean isHasExportableText() {
+        switch(getContentType()) {
+            case CMSMediaItem.CONTENT_TYPE_DOC:
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /**
      * @return the id
