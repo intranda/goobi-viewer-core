@@ -773,6 +773,11 @@ public class CMSPage implements Comparable<CMSPage> {
         return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(getRelativeUrlPath(true)).toString();
     }
 
+    /**
+     * 
+     * @param itemId
+     * @return true if content item with the given item ID has content matching its type; false otherwisee
+     */
     public boolean hasContent(String itemId) {
         CMSContentItem item;
         try {
@@ -809,6 +814,16 @@ public class CMSPage implements Comparable<CMSPage> {
                 .findFirst();
     }
 
+    /**
+     * Returns the content of the content item with the given item ID as a string. Depending on the content item's type, this can be either text, a
+     * URL, a JSON object, etc.
+     * 
+     * @param itemId
+     * @param width
+     * @param height
+     * @return the content of the content item with the given item ID as a string
+     * @throws ViewerConfigurationException
+     */
     public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
         logger.trace("Getting content {} from page {}", itemId, getId());
         CMSContentItem item;
@@ -873,51 +888,6 @@ public class CMSPage implements Comparable<CMSPage> {
         // logger.trace("Got content as string: {}", contentString);
         return contentString;
     }
-
-    //    public String getContentItemUrl(String itemId, String width, String height) throws ViewerConfigurationException 
-    //        logger.trace("getContentItemUrl: {}", itemId);
-    //        CMSContentItem item;
-    //        try {
-    //            item = getContentItem(itemId);
-    //        } catch (CmsElementNotFoundException e1) {
-    //            logger.error("No content item of id {} found in page {}", itemId, this.getId());
-    //            return "";
-    //        }
-    //        switch (item.getType()) {
-    //            case TEXT:
-    //                contentString = item.getHtmlFragment();
-    //                break;
-    //            case HTML:
-    //                contentString = CMSContentResource.getContentUrl(item);
-    //                break;
-    //            case MEDIA:
-    //                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
-    //                switch (type) {
-    //                    case CMSMediaItem.CONTENT_TYPE_DOCX:
-    //                    case CMSMediaItem.CONTENT_TYPE_HTML:
-    //                    case CMSMediaItem.CONTENT_TYPE_RTF:
-    //                    case CMSMediaItem.CONTENT_TYPE_XML:
-    //                        return CmsMediaBean.getMediaUrl(item, width, height);
-    //                    default:
-    //                        // Images
-    //                        return CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
-    //                }
-    //
-    //                break;
-    //            case COMPONENT:
-    //                contentString = item.getComponent();
-    //                break;
-    //            case GLOSSARY:
-    //                try {
-    //                    contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
-    //                } catch (ContentNotFoundException | IOException e) {
-    //                    logger.error("Failed to load glossary " + item.getGlossaryName(), e);
-    //                }
-    //                break;
-    //            default:
-    //                contentString = "";
-    //        }
-    //    }
 
     public List<CMSContentItem> getGlobalContentItems() {
         CMSPageLanguageVersion defaultVersion;
@@ -1454,10 +1424,12 @@ public class CMSPage implements Comparable<CMSPage> {
     }
 
     /**
+     * Exports the contents of the given content item into the given hotfolder path for indexing. Only media, html and text content items can
+     * currently be exported.
      * 
-     * @param item
-     * @param hotfolderPath
-     * @param namingScheme
+     * @param item Content item to export
+     * @param hotfolderPath Export path
+     * @param namingScheme Naming scheme for export files and folders
      * @throws IOException
      */
     private void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {

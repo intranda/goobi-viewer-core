@@ -1106,7 +1106,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     }
 
     /**
-     * Writes HTML fragment value as file for re-indexing.
+     * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
+     * their content type is one of the supported text document formats.
      * 
      * @param pageId ID of the owning CMS page
      * @param hotfolder
