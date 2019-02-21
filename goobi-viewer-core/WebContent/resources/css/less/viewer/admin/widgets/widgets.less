@@ -1,8 +1,30 @@
 /* ==============================================================
-   Admin 
-   global style declarations for admin backend
+   Admin Widgets
+   style declarations for admin widgets
    ==============================================================*/
-
+/* ADMIN WIDGETS */
+.admin-widget {
+    margin-bottom: 20px;
+    /* ELEMENT */
+    h3 {
+    	margin-right: -15px;
+    	margin-left: -15px;
+    	padding-top: 0;
+    	padding-right: 15px;
+    	padding-bottom: 5px;
+    	padding-left: 15px;
+    	color: @white;
+    	border-bottom: 1px solid @white;
+    }
+    ul {
+        .mx-list-reset;
+    }
+    li {}
+    a {
+    	display: block;
+    	padding: 5px 0;
+    }
+}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

@@ -545,7 +545,7 @@ span[class*=" image-"] {
   box-shadow: none;
 }
 .form-control:focus {
-  border-color: #507ebf;
+  border-color: #3365a9;
   box-shadow: none;
   outline: none;
 }
@@ -838,8 +838,8 @@ button {
 }
 .btn--full {
   color: #fff;
-  border-color: #507ebf;
-  background-color: #507ebf;
+  border-color: #3365a9;
+  background-color: #3365a9;
 }
 .btn--full:hover,
 .btn--full:active,
@@ -855,7 +855,7 @@ button {
 }
 .btn--link {
   padding: 0;
-  color: #507ebf;
+  color: #3365a9;
   border: none;
 }
 .btn--link:hover,
@@ -942,7 +942,7 @@ button.btn:active:focus {
   z-index: -1;
 }
 .custom-control__icon {
-  color: #507ebf;
+  color: #3365a9;
 }
 .custom-control .fa-check-circle-o,
 .custom-control .fa-check-square-o {
@@ -1382,7 +1382,7 @@ html.is-IE .support-overlay {
 }
 .alphabetic-paginator li.active {
   font-weight: bold;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .alphabetic-paginator li.active a {
   color: #fff;
@@ -1423,7 +1423,7 @@ html.is-IE .support-overlay {
   font-size: 12px;
   color: #fff;
   border-radius: 2px;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .bookshelf-navigation__string {
   margin-right: 5px;
@@ -1472,7 +1472,7 @@ html.is-IE .support-overlay {
   font-size: 12px;
   color: #fff;
   border-radius: 2px;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .bookshelf-navigation__dropdown-list-image {
   height: 75px;
@@ -1486,7 +1486,7 @@ html.is-IE .support-overlay {
 .bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
   width: 16px;
   height: 16px;
-  color: #507ebf;
+  color: #3365a9;
 }
 .bookshelf-navigation__dropdown-list-actions {
   border-top: 1px solid #ccc;
@@ -1511,7 +1511,7 @@ html.is-IE .support-overlay {
       justify-content: space-between;
   width: 100%;
   padding: 10px;
-  color: #507ebf;
+  color: #3365a9;
 }
 .bookshelf-navigation__dropdown-list-mirador {
   border: none;
@@ -1604,7 +1604,7 @@ html.is-IE .support-overlay {
   font-size: 12px;
   color: #fff;
   border-radius: 2px;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .bookshelf-popup__footer {
   bottom: 0;
@@ -1898,7 +1898,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   font-size: 0.75rem;
   border-radius: 5px;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -2233,7 +2233,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
   padding: 7px 14px;
   font-size: 0.9rem;
-  color: #507ebf;
+  color: #3365a9;
 }
 .login-navigation [data-login="false"] .login-navigation__login-dropdown-options a {
   display: block;
@@ -2325,7 +2325,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-left: 15px;
 }
 .login-navigation [data-login="true"] .login-navigation__user-dropdown-item-icon .fa {
-  color: #507ebf;
+  color: #3365a9;
 }
 .login-navigation [data-login="true"] .login-navigation__user-dropdown-item-string a {
   display: block;
@@ -2665,7 +2665,7 @@ div[id*="-Modal"] .email-form .form-group {
 .ner-detail-trigger {
   position: relative;
   text-decoration: underline;
-  color: #507ebf;
+  color: #3365a9;
   cursor: pointer;
 }
 .ner-trigger .fa {
@@ -2760,7 +2760,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 1rem;
   line-height: 1rem;
   padding: 0;
-  color: #507ebf;
+  color: #3365a9;
   border: none;
   background: none;
 }
@@ -3435,7 +3435,7 @@ div[id*="-Modal"] .email-form .form-group {
 #downloadWrapper nav ul li a,
 #downloadWrapper nav ul li button {
   padding: 0;
-  color: #507ebf;
+  color: #3365a9;
 }
 #downloadWrapper nav ul li a:hover,
 #downloadWrapper nav ul li button:hover {
@@ -3621,7 +3621,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: #507ebf;
+  background-color: #3365a9;
   cursor: pointer;
   z-index: 999;
 }
@@ -3836,200 +3836,6 @@ div[id*="-Modal"] .email-form .form-group {
   height: 1.45rem;
   margin: 0;
   background: #6f6f6f;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ADMIN VIEWS */
-/* ==============================================================
-   Admin 
-   global style declarations for admin backend
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin Backend Tables
-   style declarations for admin backend tables
-   ==============================================================*/
-/* BLOCK */
-.admin-table {
-  /* ELEMENT */
-}
-.admin-table ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.admin-table__action {
-  font-size: 1.1rem;
-  text-align: center;
-  vertical-align: top;
-}
-.admin-table__action a,
-.admin-table__action span {
-  margin-left: 5px;
-}
-.admin-table__action span {
-  opacity: 0.5;
-}
-/* BOOTSTRAP OVERWRITE */
-.admin-table > thead > tr > th {
-  vertical-align: top;
-}
-/* ADMIN TABLE IDS */
-/* ALL USER */
-#adminAllUserTable td span {
-  opacity: 1;
-}
-/* ALL USER GROUPS */
-#adminAllUserGroupsTable td:nth-child(3) {
-  text-align: center;
-}
-/* IP RANGES */
-/* LICENSE TYPES */
-#adminLicenseTypesTable td:nth-child(1) .fa {
-  float: right;
-  cursor: pointer;
-}
-#adminLicenseTypesTable td:nth-child(3) {
-  text-align: center;
-}
-#adminLicenseTypesTable td:nth-child(5) {
-  min-width: 100px;
-}
-#adminLicenseTypesTable li .fa {
-  margin-right: 5px;
-  color: green;
-}
-/* USER COMMENTS */
-/* USER ACTIVITY */
-/* DATATABLES SORTING */
-.sorting-wrapper {
-  float: right;
-}
-.sorting-wrapper .sort {
-  text-decoration: none;
-}
-.sorting-wrapper .sort:hover {
-  text-decoration: none;
-}
-/* DATATABLES FILTER */
-.column-filter-wrapper {
-  margin: 0.5rem 0;
-}
-.column-filter-wrapper .form-group {
-  height: 28px;
-  line-height: normal;
-  margin: 0;
-}
-.column-filter-wrapper .form-group .input-group {
-  height: 28px;
-  line-height: normal;
-}
-.column-filter-wrapper .form-group .input-group input {
-  font-size: 12px;
-  font-weight: normal;
-  height: 28px;
-  line-height: normal;
-  padding: 4px 7px;
-}
-.column-filter-wrapper .form-group .input-group .input-group-addon {
-  font-size: 10px;
-  padding: 4px 7px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin IP-Range
-   style declarations for adminIpRange.xhtml
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin Licence Type
-   style declarations for adminLicenseType.xhtml
-   ==============================================================*/
-#adminlicenseTypeWrapper {
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-#adminlicenseTypeWrapper fieldset textarea {
-  resize: vertical;
-}
-#adminlicenseTypeWrapper .btn {
-  margin: 0 0 0 5px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin Add User
-   style declarations for adminUser.xhtml
-   ==============================================================*/
-#licenses p {
-  text-align: right;
-}
-/* EDIT USER */
-#editUserGeneral .btn {
-  margin-left: 5px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin User Group
-   style declarations for adminUserGroup.xhtml
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Admin Tab User Licenses
-   style declarations for tabUserLicenses.xhtml
-   ==============================================================*/
-#editLicenseWrapper {
-  /* privileges */
-  /* action */
-}
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 {
-  /* datepicker */
-}
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 select {
-  height: 34px;
-  padding: 6px 12px;
-}
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span input,
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span button {
-  width: inherit;
-  height: 34px;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background: none;
-}
-#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span button {
-  margin-top: -4px;
-  border-left: none;
-  background-color: #eee;
-}
-#editLicenseWrapper .select-privileges label input[type="checkbox"] {
-  margin-right: 5px;
-}
-#editLicenseWrapper .edit-license-action {
-  text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -4308,7 +4114,7 @@ div[id*="-Modal"] .email-form .form-group {
   font-size: 18px;
   text-align: center;
   color: #fff;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .styles__button:hover,
 .styles__button:focus,
@@ -4913,10 +4719,10 @@ div[id*="-Modal"] .email-form .form-group {
   border-right: none;
 }
 .search-advanced__input-group input[type="text"]:focus {
-  border-right-color: #507ebf;
+  border-right-color: #3365a9;
 }
 .search-advanced__input-group input[type="text"]:focus + .input-group-addon {
-  border-color: #507ebf;
+  border-color: #3365a9;
 }
 .search-advanced__input-group .input-group-addon {
   padding: 0;
@@ -5052,7 +4858,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__options button:active,
 .search-list__options a.active,
 .search-list__options button.active {
-  color: #507ebf;
+  color: #3365a9;
 }
 .search-list__options form {
   display: inline-block;
@@ -5121,11 +4927,11 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 6px 12px;
 }
 .search-list__current-search .input-group-addon.reset.focus {
-  border-color: #507ebf;
+  border-color: #3365a9;
 }
 .search-list__current-search .input-group-addon.search {
-  background-color: #507ebf;
-  border-color: #507ebf;
+  background-color: #3365a9;
+  border-color: #3365a9;
 }
 .search-list__current-search .input-group-addon.search a {
   display: block;
@@ -5199,7 +5005,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-bookmark-o,
 .search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-bookmark {
-  color: #507ebf;
+  color: #3365a9;
 }
 .search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-bookmark-o {
   display: inline-block;
@@ -5604,7 +5410,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day a,
 .search-calendar__month-day button {
   width: 100%;
-  color: #507ebf;
+  color: #3365a9;
   text-decoration: none;
   background-color: #eee;
 }
@@ -5616,7 +5422,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day button:active {
   text-decoration: none;
   color: #fff;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .search-calendar__month-day .popover-title {
   line-height: normal;
@@ -6678,7 +6484,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .view-object__image-map .image-fragment {
   background-color: rgba(255, 255, 255, 0.3);
-  border: solid #507ebf 3px;
+  border: solid #3365a9 3px;
 }
 .view-object__access-denied {
   text-align: center;
@@ -7577,14 +7383,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   Widget Admin
-   style declarations for widget_admin.xhtml
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
    Widget Bookshelves
    style declarations for widget_bookshelves.xhtml
    ==============================================================*/
@@ -7700,8 +7498,8 @@ div[id*="-Modal"] .email-form .form-group {
   outline: none;
 }
 #chronoSlider .ui-slider-range {
-  border-color: #507ebf;
-  background-color: #507ebf;
+  border-color: #3365a9;
+  background-color: #3365a9;
 }
 #chronoSlider .ui-slider-handle {
   width: 10px;
@@ -7712,14 +7510,6 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #ccc;
   cursor: pointer;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Widget CMS
-   style declarations for widget_cms.xhtml
-   ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
@@ -8620,6 +8410,320 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-geo-locations__overlay-check .checkbox {
   margin: 0;
 }
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ADMIN BACKEND */
+/* ==============================================================
+   Admin 
+   global style declarations for admin_layout.xhtml
+   ==============================================================*/
+/* ADMIN LAYOUT */
+.admin {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 2fr 10fr;
+      grid-template-columns: 2fr 10fr;
+  background-color: #f2f3f4;
+  /* SIDEBAR */
+  /* CONTENT */
+}
+.admin__sidebar,
+.admin__content {
+  min-width: 0;
+}
+.admin__sidebar-inner,
+.admin__content-inner {
+  min-height: calc(100vh - 30px);
+}
+.admin__sidebar {
+  max-width: 400px;
+  padding: 15px;
+  font-size: 1rem;
+  background-color: #3365a9;
+  overflow-y: auto;
+}
+.admin__sidebar a,
+.admin__sidebar button {
+  color: #fff;
+}
+.admin__sidebar a:hover,
+.admin__sidebar button:hover,
+.admin__sidebar a:active,
+.admin__sidebar button:active,
+.admin__sidebar a:focus,
+.admin__sidebar button:focus {
+  text-decoration: underline;
+  color: #fff;
+}
+.admin__sidebar-inner {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+.admin__sidebar-inner h1 {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  line-height: normal;
+  margin: 0;
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+  color: #fff;
+}
+.admin__sidebar-inner h1 a {
+  max-width: 30%;
+  margin-right: 10px;
+}
+.admin__sidebar-inner h1 img {
+  max-width: 100%;
+}
+.admin__sidebar-logout {
+  margin-top: auto;
+}
+.admin__content {
+  padding: 15px;
+}
+.admin__content-inner {
+  padding: 15px;
+  background-color: #fff;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin Backend Tables
+   style declarations for admin backend tables
+   ==============================================================*/
+/* BLOCK */
+.admin-table {
+  /* ELEMENT */
+}
+.admin-table ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-table__action {
+  font-size: 1.1rem;
+  text-align: center;
+  vertical-align: top;
+}
+.admin-table__action a,
+.admin-table__action span {
+  margin-left: 5px;
+}
+.admin-table__action span {
+  opacity: 0.5;
+}
+/* BOOTSTRAP OVERWRITE */
+.admin-table > thead > tr > th {
+  vertical-align: top;
+}
+/* ADMIN TABLE IDS */
+/* ALL USER */
+#adminAllUserTable td span {
+  opacity: 1;
+}
+/* ALL USER GROUPS */
+#adminAllUserGroupsTable td:nth-child(3) {
+  text-align: center;
+}
+/* IP RANGES */
+/* LICENSE TYPES */
+#adminLicenseTypesTable td:nth-child(1) .fa {
+  float: right;
+  cursor: pointer;
+}
+#adminLicenseTypesTable td:nth-child(3) {
+  text-align: center;
+}
+#adminLicenseTypesTable td:nth-child(5) {
+  min-width: 100px;
+}
+#adminLicenseTypesTable li .fa {
+  margin-right: 5px;
+  color: green;
+}
+/* USER COMMENTS */
+/* USER ACTIVITY */
+/* DATATABLES SORTING */
+.sorting-wrapper {
+  float: right;
+}
+.sorting-wrapper .sort {
+  text-decoration: none;
+}
+.sorting-wrapper .sort:hover {
+  text-decoration: none;
+}
+/* DATATABLES FILTER */
+.column-filter-wrapper {
+  margin: 0.5rem 0;
+}
+.column-filter-wrapper .form-group {
+  height: 28px;
+  line-height: normal;
+  margin: 0;
+}
+.column-filter-wrapper .form-group .input-group {
+  height: 28px;
+  line-height: normal;
+}
+.column-filter-wrapper .form-group .input-group input {
+  font-size: 12px;
+  font-weight: normal;
+  height: 28px;
+  line-height: normal;
+  padding: 4px 7px;
+}
+.column-filter-wrapper .form-group .input-group .input-group-addon {
+  font-size: 10px;
+  padding: 4px 7px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin IP-Range
+   style declarations for adminIpRange.xhtml
+   ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin Licence Type
+   style declarations for adminLicenseType.xhtml
+   ==============================================================*/
+#adminlicenseTypeWrapper {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+#adminlicenseTypeWrapper fieldset textarea {
+  resize: vertical;
+}
+#adminlicenseTypeWrapper .btn {
+  margin: 0 0 0 5px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin Add User
+   style declarations for adminUser.xhtml
+   ==============================================================*/
+#licenses p {
+  text-align: right;
+}
+/* EDIT USER */
+#editUserGeneral .btn {
+  margin-left: 5px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin User Group
+   style declarations for adminUserGroup.xhtml
+   ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin Tab User Licenses
+   style declarations for tabUserLicenses.xhtml
+   ==============================================================*/
+#editLicenseWrapper {
+  /* privileges */
+  /* action */
+}
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 {
+  /* datepicker */
+}
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 select {
+  height: 34px;
+  padding: 6px 12px;
+}
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span input,
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span button {
+  width: inherit;
+  height: 34px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: none;
+}
+#editLicenseWrapper .form-horizontal .form-group .col-sm-8 span button {
+  margin-top: -4px;
+  border-left: none;
+  background-color: #eee;
+}
+#editLicenseWrapper .select-privileges label input[type="checkbox"] {
+  margin-right: 5px;
+}
+#editLicenseWrapper .edit-license-action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Admin Widgets
+   style declarations for admin widgets
+   ==============================================================*/
+/* ADMIN WIDGETS */
+.admin-widget {
+  margin-bottom: 20px;
+  /* ELEMENT */
+}
+.admin-widget h3 {
+  margin-right: -15px;
+  margin-left: -15px;
+  padding-top: 0;
+  padding-right: 15px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  color: #fff;
+  border-bottom: 1px solid #fff;
+}
+.admin-widget ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-widget a {
+  display: block;
+  padding: 5px 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Admin
+   style declarations for widget_admin.xhtml
+   ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget CMS
+   style declarations for widget_cms.xhtml
+   ==============================================================*/
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
@@ -10249,7 +10353,7 @@ div[id*="-Modal"] .email-form .form-group {
 .media-modal__tags .label {
   padding: .3em .6em .3em;
   font-weight: normal;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 .media-modal__tags .tag-terminator {
   margin-left: 5px;
@@ -10594,22 +10698,22 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-select-template__theme-template-marker {
   font-size: 12px;
   text-align: center;
-  color: #507ebf;
+  color: #3365a9;
 }
 .cms-select-template__action {
   text-align: right;
 }
 .cms-select-template__action .btn-theme-template {
   font-weight: normal;
-  color: #507ebf;
-  border: 1px solid #507ebf;
+  color: #3365a9;
+  border: 1px solid #3365a9;
   background-color: #fff;
 }
 .cms-select-template__action .btn-theme-template:hover,
 .cms-select-template__action .btn-theme-template:active,
 .cms-select-template__action .btn-theme-template:focus {
   color: #fff;
-  background-color: #507ebf;
+  background-color: #3365a9;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */

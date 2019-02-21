@@ -1,0 +1,78 @@
+/* ==============================================================
+   Admin 
+   global style declarations for admin_layout.xhtml
+   ==============================================================*/
+/* ADMIN LAYOUT */
+.admin {
+	display: grid;
+	grid-template-columns: 2fr 10fr;
+	background-color: @neutralgray;
+	&__sidebar,
+	&__content {
+		min-width: 0;
+	}
+	&__sidebar-inner,
+	&__content-inner {
+		min-height: calc(~"100vh - 30px");
+	}
+	/* SIDEBAR */
+	&__sidebar {
+		max-width: 400px;
+		padding: 15px;
+		font-size: 1rem;
+		background-color: @blue;
+		overflow-y: auto;
+		a, button {
+			color: @white;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: underline;
+				color: @white;
+			}
+		}
+	}
+	&__sidebar-inner {
+		display: flex;
+		flex-direction: column;
+		h1 {
+			display: flex;
+			align-items: center;
+			line-height: normal;
+			margin: 0;
+			margin-bottom: 30px;
+			font-size: 1.2rem;
+			color: @white;
+			a {
+				max-width: 30%;
+				margin-right: 10px;
+			}
+			img {
+				max-width: 100%;
+			}
+		}
+	}
+	&__sidebar-logout {
+		margin-top: auto;
+	}
+	/* CONTENT */
+	&__content {
+		padding: 15px;
+	}
+	&__content-inner {
+		padding: 15px;
+		background-color: @white;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

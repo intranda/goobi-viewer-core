@@ -3,8 +3,9 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     
     <ui:define name="metadata">
@@ -169,14 +170,9 @@
 		</f:view>
     </ui:define>
 
+    <!-- SIDEBAR -->
     <ui:define name="sidebar">
-        <widgetComponent:widget_admin />
-    	<widgetComponent:widget_cms />
-    	<widgetComponent:widget_user />
+        <adminWidget:widget_admin />
+    	<adminWidget:widget_cms />
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-
 </ui:composition>

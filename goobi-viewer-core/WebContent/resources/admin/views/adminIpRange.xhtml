@@ -3,8 +3,8 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     
     <ui:define name="metadata">
@@ -42,13 +42,13 @@
 						<div class="tab-content">
 							<!-- ip range general -->
 							<div role="tabpanel" class="tab-pane active" id="ipRangeGeneral">
-                                <ui:include src="resources/includes/admin/tabIpRangeGeneral.xhtml" />							
+                                <ui:include src="/resources/admin/includes/tabIpRangeGeneral.xhtml" />							
 							</div>
 							
 							<!-- ip range licenses -->
 							<h:panelGroup rendered="#{adminBean.currentIpRange.id != null}">
 								<div role="tabpanel" class="tab-pane" id="ipRangeLicense">
-	                                <ui:include src="resources/includes/admin/tabIpRangeLicenses.xhtml" />								
+	                                <ui:include src="/resources/admin/includes/tabIpRangeLicenses.xhtml" />								
 								</div>
 							</h:panelGroup>
 						</div>
@@ -58,14 +58,9 @@
         </f:view>
     </ui:define>
 
+    <!-- SIDEBAR -->
     <ui:define name="sidebar">
-        <widgetComponent:widget_admin />
-    	<widgetComponent:widget_cms />
-    	<widgetComponent:widget_user />
+        <adminWidget:widget_admin />
+    	<adminWidget:widget_cms />
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-
 </ui:composition>

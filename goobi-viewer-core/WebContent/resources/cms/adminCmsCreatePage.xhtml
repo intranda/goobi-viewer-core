@@ -4,10 +4,10 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core" 
 	xmlns:p="http://primefaces.org/ui" 
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-	xmlns:c="http://java.sun.com/jsp/jstl/core" 
-	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components" 
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"	
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
 	<ui:define name="metadata">
@@ -293,9 +293,9 @@
 		</h:panelGroup>
 	</ui:define>
 
-	<ui:define name="sidebar">
-		<widgetComponent:widget_admin />
-		<widgetComponent:widget_cms />
-		<widgetComponent:widget_user />
-	</ui:define>
+	<!-- SIDEBAR -->
+    <ui:define name="sidebar">
+        <adminWidget:widget_admin />
+    	<adminWidget:widget_cms />
+    </ui:define>
 </ui:composition>

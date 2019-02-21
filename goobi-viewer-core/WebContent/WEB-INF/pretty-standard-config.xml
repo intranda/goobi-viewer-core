@@ -751,57 +751,52 @@
 	<!-- ADMIN -->
 	<url-mapping id="admin">
 		<pattern value="/admin/" />
-		<view-id value="/adminAllUsers.xhtml" />
+		<view-id value="/resources/admin/views/adminAllUsers.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminAllUsers">
 		<pattern value="/adminAllUsers/" />
-		<view-id value="/adminAllUsers.xhtml" />
+		<view-id value="/resources/admin/views/adminAllUsers.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUser">
 		<pattern value="/adminUser/" />
-		<view-id value="/adminUser.xhtml" />
+		<view-id value="/resources/admin/views/adminUser.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminAllUserGroups">
 		<pattern value="/adminAllUserGroups/" />
-		<view-id value="/adminAllUserGroups.xhtml" />
+		<view-id value="/resources/admin/views/adminAllUserGroups.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUserGroup">
 		<pattern value="/adminUserGroup/" />
-		<view-id value="/adminUserGroup.xhtml" />
+		<view-id value="/resources/admin/views/adminUserGroup.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminAllIpRanges">
 		<pattern value="/adminAllIpRanges/" />
-		<view-id value="/adminIpRanges.xhtml" />
+		<view-id value="/resources/admin/views/adminIpRanges.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminIpRange">
 		<pattern value="/adminIpRange/" />
-		<view-id value="/adminIpRange.xhtml" />
+		<view-id value="/resources/admin/views/adminIpRange.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminAllLicenseTypes">
 		<pattern value="/adminAllLicenseTypes/" />
-		<view-id value="/adminLicenseTypes.xhtml" />
+		<view-id value="/resources/admin/views/adminLicenseTypes.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminLicenseType">
 		<pattern value="/adminLicenseType/" />
-		<view-id value="/adminLicenseType.xhtml" />
+		<view-id value="/resources/admin/views/adminLicenseType.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminUserComments">
 		<pattern value="/adminUserComments/" />
-		<view-id value="/adminUserComments.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminContentUpload">
-		<pattern value="/adminContentUpload/" />
-		<view-id value="/adminContentUpload.xhtml" />
+		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	
