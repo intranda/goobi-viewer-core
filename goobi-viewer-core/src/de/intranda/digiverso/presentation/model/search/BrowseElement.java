@@ -100,8 +100,8 @@ public class BrowseElement implements Serializable {
     private boolean hasImages = false;
     @JsonIgnore
     private boolean hasMedia = false;
-    @JsonIgnore
-    private boolean useOverviewPage = false;
+    //    @JsonIgnore
+    //    private boolean useOverviewPage = false;
     @JsonIgnore
     private long numVolumes = 0;
     private String pi;
@@ -135,21 +135,26 @@ public class BrowseElement implements Serializable {
      * Constructor for unit tests and special instances.
      * 
      * @param pi
+     * @param imageNo
      * @param label
-     * @param locale
      * @param fulltext
-     * @param useOverviewPage
+     * @param locale
+     * @param dataRepository
+     * @param url Injected URL, overrides URL generation
+     * 
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale, String dataRepository) {
+    BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = new SimpleMetadataValue(label);
         this.fulltext = fulltext;
-        this.useOverviewPage = useOverviewPage;
         this.locale = locale;
         this.metadataList = new ArrayList<>();
-        this.url = generateUrl();
+        this.url = url;
+        if (this.url == null) {
+            this.url = generateUrl();
+        }
         this.dataRepository = dataRepository;
     }
 
@@ -296,7 +301,7 @@ public class BrowseElement implements Serializable {
                         if (searchTerms != null) {
                             if (searchTerms.get(md.getLabel()) != null) {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(md.getLabel()));
-                            } else if(md.getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                            } else if (md.getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
                             }
                             if (searchTerms.get(SolrConstants.DEFAULT) != null) {
@@ -439,7 +444,7 @@ public class BrowseElement implements Serializable {
             }
             value.setValue(sbLabel.toString(), locale);
         }
-        
+
         return value;
     }
 
@@ -705,11 +710,11 @@ public class BrowseElement implements Serializable {
     public String getLabel() {
         return label.getValue(BeanUtils.getLocale()).orElse(label.getValue().orElse(""));
     }
-    
+
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse("");
     }
-    
+
     public IMetadataValue getLabelAsMetadataValue() {
         return label;
     }
@@ -727,7 +732,7 @@ public class BrowseElement implements Serializable {
     public void setLabelShort(IMetadataValue labelShort) {
         this.labelShort = labelShort;
     }
-    
+
     /**
      * @return the type
      */
@@ -857,13 +862,6 @@ public class BrowseElement implements Serializable {
      */
     public void setHasImages(boolean hasImages) {
         this.hasImages = hasImages;
-    }
-
-    /**
-     * @return the hasOverviewPage
-     */
-    public boolean isHasOverviewPage() {
-        return useOverviewPage;
     }
 
     /**
@@ -1026,11 +1024,11 @@ public class BrowseElement implements Serializable {
     public List<Metadata> getMetadataList() {
         return metadataList;
     }
-    
+
     public List<Metadata> getMetadataListForLocale(Locale locale) {
         return Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
     }
-    
+
     public List<Metadata> getMetadataListForCurrentLocale() {
         return getMetadataListForLocale(BeanUtils.getLocale());
     }
@@ -1131,8 +1129,7 @@ public class BrowseElement implements Serializable {
     }
 
     public PageType determinePageType() {
-        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, useOverviewPage,
-                false);
+        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false, false);
     }
 
     /**

@@ -1614,32 +1614,14 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getOverviewFolder()
+     * @see Configuration#getCmsTextFolder()
      * @verifies return correct value
      */
     @Test
-    public void getOverviewFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("overview", DataManager.getInstance().getConfiguration().getOverviewFolder());
+    public void getCmsTextFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("cms", DataManager.getInstance().getConfiguration().getCmsTextFolder());
     }
-
-    /**
-     * @see Configuration#isSidebarOverviewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarOverviewLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible());
-    }
-
-    /**
-     * @see Configuration#getSidebarOverviewLinkCondition()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarOverviewLinkCondition_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("condition_value", DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition());
-    }
-
+    
     /**
      * @see Configuration#isForceJpegConversion()
      * @verifies return correct value

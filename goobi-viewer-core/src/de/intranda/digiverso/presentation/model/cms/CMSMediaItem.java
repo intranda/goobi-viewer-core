@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,14 +42,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
+import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -63,6 +68,12 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
+
+    public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    public static final String CONTENT_TYPE_DOC = "application/msword";
+    public static final String CONTENT_TYPE_RTF = "application/rtf";
+    public static final String CONTENT_TYPE_XML = "text/xml";
+    public static final String CONTENT_TYPE_HTML = "text/html";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,7 +126,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      * @param currentMediaItem
      */
     public CMSMediaItem(CMSMediaItem orig) {
-        if(orig.id != null) {            
+        if (orig.id != null) {
             this.id = new Long(orig.id);
         }
         this.fileName = orig.fileName;
@@ -168,6 +179,45 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Perform any necessary post-upload processing (e.g. format conversions).
+     * 
+     * @throws IOException
+     * @throws JDOMException
+     */
+    public void processMediaFile(File mediaFile) {
+        if (CONTENT_TYPE_DOCX.equals(getContentType())) {
+            try {
+                // TODO convert to TEI
+                String tei = TEITools.convertDocxToTei(mediaFile.toPath());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    public String getContentType() {
+        if (fileName == null) {
+            return "";
+        }
+
+        String extension = FilenameUtils.getExtension(fileName);
+        switch (extension) {
+            case "docx":
+                return CONTENT_TYPE_DOCX;
+            case "htm":
+            case "html":
+            case "xhtml":
+                return CONTENT_TYPE_HTML;
+            case "xml":
+                return CONTENT_TYPE_XML;
+            case "rtf":
+                return CONTENT_TYPE_RTF;
+            default:
+                return "";
+        }
     }
 
     /**
@@ -317,23 +367,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     }
 
     public static void main(String[] args) {
-        
-        String uriString = "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
+
+        String uriString =
+                "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
         try {
             URI uri = new URI(uriString);
             System.out.println(uri);
-            
+
             CMSMediaItem item = new CMSMediaItem();
             item.setLink(uriString);
             URI linkURI = item.getLinkURI(null);
             System.out.println(linkURI);
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
     }
-    
+
     /**
      * @return the URI to this media item
      */
@@ -380,9 +429,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      * @throws URISyntaxException
      */
     public void setLink(String linkUrl) throws URISyntaxException {
-        if(StringUtils.isBlank(linkUrl)) {
+        if (StringUtils.isBlank(linkUrl)) {
             this.link = null;
-        } else {            
+        } else {
             this.link = new URI(linkUrl);
         }
     }
@@ -591,13 +640,17 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     @Override
     public IMetadataValue getTranslationsForName() {
-        Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName())).collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
+        Map<String, String> names = getMetadata().stream()
+                .filter(md -> StringUtils.isNotBlank(md.getName()))
+                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
         return new MultiLanguageMetadataValue(names);
         //        return IMetadataValue.getTranslations(getName());
     }
-    
+
     public IMetadataValue getTranslationsForDescription() {
-        Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getDescription())).collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
+        Map<String, String> names = getMetadata().stream()
+                .filter(md -> StringUtils.isNotBlank(md.getDescription()))
+                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
         return new MultiLanguageMetadataValue(names);
     }
 

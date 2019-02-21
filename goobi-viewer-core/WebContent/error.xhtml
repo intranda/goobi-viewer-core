@@ -42,7 +42,6 @@
                         #{msg.generalError} <br />
                         <h:outputText value="#{msg.details}:" />
                     </p>
-                    
                     <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
@@ -190,6 +189,10 @@
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.sessionExpired}" escape="false" />
+                        <p>
+	                        <h:outputText rendered="#{errMsg != null}" value="#{msg[errMsg]}" escape="false"/>
+	                        <h:outputText rendered="#{errMsg == null}" value="#{msg[flash.keep.errorDetails]}" escape="false"/>
+	                    </p>
                     </div>
 
                     <p>

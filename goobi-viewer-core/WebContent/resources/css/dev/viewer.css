@@ -5189,30 +5189,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
-.search-list__hit-thumbnail [data-link="related-page"] {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  right: 30px;
-  height: auto !important;
-  padding: 0 5px;
-  text-align: center;
-  color: #fff;
-  border-radius: 3px;
-  background-color: #507ebf;
-}
-.search-list__hit-thumbnail [data-link="related-page"]:before {
-  content: "";
-  position: absolute;
-  display: block;
-  right: 3px;
-  bottom: -8px;
-  width: 0;
-  height: 0;
-  border-width: 4px;
-  border-style: solid;
-  border-color: #507ebf transparent transparent transparent;
-}
 .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   position: absolute;
   top: 0;
@@ -5502,9 +5478,6 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
   height: 175px;
 }
-.search-list__hits.grid .search-list__hit-thumbnail [data-link="related-page"] {
-  top: 5px;
-}
 .search-list__hits.grid .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   top: 0;
   right: 0;
@@ -5740,10 +5713,15 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELMENTS */
 }
 .user-login__external .user-login__options li {
+  height: 50px;
   text-align: right;
+  margin-top: 10px;
 }
 .user-login__external .user-login__options li .provider-logo {
   float: left;
+}
+.user-login__external .user-login__options li .btn {
+  margin-top: 8px;
 }
 .user-login__external .user-login__options img {
   max-height: 50px;
@@ -7140,130 +7118,6 @@ div[id*="-Modal"] .email-form .form-group {
     visibility: hidden !important;
   }
 }
-/* ==============================================================
-   View Overview
-   style declarations for viewOverview.xhtml 
-   ==============================================================*/
-/* VIEW OVERVIEW */
-/* BLOCK */
-.overview {
-  margin-bottom: 15px;
-  /* ELEMENT */
-  /* DELETE */
-  /* METADATA */
-  /* DESCRIPTION */
-  /* PUBLICATION */
-  /* HISTORY */
-}
-.overview__delete {
-  margin-bottom: 15px;
-}
-.overview__delete .btn {
-  margin: 0;
-}
-.overview__metadata .dl-horizontal {
-  margin-bottom: 2px;
-}
-.overview__metadata .dl-horizontal.edit-metadata:hover {
-  background-color: #eee;
-}
-.overview__metadata dt {
-  text-align: left;
-}
-.overview__metadata dd {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.overview__metadata-label,
-.overview__metadata-value,
-.overview__metadata-delete {
-  padding: 5px;
-}
-.overview__metadata-label {
-  display: block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.overview__metadata-value {
-  display: inline-block;
-}
-.overview__metadata-add .btn {
-  margin: 0;
-}
-.overview__metadata-save {
-  padding: 10px 0;
-}
-.overview__metadata-save .btn {
-  margin: 0;
-}
-.overview__description {
-  margin-bottom: 15px;
-}
-.overview__description-title,
-.overview__description-action {
-  margin-bottom: 10px;
-}
-.overview__description-title h3 {
-  margin: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.overview__description-action .btn {
-  margin: 0 0 0 5px;
-}
-.overview__description-action-fullscreen.in {
-  position: fixed;
-  top: 3px;
-  right: 10px;
-  z-index: 1000;
-}
-.overview__publication {
-  margin-bottom: 15px;
-}
-.overview__publication-title,
-.overview__publication-action {
-  margin-bottom: 10px;
-}
-.overview__publication-title h3 {
-  margin: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.overview__publication-action .btn {
-  margin: 0 0 0 5px;
-}
-.overview__publication-action-fullscreen.in {
-  position: fixed;
-  top: 3px;
-  right: 10px;
-  z-index: 1000;
-}
-.overview__publication-navigate {
-  margin-bottom: 10px;
-}
-.overview__publication-navigate li {
-  display: inline-block;
-  min-width: 32px;
-  height: 32px;
-  line-height: 32px;
-}
-.overview__publication-navigate a,
-.overview__publication-navigate span {
-  display: block;
-  padding: 0 5px;
-  text-align: center;
-  border: 1px solid #ccc;
-}
-.overview__publication-navigate-count span {
-  border: none;
-}
-.overview__history {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    View Thumbs
    style declarations for viewThumbs.xhtml 
@@ -9788,7 +9642,7 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template "Tags"
-   style declarations for cms_template_25_tags.xhtml
+   style declarations for cms_template_24_tags.xhtml
    ==============================================================*/
 /* TAGS */
 /* BLOCK */
@@ -9802,6 +9656,138 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Overview Page"
+   style declarations for cms_template_25_overviewPage.xhtml
+   ==============================================================*/
+/* OVERVIEW PAGE */
+.tpl-overviewpage {
+  /* OVERVIEW */
+  /* DESCRIPTION / LITERATURE / HISTORY */
+  /* DESCRIPTION */
+  /* LITERATURE */
+  /* HISTORY */
+}
+.tpl-overviewpage__overview {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 30px;
+}
+.tpl-overviewpage__overview-thumbnail {
+  max-width: 25%;
+  margin-right: 30px;
+}
+.tpl-overviewpage__overview-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  margin-left: auto;
+}
+.tpl-overviewpage__overview-metadata dl {
+  margin-bottom: 10px;
+}
+.tpl-overviewpage__overview-metadata dt {
+  text-align: left;
+}
+.tpl-overviewpage__overview-metadata dd {
+  word-break: break-word;
+}
+.tpl-overviewpage__description,
+.tpl-overviewpage__literature,
+.tpl-overviewpage__history {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.tpl-overviewpage__history table {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-overviewpage__overview {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .tpl-overviewpage__overview-thumbnail {
+    -ms-flex-positive: 1;
+        flex-grow: 1;
+    max-width: inherit;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .tpl-overviewpage__overview-thumbnail img {
+    margin: 0 auto;
+  }
+}
+/* ==============================================================
+   CMS Template "Overview Page Legacy"
+   style declarations for cms_template_25_overviewPage.xhtml
+   ==============================================================*/
+/* OVERVIEW PAGE LEGACY */
+.tpl-overviewpage-legacy {
+  /* OVERVIEW */
+  /* DESCRIPTION / LITERATURE / HISTORY */
+  /* DESCRIPTION */
+  /* LITERATURE */
+  /* HISTORY */
+}
+.tpl-overviewpage-legacy__overview {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 30px;
+}
+.tpl-overviewpage-legacy__overview-thumbnail {
+  max-width: 25%;
+  margin-right: 30px;
+}
+.tpl-overviewpage-legacy__overview-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  margin-left: auto;
+}
+.tpl-overviewpage-legacy__overview-metadata dl {
+  margin-bottom: 10px;
+}
+.tpl-overviewpage-legacy__overview-metadata dt {
+  text-align: left;
+}
+.tpl-overviewpage-legacy__overview-metadata dd {
+  word-break: break-word;
+}
+.tpl-overviewpage-legacy__description,
+.tpl-overviewpage-legacy__literature,
+.tpl-overviewpage-legacy__history {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.tpl-overviewpage-legacy__history table {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-overviewpage-legacy__overview {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .tpl-overviewpage-legacy__overview-thumbnail {
+    -ms-flex-positive: 1;
+        flex-grow: 1;
+    max-width: inherit;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .tpl-overviewpage-legacy__overview-thumbnail img {
+    margin: 0 auto;
+  }
+}
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page

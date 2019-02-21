@@ -257,7 +257,7 @@
                                             </figure>
 
                                             <ui:repeat
-                                                value="#{cmsMediaBean.mediaItems}"
+                                                value="#{cmsMediaBean.getMediaItems('', cmsMediaBean.imageFilter)}"
                                                 var="mediaItem">
                                                 <figure class="cms-edit-collection__modal-image">
                                                     <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(mediaItem)}">

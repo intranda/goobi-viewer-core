@@ -15,7 +15,11 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.cms;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,19 +33,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.MetadataSerializer;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
  * @author Florian Alpers
@@ -51,57 +59,113 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.Metada
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
-        private static final Logger logger = LoggerFactory.getLogger(CMSContentResource.class);
-        @Context
-        protected HttpServletRequest servletRequest;
-        @Context
-        protected HttpServletResponse servletResponse;
+    private static final Logger logger = LoggerFactory.getLogger(CMSContentResource.class);
+    @Context
+    protected HttpServletRequest servletRequest;
+    @Context
+    protected HttpServletResponse servletResponse;
 
-        @GET
-        @Path("/get/{tag}")
-        @Produces({ MediaType.APPLICATION_JSON })
-        public MediaList getMediaByTag(@PathParam("tag") String tag) throws DAOException  {
-            
-            List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems().stream().filter(item -> item.getTags().contains(tag)).collect(Collectors.toList());
-            return new MediaList(items);
+    @GET
+    @Path("/get/{tag}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public MediaList getMediaByTag(@PathParam("tag") String tag) throws DAOException {
+
+        List<CMSMediaItem> items = DataManager.getInstance()
+                .getDao()
+                .getAllCMSMediaItems()
+                .stream()
+                .filter(item -> item.getTags().contains(tag))
+                .collect(Collectors.toList());
+        return new MediaList(items);
+    }
+
+    @GET
+    @Path("/get")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public MediaList getAllMedia(@PathParam("tag") String tag) throws DAOException {
+
+        List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
+        return new MediaList(items);
+    }
+
+    /**
+     * 
+     * @param id
+     * @return File contents as HTML
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     */
+    @GET
+    @Path("/get/item/{id}")
+    @Produces({ MediaType.TEXT_HTML })
+    public static String getMediaItemContent(@PathParam("id") Long id) throws ContentNotFoundException, DAOException {
+        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
+        if (item == null) {
+            throw new ContentNotFoundException("Resource not found");
         }
-        
-        @GET
-        @Path("/get")
-        @Produces({ MediaType.APPLICATION_JSON })
-        public MediaList getAllMedia(@PathParam("tag") String tag) throws DAOException  {
-            
-            List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
-            return new MediaList(items);
+        String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
+        StringBuilder sbUri = new StringBuilder();
+        sbUri.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                .append(DataManager.getInstance().getConfiguration().getCmsMediaFolder())
+                .append('/')
+                .append(item.getFileName());
+        java.nio.file.Path filePath = Paths.get(sbUri.toString());
+        if (Files.isRegularFile(filePath)) {
+            switch (item.getContentType()) {
+                case CMSMediaItem.CONTENT_TYPE_HTML:
+                case CMSMediaItem.CONTENT_TYPE_XML:
+                    try {
+                        String encoding = "windows-1252";
+                        String ret = FileTools.getStringFromFile(filePath.toFile(), encoding, Helper.DEFAULT_ENCODING);
+                        return ret;
+                    } catch (FileNotFoundException e) {
+                        logger.debug(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    break;
+                case CMSMediaItem.CONTENT_TYPE_DOCX:
+                case CMSMediaItem.CONTENT_TYPE_RTF:
+                    try {
+                        return StringTools.convertFileToHtml(filePath);
+                    } catch (FileNotFoundException e) {
+                        logger.debug(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    break;
+            }
         }
+        throw new ContentNotFoundException("Resource not found");
+    }
 
     public class MediaList {
-        
+
         private final List<MediaItem> mediaItems;
 
         public MediaList(List<CMSMediaItem> items) {
             this.mediaItems = items.stream().map(MediaItem::new).collect(Collectors.toList());
         }
-        
+
         /**
          * @return the mediaItems
          */
         public List<MediaItem> getMediaItems() {
             return mediaItems;
         };
-        
+
     }
-    
+
     public class MediaItem {
-        
-        @JsonSerialize(using=MetadataSerializer.class)
+
+        @JsonSerialize(using = MetadataSerializer.class)
         private final IMetadataValue label;
-        @JsonSerialize(using=MetadataSerializer.class)
+        @JsonSerialize(using = MetadataSerializer.class)
         private final IMetadataValue description;
         private final String link;
         private final ImageContent image;
         private final List<String> tags;
-        
+
         public MediaItem(CMSMediaItem source) {
             this.label = source.getTranslationsForName();
             this.description = source.getTranslationsForDescription();
@@ -130,7 +194,7 @@ public class CMSMediaResource {
         public String getLink() {
             return link;
         }
-        
+
         /**
          * @return the image
          */
@@ -144,7 +208,6 @@ public class CMSMediaResource {
         public List<String> getTags() {
             return tags;
         }
-        
-        
+
     }
 }

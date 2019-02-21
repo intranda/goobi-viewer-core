@@ -89,9 +89,11 @@ import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.modules.IModule;
 
@@ -111,10 +113,10 @@ public class Helper {
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    // TODO remove constants
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
+    public static final String SUFFIX_CMS = "_cms";
 
     private static final int HTTP_TIMEOUT = 10000;
 
@@ -429,13 +431,13 @@ public class Helper {
             @Override
             public void run() {
                 try {
-                    if (!Helper.reIndexRecord(pi, recordType, overviewPage)) {
+                    if (!Helper.reIndexRecord(pi)) {
                         logger.error("Failed to re-index  record {}", pi);
                         Messages.error("reIndexRecordFailure");
                     } else {
                         Messages.info("reIndexRecordSuccess");
                     }
-                } catch (DAOException e) {
+                } catch (DAOException | RecordNotFoundException e) {
                     logger.error("Failed to reindex record " + pi + ": " + e.getMessage(), e);
                     Messages.error("reIndexRecordFailure");
                 }
@@ -447,24 +449,51 @@ public class Helper {
     }
 
     /**
-     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
-     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * Legacy method signature; TODO update the crowdsourcing module and remove
      * 
      * @param pi
      * @param recordType
      * @param overviewPage
      * @return
      * @throws DAOException
+     */
+    @Deprecated
+    public static synchronized boolean reIndexRecord(String pi, String recordType, OverviewPage overviewPage) throws DAOException {
+        try {
+            return reIndexRecord(pi);
+        } catch (RecordNotFoundException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
+     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws RecordNotFoundException
      * @should write overview page data
      */
-    public static synchronized boolean reIndexRecord(String pi, String recordType, OverviewPage overviewPage) throws DAOException {
+    public static synchronized boolean reIndexRecord(String pi) throws DAOException, RecordNotFoundException {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
 
         String dataRepository = null;
+        String recordType = null;
         try {
-            dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(SolrConstants.PI + ":" + pi,
+                            Arrays.asList(new String[] { SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT }));
+            if (doc == null) {
+                throw new RecordNotFoundException(pi);
+            }
+            dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+            recordType = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             return false;
@@ -481,7 +510,6 @@ public class Helper {
         }
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
-        // TODO remove crowdsourcing constants
         File fulltextDir =
                 new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
         File altoDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
@@ -502,18 +530,17 @@ public class Helper {
             logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
         }
 
-        // TODO Export overview page contents
-        if (overviewPage == null) {
-            overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
-        }
-        if (overviewPage != null) {
-            try {
-                overviewPage.exportTextData(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+        // Export related CMS page contents
+        try {
+            List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesForRecord(pi, null);
+            if (!cmsPages.isEmpty()) {
+                for (CMSPage page : cmsPages) {
+                    page.exportTexts(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
+                }
             }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
         }
-
         // Module augmentations
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
@@ -570,8 +597,10 @@ public class Helper {
                 .append(':')
                 .append(DocType.PAGE.name())
                 .toString();
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Arrays
-                .asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query, Arrays.asList(
+                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);

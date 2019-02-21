@@ -231,7 +231,7 @@ public final class SearchHelper {
             // logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
-            hit.addOverviewPageChild();
+            hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
             logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
@@ -752,39 +752,6 @@ public final class SearchHelper {
         }
 
         return suffix;
-    }
-
-    /**
-     *
-     * @param docstructList
-     * @return Solr query suffix for docstruct filtering
-     * @should construct suffix correctly
-     * @should return empty string if only docstruct is asterisk
-     */
-    @Deprecated
-    protected static String generateDocstrctWhitelistFilterSuffix(List<String> docstructList) {
-        if (docstructList == null) {
-            throw new IllegalArgumentException("docstructList may not be null");
-        }
-        logger.debug("Generating docstruct whitelist suffix...");
-        if (!docstructList.isEmpty()) {
-            if (docstructList.size() == 1 && "*".equals(docstructList.get(0))) {
-                return "";
-            }
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(" AND (");
-            for (String s : docstructList) {
-                if (StringUtils.isNotBlank(s)) {
-                    String escapedS = s.trim();
-                    sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(escapedS).append(" OR ");
-                }
-            }
-            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            sbQuery.append(')');
-            return sbQuery.toString();
-        }
-
-        return "";
     }
 
     /**
@@ -1320,6 +1287,7 @@ public final class SearchHelper {
         fields.add(bmfc.getField());
 
         StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append('+');
         // Only search via the sorting field if not doing a wildcard search
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
@@ -1333,24 +1301,10 @@ public final class SearchHelper {
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
         }
-        if (!bmfc.getDocstructFilters().isEmpty()) {
-            //            sbQuery.append(" AND (");
-            StringBuilder sbDocstructFilter = new StringBuilder();
-            for (String docstruct : bmfc.getDocstructFilters()) {
-                sbDocstructFilter.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
-                //                sbDocstructFilter.append(docstruct).append(" OR ");
-            }
-            //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            //            sbQuery.append(')');
-            if (sbDocstructFilter.length() > 4) {
-                sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
-            }
-            filterQueries.add(sbDocstructFilter.toString());
-        }
-        if (bmfc.isRecordsAndAnchorsOnly()) {
-            filterQueries.add(
-                    new StringBuilder().append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true").toString());
 
+        // Add configured filter queries
+        if (!bmfc.getFilterQueries().isEmpty()) {
+            filterQueries.addAll(bmfc.getFilterQueries());
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false);
@@ -1896,11 +1850,8 @@ public final class SearchHelper {
                                 if (!ret.contains(SolrConstants.UGCTERMS)) {
                                     ret.add(SolrConstants.UGCTERMS);
                                 }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_DESCRIPTION)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                                }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                                if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                                    ret.add(SolrConstants.CMS_TEXT_ALL);
                                 }
                             } else if (SolrConstants.DEFAULT.equals(item.getField())
                                     || SolrConstants.SUPERDEFAULT.equals(item.getField()) && !ret.contains(SolrConstants.DEFAULT)) {
@@ -1908,13 +1859,8 @@ public final class SearchHelper {
                             } else if (SolrConstants.FULLTEXT.equals(item.getField())
                                     || SolrConstants.SUPERFULLTEXT.equals(item.getField()) && !ret.contains(SolrConstants.FULLTEXT)) {
                                 ret.add(SolrConstants.FULLTEXT);
-                            } else if (SolrConstants.OVERVIEWPAGE.equals(item.getField())) {
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_DESCRIPTION)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                                }
-                                if (!ret.contains(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)) {
-                                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
-                                }
+                            } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                                ret.add(SolrConstants.CMS_TEXT_ALL);
                             } else if (!ret.contains(item.getField())) {
                                 ret.add(item.getField());
                             }
@@ -1939,8 +1885,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.FULLTEXT);
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
-                    ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                    ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                    ret.add(SolrConstants.CMS_TEXT_ALL);
                     ret.add(SolrConstants._CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());

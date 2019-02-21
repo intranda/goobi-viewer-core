@@ -49,258 +49,271 @@ import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException
 @Table(name = "cms_page_language_versions")
 public class CMSPageLanguageVersion {
 
-	public enum CMSPageStatus {
-		WIP, REVIEW_PENDING, FINISHED;
-	}
+    public enum CMSPageStatus {
+        WIP,
+        REVIEW_PENDING,
+        FINISHED;
+    }
 
-	/** Logger for this class. */
-	private static final Logger logger = LoggerFactory.getLogger(CMSPageLanguageVersion.class);
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(CMSPageLanguageVersion.class);
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "cms_page_language_version_id")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_page_language_version_id")
+    private Long id;
 
-	/** Reference to the owning <code>CMSPage</code>. */
-	@ManyToOne
-	@JoinColumn(name = "owner_page_id")
-	private CMSPage ownerPage;
+    /** Reference to the owning <code>CMSPage</code>. */
+    @ManyToOne
+    @JoinColumn(name = "owner_page_id")
+    private CMSPage ownerPage;
 
-	@Column(name = "language", nullable = false)
-	private String language;
+    @Column(name = "language", nullable = false)
+    private String language;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status", nullable = false)
-	private CMSPageStatus status = CMSPageStatus.WIP;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private CMSPageStatus status = CMSPageStatus.WIP;
 
-	@Column(name = "title", nullable = false)
-	private String title = "";
+    @Column(name = "title", nullable = false)
+    private String title = "";
 
-	@Column(name = "menu_title", nullable = false)
-	private String menuTitle = "";
+    @Column(name = "menu_title", nullable = false)
+    private String menuTitle = "";
 
-	@OneToMany(mappedBy = "ownerPageLanguageVersion", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@PrivateOwned
-	private List<CMSContentItem> contentItems = new ArrayList<>();
+    @OneToMany(mappedBy = "ownerPageLanguageVersion", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private List<CMSContentItem> contentItems = new ArrayList<>();
 
-	@Transient
-	private List<CMSContentItem> completeContentItemList = null;
+    @Transient
+    private List<CMSContentItem> completeContentItemList = null;
 
-	public CMSPageLanguageVersion() {
+    public CMSPageLanguageVersion() {
 
-	}
+    }
 
-	public CMSPageLanguageVersion(String language) {
-		this.language = language;
-	}
+    public CMSPageLanguageVersion(String language) {
+        this.language = language;
+    }
 
-	/**
-	 * @param language2
-	 * @param cmsPage
-	 */
-	public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
-		if (original.id != null) {
-			this.id = new Long(original.id);
-		}
-		this.ownerPage = ownerPage;
-		this.language = original.language;
-		this.status = original.status;
-		this.title = original.title;
-		this.menuTitle = original.menuTitle;
+    /**
+     * @param language2
+     * @param cmsPage
+     */
+    public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
+        if (original.id != null) {
+            this.id = new Long(original.id);
+        }
+        this.ownerPage = ownerPage;
+        this.language = original.language;
+        this.status = original.status;
+        this.title = original.title;
+        this.menuTitle = original.menuTitle;
 
-		if (original.contentItems != null) {
-			this.contentItems = new ArrayList<>();
-			for (CMSContentItem item : original.contentItems) {
-				CMSContentItem copy = new CMSContentItem(item, this);
-				this.contentItems.add(copy);
-			}
-		}
-	}
+        if (original.contentItems != null) {
+            this.contentItems = new ArrayList<>();
+            for (CMSContentItem item : original.contentItems) {
+                CMSContentItem copy = new CMSContentItem(item, this);
+                this.contentItems.add(copy);
+            }
+        }
+    }
 
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	/**
-	 * @return the ownerPage
-	 */
-	public CMSPage getOwnerPage() {
-		return ownerPage;
-	}
+    /**
+     * @return the ownerPage
+     */
+    public CMSPage getOwnerPage() {
+        return ownerPage;
+    }
 
-	/**
-	 * @param ownerPage the ownerPage to set
-	 */
-	public void setOwnerPage(CMSPage ownerPage) {
-		this.ownerPage = ownerPage;
-	}
+    /**
+     * @param ownerPage the ownerPage to set
+     */
+    public void setOwnerPage(CMSPage ownerPage) {
+        this.ownerPage = ownerPage;
+    }
 
-	/**
-	 * @return the language
-	 */
-	public String getLanguage() {
-		return language;
-	}
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
 
-	/**
-	 * @param language the language to set
-	 */
-	public void setLanguage(String language) {
-		this.language = language;
-	}
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
-	/**
-	 * @return the status
-	 */
-	public CMSPageStatus getStatus() {
-		return status;
-	}
+    /**
+     * @return the status
+     */
+    public CMSPageStatus getStatus() {
+        return status;
+    }
 
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(CMSPageStatus status) {
-		this.status = status;
-	}
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(CMSPageStatus status) {
+        this.status = status;
+    }
 
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * @param title the title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title != null ? Normalizer.normalize(title, Form.NFC) : title;
-	}
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title != null ? Normalizer.normalize(title, Form.NFC) : title;
+    }
 
-	/**
-	 * @return the menuTitle
-	 */
-	public String getMenuTitle() {
-		return menuTitle;
-	}
+    /**
+     * @return the menuTitle
+     */
+    public String getMenuTitle() {
+        return menuTitle;
+    }
 
-	/**
-	 * @param menuTitle the menuTitle to set
-	 */
-	public void setMenuTitle(String menuTitle) {
-		this.menuTitle = menuTitle != null ? Normalizer.normalize(menuTitle, Form.NFC) : "";
-	}
+    /**
+     * @param menuTitle the menuTitle to set
+     */
+    public void setMenuTitle(String menuTitle) {
+        this.menuTitle = menuTitle != null ? Normalizer.normalize(menuTitle, Form.NFC) : "";
+    }
 
-	/**
-	 * @return the contentItems
-	 */
-	public List<CMSContentItem> getContentItems() {
-		// Collections.sort(contentItems);
-		return contentItems;
-	}
+    /**
+     * @return the contentItems
+     */
+    public List<CMSContentItem> getContentItems() {
+        // Collections.sort(contentItems);
+        return contentItems;
+    }
 
-	/**
-	 * @param contentItems the contentItems to set
-	 */
-	public void setContentItems(List<CMSContentItem> contentItems) {
-		this.contentItems = contentItems;
-	}
+    /**
+     * @param contentItems the contentItems to set
+     */
+    public void setContentItems(List<CMSContentItem> contentItems) {
+        this.contentItems = contentItems;
+    }
 
-	/**
-	 * @param itemId
-	 * @return
-	 * @throws CmsElementNotFoundException
-	 */
-	public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
-		if (getCompleteContentItemList() != null) {
-			for (CMSContentItem item : getCompleteContentItemList()) {
-				if (item.getItemId().equals(itemId)) {
-					return item;
-				}
-			}
-		}
-		throw new CmsElementNotFoundException("No element of id " + itemId + " found in " + this);
-	}
+    /**
+     * @param itemId
+     * @return
+     * @throws CmsElementNotFoundException
+     */
+    public CMSContentItem getContentItem(String itemId) throws CmsElementNotFoundException {
+        if (getCompleteContentItemList() != null) {
+            for (CMSContentItem item : getCompleteContentItemList()) {
+                if (item.getItemId().equals(itemId)) {
+                    return item;
+                }
+            }
+        }
+        throw new CmsElementNotFoundException("No element of id " + itemId + " found in " + this);
+    }
 
-	public List<CMSContentItem> getCompleteContentItemList() {
-		if (completeContentItemList == null) {
-			generateCompleteContentItemList();
-		}
-		return completeContentItemList;
-	}
+    public List<CMSContentItem> getCompleteContentItemList() {
+        if (completeContentItemList == null) {
+            generateCompleteContentItemList();
+        }
+        return completeContentItemList;
+    }
 
-	/**
-	 *
-	 */
-	protected void generateCompleteContentItemList() {
-		CMSPageLanguageVersion global;
-		try {
-			global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
-		} catch (CmsElementNotFoundException e) {
-			global = null;
-		}
-		completeContentItemList = new ArrayList<>();
-		if (CMSPage.GLOBAL_LANGUAGE.equals(this.getLanguage())) {
-			completeContentItemList.addAll(getContentItems());
-		} else if (global != null) {
-			completeContentItemList.addAll(getContentItems());
-			completeContentItemList.addAll(global.getContentItems());
-		} else {
-			completeContentItemList = getContentItems();
-		}
-		sortItems(completeContentItemList);
-	}
+    /**
+     * Generates complete content item list for this page language version. The language version must be added to a CMS page before calling this
+     * method!
+     */
+    protected void generateCompleteContentItemList() {
+        if (getOwnerPage() == null) {
+            throw new IllegalArgumentException("Cannot generate content item list unless this language version is already added to a CMS page");
+        }
+        CMSPageLanguageVersion global;
+        try {
+            global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
+        } catch (CmsElementNotFoundException e) {
+            global = null;
+        }
+        completeContentItemList = new ArrayList<>();
+        if (CMSPage.GLOBAL_LANGUAGE.equals(this.getLanguage())) {
+            completeContentItemList.addAll(getContentItems());
+        } else if (global != null) {
+            completeContentItemList.addAll(getContentItems());
+            completeContentItemList.addAll(global.getContentItems());
+        } else {
+            completeContentItemList = getContentItems();
+        }
+        sortItems(completeContentItemList);
+    }
 
-	/**
-	 * @param completeContentItemList2
-	 */
-	private void sortItems(List<CMSContentItem> items) {
-		if (getOwnerPage().getTemplate() != null) {
-			for (CMSContentItem cmsContentItem : items) {
-				for (CMSContentItem templateItem : getOwnerPage().getTemplate().getContentItems()) {
-					if (templateItem.getItemId().equals(cmsContentItem.getItemId())) {
-						cmsContentItem.setOrder(templateItem.getOrder());
-					}
-				}
-			}
-		}
-		Collections.sort(items);
-	}
+    /**
+     * @param completeContentItemList2
+     */
+    private void sortItems(List<CMSContentItem> items) {
+        if (getOwnerPage().getTemplate() != null) {
+            for (CMSContentItem cmsContentItem : items) {
+                for (CMSContentItem templateItem : getOwnerPage().getTemplate().getContentItems()) {
+                    if (templateItem.getItemId().equals(cmsContentItem.getItemId())) {
+                        cmsContentItem.setOrder(templateItem.getOrder());
+                    }
+                }
+            }
+        }
+        Collections.sort(items);
+    }
 
-	@Override
-	public String toString() {
-		return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage();
-	}
+    @Override
+    public String toString() {
+        return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage();
+    }
 
-	/**
-	 * @param item
-	 */
-	public void addContentItem(CMSContentItem item) {
-		for (CMSContentItem existingItem : contentItems) {
-			if (item.getItemId().equals(existingItem.getItemId())) {
-				logger.warn("Cannot add content item {}. An item with this id already exists", item.getItemId());
-				return;
-			}
-		}
-		item.setOwnerPageLanguageVersion(this);
-		contentItems.add(item);
-		generateCompleteContentItemList();
-	}
+    /**
+     * @param item
+     */
+    public void addContentItem(CMSContentItem item) {
+        if (item == null) {
+            throw new IllegalArgumentException("item may not be null");
+        }
+        if (item.getItemId() == null) {
+            throw new IllegalArgumentException("item.itemId may not be null");
+        }
 
-	/**
-	 * @param itemId
-	 */
-	public void removeContentItem(CMSContentItem item) {
-		contentItems.remove(item);
-	}
+        for (CMSContentItem existingItem : contentItems) {
+            if (item.getItemId().equals(existingItem.getItemId())) {
+                logger.warn("Cannot add content item {}. An item with this id already exists", item.getItemId());
+                return;
+            }
+        }
+        item.setOwnerPageLanguageVersion(this);
+        contentItems.add(item);
+        generateCompleteContentItemList();
+    }
+
+    /**
+     * @param itemId
+     */
+    public void removeContentItem(CMSContentItem item) {
+        contentItems.remove(item);
+    }
 }

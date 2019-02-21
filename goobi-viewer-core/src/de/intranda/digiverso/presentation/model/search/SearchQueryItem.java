@@ -260,8 +260,7 @@ public class SearchQueryItem implements Serializable {
             fields.add(SolrConstants.FULLTEXT);
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
-            fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-            fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+            fields.add(SolrConstants.CMS_TEXT_ALL);
         } else {
             if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
                 if (aggregateHits) {
@@ -273,9 +272,6 @@ public class SearchQueryItem implements Serializable {
                     fields.add(SolrConstants.SUPERFULLTEXT);
                 }
                 fields.add(SolrConstants.FULLTEXT);
-            } else if (SolrConstants.OVERVIEWPAGE.equals(field)) {
-                fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
-                fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
             } else {
                 fields.add(field);
             }
@@ -380,8 +376,7 @@ public class SearchQueryItem implements Serializable {
                                 case SolrConstants.SUPERFULLTEXT:
                                 case SolrConstants.NORMDATATERMS:
                                 case SolrConstants.UGCTERMS:
-                                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:
-                                case SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT:
+                                case SolrConstants.CMS_TEXT_ALL:
                                     value = value.toLowerCase();
                                     break;
                                 default:

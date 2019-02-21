@@ -27,6 +27,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
@@ -38,6 +46,9 @@ import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMResult;
+import org.jdom2.transform.JDOMSource;
+import org.jdom2.transform.XSLTransformException;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
@@ -217,5 +228,83 @@ public class XmlTools {
         XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
         return xpath.evaluate(parent);
 
+    }
+
+    public static String determineFileFormat(String xml, String encoding) throws JDOMException, IOException {
+        if (xml == null) {
+            return null;
+        }
+        Document doc = getDocumentFromString(xml, encoding);
+        return determineFileFormat(doc);
+    }
+
+    /**
+     * Determines the format of the given XML file by checking for namespaces.
+     * 
+     * @param path
+     * @return
+     * @should detect mets files correctly
+     * @should detect lido files correctly
+     * @should detect abbyy files correctly
+     * @should detect tei files correctly
+     */
+    public static String determineFileFormat(Document doc) {
+        if (doc == null || doc.getRootElement() == null) {
+            return null;
+        }
+
+        if (doc.getRootElement().getNamespace("mets") != null) {
+            return "METS";
+        }
+        if (doc.getRootElement().getNamespace("lido") != null) {
+            return "LIDO";
+        }
+        if (doc.getRootElement().getNamespace().getURI().contains("abbyy")) {
+            return "ABBYYXML";
+        }
+        if (doc.getRootElement().getName().equals("TEI") || doc.getRootElement().getName().equals("TEI.2")) {
+            return "TEI";
+        }
+
+        return null;
+    }
+
+    /**
+     * Transforms the given JDOM document via the given XSLT stylesheet.
+     * 
+     * @param doc JDOM document to transform
+     * @param stylesheetPath Absolute path to the XSLT stylesheet file
+     * @param params Optional transformer parameters
+     * @return Transformed document; null in case of errors
+     */
+    public static Document transformViaXSLT(Document doc, String stylesheetPath, Map<String, String> params) {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (stylesheetPath == null) {
+            throw new IllegalArgumentException("stylesheetPath may not be null");
+        }
+
+        try {
+            JDOMSource docFrom = new JDOMSource(doc);
+            JDOMResult docTo = new JDOMResult();
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(stylesheetPath));
+            if (params != null && !params.isEmpty()) {
+                for (String param : params.keySet()) {
+                    transformer.setParameter(param, params.get(param));
+                }
+            }
+            transformer.transform(docFrom, docTo);
+            return docTo.getDocument();
+        } catch (TransformerConfigurationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (TransformerFactoryConfigurationError e) {
+            logger.error(e.getMessage(), e);
+        } catch (TransformerException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 }

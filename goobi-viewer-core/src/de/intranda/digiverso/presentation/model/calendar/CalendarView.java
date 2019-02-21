@@ -65,8 +65,10 @@ public class CalendarView {
      * Checks whether the conditions for displaying the calendar view have been met.
      * 
      * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public boolean isDisplay() {
+    public boolean isDisplay() throws PresentationException, IndexUnreachableException {
         boolean empty = true;
         for (CalendarItemMonth item : calendarItems) {
             if (item.getHits() > 0) {
@@ -74,7 +76,7 @@ public class CalendarView {
                 break;
             }
         }
-        return pi.equals(anchorPi) || !empty;
+        return !empty || !getVolumeYears().isEmpty();
     }
 
     /**
@@ -97,10 +99,12 @@ public class CalendarView {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should only return volume years that have YEARMONTHDAY field
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
         if (anchorPi != null) {
-            return SearchHelper.getFacetValues(SolrConstants.PI_PARENT + ":" + anchorPi, SolrConstants._CALENDAR_YEAR, 1);
+            return SearchHelper.getFacetValues("+" + SolrConstants.PI_PARENT + ":" + anchorPi + " +" + SolrConstants._CALENDAR_DAY + ":*",
+                    SolrConstants._CALENDAR_YEAR, 1);
         }
 
         return Collections.emptyList();

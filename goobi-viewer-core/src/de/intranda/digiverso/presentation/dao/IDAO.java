@@ -214,30 +214,42 @@ public interface IDAO {
 
     // Overview page
 
+    @Deprecated
     public long getOverviewPageCount(Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public List<OverviewPage> getOverviewPages(int first, int pageSize, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public OverviewPage getOverviewPage(long id) throws DAOException;
 
+    @Deprecated
     public OverviewPage getOverviewPageForRecord(String pi, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public boolean addOverviewPage(OverviewPage overviewPage) throws DAOException;
 
+    @Deprecated
     public boolean updateOverviewPage(OverviewPage overviewPage) throws DAOException;
 
+    @Deprecated
     public boolean deleteOverviewPage(OverviewPage overviewPage) throws DAOException;
 
     // Overview page updates
 
+    @Deprecated
     public List<OverviewPageUpdate> getOverviewPageUpdatesForRecord(String pi) throws DAOException;
 
+    @Deprecated
     public boolean isOverviewPageHasUpdates(String pi, Date fromDate, Date toDate) throws DAOException;
 
+    @Deprecated
     public OverviewPageUpdate getOverviewPageUpdate(long id) throws DAOException;
 
+    @Deprecated
     public boolean addOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
 
+    @Deprecated
     public boolean deleteOverviewPageUpdate(OverviewPageUpdate update) throws DAOException;
 
     // Download jobs
@@ -267,6 +279,8 @@ public interface IDAO {
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException;
+
+    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
 
@@ -348,22 +362,26 @@ public interface IDAO {
     /**
      * @param pi
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     List<Integer> getPagesWithComments(String pi) throws DAOException;
 
     /**
      * @param solrField
-     * @return 
-     * @throws DAOException 
+     * @return
+     * @throws DAOException
      */
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException;
+
     public boolean addCMSCollection(CMSCollection collection) throws DAOException;
+
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
+
     public boolean deleteCMSCollection(CMSCollection collection) throws DAOException;
+
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
+
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
-
 
 }

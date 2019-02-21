@@ -33,7 +33,10 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
  * Database entry for overview page history updates.
+ * 
+ * @deprecated
  */
+@Deprecated
 @Entity
 @Table(name = "overview_page_updates")
 public class OverviewPageUpdate {

@@ -36,9 +36,8 @@ public class SessionResourceTest {
 
     @Before
     public void setUp() throws Exception {
-
-        Configuration configuration = new Configuration("resources/test/config_viewer.test.xml");
-        DataManager.getInstance().injectConfiguration(configuration);
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
 
         HttpServletRequest request = TestUtils.mockHttpRequest();
         resource = new SessionResource(request);

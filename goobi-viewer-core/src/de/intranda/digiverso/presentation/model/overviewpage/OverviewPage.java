@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -62,6 +62,10 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.misc.Harvestable;
@@ -70,9 +74,12 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Data and methods for the overview page view.
+ * 
+ * @deprecated Overview page functionality is now part of CMS
  */
 @Entity
 @Table(name = "overview_pages")
+@Deprecated
 public class OverviewPage implements Harvestable, Serializable {
 
     private static final long serialVersionUID = -8613810925005476807L;
@@ -176,18 +183,6 @@ public class OverviewPage implements Harvestable, Serializable {
      * @throws IndexUnreachableException
      */
     private static boolean isAllowed(String pi) throws IndexUnreachableException, PresentationException {
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()) {
-            String overviewPageCondition = DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition();
-            if (StringUtils.isNotBlank(overviewPageCondition)) {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI).append(':').append(pi).append(" AND (").append(overviewPageCondition).append(')');
-                logger.trace("Evaluating condition: {}", sbQuery.toString());
-                if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    return false;
-                }
-            }
-        }
-
         return true;
     }
 
@@ -488,12 +483,12 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     /**
-     * Returns whether the sidebar overview linkis visible (= overview pages are enabled at all).
+     * Returns whether the sidebar overview link is visible (= overview pages are enabled at all).
      *
      * @should return the value in sidenbarOverviewLinkVisible
      */
     public boolean isEnabled() {
-        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
+        return false;
     }
 
     public boolean isDisplayImage() {
@@ -672,23 +667,119 @@ public class OverviewPage implements Harvestable, Serializable {
 
     /**
      *
-     * @param configXml
-     * @return true if sucessful; false otherwise
+     * @return true if successful; false otherwise
      * @throws DAOException
      */
-    public boolean migrateToDB(String configXml, String pi) throws DAOException {
-        if (configXml == null) {
-            throw new IllegalArgumentException("configXml may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        this.pi = pi;
-        this.configXml = configXml;
+    public boolean migrateToCMS() throws DAOException {
+        logger.info("Migrating overview page for '{}' to CMS...", pi);
         loadConfig(configXml);
         parseConfig(config);
 
-        return save();
+        CMSPage cmsPage = new CMSPage();
+        cmsPage.setTemplateId("templateOverviewPageLegacy");
+        cmsPage.setRelatedPI(pi);
+        cmsPage.addClassification("overviewpage");
+        cmsPage.setPersistentUrl("overview/" + pi + "/1");
+        if (dateUpdated == null) {
+            dateUpdated = new Date();
+        }
+        cmsPage.setDateCreated(dateUpdated);
+        cmsPage.setDateUpdated(dateUpdated);
+        cmsPage.setUseDefaultSidebar(true);
+        cmsPage.setPublished(true);
+
+        String[] languages = { "global", "en", "de", "es", "fr" };
+
+        for (String lang : languages) {
+            CMSPageLanguageVersion langVersion = new CMSPageLanguageVersion(lang);
+            langVersion.setTitle(pi + " overview page");
+            langVersion.setMenuTitle("overviewPage");
+            cmsPage.addLanguageVersion(langVersion);
+
+            if ("global".equals(lang)) {
+                continue;
+            }
+
+            // Metadata
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.METADATA);
+                item.setItemId("metadata");
+                item.setItemLabel("metadata");
+                List<String> mdFieldNames = new ArrayList<>(metadata.size());
+                for (Metadata md : metadata) {
+                    mdFieldNames.add(md.getLabel());
+                    logger.trace("Added metadata field: {}", md.getLabel());
+                }
+                item.setMetadataFieldsAsList(mdFieldNames);
+                langVersion.addContentItem(item);
+            }
+            // Description
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                item.setItemId("description");
+                item.setItemLabel("description");
+                item.setHtmlFragment(description);
+                langVersion.addContentItem(item);
+            }
+
+            // Publication text
+            {
+                CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+                item.setItemId("literature");
+                item.setItemLabel("literature");
+                item.setHtmlFragment(publicationText);
+                langVersion.addContentItem(item);
+            }
+        }
+
+        // History
+        List<OverviewPageUpdate> updates = DataManager.getInstance().getDao().getOverviewPageUpdatesForRecord(pi);
+        if (!updates.isEmpty()) {
+            CMSContentItem item = new CMSContentItem(CMSContentItemType.HTML);
+            item.setItemId("history");
+            item.setItemLabel("history");
+            StringBuilder sb = new StringBuilder();
+            sb.append("<table class=\"table\"><thead><tr>")
+                    .append("<th>#{msg.viewOverviewHistory_date}</th>")
+                    .append("<th>#{msg.viewOverviewHistory_user}</th>")
+                    .append("<th>#{msg.viewOverviewHistory_changes}</th>")
+                    .append("</tr></thead><tbody>");
+
+            for (OverviewPageUpdate update : updates) {
+                sb.append("<tr><td>")
+                        .append(update.getDateUpdated())
+                        .append("</td><td>")
+                        .append(update.getUpdatedBy().getDisplayName())
+                        .append("</td><td>");
+                StringBuilder sbChanges = new StringBuilder();
+                if (update.isMetadataChanged()) {
+                    sbChanges.append("metadata");
+                }
+                if (update.isDescriptionChanged()) {
+                    if (sbChanges.length() > 0) {
+                        sbChanges.append(", ");
+                    }
+                    sb.append("description");
+                }
+                if (update.isPublicationTextChanged()) {
+                    if (sbChanges.length() > 0) {
+                        sbChanges.append(", ");
+                    }
+                    sb.append("literature");
+                }
+                sb.append(sbChanges.toString()).append("</td></tr>");
+            }
+            sb.append("</tbody></table>");
+            item.setHtmlFragment(sb.toString());
+            try {
+                cmsPage.getLanguageVersion("global").addContentItem(item);
+            } catch (CmsElementNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+            //            cmsPage.addContentItem(item);
+        }
+
+        return DataManager.getInstance().getDao().addCMSPage(cmsPage);
     }
 
     /**
@@ -829,7 +920,7 @@ public class OverviewPage implements Harvestable, Serializable {
             }
 
             // Re-index record
-            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), this);
+            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), null);
         }
 
         resetEditModes();
@@ -867,16 +958,10 @@ public class OverviewPage implements Harvestable, Serializable {
         logger.debug("deleteAction: {}", this.getId());
         if (id != null) {
             if (DataManager.getInstance().getDao().deleteOverviewPage(this)) {
-                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                adb.setOverviewPage(null);
                 logger.info("Overview page for {} deleted.", pi);
                 Messages.info("viewOverviewDeletePageSuccess");
                 return ""; // TODO redirect to different record view?
             }
-        } else {
-            logger.warn("Current overview page has no ID, so it probably is not persisted. Removing the current session object instead.");
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            adb.setOverviewPage(null);
         }
 
         Messages.error("viewOverviewDeletePagefailure");

@@ -140,19 +140,8 @@
 		</f:view>
 	</ui:define>
 
+    <!-- SIDEBAR -->
 	<ui:define name="sidebar">
-		<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
-			<widgetComponent:widget_custom widget="#{element}" />
-			<widgetComponent:widget_customDrillDown widget="#{element}" />
-			<widgetComponent:widget_searchDrillDown widget="#{element}" />
-			<widgetComponent:widget_searchField widget="#{element}" />
-			<widgetComponent:widget_browsing widget="#{element}" />
-			<widgetComponent:widget_bookshelfList widget="#{element}" />
-			<widgetComponent:widget_mySearches widget="#{element}" />
-			<widgetComponent:widget_user widget="#{element}" />
-			<widgetComponent:widget_rssFeed widget="#{element}" />
-			<widgetComponent:widget_workCount widget="#{element}" />
-			<widgetComponent:widget_geoLocations widget="#{element}" />
-		</c:forEach>
-	</ui:define>
+		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
+    </ui:define>
 </ui:composition>

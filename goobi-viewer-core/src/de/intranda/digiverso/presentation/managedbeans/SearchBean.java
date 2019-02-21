@@ -799,11 +799,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (searchTerms.get(SolrConstants.UGCTERMS) == null) {
                     searchTerms.put(SolrConstants.UGCTERMS, new HashSet<String>());
                 }
-                if (searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION) == null) {
-                    searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<String>());
-                }
-                if (searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT) == null) {
-                    searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<String>());
+                if (searchTerms.get(SolrConstants.CMS_TEXT_ALL) == null) {
+                    searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<String>());
                 }
             } else {
                 if (searchTerms.get(currentSearchFilter.getField()) == null) {
@@ -833,8 +830,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                            sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
-                            sb.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(\"").append(phrase).append("\")");
+                            sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
                             for (String field : searchTerms.keySet()) {
                                 searchTerms.get(field).add(phrase);
                             }
@@ -844,28 +840,22 @@ public class SearchBean implements SearchInterface, Serializable {
                                 Set<String> terms = new HashSet<>();
                                 searchTerms.put(SolrConstants.FULLTEXT, terms);
                             }
-                            if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
-                                sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(\"").append(phrase).append("\")");
-                            } else {
-                                if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
-                                    switch (currentSearchFilter.getField()) {
-                                        case SolrConstants.DEFAULT:
-                                            sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                            sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
-                                            break;
-                                        case SolrConstants.FULLTEXT:
-                                            sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                                            sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\")");
-                                            break;
-                                        default:
-                                            sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
-                                            break;
-                                    }
-                                } else {
-                                    sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                            if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                switch (currentSearchFilter.getField()) {
+                                    case SolrConstants.DEFAULT:
+                                        sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
+                                        sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
+                                        break;
+                                    case SolrConstants.FULLTEXT:
+                                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\")");
+                                        break;
+                                    default:
+                                        sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                        break;
                                 }
-
+                            } else {
+                                sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
                             }
                             searchTerms.get(currentSearchFilter.getField()).add(phrase);
                         }
@@ -933,12 +923,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString());
-                        sbOuter.append(") OR ")
-                                .append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)
-                                .append(":(")
-                                .append(sbInner.toString())
-                                .append(')');
+                        sbOuter.append(") OR ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(sbInner.toString()).append(')');
                     } else {
                         // Specific filter selected
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
@@ -950,18 +935,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                 case SolrConstants.FULLTEXT:
                                     sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(") OR ");
                                     sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString()).append(')');
-                                    break;
-                                case SolrConstants.OVERVIEWPAGE:
-                                    if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
-                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION)
-                                                .append(":(")
-                                                .append(sbInner.toString())
-                                                .append(") OR ");
-                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT)
-                                                .append(":(")
-                                                .append(sbInner.toString())
-                                                .append(')');
-                                    }
                                     break;
                                 default:
                                     sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
@@ -1575,7 +1548,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
                 advancedSearchSelectItems.put(key, ret);
             } else {
-                new BrowsingMenuFieldConfig(field, null, null, false);
+                new BrowsingMenuFieldConfig(field, null, null, null, false);
                 String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
 
                 List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, field, 0);

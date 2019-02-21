@@ -254,7 +254,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             }
         }
         Assert.assertEquals("((SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR DEFAULT:(foo OR bar)"
-                + " OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR OVERVIEWPAGE_DESCRIPTION:(foo OR bar) OR OVERVIEWPAGE_PUBLICATIONTEXT:(foo OR bar))"
+                + " OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar))"
                 + " OR (MD_TITLE:(bla AND \\\"blup\\\" -nein))) OR (((SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")))",
                 sb.generateAdvancedSearchString(true));
     }

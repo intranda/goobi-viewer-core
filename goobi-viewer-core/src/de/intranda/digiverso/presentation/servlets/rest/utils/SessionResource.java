@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.utils;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;

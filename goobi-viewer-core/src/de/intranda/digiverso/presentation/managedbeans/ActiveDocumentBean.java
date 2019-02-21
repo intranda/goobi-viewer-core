@@ -61,7 +61,6 @@ import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -114,7 +113,6 @@ public class ActiveDocumentBean implements Serializable {
     private int tocCurrentPage = 1;
 
     private ViewManager viewManager;
-    private OverviewPage overviewPage;
     private boolean anchor = false;
     private boolean volume = false;
     private boolean group = false;
@@ -185,7 +183,6 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (this) {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             viewManager = null;
-            overviewPage = null;
             topDocumentIddoc = 0;
             toc = null;
             titleBarMetadata.clear();
@@ -305,8 +302,8 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                overviewPage = OverviewPage.loadOverviewPage(topDocument, BeanUtils.getLocale());
-                logger.trace("Overview page found: {}", overviewPage != null);
+                toc = new TOC();
+                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
             }
 
             // If LOGID is set, update the current element
@@ -410,20 +407,19 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-	/**
-	 * @throws PresentationException
-	 * @throws IndexUnreachableException
-	 * @throws DAOException
-	 * @throws ViewerConfigurationException
-	 */
-	private TOC createTOC()
-			throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-		TOC toc = new TOC();
-		if(viewManager != null) {			
-			toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
-		}
-		return toc;
-	}
+    /**
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    private TOC createTOC() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        TOC toc = new TOC();
+        if (viewManager != null) {
+            toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+        }
+        return toc;
+    }
 
     /**
      * Pretty-URL entry point.
@@ -840,7 +836,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return
      * @throws IndexUnreachableException
-     * @deprecated  renamed to fullscreen
+     * @deprecated renamed to fullscreen
      */
     public String getReadingModeUrl() throws IndexUnreachableException {
         return getFullscreenImageUrl();
@@ -872,34 +868,37 @@ public class ActiveDocumentBean implements Serializable {
         return null;
     }
 
-    public void setChildrenVisible(TOCElement element) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if(getToc() != null) {        	
-        	synchronized (toc) {
-        		getToc().setChildVisible(element.getID());
-        		getToc().getActiveElement();
-        	}
+    public void setChildrenVisible(TOCElement element)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (getToc() != null) {
+            synchronized (toc) {
+                getToc().setChildVisible(element.getID());
+                getToc().getActiveElement();
+            }
         }
     }
 
-    public void setChildrenInvisible(TOCElement element) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-    	if(getToc() != null) {    		
-    		synchronized (toc) {
-    			getToc().setChildInvisible(element.getID());
-    			getToc().getActiveElement();
-    		}
-    	}
+    public void setChildrenInvisible(TOCElement element)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (getToc() != null) {
+            synchronized (toc) {
+                getToc().setChildInvisible(element.getID());
+                getToc().getActiveElement();
+            }
+        }
     }
 
     /**
      * Recalculates the visibility of TOC elements and jumps to the active element after a +/- button has been pressed.
      *
      * @throws IOException
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String calculateSidebarToc() throws IOException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public String calculateSidebarToc()
+            throws IOException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (getToc() != null) {
             TOCElement activeTocElement = getToc().getActiveElement();
             if (activeTocElement != null) {
@@ -914,13 +913,13 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * @return the toc
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if(toc == null) {
+        if (toc == null) {
             toc = createTOC();
         }
         return toc;
@@ -951,7 +950,7 @@ public class ActiveDocumentBean implements Serializable {
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
-                	getToc().generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                    getToc().generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
                             this.tocCurrentPage);
                 }
             }
@@ -962,11 +961,12 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @return
      * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public String getTitleBarLabel(Locale locale) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+    public String getTitleBarLabel(Locale locale)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         return getTitleBarLabel(locale.getLanguage());
     }
 
@@ -974,9 +974,9 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @return
      * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
     public String getTitleBarLabel() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         Locale locale = BeanUtils.getLocale();
@@ -991,11 +991,12 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @return
      * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    public String getTitleBarLabel(String language) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+    public String getTitleBarLabel(String language)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
         TOC toc = getToc();
         //        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
@@ -1035,9 +1036,9 @@ public class ActiveDocumentBean implements Serializable {
      * 
      * @return
      * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws PresentationException
      */
     public String getLabelForJS() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         String label = getTitleBarLabel();
@@ -1098,7 +1099,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String reIndexRecordAction() throws IndexUnreachableException, DAOException {
         if (viewManager != null) {
-            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), overviewPage)) {
+            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), null)) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -1106,46 +1107,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return "";
-    }
-
-    /**
-     * @return
-     * @throws IndexUnreachableException
-     * @throws IllegalArgumentException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @should create new config document
-     * @should set forced to true
-     * @should set displayLink to true
-     * @should save the config document
-     */
-    public String forceOverviewPage() throws IllegalArgumentException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        synchronized (this) {
-            logger.debug("forceOverviewPage");
-            overviewPage = new OverviewPage();
-            overviewPage.init(viewManager.getTopDocument(), BeanUtils.getLocale());
-            UserBean ub = BeanUtils.getUserBean();
-            if (ub != null) {
-                return overviewPage.saveAction(ub.getUser(), true);
-            }
-            return overviewPage.saveAction(null, true);
-        }
-    }
-
-    /**
-     * @return the overviewPage
-     */
-    public OverviewPage getOverviewPage() {
-        return overviewPage;
-    }
-
-    /**
-     * @param overviewPage the overviewPage to set
-     */
-    public void setOverviewPage(OverviewPage overviewPage) {
-        synchronized (this) {
-            this.overviewPage = overviewPage;
-        }
     }
 
     public int getCurrentThumbnailPage() {
@@ -1392,8 +1353,7 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         // Skip prev/next links for non-paginated views
-        if (PageType.viewOverview.equals(currentPageType) || PageType.viewMetadata.equals(currentPageType)
-                || PageType.viewToc.equals(currentPageType)) {
+        if (PageType.viewMetadata.equals(currentPageType) || PageType.viewToc.equals(currentPageType)) {
             return "";
         }
 
@@ -1411,14 +1371,14 @@ public class ActiveDocumentBean implements Serializable {
         return sb.toString();
     }
 
-	/**
-	 * resets the access rights for user comments and pdf download stored in {@link ViewManager}.
-	 * After reset, the access rights will be evaluated again on being called
-	 */
-	public void resetAccess() {
-		if(getViewManager() != null) {
-			getViewManager().resetAccessPermissionPdf();
-			getViewManager().resetAllowUserComments();
-		}
-	}
+    /**
+     * resets the access rights for user comments and pdf download stored in {@link ViewManager}. After reset, the access rights will be evaluated
+     * again on being called
+     */
+    public void resetAccess() {
+        if (getViewManager() != null) {
+            getViewManager().resetAccessPermissionPdf();
+            getViewManager().resetAllowUserComments();
+        }
+    }
 }
