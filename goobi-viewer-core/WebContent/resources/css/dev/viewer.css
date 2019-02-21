@@ -8458,12 +8458,6 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: underline;
   color: #fff;
 }
-.admin__sidebar-inner {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-}
 .admin__sidebar-inner h1 {
   display: -ms-flexbox;
   display: flex;
@@ -8483,7 +8477,12 @@ div[id*="-Modal"] .email-form .form-group {
   max-width: 100%;
 }
 .admin__sidebar-logout {
-  margin-top: auto;
+  margin-right: -15px;
+  margin-left: -15px;
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
+  border-top: 1px solid #fff;
 }
 .admin__content {
   padding: 15px;
