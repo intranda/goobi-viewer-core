@@ -1142,16 +1142,23 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         }
         // Export media item HTML content
-        if (mediaItem != null && CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType())) {
-            try {
-                String html = CmsMediaBean.getMediaFileAsString(mediaItem);
-                if (StringUtils.isNotEmpty(html)) {
-                    File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
-                    FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
-                    logger.debug("Wrote media content: {}", file.getName());
-                }
-            } catch (ViewerConfigurationException e) {
-                logger.error(e.getMessage(), e);
+        if (mediaItem != null && mediaItem.getContentType() != null) {
+            String html = null;
+            switch (mediaItem.getContentType()) {
+                case CMSMediaItem.CONTENT_TYPE_DOCX:
+                case CMSMediaItem.CONTENT_TYPE_RTF:
+                case CMSMediaItem.CONTENT_TYPE_HTML:
+                    try {
+                        html = CmsMediaBean.getMediaFileAsString(mediaItem);
+                    } catch (ViewerConfigurationException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    break;
+            }
+            if (StringUtils.isNotEmpty(html)) {
+                File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
+                FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                logger.debug("Wrote media content: {}", file.getName());
             }
         }
     }
