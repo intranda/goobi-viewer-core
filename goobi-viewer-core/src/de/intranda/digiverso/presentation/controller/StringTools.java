@@ -15,9 +15,6 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -28,8 +25,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
-import java.nio.file.Path;
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,14 +35,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.ToXMLContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
@@ -251,82 +243,44 @@ public class StringTools {
         return false;
     }
 
-    //    /**
-    //     * 
-    //     * @param rtfFile
-    //     * @return
-    //     * @throws @throws FileNotFoundException
-    //     * @should convert rtf file correctly
-    //     */
-    //    public static String convertRtfToHtml(Path rtfFile) throws FileNotFoundException {
-    //        JEditorPane p = new JEditorPane();
-    //        p.setContentType("text/rtf");
-    //        EditorKit kitRtf = p.getEditorKitForContentType("text/rtf");
-    //        try (FileReader rtf = new FileReader(rtfFile.toFile())) {
-    //            kitRtf.read(rtf, p.getDocument(), 0);
-    //            kitRtf = null;
-    //            EditorKit kitHtml = p.getEditorKitForContentType("text/html");
-    //            try (Writer writer = new StringWriter()) {
-    //                kitHtml.write(writer, p.getDocument(), 0, p.getDocument().getLength());
-    //                return writer.toString();
-    //            }
-    //        } catch (BadLocationException e) {
-    //            logger.error(e.getMessage(), e);
-    //        } catch (IOException e) {
-    //            if (e instanceof FileNotFoundException) {
-    //                throw new FileNotFoundException(e.getMessage());
-    //            }
-    //            logger.error(e.getMessage(), e);
-    //        }
-    //
-    //        return null;
-    //    }
-
     /**
+     * Renames CSS classes that start with digits in the given html code due to Chrome ignoring such classes.
      * 
-     * @param file
-     * @return String containing the HTML
-     * @throws @throws FileNotFoundException
-     * @should convert docx file correctly
-     * @should convert rtf file correctly
+     * @param html
+     * @return
+     * @should rename classes correctly
      */
-    public static String convertFileToHtml(Path file) throws IOException {
-        String ret = null;
-
-        ContentHandler handler = new ToXMLContentHandler();
-        AutoDetectParser parser = new AutoDetectParser();
-        Metadata metadata = new Metadata();
-        try (InputStream stream = new FileInputStream(file.toFile())) {
-            parser.parse(stream, handler, metadata);
-            ret = handler.toString();
-            // Remove bad tags
-            ret = ret.replaceAll("<b />", "").replace("<b/>", "");
-        } catch (TikaException e) {
-            logger.error(e.getMessage(), e);
-        } catch (SAXException e) {
-            logger.error(e.getMessage(), e);
+    public static String renameIncompatibleCSSClasses(String html) {
+        if (html == null) {
+            return null;
         }
-        //        SAXTransformerFactory factory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-        //        AutoDetectParser parser = new AutoDetectParser();
-        //        Metadata metadata = new Metadata();
-        //        try (InputStream stream = new FileInputStream(file.toFile()); StringWriter sw = new StringWriter()) {
-        //            TransformerHandler handler = factory.newTransformerHandler();
-        //            handler.getTransformer().setOutputProperty(OutputKeys.METHOD, "xml");
-        //            handler.getTransformer().setOutputProperty(OutputKeys.INDENT, "yes");
-        //            handler.getTransformer().setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        //            handler.setResult(new StreamResult(sw));
-        //
-        //            parser.parse(stream, handler, metadata, new ParseContext());
-        //
-        //            return sw.toString();
-        //        } catch (TransformerConfigurationException e) {
-        //            logger.error(e.getMessage(), e);
-        //        } catch (SAXException e) {
-        //            logger.error(e.getMessage(), e);
-        //        } catch (TikaException e) {
-        //            logger.error(e.getMessage(), e);
-        //        }
 
-        return ret;
+        Pattern p = Pattern.compile("\\.([0-9]+[A-Za-z]+) \\{.*\\}");
+        Matcher m = p.matcher(html);
+        Map<String, String> replacements = new HashMap<>();
+        // Collect bad class names
+        while (m.find()) {
+            if (m.groupCount() > 0) {
+                String oldName = m.group(1);
+                StringBuilder sbMain = new StringBuilder();
+                StringBuilder sbNum = new StringBuilder();
+                for (char c : oldName.toCharArray()) {
+                    if (Character.isDigit(c)) {
+                        sbNum.append(c);
+                    } else {
+                        sbMain.append(c);
+                    }
+                }
+                replacements.put(oldName, sbMain.toString() + sbNum.toString());
+            }
+        }
+        // Replace in HTML
+        if (!replacements.isEmpty()) {
+            for (String key : replacements.keySet()) {
+                html = html.replace(key, replacements.get(key));
+            }
+        }
+
+        return html;
     }
 }

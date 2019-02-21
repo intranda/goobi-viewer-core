@@ -118,7 +118,7 @@ public class Helper {
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
     public static final String SUFFIX_CMS = "_cms";
 
-    private static final int HTTP_TIMEOUT = 10000;
+    private static final int HTTP_TIMEOUT = 30000;
 
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
     public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
