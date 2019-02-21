@@ -140,6 +140,7 @@
                 <div class="tpl-overviewpage__description">
                     <div class="tpl-overviewpage__description-title">
                         <h3>#{msg.viewOverviewDescription}</h3>
+                        <img id="htmlLoader" src="#{request.contextPath}/resources/images/infinity_loader.gif" />
                     </div>
 
                     <div class="tpl-overviewpage__description-text">
@@ -155,7 +156,7 @@
                         datatype: "HTML"
                     } ).then( function( data ) {
                        	 $('#literature').html(data);
-                            
+                       	 $('#htmlLoader').hide();    
                         cmsJS.masonry.init( masonryConfig, data );
                     } );
                 </script>
