@@ -41,7 +41,6 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.commons.configuration.tree.ExpressionEngine;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -3188,26 +3187,15 @@ public final class Configuration extends AbstractConfiguration {
 	 * @return	The attribute "label" of any children of webapi.iiif.metadataFields
 	 */
 	public String getIIIFMetadataLabel(String field) {
-		ExpressionEngine defaultEngine = config.getExpressionEngine();
-		config.setExpressionEngine(new XPathExpressionEngine());
-		ExpressionEngine defaultEngineLocal = null;
-		if(configLocal != null) {	
-			defaultEngineLocal = configLocal.getExpressionEngine();
-			configLocal.setExpressionEngine(new XPathExpressionEngine());
-		}
-
-		try {
-			
-			return getLocalString("webapi/iiif/metadataFields/*[.='" + field + "']/@label", "");
-			
-		} finally {
-			config.setExpressionEngine(defaultEngine);
-			if(configLocal != null) {			
-				configLocal.setExpressionEngine(defaultEngineLocal);
-			}			
-		}
 		
-	
+		HierarchicalConfiguration fieldsConfig = getLocalConfigurationAt("webapi.iiif.metadataFields");
+		List<ConfigurationNode> fields = fieldsConfig.getRootNode().getChildren();
+		for (ConfigurationNode fieldNode : fields) {
+			if(fieldNode.getValue().equals(field)) {
+				return fieldNode.getAttributes("label").stream().findFirst().map(node -> node.getValue().toString()).orElse("");
+			}
+		}
+		return "";
 	}
 
     /**

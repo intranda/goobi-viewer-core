@@ -38,37 +38,6 @@ public class ConversionTools {
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionTools.class);
 
-    //    /**
-    //     * 
-    //     * @param rtfFile
-    //     * @return
-    //     * @throws @throws FileNotFoundException
-    //     * @should convert rtf file correctly
-    //     */
-    //    public static String convertRtfToHtml(Path rtfFile) throws FileNotFoundException {
-    //        JEditorPane p = new JEditorPane();
-    //        p.setContentType("text/rtf");
-    //        EditorKit kitRtf = p.getEditorKitForContentType("text/rtf");
-    //        try (FileReader rtf = new FileReader(rtfFile.toFile())) {
-    //            kitRtf.read(rtf, p.getDocument(), 0);
-    //            kitRtf = null;
-    //            EditorKit kitHtml = p.getEditorKitForContentType("text/html");
-    //            try (Writer writer = new StringWriter()) {
-    //                kitHtml.write(writer, p.getDocument(), 0, p.getDocument().getLength());
-    //                return writer.toString();
-    //            }
-    //        } catch (BadLocationException e) {
-    //            logger.error(e.getMessage(), e);
-    //        } catch (IOException e) {
-    //            if (e instanceof FileNotFoundException) {
-    //                throw new FileNotFoundException(e.getMessage());
-    //            }
-    //            logger.error(e.getMessage(), e);
-    //        }
-    //
-    //        return null;
-    //    }
-
     /**
      * Converts given file to HTML, if supported by Tika.
      * 
@@ -122,7 +91,7 @@ public class ConversionTools {
      * Converts given DOCX file to HTML using DOCX4J (usually with better results than using Tika).
      * 
      * @param file
-     * @return
+     * @return String containing the HTML
      * @throws IOException
      * @should convert docx correctly
      */

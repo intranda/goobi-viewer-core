@@ -226,20 +226,16 @@ public class CmsMediaBean implements Serializable {
             return "";
         }
 
-        switch (item.getContentType()) {
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
-            case CMSMediaItem.CONTENT_TYPE_HTML:
-            case CMSMediaItem.CONTENT_TYPE_RTF:
-            case CMSMediaItem.CONTENT_TYPE_XML:
-                StringBuilder sbUri = new StringBuilder();
-                sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
-                return sbUri.toString();
-            default:
-                return BeanUtils.getImageDeliveryBean()
-                        .getThumbs()
-                        .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
-                                StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+        if (item.isHasExportableText()) {
+            StringBuilder sbUri = new StringBuilder();
+            sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
+            return sbUri.toString();
         }
+        
+        return BeanUtils.getImageDeliveryBean()
+                .getThumbs()
+                .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
+                        StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
     }
 
     /**

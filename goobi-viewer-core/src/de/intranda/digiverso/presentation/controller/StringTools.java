@@ -178,6 +178,11 @@ public class StringTools {
         return text;
     }
 
+    /**
+     * 
+     * @param s
+     * @return
+     */
     public static String escapeQuotes(String s) {
         if (s != null) {
             s = s.replaceAll("(?<!\\\\)'", "\\\\'");
@@ -216,7 +221,7 @@ public class StringTools {
     /**
      * 
      * @param url
-     * @return
+     * @return true if this is an image URL; false otherwise
      * @should return true for image urls
      */
     public static boolean isImageUrl(String url) {
@@ -225,29 +230,29 @@ public class StringTools {
         }
 
         String extension = FilenameUtils.getExtension(url);
-        if (StringUtils.isNotEmpty(extension)) {
-            switch (extension.toLowerCase()) {
-                case "tif":
-                case "tiff":
-                case "jpg":
-                case "jpeg":
-                case "gif":
-                case "png":
-                case "jp2":
-                    return true;
-                default:
-                    return false;
-            }
+        if (StringUtils.isEmpty(extension)) {
+            return false;
         }
-
-        return false;
+        
+        switch (extension.toLowerCase()) {
+            case "tif":
+            case "tiff":
+            case "jpg":
+            case "jpeg":
+            case "gif":
+            case "png":
+            case "jp2":
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
      * Renames CSS classes that start with digits in the given html code due to Chrome ignoring such classes.
      * 
-     * @param html
-     * @return
+     * @param html The HTML to fix
+     * @return Same HTML document but with Chrome-compatible CSS class names
      * @should rename classes correctly
      */
     public static String renameIncompatibleCSSClasses(String html) {
