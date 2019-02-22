@@ -82,7 +82,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     public static final String ATTRIBUTE_LOGINS = "logins";
 
     public static final int AVATAR_DEFAULT_SIZE = 96;
-    
+
     @Transient
     private BCrypt bcrypt = new BCrypt();
 
@@ -303,8 +303,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
                         sbQuery.append(SolrConstants.PI).append(':').append(pi).append(" AND (").append(license.getConditions()).append(')');
-                        if (DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(),
-                                Collections.singletonList(SolrConstants.IDDOC)) != null) {
+                        if (DataManager.getInstance()
+                                .getSearchIndex()
+                                .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.debug("Permission found for user: {} (query: {})", id, sbQuery.toString());
                             return true;
                         }
@@ -408,13 +409,14 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-         logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+        logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
         //always allow access if the only condition is open access and there is no special licence configured for it
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE) && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
+        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)
+                && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
             return true;
         }
 
@@ -442,8 +444,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
         }
         //It should be sufficient if the user can satisfy one required licence
-          return permissionMap.isEmpty() ||  permissionMap.containsValue(true);
-//        return !permissionMap.containsValue(false);
+        return permissionMap.isEmpty() || permissionMap.containsValue(true);
+        //        return !permissionMap.containsValue(false);
     }
 
     @Override
@@ -483,20 +485,6 @@ public class User implements ILicensee, HttpSessionBindingListener {
         //        logger.trace("isMaySetRepresentativeImage");
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE, IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE,
                 recordsForWhichUserMaySetRepresentativeImage);
-    }
-
-    /**
-     * Checks whether this user has the permission to explicitly create an overview page for the currently open record.
-     *
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public boolean isMayEditOverviewPage() throws IndexUnreachableException, PresentationException, DAOException {
-        //        logger.trace("isMayEditOverviewPage");
-        return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_FORCE_OVERVIEW_PAGE, IPrivilegeHolder.PRIV_EDIT_OVERVIEW_PAGE,
-                recordsForWhichUserMayEditOverviewPage);
     }
 
     /**
@@ -978,7 +966,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     protected void setBCrypt(BCrypt bcrypt) {
         this.bcrypt = bcrypt;
     }
-    
+
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }

@@ -32,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -51,15 +50,12 @@ public class LicenseType implements IPrivilegeHolder {
 
     // When adding a new static license type name, update isStaticLicenseType()!
     public static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE = "licenseType_setRepresentativeImage";
-    public static final String LICENSE_TYPE_FORCE_OVERVIEW_PAGE = "licenseType_forceOverviewPage";
     public static final String LICENSE_TYPE_DELETE_OCR_PAGE = "licenseType_deleteOcrPage";
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
-    private static final String LICENSE_TYPE_FORCE_OVERVIEW_PAGE_DESCRIPTION = "licenseType_forceOverviewPage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
-    
-//    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
-    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
 
+    //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
+    private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -153,8 +149,7 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     public boolean isStaticLicenseType() {
-        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_FORCE_OVERVIEW_PAGE.equals(name)
-                || LICENSE_TYPE_DELETE_OCR_PAGE.equals(name);
+        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_DELETE_OCR_PAGE.equals(name);
     }
 
     /**
@@ -206,26 +201,24 @@ public class LicenseType implements IPrivilegeHolder {
      */
     public String getProcessedConditions() {
         String conditions = this.conditions;
-        
+
         conditions = getQueryConditions(conditions);
-        
+
         if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
             conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         }
-        
-        
 
         return conditions.trim();
     }
-    
+
     public String getFilenameConditions() {
         return getFilenameConditions(this.conditions);
     }
 
     /**
-     * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: 
-     * or the entire string if neither QUERY:{...} nor FILENAME:{...} is part of the  given string
+     * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: or the entire string if neither QUERY:{...} nor
+     * FILENAME:{...} is part of the given string
      * 
      * @param conditions
      * @return
@@ -233,11 +226,10 @@ public class LicenseType implements IPrivilegeHolder {
     private String getQueryConditions(String conditions) {
         String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
         String queryConditions = conditions == null ? "" : conditions.replaceAll(CONDITIONS_FILENAME, "");
-        if(StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
+        if (StringUtils.isBlank(queryConditions) && StringUtils.isBlank(filenameConditions)) {
             return conditions == null ? "" : conditions;
-        } else {
-            return queryConditions;
         }
+        return queryConditions;
     }
 
     /**
@@ -245,20 +237,19 @@ public class LicenseType implements IPrivilegeHolder {
      * @return
      */
     public String getMatch(String conditions, String pattern) {
-        if(StringUtils.isBlank(conditions)) {
+        if (StringUtils.isBlank(conditions)) {
             return "";
         }
         Matcher matcher = Pattern.compile(pattern).matcher(conditions);
-        if(matcher.find()) {
+        if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            return "";
         }
+        return "";
     }
-    
+
     /**
-     * Get the conditions referring to filename matching. This is either the substring in {} after FILENAME: 
-     * or null if neither QUERY:{...} nor FILENAME:{...} is part of the  given string
+     * Get the conditions referring to filename matching. This is either the substring in {} after FILENAME: or null if neither QUERY:{...} nor
+     * FILENAME:{...} is part of the given string
      * 
      * @param conditions
      * @return
@@ -472,17 +463,6 @@ public class LicenseType implements IPrivilegeHolder {
             licenseType.getPrivileges().add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
             if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
                 logger.error("Could not add static license type '{}'.", LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE);
-            }
-        }
-        // Add the license type "may force overview page", if not yet in the database
-        if (DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_FORCE_OVERVIEW_PAGE) == null) {
-            logger.info("License type '{}' does not exist yet, adding...", LicenseType.LICENSE_TYPE_FORCE_OVERVIEW_PAGE);
-            LicenseType licenseType = new LicenseType();
-            licenseType.setName(LicenseType.LICENSE_TYPE_FORCE_OVERVIEW_PAGE);
-            licenseType.setDescription(LICENSE_TYPE_FORCE_OVERVIEW_PAGE_DESCRIPTION);
-            licenseType.getPrivileges().add(IPrivilegeHolder.PRIV_EDIT_OVERVIEW_PAGE);
-            if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
-                logger.error("Could not add static license type '{}'.", LicenseType.LICENSE_TYPE_FORCE_OVERVIEW_PAGE);
             }
         }
         // Add the license type "may delete ocr page", if not yet in the database
