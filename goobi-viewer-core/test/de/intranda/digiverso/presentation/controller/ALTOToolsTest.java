@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -93,13 +94,12 @@ public class ALTOToolsTest {
         int rotation = 0;
         int imageFooterHeight = 0;
 
-        SAXBuilder builder = new SAXBuilder();
-        Document altoDoc = builder.build(testFile);
-        List<String> coords = ALTOTools.getWordCoords(altoDoc, Collections.singleton(searchTerms), rotation, imageFooterHeight);
+        String altoString = FileUtils.readFileToString(testFile);
+        List<String> coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms), rotation, imageFooterHeight);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
 
-        coords = ALTOTools.getWordCoords(altoDoc, Collections.singleton(searchTerms + " puh bear"), rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, Collections.singleton(searchTerms + " puh bear"), rotation, imageFooterHeight);
         Assert.assertFalse(coords.isEmpty());
         Assert.assertEquals("1740,2645,1794,2673", coords.get(0));
 
@@ -107,13 +107,13 @@ public class ALTOToolsTest {
         terms.add("Santa");
         terms.add("Monica.");
         terms.add("puh");
-        coords = ALTOTools.getWordCoords(altoDoc, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
         Assert.assertTrue(coords.size() == 2);
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica.");
-        coords = ALTOTools.getWordCoords(altoDoc, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
         for (String string : coords) {
             System.out.println(string);
         }
@@ -122,7 +122,7 @@ public class ALTOToolsTest {
 
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica. puh");
-        coords = ALTOTools.getWordCoords(altoDoc, terms, rotation, imageFooterHeight);
+        coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
         Assert.assertTrue(coords.size() == 0);
     }
 

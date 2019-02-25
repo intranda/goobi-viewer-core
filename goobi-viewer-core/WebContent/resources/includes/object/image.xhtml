@@ -44,7 +44,23 @@
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',
         		    reset: '.reset',
-        		}
+        		},
+        		overlayGroups: [ {
+                    name: "searchHighlighting",
+                    styleClass: "coords-highlighting",
+                    interactive: false
+                }, {
+                    name: "ugc",
+                    styleClass: "ugcBox",
+                    interactive: true
+                
+                },
+                {
+                    name: "annotations",
+                    styleClass: "image-fragment",
+                    interactive: false
+                
+                }],
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",

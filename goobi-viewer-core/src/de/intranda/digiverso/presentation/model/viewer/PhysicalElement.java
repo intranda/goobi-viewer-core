@@ -657,13 +657,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            Document altoDoc;
-            try {
-                altoDoc = XmlTools.getDocumentFromString(altoText, "UTF-8");
-                return ALTOTools.getWordCoords(altoDoc, searchTerms, rotation, getImageFooterHeight());
-            } catch (JDOMException | IOException e) {
-                logger.error(e.getMessage(), e);
-            }
+                return ALTOTools.getWordCoords(altoText, searchTerms, rotation, getImageFooterHeight());
         } else {
             wordCoordsFormat = CoordsFormat.NONE;
         }
