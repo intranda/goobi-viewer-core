@@ -16,27 +16,40 @@
 					<ul>
 						<li class="#{navigationHelper.currentPage == 'adminAllUsers' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminAllUsers">
-								<h:outputText value="#{msg.admin_allUsers}" />
+                                <i class="fa fa-user" aria-hidden="true"></i>
+								<span>#{msg.admin__users}</span>
 							</h:commandLink>
 						</li>
 						<li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminAllUserGroups">
-								<h:outputText value="#{msg.admin_allUserGroups}" />
+                                <i class="fa fa-users" aria-hidden="true"></i>
+								<span>#{msg.admin__groups}</span>
 							</h:commandLink>
 						</li>
-						<li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminAllIpRanges">
-								<h:outputText value="#{msg.ipRanges}" />
-							</h:commandLink>
-						</li>
+                        <li class="spacer"></li>
 						<li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminAllLicenseTypes">
-								<h:outputText value="#{msg.license_licenseTypes}" />
+                                <i class="fa fa-key" aria-hidden="true"></i>
+								<span>#{msg.admin__licenses}</span>
 							</h:commandLink>
 						</li>
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-lock" aria-hidden="true"></i>
+                                <span>#{msg.admin__rights}</span>
+                            </a>
+                        </li>
+						<li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminAllIpRanges">
+                                <i class="fa fa-bolt" aria-hidden="true"></i>
+								<span>#{msg.admin__networks}</span>
+							</h:commandLink>
+						</li>
+                        <li class="spacer"></li>
 						<li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminUserComments">
-								<h:outputText value="#{msg.admin_userComments}" />
+                                <i class="fa fa-comments" aria-hidden="true"></i>
+								<span>#{msg.admin__comments}</span>
 							</h:commandLink>
 						</li>
                         <c:forEach var="module" items="#{configurationBean.modules}">

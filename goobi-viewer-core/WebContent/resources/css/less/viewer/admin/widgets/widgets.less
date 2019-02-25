@@ -19,10 +19,45 @@
     ul {
         .mx-list-reset;
     }
-    li {}
+    li {
+    	position: relative;
+    	&:hover,
+    	&.active {
+    		margin-right: -15px;
+    		margin-left: -15px;
+    		padding-right: 15px;
+    		padding-left: 15px;
+    		background-color: @activeblue;
+    		&:after {
+    			content: "";
+    			position: absolute;
+    			display: block;
+    			top: 50%;
+    			right: 0;
+    			width: 0;
+    			height: 0;
+    			margin-top: -6px;
+    			border-width: 6px;
+    			border-style: solid;
+    			border-color: transparent @neutralgray transparent transparent;
+    			z-index: 10;
+    		}
+    	}
+    	&.spacer {
+    		margin-bottom: 10px;
+    	}
+    }
     a {
     	display: block;
     	padding: 5px 0;
+    	&:hover,
+    	&:active,
+    	&:focus {
+    		text-decoration: none;
+    	}
+    	.fa {
+    		width: 30px;
+    	}
     }
 }
 

@@ -14,23 +14,41 @@
 
 					<ul>
 						<li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminCmsOverview" value="#{msg.cms_overview}" />
+							<h:commandLink action="pretty:adminCmsOverview">
+                                <i class="fa fa-clone" aria-hidden="true"></i>
+                                <span>#{msg.cms_overview}</span>
+                            </h:commandLink>
 						</li>
 						<li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminCmsSelectTemplate" value="#{msg.cms_createPage}" />
-						</li>
-						<li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminCmsMenuItems" value="#{msg.cms_menu_items}" />
+							<h:commandLink action="pretty:adminCmsSelectTemplate">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                <span>#{msg.cms_createPage}</span>
+                            </h:commandLink>
 						</li>
 						<li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminCmsStaticPages" value="#{msg.cms_staticPages}" />
+							<h:commandLink action="pretty:adminCmsStaticPages">
+                                <i class="fa fa-cogs" aria-hidden="true"></i>
+                                <span>#{msg.cms_staticPages}</span>
+                            </h:commandLink>
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsMedia">
+                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                <span>#{msg.cms_overviewMedia}</span>
+                            </h:commandLink>
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsMenuItems">
+                                <i class="fa fa-bars" aria-hidden="true"></i>
+                                <span>#{msg.cms_menu_items}</span>
+                            </h:commandLink>
 						</li>
                         <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminCmsCollections" value="#{msg.cms_collections}" />
+                            <h:commandLink action="pretty:adminCmsCollections">
+                                <i class="fa fa-object-group" aria-hidden="true"></i>
+                                <span>#{msg.cms_collections}</span>
+                            </h:commandLink>
                         </li>
-						<li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
-							<h:commandLink action="pretty:adminCmsMedia" value="#{msg.cms_overviewMedia}" />
-						</li>
 					</ul>
 				</h:form>
 			</div>
