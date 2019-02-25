@@ -299,96 +299,10 @@
 
                     <!-- ADMIN -->
                     <h:panelGroup rendered="#{userBean.admin}">
-                        <li
-                            class="navigation__submenu-trigger #{navigationHelper.currentPage == 'adminAllUsers' or 
-                                             navigationHelper.currentPage == 'adminAllUserGroups' or
-                                             navigationHelper.currentPage == 'adminIpRanges' or
-                                             navigationHelper.currentPage == 'adminLicenseTypes' or
-                                             navigationHelper.currentPage == 'adminUserComments' or
-                                             navigationHelper.currentPage == 'adminUserActivity' ? 'active' : ''}">
-                            <button
-                                type="button"
-                                class="btn btn--clean"
-                                data-toggle="submenu">
-                                #{msg.admin}
-                                <span class="caret"></span>
-                            </button>
-                            <div class="navigation__submenu level-1">
-                                <ul>
-                                    <li class="#{navigationHelper.currentPage == 'adminAllUsers' ? 'active' : ''}">
-                                        <a href="#{navigationHelper.applicationUrl}adminAllUsers/">#{msg.admin_allUsers}</a>
-                                    </li>
-                                    <li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : ''}">
-                                        <a href="#{navigationHelper.applicationUrl}adminAllUserGroups/">#{msg.admin_allUserGroups}</a>
-                                    </li>
-                                    <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
-                                        <a href="#{navigationHelper.applicationUrl}adminAllIpRanges/">#{msg.ipRanges}</a>
-                                    </li>
-                                    <li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
-                                        <a href="#{navigationHelper.applicationUrl}adminAllLicenseTypes/">#{msg.license_licenseTypes}</a>
-                                    </li>
-                                    <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
-                                        <h:commandLink action="pretty:adminUserComments">
-                                            <h:outputText value="#{msg.admin_userComments}" />
-                                        </h:commandLink>
-                                    </li>
-                                    <c:forEach
-                                        var="module"
-                                        items="#{configurationBean.modules}">
-                                        <c:forEach
-                                            var="contribution"
-                                            items="#{module.adminContributions}">
-                                            <ui:include src="/#{contribution}" />
-                                        </c:forEach>
-                                    </c:forEach>
-                                    <li
-                                        role="separator"
-                                        class="divider"></li>
-                                    <li>
-                                        <button
-                                            type="button"
-                                            class="btn btn--clean"
-                                            data-toggle="submenu">
-                                            #{msg.cms_title_menu}
-                                            <span class="caret"></span>
-                                        </button>
-                                        <div class="navigation__submenu level-2">
-                                            <ul>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsOverview"
-                                                        value="#{msg.cms_overview}" />
-                                                </li>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsSelectTemplate"
-                                                        value="#{msg.cms_createPage}" />
-                                                </li>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsMenuItems"
-                                                        value="#{msg.cms_menu_items}" />
-                                                </li>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsStaticPages"
-                                                        value="#{msg.cms_staticPages}" />
-                                                </li>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsCollections"
-                                                        value="#{msg.cms_collections}" />
-                                                </li>
-                                                <li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
-                                                    <h:commandLink
-                                                        action="pretty:adminCmsMedia"
-                                                        value="#{msg.cms_overviewMedia}" />
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                        <li>
+                            <h:commandLink action="pretty:admin">
+								<h:outputText value="#{msg.admin}" />
+							</h:commandLink>
                         </li>
                     </h:panelGroup>
                 </ul>

@@ -87,12 +87,10 @@
 				<patternset>
 					<include name="*.*" />
 					<include name="META-INF/*.*" />
-					<!-- include name="menuUser/*.*" / -->
 					<include name="resources/components/**/*.*" />
 					<include name="resources/includes/**/*.*" />
 					<include name="resources/javascript/**/*.*" />
 					<include name="resources/xslt/**/*.*" />
-					<!-- <include name="resources/themes/${theme}/**/*.*" /> -->
 					<include name="resources/images/**/*.*" />
 					<include name="resources/css/**/*.*" />
 					<include name="resources/fonts/**/*.*" />
@@ -110,6 +108,7 @@
 			<fileset dir="WebContent" includes="*.xhtml">
 				<patternset>
 					<include name="resources/cms/**/*.*" />
+					<include name="resources/admin/**/*.*" />
 				</patternset>
 			</fileset>
 		</copy>

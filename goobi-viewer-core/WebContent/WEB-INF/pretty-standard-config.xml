@@ -608,8 +608,110 @@
 		<pattern value="/mysearches/" />
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	
+	<!-- ADMIN -->
+	<url-mapping id="admin">
+		<pattern value="/admin/" />
+		<view-id value="/resources/admin/views/adminDashboard.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminAllUsers">
+		<pattern value="/admin/users/" />
+		<view-id value="/resources/admin/views/adminAllUsers.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminUser">
+		<pattern value="/admin/user/" />
+		<view-id value="/resources/admin/views/adminUser.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminAllUserGroups">
+		<pattern value="/admin/groups/" />
+		<view-id value="/resources/admin/views/adminAllUserGroups.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminUserGroup">
+		<pattern value="/admin/group/" />
+		<view-id value="/resources/admin/views/adminUserGroup.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminAllIpRanges">
+		<pattern value="/admin/networks/" />
+		<view-id value="/resources/admin/views/adminIpRanges.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminIpRange">
+		<pattern value="/admin/network/" />
+		<view-id value="/resources/admin/views/adminIpRange.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminAllLicenseTypes">
+		<pattern value="/admin/licenses/" />
+		<view-id value="/resources/admin/views/adminLicenseTypes.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminLicenseType">
+		<pattern value="/admin/license/" />
+		<view-id value="/resources/admin/views/adminLicenseType.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminUserComments">
+		<pattern value="/admin/comments/" />
+		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>	
 
+	<!-- CMS ADMIN -->
+	<url-mapping id="adminCms">
+		<pattern value="/admin/cms/" />
+		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsOverview">
+		<pattern value="/admin/cms/pages/" />
+		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsSelectTemplate">
+		<pattern value="/admin/cms/pages/new/" />
+		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.loadTemplates}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsCreatePage">
+		<pattern value="/admin/cms/pages/create/" />
+		<view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsStaticPages">
+		<pattern value="/admin/cms/pages/mapping/" />
+		<view-id value="/resources/cms/adminCmsStaticPages.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsMedia">
+		<pattern value="/admin/cms/media/" />
+		<view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsMenuItems">
+		<pattern value="/admin/cms/menus/" />
+		<view-id value="/resources/cms/adminCmsMenuItems.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsNavigationBean.init()}</action>
+	</url-mapping>
+    <url-mapping id="adminCmsCollections">
+        <pattern value="/admin/cms/collections/" />
+        <view-id value="/resources/cms/adminCmsCollections.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsEditCollection">
+        <pattern value="/admin/cms/collections/edit/" />
+        <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
@@ -619,7 +721,6 @@
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
         <action onPostback="false">#{searchBean.resetSearchFilter}</action>
 	</url-mapping>
-	<!-- CMS -->
 	<url-mapping id="cmsOpenPageInWork">
 		<pattern value="/page/#{pi:cmsBean.currentWorkPi}/#{page:cmsBean.currentPageId}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
@@ -698,119 +799,12 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
-	<!-- CMS ADMIN -->
-	<url-mapping id="adminCms">
-		<pattern value="/adminCms/" />
-		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsOverview">
-		<pattern value="/adminCmsOverview/" />
-		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{cmsBean.loadTemplates}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsMedia">
-		<pattern value="/adminCmsMedia/" />
-		<view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsSelectTemplate">
-		<pattern value="/adminCmsSelectTemplate/" />
-		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{cmsBean.loadTemplates}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsCreatePage">
-		<pattern value="/adminCmsCreatePage/" />
-		<view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsMenuItems">
-		<pattern value="/adminCmsMenuItems/" />
-		<view-id value="/resources/cms/adminCmsMenuItems.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsNavigationBean.init()}</action>
-	</url-mapping>
-	<url-mapping id="adminCmsStaticPages">
-		<pattern value="/adminCmsStaticPages/" />
-		<view-id value="/resources/cms/adminCmsStaticPages.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-    <url-mapping id="adminCmsCollections">
-        <pattern value="/adminCmsCollections/" />
-        <view-id value="/resources/cms/adminCmsCollections.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsEditCollection">
-        <pattern value="/adminCmsCollections/edit/" />
-        <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-
-	<!-- ADMIN -->
-	<url-mapping id="admin">
-		<pattern value="/admin/" />
-		<view-id value="/adminAllUsers.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminAllUsers">
-		<pattern value="/adminAllUsers/" />
-		<view-id value="/adminAllUsers.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminUser">
-		<pattern value="/adminUser/" />
-		<view-id value="/adminUser.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminAllUserGroups">
-		<pattern value="/adminAllUserGroups/" />
-		<view-id value="/adminAllUserGroups.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminUserGroup">
-		<pattern value="/adminUserGroup/" />
-		<view-id value="/adminUserGroup.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminAllIpRanges">
-		<pattern value="/adminAllIpRanges/" />
-		<view-id value="/adminIpRanges.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminIpRange">
-		<pattern value="/adminIpRange/" />
-		<view-id value="/adminIpRange.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminAllLicenseTypes">
-		<pattern value="/adminAllLicenseTypes/" />
-		<view-id value="/adminLicenseTypes.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminLicenseType">
-		<pattern value="/adminLicenseType/" />
-		<view-id value="/adminLicenseType.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminUserComments">
-		<pattern value="/adminUserComments/" />
-		<view-id value="/adminUserComments.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="adminContentUpload">
-		<pattern value="/adminContentUpload/" />
-		<view-id value="/adminContentUpload.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	
+    <!-- SITELINKS -->
     <url-mapping id="sitelinks">
         <pattern value="/sitelinks/" />
         <view-id value="/sitelinks.xhtml" />
         <action onPostback="false">#{sitelinkBean.resetAction}</action>
-    </url-mapping>
-    
+    </url-mapping>    
     <url-mapping id="sitelinks1">
         <pattern value="/sitelinks/#{sitelinkBean.value}/" />
         <view-id value="/sitelinks.xhtml" />

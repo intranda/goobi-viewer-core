@@ -3,28 +3,24 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-	<ui:define name="metadata">
-		<f:metadata>
+    <ui:define name="metadata">
+        <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminIpRanges')}" />
-            <f:event
-                type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.ipRanges,2)}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
-		</f:metadata>
-	</ui:define>
+        </f:metadata>
+    </ui:define>
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">            
             <div id="adminIpRanges">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h2>#{msg.ipRanges}</h2>
+                    <h2 class="admin__content-inner-title">#{msg.admin__networks}</h2>
 
-                    <div id="adminIpRangesWrapper">
+                    <div class="admin__content-inner-content">
                         <h:form id="adminIpRangesForm" prependId="false">
                             <h:commandLink action="adminIpRange" actionListener="#{adminBean.resetCurrentIpRangeAction}" value="#{msg.ipRange_addNew}" styleClass="btn btn--default pull-right" />                                  
                             
@@ -136,14 +132,9 @@
 		</f:view>
     </ui:define>
 
+    <!-- SIDEBAR -->
     <ui:define name="sidebar">
-        <widgetComponent:widget_admin />
-    	<widgetComponent:widget_cms />
-    	<widgetComponent:widget_user />
+        <adminWidget:widget_admin />
+    	<adminWidget:widget_cms />
     </ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
-
 </ui:composition>

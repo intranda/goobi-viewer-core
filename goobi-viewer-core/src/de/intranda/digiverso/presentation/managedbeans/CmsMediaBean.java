@@ -571,7 +571,7 @@ public class CmsMediaBean implements Serializable {
      * 
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
-    public static String getImageFilter() {
+    public String getImageFilter() {
         return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
     }
 
