@@ -797,6 +797,19 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
     }
 
+    public String getPageUrl(String pageType) {
+    	PageType page = PageType.getByName(pageType);
+        if(page != null) {
+        	return getPageUrl(page);
+        } else {
+        	return "";
+        }
+    }
+    public String getPageUrl(PageType page) {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
+    }
+    
+
     public String getSearchUrl(int activeSearchType) {
 
         //If we are on a cms-page, return the cms page url

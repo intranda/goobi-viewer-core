@@ -16,23 +16,23 @@
 
                     <ul>
                         <li class="#{navigationHelper.currentPage == 'adminAllUsers' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminAllUsers">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span>#{msg.admin__users}</span>
-                            </h:commandLink>
+	                        <h:outputLink value="#{navigationHelper.getPageUrl('adminAllUsers')}/">
+		                        <i class="fa fa-user" aria-hidden="true"></i>
+		                        <span>#{msg.admin__users}</span>
+		                    </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminAllUserGroups">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminAllUserGroups')}/">
                                 <i class="fa fa-users" aria-hidden="true"></i>
                                 <span>#{msg.admin__groups}</span>
-                            </h:commandLink>
+                            </h:outputLink>
                         </li>
                         <li class="spacer"></li>
                         <li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminAllLicenseTypes">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminAllLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
-                            </h:commandLink>
+                            </h:outputLink>
                         </li>
                         <li>
                             <a href="#">
@@ -41,17 +41,17 @@
                             </a>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminAllIpRanges">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
                                 <i class="fa fa-bolt" aria-hidden="true"></i>
                                 <span>#{msg.admin__networks}</span>
-                            </h:commandLink>
+                            </h:outputLink>
                         </li>
                         <li class="spacer"></li>
                         <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
-                            <h:commandLink action="pretty:adminUserComments">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserComments')}/">
                                 <i class="fa fa-comments" aria-hidden="true"></i>
                                 <span>#{msg.admin__comments}</span>
-                            </h:commandLink>
+                            </h:outputLink>
                         </li>
                         
                         <!-- CROWDSOURCING -->
