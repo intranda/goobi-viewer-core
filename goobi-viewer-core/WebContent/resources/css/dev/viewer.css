@@ -8421,25 +8421,21 @@ div[id*="-Modal"] .email-form .form-group {
    ==============================================================*/
 /* ADMIN LAYOUT */
 .admin {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 2fr 10fr;
-      grid-template-columns: 2fr 10fr;
+  position: relative;
   background-color: #f2f3f4;
   /* SIDEBAR */
   /* CONTENT */
-}
-.admin__sidebar,
-.admin__content {
-  min-width: 0;
 }
 .admin__sidebar-inner,
 .admin__content-inner {
   min-height: calc(100vh - 30px);
 }
 .admin__sidebar {
-  min-width: 200px;
-  max-width: 400px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 250px;
   padding: 15px;
   font-size: 1rem;
   background-color: #3365a9;
@@ -8485,6 +8481,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #fff;
 }
 .admin__content {
+  margin-left: 250px;
   padding: 15px;
 }
 .admin__content-inner {
@@ -8704,9 +8701,46 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 0;
   list-style: none;
 }
+.admin-widget li {
+  position: relative;
+}
+.admin-widget li:hover,
+.admin-widget li.active {
+  margin-right: -15px;
+  margin-left: -15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  background-color: #134ea0;
+}
+.admin-widget li:hover:after,
+.admin-widget li.active:after {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 50%;
+  right: 0;
+  width: 0;
+  height: 0;
+  margin-top: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #f2f3f4 transparent transparent;
+  z-index: 10;
+}
+.admin-widget li.spacer {
+  margin-bottom: 10px;
+}
 .admin-widget a {
   display: block;
   padding: 5px 0;
+}
+.admin-widget a:hover,
+.admin-widget a:active,
+.admin-widget a:focus {
+  text-decoration: none;
+}
+.admin-widget a .fa {
+  width: 30px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */

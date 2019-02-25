@@ -27,6 +27,18 @@
                     </a>
                     <span>Goobi viewer</span>
                 </h1>
+                
+                <!-- DASHBOARD -->
+                <div class="admin__sidebar-dashboard admin-widget">
+                    <ul>
+                        <li class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
+                            <a href="#{request.contextPath}/admin/">
+                                <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                <span>#{msg.admin__dashboard}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- WIDGETS -->
                 <div class="admin__sidebar-widgets">
@@ -34,11 +46,17 @@
                 </div>
 
                 <!-- LOGOUT -->
-                <div class="admin__sidebar-logout">
+                <div class="admin__sidebar-logout admin-widget">
                     <h:form>
-                        <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
-                            <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
-                        </h:commandLink>
+                        <ul>
+                            <li>
+                                <h:commandLink action="#{userBean.logout}">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                    <span>#{msg.logout}</span>
+                                    <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
+                                </h:commandLink>
+                            </li>
+                        </ul>
                     </h:form>
                 </div>
             </div>
