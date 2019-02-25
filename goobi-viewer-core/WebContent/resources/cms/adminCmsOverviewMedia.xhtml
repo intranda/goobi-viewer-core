@@ -17,9 +17,8 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsOverviewMediaAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsOverviewMediaAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <div id="cmsOverviewMedia">
-                <h:panelGroup rendered="#{userBean.admin}">
                     <h2 class="admin__content-inner-title">#{msg.cms_overviewMedia}</h2>
 
                     <div class="admin__content-inner-content">
@@ -162,7 +161,6 @@
                         <!-- MEDIA UPLOAD MODAL -->
                         <cmsComponent:cms_overviewMediaUploadDialog id="uploadMediaDialog" />
                     </div>
-                </h:panelGroup>
             </div>
         </h:panelGroup>
 

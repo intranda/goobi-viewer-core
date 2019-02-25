@@ -286,7 +286,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
         if (StringUtils.isEmpty(privilegeName)) {
             return true;
         }
@@ -409,7 +409,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
@@ -472,9 +472,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return false;
     }
 
-    public boolean isHasPrivilege(String privilege) {
-
-        return false;
+    public boolean isHasPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        return canSatisfyAllAccessConditions(Collections.singletonMap(LicenseType.LICENSE_TYPE_CMS, null).keySet(), privilege, null);
     }
 
     /**
@@ -876,6 +875,24 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean isSuperuser() {
         return superuser;
+    }
+
+    /**
+     * 
+     * @return true if user is superuser or has CMS-specific privileges
+     */
+    public boolean isCmsAdmin() {
+        try {
+            return isSuperuser() || isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return false;
     }
 
     /**

@@ -306,11 +306,14 @@ public class CmsBean implements Serializable {
      * Current page URL getter for PrettyFaces. Page must be either published or the current user must be an admin.
      *
      * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public String getCurrentPageUrl() {
         logger.trace("getCurrentPageUrl");
         if (currentPage != null && (currentPage.isPublished()
-                || (getUserBean() != null && getUserBean().getUser() != null && getUserBean().getUser().isSuperuser()))) {
+                || (getUserBean() != null && getUserBean().getUser() != null && getUserBean().getUser().isCmsAdmin()))) {
             String url = getTemplateUrl(currentPage.getTemplateId(), false);
             return url;
         }
@@ -318,8 +321,8 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is
-     * superuser.
+     * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is CMS
+     * admin.
      *
      * @param page
      * @return
@@ -487,15 +490,16 @@ public class CmsBean implements Serializable {
     public CMSSidebarElement getSidebarElement(String type) {
         return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
     }
-    
+
     public boolean isRelatedWorkLoaded() throws IndexUnreachableException {
-    	if(getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
-    		ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-    		if(adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier()) && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
-    			return true;
-    		}
-    	}
-    	return false;
+        if (getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier())
+                    && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -506,8 +510,8 @@ public class CmsBean implements Serializable {
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
-        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isSuperuser()) {
-            // Only superusers may save
+        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isCmsAdmin()) {
+            // Only authorized CMS admins may save
             return;
         }
         // resetImageDisplay();

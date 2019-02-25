@@ -17,15 +17,15 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <h:panelGroup layout="block" id="cmsCreatePage">
-                <h:form rendered="#{userBean.admin and cmsBean.selectedPage == null}">
+                <h:form rendered="#{cmsBean.selectedPage == null}">
                     <h:commandLink action="pretty:adminCmsOverview">
                         <h:outputText value="#{msg.cms_backToOverview}" />
                     </h:commandLink>
                 </h:form>
                 
-                <h:panelGroup rendered="#{userBean.admin and cmsBean.selectedPage != null}">
+                <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
                     <!-- AJAX LOADER -->
                     <div id="AJAXLoader"></div>
 

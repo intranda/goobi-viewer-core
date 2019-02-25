@@ -54,7 +54,7 @@ public class LicenseType implements IPrivilegeHolder {
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
 
-    private static final String LICENSE_TYPE_CMS = "licenseType_cms";
+    public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
     //    private static final String LICENSE_TYPE_CMS_MENU = "licenseType_cms_navigation";
     //    private static final String LICENSE_TYPE_DESC_CMS_MENU = "licenseType_cms_menu_desc";

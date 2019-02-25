@@ -17,9 +17,8 @@
     </ui:define>
     
     <ui:define name="content">
-        <h:panelGroup id="cmsSelectTemplateAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsSelectTemplateAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <div id="cmsSelectTemplate" class="cms-select-template">
-                <h:panelGroup rendered="#{userBean.admin}">
                     <h2 class="admin__content-inner-title">#{msg.cms_createPage} - #{msg.cms_selectTemplate}</h2>
                     
                     <div class="admin__content-inner-content">
@@ -66,7 +65,6 @@
                             </h:form>
                         </div>
                     </div>
-                </h:panelGroup>
             </div>
         </h:panelGroup>
     </ui:define>

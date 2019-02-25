@@ -298,7 +298,7 @@
                     </h:panelGroup>
 
                     <!-- ADMIN -->
-                    <h:panelGroup rendered="#{userBean.admin}">
+                    <h:panelGroup rendered="#{userBean.admin or userBean.user.isHasPrivilege('CMS_PAGES')}">
                         <li>
                             <h:commandLink action="pretty:admin">
 								<h:outputText value="#{msg.admin}" />
