@@ -1,34 +1,31 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-    
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseType')}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.license_licenseTypes, 'adminAllLicenseTypes', 2)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.license_licenseType,3)}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">        
+        <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseType">
                 <h:panelGroup rendered="#{userBean.admin  and adminBean.currentLicenseType != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" role="form" prependId="false">
-                        <h2>
+                        <h2 class="admin__content-inner-title">
                             <h:outputText value="#{msg.license_licenseType_addNew}" rendered="#{adminBean.currentLicenseType.id == null}" />
-                            <h:outputText value="#{msg.license_licenseType}: #{adminBean.currentLicenseType.name}"
-                                rendered="#{adminBean.currentLicenseType.id != null}" />
+                            <h:outputText value="#{msg.license_licenseType}: #{adminBean.currentLicenseType.name}" rendered="#{adminBean.currentLicenseType.id != null}" />
                         </h2>
 
-                        <div id="adminlicenseTypeWrapper">
+                        <div id="adminlicenseTypeWrapper" class="admin__content-inner-content">
                             <h3>#{msg.general}</h3>
 
                             <div class="form-group">
@@ -40,7 +37,7 @@
                                             <f:ajax render="@none" />
                                         </h:selectOneMenu>
                                     </div>
-<!--                                     <h:inputText value="#{adminBean.currentLicenseType.name}" id="name" required="true" styleClass="form-control" /> -->
+                                    <!--                                     <h:inputText value="#{adminBean.currentLicenseType.name}" id="name" required="true" styleClass="form-control" /> -->
                                 </div>
                             </div>
                             <div class="form-group">
@@ -69,8 +66,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privList}" /> #{msg.license_privList}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privList}" />
+                                            #{msg.license_privList}
                                         </label>
                                     </div>
                                 </div>
@@ -78,8 +76,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewImages}" /> #{msg.license_privViewImages}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewImages}" />
+                                            #{msg.license_privViewImages}
                                         </label>
                                     </div>
                                 </div>
@@ -87,8 +86,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewThumbnails}" /> #{msg.license_privViewThumbnails}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewThumbnails}" />
+                                            #{msg.license_privViewThumbnails}
                                         </label>
                                     </div>
                                 </div>
@@ -96,8 +96,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewFulltext}" /> #{msg.license_privViewFulltext}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewFulltext}" />
+                                            #{msg.license_privViewFulltext}
                                         </label>
                                     </div>
                                 </div>
@@ -105,8 +106,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewVideo}" /> #{msg.license_privViewVideo}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewVideo}" />
+                                            #{msg.license_privViewVideo}
                                         </label>
                                     </div>
                                 </div>
@@ -114,7 +116,8 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewAudio}" />
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privViewAudio}" />
                                             #{msg.license_privViewAudio}
                                         </label>
                                     </div>
@@ -123,8 +126,9 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDownloadPdf}" /> #{msg.license_privDownloadPdf}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDownloadPdf}" />
+                                            #{msg.license_privDownloadPdf}
                                         </label>
                                     </div>
                                 </div>
@@ -132,20 +136,21 @@
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-8">
                                     <div class="checkbox">
-                                        <label> 
-                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDownloadOriginalContent}" /> #{msg.license_privDownloadOriginalContent}
+                                        <label>
+                                            <h:selectBooleanCheckbox value="#{adminBean.currentLicenseType.privDownloadOriginalContent}" />
+                                            #{msg.license_privDownloadOriginalContent}
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <h:outputLabel for="overriding" styleClass="col-sm-4 control-label" value="#{msg.license_licenseType_overriding}" />
                                 <div class="col-sm-8">
                                     <div class="">
                                         <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
                                             value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
-                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}"  />
+                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                                             <f:ajax render="@none" />
                                         </h:selectManyListbox>
                                     </div>
@@ -157,8 +162,7 @@
                                     <f:setPropertyActionListener target="#{adminBean.currentLicenseType}" value="#{null}" />
                                 </h:commandLink>
 
-                                <h:commandLink action="adminLicenseTypes" actionListener="#{adminBean.saveLicenseTypeAction}" value="#{msg.save}"
-                                    styleClass="btn btn--success" />
+                                <h:commandLink action="adminLicenseTypes" actionListener="#{adminBean.saveLicenseTypeAction}" value="#{msg.save}" styleClass="btn btn--success" />
                             </div>
                         </div>
                     </h:form>
@@ -170,6 +174,6 @@
     <!-- SIDEBAR -->
     <ui:define name="sidebar">
         <adminWidget:widget_admin />
-    	<adminWidget:widget_cms />
+        <adminWidget:widget_cms />
     </ui:define>
 </ui:composition>

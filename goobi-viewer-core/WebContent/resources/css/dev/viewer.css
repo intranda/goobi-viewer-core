@@ -8426,10 +8426,6 @@ div[id*="-Modal"] .email-form .form-group {
   /* SIDEBAR */
   /* CONTENT */
 }
-.admin__sidebar-inner,
-.admin__content-inner {
-  min-height: calc(100vh - 30px);
-}
 .admin__sidebar {
   position: fixed;
   top: 0;
@@ -8451,14 +8447,10 @@ div[id*="-Modal"] .email-form .form-group {
 .admin__sidebar button:active,
 .admin__sidebar a:focus,
 .admin__sidebar button:focus {
-  text-decoration: underline;
+  text-decoration: none;
   color: #fff;
 }
 .admin__sidebar-inner h1 {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
   line-height: normal;
   margin: 0;
   margin-bottom: 30px;
@@ -8466,11 +8458,15 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
 }
 .admin__sidebar-inner h1 a {
-  max-width: 30%;
-  margin-right: 10px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  max-width: 100%;
 }
 .admin__sidebar-inner h1 img {
-  max-width: 100%;
+  max-width: 30%;
+  margin-right: 10px;
 }
 .admin__sidebar-logout {
   margin-right: -15px;
@@ -8485,8 +8481,19 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 15px;
 }
 .admin__content-inner {
-  padding: 15px;
+  min-height: calc(100vh - 30px);
+  border: 1px solid #ccc;
   background-color: #fff;
+}
+.admin__content-inner-title {
+  margin: 0;
+  padding: 15px;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+}
+.admin__content-inner-content {
+  padding: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -8710,7 +8717,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: -15px;
   padding-right: 15px;
   padding-left: 15px;
-  background-color: #134ea0;
+  background-color: #f08421;
 }
 .admin-widget li:hover:after,
 .admin-widget li.active:after {
@@ -8727,17 +8734,29 @@ div[id*="-Modal"] .email-form .form-group {
   border-color: transparent #f2f3f4 transparent transparent;
   z-index: 10;
 }
+.admin-widget li:hover a,
+.admin-widget li.active a {
+  color: #1a1a1a;
+}
+.admin-widget li:hover a .fa,
+.admin-widget li.active a .fa {
+  color: #1a1a1a;
+}
+.admin-widget li:hover {
+  background-color: #134ea0;
+}
+.admin-widget li:hover a {
+  color: #fff;
+}
+.admin-widget li:hover a .fa {
+  color: #fff;
+}
 .admin-widget li.spacer {
   margin-bottom: 10px;
 }
 .admin-widget a {
   display: block;
   padding: 5px 0;
-}
-.admin-widget a:hover,
-.admin-widget a:active,
-.admin-widget a:focus {
-  text-decoration: none;
 }
 .admin-widget a .fa {
   width: 30px;
@@ -10443,8 +10462,9 @@ div[id*="-Modal"] .email-form .form-group {
       justify-content: space-between;
 }
 .cms-menu__save {
-  text-align: right;
+  margin-left: auto;
   padding-right: 11px;
+  text-align: right;
 }
 .cms-menu__save.fixed {
   position: fixed;

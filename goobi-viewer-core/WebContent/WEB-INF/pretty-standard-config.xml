@@ -610,7 +610,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	
-		<!-- ADMIN -->
+	<!-- ADMIN -->
 	<url-mapping id="admin">
 		<pattern value="/admin/" />
 		<view-id value="/resources/admin/views/adminDashboard.xhtml" />

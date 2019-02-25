@@ -1,78 +1,74 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"                 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserGroup')}" />
-            <f:event
-                type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
-            <f:event
-                type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUserGroups,'adminAllUserGroups',2)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_userGroup,3)}" />
         </f:metadata>
     </ui:define>
-    
+
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">        
+        <f:view contentType="text/html" encoding="utf-8">
             <div id="adminUserGroup">
-                <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">                    
+                <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
-                        <h2>#{msg.userGroup_createNewUserGroup}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.userGroup_createNewUserGroup}</h2>
                     </h:panelGroup>
-                    
+
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                        <h2>#{msg.userGroup}: #{adminBean.currentUserGroup.name}</h2>
+                        <h2 class="admin__content-inner-title">#{msg.userGroup}: #{adminBean.currentUserGroup.name}</h2>
                     </h:panelGroup>
 
-					<div role="tabpanel">
-						<!-- Nav tabs -->
-						<ul class="nav nav-tabs" role="tablist">
-							<li role="presentation" class="active">
-								<a href="#userGroupGeneral" aria-controls="home" role="tab" data-toggle="tab">#{msg.general}</a>
-							</li>
-							<h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-								<li role="presentation">
-									<a href="#userGroupMembers" aria-controls="profile" role="tab" data-toggle="tab">#{msg.userGroup_members}</a>
-								</li>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-								<li role="presentation">
-									<a href="#userGroupLicenses" aria-controls="messages" role="tab" data-toggle="tab">#{msg.licenses}</a>
-								</li>
-							</h:panelGroup>
-						</ul>
-
-						<!-- Tab panes -->
-						<div class="tab-content">
-							<!-- user group general -->
-							<div role="tabpanel" class="tab-pane active" id="userGroupGeneral">
-                                <ui:include src="/resources/admin/includes/tabUserGroupGeneral.xhtml" />
-							</div>
-							
-							<!-- user group member -->
-							<h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-								<div role="tabpanel" class="tab-pane" id="userGroupMembers">
-	                                <ui:include src="/resources/admin/includes/tabUserGroupMembers.xhtml" />
-								</div>
-							</h:panelGroup>
-							
-							<!-- user group license -->
-							<h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-								<div role="tabpanel" class="tab-pane" id="userGroupLicenses">
-	                                <ui:include src="/resources/admin/includes/tabUserGroupLicenses.xhtml" />
-								</div>
-							</h:panelGroup>
-						</div>
-					</div>
+                    <div class="admin__content-inner-content">
+                        <div role="tabpanel">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#userGroupGeneral" aria-controls="home" role="tab" data-toggle="tab">#{msg.general}</a>
+                                </li>
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <li role="presentation">
+                                        <a href="#userGroupMembers" aria-controls="profile" role="tab" data-toggle="tab">#{msg.userGroup_members}</a>
+                                    </li>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <li role="presentation">
+                                        <a href="#userGroupLicenses" aria-controls="messages" role="tab" data-toggle="tab">#{msg.licenses}</a>
+                                    </li>
+                                </h:panelGroup>
+                            </ul>
+    
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <!-- user group general -->
+                                <div role="tabpanel" class="tab-pane active" id="userGroupGeneral">
+                                    <ui:include src="/resources/admin/includes/tabUserGroupGeneral.xhtml" />
+                                </div>
+    
+                                <!-- user group member -->
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <div role="tabpanel" class="tab-pane" id="userGroupMembers">
+                                        <ui:include src="/resources/admin/includes/tabUserGroupMembers.xhtml" />
+                                    </div>
+                                </h:panelGroup>
+    
+                                <!-- user group license -->
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <div role="tabpanel" class="tab-pane" id="userGroupLicenses">
+                                        <ui:include src="/resources/admin/includes/tabUserGroupLicenses.xhtml" />
+                                    </div>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
                 </h:panelGroup>
             </div>
         </f:view>
@@ -81,6 +77,6 @@
     <!-- SIDEBAR -->
     <ui:define name="sidebar">
         <adminWidget:widget_admin />
-    	<adminWidget:widget_cms />
+        <adminWidget:widget_cms />
     </ui:define>
 </ui:composition>
