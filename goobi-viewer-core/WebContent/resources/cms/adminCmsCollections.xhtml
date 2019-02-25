@@ -27,7 +27,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.admin}">
+        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.hasPrivilege('CMS_COLLECTIONS')}">
             <div id="cmsCollections" class="cms-collections">
                 <h2>#{msg.cms_collections}</h2>
 

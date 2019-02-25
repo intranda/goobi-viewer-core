@@ -25,7 +25,7 @@
 	</ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.hasPrivilege('CMS_MENU')}">
             <div id="cmsMenuItems" class="cms-menu">
                 <h:form id="editMenuForm" prependId="false">
                     <h:panelGroup rendered="#{userBean.admin}">

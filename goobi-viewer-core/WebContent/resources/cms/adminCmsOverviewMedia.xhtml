@@ -23,7 +23,7 @@
 	</ui:define>
 
 	<ui:define name="content">
-        <h:panelGroup id="cmsOverviewMediaAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsOverviewMediaAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.hasPrivilege('CMS')}>
             <div id="cmsOverviewMedia">
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h2>#{msg.cms_overviewMedia}</h2>

@@ -279,6 +279,86 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
+     */
+    @Override
+    public boolean isPrivCms() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCms(boolean)
+     */
+    @Override
+    public void setPrivCms(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
+     */
+    @Override
+    public boolean isPrivCmsMenu() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
+     */
+    @Override
+    public void setPrivCmsMenu(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
+     */
+    @Override
+    public boolean isPrivCmsStaticPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
+     */
+    @Override
+    public void setPrivCmsStaticPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCollections()
+     */
+    @Override
+    public boolean isPrivCmsCollections() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
+     */
+    @Override
+    public void setPrivCmsCollections(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        }
+    }
+
     /*********************************** Getter and Setter ***************************************/
 
     /**

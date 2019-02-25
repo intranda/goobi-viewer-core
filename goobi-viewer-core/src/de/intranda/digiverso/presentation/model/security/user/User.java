@@ -443,7 +443,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             }
 
         }
-        //It should be sufficient if the user can satisfy one required licence
+        // It should be sufficient if the user can satisfy one required licence
         return permissionMap.isEmpty() || permissionMap.containsValue(true);
         //        return !permissionMap.containsValue(false);
     }
@@ -468,6 +468,11 @@ public class User implements ILicensee, HttpSessionBindingListener {
             // license.setUser(null);
             return licenses.remove(license);
         }
+
+        return false;
+    }
+
+    public boolean isHasPrivilege(String privilege) {
 
         return false;
     }

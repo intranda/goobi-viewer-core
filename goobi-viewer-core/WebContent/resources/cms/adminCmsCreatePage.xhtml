@@ -37,7 +37,7 @@
 	<ui:define name="content">
         <h:panelGroup
             id="cmsCreatePageAccessControl"
-            rendered="#{configurationBean.cmsEnabled}">
+            rendered="#{configurationBean.cmsEnabled and userBean.user.hasPrivilege('CMS')}">
             <h:panelGroup
                 layout="block"
                 id="cmsCreatePage">
