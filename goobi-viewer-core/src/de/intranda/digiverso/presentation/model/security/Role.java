@@ -283,19 +283,19 @@ public class Role implements IPrivilegeHolder {
      * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
      */
     @Override
-    public boolean isPrivCms() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_CMS);
+    public boolean isPrivCmsPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCms(boolean)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
      */
     @Override
-    public void setPrivCms(boolean priv) {
+    public void setPrivCmsPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS);
+            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS);
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
 

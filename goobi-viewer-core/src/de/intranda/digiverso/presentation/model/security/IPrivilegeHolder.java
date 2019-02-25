@@ -31,7 +31,7 @@ public interface IPrivilegeHolder {
     // Static privileges
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
-    public static final String PRIV_CMS = "CMS";
+    public static final String PRIV_CMS_PAGES = "CMS_PAGES";
     public static final String PRIV_CMS_MENU = "CMS_MENU";
     public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
@@ -74,9 +74,9 @@ public interface IPrivilegeHolder {
 
     public void setPrivSetRepresentativeImage(boolean priv);
 
-    public boolean isPrivCms();
+    public boolean isPrivCmsPages();
 
-    public void setPrivCms(boolean priv);
+    public void setPrivCmsPages(boolean priv);
 
     public boolean isPrivCmsMenu();
 

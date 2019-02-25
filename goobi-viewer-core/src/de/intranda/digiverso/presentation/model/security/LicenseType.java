@@ -56,12 +56,12 @@ public class LicenseType implements IPrivilegeHolder {
 
     private static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
-//    private static final String LICENSE_TYPE_CMS_MENU = "licenseType_cms_navigation";
-//    private static final String LICENSE_TYPE_DESC_CMS_MENU = "licenseType_cms_menu_desc";
-//    private static final String LICENSE_TYPE_CMS_STATIC_PAGES = "licenseType_cms_static_pages";
-//    private static final String LICENSE_TYPE_DESC_CMS_STATIC_PAGES = "licenseType_cms_static_pages_desc";
-//    private static final String LICENSE_TYPE_CMS_COLLECTIONS = "licenseType_cms_collections";
-//    private static final String LICENSE_TYPE_DESC_CMS_COLLECTIONS = "licenseType_cms_collections_desc";
+    //    private static final String LICENSE_TYPE_CMS_MENU = "licenseType_cms_navigation";
+    //    private static final String LICENSE_TYPE_DESC_CMS_MENU = "licenseType_cms_menu_desc";
+    //    private static final String LICENSE_TYPE_CMS_STATIC_PAGES = "licenseType_cms_static_pages";
+    //    private static final String LICENSE_TYPE_DESC_CMS_STATIC_PAGES = "licenseType_cms_static_pages_desc";
+    //    private static final String LICENSE_TYPE_CMS_COLLECTIONS = "licenseType_cms_collections";
+    //    private static final String LICENSE_TYPE_DESC_CMS_COLLECTIONS = "licenseType_cms_collections_desc";
 
     //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
     private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
@@ -155,10 +155,21 @@ public class LicenseType implements IPrivilegeHolder {
     /**
      * Checks whether this is a static license type by the name.
      *
-     * @return
+     * @return true if license type name is one of the static name strings; false otherwise
      */
     public boolean isStaticLicenseType() {
-        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_DELETE_OCR_PAGE.equals(name);
+        if (name == null) {
+            return false;
+        }
+
+        switch (name) {
+            case LICENSE_TYPE_CMS:
+            case LICENSE_TYPE_DELETE_OCR_PAGE:
+            case LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -279,9 +290,9 @@ public class LicenseType implements IPrivilegeHolder {
 
         switch (name) {
             case LICENSE_TYPE_CMS:
-//            case LICENSE_TYPE_CMS_MENU:
-//            case LICENSE_TYPE_CMS_STATIC_PAGES:
-//            case LICENSE_TYPE_CMS_COLLECTIONS:
+                //            case LICENSE_TYPE_CMS_MENU:
+                //            case LICENSE_TYPE_CMS_STATIC_PAGES:
+                //            case LICENSE_TYPE_CMS_COLLECTIONS:
                 return true;
             default:
                 return false;
@@ -469,22 +480,22 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsPages()
      */
     @Override
-    public boolean isPrivCms() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_CMS);
+    public boolean isPrivCmsPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCms(boolean)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
      */
     @Override
-    public void setPrivCms(boolean priv) {
+    public void setPrivCmsPages(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_CMS);
+            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_CMS);
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
         }
     }
 
@@ -569,7 +580,7 @@ public class LicenseType implements IPrivilegeHolder {
         // Add the license type "may delete ocr page", if not yet in the database
         addStaticLicenseType(LICENSE_TYPE_DELETE_OCR_PAGE, LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         // Add CMS license types, if not yet in the database
-        addStaticLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS);
+        addStaticLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS_PAGES);
         //        addStaticLicenseType(LICENSE_TYPE_CMS_MENU, LICENSE_TYPE_DESC_CMS_MENU, IPrivilegeHolder.PRIV_CMS_MENU);
         //        addStaticLicenseType(LICENSE_TYPE_CMS_STATIC_PAGES, LICENSE_TYPE_DESC_CMS_STATIC_PAGES, IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
         //        addStaticLicenseType(LICENSE_TYPE_CMS_COLLECTIONS, LICENSE_TYPE_DESC_CMS_COLLECTIONS, IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
