@@ -10,10 +10,6 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminAllUsers')}" />
-            <f:event
-                type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_general, '',1)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.admin_allUsers,2)}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
         </f:metadata>
     </ui:define>
@@ -21,9 +17,9 @@
     <ui:define name="content">
         <div id="adminAllUsers">			
             <h:panelGroup rendered="#{userBean.admin}">
-                <h2>#{msg.admin_allUsers}</h2>
+                <h2 class="admin__content-inner-title">#{msg.admin__users}</h2>
 
-                <div id="admin_allUser_wrapper">
+                <div class="admin__content-inner-content">
                     <h:form id="adminAllUserForm" prependId="false">
                         <h:commandLink action="pretty:adminUser" actionListener="#{adminBean.resetCurrentUserAction}" value="#{msg.admin_createNewUser}" styleClass="btn btn--default pull-right" />
                         

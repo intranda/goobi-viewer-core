@@ -27,7 +27,7 @@
     		margin-left: -15px;
     		padding-right: 15px;
     		padding-left: 15px;
-    		background-color: @activeblue;
+    		background-color: @orange;
     		&:after {
     			content: "";
     			position: absolute;
@@ -42,6 +42,21 @@
     			border-color: transparent @neutralgray transparent transparent;
     			z-index: 10;
     		}
+    		a {
+    			color: @black;
+    			.fa {
+    				color: @black;
+    			}
+    		}
+    	}
+    	&:hover {
+    		background-color: @activeblue;
+    		a {
+    			color: @white;
+    			.fa {
+    				color: @white;
+    			}
+    		}
     	}
     	&.spacer {
     		margin-bottom: 10px;
@@ -50,11 +65,6 @@
     a {
     	display: block;
     	padding: 5px 0;
-    	&:hover,
-    	&:active,
-    	&:focus {
-    		text-decoration: none;
-    	}
     	.fa {
     		width: 30px;
     	}
