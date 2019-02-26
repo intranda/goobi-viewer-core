@@ -15,48 +15,48 @@
 					<ul>
 					    <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
-							    <h:commandLink action="pretty:adminCmsOverview">
+							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverview')}/">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                     <span>#{msg.cms_overview}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
                             <li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
-						        <h:commandLink action="pretty:adminCmsSelectTemplate">
+							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     <span>#{msg.cms_createPage}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
 						</ui:fragment>
 						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
-						        <h:commandLink action="pretty:adminCmsStaticPages">
+							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/">
                                     <i class="fa fa-cogs" aria-hidden="true"></i>
                                     <span>#{msg.cms_staticPages}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
 						</ui:fragment>
 						<ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
-							    <h:commandLink action="pretty:adminCmsMedia">
+							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverviewMedia')}/">
                                     <i class="fa fa-picture-o" aria-hidden="true"></i>
                                     <span>#{msg.cms_overviewMedia}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
 						</ui:fragment>
 						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_MENU')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
-							    <h:commandLink action="pretty:adminCmsMenuItems">
+							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/">
                                     <i class="fa fa-bars" aria-hidden="true"></i>
                                     <span>#{msg.cms_menu_items}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
 						</ui:fragment>
 						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_COLLECTIONS')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
-                                <h:commandLink action="pretty:adminCmsCollections">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCollections')}/">
                                     <i class="fa fa-object-group" aria-hidden="true"></i>
                                     <span>#{msg.cms_collections}</span>
-                                </h:commandLink>
+                            </h:outputLink>
                             </li>
                         </ui:fragment>
 					</ul>
