@@ -188,7 +188,7 @@ var viewerJS = ( function( viewer ) {
                 html += '<dd>';
                 $.each( value, function( p, v ) {
                     if ( v.text ) {
-                        if ( property === "URI" ) {
+                        if ( v.text.startsWith('http://') || v.text.startsWith('https://') ) {
                             html += '<a href="' + v.text + '" target="_blank">';
                             html += v.text;
                             html += '</a>';
