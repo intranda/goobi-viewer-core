@@ -54,6 +54,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -2360,55 +2361,7 @@ public class JPADAO implements IDAO {
         return filterString;
     }
 
-    /**
-     * @throws DAOException
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByClassification(java.lang.String)
-     * @should return all pages with given classification
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                StringBuilder sbQuery = new StringBuilder(70);
-                sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
-                Query q = em.createQuery(sbQuery.toString());
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
 
-    /**
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, java.lang.String)
-     * @should return all pages with the given related pi
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                StringBuilder sbQuery = new StringBuilder(70);
-                sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
-                if (StringUtils.isNotEmpty(pageClassification)) {
-                    sbQuery.append("AND '").append(pageClassification).append("' MEMBER OF o.classifications");
-                }
-                Query q = em.createQuery(sbQuery.toString());
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
 
     /**
      * @throws DAOException
@@ -3083,30 +3036,6 @@ public class JPADAO implements IDAO {
         return (long) q.getSingleResult();
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getMatchingTags(java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getMatchingTags(String inputString) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery =
-                new StringBuilder("SELECT DISTINCT tag_name FROM cms_media_item_tags").append(" WHERE tag_name LIKE '" + inputString + "%'");
-        Query q = em.createNativeQuery(sbQuery.toString());
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllTags()
-     */
-    @SuppressWarnings({ "unchecked" })
-    @Override
-    public List<String> getAllTags() throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT tag_name FROM cms_media_item_tags");
-        Query q = em.createNativeQuery(sbQuery.toString());
-        return q.getResultList();
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getAllStaticPages()
@@ -3320,4 +3249,52 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public List<CMSPage> getCMSPagesByCategory(Category category) throws DAOException {
+		preQuery();
+        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories ");
+        q.setParameter("field", solrField);
+        q.setParameter("value", solrFieldValue);
+        return (CMSCollection) getSingleResult(q).orElse(null);
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public List<CMSPage> getCMSPagesForRecord(String pi, Category category) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
+	 */
+	@Override
+	public List<Category> getAllCategories() throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public void addCategory(Category category) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public boolean deleteCategory(Category category) throws DAOException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -137,12 +137,6 @@ public class CMSPage implements Comparable<CMSPage> {
     @Transient
     private List<CMSSidebarElement> unusedSidebarElements;
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(name = "cms_page_classifications", joinColumns = @JoinColumn(name = "page_id"))
-//    @Column(name = "classification")
-//    @PrivateOwned
-//    private List<String> classifications = new ArrayList<>();
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "join_categories_pages", joinColumns = @JoinColumn(name = "page_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -475,7 +469,7 @@ public class CMSPage implements Comparable<CMSPage> {
     }
 
     public void addcategory(Category category) {
-        if (!categories.contains(categories)) {
+        if (!categories.contains(category)) {
         	categories.add(category);
         }
     }

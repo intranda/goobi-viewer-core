@@ -29,6 +29,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -278,9 +279,9 @@ public interface IDAO {
 
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
-    public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException;
+    public List<CMSPage> getCMSPagesByCategory(Category category) throws DAOException;
 
-    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException;
+    public List<CMSPage> getCMSPagesForRecord(String pi, Category category) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
 
@@ -320,9 +321,6 @@ public interface IDAO {
 
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException;
 
-    public List<String> getMatchingTags(String inputString) throws DAOException;
-
-    public List<String> getAllTags() throws DAOException;
 
     public List<CMSStaticPage> getAllStaticPages() throws DAOException;
 
@@ -335,6 +333,12 @@ public interface IDAO {
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
 
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+    
+    public List<Category> getAllCategories() throws DAOException;
+
+    public void addCategory(Category category) throws DAOException;
+    
+    public boolean deleteCategory(Category category) throws DAOException;
 
     // Transkribus
 
