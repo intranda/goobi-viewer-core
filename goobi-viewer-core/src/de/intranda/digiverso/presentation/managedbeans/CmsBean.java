@@ -71,6 +71,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -426,16 +427,14 @@ public class CmsBean implements Serializable {
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        for (String classification : item.getPageClassification()) {
-            if (!StringUtils.isEmpty(classification)) {
+        for (Category category : item.getCategories()) {
                 for (CMSPage cmsPage : cmsPages) {
-                    if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
+                    if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
                         counter++;
                         if (counter > offset && counter <= size + offset) {
                             nestedPages.add(cmsPage);
                         }
                     }
-                }
             }
         }
         setNestedPagesCount((int) Math.ceil(counter / (double) size));
@@ -629,7 +628,7 @@ public class CmsBean implements Serializable {
                             }
                             break;
                         case PAGELIST:
-                            if (item.getPageClassification().length == 0) {
+                            if (item.getCategories().size() == 0) {
                                 languageIncomplete = true;
                             }
                             break;
@@ -1469,10 +1468,10 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
+    public List<CMSPage> getRelatedPages(String pi, Category category) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getCMSPagesForRecord(pi, classification)
+                .getCMSPagesForRecord(pi, category)
                 .stream()
                 //                .filter(page -> pi.equals(page.getRelatedPI()))
                 //                .filter(page -> page.getClassifications().contains(classification))

@@ -100,6 +100,33 @@ public class Category {
 		this.description = description;
 	}
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj != null && obj.getClass().equals(Category.class)) {
+    		if(((Category)obj).getId() != null && this.getId() != null) {
+    			return ((Category)obj).getId().equals(this.getId());
+    		} else {
+    			return false;
+    		}
+     	}
+    	return false;
+    }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+    	if(getId() != null) {
+    		return getId().hashCode();
+    	} else if(getName() != null) {
+    		return getName().hashCode();
+    	} else {
+    		return super.hashCode();
+    	}
+    }
 
 }

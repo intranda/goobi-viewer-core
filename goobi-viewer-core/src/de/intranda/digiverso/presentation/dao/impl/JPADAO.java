@@ -3254,12 +3254,13 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByCategory(de.intranda.digiverso.presentation.model.cms.Category)
 	 */
 	@Override
+    @SuppressWarnings("unchecked")
 	public List<CMSPage> getCMSPagesByCategory(Category category) throws DAOException {
 		preQuery();
-        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories ");
-        q.setParameter("field", solrField);
-        q.setParameter("value", solrFieldValue);
-        return (CMSCollection) getSingleResult(q).orElse(null);
+        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
+        q.setParameter("id", category.getId());
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
 	}
 
 	/* (non-Javadoc)
@@ -3267,8 +3268,17 @@ public class JPADAO implements IDAO {
 	 */
 	@Override
 	public List<CMSPage> getCMSPagesForRecord(String pi, Category category) throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		preQuery();
+		Query q;
+		if(category != null) {			
+			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
+			q.setParameter("id", category.getId());
+		} else {
+			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.relatedPI = :pi");
+		}
+        q.setParameter("pi", pi);
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
 	}
 
 	/* (non-Javadoc)
@@ -3276,8 +3286,10 @@ public class JPADAO implements IDAO {
 	 */
 	@Override
 	public List<Category> getAllCategories() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		preQuery();
+        Query q = em.createQuery("SELECT c FROM Category");
+        List<Category> list = q.getResultList();
+        return list;
 	}
 
 	/* (non-Javadoc)
@@ -3285,8 +3297,31 @@ public class JPADAO implements IDAO {
 	 */
 	@Override
 	public void addCategory(Category category) throws DAOException {
-		// TODO Auto-generated method stub
-		
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(category);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public void updateCategory(Category category) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(category);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
 	}
 
 	/* (non-Javadoc)
@@ -3294,7 +3329,28 @@ public class JPADAO implements IDAO {
 	 */
 	@Override
 	public boolean deleteCategory(Category category) throws DAOException {
-		// TODO Auto-generated method stub
-		return false;
+		preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.remove(category);
+            em.getTransaction().commit();
+            return true;
+        } finally {
+            em.close();
+        }
 	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
+	 */
+	@Override
+	public Category getCategoryByName(String name) throws DAOException {
+		preQuery();
+        Query q = em.createQuery("SELECT c FROM Category WHERE c.name = :name");
+        q.setParameter("name", name);
+        Category category = (Category) getSingleResult(q).orElse(null);
+        return category;
+	}
+
 }

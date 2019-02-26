@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.cms.tilegrid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,7 +27,9 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 public class TileGridBuilderTest {
@@ -49,38 +52,53 @@ public class TileGridBuilderTest {
 
     @Test
     public void testCountTags() {
-        List<String> itemTags = Arrays.asList(new String[] { "tag1", "tag2", "tag3", "tag4" });
-        List<String> selectionTags = Arrays.asList(new String[] { "tag2", "tag3", "tag5" });
+        List<String> itemTags = Arrays.asList(new String[] { "tag1", "tag2", "tag3", "other"});
+        List<Category> categories = itemTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
+        List<String> selectionTags = Arrays.asList(new String[] { "tag2", "tag3", "news" });
+        List<Category> selectionCategories = selectionTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
         CMSMediaItem item = new CMSMediaItem();
-        item.setTags(itemTags);
-        Assert.assertEquals(2, TileGridBuilder.countTags(item, selectionTags));
+        item.setCategories(categories);
+        Assert.assertEquals(2, TileGridBuilder.countTags(item, selectionCategories.stream().map(c -> c.getName()).collect(Collectors.toList())));
 
     }
+
+	/**
+	 * @param tag
+	 * @return
+	 * @throws DAOException
+	 */
+	private Category getCategory(String tag) {
+		try {
+			return DataManager.getInstance().getDao().getCategoryByName(tag);
+		} catch (DAOException e) {
+			return null;
+		}
+	}
 
     @Test
     public void testBuild() {
         List<ImageGalleryTile> items = new ArrayList<>();
         CMSMediaItem item1 = new CMSMediaItem();
         item1.setId(1l);
-        item1.addTag("tag1");
+        item1.addCategory(getCategory("tag1"));
         item1.setPriority(Priority.IMPORTANT);
         item1.setFileName("file1");
         items.add(item1);
         CMSMediaItem item2 = new CMSMediaItem();
         item2.setId(2l);
-        item2.addTag("tag2");
+        item2.addCategory(getCategory("tag2"));
         item2.setPriority(Priority.IMPORTANT);
         item2.setFileName("file2");
         items.add(item2);
         CMSMediaItem item3 = new CMSMediaItem();
         item3.setId(3l);
-        item3.addTag("tag1");
+        item3.addCategory(getCategory("tag1"));
         item3.setPriority(Priority.DEFAULT);
         item3.setFileName("file3");
         items.add(item3);
         CMSMediaItem item4 = new CMSMediaItem();
         item4.setId(4l);
-        item4.addTag("tag1");
+        item4.addCategory(getCategory("tag1"));
         item4.setPriority(Priority.DEFAULT);
         item4.setFileName("file4");
         items.add(item4);

@@ -154,7 +154,7 @@ public class TileGridBuilder {
      * @return
      */
     protected static int countTags(ImageGalleryTile item, Collection<String> tags) {
-        return CollectionUtils.intersection(item.getTags(), tags).size();
+        return CollectionUtils.intersection(item.getCategories().stream().map(c -> c.getName()).collect(Collectors.toList()), tags).size();
     }
 
     /**

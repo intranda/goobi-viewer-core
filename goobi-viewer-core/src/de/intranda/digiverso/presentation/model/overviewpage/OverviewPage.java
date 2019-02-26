@@ -66,6 +66,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.misc.Harvestable;
@@ -674,11 +675,17 @@ public class OverviewPage implements Harvestable, Serializable {
         logger.info("Migrating overview page for '{}' to CMS...", pi);
         loadConfig(configXml);
         parseConfig(config);
+        
+        Category overviewPageCategory = DataManager.getInstance().getDao().getCategoryByName("overviewpage");
+        if(overviewPageCategory == null) {
+        	overviewPageCategory = new Category("overviewpage");
+        	DataManager.getInstance().getDao().addCategory(overviewPageCategory);
+        }
 
         CMSPage cmsPage = new CMSPage();
         cmsPage.setTemplateId("templateOverviewPageLegacy");
         cmsPage.setRelatedPI(pi);
-        cmsPage.addClassification("overviewpage");
+        cmsPage.addcategory(overviewPageCategory);
         cmsPage.setPersistentUrl("overview/" + pi + "/1");
         if (dateUpdated == null) {
             dateUpdated = new Date();

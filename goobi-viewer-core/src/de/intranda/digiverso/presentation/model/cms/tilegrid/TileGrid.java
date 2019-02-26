@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.cms.tilegrid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,48 +26,52 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 
 public class TileGrid {
 
-    private final List<String> tags = new ArrayList<>();
-    private final List<Tile> items = new ArrayList<Tile>();
+	private final List<String> tags = new ArrayList<>();
+	private final List<Tile> items = new ArrayList<Tile>();
 
-    public TileGrid(List<ImageGalleryTile> items, Set<String> tags,String language, HttpServletRequest request) {
-        this.tags.addAll(tags);
-        for (ImageGalleryTile mediaItem : items) {
-            this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "", mediaItem.getIconURI() != null ? mediaItem
-                    .getIconURI(0,0).toString() : "", mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "", mediaItem
-                            .getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "", mediaItem.isImportant(), mediaItem.getSize() != null
-                                    ? mediaItem.getSize() : CMSMediaItem.DisplaySize.DEFAULT, mediaItem.getTags(), mediaItem.isCollection()
-                                            ? mediaItem.getCollectionName() : null, mediaItem.getDisplayOrder()));
-        }
-    }
+	public TileGrid(List<ImageGalleryTile> items, Set<String> tags, String language, HttpServletRequest request) {
+		this.tags.addAll(tags);
+		for (ImageGalleryTile mediaItem : items) {
+			this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "",
+					mediaItem.getIconURI() != null ? mediaItem.getIconURI(0, 0).toString() : "",
+					mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "",
+					mediaItem.getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "",
+					mediaItem.isImportant(),
+					mediaItem.getSize() != null ? mediaItem.getSize() : CMSMediaItem.DisplaySize.DEFAULT,
+					mediaItem.getCategories().stream().map(c -> c.getName()).collect(Collectors.toList()), mediaItem.isCollection() ? mediaItem.getCollectionName() : null,
+					mediaItem.getDisplayOrder()));
+		}
+	}
 
-    public TileGrid() {
-    }
+	public TileGrid() {
+	}
 
-    public List<Tile> getItems() {
-        return this.items;
-    }
+	public List<Tile> getItems() {
+		return this.items;
+	}
 
-    public void addItem(Tile item) {
-        this.items.add(item);
-    }
+	public void addItem(Tile item) {
+		this.items.add(item);
+	}
 
-    public void removeItem(Tile item) {
-        this.items.remove(item);
-    }
-    
-    /**
-     * @return the tags
-     */
-    public List<String> getTags() {
-        return tags;
-    }
+	public void removeItem(Tile item) {
+		this.items.remove(item);
+	}
 
+	/**
+	 * @return the tags
+	 */
+	public List<String> getTags() {
+		return tags;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getItems().toString();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getItems().toString();
+	}
 }

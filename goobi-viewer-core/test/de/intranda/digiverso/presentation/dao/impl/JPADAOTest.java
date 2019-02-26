@@ -46,6 +46,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.DownloadJob.JobStatus;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -1483,7 +1484,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesByClassification_shouldReturnAllPagesWithGivenClassification() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByClassification("news").size());
+    	Category news = DataManager.getInstance().getDao().getCategoryByName("news");
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByCategory(news).size());
     }
 
     /**
@@ -1492,7 +1494,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", CMSPage.CLASSIFICATION_OVERVIEWPAGE).size());
+    	Category c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", c).size());
     }
 
     /**
@@ -1535,7 +1538,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.setDateCreated(new Date());
         page.setPublished(true);
         page.setUseDefaultSidebar(false);
-        page.getClassifications().add("class");
+        
+    	Category cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+        page.getCategories().add(cClass);
 
         CMSPageLanguageVersion version = new CMSPageLanguageVersion();
         version.setLanguage("en");
@@ -1565,8 +1570,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(page2);
         Assert.assertEquals(page.getTemplateId(), page2.getTemplateId());
         Assert.assertEquals(page.getDateCreated(), page2.getDateCreated());
-        Assert.assertEquals(1, page2.getClassifications().size());
-        Assert.assertEquals("class", page2.getClassifications().get(0));
+        Assert.assertEquals(1, page2.getCategories().size());
+        Assert.assertEquals(cClass, page2.getCategories().get(0));
         Assert.assertEquals(1, page.getLanguageVersions().size());
         Assert.assertEquals(version.getLanguage(), page.getLanguageVersions().get(0).getLanguage());
         Assert.assertEquals(version.getTitle(), page.getLanguageVersions().get(0).getTitle());
@@ -1594,8 +1599,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersion("en").setTitle("English title");
         page.getLanguageVersion("fr").setTitle("Titre français");
         page.getLanguageVersions().remove(0);
-        page.getClassifications().add("new class");
         page.getProperty("TEST_PROPERTY").setValue("true");
+
+    	Category cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+        page.getCategories().add(cClass);
 
         Date now = new Date();
         page.setDateUpdated(now);
@@ -1607,15 +1614,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
         Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
         Assert.assertEquals(2, page2.getLanguageVersions().size());
-        Assert.assertEquals(3, page2.getClassifications().size());
+        Assert.assertEquals(3, page2.getCategories().size());
         Assert.assertEquals(now, page2.getDateUpdated());
         Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
 
         page.getLanguageVersion("fr").setTitle("");
-        page.removeClassification("new class");
+        page.removeCategory(cClass);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
         Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page.getClassifications().size(), 0);
+        Assert.assertEquals(2, page.getCategories().size(), 0);
     }
 
     /**

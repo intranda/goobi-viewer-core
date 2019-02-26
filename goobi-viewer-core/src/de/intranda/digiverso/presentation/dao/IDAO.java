@@ -335,10 +335,15 @@ public interface IDAO {
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
     
     public List<Category> getAllCategories() throws DAOException;
-
+    
     public void addCategory(Category category) throws DAOException;
     
+    public void updateCategory(Category category) throws DAOException;
+    
     public boolean deleteCategory(Category category) throws DAOException;
+    
+    public Category getCategoryByName(String name) throws DAOException;
+
 
     // Transkribus
 
@@ -387,5 +392,6 @@ public interface IDAO {
 
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
 
 }
