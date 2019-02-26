@@ -33,13 +33,13 @@ public class Category {
 	/** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_category_id")
+    @Column(name = "id")
     private Long id;
     
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
     
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     public Category() {

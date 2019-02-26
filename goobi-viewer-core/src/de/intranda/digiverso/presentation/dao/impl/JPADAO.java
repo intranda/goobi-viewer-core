@@ -149,8 +149,8 @@ public class JPADAO implements IDAO {
            tags.forEach((name, ids) -> System.out.println(name + ": " + StringUtils.join(ids, ", ")));
             em.getTransaction().commit();
             
-        } catch (DAOException e) {
-            throw new DAOException(e.getMessage());
+        } catch (DAOException | PersistenceException e) {
+            logger.warn("Error converting categories");
         }
 	}
 
