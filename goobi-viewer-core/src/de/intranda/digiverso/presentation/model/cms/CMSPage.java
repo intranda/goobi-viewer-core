@@ -41,6 +41,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -135,12 +137,17 @@ public class CMSPage implements Comparable<CMSPage> {
     @Transient
     private List<CMSSidebarElement> unusedSidebarElements;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_page_classifications", joinColumns = @JoinColumn(name = "page_id"))
-    @Column(name = "classification")
-    @PrivateOwned
-    private List<String> classifications = new ArrayList<>();
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    @CollectionTable(name = "cms_page_classifications", joinColumns = @JoinColumn(name = "page_id"))
+//    @Column(name = "classification")
+//    @PrivateOwned
+//    private List<String> classifications = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "join_categories_pages", joinColumns = @JoinColumn(name = "page_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
+    
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
@@ -221,7 +228,7 @@ public class CMSPage implements Comparable<CMSPage> {
         this.persistentUrl = original.persistentUrl;
         this.relatedPI = original.relatedPI;
         this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
-        this.classifications = new ArrayList<>(original.classifications);
+        this.categories = new ArrayList<>(original.categories);
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
         this.wrapperElementClass = original.wrapperElementClass;
@@ -456,25 +463,25 @@ public class CMSPage implements Comparable<CMSPage> {
     /**
      * @return the classifications
      */
-    public List<String> getClassifications() {
-        return classifications;
+    public List<Category> getCategories() {
+        return categories;
     }
 
     /**
      * @param classifications the classifications to set
      */
-    public void setClassifications(List<String> classifications) {
-        this.classifications = classifications;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
-    public void addClassification(String classification) {
-        if (StringUtils.isNotBlank(classification) && !classifications.contains(classification)) {
-            classifications.add(classification);
+    public void addcategory(Category category) {
+        if (!categories.contains(categories)) {
+        	categories.add(category);
         }
     }
 
-    public void removeClassification(String classification) {
-        classifications.remove(classification);
+    public void removeCategory(Category category) {
+    	categories.remove(category);
     }
 
     /**

@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.dao.impl;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -112,6 +113,7 @@ public class JPADAO implements IDAO {
 
             em = factory.createEntityManager();
             createDiscriminatorRow();
+            convertCMSCategories();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
@@ -119,6 +121,39 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @throws DAOException 
+	 * 
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void convertCMSCategories() throws DAOException {
+		try {
+            preQuery();
+            em.getTransaction().begin();
+            Query qClassifications = em.createNativeQuery("SELECT * FROM cms_page_classifications");
+			List<Object[]> classificationResults = qClassifications.getResultList();
+           Map<String, List<Long>> classifications = classificationResults.stream().collect(Collectors.toMap(
+        		   array -> (String)array[1], 
+        		   array -> new ArrayList<Long>(Arrays.asList((Long)array[0])), 
+        		   (list1, list2) -> {list1.addAll(list2);return list1;}));
+           classifications.forEach((name, ids) -> System.out.println(name + ": " + StringUtils.join(ids, ", ")));
+            em.getTransaction().commit();
+            
+            em.getTransaction().begin();
+            Query qTags = em.createNativeQuery("SELECT * FROM cms_media_item_tags");
+			List<Object[]> tagResults = qTags.getResultList();
+           Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(
+        		   array -> (String)array[1], 
+        		   array -> new ArrayList<Long>(Arrays.asList((Long)array[0])), 
+        		   (list1, list2) -> {list1.addAll(list2);return list1;}));
+           tags.forEach((name, ids) -> System.out.println(name + ": " + StringUtils.join(ids, ", ")));
+            em.getTransaction().commit();
+            
+        } catch (DAOException e) {
+            throw new DAOException(e.getMessage());
+        }
+	}
+
+	/**
      * @throws DAOException
      * 
      */

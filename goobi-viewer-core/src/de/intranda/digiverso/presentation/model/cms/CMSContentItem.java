@@ -620,12 +620,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return nestedPages;
     }
 
-    public List<CMSPage> getNestedPages(String classification) throws DAOException {
+    public List<CMSPage> getNestedPages(Category category) throws DAOException {
         if (nestedPages == null) {
             return loadNestedPages();
         }
         List<CMSPage> pages = nestedPages.stream()
-                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .filter(page -> page.getCategories() != null && page.getCategories().contains(category))
                 .collect(Collectors.toList());
         return pages;
     }

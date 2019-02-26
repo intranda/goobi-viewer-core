@@ -39,6 +39,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
@@ -106,6 +108,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @PrivateOwned
     private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "join_categories_media_items", joinColumns = @JoinColumn(name = "media_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cms_media_item_tags", joinColumns = @JoinColumn(name = "owner_media_item_id"))
     @Column(name = "tag_name")
