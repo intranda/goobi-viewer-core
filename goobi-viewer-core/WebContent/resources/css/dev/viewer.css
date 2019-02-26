@@ -8349,15 +8349,13 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin__content-inner {
   min-height: calc(100vh - 30px);
-  border: 1px solid #ccc;
   background-color: #fff;
 }
 .admin__content-inner-title {
   margin: 0;
   padding: 15px;
-  font-size: 1.5rem;
-  border-bottom: 1px solid #ccc;
-  background-color: #eee;
+  font-size: 2rem;
+  background-color: #f2f3f4;
 }
 .admin__content-inner-content {
   padding: 15px;
@@ -8577,16 +8575,14 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-widget li {
   position: relative;
-}
-.admin-widget li:hover,
-.admin-widget li.active {
   margin-right: -15px;
   margin-left: -15px;
   padding-right: 15px;
   padding-left: 15px;
-  background-color: #f08421;
 }
-.admin-widget li:hover:after,
+.admin-widget li.active {
+  background-color: #0d3a79;
+}
 .admin-widget li.active:after {
   content: "";
   position: absolute;
@@ -8601,22 +8597,11 @@ div[id*="-Modal"] .email-form .form-group {
   border-color: transparent #f2f3f4 transparent transparent;
   z-index: 10;
 }
-.admin-widget li:hover a,
-.admin-widget li.active a {
-  color: #1a1a1a;
-}
-.admin-widget li:hover a .fa,
-.admin-widget li.active a .fa {
-  color: #1a1a1a;
-}
 .admin-widget li:hover {
   background-color: #134ea0;
 }
-.admin-widget li:hover a {
-  color: #fff;
-}
-.admin-widget li:hover a .fa {
-  color: #fff;
+.admin-widget li:hover:after {
+  display: none;
 }
 .admin-widget li.spacer {
   margin-bottom: 10px;

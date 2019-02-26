@@ -27,12 +27,10 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _notFound;
-    var _accessDenied
+    var _accessDenied;
     
     // load images with error handling
     viewer.loadThumbnails = function() {
-        
-
         _notFound = currentPath + '/resources/themes/' + viewer.theme + '/images/image_not_found.png';
         _accessDenied = currentPath + '/resources/themes/' + viewer.theme + '/images/access_denied.png';
         
