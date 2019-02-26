@@ -713,7 +713,7 @@ public class TocMaker {
                     }
                 }
                 // Translate parameter value, if so configured and not already translated
-                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType()) && !(value instanceof MultiLanguageMetadataValue)) {
+                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
                     value = IMetadataValue.getTranslations(value.getValue().orElse(""));
                 }
@@ -731,21 +731,21 @@ public class TocMaker {
                 Set<String> languages = new HashSet<>(value.getLanguages());
                 
                 languages.addAll(label.getLanguages());
-                if (MetadataParameterType.FIELD.equals(param.getType())) {
+//                if (MetadataParameterType.FIELD.equals(param.getType())) {
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(labelConfig.getMasterValue()).replace(placeholder,
                                 value.getValue(language).orElse(value.getValue().orElse("")));
                         label.setValue(langValue, language);
                     }
-                } else {
-                    for (String language : languages) {
-                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
-                        //                        String langValue =
-                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
-                        label.setValue(langValue, language);
-                    }
-                }
+//                } else {
+//                    for (String language : languages) {
+//                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
+//                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
+//                        //                        String langValue =
+//                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+//                        label.setValue(langValue, language);
+//                    }
+//                }
             }
         } else {
             // Old style layout
