@@ -1559,6 +1559,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setSolrQuery("PI:PPN517154005");
         item.setSolrSortFields("SORT_TITLE,DATECREATED");
         version.getContentItems().add(item);
+        
+    	Category news = DataManager.getInstance().getDao().getCategoryByName("news");
+    	Category other = DataManager.getInstance().getDao().getCategoryByName("other");
+    	item.addCategory(news);
+    	item.addCategory(other);
 
         // TODO add sidebar elements
 
@@ -1584,6 +1589,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
         Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
         Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());
+        Assert.assertEquals(2, item.getCategories().size());
+        Assert.assertTrue(item.getCategories().contains(news));
     }
 
     /**
@@ -1615,6 +1622,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
         Assert.assertEquals(2, page2.getLanguageVersions().size());
         Assert.assertEquals(3, page2.getCategories().size());
+        Assert.assertTrue(page.getCategories().contains(cClass));
         Assert.assertEquals(now, page2.getDateUpdated());
         Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
 
@@ -1623,6 +1631,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
         Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
         Assert.assertEquals(2, page.getCategories().size(), 0);
+        Assert.assertFalse(page.getCategories().contains(cClass));
     }
 
     /**
@@ -1942,7 +1951,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
         Assert.assertEquals("Too many observers after updateDownloadJob", 2, job.getObservers().size());
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        List<DownloadJob> allJobs = DataManager.getInstance().getDao().getAllDownloadJobs();
+        Assert.assertEquals(2, allJobs.size());
         Assert.assertEquals("Too many observers after getAllDownloadJobs", 2, job.getObservers().size());
 
         

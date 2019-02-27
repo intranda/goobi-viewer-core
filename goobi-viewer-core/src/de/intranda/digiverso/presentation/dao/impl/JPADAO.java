@@ -752,6 +752,7 @@ public class JPADAO implements IDAO {
     public List<Role> getAllRoles() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT r FROM Role r");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -793,6 +794,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -909,6 +911,7 @@ public class JPADAO implements IDAO {
     public List<UserRole> getAllUserRoles() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT ur FROM UserRole ur");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -957,6 +960,7 @@ public class JPADAO implements IDAO {
         if (role != null) {
             q.setParameter("role", role);
         }
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1030,6 +1034,7 @@ public class JPADAO implements IDAO {
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1047,6 +1052,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess");
             q.setParameter("openAccess", false);
+            q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
@@ -1092,6 +1098,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1126,6 +1133,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
         q.setParameter("name", name);
+        q.setFlushMode(FlushModeType.COMMIT);
         try {
             LicenseType o = (LicenseType) q.getSingleResult();
             if (o != null) {
@@ -1212,6 +1220,7 @@ public class JPADAO implements IDAO {
     public List<IpRange> getAllIpRanges() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1253,6 +1262,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1371,6 +1381,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getAllComments() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM Comment o");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1412,6 +1423,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1432,6 +1444,7 @@ public class JPADAO implements IDAO {
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
+        q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1520,6 +1533,7 @@ public class JPADAO implements IDAO {
         sbQuery.append("SELECT o.page FROM Comment o WHERE o.pi = :pi");
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
+        q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         List<Integer> results = q.getResultList();
         return results.stream().distinct().sorted().collect(Collectors.toList());
@@ -1533,6 +1547,7 @@ public class JPADAO implements IDAO {
     public List<Search> getAllSearches() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM Search o");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -2161,6 +2176,11 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(downloadJob);
             em.getTransaction().commit();
+            
+            if(this.em.contains(downloadJob)) {            	
+            	this.em.refresh(downloadJob);
+            }
+            
             return true;
         } finally {
             em.close();
@@ -3287,7 +3307,8 @@ public class JPADAO implements IDAO {
 	@Override
 	public List<Category> getAllCategories() throws DAOException {
 		preQuery();
-        Query q = em.createQuery("SELECT c FROM Category");
+        Query q = em.createQuery("SELECT c FROM Category c");
+        q.setFlushMode(FlushModeType.COMMIT);
         List<Category> list = q.getResultList();
         return list;
 	}
@@ -3347,8 +3368,10 @@ public class JPADAO implements IDAO {
 	@Override
 	public Category getCategoryByName(String name) throws DAOException {
 		preQuery();
-        Query q = em.createQuery("SELECT c FROM Category WHERE c.name = :name");
+        Query q = em.createQuery("SELECT c FROM Category c WHERE c.name = :name");
         q.setParameter("name", name);
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         Category category = (Category) getSingleResult(q).orElse(null);
         return category;
 	}

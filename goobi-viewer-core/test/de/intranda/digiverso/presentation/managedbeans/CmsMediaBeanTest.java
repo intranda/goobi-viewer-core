@@ -60,7 +60,7 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testGetAllMediaCategories() throws DAOException {
         List<Category> tags = bean.getAllMediaCategories();
-        Assert.assertEquals(3, tags.size());
+        Assert.assertEquals(7, tags.size());
     }
 
     @Test

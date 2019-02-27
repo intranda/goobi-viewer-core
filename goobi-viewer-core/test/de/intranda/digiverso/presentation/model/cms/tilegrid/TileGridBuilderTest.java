@@ -63,16 +63,14 @@ public class TileGridBuilderTest {
     }
 
 	/**
+	 * Just create a temporary category to avoid having to set up the DAO
 	 * @param tag
 	 * @return
 	 * @throws DAOException
 	 */
 	private Category getCategory(String tag) {
-		try {
-			return DataManager.getInstance().getDao().getCategoryByName(tag);
-		} catch (DAOException e) {
-			return null;
-		}
+		Category cat = new Category(tag);
+		return cat;
 	}
 
     @Test

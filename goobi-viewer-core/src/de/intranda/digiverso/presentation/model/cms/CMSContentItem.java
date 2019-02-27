@@ -568,7 +568,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.categories = categories;
     }
 
-    public void addcategory(Category category) {
+    public void addCategory(Category category) {
         if (!categories.contains(category)) {
         	categories.add(category);
         }
