@@ -9904,26 +9904,58 @@ div[id*="-Modal"] .email-form .form-group {
   display: flex;
   -ms-flex-align: center;
       align-items: center;
-  margin-bottom: 30px;
+  padding: 10px;
+  background-color: #f2f3f4;
 }
 .admin-cms-media__bulk-actions {
+  margin-right: 15px;
+}
+.admin-cms-media__switch [data-switch="list"].active,
+.admin-cms-media__switch [data-switch="grid"].active,
+.admin-cms-media__switch [data-switch="list"]:hover,
+.admin-cms-media__switch [data-switch="grid"]:hover,
+.admin-cms-media__switch [data-switch="list"]:active,
+.admin-cms-media__switch [data-switch="grid"]:active,
+.admin-cms-media__switch [data-switch="list"]:focus,
+.admin-cms-media__switch [data-switch="grid"]:focus {
+  color: #3365a9;
+}
+.admin-cms-media__switch [data-switch="list"].btn:active,
+.admin-cms-media__switch [data-switch="grid"].btn:active,
+.admin-cms-media__switch [data-switch="list"].btn:focus,
+.admin-cms-media__switch [data-switch="grid"].btn:focus,
+.admin-cms-media__switch [data-switch="list"].btn:active:focus,
+.admin-cms-media__switch [data-switch="grid"].btn:active:focus {
+  color: #3365a9;
+}
+.admin-cms-media__switch [data-switch="list"] {
   margin-right: 10px;
 }
 .admin-cms-media__paginator {
-  margin-left: auto;
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  margin-left: 10px;
+  text-align: center;
 }
 .admin-cms-media__filter {
   margin-left: 10px;
 }
+.admin-cms-media__files.grid .admin-cms-media__file,
 .admin-cms-media__file {
   position: relative;
   padding: 10px;
   background-color: #fff;
 }
-.admin-cms-media__file:nth-child(even) {
+.admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd),
+.admin-cms-media__file:nth-child(odd) {
   background-color: #f2f3f4;
 }
+.admin-cms-media__files.grid .admin-cms-media__file.fixed,
 .admin-cms-media__file.fixed {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
   position: fixed;
   top: 30px;
   right: 30px;
@@ -9932,24 +9964,85 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 50px;
   z-index: 2020;
 }
-.admin-cms-media__file.fixed:nth-child(even) {
+.admin-cms-media__files.grid .admin-cms-media__file.fixed:nth-child(odd),
+.admin-cms-media__file.fixed:nth-child(odd) {
   background-color: #fff;
 }
-.admin-cms-media__file.fixed .admin-cms-media__file-close {
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-close,
+.admin-cms-media__file.fixed .admin-cms-media__file-close,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-prev,
+.admin-cms-media__file.fixed .admin-cms-media__file-prev,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-next,
+.admin-cms-media__file.fixed .admin-cms-media__file-next {
   display: block;
 }
-.admin-cms-media__file-close {
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-select,
+.admin-cms-media__file.fixed .admin-cms-media__file-select {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-image,
+.admin-cms-media__file.fixed .admin-cms-media__file-image {
+  width: 300px;
+  height: 300px;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata {
+  display: block;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-bottom,
+.admin-cms-media__file.fixed .admin-cms-media__file-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: auto;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-view,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-view,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-view.in,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-view.in,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit.in,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit.in {
+  display: block;
+}
+.admin-cms-media__file-close,
+.admin-cms-media__file-prev,
+.admin-cms-media__file-next {
   display: none;
   position: absolute;
   top: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   cursor: pointer;
-  background-image: url("../../images/icons/icon_fs-close.svg");
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 16px;
+}
+.admin-cms-media__file-close {
+  right: 0;
+  background-image: url("../../images/icons/icon_fs-close.svg");
+  background-size: 22px;
+}
+.admin-cms-media__file-prev,
+.admin-cms-media__file-next {
+  background-size: 12px;
+}
+.admin-cms-media__file-prev {
+  right: 84px;
+  background-image: url("../../images/icons/icon_fs-back.svg");
+}
+.admin-cms-media__file-prev.disabled {
+  background-image: url("../../images/icons/icon_fs-back-disabled.svg");
+}
+.admin-cms-media__file-next {
+  right: 42px;
+  background-image: url("../../images/icons/icon_fs-forward.svg");
+}
+.admin-cms-media__file-next.disabled {
+  background-image: url("../../images/icons/icon_fs-forward-disabled.svg");
 }
 .admin-cms-media__file-top {
   display: -ms-flexbox;
@@ -10101,11 +10194,12 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-grid-columns: (minmax(100px, 100px))[auto-fit];
       grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
   grid-gap: 10px;
+  padding: 10px;
 }
 .admin-cms-media__files.grid .admin-cms-media__file {
   padding: 0;
 }
-.admin-cms-media__files.grid .admin-cms-media__file:nth-child(even) {
+.admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd) {
   background-color: #fff;
 }
 .admin-cms-media__files.grid .admin-cms-media__file-select {
