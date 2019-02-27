@@ -93,7 +93,7 @@ public class CmsMediaBean implements Serializable {
                 Messages.error("cms_errIllegalMediaContent");
             } else {
                 setUploadProgress(100);
-                saveMedia();
+                saveMedia(currentMediaItem);
                 Messages.info("cms_media_upload_success");
             }
         } catch (IOException | DAOException e) {
@@ -350,15 +350,15 @@ public class CmsMediaBean implements Serializable {
         // }
     }
 
-    public void saveMedia() throws DAOException {
-        if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
+    public void saveMedia(CMSMediaItem media) throws DAOException {
+        if (media != null && media.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
             //            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
+            DataManager.getInstance().getDao().addCMSMediaItem(media);
             //            setCurrentMediaItem(null);
-        } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
-            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
+        } else if (media != null && media.getId() != null) {
+        	media.processMediaFile(mediaFile);
+            DataManager.getInstance().getDao().updateCMSMediaItem(media);
             //            setCurrentMediaItem(null);
         }
     }
