@@ -4,6 +4,11 @@
    ==============================================================*/
 /* OVERVIEW PAGE */
 .tpl-overviewpage {
+	&__subtitle {
+		margin: 0;
+		margin-bottom: 30px;
+		font-size: 1rem;
+	}
 	/* OVERVIEW */
 	&__overview {
 		display: flex;
@@ -29,8 +34,7 @@
 	}
 	&__overview-metadata-label {}
 	&__overview-metadata-value {}
-	/* DESCRIPTION / LITERATURE / HISTORY */
-	&__description,
+	/* LITERATURE / HISTORY */
 	&__literature,
 	&__history {
 		margin-bottom: 30px;
@@ -38,14 +42,8 @@
 		border: 1px solid @middlegray;
 		background-color: @white;
 	}
-	/* DESCRIPTION */
-	&__description {}
-	&__description-title {}
-	&__description-text {}
 	/* LITERATURE */
 	&__literature {}
-	&__literature-title {}
-	&__literature-text {}
 	/* HISTORY */
 	&__history {
 		h3 {}

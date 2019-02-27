@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="templateOverviewPage" version="2018-11-28">
-	<name>Overview page</name>
-	<description>Overview page template.</description>
+	<name>Wissenschaftliche Bearbeitung</name>
+	<description>Mit diesem Template kann eine wissenschaftliche Bearbeitung im Werkskontext angezeigt werden. Dafür kann eine im Medienbereich hochgeladene eine DOCX, RTF oder HTML Datei referenziert und zusammen mit weiteren Informationen angezeigt werden.</description>
 	<icon>cms_template_25_overviewPage.png</icon>
 	<html>cms_template_25_overviewPage.xhtml</html>
 
 	<content>
-		<item id="metadata" order="1" label="Metadata" type="METADATA" />
-		<item id="literature" order="2" label="Dokument" type="MEDIA" filter=".*(.docx|.rtf|.htm|.html|.xhtml)"/>
+		<item id="subtitle" order="1" label="Untertitel" type="TEXT" />
+		<item id="metadata" order="2" label="Metadata" type="METADATA" />
+		<item id="literature" order="3" label="Dokument" type="MEDIA" filter=".*(.docx|.rtf|.htm|.html|.xhtml)"/>
 	</content>
 </cms_page_template>
