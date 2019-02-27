@@ -8687,6 +8687,10 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control.in .cms-module__option-control-checkbox {
   padding: 7px;
 }
+.cms-module__option-control textarea {
+  min-height: 34px;
+  resize: vertical;
+}
 .cms-module__option-control-checkbox {
   display: inline-block;
   padding: 7px 0;
@@ -9799,6 +9803,176 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* CMS VIEWS */
 /* ==============================================================
+   CMS Media
+   style declarations for adminCmsMedia.xhtml
+   ==============================================================*/
+/* ADMIN CMS MEDIA */
+.admin-cms-media {
+  /* UPLOAD */
+  /* ACTIONS */
+  /* MEDIA FILES */
+  /* TOP */
+  /* BOTTOM */
+}
+.admin-cms-media__upload {
+  margin-bottom: 30px;
+  padding: 50px 20px;
+  border: 2px dashed #ccc;
+}
+.admin-cms-media__actions {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  margin-bottom: 30px;
+}
+.admin-cms-media__file {
+  padding: 10px;
+}
+.admin-cms-media__file:nth-child(odd) {
+  background-color: #f2f3f4;
+}
+.admin-cms-media__file-top {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 10px;
+}
+.admin-cms-media__file-select {
+  padding-right: 10px;
+}
+.admin-cms-media__file-image {
+  position: relative;
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+.admin-cms-media__file-type {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 5px;
+  font-size: 0.75rem;
+  text-align: center;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+.admin-cms-media__file-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  padding-left: 10px;
+}
+.admin-cms-media__file-metadata-view,
+.admin-cms-media__file-metadata-edit {
+  display: none;
+}
+.admin-cms-media__file-metadata-view.in,
+.admin-cms-media__file-metadata-edit.in {
+  display: block;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal {
+  margin: 0;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal dt {
+  width: auto;
+  margin-right: 5px;
+  text-align: left;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal dd {
+  margin-left: auto;
+}
+.admin-cms-media__file-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  min-height: 34px;
+}
+.admin-cms-media__file-language {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  max-width: 50%;
+  padding-right: 10px;
+}
+.admin-cms-media__file-language ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  margin-left: 10px;
+}
+.admin-cms-media__file-language li {
+  position: relative;
+  margin-right: 11px;
+}
+.admin-cms-media__file-language li:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 5px;
+  right: -6px;
+  width: 1px;
+  height: 11px;
+  background-color: #1a1a1a;
+}
+.admin-cms-media__file-language li:last-child {
+  margin-right: 0;
+}
+.admin-cms-media__file-language li:last-child:after {
+  display: none;
+}
+.admin-cms-media__file-language li.finished a {
+  color: #1a1a1a;
+}
+.admin-cms-media__file-language a {
+  color: #ccc;
+}
+.admin-cms-media__file-language a:hover,
+.admin-cms-media__file-language a:active,
+.admin-cms-media__file-language a:focus {
+  text-decoration: none;
+}
+.admin-cms-media__file-actions {
+  display: none;
+}
+.admin-cms-media__file-actions button {
+  margin-left: 10px;
+}
+.admin-cms-media__file-actions button:first-child {
+  margin-left: 0;
+}
+.admin-cms-media__file-actions button.btn--clean {
+  color: #555;
+}
+.admin-cms-media__file-actions button.delete {
+  color: #a00;
+}
+.admin-cms-media__file-actions-view,
+.admin-cms-media__file-actions-edit {
+  display: none;
+}
+.admin-cms-media__file-actions-view.in,
+.admin-cms-media__file-actions-edit.in {
+  display: block;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    CMS Create Page
    style declarations for adminCmsCreatePage.xhtml
    ==============================================================*/
@@ -10124,174 +10298,6 @@ div[id*="-Modal"] .email-form .form-group {
 .edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
 }
-/* ==============================================================
-   CMS Media
-   style declarations for adminCmsOverviewMedia.xhtml
-   ==============================================================*/
-/* TRIGGER UPLOAD */
-/* BLOCK */
-.overview-media__file-upload {
-  margin-bottom: 15px;
-}
-.overview-media__file-upload .btn {
-  margin: 0;
-}
-/* MEDIA GALLERY */
-/* BLOCK */
-.media-gallery {
-  margin-bottom: 15px;
-  /* ELEMENT */
-}
-.media-gallery__tag-filter {
-  margin-bottom: 10px;
-}
-.media-gallery__tag-filter .col-sm-4 {
-  padding: 0;
-}
-.media-gallery__tag-filter-label {
-  display: inline-block;
-  height: 34px;
-  padding-top: 9px;
-  line-height: normal;
-  font-size: 14px;
-}
-.media-gallery__item {
-  margin: 7px 0;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.media-gallery__item-image {
-  position: relative;
-  height: 125px;
-  padding: 5px;
-  border-radius: 4px 4px 0 0;
-  overflow: hidden;
-}
-.media-gallery__item-image [data-copy="img-url"] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  z-index: 998;
-}
-.media-gallery__item-image img {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-  margin: 0 auto;
-}
-.media-gallery__item-action-wrap {
-  margin: 0;
-  border-top: 1px solid #ccc;
-  background-color: #eee;
-}
-.media-gallery__item-title,
-.media-gallery__item-action {
-  height: 45px;
-  line-height: 45px;
-}
-.media-gallery__item-title {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-/* MEDIA UPLOAD MODAL */
-/* BLOCK */
-.media-modal {
-  /* ELEMENT */
-}
-.media-modal .modal-body .form-group {
-  margin-bottom: 3px;
-}
-.media-modal .modal-body .form-group label {
-  padding-left: 20px;
-}
-.media-modal__upload {
-  padding: 10px 0;
-  margin-bottom: 15px;
-}
-.media-modal__upload-input:focus,
-.media-modal__upload-input:active {
-  outline: none !important;
-}
-.media-modal__metadata {
-  margin-bottom: 15px;
-}
-.media-modal__metadata dl {
-  margin: 0;
-}
-.media-modal__metadata dt {
-  width: 50px;
-  text-align: left;
-}
-.media-modal__metadata dd {
-  margin-left: 50px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.media-modal__options {
-  padding: 10px;
-  border-right: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-}
-.media-modal__options span.control-label {
-  display: inline-block;
-  padding-top: 6px;
-  font-weight: bold;
-}
-.media-modal__tags {
-  padding: 6px 6px 4px 6px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  /* autocomplete */
-}
-.media-modal__tags ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.media-modal__tags li {
-  display: inline-block;
-  margin-right: 3px;
-  margin-bottom: 2px;
-}
-.media-modal__tags .label {
-  padding: .3em .6em .3em;
-  font-weight: normal;
-  background-color: #3365a9;
-}
-.media-modal__tags .tag-terminator {
-  margin-left: 5px;
-  cursor: pointer;
-}
-.media-modal__tags .tag-terminator:after {
-  content: "x";
-}
-.media-modal__tags input {
-  width: auto;
-  max-width: inherit;
-  margin: 0;
-  padding: 0 6px;
-  border: none;
-  box-shadow: none;
-  background-color: transparent;
-  outline: none;
-}
-.media-modal__tags .ui-widget-content {
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.media-modal__tags .ui-menu-item {
-  display: block;
-}
-.media-modal__tags .ui-menu-item.ui-state-focus {
-  border-color: #ccc;
-  background: #eee;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml
