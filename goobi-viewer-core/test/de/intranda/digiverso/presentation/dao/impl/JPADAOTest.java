@@ -1941,8 +1941,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         job.getObservers().add("newobserver@example.com");
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
+        Assert.assertEquals("Too many observers after updateDownloadJob", 2, job.getObservers().size());
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assert.assertEquals("Too many observers after getAllDownloadJobs", 2, job.getObservers().size());
 
+        
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
         Assert.assertNotNull(job2);
         Assert.assertEquals(job.getId(), job2.getId());
