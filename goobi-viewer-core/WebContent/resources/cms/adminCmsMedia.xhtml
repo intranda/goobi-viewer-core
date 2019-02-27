@@ -21,26 +21,30 @@
     <ui:define name="content">
         <div id="adminCmsMedia" class="admin-cms-media">
             <ui:fragment rendered="#{userBean.admin}">
+                <!-- MEDIA ITEM OVERLAY -->
+                <div class="admin-cms-media__overlay"></div>
+            
                 <h2 class="admin__content-inner-title">#{msg.cms_overviewMedia}</h2>
 
                 <div class="admin__content-inner-content">
                     <!-- UPLOAD -->
-                    <form id="uploadArea" class="admin-cms-media__upload" method="post" action="" enctype="multipart/form-data">
-                        <div class="admin-cms-media__upload-input">
-                            <input class="admin-cms-media__upload-file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple="multiple" />
-                            <label for="file">
-                                <strong>Choose a file</strong>
-                                <span class="admin-cms-media__upload-dragndrop"> or drag it here</span>.
-                            </label>
-                            <button class="admin-cms-media__upload-button" type="submit">Upload</button>
-                        </div>
-                        <div class="admin-cms-media__upload-uploading">Uploading...</div>
-                        <div class="admin-cms-media__upload-success">Done!</div>
-                        <div class="admin-cms-media__upload-error">Error!<span></span>.</div>
-                    </form>
+                    <adminMediaUpload></adminMediaUpload>
 
                     <!-- ACTIONS -->
                     <div class="admin-cms-media__actions">
+                        <!-- BULK ACTIONS -->
+                        <div class="admin-cms-media__bulk-actions">[BULK ACTIONS]</div>
+                    
+                        <!-- VIEW SWITCH -->
+                        <div class="admin-cms-media__switch">
+                            <button type="button" class="btn btn--clean" data-switch="list">
+                                <i class="fa fa-list" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="btn btn--clean" data-switch="grid">
+                                <i class="fa fa-th" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        
                         <!-- PAGINATOR -->
                         <!-- TODO: nur in Listenansicht zeigen -->
                         <!-- TODO: 20 Medien pro Seite anzeigen -->
@@ -71,6 +75,9 @@
                             <ui:repeat value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media">
                                 <!-- FILE -->
                                 <div class="admin-cms-media__file">
+                                    <!-- CLOSE -->
+                                    <div class="admin-cms-media__file-close"></div>
+                                
                                     <!-- TOP -->
                                     <div class="admin-cms-media__file-top">
                                         <!-- FILE SELECT -->
@@ -232,9 +239,21 @@
 
         <script type="text/javascript">
         	var cmsMediaConfig = {};
-        
+            var adminMediaConfig = {
+            	postUrl: '',
+            	msg: {
+            		buttonUpload: "#{msg.button__upload}",
+            		uploadText: "#{msg.admin__media_upload_text}",
+            		allowedFileTypes: "#{msg.admin__media_upload_filetypes}",
+            		mediaUploading: "#{msg.admin__media_upload_uploading},",
+            		mediaFinished: "#{msg.admin__media_upload_finished}",
+            		mediaError: "#{msg.admin__media_upload_error}"
+            	}
+            };
+            
         	viewerJS.clipboard.init('[data-copy]');
         	cmsJS.media.init( cmsMediaConfig );
+        	riot.mount( 'adminMediaUpload', adminMediaConfig );
 		</script>
     </ui:define>                    
 
