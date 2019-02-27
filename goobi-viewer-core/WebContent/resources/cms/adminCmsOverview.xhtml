@@ -47,7 +47,7 @@
                                             <th class="column_classification">
                                                 #{msg.cms_pageClassifications}
                                                 <!-- FILTER -->
-                                                <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('classifications', 'classification')}" />
+                                                <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('categories', 'categories')}" />
                                             </th>
                                             <th class="column_date_updated">
                                                 #{msg.cms_pageMetadata_lastEdited}
@@ -95,9 +95,9 @@
                                                 </td>
                                                 <td class="column_classification">
                                                     <ul>
-                                                        <ui:repeat value="#{page.classifications}" var="classification">
+                                                        <ui:repeat value="#{page.categories}" var="category">
                                                             <li>
-                                                                <h:outputText value="#{classification} " />
+                                                                <h:outputText value="#{category.name} " />
                                                             </li>
                                                         </ui:repeat>
                                                     </ul>

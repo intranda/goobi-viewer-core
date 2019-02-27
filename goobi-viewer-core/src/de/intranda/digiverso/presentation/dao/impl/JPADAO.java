@@ -16,6 +16,10 @@
 package de.intranda.digiverso.presentation.dao.impl;
 
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
+import de.intranda.digiverso.presentation.dao.DatabaseUpdater;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -113,64 +118,15 @@ public class JPADAO implements IDAO {
             currentThread.setContextClassLoader(saveClassLoader);
 
             em = factory.createEntityManager();
-            createDiscriminatorRow();
-            convertCMSCategories();
+            preQuery();
+            new DatabaseUpdater(em).update();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
         }
     }
 
-    /**
-     * @throws DAOException 
-	 * 
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void convertCMSCategories() throws DAOException {
-		try {
-            preQuery();
-            em.getTransaction().begin();
-            Query qClassifications = em.createNativeQuery("SELECT * FROM cms_page_classifications");
-			List<Object[]> classificationResults = qClassifications.getResultList();
-           Map<String, List<Long>> classifications = classificationResults.stream().collect(Collectors.toMap(
-        		   array -> (String)array[1], 
-        		   array -> new ArrayList<Long>(Arrays.asList((Long)array[0])), 
-        		   (list1, list2) -> {list1.addAll(list2);return list1;}));
-           classifications.forEach((name, ids) -> System.out.println(name + ": " + StringUtils.join(ids, ", ")));
-            em.getTransaction().commit();
-            
-            em.getTransaction().begin();
-            Query qTags = em.createNativeQuery("SELECT * FROM cms_media_item_tags");
-			List<Object[]> tagResults = qTags.getResultList();
-           Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(
-        		   array -> (String)array[1], 
-        		   array -> new ArrayList<Long>(Arrays.asList((Long)array[0])), 
-        		   (list1, list2) -> {list1.addAll(list2);return list1;}));
-           tags.forEach((name, ids) -> System.out.println(name + ": " + StringUtils.join(ids, ", ")));
-            em.getTransaction().commit();
-            
-        } catch (DAOException | PersistenceException e) {
-            logger.warn("Error converting categories");
-        }
-	}
 
-	/**
-     * @throws DAOException
-     * 
-     */
-    private void createDiscriminatorRow() throws DAOException {
-        try {
-            preQuery();
-            em.getTransaction().begin();
-            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
-                    + "' WHERE element.widgetType IS NULL");
-            q.executeUpdate();
-            em.getTransaction().commit();
-        } catch (DAOException e) {
-            throw new DAOException(e.getMessage());
-        }
-
-    }
 
     /*
      * (non-Javadoc)
@@ -2339,7 +2295,7 @@ public class JPADAO implements IDAO {
                         }
                         if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
                             where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        } else if ("classifications".equals(joinTable)) {
+                        } else if ("categories".equals(joinTable)) {
                             where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
 
                         } else {
