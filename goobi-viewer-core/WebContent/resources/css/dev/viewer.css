@@ -9680,12 +9680,10 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
   margin-bottom: 5px;
 }
-.tpl-overviewpage__subtitle {
-  margin-bottom: 30px;
-}
 .tpl-overviewpage__overview {
   display: -ms-flexbox;
   display: flex;
+  margin-top: 30px;
   margin-bottom: 30px;
 }
 .tpl-overviewpage__overview-thumbnail {

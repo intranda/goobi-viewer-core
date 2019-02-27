@@ -8,6 +8,6 @@
 	<content>
 		<item id="subtitle" order="1" label="Untertitel" type="TEXT" />
 		<item id="metadata" order="2" label="Metadata" type="METADATA" />
-		<item id="literature" order="3" label="Dokument" type="MEDIA" filter=".*(.docx|.rtf|.htm|.html|.xhtml)"/>
+		<item id="literature" order="3" label="Dokument" type="MEDIA" filter=".*(.docx|.rtf|.htm|.html|.xhtml)" />
 	</content>
 </cms_page_template>
