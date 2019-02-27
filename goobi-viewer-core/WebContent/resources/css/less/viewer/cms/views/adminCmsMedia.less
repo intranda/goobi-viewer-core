@@ -23,7 +23,7 @@
 	&__files {}
 	&__file {
 		padding: 10px;
-		&:nth-child(odd) {
+		&:nth-child(even) {
 			background-color: @neutralgray;
 		}
 	}
@@ -135,7 +135,9 @@
 	}
 	&__file-actions {
 		display: none;
-		button {
+		a,
+		button,
+		input[type="submit"] {
 			margin-left: 10px;
 			&:first-child {
 				margin-left: 0;
@@ -157,6 +159,167 @@
 	}
 	&__file-actions-view {}
 	&__file-actions-edit {}
+}
+
+.admin-cms-media__upload {
+    font-size: 1.25rem;
+    /* 20 */
+    background-color: #c8dadf;
+    position: relative;
+    padding: 100px 20px;
+}
+
+.admin-cms-media__upload.has-advanced-upload {
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear;
+}
+
+.admin-cms-media__upload.is-dragover {
+    outline-offset: -20px;
+    outline-color: #c8dadf;
+    background-color: #fff;
+}
+
+.admin-cms-media__upload-dragndrop,
+.admin-cms-media__upload-icon {
+    display: none;
+}
+
+.admin-cms-media__upload.has-advanced-upload .admin-cms-media__upload-dragndrop {
+    display: inline;
+}
+
+.admin-cms-media__upload.has-advanced-upload .admin-cms-media__upload-icon {
+    width: 100%;
+    height: 80px;
+    fill: #92b0b3;
+    display: block;
+    margin-bottom: 40px;
+}
+
+.admin-cms-media__upload.is-uploading .admin-cms-media__upload-input,
+.admin-cms-media__upload.is-success .admin-cms-media__upload-input,
+.admin-cms-media__upload.is-error .admin-cms-media__upload-input {
+    visibility: hidden;
+}
+
+.admin-cms-media__upload-uploading,
+.admin-cms-media__upload-success,
+.admin-cms-media__upload-error {
+    display: none;
+}
+
+.admin-cms-media__upload.is-uploading .admin-cms-media__upload-uploading,
+.admin-cms-media__upload.is-success .admin-cms-media__upload-success,
+.admin-cms-media__upload.is-error .admin-cms-media__upload-error {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    -webkit-transform: translateY( -50%);
+    transform: translateY( -50%);
+}
+
+.admin-cms-media__upload-uploading {
+    font-style: italic;
+}
+
+.admin-cms-media__upload-success {
+    -webkit-animation: appear-from-inside .25s ease-in-out;
+    animation: appear-from-inside .25s ease-in-out;
+}
+
+@-webkit-keyframes appear-from-inside {
+    from {
+        -webkit-transform: translateY( -50%) scale( 0);
+    }
+    75% {
+        -webkit-transform: translateY( -50%) scale( 1.1);
+    }
+    to {
+        -webkit-transform: translateY( -50%) scale( 1);
+    }
+}
+
+@keyframes appear-from-inside {
+    from {
+        transform: translateY( -50%) scale( 0);
+    }
+    75% {
+        transform: translateY( -50%) scale( 1.1);
+    }
+    to {
+        transform: translateY( -50%) scale( 1);
+    }
+}
+
+.admin-cms-media__upload-restart {
+    font-weight: 700;
+}
+
+.admin-cms-media__upload-restart:focus,
+.admin-cms-media__upload-restart:hover {
+    color: #39bfd3;
+}
+
+.js .admin-cms-media__upload-file {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.js .admin-cms-media__upload-file+label {
+    max-width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.js .admin-cms-media__upload-file+label:hover strong,
+.admin-cms-media__upload-file:focus+label strong,
+.admin-cms-media__upload-file.has-focus+label strong {
+    color: #39bfd3;
+}
+
+.js .admin-cms-media__upload-file:focus+label,
+.js .admin-cms-media__upload-file.has-focus+label {
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+.js .admin-cms-media__upload-file+label * {
+    /* pointer-events: none; */
+    /* in case of FastClick lib use */
+}
+
+.no-js .admin-cms-media__upload-file+label {
+    display: none;
+}
+
+.no-js .admin-cms-media__upload-button {
+    display: block;
+}
+
+.admin-cms-media__upload-button {
+    font-weight: 700;
+    color: #e5edf1;
+    background-color: #39bfd3;
+    display: none;
+    padding: 8px 16px;
+    margin: 40px auto 0;
+}
+
+.admin-cms-media__upload-button:hover,
+.admin-cms-media__upload-button:focus {
+    background-color: #0f3c4b;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -30,18 +30,13 @@
                             <input class="admin-cms-media__upload-file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple="multiple" />
                             <label for="file">
                                 <strong>Choose a file</strong>
-                                <span class="admin-cms-media__upload-dragndrop"> or drag it here</span>
-                                .
+                                <span class="admin-cms-media__upload-dragndrop"> or drag it here</span>.
                             </label>
                             <button class="admin-cms-media__upload-button" type="submit">Upload</button>
                         </div>
-                        <div class="admin-cms-media__upload-uploading">Uploading</div>
+                        <div class="admin-cms-media__upload-uploading">Uploading...</div>
                         <div class="admin-cms-media__upload-success">Done!</div>
-                        <div class="admin-cms-media__upload-error">
-                            Error!
-                            <span></span>
-                            .
-                        </div>
+                        <div class="admin-cms-media__upload-error">Error!<span></span>.</div>
                     </form>
 
                     <!-- ACTIONS -->
@@ -111,8 +106,10 @@
                                                     <dt>#{msg.admin__media_alt_text}:</dt>
                                                     <dd>[ALTERNATIVER TEXT]</dd>
                                                     <!-- LINKS TO -->
-                                                    <dt>#{msg.admin__media_links_to}:</dt>
-                                                    <dd>#{media.link}</dd>
+                                                    <ui:fragment rendered="#{media.link != '#'}">
+                                                        <dt>#{msg.admin__media_links_to}:</dt>
+                                                        <dd>#{media.link}</dd>
+                                                    </ui:fragment>
                                                 </dl>
                                             </div>
     
@@ -172,7 +169,7 @@
                                                         <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaLinksTo" value="#{cmsMediaBean.currentMediaItem.link}" validator="URISyntaxValidator" styleClass="form-control" />
+                                                        <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control" />
                                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
@@ -206,19 +203,22 @@
                                         <div class="admin-cms-media__file-actions">
                                             <!-- ACTIONS VIEW -->
                                             <div class="admin-cms-media__file-actions-view in">
-                                                <button type="button" class="btn btn--clean" data-copy="img-url"
-                                                    data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" title="#{msg.cms_media_copyUrlToClipboard}">
-                                                    #{msg.admin__cms_media_copy_image_url}</button>
-                                                <button type="button" class="btn btn--clean delete">#{msg.button__delete}</button>
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn--clean" 
+                                                    data-copy="img-url" 
+                                                    data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" 
+                                                    title="#{msg.cms_media_copyUrlToClipboard}">
+                                                    #{msg.admin__cms_media_copy_image_url}
+                                                </button>
+                                                <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete" />
                                                 <button type="button" class="btn btn--default" data-action="edit">#{msg.button__edit}</button>
                                             </div>
-    
     
                                             <!-- ACTIONS EDIT -->
                                             <div class="admin-cms-media__file-actions-edit">
                                                 <button type="button" class="btn btn--clean" data-action="cancel">#{msg.button__abort}</button>
-    <!--                                             <button type="button" class="btn btn-default">#{msg.button__save}</button> -->
-                                                <h:commandButton actionListener="#{cmsMediaBean.saveMedia()}" value="#{msg.button__save}" styleClass="btn btn--default" />
+                                                <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" value="#{msg.button__save}" styleClass="btn btn--success" />
                                             </div>
                                         </div>
                                     </div>
@@ -231,29 +231,10 @@
         </div>
 
         <script type="text/javascript">
-									
+        	var cmsMediaConfig = {};
+        
         	viewerJS.clipboard.init('[data-copy]');
-
-			
-        	$('.admin-cms-media__file').on( 'mouseover', function() {
-				$(this).find('.admin-cms-media__file-actions').show();
-			});
-        	$('.admin-cms-media__file').on( 'mouseout', function() {
-				$(this).find( '.admin-cms-media__file-actions').hide();
-			});
-
-			$('[data-action="edit"]').on( 'click', function() {
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).removeClass( 'in');
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).addClass( 'in');
-				$( this ).parent().removeClass( 'in');
-				$( this ).parent().next().addClass('in');
-			});
-			$('[data-action="cancel"]').on( 'click', function() {
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).addClass( 'in');
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).removeClass( 'in');
-				$( this ).parent().removeClass( 'in' );
-				$( this ).parent().prev().addClass( 'in' );
-			});
+        	cmsJS.media.init( cmsMediaConfig );
 		</script>
     </ui:define>                    
 
