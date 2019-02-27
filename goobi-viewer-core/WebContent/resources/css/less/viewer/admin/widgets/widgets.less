@@ -21,13 +21,12 @@
     }
     li {
     	position: relative;
-    	&:hover,
+    	margin-right: -15px;
+    	margin-left: -15px;
+    	padding-right: 15px;
+    	padding-left: 15px;
     	&.active {
-    		margin-right: -15px;
-    		margin-left: -15px;
-    		padding-right: 15px;
-    		padding-left: 15px;
-    		background-color: @orange;
+    		background-color: @activeblue;
     		&:after {
     			content: "";
     			position: absolute;
@@ -42,20 +41,11 @@
     			border-color: transparent @neutralgray transparent transparent;
     			z-index: 10;
     		}
-    		a {
-    			color: @black;
-    			.fa {
-    				color: @black;
-    			}
-    		}
     	}
     	&:hover {
-    		background-color: @activeblue;
-    		a {
-    			color: @white;
-    			.fa {
-    				color: @white;
-    			}
+    		background-color: @hoverblue;
+    		&:after {
+    			display: none;
     		}
     	}
     	&.spacer {
