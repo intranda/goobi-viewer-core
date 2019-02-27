@@ -22,12 +22,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -79,6 +81,9 @@ import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.security.License;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
@@ -242,6 +247,10 @@ public class CmsBean implements Serializable {
                 .updateTemplates(CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
     }
 
+    /**
+     * 
+     * @return all existing templates
+     */
     public List<CMSPageTemplate> getTemplates() {
         try {
             List<CMSPageTemplate> list = CMSTemplateManager.getInstance()
@@ -254,6 +263,59 @@ public class CmsBean implements Serializable {
             logger.warn("Error loading templates", e);
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 
+     * @param user
+     * @return List of CMS templates whose IDs are among f
+     */
+    public List<CMSPageTemplate> getAllowedTemplates(User user) {
+        // Abort if user not a CMS admin
+        if (user == null || !user.isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+
+        List<CMSPageTemplate> allTemplates = getTemplates();
+        if (allTemplates.isEmpty()) {
+            return allTemplates;
+        }
+
+        // Full admins get all templates
+        if (user.isSuperuser()) {
+            return allTemplates;
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
+        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
+        // TODO make this faster
+        for (License license : user.getLicenses()) {
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+            }
+        }
+        try {
+            for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        //        allowedTemplateIds.add("template_general_generic");
+        if (allowedTemplateIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        for (CMSPageTemplate template : allTemplates) {
+            if (allowedTemplateIds.contains(template.getId())) {
+                ret.add(template);
+            }
+        }
+
+        return ret;
     }
 
     /**

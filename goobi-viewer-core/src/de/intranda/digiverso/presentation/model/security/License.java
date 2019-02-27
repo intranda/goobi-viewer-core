@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -121,6 +123,11 @@ public class License implements IPrivilegeHolder {
 
     @Column(name = "description")
     private String description;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "template_id")
+    private List<String> allowedCmsTemplates = new ArrayList<>();
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -492,4 +499,19 @@ public class License implements IPrivilegeHolder {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    /**
+     * @return the allowedCmsTemplates
+     */
+    public List<String> getAllowedCmsTemplates() {
+        return allowedCmsTemplates;
+    }
+
+    /**
+     * @param allowedCmsTemplates the allowedCmsTemplates to set
+     */
+    public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
+        this.allowedCmsTemplates = allowedCmsTemplates;
+    }
+
 }

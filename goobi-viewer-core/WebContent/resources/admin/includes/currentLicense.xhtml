@@ -26,8 +26,16 @@
                 </div>
             </div>
         </div>
+       
+        <!-- LICENSE DESCRIPTION -->
+        <div class="form-group">
+            <h:outputLabel for="description" styleClass="col-sm-4 control-label" value="#{msg.description}" />
+            <div class="col-sm-8">
+                <h:inputTextarea value="#{adminBean.currentLicense.description}" id="description" styleClass="form-control" />
+            </div>
+        </div>
         
-        <!-- LIZENSE START -->
+        <!-- LICENSE START -->
         <div class="form-group">
             <h:outputLabel for="dateStart" styleClass="col-sm-4 control-label" value="#{msg.license_start}" />
             <div class="col-sm-8">
@@ -35,7 +43,7 @@
             </div>
         </div>
         
-        <!-- LIZENSE END -->
+        <!-- LICENSE END -->
         <div class="form-group">
             <h:outputLabel for="dateEnd" styleClass="col-sm-4 control-label" value="#{msg.license_end}" />
             <div class="col-sm-8">
@@ -43,20 +51,26 @@
             </div>
         </div>
         
-        <!-- LIZENSE CONDITIONS -->
+        <!-- LICENSE CONDITIONS -->
         <div class="form-group">
-            <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.conditions}" />
+            <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_conditions}" />
             <div class="col-sm-8">
                 <h:inputTextarea value="#{adminBean.currentLicense.conditions}" id="conditions" styleClass="form-control" />
             </div>
         </div>
         
-        <!-- LIZENSE DESCRIPTION -->
-        <div class="form-group">
-            <h:outputLabel for="description" styleClass="col-sm-4 control-label" value="#{msg.description}" />
-            <div class="col-sm-8">
-                <h:inputTextarea value="#{adminBean.currentLicense.description}" id="description" styleClass="form-control" />
+        <!-- LICENSE TEMPLATES -->
+        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
+            <div class="form-group">
+                <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
+                <div class="col-sm-8">
+                    <div class="custom-control custom-control--select">
+                        <h:selectManyListbox id="templates" value="#{adminBean.currentLicense.allowedCmsTemplates}">
+                            <f:selectItems value="#{cmsBean.templates}" var="template" itemLabel="#{template.name}" itemValue="#{template.id}" />
+                        </h:selectManyListbox>
+                    </div>
+                </div>
             </div>
-        </div>
+        </ui:fragment>
     </div>
 </ui:composition>

@@ -24,7 +24,7 @@
                     <div class="admin__content-inner-content">
                         <div id="cmsSelectTemplateWrapper" class="cms-select-template__wrapper">
                             <h:form id="cmsSelectTemplateForm" prependId="false">
-                                <ui:repeat value="#{cmsBean.templates}" var="template">
+                                <ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}" var="template">
                                     <div class="row no-margin">
                                         <!-- TEMPLATE -->
                                         <div class="cms-select-template__template">

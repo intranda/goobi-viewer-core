@@ -411,7 +411,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
-            logger.trace("User '{}' is superuser, access granted.", getDisplayName());
+            // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
         //always allow access if the only condition is open access and there is no special licence configured for it
