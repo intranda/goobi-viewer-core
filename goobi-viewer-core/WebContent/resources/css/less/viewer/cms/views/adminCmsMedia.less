@@ -1,0 +1,172 @@
+/* ==============================================================
+   CMS Media
+   style declarations for adminCmsMedia.xhtml
+   ==============================================================*/
+/* ADMIN CMS MEDIA */
+.admin-cms-media {
+	/* UPLOAD */
+	&__upload {
+		margin-bottom: 30px;
+		padding: 50px 20px;
+		border: 2px dashed @middlegray;
+	}
+	/* ACTIONS */
+	&__actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 30px;
+	}
+	&__paginator {}
+	&__filter {}
+	/* MEDIA FILES */
+	&__files {}
+	&__file {
+		padding: 10px;
+		&:nth-child(odd) {
+			background-color: @neutralgray;
+		}
+	}
+	/* TOP */
+	&__file-top {
+		display: flex;
+		margin-bottom: 10px;
+	}
+	&__file-select {
+		padding-right: 10px;
+	}
+	&__file-image {
+		position: relative;
+		width: 100px;
+		min-width: 100px;
+		height: 100px;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+	&__file-type {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		padding: 5px;
+		font-size: 0.75rem;
+		text-align: center;
+		color: @white;
+		background-color: rgba(0,0,0,0.5);
+		z-index: 10;		
+	}
+	&__file-metadata {
+		flex-grow: 1;
+		padding-left: 10px;
+	}
+	&__file-metadata-view,
+	&__file-metadata-edit {
+		display: none;
+		&.in {
+			display: block;
+		}
+	}
+	&__file-metadata-view {
+		.dl-horizontal {
+			margin: 0;
+			dt {
+				width: auto;
+				margin-right: 5px;
+				text-align: left;
+			}
+			dd {
+				margin-left: auto;
+			}
+		}
+	}
+	&__file-metadata-edit {}
+	/* BOTTOM */
+	&__file-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 34px;
+	}
+	&__file-language {
+		display: flex;
+		flex-wrap: wrap;
+		max-width: 50%;
+		padding-right: 10px;
+		ul {
+			.mx-list-reset;
+			display: flex;
+			align-items: center;
+			margin-left: 10px;
+		}
+		li {
+			position: relative;
+			margin-right: 11px;
+			&:after {
+				content: "";
+				display: block;
+				position: absolute;
+				top: 5px;
+				right: -6px;
+				width: 1px;
+				height: 11px;
+				background-color: @black;
+			}
+			&:last-child {
+				margin-right: 0;
+				&:after {
+					display: none;
+				}
+			}
+			&.finished {
+				a {
+					color: @black;
+				}
+			}
+		}
+		a {
+			color: @middlegray;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+			}
+		}
+	}
+	&__file-actions {
+		display: none;
+		button {
+			margin-left: 10px;
+			&:first-child {
+				margin-left: 0;
+			}
+			&.btn--clean {
+				color: @btnDefault;
+			}
+			&.delete {
+				color: @btnCleanDelete;
+			}
+		}
+	}
+	&__file-actions-view,
+	&__file-actions-edit {
+		display: none;
+		&.in {
+			display: block;
+		}
+	}
+	&__file-actions-view {}
+	&__file-actions-edit {}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
