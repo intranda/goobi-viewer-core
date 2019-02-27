@@ -13,10 +13,7 @@
 			<div class="edit-content-page edit-content-page-metadata">
 				<div class="form-horizontal">
 					<div class="form-group">
-						<label class="col-sm-12 group-label">#{msg.cms_itemMetadata}#{contentItem.mandatory?'*':''}:</label>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3 control-label">#{msg.cms_itemMetadataFields}#{contentItem.mandatory?'*':''}:</label>
+						<label class="col-sm-3 control-label">#{msg.cms_itemMetadata}#{contentItem.mandatory?'*':''}:</label>
 						<div class="col-sm-9">
 							<div class="form-control__select form-control--multi-select">
                                 <h:selectManyMenu id="metadataFieldsMenu" styleClass="form-control content-input select-many" value="#{contentItem.metadataFieldsAsList}">

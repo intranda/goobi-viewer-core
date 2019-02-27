@@ -4,9 +4,15 @@
    ==============================================================*/
 /* OVERVIEW PAGE */
 .tpl-overviewpage {
+	h2 {
+		margin: 0;
+		margin-bottom: 5px;
+	}
+	&__subtitle {}
 	/* OVERVIEW */
 	&__overview {
 		display: flex;
+		margin-top: 30px;
 		margin-bottom: 30px;
 	}
 	&__overview-thumbnail {
@@ -29,8 +35,7 @@
 	}
 	&__overview-metadata-label {}
 	&__overview-metadata-value {}
-	/* DESCRIPTION / LITERATURE / HISTORY */
-	&__description,
+	/* LITERATURE / HISTORY */
 	&__literature,
 	&__history {
 		margin-bottom: 30px;
@@ -38,14 +43,17 @@
 		border: 1px solid @middlegray;
 		background-color: @white;
 	}
-	/* DESCRIPTION */
-	&__description {}
-	&__description-title {}
-	&__description-text {}
 	/* LITERATURE */
-	&__literature {}
-	&__literature-title {}
-	&__literature-text {}
+	&__literature {
+		position: relative;
+		min-height: 72px;
+		& > img {
+			position: absolute;
+			top: 15px;
+			left: 50%;
+			margin-left: -34px;
+		}
+	}
 	/* HISTORY */
 	&__history {
 		h3 {}

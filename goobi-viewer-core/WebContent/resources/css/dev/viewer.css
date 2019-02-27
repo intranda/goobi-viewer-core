@@ -9676,14 +9676,18 @@ div[id*="-Modal"] .email-form .form-group {
 /* OVERVIEW PAGE */
 .tpl-overviewpage {
   /* OVERVIEW */
-  /* DESCRIPTION / LITERATURE / HISTORY */
-  /* DESCRIPTION */
+  /* LITERATURE / HISTORY */
   /* LITERATURE */
   /* HISTORY */
+}
+.tpl-overviewpage h2 {
+  margin: 0;
+  margin-bottom: 5px;
 }
 .tpl-overviewpage__overview {
   display: -ms-flexbox;
   display: flex;
+  margin-top: 30px;
   margin-bottom: 30px;
 }
 .tpl-overviewpage__overview-thumbnail {
@@ -9704,13 +9708,22 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-overviewpage__overview-metadata dd {
   word-break: break-word;
 }
-.tpl-overviewpage__description,
 .tpl-overviewpage__literature,
 .tpl-overviewpage__history {
   margin-bottom: 30px;
   padding: 15px;
   border: 1px solid #ccc;
   background-color: #fff;
+}
+.tpl-overviewpage__literature {
+  position: relative;
+  min-height: 72px;
+}
+.tpl-overviewpage__literature > img {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  margin-left: -34px;
 }
 .tpl-overviewpage__history table {
   margin: 0;
