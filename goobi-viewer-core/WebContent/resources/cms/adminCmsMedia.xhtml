@@ -102,7 +102,7 @@
     
                                         <!-- FILE IMAGE -->
                                         <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
-                                            <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaPreviewUrl(media)}')">
+                                            <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')">
                                                 <div class="admin-cms-media__file-type">[JPG]</div>                                            
                                             </div>
                                         </ui:fragment>
