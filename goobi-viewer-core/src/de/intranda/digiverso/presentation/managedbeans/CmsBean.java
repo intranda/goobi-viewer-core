@@ -82,6 +82,7 @@ import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.security.License;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
@@ -266,37 +267,43 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
+     * list attached to ther CMS license.
      * 
      * @param user
-     * @return List of CMS templates whose IDs are among f
+     * @return List of CMS templates whose IDs are among allowed template IDs
      */
     public List<CMSPageTemplate> getAllowedTemplates(User user) {
+        logger.trace("getAllowedTemplates");
         // Abort if user not a CMS admin
         if (user == null || !user.isCmsAdmin()) {
             return Collections.emptyList();
         }
 
         List<CMSPageTemplate> allTemplates = getTemplates();
-        if (allTemplates.isEmpty()) {
-            return allTemplates;
-        }
-
         // Full admins get all templates
-        if (user.isSuperuser()) {
+        if (allTemplates.isEmpty() || user.isSuperuser()) {
             return allTemplates;
         }
 
         List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
         Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
-        // TODO make this faster
+        // Check user licenses
         for (License license : user.getLicenses()) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
             if (!license.getAllowedCmsTemplates().isEmpty()) {
                 allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
             }
         }
+        // Check user group licenses
         try {
             for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
                 for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
                     if (!license.getAllowedCmsTemplates().isEmpty()) {
                         allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
                     }
@@ -315,6 +322,7 @@ public class CmsBean implements Serializable {
             }
         }
 
+        logger.trace("getAllowedTemplates END");
         return ret;
     }
 
