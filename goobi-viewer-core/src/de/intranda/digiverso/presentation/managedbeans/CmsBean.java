@@ -114,7 +114,7 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private String selectedClassification;
+    private Category selectedCategory;
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
@@ -854,10 +854,9 @@ public class CmsBean implements Serializable {
 
     }
 
-    public List<String> getClassifications() {
-        List<String> ret = new ArrayList<>();
-        ret.add("");
-        ret.addAll(DataManager.getInstance().getConfiguration().getCmsClassifications());
+    public List<Category> getCategories() throws DAOException {
+        List<Category> ret = new ArrayList<>();
+        ret.addAll(DataManager.getInstance().getDao().getAllCategories());
 
         return ret;
     }
@@ -870,12 +869,12 @@ public class CmsBean implements Serializable {
         this.displaySidebarEditor = displaySidebarEditor;
     }
 
-    public String getSelectedClassification() {
-        return selectedClassification;
+    public Category getSelectedCategory() {
+        return selectedCategory;
     }
 
-    public void setSelectedClassification(String selectedClassification) {
-        this.selectedClassification = selectedClassification;
+    public void setSelectedCategory(Category category) {
+        this.selectedCategory = category;
     }
 
     public CMSMediaItem getSelectedMediaItem() {

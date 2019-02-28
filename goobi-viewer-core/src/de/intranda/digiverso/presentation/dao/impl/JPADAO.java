@@ -119,7 +119,7 @@ public class JPADAO implements IDAO {
 
             em = factory.createEntityManager();
             preQuery();
-            new DatabaseUpdater(em).update();
+//            new DatabaseUpdater(em).update();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
