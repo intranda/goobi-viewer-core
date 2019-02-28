@@ -44,25 +44,38 @@ var cmsJS = ( function( cms ) {
             
             $.extend( true, _defaults, config );
             
-            // show/hide edit actions for media file
-            $( '.admin-cms-media__file' ).on( 'mouseover', function() {
-				$( this ).find( '.admin-cms-media__file-actions' ).show();
-			});
-        	$( '.admin-cms-media__file') .on( 'mouseout', function() {
-				$( this ).find( '.admin-cms-media__file-actions' ).hide();
-			});
-        	$( '[data-action="edit"]' ).on( 'click', function() {
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).removeClass( 'in');
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).addClass( 'in');
-				$( this ).parent().removeClass( 'in');
-				$( this ).parent().next().addClass('in');
-			});
-			$( '[data-action="cancel"]' ).on( 'click', function() {
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).addClass( 'in');
-				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).removeClass( 'in');
-				$( this ).parent().removeClass( 'in' );
-				$( this ).parent().prev().addClass( 'in' );
-			});
+            // select all media items
+            $( '#selectAllMediaItems' ).on( 'change', function() {
+            	if ( this.checked ) {
+                    $( 'input[name="selectMediaItem"]' ).each( function() {
+                    	$( this ).prop( 'checked', true );
+                    } );
+                }
+            	else {
+            		$( 'input[name="selectMediaItem"]' ).each( function() {
+            			$( this ).prop( 'checked', false );
+            		} );            		
+            	}
+            } );
+            
+            // reset bulk actions
+            $( '#selectAllMediaItems, input[name="selectMediaItem"]' ).on( 'change', function() {
+            	$( '#bulkActionSelect' ).val( 'bulk' );
+            } );
+            
+            // bulk action edit
+            $( '#bulkActionSelect' ).on( 'change', function() {
+            	var action = $( this ).val();
+            	
+            	switch ( action ) {
+            		case 'edit':
+            			_bulkActionEdit();
+            			break;
+            		case 'delete':
+            			return false;            			
+            			break;
+            	}
+            } );
 			
 			// switch file view
 			_adminCmsMediaGrid = localStorage.getItem( 'adminCmsMediaGrid' );
@@ -89,6 +102,26 @@ var cmsJS = ( function( cms ) {
 				localStorage.setItem( 'adminCmsMediaGrid', true );
 			});
 			
+            // show/hide edit actions for media file
+            $( '.admin-cms-media__file' ).on( 'mouseover', function() {
+				$( this ).find( '.admin-cms-media__file-actions' ).show();
+			});
+        	$( '.admin-cms-media__file') .on( 'mouseout', function() {
+				$( this ).find( '.admin-cms-media__file-actions' ).hide();
+			});
+        	$( '[data-action="edit"]' ).on( 'click', function() {
+				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).removeClass( 'in');
+				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).addClass( 'in');
+				$( this ).parent().removeClass( 'in');
+				$( this ).parent().next().addClass('in');
+			});
+			$( '[data-action="cancel"]' ).on( 'click', function() {
+				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-view' ).addClass( 'in');
+				$( this ).parents( '.admin-cms-media__file' ).find( '.admin-cms-media__file-metadata-edit' ).removeClass( 'in');
+				$( this ).parent().removeClass( 'in' );
+				$( this ).parent().prev().addClass( 'in' );
+			});			
+			
 			// enlarge file
 			$( '.admin-cms-media__file-image, .admin-cms-media__file-close' ).on( 'click', function() {
 				$( this ).parents( '.admin-cms-media__file' ).toggleClass( 'fixed' );
@@ -96,6 +129,9 @@ var cmsJS = ( function( cms ) {
 			} );
 			
 			// navigate through overlays
+			$( '.admin-cms-media__file' ).first().find( '.admin-cms-media__file-prev' ).addClass( 'disabled' );
+			$( '.admin-cms-media__file' ).last().find( '.admin-cms-media__file-next' ).addClass( 'disabled' );
+			
 			$( '.admin-cms-media__file-next' ).on( 'click', function() {
 				if ( $( this ).parent().next().is( ':last-child' ) ) {
 					$( this ).addClass( 'disabled' );
@@ -140,6 +176,26 @@ var cmsJS = ( function( cms ) {
 			$( '[data-switch="list"]' ).addClass( 'active' );
 			$( '[data-switch="grid"]' ).removeClass( 'active' );
 		}
+    }
+
+    /**
+     * @description Method to set multiple media items to edit mode.
+     * @method _bulkActionEdit
+     * */
+    function _bulkActionEdit() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _bulkActionEdit' );
+    	}
+    	
+    	$( '.admin-cms-media__file' ).each( function() {
+    		var $file = $( this ),
+    		    $cbStatus = $file.find( 'input[name="selectMediaItem"]' ).prop( 'checked' ),
+    		    $editButton = $file.find( '[data-action="edit"]' );
+    		
+    		if ( $cbStatus ) {
+    			$editButton.click();
+    		}
+    	} );
     }
     
     return cms;
