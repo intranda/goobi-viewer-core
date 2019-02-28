@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.servlets.rest.cms;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,14 +27,19 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.restlet.resource.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +62,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
  * @author Florian Alpers
  *
  */
-@Path("/cms/media")
+@javax.ws.rs.Path("/cms/media")
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
@@ -67,7 +73,7 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
 
     @GET
-    @Path("/get/{tag}")
+    @javax.ws.rs.Path("/get/{tag}")
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaList getMediaByTag(@PathParam("tag") String tag) throws DAOException {
 
@@ -81,7 +87,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @Path("/get")
+    @javax.ws.rs.Path("/get")
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaList getAllMedia(@PathParam("tag") String tag) throws DAOException {
 
@@ -97,7 +103,7 @@ public class CMSMediaResource {
      * @throws DAOException
      */
     @GET
-    @Path("/get/item/{id}")
+    @javax.ws.rs.Path("/get/item/{id}")
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("id") Long id) throws ContentNotFoundException, DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
@@ -148,6 +154,21 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("Resource not found");
     }
+    
+	@Post
+	@javax.ws.rs.Path("/download")
+	public Response uploadMediaFiles( @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) {
+		
+		if (uploadedInputStream == null) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
+        }
+		
+		 
+		
+		
+	}
 
     public class MediaList {
 
