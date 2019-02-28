@@ -23,7 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.cms.Category;
 
 public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -56,17 +58,19 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetAllMediaTags() throws DAOException {
-        List<String> tags = bean.getAllMediaTags();
-        Assert.assertEquals(3, tags.size());
+    public void testGetAllMediaCategories() throws DAOException {
+        List<Category> tags = bean.getAllMediaCategories();
+        Assert.assertEquals(7, tags.size());
     }
 
     @Test
     public void testGetMediaItems() throws DAOException {
-        Assert.assertEquals(4, bean.getMediaItems("", "").size());
-        Assert.assertEquals(3, bean.getMediaItems("tag1", "").size());
-        Assert.assertEquals(4, bean.getMediaItems("", bean.getImageFilter()).size());
-        Assert.assertEquals(0, bean.getMediaItems("", ".*\\.xml").size());
+    	Category tag1 = DataManager.getInstance().getDao().getCategoryByName("tag1");
+    	
+        Assert.assertEquals(4, bean.getMediaItems(null, "").size());
+        Assert.assertEquals(3, bean.getMediaItems(tag1, "").size());
+        Assert.assertEquals(4, bean.getMediaItems(null, bean.getImageFilter()).size());
+        Assert.assertEquals(0, bean.getMediaItems(null, ".*\\.xml").size());
     }
     
     @Test

@@ -81,18 +81,18 @@
                 </div>
             </h:panelGroup>
 
-            <!-- metadata item classification -->
+            <!-- metadata item categories -->
             <div class="page-metadata-item page-metadata-item-classification">
                 <h:panelGroup id="classifications_group">
                     <h3>#{msg.cms_pageMetadata_classifications}</h3>
 
                     <ul>
-                        <c:forEach var="classification" items="#{cmsBean.selectedPage.classifications}">
+                        <c:forEach var="category" items="#{cmsBean.selectedPage.categories}">
                             <li>
                                 <span>
-                                    <h:outputText value="#{classification}" />
+                                    <h:outputText value="#{category.name}" />
                                 </span>
-                                <h:commandLink action="#{cmsBean.selectedPage.removeClassification(classification)}" title="#{msg.more}">
+                                <h:commandLink action="#{cmsBean.selectedPage.removeCategory(category)}" title="#{msg.more}">
                                     <i class="fa fa-minus-circle" aria-hidden="true"></i>
                                     <f:ajax render="classifications_group" />
                                 </h:commandLink>
@@ -103,14 +103,14 @@
                     <div class="row">
                         <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
                             <div class="form-control__select">
-                                <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedClassification}">
-                                    <f:selectItems value="#{cmsBean.classifications}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+                                <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedCategory}">
+                                    <f:selectItems value="#{cmsBean.categories}" var="cat" itemValue="#{cat}" itemLabel="#{cat.name}" />
                                     <f:ajax render="@none"></f:ajax>
                                 </h:selectOneMenu>
                             </div>
                         </div>
                         <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                            <h:commandLink action="#{cmsBean.selectedPage.addClassification(cmsBean.selectedClassification)}" title="#{msg.more}">
+                            <h:commandLink action="#{cmsBean.selectedPage.addCategory(cmsBean.selectedCategory)}" title="#{msg.more}">
                                 <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                 <f:ajax render="classifications_group" />
                             </h:commandLink>

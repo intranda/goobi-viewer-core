@@ -54,6 +54,7 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 
 @Named
@@ -198,10 +199,10 @@ public class CmsMediaBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCMSMediaItems();
     }
 
-    public List<CMSMediaItem> getMediaItems(String tag, String filenameFilter) throws DAOException {
+    public List<CMSMediaItem> getMediaItems(Category category, String filenameFilter) throws DAOException {
         Stream<CMSMediaItem> items = getAllMedia().stream();
-        if (StringUtils.isNotBlank(tag)) {
-            items = items.filter(item -> item.getTags().contains(tag));
+        if (category != null) {
+            items = items.filter(item -> item.getCategories().contains(category));
         }
         if (StringUtils.isNotBlank(filenameFilter)) {
             items = items.filter(item -> item.getFileName().matches(filenameFilter));
@@ -544,8 +545,8 @@ public class CmsMediaBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<String> getAllMediaTags() throws DAOException {
-        return DataManager.getInstance().getDao().getAllTags();
+    public List<Category> getAllMediaCategories() throws DAOException {
+        return DataManager.getInstance().getDao().getAllCategories();
     }
 
     public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {

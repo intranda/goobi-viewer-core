@@ -39,6 +39,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
@@ -106,10 +108,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @PrivateOwned
     private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_media_item_tags", joinColumns = @JoinColumn(name = "owner_media_item_id"))
-    @Column(name = "tag_name")
-    private List<String> tags = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "join_categories_media_items", joinColumns = @JoinColumn(name = "media_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
 
     @Column(name = "display_size", nullable = true)
     private DisplaySize displaySize = DisplaySize.DEFAULT;
@@ -140,7 +142,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.collectionName = orig.collectionName;
         this.displayOrder = orig.displayOrder;
         this.displaySize = orig.displaySize;
-        this.tags = new ArrayList<>(orig.tags);
+        this.categories = new ArrayList<>(orig.categories);
 
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
             CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
@@ -356,28 +358,28 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return version;
     }
 
-    public boolean hasTags() {
-        return !tags.isEmpty();
+    public boolean hasCategories() {
+        return !categories.isEmpty();
     }
 
     @Override
-    public List<String> getTags() {
-        return tags;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
-    public boolean removeTag(String tag) {
-        return this.tags.remove(tag);
+    public boolean removeCategory(Category category) {
+        return this.categories.remove(category);
     }
 
-    public boolean addTag(String tag) {
-        if (this.tags.contains(tag)) {
+    public boolean addCategory(Category category) {
+        if (this.categories.contains(category)) {
             return false;
         }
-        return this.tags.add(tag);
+        return this.categories.add(category);
     }
 
     @Override
