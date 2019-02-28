@@ -70,11 +70,11 @@ public class CMSContentResource {
 
     @GET
     @Path("/content/{pageId}/{language}/{contentId}")
-    @Produces({ MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.TEXT_HTML })
     public String getContentHtml(@PathParam("pageId") Long pageId, @PathParam("language") String language, @PathParam("contentId") String contentId)
             throws IOException, DAOException, ServletException {
         String output = createResponseInThread(TargetType.CONTENT, pageId, language, contentId, REQUEST_TIMEOUT);
-        return wrap(output);
+        return wrap(output, false);
     }
 
     @GET
@@ -82,7 +82,7 @@ public class CMSContentResource {
     @Produces({ MediaType.TEXT_HTML })
     public String getPageUrl(@PathParam("pageId") Long pageId) throws IOException, DAOException, ServletException {
         String output = createResponseInThread(TargetType.PAGE, pageId, null, null, REQUEST_TIMEOUT);
-        return wrap(output);
+        return wrap(output, true);
     }
 
     @GET
@@ -90,17 +90,20 @@ public class CMSContentResource {
     @Produces({ MediaType.TEXT_PLAIN })
     public String getSidebarElementHtml(@PathParam("elementId") Long elementId) throws IOException, DAOException, ServletException {
         String output = createResponseInThread(TargetType.SIDEBAR, elementId, null, null, REQUEST_TIMEOUT);
-        return wrap(output);
+        return wrap(output, true);
     }
 
     /**
      * @param output
      * @return
      */
-    protected String wrap(String string) {
+    protected String wrap(String string, boolean escapeHtml) {
         String output = "";
         if (StringUtils.isNotBlank(string)) {
-            output = replaceHtmlCharacters(string);
+            output = string;
+            if (escapeHtml) {
+                output = replaceHtmlCharacters(output);
+            }
             output = "<span>" + output + "</span>";
         } else {
             output = "<span></span>";
