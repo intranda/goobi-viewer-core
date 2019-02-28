@@ -168,6 +168,7 @@ public class CMSMediaResource {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response uploadMediaFiles(
+			@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		
