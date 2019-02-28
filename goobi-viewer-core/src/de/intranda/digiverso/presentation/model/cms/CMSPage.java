@@ -468,8 +468,8 @@ public class CMSPage implements Comparable<CMSPage> {
         this.categories = categories;
     }
 
-    public void addcategory(Category category) {
-        if (!categories.contains(category)) {
+    public void addCategory(Category category) {
+        if (category != null && !categories.contains(category)) {
         	categories.add(category);
         }
     }
