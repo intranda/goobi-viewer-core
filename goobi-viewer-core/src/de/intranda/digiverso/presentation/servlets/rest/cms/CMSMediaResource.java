@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -157,6 +159,7 @@ public class CMSMediaResource {
     
 	@Post
 	@javax.ws.rs.Path("/download")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadMediaFiles( @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
@@ -165,7 +168,17 @@ public class CMSMediaResource {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
         }
 		
-		 
+		Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+		String filename = fileDetail.getFileName();
+		Path mediaFile = cmsMediaFolder.resolve(filename);
+		try {			
+			if(!Files.exists(cmsMediaFolder)) {
+				Files.createDirectory(cmsMediaFolder);
+			}
+			
+		} catch(IOException e) {
+			
+		}
 		
 		
 	}
