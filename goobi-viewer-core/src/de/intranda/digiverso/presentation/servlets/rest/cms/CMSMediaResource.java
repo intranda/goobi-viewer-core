@@ -164,7 +164,7 @@ public class CMSMediaResource {
     }
     
 	@Post
-	@javax.ws.rs.Path("/download")
+	@javax.ws.rs.Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response uploadMediaFiles( @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
