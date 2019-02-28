@@ -507,7 +507,7 @@ public class TocMaker {
         if (pi == null) {
             logger.error("No PI found for: {}", doc.getFieldValue(SolrConstants.IDDOC));
         }
-        logger.trace("populateTocTree: {}", pi);
+        logger.info("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check PDF download permissions for all docstructs and save into map
         Map<String, Boolean> pdfPermissionMap = null;
@@ -579,13 +579,14 @@ public class TocMaker {
                             SolrSearchIndex.MAX_HITS, DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(
                                     SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
                             null);
-            logger.trace("Loose children of {}: {}", queryValue, childDocs.size());
+            boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
+            logger.info("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
             if (!childDocs.isEmpty()) {
                 for (SolrDocument childDoc : childDocs) {
                     // Add child, if either all siblings are requested or the path leads to the main record
-                    if (addAllSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
+                    if (addSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
                         populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
-                                addAllSiblings, footerId);
+                        		addSiblings, footerId);
                     }
                 }
             }
