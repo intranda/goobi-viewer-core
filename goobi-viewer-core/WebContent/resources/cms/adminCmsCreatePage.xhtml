@@ -162,7 +162,7 @@
                                                                 <!-- subtheme discriminator field -->
                                                                 <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
                                                                     label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
-                                                                    options="#{cmsBean.subThemeDiscriminatorValues}" defaultItemValue="" defaultItemLabel="-" />
+                                                                    options="#{cmsBean.getAllowedSubThemeDiscriminatorValues(userBean.user)}" defaultItemValue="" defaultItemLabel="-" />
                                                                 <!-- parent page for breadcrumbs -->
                                                                 <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
                                                                     label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"

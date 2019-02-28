@@ -286,7 +286,6 @@ public class CmsBean implements Serializable {
             return allTemplates;
         }
 
-        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
         Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
         // Check user licenses
         for (License license : user.getLicenses()) {
@@ -316,6 +315,8 @@ public class CmsBean implements Serializable {
         if (allowedTemplateIds.isEmpty()) {
             return Collections.emptyList();
         }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
         for (CMSPageTemplate template : allTemplates) {
             if (allowedTemplateIds.contains(template.getId())) {
                 ret.add(template);
@@ -1408,7 +1409,7 @@ public class CmsBean implements Serializable {
 
         for (CMSStaticPage staticPage : getStaticPages()) {
             if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPageOptional());
+                allPages.remove(staticPage.getCmsPageOptional().get());
             }
         }
         return allPages;
@@ -1480,6 +1481,55 @@ public class CmsBean implements Serializable {
             return values;
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns a filtered subtheme discriminator value list for the given user, unless the user is a superuser. Other CMS admins get a list matching
+     * values list attached to their CMS license.
+     * 
+     * @param user
+     * @return List of CMS templates whose IDs are among allowed template IDs
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<String> getAllowedSubThemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
+        // Abort if user not a CMS admin
+        if (user == null || !user.isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+
+        if (user.isSuperuser()) {
+            return getSubThemeDiscriminatorValues();
+        }
+
+        List<String> ret = new ArrayList<>();
+        // Check user licenses
+        for (License license : user.getLicenses()) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                ret.addAll(license.getSubthemeDiscriminatorValues());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        ret.addAll(license.getSubthemeDiscriminatorValues());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
+
     }
 
     /**

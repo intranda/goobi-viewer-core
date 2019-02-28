@@ -59,10 +59,24 @@
             </div>
         </div>
         
-        <!-- LICENSE TEMPLATES -->
+        <!-- CMS SETTINGS -->
         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
+        
+            <!-- ALLOWED SUBTHEMES -->
             <div class="form-group">
-                <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
+                <h:outputLabel for="subthemes" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_subthemes}" />
+                <div class="col-sm-8">
+                    <div class="custom-control custom-control--select">
+                        <h:selectManyListbox id="subthemes" value="#{adminBean.currentLicense.subthemeDiscriminatorValues}">
+                            <f:selectItems value="#{cmsBean.subThemeDiscriminatorValues}" />
+                        </h:selectManyListbox>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- ALLOWED TEMPLATES -->
+            <div class="form-group">
+                <h:outputLabel for="templates" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
                 <div class="col-sm-8">
                     <div class="custom-control custom-control--select">
                         <h:selectManyListbox id="templates" value="#{adminBean.currentLicense.allowedCmsTemplates}">
@@ -71,6 +85,7 @@
                     </div>
                 </div>
             </div>
+            
         </ui:fragment>
     </div>
 </ui:composition>

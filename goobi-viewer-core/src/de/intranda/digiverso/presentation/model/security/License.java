@@ -124,6 +124,13 @@ public class License implements IPrivilegeHolder {
     @Column(name = "description")
     private String description;
 
+    /** List of allowed subtheme discriminator values for CMS pages. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "subtheme_discriminator_value")
+    private List<String> subthemeDiscriminatorValues = new ArrayList<>();
+
+    /** List of allowed CMS templates. */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
     @Column(name = "template_id")
@@ -498,6 +505,20 @@ public class License implements IPrivilegeHolder {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the subthemeDiscriminatorValues
+     */
+    public List<String> getSubthemeDiscriminatorValues() {
+        return subthemeDiscriminatorValues;
+    }
+
+    /**
+     * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
+     */
+    public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
+        this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
     }
 
     /**
