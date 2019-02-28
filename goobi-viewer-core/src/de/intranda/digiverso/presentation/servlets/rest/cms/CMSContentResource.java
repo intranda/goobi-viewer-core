@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -79,7 +80,9 @@ public class CMSContentResource {
     @Produces({ MediaType.TEXT_HTML })
     public String getContentHtml(@PathParam("pageId") Long pageId, @PathParam("language") String language, @PathParam("contentId") String contentId)
             throws IOException, DAOException, ServletException {
-        servletResponse.setCharacterEncoding("UTF-8");
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
         String output = createResponseInThread(TargetType.CONTENT, pageId, language, contentId, REQUEST_TIMEOUT);
         return wrap(output, false);
     }
