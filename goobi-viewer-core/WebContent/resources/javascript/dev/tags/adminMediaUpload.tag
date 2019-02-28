@@ -1,5 +1,5 @@
 <adminMediaUpload>
-    <div class="admin-cms-media__upload" ref="drop_area">
+    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
         <div class="admin-cms-media__upload-input">
             <p>
                 {opts.msg.uploadText}
@@ -8,44 +8,60 @@
             </p>
             <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
             <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple">
-            <button class="admin-cms-media__upload-button" type="submit">{opts.msg.buttonUpload}</button>
         </div>
-        <div class="admin-cms-media__upload-uploading">{opts.msg.mediaUploading}</div>
-        <div class="admin-cms-media__upload-success">{opts.msg.mediaFinished}</div>
-        <div class="admin-cms-media__upload-error">{opts.msg.mediaError}:<span></span>.</div>
+        <div class="admin-cms-media__upload-messages">
+            <div class="admin-cms-media__upload-message uploading">
+                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
+            </div>
+            <div class="admin-cms-media__upload-message success">
+                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
+            </div>
+            <div class="admin-cms-media__upload-message error">
+                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> {opts.msg.mediaError}:<span></span>
+            </div>        
+        </div>
     </div>
 
     <script>
         this.files = [];
         this.displayFiles = [];
         this.fileTypes = 'jpg, png, svg, tif, docx, doc, rtf, html, xhtml, xml';
+        this.isDragover = false;
     
         this.on('mount', function () {
-            var dropZone = (this.refs.drop_area);
+            var dropZone = (this.refs.dropZone);
             
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
-            });
+                
+                this.isDragover = true;
+                this.update();
+            }.bind(this));
+
+            dropZone.addEventListener('dragleave', function (e) {                
+                this.isDragover = false;
+                this.update();
+            }.bind(this));
             
-            dropZone.addEventListener("drop", (e) => {
+            dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 
                 for (var f of e.dataTransfer.files) {
                     this.files.push(f);
-                    var sizeUnit = "KB";
+                    var sizeUnit = 'KB';
                     var size = f.size / 1000;
                     if (size > 1024) {
                         size = size / 1024;
-                        sizeUnit = "MB";
+                        sizeUnit = 'MB';
                     }
                     if (size > 1024) {
                         size = size / 1024;
-                        sizeUnit = "GB";
+                        sizeUnit = 'GB';
                     }
-                    this.displayFiles.push({ name: f.name, size: Math.floor(size) + " " + sizeUnit, completed: 0 });
+                    this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
     
                 this.uploadFiles();
@@ -55,19 +71,19 @@
         buttonFilesSelected(e) {
             for (var f of e.target.files) {
                 this.files.push(f);
-                var sizeUnit = "KB";
+                var sizeUnit = 'KB';
                 var size = f.size / 1000;
                 
                 if (size > 1024) {
                     size = size / 1024;
-                    sizeUnit = "MB";
+                    sizeUnit = 'MB';
                 }
                 if (size > 1024) {
                     size = size / 1024;
-                    sizeUnit = "GB";
+                    sizeUnit = 'GB';
                 }
                 
-                this.displayFiles.push({ name: f.name, size: Math.floor(size) + " " + sizeUnit, completed: 0 });
+                this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
             }
     
             this.uploadFiles();
