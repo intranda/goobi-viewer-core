@@ -167,7 +167,7 @@ public class CMSMediaResource {
 	@javax.ws.rs.Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response uploadMediaFiles( @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+	public Response uploadMediaFiles(
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		
@@ -181,7 +181,6 @@ public class CMSMediaResource {
 		} else {
 			//TODO: Check if user has rights to upload cms media files
 		}
-		
 		Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
 		String filename = fileDetail.getFileName();
 		Path mediaFile = cmsMediaFolder.resolve(filename);
@@ -192,13 +191,13 @@ public class CMSMediaResource {
 			Files.copy(uploadedInputStream, mediaFile);
 			
 			if(Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
+				logger.debug("Successfully downloaded file {}", mediaFile);
 				//upload successful. TODO: check file integrity?
 				CMSMediaItem item = createMediaItem(mediaFile);
 				//TODO: Add user category to item?
 				DataManager.getInstance().getDao().addCMSMediaItem(item);
-				
 				MediaItem jsonItem = new MediaItem(item);
-				return Response.status(Status.ACCEPTED).entity(jsonItem).build();
+				return Response.status(Status.ACCEPTED).entity(jsonItem.toString()).build();
 			} else {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to create file " + mediaFile).build();
 
