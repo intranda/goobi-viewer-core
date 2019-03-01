@@ -48,7 +48,7 @@
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                
+                this.files = [];
                 for (var f of e.dataTransfer.files) {
                     this.files.push(f);
                     var sizeUnit = 'KB';
@@ -90,7 +90,21 @@
         }
     
         uploadFiles() {
-            this.uploadFile(0);
+        	for (i = 0; i < this.files.length; i++) {         		
+            	this.uploadFile(i);
+        	}
+        }
+        
+        fileUploaded(fileInfo) {
+        	console.log("uploaded file ", fileInfo);
+        }
+        
+        fileUploadError(error) {
+        	console.log("Error uploading file ", error);
+        }
+        
+        fileUploadComlpete(arg) {
+        	console.log("Completed uploading file ", arg);
         }
         
         uploadFile(i) {
@@ -119,9 +133,9 @@
                 cache: false,
                 contentType: false,
                 processData: false,
-                complete: function () {}.bind(this),
-                success: function (data) {}.bind(this),
-                error: function () {}.bind(this)
+                complete: this.fileUploadComplete,
+                success: this.fileUploaded,
+                error: this.fileUploadError
             });
         }
     </script> 
