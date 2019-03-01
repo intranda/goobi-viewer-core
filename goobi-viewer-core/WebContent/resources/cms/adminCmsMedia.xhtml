@@ -78,9 +78,10 @@
                     <!-- MEDIA FILES -->
                     <div class="admin-cms-media__files">
                         <h:form id="adminCmsMediaFilesForm" prependId="false">
-                            <ui:repeat value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media" varStatus="status">
+                            <ui:repeat  value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media" varStatus="status">
                                 <!-- FILE -->
                                 <div display="block" class="admin-cms-media__file" tabindex="-1">
+                                <h:panelGroup id="mediaItemBlock">
                                     <!-- CLOSE -->
                                     <div class="admin-cms-media__file-close"></div>
                                     <!-- NAVIGATE -->
@@ -215,7 +216,9 @@
                                             <!-- ACTIONS VIEW -->
                                             <div class="admin-cms-media__file-actions-view in">
                                                 <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
-                                                <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete" />
+                                                <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
+                                                	<f:ajax render="@all"></f:ajax>
+                                                </h:commandLink>
                                                 <button 
                                                     type="button" 
                                                     class="btn btn--clean" 
@@ -226,8 +229,10 @@
     
                                             <!-- ACTIONS EDIT -->
                                             <div class="admin-cms-media__file-actions-edit">
-                                                <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
-                                                <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" value="#{msg.button__save}" styleClass="btn btn--clean" />
+                                                <button id="cancel-btn-#{status.index}" type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
+                                                <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$('#cancel-btn-#{status.index}').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
+                                                	<f:ajax execute="edit-fields" render="display-fields edit-fields"></f:ajax>
+                                                </h:commandButton>
                                             </div>
                                         </div>
                                         
@@ -239,7 +244,7 @@
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
                                                     	<h:commandButton actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
-                                                    		<f:ajax execute="display-fields edit-fields" render="display-fields edit-fields language-select"></f:ajax>
+                                                    		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select"></f:ajax>
                                                     	</h:commandButton>
                                                     </li>  
                                                 </c:forEach>
@@ -247,8 +252,13 @@
                                             </h:panelGroup>                                          
                                         </div>    
                                     </div>
+                                    </h:panelGroup>
                             	</div>
                             </ui:repeat>
+                            <h:commandButton id="reloadButton" style="display:none">
+                            <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
+                            	<f:ajax execute="@none" render="@all"></f:ajax>
+                            </h:commandButton>
                         </h:form>
                     </div>
                 </div>
@@ -265,7 +275,10 @@
             		mediaUploading: "#{msg.admin__media_upload_uploading}",
             		mediaFinished: "#{msg.admin__media_upload_finished}",
             		mediaError: "#{msg.admin__media_upload_error}"
-            	}
+            	},
+            	onUploadComplete: function() {
+            		$("#reloadButton").click();
+            	},
             };
             
         	viewerJS.clipboard.init( '[data-copy]' );

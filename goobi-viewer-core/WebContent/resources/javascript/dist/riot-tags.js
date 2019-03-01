@@ -66,9 +66,25 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
         }.bind(this)
 
         this.uploadFiles = function() {
+        	var uploads = [];
         	for (i = 0; i < this.files.length; i++) {
-            	this.uploadFile(i);
+            	uploads.push(Q(this.uploadFile(i)));
         	}
+        	Q.allSettled(uploads)
+        	.then(function(results) {
+        		results.forEach(function (result) {
+        	        if (result.state === "fulfilled") {
+        	            var value = result.value;
+        	            this.fileUploaded(value);
+        	        } else {
+        	            var reason = result.reason;
+        	            this.fileUploadError(result);
+        	        }
+        	    }.bind(this));
+        		if(this.opts.onUploadComplete) {
+        			this.opts.onUploadComplete();
+        		}
+        	}.bind(this))
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
@@ -101,7 +117,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
             data.append('file', this.files[i])
 
-            $.ajax({
+            return $.ajax({
                 url: this.opts.postUrl,
                 type: 'POST',
                 data: data,
@@ -109,9 +125,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 cache: false,
                 contentType: false,
                 processData: false,
-                complete: this.fileUploadComplete,
-                success: this.fileUploaded,
-                error: this.fileUploadError
+
             });
         }.bind(this)
 });
