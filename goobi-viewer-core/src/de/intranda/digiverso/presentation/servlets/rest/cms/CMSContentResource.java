@@ -26,10 +26,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -38,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.CmsElementNotFoundException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -68,11 +72,17 @@ public class CMSContentResource {
         SIDEBAR
     }
 
+    @Context
+    private HttpServletResponse servletResponse;
+
     @GET
     @Path("/content/{pageId}/{language}/{contentId}")
     @Produces({ MediaType.TEXT_HTML })
     public String getContentHtml(@PathParam("pageId") Long pageId, @PathParam("language") String language, @PathParam("contentId") String contentId)
             throws IOException, DAOException, ServletException {
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
         String output = createResponseInThread(TargetType.CONTENT, pageId, language, contentId, REQUEST_TIMEOUT);
         return wrap(output, false);
     }
@@ -94,16 +104,14 @@ public class CMSContentResource {
     }
 
     /**
-     * @param output
+     * @param string
+     * @param escapeHtml
      * @return
      */
     protected String wrap(String string, boolean escapeHtml) {
         String output = "";
         if (StringUtils.isNotBlank(string)) {
-            output = string;
-            if (escapeHtml) {
-                output = replaceHtmlCharacters(output);
-            }
+            output = replaceHtmlCharacters(string, escapeHtml);
             output = "<span>" + output + "</span>";
         } else {
             output = "<span></span>";
@@ -183,12 +191,24 @@ public class CMSContentResource {
     }
 
     /**
-     * @param include
+     * @param input
+     * @param escapeHtml
      * @return
      */
-    private static String replaceHtmlCharacters(String input) {
-        String output = StringEscapeUtils.unescapeHtml(input);
-        output = output.replace("&", "&amp;");
+    private static String replaceHtmlCharacters(String input, boolean escapeHtml) {
+        String output = input;
+        if (escapeHtml) {
+            // Full unescape
+            output = StringEscapeUtils.unescapeHtml(output);
+            output = output.replace("&", "&amp;");
+        } else {
+            // Unescape everything except escaped <>
+            output = output.replace("&lt;", "###LT###").replace("&gt;", "###GT###");
+            output = StringEscapeUtils.unescapeHtml(output);
+            output = output.replace("&", "&amp;");
+            output = output.replace("###LT###", "&lt;").replace("###GT###", "&gt;");
+        }
+
         return output;
     }
 
