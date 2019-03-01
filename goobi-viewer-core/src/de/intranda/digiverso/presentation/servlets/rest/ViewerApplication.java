@@ -25,8 +25,11 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class ViewerApplication extends ResourceConfig {
 
 	public ViewerApplication() {
+		super();
 		register(MultiPartFeature.class);
 		packages(true, "de.intranda.digiverso.presentation.servlets.rest");
+		packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
+
 	}
 
 }

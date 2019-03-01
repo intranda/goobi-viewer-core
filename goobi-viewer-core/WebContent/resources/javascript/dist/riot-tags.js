@@ -24,7 +24,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
-
+                this.files = [];
                 for (var f of e.dataTransfer.files) {
                     this.files.push(f);
                     var sizeUnit = 'KB';
@@ -69,6 +69,14 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             this.uploadFile(0);
         }.bind(this)
 
+        this.fileUploaded = function(fileInfo) {
+        	console.log("uploaded file ", fileInfo);
+        }.bind(this)
+
+        this.fileUploadError = function(error) {
+        	console.log("Error uploading file ", error);
+        }.bind(this)
+
         this.uploadFile = function(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
@@ -96,8 +104,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 contentType: false,
                 processData: false,
                 complete: function () {}.bind(this),
-                success: function (data) {}.bind(this),
-                error: function () {}.bind(this)
+                success: function (data) {this.fileUploaded(data)}.bind(this),
+                error: function (error) {this.fileUploadError(error)}.bind(this)
             });
         }.bind(this)
 });

@@ -232,10 +232,12 @@ public class CmsMediaBean implements Serializable {
             return sbUri.toString();
         }
         
-        return BeanUtils.getImageDeliveryBean()
+        String url = BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
                         StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+        
+        return url;
     }
 
     /**

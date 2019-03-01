@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -42,7 +43,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.FilenameUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.restlet.resource.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +163,7 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("Resource not found");
     }
     
-	@Post
+	@POST
 	@javax.ws.rs.Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -198,7 +198,7 @@ public class CMSMediaResource {
 				//TODO: Add user category to item?
 				DataManager.getInstance().getDao().addCMSMediaItem(item);
 				MediaItem jsonItem = new MediaItem(item);
-				return Response.status(Status.ACCEPTED).entity(jsonItem.toString()).build();
+				return Response.status(Status.ACCEPTED).entity(jsonItem).build();
 			} else {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to create file " + mediaFile).build();
 
