@@ -79,11 +79,11 @@ var cmsJS = ( function( cms ) {
             } );
 			
 			// switch file view
-			_adminCmsMediaGrid = localStorage.getItem( 'adminCmsMediaGrid' );
+			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 			
-			if ( localStorage.getItem( 'adminCmsMediaGrid' ) == undefined || localStorage.getItem( 'adminCmsMediaGrid' ) == '' ) {
-				localStorage.setItem( 'adminCmsMediaGrid', false );
-				_adminCmsMediaGrid = localStorage.getItem( 'adminCmsMediaGrid' );
+			if ( sessionStorage.getItem( 'adminCmsMediaGrid' ) == undefined || sessionStorage.getItem( 'adminCmsMediaGrid' ) == '' ) {
+				sessionStorage.setItem( 'adminCmsMediaGrid', false );
+				_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 				_setMediaGridStatus( _adminCmsMediaGrid );
 			}
 			else {
@@ -94,13 +94,13 @@ var cmsJS = ( function( cms ) {
 				$( this ).addClass( 'active' );
 				$( '[data-switch="grid"]' ).removeClass( 'active' );
 				$( '.admin-cms-media__files' ).removeClass( 'grid' );
-				localStorage.setItem( 'adminCmsMediaGrid', false );
+				sessionStorage.setItem( 'adminCmsMediaGrid', false );
 			});
 			$( '[data-switch="grid"]' ).on( 'click', function() {
 				$( this ).addClass( 'active' );
 				$( '[data-switch="list"]' ).removeClass( 'active' );
 				$( '.admin-cms-media__files' ).addClass( 'grid' );
-				localStorage.setItem( 'adminCmsMediaGrid', true );
+				sessionStorage.setItem( 'adminCmsMediaGrid', true );
 			});
 			
             // show/hide edit actions for media file
@@ -115,21 +115,23 @@ var cmsJS = ( function( cms ) {
 			
 			// enlarge file
 			$( '.admin-cms-media__file-image, .admin-cms-media__file-close' ).on( 'click', function() {
+				var $thisFile = $( this ).parents( '.admin-cms-media__file' ); 
+				
 				// show modal
-				$( this ).parents( '.admin-cms-media__file' ).toggleClass( 'fixed' );
+				$thisFile.toggleClass( 'fixed' );
 				$( '.admin-cms-media__overlay' ).toggle();
 
 				// set modal events				
-				if ( $( this ).parents( '.admin-cms-media__file' ).hasClass( 'fixed' ) ) {
+				if ( $thisFile.hasClass( 'fixed' ) ) {
 					_setFileMouseover( true );
 					_setFileCancelClick( true );
-//					_setFileKeyEvents( $( this ).parents( '.admin-cms-media__file' ), true );
+					_setFileKeyEvents( true );
 					_toggleEditMode( $( '.admin-cms-media__file' ), true );					
 				}
 				else {
 					_setFileMouseover( false );
 					_setFileCancelClick( false );
-//					_setFileKeyEvents( $( this ).parents( '.admin-cms-media__file' ), false );
+					_setFileKeyEvents( false );
 					$( '[data-action="cancel"]' ).click();
 				}
 			} );
@@ -146,7 +148,6 @@ var cmsJS = ( function( cms ) {
 				else {
 					$( this ).removeClass( 'disabled' );
 					$( this ).parent().removeClass( 'fixed' ).next().addClass( 'fixed' );
-					_setFileKeyEvents( $( this ).parent(), true );
 				}
 			} );
 			$( '.admin-cms-media__file-prev' ).on( 'click', function() {
@@ -263,26 +264,41 @@ var cmsJS = ( function( cms ) {
     /**
      * @description Method to set the keyboard events for the media file modal.
      * @method _setFileKeyEvents
-     * @param {Object} item A jQuery object which contains the current media file.
      * @param {Boolean} modal Trigger to switch between modal and list files.
      * */
-    function _setFileKeyEvents( item, modal ) {
+    function _setFileKeyEvents( modal ) {
     	if ( _debug ) {
     		console.log( 'EXECUTE: _setFileKeyEvents' );
-    		console.log( '--> item: ', item );
     		console.log( '--> modal: ', modal );
     	}
     	
     	if ( modal ) {
     		$( '.admin-cms-media__file' ).off().on( 'keydown', function( e ) {
     			var code = e.keyCode || e.which;
+    			console.log(code);
     			
     			switch ( code ) {
-	    			case 37:
-	    				item.find( '.admin-cms-media__file-prev' ).click();
+    				// esc
+	    			case 27:
+	    				$( this ).find( '[data-action="cancel"]' ).click();
 	    				break;
-	    			case 39:	    				
-	    				item.find( '.admin-cms-media__file-next' ).click();
+	    			// left
+    				case 37:
+	    				if ( $( this ).prev().is( ':first-child' ) ) {
+	    					return false;
+	    				}
+	    				else {
+	    					$( this ).removeClass( 'fixed' ).prev().addClass( 'fixed' ).focus();	    					
+	    				}	    				
+	    				break;
+	    			// right
+    				case 39:
+	    				if ( $( this ).next().is( ':last-child' ) ) {
+	    					return false;
+	    				}
+	    				else {
+	    					$( this ).removeClass( 'fixed' ).next().addClass( 'fixed' ).focus();
+	    				}	    				
 	    				break;
     			}
     		} );
