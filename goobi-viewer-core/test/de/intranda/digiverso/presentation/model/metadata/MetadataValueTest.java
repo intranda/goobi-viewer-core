@@ -56,7 +56,7 @@ public class MetadataValueTest {
         value.getParamValues().get(1).add("value1");
         value.getParamValues().get(1).add("value2");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("prefix_value1_suffixprefix_value2_suffix", value.getComboValueShort(1));
+        Assert.assertEquals("prefix_value1_suffix, prefix_value2_suffix", value.getComboValueShort(1));
     }
 
     /**

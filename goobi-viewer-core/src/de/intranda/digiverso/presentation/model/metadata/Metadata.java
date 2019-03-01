@@ -40,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.NormData;
+import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -330,8 +332,32 @@ public class Metadata implements Serializable {
                                 NavigationHelper nh = BeanUtils.getNavigationHelper();
                                 String normDataType = MetadataGroupType.OTHER.name();
                                 // Use the last part of NORM_URI_* field name as the normdata type
-                                if (param.getKey() != null && param.getKey().startsWith("NORM_URI_")) {
-                                    normDataType = param.getKey().replace("NORM_URI_", "");
+                                if (param.getKey() != null) {
+                                    if (param.getKey().startsWith("NORM_URI_")) {
+                                        // Determine norm data set type from the URI field name
+                                        normDataType = param.getKey().replace("NORM_URI_", "");
+                                    } else if (param.getKey().equals("NORM_URI")) {
+                                        // Determine norm data set type from GND field 075$b
+                                        Map<String, List<NormData>> ret = NormDataImporter.importNormData(value);
+                                        if (ret.get("GND") != null) {
+                                            for (NormData normData : ret.get("GND")) {
+                                                if ("NORM_TYPE".equals(normData.getKey())) {
+                                                    String val = normData.getValues().get(0).getText();
+                                                    logger.trace("val: " + val);
+                                                    switch (val) {
+                                                        case "kiz":
+                                                            normDataType = MetadataGroupType.CORPORATION.name();
+                                                            break;
+                                                        case "piz":
+                                                            normDataType = MetadataGroupType.PERSON.name();
+                                                            break;
+                                                    }
+                                                    logger.trace("norm data type determined fro 075$b: {}", normDataType);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                                 String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
                                         .replace("{0}", nh.getApplicationUrl())
