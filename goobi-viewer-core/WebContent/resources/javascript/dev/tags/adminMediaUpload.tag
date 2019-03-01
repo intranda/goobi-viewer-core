@@ -90,7 +90,9 @@
         }
     
         uploadFiles() {
-            this.uploadFile(0);
+        	for (i = 0; i < this.files.length; i++) {         		
+            	this.uploadFile(i);
+        	}
         }
         
         fileUploaded(fileInfo) {
@@ -99,6 +101,10 @@
         
         fileUploadError(error) {
         	console.log("Error uploading file ", error);
+        }
+        
+        fileUploadComlpete(arg) {
+        	console.log("Completed uploading file ", arg);
         }
         
         uploadFile(i) {
@@ -127,9 +133,9 @@
                 cache: false,
                 contentType: false,
                 processData: false,
-                complete: function () {}.bind(this),
-                success: function (data) {this.fileUploaded(data)}.bind(this),
-                error: function (error) {this.fileUploadError(error)}.bind(this)
+                complete: this.fileUploadComplete,
+                success: this.fileUploaded,
+                error: this.fileUploadError
             });
         }
     </script> 
