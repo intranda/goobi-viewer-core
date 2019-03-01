@@ -80,8 +80,7 @@
                         <h:form id="adminCmsMediaFilesForm" prependId="false">
                             <ui:repeat  value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media" varStatus="status">
                                 <!-- FILE -->
-                                <div display="block" class="admin-cms-media__file" tabindex="-1">
-                                <h:panelGroup id="mediaItemBlock">
+                                <div class="admin-cms-media__file" tabindex="-1">
                                     <!-- CLOSE -->
                                     <div class="admin-cms-media__file-close"></div>
                                     <!-- NAVIGATE -->
@@ -243,22 +242,22 @@
                                               <ul>
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
-                                                    	<h:commandButton actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
+                                                    	<h:commandLink actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
                                                     		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select"></f:ajax>
-                                                    	</h:commandButton>
+                                                    	</h:commandLink>
                                                     </li>  
                                                 </c:forEach>
                                               </ul>
                                             </h:panelGroup>                                          
                                         </div>    
                                     </div>
-                                    </h:panelGroup>
                             	</div>
                             </ui:repeat>
-                            <h:commandButton id="reloadButton" style="display:none">
-                            <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
+                            
+                            <h:commandLink id="reloadButton" style="display:none">
+                                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
                             	<f:ajax execute="@none" render="@all"></f:ajax>
-                            </h:commandButton>
+                            </h:commandLink>
                         </h:form>
                     </div>
                 </div>

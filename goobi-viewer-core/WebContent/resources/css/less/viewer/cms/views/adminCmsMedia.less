@@ -28,18 +28,6 @@
 		&.is-uploading,
 		&.is-success,
 		&.is-error {
-			.admin-cms-media__upload-input {
-			    visibility: hidden;			
-			}
-			.admin-cms-media__upload-error {
-			    display: block;
-			    position: absolute;
-			    top: 50%;
-			    right: 0;
-			    left: 0;
-			    -webkit-transform: translateY( -50%);
-			    transform: translateY( -50%);
-			}
 		}
 	}
 	&__upload-input {
@@ -400,16 +388,21 @@
 				content: "";
 				display: block;
 				position: absolute;
-				top: 5px;
+				top: 6px;
 				right: -6px;
 				width: 1px;
-				height: 11px;
+				height: 12px;
 				background-color: @black;
 			}
 			&:last-child {
 				margin-right: 0;
 				&:after {
 					display: none;
+				}
+			}
+			&.active {
+				a {
+					text-decoration: underline;
 				}
 			}
 			&.finished {

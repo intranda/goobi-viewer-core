@@ -9846,21 +9846,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-color: #3365a9;
   background-color: #f2f3f4;
 }
-.admin-cms-media__upload.is-uploading .admin-cms-media__upload-input,
-.admin-cms-media__upload.is-success .admin-cms-media__upload-input,
-.admin-cms-media__upload.is-error .admin-cms-media__upload-input {
-  visibility: hidden;
-}
-.admin-cms-media__upload.is-uploading .admin-cms-media__upload-error,
-.admin-cms-media__upload.is-success .admin-cms-media__upload-error,
-.admin-cms-media__upload.is-error .admin-cms-media__upload-error {
-  display: block;
-  position: absolute;
-  top: 50%;
-  right: 0;
-  left: 0;
-  transform: translateY(-50%);
-}
 .admin-cms-media__upload-input {
   text-align: center;
 }
@@ -10251,10 +10236,10 @@ div[id*="-Modal"] .email-form .form-group {
   content: "";
   display: block;
   position: absolute;
-  top: 5px;
+  top: 6px;
   right: -6px;
   width: 1px;
-  height: 11px;
+  height: 12px;
   background-color: #1a1a1a;
 }
 .admin-cms-media__file-language li:last-child {
@@ -10262,6 +10247,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__file-language li:last-child:after {
   display: none;
+}
+.admin-cms-media__file-language li.active a {
+  text-decoration: underline;
 }
 .admin-cms-media__file-language li.finished a {
   color: #1a1a1a;

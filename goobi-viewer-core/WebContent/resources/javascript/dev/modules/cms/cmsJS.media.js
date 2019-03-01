@@ -25,7 +25,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {};
     var _adminCmsMediaGrid = '';
     
@@ -141,7 +141,7 @@ var cmsJS = ( function( cms ) {
 			$( '.admin-cms-media__file' ).last().find( '.admin-cms-media__file-next' ).addClass( 'disabled' );
 			
 			$( '.admin-cms-media__file-next' ).on( 'click', function() {
-				if ( $( this ).parent().next().is( ':last-child' ) ) {
+				if ( $( this ).parent().next().is( ':last-child, :nth-last-child(2)' ) ) {
 					$( this ).addClass( 'disabled' );
 					return false;
 				}
@@ -275,7 +275,6 @@ var cmsJS = ( function( cms ) {
     	if ( modal ) {
     		$( '.admin-cms-media__file' ).off().on( 'keydown', function( e ) {
     			var code = e.keyCode || e.which;
-    			console.log(code);
     			
     			switch ( code ) {
     				// esc
@@ -294,7 +293,7 @@ var cmsJS = ( function( cms ) {
 	    				break;
 	    			// right
     				case 39:
-	    				if ( $( this ).next().is( ':last-child' ) ) {
+	    				if ( $( this ).next().is( ':last-child, :nth-last-child(2)' ) ) {
 	    					return false;
 	    				}
 	    				else {
