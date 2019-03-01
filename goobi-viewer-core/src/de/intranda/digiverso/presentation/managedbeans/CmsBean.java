@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -114,7 +116,7 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private Category selectedCategory;
+    private Long selectedCategoryId;
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
@@ -122,6 +124,7 @@ public class CmsBean implements Serializable {
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
+    private List<Category> selectableCategories;
 
     @PostConstruct
     public void init() {
@@ -174,7 +177,7 @@ public class CmsBean implements Serializable {
             lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
             lazyModelPages.addFilter("classifications", "classification");
         }
-        selectedLocale = getDefaultLocale();
+        selectedLocale = getDefaultLocale();        
     }
 
     /**
@@ -782,6 +785,15 @@ public class CmsBean implements Serializable {
             }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
+            
+            try {
+    			selectableCategories = getCategoriesToSelect();
+    			resetSelectedCategoryId();
+    		} catch (DAOException e) {
+                logger.error("Unable to get available categories", e);
+
+    		}
+            
         } else {
             this.selectedPage = null;
         }
@@ -854,12 +866,6 @@ public class CmsBean implements Serializable {
 
     }
 
-    public List<Category> getCategories() throws DAOException {
-        List<Category> ret = new ArrayList<>();
-        ret.addAll(DataManager.getInstance().getDao().getAllCategories());
-
-        return ret;
-    }
 
     public boolean isDisplaySidebarEditor() {
         return displaySidebarEditor;
@@ -868,14 +874,66 @@ public class CmsBean implements Serializable {
     public void setDisplaySidebarEditor(boolean displaySidebarEditor) {
         this.displaySidebarEditor = displaySidebarEditor;
     }
-
-    public Category getSelectedCategory() {
-        return selectedCategory;
+    
+    
+    public List<Category> getCategoriesToSelect() throws DAOException {
+        List<Category> categories = new ArrayList<>(DataManager.getInstance().getDao().getAllCategories());
+        if(this.selectedPage != null) {
+        	this.selectedPage.getCategories().forEach(cat -> categories.remove(cat));
+        }
+        return categories;
     }
 
-    public void setSelectedCategory(Category category) {
-        this.selectedCategory = category;
+    public Long getSelectedCategoryId() {
+        return selectedCategoryId;
     }
+
+    public void setSelectedCategoryId(Long categoryId) {
+        this.selectedCategoryId = categoryId;
+    }
+    
+    public Category getSelectedCategory() throws DAOException {
+    	if(this.selectedCategoryId != null) {    		
+    		Category category = getSelectableCategories().stream().filter(cat -> this.selectedCategoryId.equals(cat.getId())).findFirst().orElse(null);
+    		return category;
+    	}
+    	return null;
+    }
+
+	public List<Category> getSelectableCategories() {
+		return selectableCategories;
+	}
+	
+	public void addSelectedCategoryToPage() throws DAOException {
+		Category cat = getSelectedCategory();
+		if(this.selectedPage != null && cat != null) {
+			this.selectedPage.addCategory(cat);
+			this.selectableCategories.remove(cat);
+			this.selectedPage.getCategories().sort( (c1,c2) -> c1.getId().compareTo(c2.getId()));
+			resetSelectedCategoryId();
+		}
+	}
+	
+	public void removeCategoryFromPage(Category cat) throws DAOException {
+		if(this.selectedPage != null && cat != null) {
+			this.selectedPage.removeCategory(cat);
+			this.selectableCategories.add(cat);
+			this.selectableCategories.sort( (c1,c2) -> c1.getId().compareTo(c2.getId()));
+			resetSelectedCategoryId();
+		}
+	}
+	
+	public List<Category> getAllCategories() throws DAOException {
+		return DataManager.getInstance().getDao().getAllCategories();
+	}
+	
+	public void resetSelectedCategoryId() {
+		this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(Category::getId).orElse(null);
+	}
+	
+	public boolean hasSelectedCategoryId() {
+		return this.selectedCategoryId != null;
+	}
 
     public CMSMediaItem getSelectedMediaItem() {
         return selectedMediaItem;
