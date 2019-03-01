@@ -7271,6 +7271,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget-bookshelf-list__back {
   padding-top: 10px;
+  border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -7448,14 +7449,6 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-custom-drilldown .sidebar-collection-less .fa {
   margin-left: 5px;
 }
-/* ==============================================================
-   Widget Downloads
-   style declarations for widget_downloads.xhtml
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Widget Metadata
    style declarations for widget_metadata.xhtml
