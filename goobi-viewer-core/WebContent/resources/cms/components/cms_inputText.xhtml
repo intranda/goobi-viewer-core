@@ -17,6 +17,9 @@
         <composite:attribute
             name="help"
             required="true" />
+        <composite:attribute
+            name="validator"
+            default="anyStringValidator" />
     </composite:interface>
 
     <composite:implementation>
@@ -29,7 +32,8 @@
                 <h:inputText
                     id="input"
                     value="#{cc.attrs.field}"
-                    styleClass="form-control" />
+                    styleClass="form-control"
+                    validator="#{cc.attrs.validator}" />
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">
