@@ -80,6 +80,9 @@ public class MetadataValue implements Serializable {
                 if (StringUtils.isEmpty(paramValue)) {
                     continue;
                 }
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
                 boolean addPrefix = true;
                 if (index == 0) {
                     addPrefix = false;
