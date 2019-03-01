@@ -66,9 +66,10 @@
             <div class="form-group">
                 <h:outputLabel for="subthemes" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_subthemes}" />
                 <div class="col-sm-8">
-                    <div class="custom-control custom-control--select">
-                        <h:selectManyListbox id="subthemes" value="#{adminBean.currentLicense.subthemeDiscriminatorValues}">
-                            <f:selectItems value="#{cmsBean.subThemeDiscriminatorValues}" />
+                    <div class="custom-control custom-control--select" style="min-height: 200px">
+                        <h:selectManyListbox id="subthemes" value="#{adminBean.currentLicense.subthemeDiscriminatorValues}"
+                            disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}">
+                            <f:selectItems value="#{cmsBean.subthemeDiscriminatorValues}" />
                         </h:selectManyListbox>
                     </div>
                 </div>
@@ -78,7 +79,7 @@
             <div class="form-group">
                 <h:outputLabel for="templates" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
                 <div class="col-sm-8">
-                    <div class="custom-control custom-control--select">
+                    <div class="custom-control custom-control--select" style="min-height: 200px">
                         <h:selectManyListbox id="templates" value="#{adminBean.currentLicense.allowedCmsTemplates}">
                             <f:selectItems value="#{cmsBean.templates}" var="template" itemLabel="#{template.name}" itemValue="#{template.id}" />
                         </h:selectManyListbox>

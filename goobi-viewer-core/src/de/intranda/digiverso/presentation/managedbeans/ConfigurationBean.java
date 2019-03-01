@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -741,5 +742,9 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isDisplayWidgetUsage() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
+    }
+
+    public boolean isSubthemeDiscriminatorFieldSet() {
+        return StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 }

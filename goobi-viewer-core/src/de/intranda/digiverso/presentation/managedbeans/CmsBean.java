@@ -1471,7 +1471,7 @@ public class CmsBean implements Serializable {
         return FacesContext.getCurrentInstance();
     }
 
-    public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
+    public List<String> getSubthemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
         String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
             subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
@@ -1490,14 +1490,14 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public List<String> getAllowedSubThemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
+    public List<String> getAllowedSubthemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
         // Abort if user not a CMS admin
         if (user == null || !user.isCmsAdmin()) {
             return Collections.emptyList();
         }
 
         if (user.isSuperuser()) {
-            return getSubThemeDiscriminatorValues();
+            return getSubthemeDiscriminatorValues();
         }
 
         List<String> ret = new ArrayList<>();
