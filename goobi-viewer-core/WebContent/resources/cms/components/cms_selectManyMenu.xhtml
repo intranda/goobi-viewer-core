@@ -30,6 +30,8 @@
         <composite:attribute name="itemValue" default="#{item.value}"/>
         <composite:attribute name="itemLabel" default="#{msg[item]}" />
         <composite:attribute name="disabled" default="false" />
+        <composite:attribute name="required" default="false" />
+        <composite:attribute name="requiredMessage" default="" />
     </composite:interface>
 
     <composite:implementation>
@@ -43,7 +45,9 @@
                     id="input"
                     styleClass="form-control"
                     value="#{cc.attrs.field}"
-                    disabled="#{cc.attrs.disabled}">
+                    disabled="#{cc.attrs.disabled}"
+                    required="#{cc.attrs.required}"
+                    requiredMessage="#{cc.attrs.requiredMessage}">
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue != ''}">
                         <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}"></f:selectItem>
                     </ui:fragment>
