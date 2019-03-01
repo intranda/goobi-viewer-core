@@ -255,7 +255,7 @@ var cmsJS = ( function( cms ) {
     				$( this ).find( '.admin-cms-media__file-actions' ).show();
     			},
     			'mouseout': function() {
-    				$( this ).find( '.admin-cms-media__file-actions' ).hide();    				
+    				$( this ).find( '.admin-cms-media__file-actions' ).hide();
     			}
     		} );
     	}
@@ -281,6 +281,7 @@ var cmsJS = ( function( cms ) {
     				// esc
 	    			case 27:
 	    				$( this ).find( '[data-action="cancel"]' ).click();
+	    				$( '.admin-cms-media__file-actions' ).hide();
 	    				break;
 	    			// left
     				case 37:
