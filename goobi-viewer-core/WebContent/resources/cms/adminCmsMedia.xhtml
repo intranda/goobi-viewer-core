@@ -80,7 +80,7 @@
                         <h:form id="adminCmsMediaFilesForm" prependId="false">
                             <ui:repeat value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media" varStatus="status">
                                 <!-- FILE -->
-                                <div class="admin-cms-media__file" tabindex="-1">
+                                <div display="block" class="admin-cms-media__file" tabindex="-1">
                                     <!-- CLOSE -->
                                     <div class="admin-cms-media__file-close"></div>
                                     <!-- NAVIGATE -->
@@ -117,33 +117,36 @@
                                         <div class="admin-cms-media__file-metadata">
                                             <!-- FILE METADATA VIEW -->
                                             <div class="admin-cms-media__file-metadata-view in">
-                                                <dl class="dl-horizontal">
-                                                    <!-- TITLE -->
-                                                    <dt>#{msg.admin__media_title}:</dt>
-                                                    <dd>#{media.getMetadataForLocale(cmsBean.getCurrentLocale()).name}</dd>
-                                                    <!-- DESCRIPTION -->
-                                                    <dt>#{msg.admin__media_description}:</dt>
-                                                    <dd>#{media.getMetadataForLocale(cmsBean.getCurrentLocale()).description}</dd>
-                                                    <!-- ALT TEXT -->
-                                                    <dt>#{msg.admin__media_alt_text}:</dt>
-                                                    <dd>[ALTERNATIVER TEXT]</dd>
-                                                    <!-- LINKS TO -->
-                                                    <ui:fragment rendered="#{media.link != '#'}">
-                                                        <dt>#{msg.admin__media_links_to}:</dt>
-                                                        <dd>#{media.link}</dd>
-                                                    </ui:fragment>
-                                                </dl>
+                                                <h:panelGroup id="display-fields">
+	                                                <dl class="dl-horizontal">
+	                                                    <!-- TITLE -->
+	                                                    <dt>#{msg.admin__media_title}:</dt>
+		                                                    <dd>#{media.getMetadataForLocale(media.selectedLocale).name}</dd>
+	                                                    <!-- DESCRIPTION -->
+	                                                    <dt>#{msg.admin__media_description}:</dt>
+	                                                    <dd>#{media.getMetadataForLocale(media.selectedLocale).description}</dd>
+	                                                    <!-- ALT TEXT (only visible in edit mode) -->
+	<!--                                                     <dt>#{msg.admin__media_alt_text}:</dt> -->
+	<!--                                                     <dd>#{media.alternativeText}</dd> -->
+	                                                    <!-- LINKS TO -->
+	                                                    <ui:fragment rendered="#{media.link != '#'}">
+	                                                        <dt>#{msg.admin__media_links_to}:</dt>
+	                                                        <dd>#{media.link}</dd>
+	                                                    </ui:fragment>
+	                                                </dl>
+                                                </h:panelGroup>
                                             </div>
     
                                             <!-- FILE METADATA EDIT -->
                                             <div class="admin-cms-media__file-metadata-edit">
+                                            	<h:panelGroup id="edit-fields">
                                                 <!-- EDIT TITLE -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
                                                         <label for="editMediaTitle">#{msg.admin__media_title}:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(cmsBean.getCurrentLocale()).name}" styleClass="form-control" />
+                                                        <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(media.selectedLocale).name}" styleClass="form-control" />
                                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
@@ -159,7 +162,7 @@
                                                         <label for="editMediaDescription">#{msg.admin__media_description}:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(cmsBean.getCurrentLocale()).description}" styleClass="form-control" />
+                                                        <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(media.selectedLocale).description}" styleClass="form-control" />
                                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
@@ -175,7 +178,7 @@
                                                         <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaAltText" value="..." styleClass="form-control" />
+                                                        <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control" />
                                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
@@ -200,6 +203,7 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                                </h:panelGroup>
                                             </div>
                                         </div>
                                     </div>
@@ -230,19 +234,20 @@
                                         <!-- FILE LANGUAGE -->
                                         <div class="admin-cms-media__file-language">
                                             <strong>#{msg.admin__available_languages}:</strong>
-                                            <ul>
+                                            <h:panelGroup id="language-select">
+                                              <ul>
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                    <li>
-                                                        <a href="#">#{locale.language}</a>
-                                                    </li>                                            
+                                                    <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
+                                                    	<h:commandButton actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
+                                                    		<f:ajax execute="display-fields edit-fields" render="display-fields edit-fields language-select"></f:ajax>
+                                                    	</h:commandButton>
+                                                    </li>  
                                                 </c:forEach>
-    <!--                                             <li class="finished"> -->
-    <!--                                                 <a href="#">en</a> -->
-    <!--                                             </li> -->
-                                            </ul>
+                                              </ul>
+                                            </h:panelGroup>                                          
                                         </div>    
                                     </div>
-                                </div>
+                            	</div>
                             </ui:repeat>
                         </h:form>
                     </div>

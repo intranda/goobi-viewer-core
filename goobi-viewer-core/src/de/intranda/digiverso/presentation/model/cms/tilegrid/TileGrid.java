@@ -33,9 +33,7 @@ public class TileGrid {
         for (ImageGalleryTile mediaItem : items) {
             this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "", mediaItem.getIconURI() != null ? mediaItem
                     .getIconURI(0,0).toString() : "", mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "", mediaItem
-                            .getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "", mediaItem.isImportant(), mediaItem.getSize() != null
-                                    ? mediaItem.getSize() : CMSMediaItem.DisplaySize.DEFAULT, mediaItem.getTags(), mediaItem.isCollection()
-                                            ? mediaItem.getCollectionName() : null, mediaItem.getDisplayOrder()));
+                            .getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "", mediaItem.isImportant(), CMSMediaItem.DisplaySize.DEFAULT, mediaItem.getTags(), null, mediaItem.getDisplayOrder()));
         }
     }
 
