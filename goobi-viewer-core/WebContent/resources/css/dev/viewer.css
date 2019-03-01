@@ -7271,6 +7271,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget-bookshelf-list__back {
   padding-top: 10px;
+  border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -7448,14 +7449,6 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-custom-drilldown .sidebar-collection-less .fa {
   margin-left: 5px;
 }
-/* ==============================================================
-   Widget Downloads
-   style declarations for widget_downloads.xhtml
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Widget Metadata
    style declarations for widget_metadata.xhtml
@@ -8293,6 +8286,11 @@ div[id*="-Modal"] .email-form .form-group {
   /* SIDEBAR */
   /* CONTENT */
 }
+.admin button.btn:active,
+.admin button.btn:focus,
+.admin button.btn:active:focus {
+  color: #1a1a1a;
+}
 .admin__sidebar {
   position: fixed;
   top: 0;
@@ -8686,6 +8684,10 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-control.in .cms-module__option-control-checkbox {
   padding: 7px;
+}
+.cms-module__option-control textarea {
+  min-height: 34px;
+  resize: vertical;
 }
 .cms-module__option-control-checkbox {
   display: inline-block;
@@ -9672,14 +9674,18 @@ div[id*="-Modal"] .email-form .form-group {
 /* OVERVIEW PAGE */
 .tpl-overviewpage {
   /* OVERVIEW */
-  /* DESCRIPTION / LITERATURE / HISTORY */
-  /* DESCRIPTION */
+  /* LITERATURE / HISTORY */
   /* LITERATURE */
   /* HISTORY */
+}
+.tpl-overviewpage h2 {
+  margin: 0;
+  margin-bottom: 5px;
 }
 .tpl-overviewpage__overview {
   display: -ms-flexbox;
   display: flex;
+  margin-top: 30px;
   margin-bottom: 30px;
 }
 .tpl-overviewpage__overview-thumbnail {
@@ -9700,13 +9706,22 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-overviewpage__overview-metadata dd {
   word-break: break-word;
 }
-.tpl-overviewpage__description,
 .tpl-overviewpage__literature,
 .tpl-overviewpage__history {
   margin-bottom: 30px;
   padding: 15px;
   border: 1px solid #ccc;
   background-color: #fff;
+}
+.tpl-overviewpage__literature {
+  position: relative;
+  min-height: 72px;
+}
+.tpl-overviewpage__literature > img {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  margin-left: -34px;
 }
 .tpl-overviewpage__history table {
   margin: 0;
@@ -9798,6 +9813,489 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* CMS VIEWS */
+/* ==============================================================
+   CMS Media
+   style declarations for adminCmsMedia.xhtml
+   ==============================================================*/
+/* ADMIN CMS MEDIA */
+.admin-cms-media {
+  /* OVERLAY */
+  /* UPLOAD */
+  /* ACTIONS */
+  /* MEDIA FILES */
+  /* TOP */
+  /* BOTTOM */
+}
+.admin-cms-media__overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2010;
+}
+.admin-cms-media__upload {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 50px 20px;
+  border: 2px dashed #ccc;
+}
+.admin-cms-media__upload.is-dragover {
+  border-color: #3365a9;
+  background-color: #f2f3f4;
+}
+.admin-cms-media__upload-input {
+  text-align: center;
+}
+.admin-cms-media__upload-input label {
+  margin: 0;
+  cursor: pointer;
+}
+.admin-cms-media__upload-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.admin-cms-media__upload-messages {
+  display: none;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: center;
+      justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 50px 20px;
+  text-align: center;
+  background-color: #fff;
+  z-index: 10;
+}
+.admin-cms-media__upload-messages.in-progress {
+  display: -ms-flexbox;
+  display: flex;
+}
+.admin-cms-media__upload-message {
+  display: none;
+}
+.admin-cms-media__upload-message .fa {
+  margin-right: 20px;
+  font-size: 3rem;
+  vertical-align: middle;
+}
+.admin-cms-media__upload-message.uploading.in-progress,
+.admin-cms-media__upload-message.success.in-progress,
+.admin-cms-media__upload-message.error.in-progress {
+  display: block;
+}
+.admin-cms-media__upload-message.uploading {
+  color: #3365a9;
+}
+.admin-cms-media__upload-message.success {
+  color: #155724;
+}
+.admin-cms-media__upload-message.error {
+  color: #721c24;
+}
+.admin-cms-media__actions {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 10px;
+  background-color: #f2f3f4;
+}
+.admin-cms-media__bulk-actions,
+.admin-cms-media__switch,
+.admin-cms-media__filter {
+  margin-right: 15px;
+}
+.admin-cms-media__bulk-actions {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
+.admin-cms-media__bulk-actions label {
+  min-width: 23px;
+  margin-bottom: 0;
+  padding-right: 0;
+}
+.admin-cms-media__bulk-actions .custom-control__icon {
+  color: #1a1a1a;
+}
+.admin-cms-media__switch [data-switch="list"].active,
+.admin-cms-media__switch [data-switch="grid"].active,
+.admin-cms-media__switch [data-switch="list"]:hover,
+.admin-cms-media__switch [data-switch="grid"]:hover,
+.admin-cms-media__switch [data-switch="list"]:active,
+.admin-cms-media__switch [data-switch="grid"]:active,
+.admin-cms-media__switch [data-switch="list"]:focus,
+.admin-cms-media__switch [data-switch="grid"]:focus {
+  color: #3365a9;
+}
+.admin-cms-media__switch [data-switch="list"].btn:active,
+.admin-cms-media__switch [data-switch="grid"].btn:active,
+.admin-cms-media__switch [data-switch="list"].btn:focus,
+.admin-cms-media__switch [data-switch="grid"].btn:focus,
+.admin-cms-media__switch [data-switch="list"].btn:active:focus,
+.admin-cms-media__switch [data-switch="grid"].btn:active:focus {
+  color: #3365a9;
+}
+.admin-cms-media__switch [data-switch="list"] {
+  margin-right: 10px;
+}
+.admin-cms-media__filter {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+}
+.admin-cms-media__paginator {
+  margin-left: auto;
+}
+.admin-cms-media__paginator .data-table-paginator {
+  margin: 0;
+}
+.admin-cms-media__files.grid .admin-cms-media__file,
+.admin-cms-media__file {
+  position: relative;
+  padding: 10px;
+  background-color: #fff;
+}
+.admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd),
+.admin-cms-media__file:nth-child(odd) {
+  background-color: #f2f3f4;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed,
+.admin-cms-media__file.fixed {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  bottom: 30px;
+  left: 30px;
+  padding: 50px;
+  z-index: 2020;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed:nth-child(odd),
+.admin-cms-media__file.fixed:nth-child(odd) {
+  background-color: #fff;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-close,
+.admin-cms-media__file.fixed .admin-cms-media__file-close,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-prev,
+.admin-cms-media__file.fixed .admin-cms-media__file-prev,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-next,
+.admin-cms-media__file.fixed .admin-cms-media__file-next {
+  display: block;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-top,
+.admin-cms-media__file.fixed .admin-cms-media__file-top {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-select,
+.admin-cms-media__file.fixed .admin-cms-media__file-select {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-image,
+.admin-cms-media__file.fixed .admin-cms-media__file-image {
+  width: 40%;
+  height: 100%;
+  background-position: center top;
+  background-size: contain;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-type,
+.admin-cms-media__file.fixed .admin-cms-media__file-type {
+  top: 0;
+  bottom: auto;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata {
+  display: block;
+  padding-left: 30px;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-view,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-view,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-view.in,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-view.in,
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit.in,
+.admin-cms-media__file.fixed .admin-cms-media__file-metadata-edit.in {
+  display: block;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-bottom,
+.admin-cms-media__file.fixed .admin-cms-media__file-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: auto;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-actions,
+.admin-cms-media__file.fixed .admin-cms-media__file-actions {
+  -ms-flex-order: 1;
+      order: 1;
+  margin-left: auto;
+  padding-left: 15px;
+}
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-language,
+.admin-cms-media__file.fixed .admin-cms-media__file-language {
+  margin-left: 0;
+  padding-left: 0;
+}
+.admin-cms-media__file-close,
+.admin-cms-media__file-prev,
+.admin-cms-media__file-next {
+  display: none;
+  position: absolute;
+  top: 0;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.admin-cms-media__file-close {
+  right: 0;
+  background-image: url("../../images/icons/icon_fs-close.svg");
+  background-size: 22px;
+}
+.admin-cms-media__file-prev,
+.admin-cms-media__file-next {
+  background-size: 12px;
+}
+.admin-cms-media__file-prev {
+  right: 84px;
+  background-image: url("../../images/icons/icon_fs-back.svg");
+}
+.admin-cms-media__file-prev.disabled {
+  background-image: url("../../images/icons/icon_fs-back-disabled.svg");
+}
+.admin-cms-media__file-next {
+  right: 42px;
+  background-image: url("../../images/icons/icon_fs-forward.svg");
+}
+.admin-cms-media__file-next.disabled {
+  background-image: url("../../images/icons/icon_fs-forward-disabled.svg");
+}
+.admin-cms-media__file-top {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 20px;
+}
+.admin-cms-media__file-select label {
+  min-width: 23px;
+  margin-bottom: 0;
+  padding-right: 0;
+}
+.admin-cms-media__file-select .custom-control__icon {
+  color: #1a1a1a;
+}
+.admin-cms-media__file-image {
+  position: relative;
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+}
+.admin-cms-media__file-type {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 5px;
+  font-size: 0.75rem;
+  text-align: center;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+.admin-cms-media__file-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  padding-left: 10px;
+}
+.admin-cms-media__file-metadata-view,
+.admin-cms-media__file-metadata-edit {
+  display: none;
+}
+.admin-cms-media__file-metadata-view.in,
+.admin-cms-media__file-metadata-edit.in {
+  display: block;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal {
+  margin: 0;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal dt {
+  width: auto;
+  margin-right: 5px;
+  text-align: left;
+}
+.admin-cms-media__file-metadata-view .dl-horizontal dd {
+  margin-left: auto;
+}
+.admin-cms-media__file-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  min-height: 34px;
+}
+.admin-cms-media__file-actions {
+  display: none;
+  padding-left: 22px;
+}
+.admin-cms-media__file-actions .btn {
+  position: relative;
+  margin-left: 7px;
+}
+.admin-cms-media__file-actions .btn:after {
+  content: "|";
+  margin-left: 7px;
+  color: #ccc;
+}
+.admin-cms-media__file-actions .btn:last-child:after {
+  display: none;
+}
+.admin-cms-media__file-actions .btn:first-child {
+  margin-left: 0;
+}
+.admin-cms-media__file-actions .btn.btn--clean {
+  color: #3365a9;
+}
+.admin-cms-media__file-actions .btn.btn--clean:hover,
+.admin-cms-media__file-actions .btn.btn--clean:active,
+.admin-cms-media__file-actions .btn.btn--clean:focus {
+  color: #134ea0;
+}
+.admin-cms-media__file-actions .btn.delete {
+  color: #a00;
+}
+.admin-cms-media__file-actions .btn.delete:hover,
+.admin-cms-media__file-actions .btn.delete:active,
+.admin-cms-media__file-actions .btn.delete:focus {
+  color: #721c24;
+}
+.admin-cms-media__file-actions .btn.abort {
+  color: #555;
+}
+.admin-cms-media__file-actions .btn.abort:hover,
+.admin-cms-media__file-actions .btn.abort:active,
+.admin-cms-media__file-actions .btn.abort:focus {
+  color: #1a1a1a;
+}
+.admin-cms-media__file-actions-view,
+.admin-cms-media__file-actions-edit {
+  display: none;
+}
+.admin-cms-media__file-actions-view.in,
+.admin-cms-media__file-actions-edit.in {
+  display: block;
+}
+.admin-cms-media__file-language {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  max-width: 50%;
+  margin-left: auto;
+  padding-left: 10px;
+}
+.admin-cms-media__file-language ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  margin-left: 10px;
+}
+.admin-cms-media__file-language li {
+  position: relative;
+  margin-right: 11px;
+}
+.admin-cms-media__file-language li:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 6px;
+  right: -6px;
+  width: 1px;
+  height: 12px;
+  background-color: #1a1a1a;
+}
+.admin-cms-media__file-language li:last-child {
+  margin-right: 0;
+}
+.admin-cms-media__file-language li:last-child:after {
+  display: none;
+}
+.admin-cms-media__file-language li.active a {
+  text-decoration: underline;
+}
+.admin-cms-media__file-language li.finished a {
+  color: #1a1a1a;
+}
+.admin-cms-media__file-language a {
+  color: #ccc;
+}
+.admin-cms-media__file-language a:hover,
+.admin-cms-media__file-language a:active,
+.admin-cms-media__file-language a:focus {
+  text-decoration: none;
+}
+/* GRID VIEW */
+.admin-cms-media__files.grid form {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(100px, 100px))[auto-fit];
+      grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
+  grid-gap: 10px;
+  padding: 10px;
+}
+.admin-cms-media__files.grid .admin-cms-media__file {
+  padding: 0;
+}
+.admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd) {
+  background-color: #fff;
+}
+.admin-cms-media__files.grid .admin-cms-media__file-select {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file-metadata,
+.admin-cms-media__files.grid .admin-cms-media__file-metadata-view,
+.admin-cms-media__files.grid .admin-cms-media__file-metadata-edit,
+.admin-cms-media__files.grid .admin-cms-media__file-bottom {
+  display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file-metadata.in,
+.admin-cms-media__files.grid .admin-cms-media__file-metadata-view.in,
+.admin-cms-media__files.grid .admin-cms-media__file-metadata-edit.in,
+.admin-cms-media__files.grid .admin-cms-media__file-bottom.in {
+  display: none;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Create Page
    style declarations for adminCmsCreatePage.xhtml
@@ -10124,174 +10622,6 @@ div[id*="-Modal"] .email-form .form-group {
 .edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
 }
-/* ==============================================================
-   CMS Media
-   style declarations for adminCmsOverviewMedia.xhtml
-   ==============================================================*/
-/* TRIGGER UPLOAD */
-/* BLOCK */
-.overview-media__file-upload {
-  margin-bottom: 15px;
-}
-.overview-media__file-upload .btn {
-  margin: 0;
-}
-/* MEDIA GALLERY */
-/* BLOCK */
-.media-gallery {
-  margin-bottom: 15px;
-  /* ELEMENT */
-}
-.media-gallery__tag-filter {
-  margin-bottom: 10px;
-}
-.media-gallery__tag-filter .col-sm-4 {
-  padding: 0;
-}
-.media-gallery__tag-filter-label {
-  display: inline-block;
-  height: 34px;
-  padding-top: 9px;
-  line-height: normal;
-  font-size: 14px;
-}
-.media-gallery__item {
-  margin: 7px 0;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.media-gallery__item-image {
-  position: relative;
-  height: 125px;
-  padding: 5px;
-  border-radius: 4px 4px 0 0;
-  overflow: hidden;
-}
-.media-gallery__item-image [data-copy="img-url"] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 10px;
-  z-index: 998;
-}
-.media-gallery__item-image img {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-  margin: 0 auto;
-}
-.media-gallery__item-action-wrap {
-  margin: 0;
-  border-top: 1px solid #ccc;
-  background-color: #eee;
-}
-.media-gallery__item-title,
-.media-gallery__item-action {
-  height: 45px;
-  line-height: 45px;
-}
-.media-gallery__item-title {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-/* MEDIA UPLOAD MODAL */
-/* BLOCK */
-.media-modal {
-  /* ELEMENT */
-}
-.media-modal .modal-body .form-group {
-  margin-bottom: 3px;
-}
-.media-modal .modal-body .form-group label {
-  padding-left: 20px;
-}
-.media-modal__upload {
-  padding: 10px 0;
-  margin-bottom: 15px;
-}
-.media-modal__upload-input:focus,
-.media-modal__upload-input:active {
-  outline: none !important;
-}
-.media-modal__metadata {
-  margin-bottom: 15px;
-}
-.media-modal__metadata dl {
-  margin: 0;
-}
-.media-modal__metadata dt {
-  width: 50px;
-  text-align: left;
-}
-.media-modal__metadata dd {
-  margin-left: 50px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.media-modal__options {
-  padding: 10px;
-  border-right: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-}
-.media-modal__options span.control-label {
-  display: inline-block;
-  padding-top: 6px;
-  font-weight: bold;
-}
-.media-modal__tags {
-  padding: 6px 6px 4px 6px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  /* autocomplete */
-}
-.media-modal__tags ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.media-modal__tags li {
-  display: inline-block;
-  margin-right: 3px;
-  margin-bottom: 2px;
-}
-.media-modal__tags .label {
-  padding: .3em .6em .3em;
-  font-weight: normal;
-  background-color: #3365a9;
-}
-.media-modal__tags .tag-terminator {
-  margin-left: 5px;
-  cursor: pointer;
-}
-.media-modal__tags .tag-terminator:after {
-  content: "x";
-}
-.media-modal__tags input {
-  width: auto;
-  max-width: inherit;
-  margin: 0;
-  padding: 0 6px;
-  border: none;
-  box-shadow: none;
-  background-color: transparent;
-  outline: none;
-}
-.media-modal__tags .ui-widget-content {
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.media-modal__tags .ui-menu-item {
-  display: block;
-}
-.media-modal__tags .ui-menu-item.ui-state-focus {
-  border-color: #ccc;
-  background: #eee;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml

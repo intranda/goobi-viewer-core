@@ -20,6 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -65,47 +68,8 @@ public class CmsMediaBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(CmsMediaBean.class);
 
-    private CMSMediaItem currentMediaItem;
-    private File mediaFile;
-    private Part filePart;
-    private ImageFileUploadThread uploadThread;
-    private int uploadProgress;
     private String selectedTag;
-    private Locale selectedLocale = CmsBean.getCurrentLocale();
     //    private List<CMSMediaItem> mediaItems;
-
-    public String uploadMedia() {
-        logger.trace("uploadMedia");
-        if (filePart == null || !isValidMediaType(filePart.getContentType(), null)) {
-            Messages.error("cms_errIllegalMediaFileFormat");
-            return "cmsMedia";
-        }
-
-        if (isUploadComplete()) {
-            logger.debug("Media file has already been uploaded");
-            return "cmsMedia";
-        }
-
-        try {
-            setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
-            logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
-            filePart.write(mediaFile.getAbsolutePath());
-            if (!validate(mediaFile, filePart.getContentType())) {
-                Messages.error("cms_errIllegalMediaContent");
-            } else {
-                setUploadProgress(100);
-                saveMedia();
-                Messages.info("cms_media_upload_success");
-            }
-        } catch (IOException | DAOException e) {
-            logger.error("Failed to upload media file:{}", e.getMessage());
-            if (mediaFile != null && mediaFile.isFile()) {
-                mediaFile.delete();
-            }
-        }
-
-        return "cmsMedia";
-    }
 
     /**
      * @param mediaFile2
@@ -120,10 +84,6 @@ public class CmsMediaBean implements Serializable {
         }
 
         return true;
-    }
-
-    public boolean isNewMedia() {
-        return currentMediaItem != null && currentMediaItem.getId() == null;
     }
 
     /**
@@ -184,9 +144,10 @@ public class CmsMediaBean implements Serializable {
                 logger.error("Failed to delete media item");
             } else if (item.getFileName() != null) {
                 try {
-                    File mediaFile = calculateMediaFilePath(item.getFileName(), false);
-                    if (!mediaFile.delete()) {
-                        throw new IOException("Cannot delete file " + mediaFile.getAbsolutePath());
+                    Path mediaFile = item.getFilePath();
+                    Files.delete(mediaFile);
+                    if (Files.exists(mediaFile)) {
+                        throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
                     }
                 } catch (IOException e) {
                     logger.error("Failed to delete media file: " + e.getMessage());
@@ -207,7 +168,10 @@ public class CmsMediaBean implements Serializable {
         if (StringUtils.isNotBlank(filenameFilter)) {
             items = items.filter(item -> item.getFileName().matches(filenameFilter));
         }
-        List<CMSMediaItem> list = items.collect(Collectors.toList());
+        List<CMSMediaItem> list = items.sorted().collect(Collectors.toList());
+        list.forEach(item -> {
+        	System.out.println("Item " + item.toString() + " Name = " + item.getName());
+        });
         return list;
     }
 
@@ -233,10 +197,12 @@ public class CmsMediaBean implements Serializable {
             return sbUri.toString();
         }
         
-        return BeanUtils.getImageDeliveryBean()
+        String url = BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
                         StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+        
+        return url;
     }
 
     /**
@@ -281,172 +247,18 @@ public class CmsMediaBean implements Serializable {
         return !item.getFileName().matches(getImageFilter());
     }
 
-    public CMSMediaItem getCurrentMediaItem() {
-        return currentMediaItem;
-    }
 
-    public void setCurrentMediaItem(CMSMediaItem currentMediaItem) {
-        this.currentMediaItem = new CMSMediaItem(currentMediaItem);
-        mediaFile = null;
-        filePart = null;
-        resetUploadThread();
-
-    }
-
-    public File getMediaFile() {
-        return mediaFile;
-    }
-
-    protected void setMediaFile(File mediaFile) {
-        this.mediaFile = mediaFile;
-    }
-
-    public Part getFilePart() {
-        return filePart;
-    }
-
-    public void setFilePart(Part filePart) {
-        this.filePart = filePart;
-        if (filePart != null && !filePart.equals(this.filePart)) {
-            resetUploadThread();
-        }
-        //	if (filePart != null) {
-        //	    try {
-        //		setMediaFile(calculateMediaFilePath(getFileName(filePart), false));
-        //	    } catch (IOException e) {
-        //		logger.error("Failed to create media file: " + e.getMessage());
-        //	    }
-        //	}
-    }
-
-    /**
-     * @param filePart2
-     * @return
-     */
-    private static File calculateMediaFilePath(String fileName, boolean renameIfFileExists) throws IOException {
-        // try {
-        // URL imageRepositoryUrl = new
-        // URL(ContentServerDataManager.getInstance().getConfiguration().getRepositoryPathImages());
-        // File folder = new File(new File(imageRepositoryUrl.toURI()),
-        // DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        File folder = new File(
-                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        if (!folder.isDirectory() && !folder.mkdir()) {
-            throw new IOException("Unable to create directory " + folder);
-        }
-        //        fileName = fileName.replaceAll("\\s", "_");
-        File file = new File(folder, fileName);
-        int counter = 1;
-        File newFile = file;
-        while (renameIfFileExists && newFile.isFile()) {
-            newFile = new File(file.getParent(),
-                    FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file.getName()));
-            counter++;
-        }
-        file = newFile;
-        return file;
-        // } catch (URISyntaxException e) {
-        // throw new IOException("Failed to create media repository uri: " +
-        // e.getMessage());
-        // }
-    }
-
-    public void saveMedia() throws DAOException {
-        if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
+    public void saveMedia(CMSMediaItem media) throws DAOException {
+        if (media != null && media.getId() == null) {
             // currentMediaItem.setFileName(mediaFile.getName());
             //            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
+            DataManager.getInstance().getDao().addCMSMediaItem(media);
             //            setCurrentMediaItem(null);
-        } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
-            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
+        } else if (media != null && media.getId() != null) {
+        	media.processMediaFile(media.getFilePath());
+            DataManager.getInstance().getDao().updateCMSMediaItem(media);
             //            setCurrentMediaItem(null);
         }
-    }
-
-    public int getUploadProgress() {
-        return uploadProgress;
-    }
-
-    protected void setUploadProgress(int uploadProgress) {
-        if (uploadProgress == 100) {
-            logger.debug("File upload finished");
-            currentMediaItem.setFileName(mediaFile.getName());
-        } else {
-            logger.trace("Upload progress: {}%", uploadProgress);
-        }
-        this.uploadProgress = uploadProgress;
-    }
-
-    /**
-     *
-     */
-    private void resetUploadThread() {
-        if (uploadThread != null && uploadThread.isAlive()) {
-            uploadThread.interrupt();
-        }
-        uploadThread = null;
-        uploadProgress = 0;
-
-    }
-
-    public boolean isUploadComplete() {
-        return uploadProgress == 100;
-    }
-
-    private class ImageFileUploadThread extends Thread {
-
-        private long totalSize;
-        private long currentSize = 0;
-        private File targetFile;
-        private InputStream istr;
-
-        @Override
-        public void run() {
-            try (FileOutputStream fos = new FileOutputStream(targetFile)) {
-
-                int BUFFER_SIZE = 4092;
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int a;
-                while (true) {
-                    a = istr.read(buffer);
-                    if (a < 0) {
-                        break;
-                    }
-                    fos.write(buffer, 0, a);
-                    fos.flush();
-                    currentSize += a;
-                    setUploadProgress(getProgress());
-                    try {
-                        if (interrupted()) {
-                            throw new InterruptedException();
-                        }
-                        // System.out.println("Writing... " +
-                        // getUploadProgress()*100 + "%");
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        fos.flush();
-                        setUploadProgress(0);
-                        targetFile.delete();
-                        return;
-                    }
-                }
-                setUploadProgress(100);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                try {
-                    istr.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
-
-        public int getProgress() {
-            return (int) ((float) currentSize / (float) totalSize * 100f);
-        }
-
     }
 
     public static String getFileName(Part filePart) {
@@ -473,59 +285,6 @@ public class CmsMediaBean implements Serializable {
         return null;
     }
 
-    public List<String> getAllowedCollections() throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC);
-        List<BrowseDcElement> collections = browseBean.getList(SolrConstants.DC, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
-
-        return collectionNames;
-    }
-
-    public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
-        List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
-
-        return collectionNames;
-    }
-
-    /**
-     * @return
-     * @throws DAOException
-     */
-    private static List<String> getUsedCollections() throws DAOException {
-        List<String> collectionNames = new ArrayList<>();
-        for (CMSMediaItem media : getAllMedia()) {
-            if (media.isCollection()) {
-                collectionNames.add(media.getCollectionName());
-            }
-        }
-        return collectionNames;
-    }
 
     /**
      * @param selectedTag the selectedTag to set
@@ -552,20 +311,6 @@ public class CmsMediaBean implements Serializable {
     public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
         Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
         return sizes;
-    }
-
-    /**
-     * @return the selectedLanguage
-     */
-    public Locale getSelectedLocale() {
-        return selectedLocale;
-    }
-
-    /**
-     * @param selectedLanguage the selectedLanguage to set
-     */
-    public void setSelectedLocale(Locale selectedLocale) {
-        this.selectedLocale = selectedLocale;
     }
 
     /**

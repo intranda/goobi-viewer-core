@@ -692,7 +692,7 @@
 	</url-mapping>
 	<url-mapping id="adminCmsMedia">
 		<pattern value="/admin/cms/media/" />
-		<view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
+		<view-id value="/resources/cms/adminCmsMedia.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsMenuItems">

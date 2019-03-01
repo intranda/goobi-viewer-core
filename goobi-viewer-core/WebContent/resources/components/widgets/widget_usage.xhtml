@@ -36,7 +36,7 @@
                                 id="lidomets" 
                                 class="label label-default widget-usage__work-download-lido-mets" 
                                 title="#{msg.metadata_dl_mets}" 
-                                target="_blank"> 
+                                target="_blank" rel="nofollow"> 
                                 #{msg.downloadMetsButtonLabel}
                             </a>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
@@ -45,7 +45,7 @@
                                     id="metsanchor" 
                                     class="label label-default widget-usage__work-download-mets-anchor" 
                                     title="#{msg.metadata_dl_metsAnchor}" 
-                                    target="_blank"> 
+                                    target="_blank" rel="nofollow"> 
                                      #{msg.downloadAnchorMetsButtonLabel}
                                 </a>
                             </ui:fragment>
@@ -58,7 +58,7 @@
                                 id="lidomets" 
                                 class="label label-default widget-usage__work-download-lido-mets" 
                                 title="#{msg.metadata_dl_lido}" 
-                                target="_blank"> 
+                                target="_blank" rel="nofollow"> 
                                 #{msg.downloadLidoButtonLabel}
                             </a>
                         </ui:fragment>
@@ -69,7 +69,7 @@
                                 href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
                                 class="label label-default widget-usage__work-download-oai-marc"
                                 title="#{msg.metadata_dl_marc}"
-                                target="_blank"> #{msg.marcLink} </a>
+                                target="_blank" rel="nofollow"> #{msg.marcLink} </a>
                         </ui:fragment>
                         
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
@@ -78,7 +78,7 @@
                                 href="#{activeDocumentBean.viewManager.oaiDcUrl}"
                                 class="label label-default widget-usage__work-download-oai-dc"
                                 title="#{msg.metadata_dl_dublinCore}"
-                                target="_blank"> 
+                                target="_blank" rel="nofollow"> 
                                 #{msg.dcLink} 
                            </a>
                         </ui:fragment>
@@ -101,7 +101,7 @@
                                 id="alto" 
                                 class="label label-default widget-usage__work-download-alto" 
                                 title="#{msg.metadata_dl_alto_work}"
-                                target="_blank"> 
+                                target="_blank" rel="nofollow"> 
                                 #{msg.downloadAltoWorkButtonLabel}
                             </a>
                         </ui:fragment>
@@ -113,7 +113,7 @@
                                 id="textWork" 
                                 class="label label-default widget-usage__work-download-tei" 
                                 title="#{msg.downloadWorkTei}"
-                                target="_blank">
+                                target="_blank" rel="nofollow">
                                 #{msg.TEI}
                             </a>
                         </ui:fragment>
@@ -125,7 +125,7 @@
                                 id="textWork" 
                                 class="label label-default widget-usage__work-download-fulltext" 
                                 title="#{msg.downloadWorkFulltext}"
-                                target="_blank">
+                                target="_blank" rel="nofollow">
                                 #{msg.FULLEXT}
                             </a>
                         </ui:fragment>
@@ -138,7 +138,7 @@
                                     id="pdfWork" 
                                     class="label label-default widget-usage__work-download-pdf" 
                                     title="#{msg.metadata_dl_pdf}" 
-                                    target="_blank">
+                                    target="_blank" rel="nofollow">
                                     #{msg.pdfDownload}</a>
                             </ui:fragment>
                             <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
@@ -177,7 +177,7 @@
                                 id="dfgViewer" 
                                 class="label label-default widget-usage__work-link-dfg-viewer" 
                                 title="#{msg.dfgViewerLink}" 
-                                target="_blank"> 
+                                target="_blank" rel="nofollow"> 
                                #{msg.dfgViewerLink}
                             </a>
                         </ui:fragment>
@@ -188,7 +188,7 @@
                                 id="opac"
                                 class="label label-default widget-usage__work-link-opac" 
                                 title="#{msg.opacLink}" 
-                                target="_blank"> #{msg.opacLink} </a>
+                                target="_blank" rel="nofollow"> #{msg.opacLink} </a>
                         </ui:fragment>                        
                     </div>
                     
@@ -205,7 +205,7 @@
 								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 									id="pdfPage"
 									class="label label-default widget-usage__page-download-pdf"
-									title="#{msg.pdfDownloadCurrentPage}" target="_blank">
+									title="#{msg.pdfDownloadCurrentPage}" target="_blank" rel="nofollow">
 									#{msg.pdfDownload} </a>
 							</ui:fragment>
 
@@ -215,7 +215,7 @@
 								<a href="#{activeDocumentBean.viewManager.currentImageUrl}"
 									id="jpeg"
 									class="label label-default widget-usage__page-download-jpeg"
-									title="#{msg.imageLinkDesc}" target="_blank">
+									title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
 									#{msg.imageLink} </a>
 							</ui:fragment>
 
@@ -225,7 +225,7 @@
 								<a href="#{activeDocumentBean.viewManager.altoUrl}"
 									id="altoPage"
 									class="label label-default widget-usage__page-download-alto"
-									title="#{msg.metadata_dl_alto_page}" target="_blank">
+									title="#{msg.metadata_dl_alto_page}" target="_blank" rel="nofollow">
 									#{msg.downloadAltoPageButtonLabel} </a>
 							</ui:fragment>
 
@@ -234,7 +234,7 @@
 								rendered="#{activeDocumentBean.viewManager.teiAvailableForPage}">
 								<a href="#{activeDocumentBean.viewManager.teiUrl}" id="textPage"
 									class="label label-default widget-usage__page-download-tei"
-									title="#{msg.downloadPageTei}" target="_blank"> #{msg.TEI}
+									title="#{msg.downloadPageTei}" target="_blank" rel="nofollow"> #{msg.TEI}
 								</a>
 							</ui:fragment>
 
@@ -244,7 +244,7 @@
 								<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
 									id="textPage"
 									class="label label-default widget-usage__page-download-fulltext"
-									title="#{msg.downloadPageFulltext}" target="_blank">
+									title="#{msg.downloadPageFulltext}" target="_blank" rel="nofollow">
 									#{msg.FULLEXT} </a>
 							</ui:fragment>
 						</div>

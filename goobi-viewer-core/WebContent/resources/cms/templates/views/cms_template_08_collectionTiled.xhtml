@@ -29,7 +29,7 @@
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateCollectionTiled" class="tpl-collection-tiled #{cmsPage.wrapperElementClass}">
-				<h1>#{cmsPage.title}</h1>
+				<h2>#{cmsPage.title}</h2>
                 
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">

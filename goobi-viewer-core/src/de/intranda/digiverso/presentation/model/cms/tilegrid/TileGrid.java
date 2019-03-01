@@ -23,25 +23,21 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.Category;
 
 public class TileGrid {
 
 	private final List<String> tags = new ArrayList<>();
 	private final List<Tile> items = new ArrayList<Tile>();
 
-	public TileGrid(List<ImageGalleryTile> items, Set<String> tags, String language, HttpServletRequest request) {
-		this.tags.addAll(tags);
-		for (ImageGalleryTile mediaItem : items) {
-			this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "",
-					mediaItem.getIconURI() != null ? mediaItem.getIconURI(0, 0).toString() : "",
-					mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "",
-					mediaItem.getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "",
-					mediaItem.isImportant(),
-					mediaItem.getSize() != null ? mediaItem.getSize() : CMSMediaItem.DisplaySize.DEFAULT,
-					mediaItem.getCategories().stream().map(c -> c.getName()).collect(Collectors.toList()), mediaItem.isCollection() ? mediaItem.getCollectionName() : null,
-					mediaItem.getDisplayOrder()));
-		}
-	}
+    public TileGrid(List<ImageGalleryTile> items, Set<String> tags,String language, HttpServletRequest request) {
+        this.tags.addAll(tags);
+        for (ImageGalleryTile mediaItem : items) {
+            this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "", mediaItem.getIconURI() != null ? mediaItem
+                    .getIconURI(0,0).toString() : "", mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "", mediaItem
+                            .getLinkURI(request) != null ? mediaItem.getLinkURI(request).toString() : "", mediaItem.isImportant(), CMSMediaItem.DisplaySize.DEFAULT, mediaItem.getCategories().stream().map(Category::getName).collect(Collectors.toList()), null, mediaItem.getDisplayOrder()));
+        }
+    }
 
 	public TileGrid() {
 	}
