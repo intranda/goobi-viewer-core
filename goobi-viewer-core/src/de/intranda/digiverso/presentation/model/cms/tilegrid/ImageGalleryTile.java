@@ -27,8 +27,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public interface ImageGalleryTile {
 
-    public DisplaySize getSize();
-
     public Priority getPriority();
 
     public String getName(String language);
@@ -44,10 +42,6 @@ public interface ImageGalleryTile {
     public boolean isImportant();
 
     public List<String> getTags();
-
-    public boolean isCollection();
-
-    public String getCollectionName();
 
     public int getDisplayOrder();
 

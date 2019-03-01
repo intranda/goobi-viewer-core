@@ -474,59 +474,6 @@ public class CmsMediaBean implements Serializable {
         return null;
     }
 
-    public List<String> getAllowedCollections() throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC);
-        List<BrowseDcElement> collections = browseBean.getList(SolrConstants.DC, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
-
-        return collectionNames;
-    }
-
-    public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
-        List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
-
-        return collectionNames;
-    }
-
-    /**
-     * @return
-     * @throws DAOException
-     */
-    private static List<String> getUsedCollections() throws DAOException {
-        List<String> collectionNames = new ArrayList<>();
-        for (CMSMediaItem media : getAllMedia()) {
-            if (media.isCollection()) {
-                collectionNames.add(media.getCollectionName());
-            }
-        }
-        return collectionNames;
-    }
 
     /**
      * @param selectedTag the selectedTag to set

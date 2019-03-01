@@ -17,10 +17,8 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -40,6 +38,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
@@ -60,7 +58,6 @@ import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
-import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 @Entity
 @Table(name = "cms_media_items")
@@ -91,15 +88,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     @Column(name = "priority", nullable = true)
     private Priority priority = Priority.DEFAULT;
-
-    @Column(name = "collection", nullable = true)
-    private Boolean collection = false;
-
-    @Column(name = "collection_field", nullable = true)
-    private String collectionField = "DC";
-
-    @Column(name = "collection_name", nullable = true)
-    private String collectionName = null;
+    
+    @Column(name = "image_alt_text", nullable = true)
+    private String alternativeText = "";
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cms_media_item_metadata", joinColumns = @JoinColumn(name = "owner_media_item_id"))
@@ -111,11 +102,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Column(name = "tag_name")
     private List<String> tags = new ArrayList<>();
 
-    @Column(name = "display_size", nullable = true)
-    private DisplaySize displaySize = DisplaySize.DEFAULT;
-
     @Column(name = "display_order", nullable = true)
     private int displayOrder = 0;
+    
+    @Transient
+    private Locale selectedLocale = BeanUtils.getLocale();
 
     /**
      * default constructor
@@ -135,11 +126,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.fileName = orig.fileName;
         this.link = orig.link;
         this.priority = orig.priority;
-        this.collection = new Boolean(orig.collection);
-        this.collectionField = orig.collectionField;
-        this.collectionName = orig.collectionName;
         this.displayOrder = orig.displayOrder;
-        this.displaySize = orig.displaySize;
         this.tags = new ArrayList<>(orig.tags);
 
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
@@ -278,7 +265,35 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+    
+    /**
+	 * @return the alternativeText
+	 */
+	public String getAlternativeText() {
+		return alternativeText;
+	}
+	
+	/**
+	 * @param alternativeText the alternativeText to set
+	 */
+	public void setAlternativeText(String alternativeText) {
+		this.alternativeText = alternativeText;
+	}
 
+	/**
+	 * @return the selectedLocale
+	 */
+	public Locale getSelectedLocale() {
+		return selectedLocale;
+	}
+	
+	/**
+	 * @param selectedLocale the selectedLocale to set
+	 */
+	public void setSelectedLocale(Locale selectedLocale) {
+		this.selectedLocale = selectedLocale;
+	}
+	
     /**
      * 
      * @param locale
@@ -464,54 +479,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         }
     }
 
-    @Override
-    public boolean isCollection() {
-        if (collection == null) {
-            collection = false;
-        }
-        return collection;
-    }
-
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-
-    @Override
-    public String getCollectionName() {
-        return collectionName;
-    }
-
-    public void setCollectionName(String collectionName) throws URISyntaxException, UnsupportedEncodingException {
-        this.collectionName = collectionName;
-        if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
-            this.link = new URI(URLEncoder.encode(getCollectionSearchUri(), "utf-8"));
-        }
-    }
-
-    @Deprecated
-    public String getCollectionViewUri() {
-        String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
-        return new StringBuilder(baseUri).append('/')
-                .append(PageType.expandCollection)
-                .append('/')
-                .append(getCollectionField())
-                .append(':')
-                .append(getCollectionName())
-                .append('/')
-                .toString();
-    }
-
-    public String getCollectionSearchUri() throws UnsupportedEncodingException {
-        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                .append(PageType.browse.getName())
-                .append("/-/1/-/")
-                .append(getCollectionField())
-                .append(':')
-                .append(URLEncoder.encode(getCollectionName(), "utf-8"))
-                .append('/')
-                .toString();
-    }
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getDescription()
      */
@@ -525,20 +492,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return getCurrentLanguageMetadata().getName();
     }
 
-    /**
-     * @return the size
-     */
-    @Override
-    public DisplaySize getSize() {
-        return displaySize;
-    }
-
-    /**
-     * @param size the size to set
-     */
-    public void setSize(DisplaySize size) {
-        this.displaySize = size;
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getIconURI()
@@ -630,22 +583,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.displayOrder = displayOrder;
     }
 
-    /**
-     * @return the collectionNField
-     */
-    public String getCollectionField() {
-        if (StringUtils.isBlank(collectionField)) {
-            return SolrConstants.DC;
-        }
-        return collectionField;
-    }
-
-    /**
-     * @param collectionField the collectionField to set
-     */
-    public void setCollectionField(String collectionField) {
-        this.collectionField = collectionField;
-    }
 
     public String getImageURI() {
 
@@ -682,19 +619,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return new MultiLanguageMetadataValue(names);
     }
 
-    public static void main(String[] args) {
-        String uriString =
-                "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
-        try {
-            URI uri = new URI(uriString);
-            System.out.println(uri);
-
-            CMSMediaItem item = new CMSMediaItem();
-            item.setLink(uriString);
-            URI linkURI = item.getLinkURI(null);
-            System.out.println(linkURI);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+    public boolean isFinished(Locale locale) {
+    	return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
     }
 }
