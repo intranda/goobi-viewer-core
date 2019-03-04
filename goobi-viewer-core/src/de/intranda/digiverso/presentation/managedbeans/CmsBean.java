@@ -183,7 +183,7 @@ public class CmsBean implements Serializable {
             lazyModelPages.addFilter("CMSPageLanguageVersion", "title_menuTitle");
             lazyModelPages.addFilter("classifications", "classification");
         }
-        selectedLocale = getDefaultLocale();        
+        selectedLocale = getDefaultLocale();
     }
 
     /**
@@ -505,13 +505,13 @@ public class CmsBean implements Serializable {
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
         for (Category category : item.getCategories()) {
-                for (CMSPage cmsPage : cmsPages) {
-                    if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
-                        counter++;
-                        if (counter > offset && counter <= size + offset) {
-                            nestedPages.add(cmsPage);
-                        }
+            for (CMSPage cmsPage : cmsPages) {
+                if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
+                    counter++;
+                    if (counter > offset && counter <= size + offset) {
+                        nestedPages.add(cmsPage);
                     }
+                }
             }
         }
         setNestedPagesCount((int) Math.ceil(counter / (double) size));
@@ -860,15 +860,15 @@ public class CmsBean implements Serializable {
             }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
-            
+
             try {
-    			selectableCategories = getCategoriesToSelect();
-    			resetSelectedCategoryId();
-    		} catch (DAOException e) {
+                selectableCategories = getCategoriesToSelect();
+                resetSelectedCategoryId();
+            } catch (DAOException e) {
                 logger.error("Unable to get available categories", e);
 
-    		}
-            
+            }
+
         } else {
             this.selectedPage = null;
         }
@@ -941,7 +941,6 @@ public class CmsBean implements Serializable {
 
     }
 
-
     public boolean isDisplaySidebarEditor() {
         return displaySidebarEditor;
     }
@@ -949,12 +948,11 @@ public class CmsBean implements Serializable {
     public void setDisplaySidebarEditor(boolean displaySidebarEditor) {
         this.displaySidebarEditor = displaySidebarEditor;
     }
-    
-    
+
     public List<Category> getCategoriesToSelect() throws DAOException {
         List<Category> categories = new ArrayList<>(DataManager.getInstance().getDao().getAllCategories());
-        if(this.selectedPage != null) {
-        	this.selectedPage.getCategories().forEach(cat -> categories.remove(cat));
+        if (this.selectedPage != null) {
+            this.selectedPage.getCategories().forEach(cat -> categories.remove(cat));
         }
         return categories;
     }
@@ -966,49 +964,50 @@ public class CmsBean implements Serializable {
     public void setSelectedCategoryId(Long categoryId) {
         this.selectedCategoryId = categoryId;
     }
-    
+
     public Category getSelectedCategory() throws DAOException {
-    	if(this.selectedCategoryId != null) {    		
-    		Category category = getSelectableCategories().stream().filter(cat -> this.selectedCategoryId.equals(cat.getId())).findFirst().orElse(null);
-    		return category;
-    	}
-    	return null;
+        if (this.selectedCategoryId != null) {
+            Category category =
+                    getSelectableCategories().stream().filter(cat -> this.selectedCategoryId.equals(cat.getId())).findFirst().orElse(null);
+            return category;
+        }
+        return null;
     }
 
-	public List<Category> getSelectableCategories() {
-		return selectableCategories;
-	}
-	
-	public void addSelectedCategoryToPage() throws DAOException {
-		Category cat = getSelectedCategory();
-		if(this.selectedPage != null && cat != null) {
-			this.selectedPage.addCategory(cat);
-			this.selectableCategories.remove(cat);
-			this.selectedPage.getCategories().sort( (c1,c2) -> c1.getId().compareTo(c2.getId()));
-			resetSelectedCategoryId();
-		}
-	}
-	
-	public void removeCategoryFromPage(Category cat) throws DAOException {
-		if(this.selectedPage != null && cat != null) {
-			this.selectedPage.removeCategory(cat);
-			this.selectableCategories.add(cat);
-			this.selectableCategories.sort( (c1,c2) -> c1.getId().compareTo(c2.getId()));
-			resetSelectedCategoryId();
-		}
-	}
-	
-	public List<Category> getAllCategories() throws DAOException {
-		return DataManager.getInstance().getDao().getAllCategories();
-	}
-	
-	public void resetSelectedCategoryId() {
-		this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(Category::getId).orElse(null);
-	}
-	
-	public boolean hasSelectedCategoryId() {
-		return this.selectedCategoryId != null;
-	}
+    public List<Category> getSelectableCategories() {
+        return selectableCategories;
+    }
+
+    public void addSelectedCategoryToPage() throws DAOException {
+        Category cat = getSelectedCategory();
+        if (this.selectedPage != null && cat != null) {
+            this.selectedPage.addCategory(cat);
+            this.selectableCategories.remove(cat);
+            this.selectedPage.getCategories().sort((c1, c2) -> c1.getId().compareTo(c2.getId()));
+            resetSelectedCategoryId();
+        }
+    }
+
+    public void removeCategoryFromPage(Category cat) throws DAOException {
+        if (this.selectedPage != null && cat != null) {
+            this.selectedPage.removeCategory(cat);
+            this.selectableCategories.add(cat);
+            this.selectableCategories.sort((c1, c2) -> c1.getId().compareTo(c2.getId()));
+            resetSelectedCategoryId();
+        }
+    }
+
+    public List<Category> getAllCategories() throws DAOException {
+        return DataManager.getInstance().getDao().getAllCategories();
+    }
+
+    public void resetSelectedCategoryId() {
+        this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(Category::getId).orElse(null);
+    }
+
+    public boolean hasSelectedCategoryId() {
+        return this.selectedCategoryId != null;
+    }
 
     public CMSMediaItem getSelectedMediaItem() {
         return selectedMediaItem;
@@ -1549,43 +1548,11 @@ public class CmsBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public List<String> getAllowedSubthemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
-        // Abort if user not a CMS admin
-        if (user == null || !user.isCmsAdmin()) {
+        if (user == null) {
             return Collections.emptyList();
         }
 
-        if (user.isSuperuser()) {
-            return getSubthemeDiscriminatorValues();
-        }
-
-        List<String> ret = new ArrayList<>();
-        // Check user licenses
-        for (License license : user.getLicenses()) {
-            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                continue;
-            }
-            if (!license.getAllowedCmsTemplates().isEmpty()) {
-                ret.addAll(license.getSubthemeDiscriminatorValues());
-            }
-        }
-        // Check user group licenses
-        try {
-            for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
-                for (License license : userGroup.getLicenses()) {
-                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                        continue;
-                    }
-                    if (!license.getAllowedCmsTemplates().isEmpty()) {
-                        ret.addAll(license.getSubthemeDiscriminatorValues());
-                    }
-                }
-            }
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return ret;
-
+        return user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
     }
 
     /**

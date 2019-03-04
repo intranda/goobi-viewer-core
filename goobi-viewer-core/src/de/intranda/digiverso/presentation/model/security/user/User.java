@@ -61,6 +61,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.License;
@@ -636,6 +637,106 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
 
         throw new AuthenticationException("User not found or passwort incorrect");
+    }
+
+    public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
+        if (allTemplates == null || allTemplates.isEmpty()) {
+            return allTemplates;
+        }
+        // Abort if user not a CMS admin
+        if (!isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+        // Full admins get all templates
+        if (isSuperuser()) {
+            return allTemplates;
+        }
+
+        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
+        // Check user licenses
+        for (License license : licenses) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        //        allowedTemplateIds.add("template_general_generic");
+        if (allowedTemplateIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
+        for (CMSPageTemplate template : allTemplates) {
+            if (allowedTemplateIds.contains(template.getId())) {
+                ret.add(template);
+            }
+        }
+
+        logger.trace("getAllowedTemplates END");
+        return ret;
+    }
+
+    /**
+     * 
+     * @param rawValues All possible values
+     * @return filtered list of allowed values
+     */
+    public List<String> getAllowedSubthemeDiscriminatorValues(List<String> rawValues) {
+        if (rawValues == null || rawValues.isEmpty()) {
+            return rawValues;
+        }
+        // Abort if user not a CMS admin
+        if (!isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+        if (isSuperuser()) {
+            return rawValues;
+        }
+
+        List<String> ret = new ArrayList<>();
+        // Check user licenses
+        for (License license : licenses) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                ret.addAll(license.getSubthemeDiscriminatorValues());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        ret.addAll(license.getSubthemeDiscriminatorValues());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
     }
 
     /*********************************** Getter and Setter ***************************************/
