@@ -29,8 +29,6 @@ import de.intranda.digiverso.presentation.model.cms.Category;
  */
 public interface ImageGalleryTile {
 
-    public DisplaySize getSize();
-
     public Priority getPriority();
 
     public String getName(String language);
@@ -46,10 +44,6 @@ public interface ImageGalleryTile {
     public boolean isImportant();
 
     public List<Category> getCategories();
-
-    public boolean isCollection();
-
-    public String getCollectionName();
 
     public int getDisplayOrder();
 

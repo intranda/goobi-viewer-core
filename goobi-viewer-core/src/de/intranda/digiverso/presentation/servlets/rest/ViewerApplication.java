@@ -16,10 +16,20 @@
 package de.intranda.digiverso.presentation.servlets.rest;
 
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 
 @ApplicationPath("rest")
 @ViewerRestServiceBinding
-public class ViewerApplication extends Application {
+public class ViewerApplication extends ResourceConfig {
+
+	public ViewerApplication() {
+		super();
+		register(MultiPartFeature.class);
+		packages(true, "de.intranda.digiverso.presentation.servlets.rest");
+		packages(true, "de.unigoettingen.sub.commons.contentlib.servlet.rest");
+
+	}
 
 }
