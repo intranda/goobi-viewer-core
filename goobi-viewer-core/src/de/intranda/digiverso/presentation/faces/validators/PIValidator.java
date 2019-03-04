@@ -30,7 +30,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
  * Syntax validator for passwords addresses.
  */
 @FacesValidator("piValidator")
-public class PIValidator implements Validator {
+public class PIValidator implements Validator<Object> {
 
     private static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 

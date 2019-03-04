@@ -157,8 +157,10 @@
                                                                     label="#{msg.cms_page_url_parameters}:" help="#{msg.cms_page_url_parameters_help}"
                                                                     onclick="cmsJS.createPage.disablePreview();" />
                                                                 <!-- related PI -->
-                                                                <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:"
-                                                                    help="#{msg.cms_page_related_pi_help}" validator="relatedPiValidator" />
+                                                                <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}"
+                                                                    label="#{msg.cms_page_related_pi}:" help="#{msg.cms_page_related_pi_help}">
+                                                                    <f:validator validatorId="relatedPiValidator" for="inputField"></f:validator>
+                                                                </cmsComponent:cms_inputText>
                                                                 <!-- subtheme discriminator field -->
                                                                 <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
                                                                     label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
