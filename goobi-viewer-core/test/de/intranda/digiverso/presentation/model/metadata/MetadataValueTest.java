@@ -56,7 +56,7 @@ public class MetadataValueTest {
         value.getParamValues().get(1).add("value1");
         value.getParamValues().get(1).add("value2");
         value.getParamSuffixes().add("_suffix");
-        Assert.assertEquals("prefix_value1_suffix, prefix_value2_suffix", value.getComboValueShort(1));
+        Assert.assertEquals("prefix_value1_suffixprefix_value2_suffix", value.getComboValueShort(1));
     }
 
     /**
@@ -103,22 +103,6 @@ public class MetadataValueTest {
 
     /**
      * @see MetadataValue#getComboValueShort(int)
-     * @verifies not add null prefix
-     */
-    @Test
-    public void getComboValueShort_shouldNotAddNullPrefix() throws Exception {
-        MetadataValue value = new MetadataValue("");
-        value.getParamPrefixes().add(null);
-        value.getParamValues().add(new ArrayList<>());
-        value.getParamValues().get(0).add("value1");
-        value.getParamPrefixes().add(null);
-        value.getParamValues().add(new ArrayList<>());
-        value.getParamValues().get(1).add("value2");
-        Assert.assertEquals("value2", value.getComboValueShort(1));
-    }
-
-    /**
-     * @see MetadataValue#getComboValueShort(int)
      * @verifies not add null suffix
      */
     @Test
@@ -131,5 +115,51 @@ public class MetadataValueTest {
         value.getParamValues().add(new ArrayList<>());
         value.getParamValues().get(1).add("value2");
         Assert.assertEquals("value2", value.getComboValueShort(1));
+    }
+
+    /**
+     * @see MetadataValue#getComboValueShort(int)
+     * @verifies not add empty prefix
+     */
+    @Test
+    public void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
+        MetadataValue value = new MetadataValue("");
+        value.getParamPrefixes().add(null);
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(0).add("value1");
+        value.getParamPrefixes().add("");
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(1).add("value2");
+        Assert.assertEquals("value2", value.getComboValueShort(1));
+    }
+
+    /**
+     * @see MetadataValue#getComboValueShort(int)
+     * @verifies not add empty suffix
+     */
+    @Test
+    public void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
+        MetadataValue value = new MetadataValue("");
+        value.getParamSuffixes().add(null);
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(0).add("value1");
+        value.getParamSuffixes().add("");
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(1).add("value2");
+        Assert.assertEquals("value2", value.getComboValueShort(1));
+    }
+
+    /**
+     * @see MetadataValue#getComboValueShort(int)
+     * @verifies add separator between values if no prefix used
+     */
+    @Test
+    public void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
+        MetadataValue value = new MetadataValue("");
+        value.getParamSuffixes().add(null);
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(0).add("value1");
+        value.getParamValues().get(0).add("value2");
+        Assert.assertEquals("value1, value2", value.getComboValueShort(0));
     }
 }
