@@ -8633,6 +8633,49 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR SMARTPHONES */
 /* CMS MODULES */
 /* ==============================================================
+   CMS Module Actions
+   ==============================================================*/
+/* TABLES */
+.cms-module__actions .btn {
+  position: relative;
+  margin-left: 7px;
+}
+.cms-module__actions .btn:after {
+  content: "|";
+  margin-left: 7px;
+  color: #ccc;
+}
+.cms-module__actions .btn:last-child:after {
+  display: none;
+}
+.cms-module__actions .btn:first-child {
+  margin-left: 0;
+}
+.cms-module__actions .btn.btn--clean {
+  color: #3365a9;
+}
+.cms-module__actions .btn.btn--clean:hover,
+.cms-module__actions .btn.btn--clean:active,
+.cms-module__actions .btn.btn--clean:focus {
+  color: #134ea0;
+}
+.cms-module__actions .btn.delete {
+  color: #a00;
+}
+.cms-module__actions .btn.delete:hover,
+.cms-module__actions .btn.delete:active,
+.cms-module__actions .btn.delete:focus {
+  color: #721c24;
+}
+.cms-module__actions .btn.abort {
+  color: #555;
+}
+.cms-module__actions .btn.abort:hover,
+.cms-module__actions .btn.abort:active,
+.cms-module__actions .btn.abort:focus {
+  color: #1a1a1a;
+}
+/* ==============================================================
    CMS Module Options
    ==============================================================*/
 /* OPTIONS */
@@ -8686,7 +8729,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 7px;
 }
 .cms-module__option-control textarea {
-  min-height: 34px;
+  min-height: 68px;
   resize: vertical;
 }
 .cms-module__option-control-checkbox {
@@ -8733,6 +8776,35 @@ div[id*="-Modal"] .email-form .form-group {
   .cms-module__option-action {
     padding-right: 10%;
   }
+}
+/* ==============================================================
+   CMS Module Tables
+   ==============================================================*/
+/* TABLES */
+.cms-module__table {
+  width: 100%;
+  max-width: 100%;
+}
+.cms-module__table > thead > tr > th,
+.cms-module__table > tbody > tr > td,
+.cms-module__table > tfoot > tr > th {
+  padding: 8px;
+}
+.cms-module__table > thead > tr > th {
+  min-width: 175px;
+  border: 1px solid #f2f3f4;
+  border-top-color: #ccc;
+  border-bottom-color: #ccc;
+  vertical-align: bottom;
+  background-color: #f2f3f4;
+}
+.cms-module__table > tbody > tr > td {
+  border: 1px solid #fff;
+  border-bottom-color: #f2f3f4;
+  vertical-align: top;
+}
+.cms-module__table > tbody > tr:nth-child(even) {
+  background-color: #f2f3f4;
 }
 /* CMS COMPONENTS */
 /* ==============================================================
@@ -9818,6 +9890,17 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for adminCmsCategories.xhtml
    ==============================================================*/
 /* CMS CATEGORIES */
+.admin-cms-categories {
+  /* EDIT */
+  /* LIST */
+}
+.admin-cms-categories__wrapper {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 2fr;
+      grid-template-columns: 1fr 2fr;
+  grid-gap: 15px;
+}
 /* ==============================================================
    CMS Media
    style declarations for adminCmsMedia.xhtml
@@ -10166,45 +10249,6 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__file-actions {
   display: none;
   padding-left: 22px;
-}
-.admin-cms-media__file-actions .btn {
-  position: relative;
-  margin-left: 7px;
-}
-.admin-cms-media__file-actions .btn:after {
-  content: "|";
-  margin-left: 7px;
-  color: #ccc;
-}
-.admin-cms-media__file-actions .btn:last-child:after {
-  display: none;
-}
-.admin-cms-media__file-actions .btn:first-child {
-  margin-left: 0;
-}
-.admin-cms-media__file-actions .btn.btn--clean {
-  color: #3365a9;
-}
-.admin-cms-media__file-actions .btn.btn--clean:hover,
-.admin-cms-media__file-actions .btn.btn--clean:active,
-.admin-cms-media__file-actions .btn.btn--clean:focus {
-  color: #134ea0;
-}
-.admin-cms-media__file-actions .btn.delete {
-  color: #a00;
-}
-.admin-cms-media__file-actions .btn.delete:hover,
-.admin-cms-media__file-actions .btn.delete:active,
-.admin-cms-media__file-actions .btn.delete:focus {
-  color: #721c24;
-}
-.admin-cms-media__file-actions .btn.abort {
-  color: #555;
-}
-.admin-cms-media__file-actions .btn.abort:hover,
-.admin-cms-media__file-actions .btn.abort:active,
-.admin-cms-media__file-actions .btn.abort:focus {
-  color: #1a1a1a;
 }
 .admin-cms-media__file-actions-view,
 .admin-cms-media__file-actions-edit {

@@ -1,0 +1,61 @@
+/* ==============================================================
+   CMS Module Actions
+   ==============================================================*/
+/* TABLES */
+.cms-module {
+	&__actions {
+		.btn {
+			position: relative;
+			margin-left: 7px;
+			&:after {
+				content: "|";
+				margin-left: 7px;
+				color: @middlegray;
+			}
+			&:last-child {
+				&:after {
+					display: none;
+				}
+			}
+			&:first-child {
+				margin-left: 0;
+			}
+			&.btn--clean {
+				color: @blue;
+				&:hover,
+				&:active,
+				&:focus {
+					color: @hoverblue;
+				}
+			}
+			&.delete {
+				color: @btnCleanDelete;
+				&:hover,
+				&:active,
+				&:focus {
+					color: @btnDanger;
+				}
+			}
+			&.abort {
+				color: @btnDefault;
+				&:hover,
+				&:active,
+				&:focus {
+					color: @black;
+				}
+			}
+		}
+	}
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOPS
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}
