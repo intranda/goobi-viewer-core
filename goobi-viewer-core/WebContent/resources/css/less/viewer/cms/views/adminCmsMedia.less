@@ -318,47 +318,6 @@
 	&__file-actions {
 		display: none;
 		padding-left: 22px;
-		.btn {
-			position: relative;
-			margin-left: 7px;
-			&:after {
-				content: "|";
-				margin-left: 7px;
-				color: @middlegray;
-			}
-			&:last-child {
-				&:after {
-					display: none;
-				}
-			}
-			&:first-child {
-				margin-left: 0;
-			}
-			&.btn--clean {
-				color: @blue;
-				&:hover,
-				&:active,
-				&:focus {
-					color: @hoverblue;
-				}
-			}
-			&.delete {
-				color: @btnCleanDelete;
-				&:hover,
-				&:active,
-				&:focus {
-					color: @btnDanger;
-				}
-			}
-			&.abort {
-				color: @btnDefault;
-				&:hover,
-				&:active,
-				&:focus {
-					color: @black;
-				}
-			}
-		}
 	}
 	&__file-actions-view,
 	&__file-actions-edit {

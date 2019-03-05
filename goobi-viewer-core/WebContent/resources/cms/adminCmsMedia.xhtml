@@ -213,7 +213,7 @@
                                         <!-- FILE ACTIONS -->
                                         <div class="admin-cms-media__file-actions">
                                             <!-- ACTIONS VIEW -->
-                                            <div class="admin-cms-media__file-actions-view in">
+                                            <div class="admin-cms-media__file-actions-view cms-module__actions in">
                                                 <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
                                                 <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
                                                 	<f:ajax render="@all"></f:ajax>
@@ -227,7 +227,7 @@
                                             </div>
     
                                             <!-- ACTIONS EDIT -->
-                                            <div class="admin-cms-media__file-actions-edit">
+                                            <div class="admin-cms-media__file-actions-edit cms-module__actions">
                                                 <button id="cancel-btn-#{status.index}" type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
                                                 <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$('#cancel-btn-#{status.index}').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
                                                 	<f:ajax execute="edit-fields" render="display-fields edit-fields"></f:ajax>

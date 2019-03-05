@@ -65,6 +65,7 @@ public enum PageType {
     adminCmsOverview("admin/cms/pages"),
     adminCmsSelectTemplate("admin/cms/pages/new"),
     adminCmsCreatePage("admin/cms/pages/create"),
+    adminCmsCategories("admin/cms/categories"),
     adminCmsStaticPages("admin/cms/pages/mapping"),
     adminCmsMedia("admin/cms/media"),
     adminCmsMenuItems("admin/cms/menus"),
