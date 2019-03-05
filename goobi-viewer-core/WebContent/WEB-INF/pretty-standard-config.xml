@@ -711,6 +711,11 @@
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCmsCategories">
+        <pattern value="/admin/cms/categories/" />
+        <view-id value="/resources/cms/adminCmsCategories.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">

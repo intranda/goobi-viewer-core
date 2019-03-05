@@ -7,61 +7,70 @@
 	<composite:interface />
 
     <composite:implementation>
-    	<h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_PAGES')}">
-	        <div id="widgetCms" class="admin-widget">
-				<h:form id="widgetCmsForm">
-					<h3>#{msg.cms_title}</h3>
+        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_PAGES')}">
+            <div id="widgetCms" class="admin-widget">
+                <h:form id="widgetCmsForm">
+                    <h3>#{msg.cms_title}</h3>
 
-					<ul>
-					    <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                    <ul>
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
-							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverview')}/">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsOverview')}/">
                                     <i class="fa fa-clone" aria-hidden="true"></i>
                                     <span>#{msg.cms_overview}</span>
-                            </h:outputLink>
+                                </h:outputLink>
                             </li>
                             <li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
-							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     <span>#{msg.cms_createPage}</span>
-                            </h:outputLink>
-                            </li>
-						</ui:fragment>
-						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
-                            <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
-							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/">
-                                    <i class="fa fa-cogs" aria-hidden="true"></i>
-                                    <span>#{msg.cms_staticPages}</span>
-                            </h:outputLink>
-                            </li>
-						</ui:fragment>
-						<ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
-							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMedia')}/">
-                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                    <span>#{msg.cms_overviewMedia}</span>
-                            </h:outputLink>
-                            </li>
-						</ui:fragment>
-						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_MENU')}">
-                            <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
-							 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/">
-                                    <i class="fa fa-bars" aria-hidden="true"></i>
-                                    <span>#{msg.cms_menu_items}</span>
-                            </h:outputLink>
-                            </li>
-						</ui:fragment>
-						<ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_COLLECTIONS')}">
-                            <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCollections')}/">
-                                    <i class="fa fa-object-group" aria-hidden="true"></i>
-                                    <span>#{msg.cms_collections}</span>
-                            </h:outputLink>
+                                </h:outputLink>
                             </li>
                         </ui:fragment>
-					</ul>
-				</h:form>
-			</div>
+
+                        <!-- CATEGORIES -->
+                        <li class="#{navigationHelper.currentPage == 'adminCmsCategories' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCategories')}/">
+                                <i class="fa fa-thumb-tack" aria-hidden="true"></i>
+                                <span>#{msg.cms__categories}</span>
+                            </h:outputLink>
+                        </li>
+
+                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/">
+                                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                                    <span>#{msg.cms_staticPages}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMedia')}/">
+                                    <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                    <span>#{msg.cms_overviewMedia}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_MENU')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/">
+                                    <i class="fa fa-bars" aria-hidden="true"></i>
+                                    <span>#{msg.cms_menu_items}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_COLLECTIONS')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCollections')}/">
+                                    <i class="fa fa-object-group" aria-hidden="true"></i>
+                                    <span>#{msg.cms_collections}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                    </ul>
+                </h:form>
+            </div>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>
