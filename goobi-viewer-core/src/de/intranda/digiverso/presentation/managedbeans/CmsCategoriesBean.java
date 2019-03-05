@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +32,13 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.Category;
 
 /**
+ * Managed Bean for editing, deleting and creating {@link Category categories}
+ * 
  * @author florian
  *
  */
+@Named("categories")
+@SessionScoped
 public class CmsCategoriesBean implements Serializable {
 
 	private static final long serialVersionUID = 5297975169931740605L;
@@ -54,17 +61,103 @@ public class CmsCategoriesBean implements Serializable {
 	 */
 	private Category selectedCategory = null;
 
+	/**
+	 * Check if {@link #getCategoryName()} is empty or equal (ignoring case) to the name of any existing category. 
+	 * If we are editing a category, obviously ignore this category for the check
+	 * 
+	 * @return	true if {@link #getCategoryName()} returns a valid name for a category
+	 * @throws DAOException
+	 */
 	public boolean isValid() throws DAOException {
 		if(StringUtils.isNotBlank(getCategoryName())) {
 			Stream<Category> stream = getAllCategories().stream();
 			if(getSelectedCategory() != null) {
-				stream.filter(cat -> !cat.equals(getSelectedCategory()))
+				stream = stream.filter(cat -> !getSelectedCategory().equals(cat));
 			}
+			return !stream.anyMatch(cat -> cat.getName().equalsIgnoreCase(getCategoryName()));
 		} else {
 			return false;
 		}
 	}
 	
+	/**
+	 * Start editing the given category. Editing will continue until either {@link #save()} or {@link #cancel()} is executed 
+	 * 
+	 * @param category	The category to edit
+	 */
+	public void edit(Category category) {
+		this.selectedCategory = category;
+		this.setCategoryName(category.getName());
+		this.setCategoryDescription(category.getDescription());
+	}
+	
+	/**
+	 * If editing mode is active, set categoryName and categoryDescription to the currently selected category, 
+	 * persist it and end the editing mode. 
+	 * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} 
+	 * and {@link CmsCategoriesBean#getCategoryDescription()} and persist it.
+	 *  Also clear categoryName and categoryDescription.
+	 * 
+	 * @throws DAOException 
+	 */
+	public void save() throws DAOException {
+		if(isValid()) {			
+			if(isEditing()) {
+				this.selectedCategory.setName(getCategoryName());
+				this.selectedCategory.setDescription(getCategoryDescription());
+				DataManager.getInstance().getDao().updateCategory(this.selectedCategory);
+			} else {
+				Category category = new Category();
+				category.setName(getCategoryName());
+				category.setDescription(getCategoryDescription());
+				DataManager.getInstance().getDao().addCategory(category);
+			}
+			endEditing();
+		}
+	}
+	
+	/**
+	 * Delete the given Category in DAO.  Also clear categoryName and categoryDescription
+	 * 
+	 * @param category
+	 * @throws DAOException
+	 */
+	public void delete(Category category) throws DAOException {
+		if(getSelectedCategory() != null && getSelectedCategory().equals(category)) {
+			endEditing();
+		}
+		DataManager.getInstance().getDao().deleteCategory(category);
+	}
+
+	
+	/**
+	 * End the editing mode if active without persisting anything. Also clear categoryName and categoryDescription
+	 */
+	public void cancel() {
+		endEditing();
+	}
+	
+	/**
+	 * Check is we are currently editing an existing category, i.e. {@link #getSelectedCategory} doesn't return null
+	 * 
+	 * @return true if we are currently editing an existing category, i.e. {@link #getSelectedCategory} doesn't return null
+	 */
+	public boolean isEditing() {
+		return getSelectedCategory() != null;
+	}
+
+	private void endEditing() {
+		this.selectedCategory = null;
+		setCategoryName("");
+		setCategoryDescription("");
+	}
+	
+	/**
+	 * Returns a newly created list of all saved categories
+	 * 
+	 * @return a newly created list of all saved categories
+	 * @throws DAOException
+	 */
 	public List<Category> getAllCategories() throws DAOException {
 		return new ArrayList<Category>(DataManager.getInstance().getDao().getAllCategories());
 	}

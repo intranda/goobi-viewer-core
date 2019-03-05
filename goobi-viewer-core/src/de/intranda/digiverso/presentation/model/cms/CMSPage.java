@@ -138,7 +138,7 @@ public class CMSPage implements Comparable<CMSPage> {
     private List<CMSSidebarElement> unusedSidebarElements;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "join_categories_pages", joinColumns = @JoinColumn(name = "page_id"),
+    @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories = new ArrayList<>();
     

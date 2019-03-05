@@ -3310,7 +3310,8 @@ public class JPADAO implements IDAO {
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.remove(category);
+            Category o = em.getReference(Category.class, category.getId());
+            em.remove(o);
             em.getTransaction().commit();
             return true;
         } finally {

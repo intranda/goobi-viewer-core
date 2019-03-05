@@ -27,17 +27,21 @@
                     <div class="admin-cms-categories__edit">
                         <!-- CREATE -->
                         <div class="admin-cms-categories__create">
-                            <h4>#{msg.admin__category_create_new}</h4>
-                            <h4>#{msg.admin__category_edit}</h4>
-                            
                             <h:form id="adminCategoryCreateForm" prependId="false">
+	                            <ui:fragment rendered="#{!categories.editing}">
+		                            <h4>#{msg.admin__category_create_new}</h4>
+	                            </ui:fragment>
+	                            <ui:fragment rendered="#{categories.editing}">
+	                            	<h4>#{msg.admin__category_edit}</h4>
+	                            </ui:fragment>
+                            
                                 <!-- TITLE -->
                                 <div class="cms-module__option-group">
                                     <div class="cms-module__option-label cms-module__option-label--fullwidth">
                                         <label for="createCategoryTitle">#{msg.admin__category_title}:</label>
                                     </div>
                                     <div class="cms-module__option-control">
-                                        <h:inputText id="createCategoryTitle" styleClass="form-control" />
+                                        <h:inputText id="createCategoryTitle" styleClass="form-control" value="#{categories.categoryName}"/>
                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__create_category_title}</span>
                                     </div>
                                     <div class="cms-module__option-help">
@@ -53,7 +57,7 @@
                                         <label for="createCategoryDescription">#{msg.admin__category_description}:</label>
                                     </div>
                                     <div class="cms-module__option-control">
-                                        <h:inputTextarea id="createCategoryDescription" styleClass="form-control" />
+                                        <h:inputTextarea id="createCategoryDescription" styleClass="form-control" value="#{categories.categoryDescription}"/>
                                         <span class="cms-module__option-control-helptext">#{msg.inline_help__create_category_description}</span>
                                     </div>
                                     <div class="cms-module__option-help">
@@ -65,9 +69,12 @@
                                 
                                 <!-- ACTION -->
                                 <div class="admin-cms-categories__create-action">
-                                    <button type="button" class="btn btn--full">
-                                        #{msg.admin__category_create_new}
-                                    </button>
+                                    <h:commandLink type="button" class="btn btn--full" action="#{categories.save()}">
+                                        #{categories.editing ? msg.save : msg.admin__category_create_new}
+                                    </h:commandLink>
+                                    <h:commandLink rendered="#{categories.editing}" type="button" class="btn btn--cancel" action="#{categories.cancel()}">
+                                        #{msg.cancel}
+                                    </h:commandLink>
                                 </div>
                             </h:form>
                         </div>
@@ -76,6 +83,7 @@
                     <!-- LIST -->
                     <!-- TODO: eventuell noch eine weiter Spalte "Zuweisung", damit die Kategorie Seiten oder Medien zugewiesen werden kann. -->
                     <div class="admin-cms-categories__list">
+                      <h:form id="adminCategoryListForm" prependId="false">
                         <table class="cms-module__table">
                             <thead>
                                 <tr>
@@ -84,38 +92,27 @@
                                 </tr>
                             </thead>
                             <tbody>
+                            	<ui:repeat var="category" value="#{categories.allCategories}">
                                 <tr>
                                     <td>
-                                        Der Titel der Kategorie, der auch schonmal länger sein kann und dann bestimmt blöd umbricht.
+                                        #{category.name}
                                         <div class="cms-module__actions">
-                                            <button type="button" class="btn btn--clean">#{msg.button__edit}</button>
-                                            <button type="button" class="btn btn--clean delete">#{msg.button__delete}</button>
+                                            <h:commandLink type="button" class="btn btn--clean" action="#{categories.edit(category)}">
+                                            	#{msg.button__edit}
+                                            	<f:ajax render="adminCategoryCreateForm"></f:ajax>
+                                            </h:commandLink>
+                                            <h:commandLink type="button" class="btn btn--clean delete" action="#{categories.delete(category)}">
+                                            	#{msg.button__delete}
+                                            	<f:ajax render="@form"></f:ajax>
+                                            </h:commandLink>
                                         </div>
                                     </td>
-                                    <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore voluptatem nesciunt laborum perspiciatis error accusamus nisi dolore pariatur numquam possimus.</td>                                    
+                                    <td>#{category.description}</td>                                    
                                 </tr>
-                                <tr>
-                                    <td>
-                                        Der Titel der Kategorie
-                                        <div class="cms-module__actions">
-                                            <button type="button" class="btn btn--clean">#{msg.button__edit}</button>
-                                            <button type="button" class="btn btn--clean delete">#{msg.button__delete}</button>
-                                        </div>
-                                    </td>
-                                    <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore voluptatem nesciunt laborum perspiciatis error accusamus nisi dolore pariatur numquam possimus.</td>                                    
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Der Titel der Kategorie
-                                        <div class="cms-module__actions">
-                                            <button type="button" class="btn btn--clean">#{msg.button__edit}</button>
-                                            <button type="button" class="btn btn--clean delete">#{msg.button__delete}</button>
-                                        </div>
-                                    </td>
-                                    <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempore voluptatem nesciunt laborum perspiciatis error accusamus nisi dolore pariatur numquam possimus.</td>                                    
-                                </tr>
+                              </ui:repeat>
                             </tbody>
                         </table>
+                      </h:form>
                     </div>                    
                 </div>
             </div>

@@ -101,7 +101,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "join_categories_media_items", joinColumns = @JoinColumn(name = "media_item_id"),
+    @JoinTable(name = "cms_media_item_cms_categories", joinColumns = @JoinColumn(name = "media_item_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories = new ArrayList<>();
 

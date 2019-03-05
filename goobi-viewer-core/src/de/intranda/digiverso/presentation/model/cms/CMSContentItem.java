@@ -192,7 +192,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private CMSMediaItem mediaItem;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "join_categories_content_items", joinColumns = @JoinColumn(name = "content_item_id"),
+    @JoinTable(name = "cms_content_item_cms_categories", joinColumns = @JoinColumn(name = "content_item_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories = new ArrayList<>();
 
