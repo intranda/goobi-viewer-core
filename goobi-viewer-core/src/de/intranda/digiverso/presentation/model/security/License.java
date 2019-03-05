@@ -138,7 +138,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** List of allowed CMS categories. */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "license_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
