@@ -38,13 +38,6 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 @ViewerRestServiceBinding
 public class ContentAssistResource {
 
-    @GET
-    @Path("/mediaTags/{input}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    public List<String> getTagsForPageJson(@PathParam("input") String inputString) throws DAOException {
-        List<String> suggestions = DataManager.getInstance().getDao().getMatchingTags(inputString);
-        return suggestions;
-    }
 
     @GET
     @Path("/collections/{solrField}/{input}")

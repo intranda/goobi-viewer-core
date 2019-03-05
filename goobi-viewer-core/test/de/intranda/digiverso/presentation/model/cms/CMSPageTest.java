@@ -53,8 +53,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 //@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
-    private static final String[] CLASSIFICATIONS = new String[] { "A", "B", "C", "D" };
-
     /**
      * @throws java.lang.Exception
      */
@@ -143,7 +141,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.setDateCreated(created);
         page.setDateUpdated(updated);
 
-        page.setClassifications(new ArrayList<>(Arrays.asList(CLASSIFICATIONS)));
+        page.setCategories(DataManager.getInstance().getDao().getAllCategories());
 
         String altUrl = "test/page/";
         page.setPersistentUrl(altUrl);
@@ -188,7 +186,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         //tests
         Assert.assertEquals(created, page.getDateCreated());
         Assert.assertEquals(updated, page.getDateUpdated());
-        Assert.assertEquals(Arrays.asList(CLASSIFICATIONS), page.getClassifications());
+        Assert.assertEquals(DataManager.getInstance().getDao().getAllCategories(), page.getCategories());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));
         Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
 

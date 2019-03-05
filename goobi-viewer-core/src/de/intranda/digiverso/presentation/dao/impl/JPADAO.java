@@ -16,7 +16,12 @@
 package de.intranda.digiverso.presentation.dao.impl;
 
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
+import de.intranda.digiverso.presentation.dao.DatabaseUpdater;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -53,6 +59,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -111,30 +118,15 @@ public class JPADAO implements IDAO {
             currentThread.setContextClassLoader(saveClassLoader);
 
             em = factory.createEntityManager();
-            createDiscriminatorRow();
+            preQuery();
+//            new DatabaseUpdater(em).update();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
         }
     }
 
-    /**
-     * @throws DAOException
-     * 
-     */
-    private void createDiscriminatorRow() throws DAOException {
-        try {
-            preQuery();
-            em.getTransaction().begin();
-            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
-                    + "' WHERE element.widgetType IS NULL");
-            q.executeUpdate();
-            em.getTransaction().commit();
-        } catch (DAOException e) {
-            throw new DAOException(e.getMessage());
-        }
 
-    }
 
     /*
      * (non-Javadoc)
@@ -716,6 +708,7 @@ public class JPADAO implements IDAO {
     public List<Role> getAllRoles() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT r FROM Role r");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -757,6 +750,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -873,6 +867,7 @@ public class JPADAO implements IDAO {
     public List<UserRole> getAllUserRoles() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT ur FROM UserRole ur");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -921,6 +916,7 @@ public class JPADAO implements IDAO {
         if (role != null) {
             q.setParameter("role", role);
         }
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -994,6 +990,7 @@ public class JPADAO implements IDAO {
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT lt FROM LicenseType lt");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1011,6 +1008,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess");
             q.setParameter("openAccess", false);
+            q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
@@ -1056,6 +1054,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1090,6 +1089,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.name = :name");
         q.setParameter("name", name);
+        q.setFlushMode(FlushModeType.COMMIT);
         try {
             LicenseType o = (LicenseType) q.getSingleResult();
             if (o != null) {
@@ -1176,6 +1176,7 @@ public class JPADAO implements IDAO {
     public List<IpRange> getAllIpRanges() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT ipr FROM IpRange ipr");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1217,6 +1218,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1335,6 +1337,7 @@ public class JPADAO implements IDAO {
     public List<Comment> getAllComments() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM Comment o");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1376,6 +1379,7 @@ public class JPADAO implements IDAO {
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
         return q.getResultList();
@@ -1396,6 +1400,7 @@ public class JPADAO implements IDAO {
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
         q.setParameter("page", page);
+        q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -1484,6 +1489,7 @@ public class JPADAO implements IDAO {
         sbQuery.append("SELECT o.page FROM Comment o WHERE o.pi = :pi");
         Query q = em.createQuery(sbQuery.toString());
         q.setParameter("pi", pi);
+        q.setFlushMode(FlushModeType.COMMIT);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         List<Integer> results = q.getResultList();
         return results.stream().distinct().sorted().collect(Collectors.toList());
@@ -1497,6 +1503,7 @@ public class JPADAO implements IDAO {
     public List<Search> getAllSearches() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM Search o");
+        q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -2125,6 +2132,11 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(downloadJob);
             em.getTransaction().commit();
+            
+            if(this.em.contains(downloadJob)) {            	
+            	this.em.refresh(downloadJob);
+            }
+            
             return true;
         } finally {
             em.close();
@@ -2283,7 +2295,7 @@ public class JPADAO implements IDAO {
                         }
                         if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
                             where.append("UPPER(" + tableKey + ".").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
-                        } else if ("classifications".equals(joinTable)) {
+                        } else if ("categories".equals(joinTable)) {
                             where.append(tableKey).append(" LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
 
                         } else {
@@ -2325,55 +2337,7 @@ public class JPADAO implements IDAO {
         return filterString;
     }
 
-    /**
-     * @throws DAOException
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByClassification(java.lang.String)
-     * @should return all pages with given classification
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                StringBuilder sbQuery = new StringBuilder(70);
-                sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
-                Query q = em.createQuery(sbQuery.toString());
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
 
-    /**
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, java.lang.String)
-     * @should return all pages with the given related pi
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException {
-        synchronized (cmsRequestLock) {
-            try {
-                preQuery();
-                StringBuilder sbQuery = new StringBuilder(70);
-                sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
-                if (StringUtils.isNotEmpty(pageClassification)) {
-                    sbQuery.append("AND '").append(pageClassification).append("' MEMBER OF o.classifications");
-                }
-                Query q = em.createQuery(sbQuery.toString());
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            }
-        }
-    }
 
     /**
      * @throws DAOException
@@ -3048,30 +3012,6 @@ public class JPADAO implements IDAO {
         return (long) q.getSingleResult();
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getMatchingTags(java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getMatchingTags(String inputString) throws DAOException {
-        preQuery();
-        StringBuilder sbQuery =
-                new StringBuilder("SELECT DISTINCT tag_name FROM cms_media_item_tags").append(" WHERE tag_name LIKE '" + inputString + "%'");
-        Query q = em.createNativeQuery(sbQuery.toString());
-        return q.getResultList();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllTags()
-     */
-    @SuppressWarnings({ "unchecked" })
-    @Override
-    public List<String> getAllTags() throws DAOException {
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT tag_name FROM cms_media_item_tags");
-        Query q = em.createNativeQuery(sbQuery.toString());
-        return q.getResultList();
-    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getAllStaticPages()
@@ -3285,4 +3225,111 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+    @SuppressWarnings("unchecked")
+	public List<CMSPage> getCMSPagesByCategory(Category category) throws DAOException {
+		preQuery();
+        Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
+        q.setParameter("id", category.getId());
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public List<CMSPage> getCMSPagesForRecord(String pi, Category category) throws DAOException {
+		preQuery();
+		Query q;
+		if(category != null) {			
+			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
+			q.setParameter("id", category.getId());
+		} else {
+			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.relatedPI = :pi");
+		}
+        q.setParameter("pi", pi);
+        List<CMSPage> pageList = q.getResultList();
+        return pageList;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
+	 */
+	@Override
+	public List<Category> getAllCategories() throws DAOException {
+		preQuery();
+        Query q = em.createQuery("SELECT c FROM Category c");
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<Category> list = q.getResultList();
+        return list;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public void addCategory(Category category) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(category);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public void updateCategory(Category category) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(category);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
+	 */
+	@Override
+	public boolean deleteCategory(Category category) throws DAOException {
+		preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.remove(category);
+            em.getTransaction().commit();
+            return true;
+        } finally {
+            em.close();
+        }
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
+	 */
+	@Override
+	public Category getCategoryByName(String name) throws DAOException {
+		preQuery();
+        Query q = em.createQuery("SELECT c FROM Category c WHERE c.name = :name");
+        q.setParameter("name", name);
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        Category category = (Category) getSingleResult(q).orElse(null);
+        return category;
+	}
+
 }

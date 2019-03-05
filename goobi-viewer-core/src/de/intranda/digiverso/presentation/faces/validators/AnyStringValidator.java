@@ -15,50 +15,23 @@
  */
 package de.intranda.digiverso.presentation.faces.validators;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
-import org.apache.commons.lang.StringUtils;
-
-import de.intranda.digiverso.presentation.controller.Helper;
-
 /**
- * Syntax validator for passwords addresses.
+ * Validator that validates any input.
  */
-@FacesValidator("piValidator")
-public class PIValidator implements Validator<String> {
+@FacesValidator("anyStringValidator")
+public class AnyStringValidator implements Validator<String> {
 
-    protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-        if (!validatePi(value)) {
-            FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_errInvalid", null), "");
-            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            throw new ValidatorException(msg);
-        }
-    }
-
-    /**
-     *
-     * @param pi
-     * @return
-     * @should return true if pi good
-     * @should return false if pi empty, blank or null
-     * @should return false if pi contains illegal characters
-     */
-    public static boolean validatePi(String pi) {
-        if (StringUtils.isBlank(pi)) {
-            return false;
-        }
-
-        return !StringUtils.containsAny(pi, ILLEGAL_CHARS);
     }
 }

@@ -321,7 +321,7 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference"
-			discriminatorField="" autoSwitch="true" addFilterQuery="false"
+			discriminatorField="DOCSTRCT" autoSwitch="true" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 				mechanism needs the root path of the theme. The path must be defined down 
@@ -802,6 +802,17 @@
 				<metadata label="MD_RISMSEAL" value="">
 					<param type="field" key="MD_RISMSEAL" />
 				</metadata>
+				
+        <metadata label="MD_HAAB_PROVENIENCE" value="MASTERVALUE_GROUP" group="true">
+          <param type="translatedfield" key="MD_CODE" suffix=":_SPACE_"/>
+          <param type="field" key="MD_PREVIOUS_OWNER"/>
+          <param type="normdatauri" key="NORM_URI"/>
+          <param type="field" key="MD_CHARACTERISTIC" prefix="_SPACE_|_SPACE_"/>
+          <param type="field" key="MD_DATE" prefix="_SPACE_|_SPACE_Datum:_SPACE_"/>
+          <param type="field" key="MD_EXPLANATION" prefix="_SPACE_|_SPACE_Erläuterung:_SPACE_"/>
+          <param type="normdatauri" key="NORM_URI_RECORD"/>
+        </metadata>
+				
 			</template>
 		</mainMetadataList>
 

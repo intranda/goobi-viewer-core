@@ -17,15 +17,15 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <h:panelGroup layout="block" id="cmsCreatePage">
-                <h:form rendered="#{userBean.admin and cmsBean.selectedPage == null}">
+                <h:form rendered="#{cmsBean.selectedPage == null}">
                     <h:commandLink action="pretty:adminCmsOverview">
                         <h:outputText value="#{msg.cms_backToOverview}" />
                     </h:commandLink>
                 </h:form>
                 
-                <h:panelGroup rendered="#{userBean.admin and cmsBean.selectedPage != null}">
+                <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
                     <!-- AJAX LOADER -->
                     <div id="AJAXLoader"></div>
 
@@ -157,12 +157,18 @@
                                                                     label="#{msg.cms_page_url_parameters}:" help="#{msg.cms_page_url_parameters_help}"
                                                                     onclick="cmsJS.createPage.disablePreview();" />
                                                                 <!-- related PI -->
-                                                                <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:"
-                                                                    help="#{msg.cms_page_related_pi_help}" />
+                                                                <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}"
+                                                                    label="#{msg.cms_page_related_pi}:" help="#{msg.cms_page_related_pi_help}">
+                                                                    <f:validator validatorId="relatedPiValidator" for="inputField"></f:validator>
+                                                                </cmsComponent:cms_inputText>
                                                                 <!-- subtheme discriminator field -->
                                                                 <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
                                                                     label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
-                                                                    options="#{cmsBean.subThemeDiscriminatorValues}" defaultItemValue="" defaultItemLabel="-" />
+                                                                    options="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}"
+                                                                    defaultItemValue="#{null}" defaultItemLabel="-"
+                                                                    disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
+                                                                    required="#{!userBean.admin and configurationBean.subthemeDiscriminatorFieldSet}"
+                                                                    requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}" />
                                                                 <!-- parent page for breadcrumbs -->
                                                                 <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
                                                                     label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"

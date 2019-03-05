@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -61,8 +62,6 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         // Create new personal filter query suffix        
 
-
-        
         if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
                 SearchHelper.updateFilterQuerySuffix(httpRequest);
@@ -92,20 +91,29 @@ public class LoginFilter implements Filter {
             User user = (User) httpRequest.getSession().getAttribute("user");
             if (user == null) {
                 logger.debug("No user found, redirecting to login...");
-                ((HttpServletResponse) response).sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from="
-                        + URLEncoder.encode(requestURI, "UTF-8"));
-            } else if (httpRequest.getRequestURI().contains("/admin") && !user.isSuperuser()) {
-                logger.debug("User '" + user.getEmail() + "' not superuser, redirecting to login...");
-                ((HttpServletResponse) response).sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from="
-                        + URLEncoder.encode(requestURI, "UTF-8"));
-            } else {
-                chain.doFilter(request, response); // continue
+                ((HttpServletResponse) response).sendRedirect(
+                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+            } else if (httpRequest.getRequestURI().contains("/admin")) {
+                try {
+                    if (user.isSuperuser() || user.isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
+                        chain.doFilter(request, response); // continue
+                        return;
+                    }
+                    logger.debug("User '{}' not superuser, redirecting to login...", user.getDisplayName());
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (IndexUnreachableException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+                ((HttpServletResponse) response).sendRedirect(
+                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
             }
         } else {
             chain.doFilter(request, response); // continue
         }
     }
-
 
     /**
      * Checks whether the given URI requires a logged in user.
@@ -132,8 +140,8 @@ public class LoginFilter implements Filter {
                     return true;
                 default:
                     // Regular URLs
-                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend") || uri.contains(
-                            "/bookshel"))) {
+                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend")
+                            || uri.contains("/bookshel"))) {
                         return true;
                     }
             }

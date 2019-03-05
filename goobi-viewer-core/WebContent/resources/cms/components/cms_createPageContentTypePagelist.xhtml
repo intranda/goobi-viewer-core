@@ -15,8 +15,8 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label">#{msg.cms_itemClassification}#{contentItem.mandatory?'*':''}:</label>
 						<div class="col-sm-9">
-								<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.pageClassification}">
-									<f:selectItems value="#{cmsBean.classifications}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+								<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.categories}">
+									<f:selectItems value="#{cmsBean.allCategories}" var="field" itemValue="#{field}" itemLabel="#{field.name}" />
 								</h:selectManyListbox>
 						</div>
 					</div>

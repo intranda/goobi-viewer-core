@@ -36,10 +36,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -188,9 +191,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
-    /** Page classification for page list content items. */
-    @Column(name = "page_classification")
-    private String pageClassification = "";
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "join_categories_content_items", joinColumns = @JoinColumn(name = "content_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> categories = new ArrayList<>();
 
     /** Lucence field on which to base a collecion view */
     @Column(name = "collection_field")
@@ -314,7 +318,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setCollectionOpenExpanded(blueprint.isCollectionOpenExpanded());
         this.setBaseCollection(blueprint.getBaseCollection());
         this.setMediaItem(blueprint.getMediaItem());
-        this.setPageClassification(blueprint.getPageClassification());
+        this.setCategories(new ArrayList<>(blueprint.getCategories()));
         this.setComponent(blueprint.component);
         this.setNumberOfTiles(blueprint.numberOfTiles);
         this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
@@ -553,19 +557,32 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * @return the pageClassification
      */
-    public String[] getPageClassification() {
-        if (StringUtils.isNotBlank(pageClassification)) {
-            return pageClassification.split(CLASSIFICATION_SEPARATOR);
-        }
-
-        return new String[0];
+    public List<Category> getCategories() {
+        return this.categories;
+    }
+    
+    /**
+     * @param classifications the classifications to set
+     */
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
-    public List<String> getSortedPageClassifications() throws DAOException {
-        if (StringUtils.isNotBlank(pageClassification)) {
-            SortedMap<Long, String> sortMap = new TreeMap<>();
-            for (String classification : getPageClassification()) {
-                long order = getNestedPages(classification).stream()
+    public void addCategory(Category category) {
+        if (!categories.contains(category)) {
+        	categories.add(category);
+        }
+    }
+
+    public void removeCategory(Category category) {
+    	categories.remove(category);
+    }
+
+    public List<Category> getSortedCategories() throws DAOException {
+        if (!this.categories.isEmpty()) {
+            SortedMap<Long, Category> sortMap = new TreeMap<>();
+            for (Category category : getCategories()) {
+                long order = getNestedPages(category).stream()
                         .filter(page -> page.getPageSorting() != null)
                         .mapToLong(CMSPage::getPageSorting)
                         .sorted()
@@ -574,23 +591,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 while (sortMap.containsKey(order)) {
                     order++;
                 }
-                sortMap.put(order, classification);
+                sortMap.put(order, category);
             }
             return new ArrayList<>(sortMap.values());
         }
 
         return Collections.emptyList();
-    }
-
-    /**
-     * @param pageClassification the pageClassification to set
-     */
-    public void setPageClassification(String[] pageClassification) {
-        if (pageClassification != null && pageClassification.length > 0) {
-            this.pageClassification = StringUtils.join(pageClassification, CLASSIFICATION_SEPARATOR);
-        } else {
-            this.pageClassification = "";
-        }
     }
 
     public int getListPage() {
@@ -620,12 +626,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return nestedPages;
     }
 
-    public List<CMSPage> getNestedPages(String classification) throws DAOException {
+    public List<CMSPage> getNestedPages(Category category) throws DAOException {
         if (nestedPages == null) {
             return loadNestedPages();
         }
         List<CMSPage> pages = nestedPages.stream()
-                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .filter(page -> page.getCategories() != null && page.getCategories().contains(category))
                 .collect(Collectors.toList());
         return pages;
     }
@@ -639,13 +645,11 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         int offset = getListOffset();
 
         List<CMSPage> allPages = new ArrayList<>();
-        if (StringUtils.isBlank(pageClassification)) {
+        if (getCategories().isEmpty()) {
             allPages = DataManager.getInstance().getDao().getAllCMSPages();
         } else {
-            for (String classification : getPageClassification()) {
-                if (StringUtils.isNotBlank(classification)) {
-                    allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByClassification(classification));
-                }
+            for (Category category : getCategories()) {
+            	allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
             }
         }
 

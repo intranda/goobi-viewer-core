@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -121,6 +123,18 @@ public class License implements IPrivilegeHolder {
 
     @Column(name = "description")
     private String description;
+
+    /** List of allowed subtheme discriminator values for CMS pages. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "subtheme_discriminator_value")
+    private List<String> subthemeDiscriminatorValues = new ArrayList<>();
+
+    /** List of allowed CMS templates. */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "template_id")
+    private List<String> allowedCmsTemplates = new ArrayList<>();
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -272,6 +286,86 @@ public class License implements IPrivilegeHolder {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
+     */
+    @Override
+    public boolean isPrivCmsPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
+     */
+    @Override
+    public void setPrivCmsPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
+     */
+    @Override
+    public boolean isPrivCmsMenu() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
+     */
+    @Override
+    public void setPrivCmsMenu(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
+     */
+    @Override
+    public boolean isPrivCmsStaticPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
+     */
+    @Override
+    public void setPrivCmsStaticPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCollections()
+     */
+    @Override
+    public boolean isPrivCmsCollections() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
+     */
+    @Override
+    public void setPrivCmsCollections(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        }
+    }
+
     /**
      * @return the id
      */
@@ -412,4 +506,33 @@ public class License implements IPrivilegeHolder {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    /**
+     * @return the subthemeDiscriminatorValues
+     */
+    public List<String> getSubthemeDiscriminatorValues() {
+        return subthemeDiscriminatorValues;
+    }
+
+    /**
+     * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
+     */
+    public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
+        this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
+    }
+
+    /**
+     * @return the allowedCmsTemplates
+     */
+    public List<String> getAllowedCmsTemplates() {
+        return allowedCmsTemplates;
+    }
+
+    /**
+     * @param allowedCmsTemplates the allowedCmsTemplates to set
+     */
+    public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
+        this.allowedCmsTemplates = allowedCmsTemplates;
+    }
+
 }

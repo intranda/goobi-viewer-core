@@ -17,6 +17,8 @@
         <composite:attribute
             name="help"
             required="true" />
+        <!-- Value holder for using a validator inside components -->
+        <composite:editableValueHolder name="inputField" targets="input" />
     </composite:interface>
 
     <composite:implementation>
@@ -29,7 +31,8 @@
                 <h:inputText
                     id="input"
                     value="#{cc.attrs.field}"
-                    styleClass="form-control" />
+                    styleClass="form-control">
+                </h:inputText>
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">

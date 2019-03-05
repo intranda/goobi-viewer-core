@@ -54,6 +54,15 @@ public class LicenseType implements IPrivilegeHolder {
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
 
+    public static final String LICENSE_TYPE_CMS = "licenseType_cms";
+    private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
+    //    private static final String LICENSE_TYPE_CMS_MENU = "licenseType_cms_navigation";
+    //    private static final String LICENSE_TYPE_DESC_CMS_MENU = "licenseType_cms_menu_desc";
+    //    private static final String LICENSE_TYPE_CMS_STATIC_PAGES = "licenseType_cms_static_pages";
+    //    private static final String LICENSE_TYPE_DESC_CMS_STATIC_PAGES = "licenseType_cms_static_pages_desc";
+    //    private static final String LICENSE_TYPE_CMS_COLLECTIONS = "licenseType_cms_collections";
+    //    private static final String LICENSE_TYPE_DESC_CMS_COLLECTIONS = "licenseType_cms_collections_desc";
+
     //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
     private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
 
@@ -146,10 +155,21 @@ public class LicenseType implements IPrivilegeHolder {
     /**
      * Checks whether this is a static license type by the name.
      *
-     * @return
+     * @return true if license type name is one of the static name strings; false otherwise
      */
     public boolean isStaticLicenseType() {
-        return LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE.equals(name) || LICENSE_TYPE_DELETE_OCR_PAGE.equals(name);
+        if (name == null) {
+            return false;
+        }
+
+        switch (name) {
+            case LICENSE_TYPE_CMS:
+            case LICENSE_TYPE_DELETE_OCR_PAGE:
+            case LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -257,6 +277,26 @@ public class LicenseType implements IPrivilegeHolder {
     private String getFilenameConditions(String conditions) {
         String filenameConditions = getMatch(conditions, CONDITIONS_FILENAME);
         return filenameConditions;
+    }
+
+    /**
+     * 
+     * @return true if this license type has one of the static CMS type names; false otherwise
+     */
+    public boolean isCmsType() {
+        if (name == null) {
+            return false;
+        }
+
+        switch (name) {
+            case LICENSE_TYPE_CMS:
+                //            case LICENSE_TYPE_CMS_MENU:
+                //            case LICENSE_TYPE_CMS_STATIC_PAGES:
+                //            case LICENSE_TYPE_CMS_COLLECTIONS:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -439,6 +479,86 @@ public class LicenseType implements IPrivilegeHolder {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsPages()
+     */
+    @Override
+    public boolean isPrivCmsPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
+     */
+    @Override
+    public void setPrivCmsPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
+     */
+    @Override
+    public boolean isPrivCmsMenu() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
+     */
+    @Override
+    public void setPrivCmsMenu(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
+     */
+    @Override
+    public boolean isPrivCmsStaticPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
+     */
+    @Override
+    public void setPrivCmsStaticPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCollections()
+     */
+    @Override
+    public boolean isPrivCmsCollections() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
+     */
+    @Override
+    public void setPrivCmsCollections(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        }
+    }
+
     /**
      * @return the overridingLicenseTypes
      */
@@ -455,25 +575,33 @@ public class LicenseType implements IPrivilegeHolder {
 
     public static void addStaticLicenseTypesToDB() throws DAOException {
         // Add the license type "may set representative image", if not yet in the database
-        if (DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE) == null) {
-            logger.info("License type '{}' does not exist yet, adding...", LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE);
-            LicenseType licenseType = new LicenseType();
-            licenseType.setName(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE);
-            licenseType.setDescription(LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE);
-            licenseType.getPrivileges().add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
-            if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
-                logger.error("Could not add static license type '{}'.", LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE);
-            }
-        }
+        addStaticLicenseType(LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE, LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION,
+                IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
         // Add the license type "may delete ocr page", if not yet in the database
-        if (DataManager.getInstance().getDao().getLicenseType(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE) == null) {
-            logger.info("License type '{}' does not exist yet, adding...", LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE);
+        addStaticLicenseType(LICENSE_TYPE_DELETE_OCR_PAGE, LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+        // Add CMS license types, if not yet in the database
+        addStaticLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS_PAGES);
+        //        addStaticLicenseType(LICENSE_TYPE_CMS_MENU, LICENSE_TYPE_DESC_CMS_MENU, IPrivilegeHolder.PRIV_CMS_MENU);
+        //        addStaticLicenseType(LICENSE_TYPE_CMS_STATIC_PAGES, LICENSE_TYPE_DESC_CMS_STATIC_PAGES, IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        //        addStaticLicenseType(LICENSE_TYPE_CMS_COLLECTIONS, LICENSE_TYPE_DESC_CMS_COLLECTIONS, IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+    }
+
+    /**
+     * 
+     * @param licenseTypeName
+     * @param licenseTypeDesc
+     * @param privName
+     * @throws DAOException
+     */
+    private static void addStaticLicenseType(String licenseTypeName, String licenseTypeDesc, String privName) throws DAOException {
+        if (DataManager.getInstance().getDao().getLicenseType(licenseTypeName) == null) {
+            logger.info("License type '{}' does not exist yet, adding...", licenseTypeName);
             LicenseType licenseType = new LicenseType();
-            licenseType.setName(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE);
-            licenseType.setDescription(LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION);
-            licenseType.getPrivileges().add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+            licenseType.setName(licenseTypeName);
+            licenseType.setDescription(licenseTypeDesc);
+            licenseType.getPrivileges().add(privName);
             if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
-                logger.error("Could not add static license type '{}'.", IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+                logger.error("Could not add static license type '{}'.", licenseTypeName);
             }
         }
     }

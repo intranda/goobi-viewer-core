@@ -29,6 +29,9 @@
         <composite:attribute name="item" default="item"/>
         <composite:attribute name="itemValue" default="#{item}"/>
         <composite:attribute name="itemLabel" default="#{msg[item]}" />
+        <composite:attribute name="disabled" default="false" />
+        <composite:attribute name="required" default="false" />
+        <composite:attribute name="requiredMessage" default="" />
     </composite:interface>
 
     <composite:implementation>
@@ -42,7 +45,10 @@
                 <h:selectOneMenu
                     id="input1"
                     styleClass="form-control"
-                    value="#{cc.attrs.field}">
+                    value="#{cc.attrs.field}"
+                    disabled="#{cc.attrs.disabled}"
+                    required="#{cc.attrs.required}"
+                    requiredMessage="#{cc.attrs.requiredMessage}">
                     <f:selectItems
                         value="#{cc.attrs.options}"
                         var="#{cc.attrs.item}"
@@ -55,7 +61,10 @@
                 <h:selectOneMenu
                     id="input2"
                     styleClass="form-control"
-                    value="#{cc.attrs.field}">
+                    value="#{cc.attrs.field}"
+                    disabled="#{cc.attrs.disabled}"
+                    required="#{cc.attrs.required}"
+                    requiredMessage="#{cc.attrs.requiredMessage}">
                     <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}"></f:selectItem>
                     <f:selectItems
                         value="#{cc.attrs.options}"

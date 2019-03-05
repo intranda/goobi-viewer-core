@@ -188,7 +188,7 @@ public class UserGroup implements ILicensee {
 
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
         if (StringUtils.isEmpty(privilegeName)) {
             return true;
         }
@@ -197,7 +197,7 @@ public class UserGroup implements ILicensee {
                 if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
                     if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
                         if (StringUtils.isEmpty(license.getConditions())) {
-                            logger.debug("Permission found for user group: {}", name);
+                            // logger.debug("Permission found for user group: {}", name);
                             return true;
                         } else if (StringUtils.isNotEmpty(pi)) {
                             // If PI and Solr condition subquery are present, check via Solr

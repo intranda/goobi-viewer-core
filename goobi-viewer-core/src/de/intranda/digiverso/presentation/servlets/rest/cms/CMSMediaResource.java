@@ -58,6 +58,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -89,7 +90,7 @@ public class CMSMediaResource {
                 .getDao()
                 .getAllCMSMediaItems()
                 .stream()
-                .filter(item -> item.getTags().contains(tag))
+                .filter(item -> item.getCategories().stream().anyMatch(c -> c.getName().equalsIgnoreCase(tag)))
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
@@ -97,7 +98,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path("/get")
     @Produces({ MediaType.APPLICATION_JSON })
-    public MediaList getAllMedia(@PathParam("tag") String tag) throws DAOException {
+    public MediaList getAllMedia() throws DAOException {
 
         List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
         return new MediaList(items);
@@ -275,7 +276,7 @@ public class CMSMediaResource {
             this.description = source.getTranslationsForDescription();
             this.image = new ImageContent(source.getIconURI(), true);
             this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
-            this.tags = source.getTags();
+            this.tags = source.getCategories().stream().map(Category::getName).collect(Collectors.toList());
         }
 
         /**

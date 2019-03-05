@@ -61,6 +61,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.License;
@@ -286,7 +287,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
         if (StringUtils.isEmpty(privilegeName)) {
             return true;
         }
@@ -409,9 +410,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
-            logger.trace("User '{}' is superuser, access granted.", getDisplayName());
+            // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
         //always allow access if the only condition is open access and there is no special licence configured for it
@@ -443,7 +444,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             }
 
         }
-        //It should be sufficient if the user can satisfy one required licence
+        // It should be sufficient if the user can satisfy one required licence
         return permissionMap.isEmpty() || permissionMap.containsValue(true);
         //        return !permissionMap.containsValue(false);
     }
@@ -470,6 +471,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
 
         return false;
+    }
+
+    public boolean isHasPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        return canSatisfyAllAccessConditions(Collections.singletonMap(LicenseType.LICENSE_TYPE_CMS, null).keySet(), privilege, null);
     }
 
     /**
@@ -632,6 +637,106 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
 
         throw new AuthenticationException("User not found or passwort incorrect");
+    }
+
+    public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
+        if (allTemplates == null || allTemplates.isEmpty()) {
+            return allTemplates;
+        }
+        // Abort if user not a CMS admin
+        if (!isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+        // Full admins get all templates
+        if (isSuperuser()) {
+            return allTemplates;
+        }
+
+        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
+        // Check user licenses
+        for (License license : licenses) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        //        allowedTemplateIds.add("template_general_generic");
+        if (allowedTemplateIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
+        for (CMSPageTemplate template : allTemplates) {
+            if (allowedTemplateIds.contains(template.getId())) {
+                ret.add(template);
+            }
+        }
+
+        logger.trace("getAllowedTemplates END");
+        return ret;
+    }
+
+    /**
+     * 
+     * @param rawValues All possible values
+     * @return filtered list of allowed values
+     */
+    public List<String> getAllowedSubthemeDiscriminatorValues(List<String> rawValues) {
+        if (rawValues == null || rawValues.isEmpty()) {
+            return rawValues;
+        }
+        // Abort if user not a CMS admin
+        if (!isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+        if (isSuperuser()) {
+            return rawValues;
+        }
+
+        List<String> ret = new ArrayList<>();
+        // Check user licenses
+        for (License license : licenses) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCmsTemplates().isEmpty()) {
+                ret.addAll(license.getSubthemeDiscriminatorValues());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCmsTemplates().isEmpty()) {
+                        ret.addAll(license.getSubthemeDiscriminatorValues());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
     }
 
     /*********************************** Getter and Setter ***************************************/
@@ -871,6 +976,24 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean isSuperuser() {
         return superuser;
+    }
+
+    /**
+     * 
+     * @return true if user is superuser or has CMS-specific privileges
+     */
+    public boolean isCmsAdmin() {
+        try {
+            return isSuperuser() || isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return false;
     }
 
     /**
