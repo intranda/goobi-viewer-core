@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -30,6 +31,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -38,13 +41,16 @@ import javax.persistence.TemporalType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
 @Entity
 @Table(name = "licenses")
-public class License implements IPrivilegeHolder {
+public class License implements IPrivilegeHolder, Serializable {
+
+    private static final long serialVersionUID = 1363557138283960150L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
@@ -125,13 +131,18 @@ public class License implements IPrivilegeHolder {
     private String description;
 
     /** List of allowed subtheme discriminator values for CMS pages. */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
     @Column(name = "subtheme_discriminator_value")
     private List<String> subthemeDiscriminatorValues = new ArrayList<>();
 
+    /** List of allowed CMS categories. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> allowedCategories = new ArrayList<>();
+
     /** List of allowed CMS templates. */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
     @Column(name = "template_id")
     private List<String> allowedCmsTemplates = new ArrayList<>();
@@ -522,6 +533,20 @@ public class License implements IPrivilegeHolder {
     }
 
     /**
+     * @return the allowedCategories
+     */
+    public List<Category> getAllowedCategories() {
+        return allowedCategories;
+    }
+
+    /**
+     * @param allowedCategories the allowedCategories to set
+     */
+    public void setAllowedCategories(List<Category> allowedCategories) {
+        this.allowedCategories = allowedCategories;
+    }
+
+    /**
      * @return the allowedCmsTemplates
      */
     public List<String> getAllowedCmsTemplates() {
@@ -534,5 +559,4 @@ public class License implements IPrivilegeHolder {
     public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
     }
-
 }

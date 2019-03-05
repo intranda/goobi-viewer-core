@@ -29,104 +29,103 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "cms_categories")
 public class Category {
-	
-	/** Unique database ID. */
+
+    /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "category_id")
     private Long id;
-    
+
     @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
-    
+
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     public Category() {
-    	
+
     }
-    
+
     public Category(String name) {
-    	this.name = name;
-    	this.id = null;
-    	this.description = "";
+        this.name = name;
+        this.id = null;
+        this.description = "";
     }
-    
+
     public Category(Category blueprint, boolean keepId) {
-    	this.id = keepId ? blueprint.id : null;
-    	this.name = blueprint.name;
-    	this.description = blueprint.description;
+        this.id = keepId ? blueprint.id : null;
+        this.name = blueprint.name;
+        this.description = blueprint.description;
     }
-    
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-    
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-    	if(obj != null && obj.getClass().equals(Category.class)) {
-    		if(((Category)obj).getId() != null && this.getId() != null) {
-    			return ((Category)obj).getId().equals(this.getId());
-    		} else {
-    			return false;
-    		}
-     	}
-    	return false;
+        if (obj != null && obj.getClass().equals(Category.class)) {
+            if (((Category) obj).getId() != null && this.getId() != null) {
+                return ((Category) obj).getId().equals(this.getId());
+            }
+            return false;
+        }
+        return false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
     public int hashCode() {
-    	if(getId() != null) {
-    		return getId().hashCode();
-    	} else if(getName() != null) {
-    		return getName().hashCode();
-    	} else {
-    		return super.hashCode();
-    	}
+        if (getId() != null) {
+            return getId().hashCode();
+        } else if (getName() != null) {
+            return getName().hashCode();
+        } else {
+            return super.hashCode();
+        }
     }
 
 }
