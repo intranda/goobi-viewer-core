@@ -60,7 +60,11 @@
                                     <ui:repeat var="userGroup" value="#{adminBean.pageUserGroups}">
                                         <tr>
                                             <td>
-                                                <h:outputText value="#{userGroup.name}" />
+<!--                                                 <h:outputText value="#{userGroup.name}" /> -->
+                                                <h:commandLink styleClass="btn btn--icon" action="pretty:adminUserGroup"
+                                                    title="#{userGroup.name}" value="#{userGroup.name}">
+                                                    <f:setPropertyActionListener value="#{userGroup}" target="#{adminBean.currentUserGroup}" />
+                                                </h:commandLink>
                                             </td>
                                             <td>
                                                 <h:link outcome="adminUser" value="#{userGroup.owner.displayName}">

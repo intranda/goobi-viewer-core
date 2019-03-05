@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPa
 /**
  * Page templates are read from XML configuration files and are not stored in the DB.
  */
-public class CMSPageTemplate {
+public class CMSPageTemplate implements Serializable {
+
+    private static final long serialVersionUID = -4254711480254674992L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPageTemplate.class);
@@ -59,11 +62,11 @@ public class CMSPageTemplate {
     private String iconFileName;
 
     private boolean displaySortingField = false;
-    
+
     private boolean appliesToExpandedUrl = true;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
-    
+
     private boolean themeTemplate = false;
 
     /**
@@ -86,8 +89,8 @@ public class CMSPageTemplate {
         try {
             doc = XmlTools.readXmlFile(file);
         } catch (IOException | JDOMException e1) {
-           logger.error(e1.toString(), e1);
-           return null;
+            logger.error(e1.toString(), e1);
+            return null;
         }
         if (doc != null) {
             Element root = doc.getRootElement();
@@ -113,8 +116,8 @@ public class CMSPageTemplate {
                             int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
                             item.setOrder(order);
                         } catch (NumberFormatException e) {
-                            logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getFileName(), eleContentItem
-                                    .getAttributeValue("order"));
+                            logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getFileName(),
+                                    eleContentItem.getAttributeValue("order"));
                         }
                     }
                     template.getContentItems().add(item);
@@ -184,8 +187,8 @@ public class CMSPageTemplate {
         for (Locale locale : locales) {
             CMSPageLanguageVersion langVersion = createNewLanguageVersion(page, locale.getLanguage());
             page.getLanguageVersions().add(langVersion);
-            if(locale.equals(ViewerResourceBundle.getDefaultLocale())) {
-            	langVersion.setStatus(CMSPageStatus.FINISHED);
+            if (locale.equals(ViewerResourceBundle.getDefaultLocale())) {
+                langVersion.setStatus(CMSPageStatus.FINISHED);
             }
         }
         //add global language for language independent items
@@ -330,13 +333,13 @@ public class CMSPageTemplate {
 
     public CMSContentItemTemplate getContentItem(String itemId) {
         for (CMSContentItemTemplate item : contentItems) {
-            if(item.getItemId().equals(itemId)) {
+            if (item.getItemId().equals(itemId)) {
                 return item;
             }
         }
         return null;
     }
-    
+
     /**
      * @param contentItems the contentItems to set
      */
@@ -351,14 +354,14 @@ public class CMSPageTemplate {
     public void setDisplaySortingField(boolean displaySortingField) {
         this.displaySortingField = displaySortingField;
     }
-    
+
     /**
      * @return the themeTemplate
      */
     public boolean isThemeTemplate() {
         return themeTemplate;
     }
-    
+
     /**
      * @param themeTemplate the themeTemplate to set
      */
@@ -372,13 +375,12 @@ public class CMSPageTemplate {
     public void setAppliesToExpandedUrl(boolean appliesToExpandedUrl) {
         this.appliesToExpandedUrl = appliesToExpandedUrl;
     }
-    
+
     /**
      * @return the appliesToExpandedUrl
      */
     public boolean isAppliesToExpandedUrl() {
         return appliesToExpandedUrl;
     }
-
 
 }

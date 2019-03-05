@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -113,6 +111,8 @@ public class CmsBean implements Serializable {
     private CmsNavigationBean cmsNavigationBean;
     @Inject
     private SearchBean searchBean;
+    @Inject
+    private UserBean userBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page open for editing */
@@ -950,7 +950,14 @@ public class CmsBean implements Serializable {
     }
 
     public List<Category> getCategoriesToSelect() throws DAOException {
-        List<Category> categories = new ArrayList<>(DataManager.getInstance().getDao().getAllCategories());
+        User user = null;
+        if (userBean != null) {
+            user = userBean.getUser();
+        }
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        List<Category> categories = new ArrayList<>(user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories()));
         if (this.selectedPage != null) {
             this.selectedPage.getCategories().forEach(cat -> categories.remove(cat));
         }
@@ -965,7 +972,7 @@ public class CmsBean implements Serializable {
         this.selectedCategoryId = categoryId;
     }
 
-    public Category getSelectedCategory() throws DAOException {
+    public Category getSelectedCategory() {
         if (this.selectedCategoryId != null) {
             Category category =
                     getSelectableCategories().stream().filter(cat -> this.selectedCategoryId.equals(cat.getId())).findFirst().orElse(null);
@@ -978,7 +985,7 @@ public class CmsBean implements Serializable {
         return selectableCategories;
     }
 
-    public void addSelectedCategoryToPage() throws DAOException {
+    public void addSelectedCategoryToPage() {
         Category cat = getSelectedCategory();
         if (this.selectedPage != null && cat != null) {
             this.selectedPage.addCategory(cat);
@@ -988,7 +995,7 @@ public class CmsBean implements Serializable {
         }
     }
 
-    public void removeCategoryFromPage(Category cat) throws DAOException {
+    public void removeCategoryFromPage(Category cat) {
         if (this.selectedPage != null && cat != null) {
             this.selectedPage.removeCategory(cat);
             this.selectableCategories.add(cat);
@@ -1553,6 +1560,22 @@ public class CmsBean implements Serializable {
         }
 
         return user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
+    }
+
+    /**
+     * Returns a filtered category list for the given user, unless the user is a superuser. Other CMS admins get a list matching values list attached
+     * to their CMS license.
+     * 
+     * @param user
+     * @return
+     * @throws DAOException
+     */
+    public List<Category> getAllowedCategories(User user) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return user.getAllowedCategories(getAllCategories());
     }
 
     /**
