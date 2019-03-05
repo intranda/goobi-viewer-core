@@ -8737,6 +8737,68 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 7px 0;
   border: 1px solid transparent;
 }
+.cms-module__option-dropdown {
+  position: relative;
+  width: 100%;
+  height: 34px;
+  font-size: 1rem;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.cms-module__option-dropdown.in {
+  border-color: #468847;
+}
+.cms-module__option-dropdown-trigger {
+  position: relative;
+  height: 32px;
+  padding: 5px 12px;
+  padding-right: 30px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.cms-module__option-dropdown-trigger:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 0;
+  height: 0;
+  margin-top: -0.15rem;
+  pointer-events: none;
+  border-top: 0.35rem solid #1a1a1a;
+  border-right: .35rem solid transparent;
+  border-bottom: .35rem solid transparent;
+  border-left: .35rem solid transparent;
+}
+.cms-module__option-dropdown ul {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  top: 32px;
+  left: -1px;
+  width: calc(100% + 2px);
+  max-height: 200px;
+  padding: 5px 12px;
+  border: 1px solid #ccc;
+  border-top-color: #fff;
+  background-color: #fff;
+  overflow-y: auto;
+  z-index: 2000;
+}
+.cms-module__option-dropdown input[type="checkbox"] {
+  position: relative;
+  top: -1px;
+  margin: 0 10px 0 0;
+}
+.cms-module__option-dropdown label {
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
 .cms-module__option-control-helptext {
   display: none;
   color: #468847;

@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module which enables a sortable List based on jQuery UI. This list is used for the
- * mainmenu items and dynamic sidebar elements.
- * 
- * @version 3.2.0
- * @module cmsJS.sortableList
+ * @version 3.4.0
+ * @module cmsJS.modules
  * @requires jQuery, jQuery UI
+ * @description Module which enables the cms module functionality.
  */
 var cmsJS = ( function( cms ) {
     'use strict';
@@ -30,8 +28,6 @@ var cmsJS = ( function( cms ) {
     
     cms.modules = {
         /**
-         * Method which initializes the CMS sortable list items and sets events.
-         * 
          * @method init
          */
         init: function() {
@@ -45,7 +41,7 @@ var cmsJS = ( function( cms ) {
             $( '[data-toggle="helptext"]' ).on( 'click', function() {
             	$( this ).toggleClass( 'in' );
             	
-            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control' );
+            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control, .cms-module__option-dropdown' );
             	$input.toggleClass( 'in' );
             	$input.find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
             	// focus input
@@ -73,6 +69,15 @@ var cmsJS = ( function( cms ) {
             			$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
             		} );            		
             	}
+            } );
+            
+            // toggle option dropdown
+            $( '[data-toggle="option-dropdown"]' ).on( 'click', function() {
+            	$( this ).parent().focus();
+            	$( this ).next().slideToggle( 'fast' );
+            } );
+            $( '.cms-module__option-dropdown' ).on( 'blur', function() {
+            	$( this ).find( 'ul' ).hide();
             } );
         }
     };

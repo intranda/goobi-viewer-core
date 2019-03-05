@@ -99,115 +99,163 @@
                                                 </span>
                                             </label>
                                         </div>
-    
+
                                         <!-- FILE IMAGE -->
                                         <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
                                             <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')">
-                                                <div class="admin-cms-media__file-type">[JPG]</div>                                            
+                                                <div class="admin-cms-media__file-type">[JPG]</div>
                                             </div>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
                                             <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')">
-                                                <div class="admin-cms-media__file-type">[JPG]</div>                                            
+                                                <div class="admin-cms-media__file-type">[JPG]</div>
                                             </div>
                                         </ui:fragment>
-    
-    
+
+
                                         <!-- FILE METADATA -->
                                         <div class="admin-cms-media__file-metadata">
                                             <!-- FILE METADATA VIEW -->
                                             <div class="admin-cms-media__file-metadata-view in">
                                                 <h:panelGroup id="display-fields">
-	                                                <dl class="dl-horizontal">
-	                                                    <!-- TITLE -->
-	                                                    <dt>#{msg.admin__media_title}:</dt>
-		                                                    <dd>#{media.getMetadataForLocale(media.selectedLocale).name}</dd>
-	                                                    <!-- DESCRIPTION -->
-	                                                    <dt>#{msg.admin__media_description}:</dt>
-	                                                    <dd>#{media.getMetadataForLocale(media.selectedLocale).description}</dd>
-	                                                    <!-- ALT TEXT (only visible in edit mode) -->
-	<!--                                                     <dt>#{msg.admin__media_alt_text}:</dt> -->
-	<!--                                                     <dd>#{media.alternativeText}</dd> -->
-	                                                    <!-- LINKS TO -->
-	                                                    <ui:fragment rendered="#{media.link != '#'}">
-	                                                        <dt>#{msg.admin__media_links_to}:</dt>
-	                                                        <dd>#{media.link}</dd>
-	                                                    </ui:fragment>
-	                                                </dl>
+                                                    <dl class="dl-horizontal">
+                                                        <!-- TITLE -->
+                                                        <dt>#{msg.admin__media_title}:</dt>
+                                                        <dd>#{media.getMetadataForLocale(media.selectedLocale).name}</dd>
+                                                        <!-- DESCRIPTION -->
+                                                        <dt>#{msg.admin__media_description}:</dt>
+                                                        <dd>#{media.getMetadataForLocale(media.selectedLocale).description}</dd>
+                                                        <!-- LINKS TO -->
+                                                        <ui:fragment rendered="#{media.link != '#'}">
+                                                            <dt>#{msg.admin__media_links_to}:</dt>
+                                                            <dd>#{media.link}</dd>
+                                                        </ui:fragment>
+                                                        
+                                                        <!-- TODO: Logik zum entfernen von Kategorien einbauen -->
+                                                        <dt>#{msg.admin__categories}:</dt>
+                                                        <dd>
+                                                            <span class="label label-default">Allgemein <i class="fa fa-times" aria-hidden="true"></i></span>
+                                                            <span class="label label-default">Backend <i class="fa fa-times" aria-hidden="true"></i></span>
+                                                            <span class="label label-default">Test <i class="fa fa-times" aria-hidden="true"></i></span>
+                                                        </dd>
+                                                    </dl>
                                                 </h:panelGroup>
                                             </div>
-    
+
                                             <!-- FILE METADATA EDIT -->
                                             <div class="admin-cms-media__file-metadata-edit">
-                                            	<h:panelGroup id="edit-fields">
-                                                <!-- EDIT TITLE -->
-                                                <div class="cms-module__option-group">
-                                                    <div class="cms-module__option-label">
-                                                        <label for="editMediaTitle">#{msg.admin__media_title}:</label>
+                                                <h:panelGroup id="edit-fields">
+                                                    <!-- EDIT TITLE -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="editMediaTitle">#{msg.admin__media_title}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(media.selectedLocale).name}"
+                                                                styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(media.selectedLocale).name}" styleClass="form-control" />
-                                                        <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
+
+                                                    <!-- EDIT DESCRIPTION -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="editMediaDescription">#{msg.admin__media_description}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(media.selectedLocale).description}"
+                                                                styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="cms-module__option-help">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
+
+                                                    <!-- EDIT ALT TEXT -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-    
-                                                <!-- EDIT DESCRIPTION -->
-                                                <div class="cms-module__option-group">
-                                                    <div class="cms-module__option-label">
-                                                        <label for="editMediaDescription">#{msg.admin__media_description}:</label>
+
+                                                    <!-- EDIT LINKS TO -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control" />
+                                                            <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="cms-module__option-control">
-                                                        <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(media.selectedLocale).description}" styleClass="form-control" />
-                                                        <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
+                                                    
+                                                    <!-- ADD CATEGORY -->
+                                                    <!-- TODO: Logik zum zuweisen von Kategorien einbauen -->
+                                                    <div class="cms-module__option-group">
+                                                        <div class="cms-module__option-label">
+                                                            <label for="editMediaCategories">#{msg.admin__categories}:</label>
+                                                        </div>
+                                                        <div class="cms-module__option-control">
+                                                            <div class="cms-module__option-dropdown" tabindex="-1">
+                                                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">
+                                                                    #{msg.admin__category_select}
+                                                                </div>
+                                                                <ul>
+                                                                    <li>
+                                                                        <label>
+                                                                            <input type="checkbox" />
+                                                                            Allgemein
+                                                                        </label>
+                                                                    </li>
+                                                                    <li>
+                                                                        <label>
+                                                                            <input type="checkbox" />
+                                                                            Backend
+                                                                        </label>
+                                                                    </li>
+                                                                    <li>
+                                                                        <label>
+                                                                            <input type="checkbox" />
+                                                                            Test
+                                                                        </label>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>
+                                                        </div>
+                                                        <div class="cms-module__option-help">
+                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="cms-module__option-help">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-    
-                                                <!-- EDIT ALT TEXT -->
-                                                <div class="cms-module__option-group">
-                                                    <div class="cms-module__option-label">
-                                                        <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
-                                                    </div>
-                                                    <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control" />
-                                                        <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
-                                                    </div>
-                                                    <div class="cms-module__option-help">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- EDIT LINKS TO -->
-                                                <div class="cms-module__option-group">
-                                                    <div class="cms-module__option-label">
-                                                        <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
-                                                    </div>
-                                                    <div class="cms-module__option-control">
-                                                        <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control" />
-                                                        <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
-                                                    </div>
-                                                    <div class="cms-module__option-help">
-                                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
                                                 </h:panelGroup>
                                             </div>
                                         </div>
                                     </div>
-    
+
                                     <!-- BOTTOM -->
                                     <div class="admin-cms-media__file-bottom">
                                         <!-- FILE ACTIONS -->
