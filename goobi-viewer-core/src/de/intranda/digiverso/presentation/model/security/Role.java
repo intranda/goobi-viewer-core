@@ -300,6 +300,66 @@ public class Role implements IPrivilegeHolder {
     }
 
     /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
+     */
+    @Override
+    public boolean isPrivCmsAllSubthemes() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
+     */
+    @Override
+    public void setPrivCmsAllSubthemes(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
+     */
+    @Override
+    public boolean isPrivCmsAllCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsAllCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
+     */
+    @Override
+    public boolean isPrivCmsAllTemplates() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
+     */
+    @Override
+    public void setPrivCmsAllTemplates(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
      */
     @Override

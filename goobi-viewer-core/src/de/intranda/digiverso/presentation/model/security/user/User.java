@@ -659,6 +659,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
+            // If no restriction is set, return all values
+            if (license.isPrivCmsAllTemplates()) {
+                return allTemplates;
+            }
             if (!license.getAllowedCmsTemplates().isEmpty()) {
                 allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
             }
@@ -669,6 +673,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
                 for (License license : userGroup.getLicenses()) {
                     if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                         continue;
+                    }
+                    // If no restriction is set, return all values
+                    if (license.isPrivCmsAllTemplates()) {
+                        return allTemplates;
                     }
                     if (!license.getAllowedCmsTemplates().isEmpty()) {
                         allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
@@ -718,6 +726,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
+            // If no restriction is set, return all values
+            if (license.isPrivCmsAllCategories()) {
+                return allCategories;
+            }
             if (!license.getAllowedCategories().isEmpty()) {
                 ret.addAll(license.getAllowedCategories());
             }
@@ -728,6 +740,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
                 for (License license : userGroup.getLicenses()) {
                     if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                         continue;
+                    }
+                    // If no restriction is set, return all values
+                    if (license.isPrivCmsAllCategories()) {
+                        return allCategories;
                     }
                     if (!license.getAllowedCategories().isEmpty()) {
                         ret.addAll(license.getAllowedCategories());
@@ -765,6 +781,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
+            // If no restriction is set, return all values
+            if (license.isPrivCmsAllSubthemes()) {
+                return rawValues;
+            }
             if (!license.getAllowedCmsTemplates().isEmpty()) {
                 ret.addAll(license.getSubthemeDiscriminatorValues());
             }
@@ -775,6 +795,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
                 for (License license : userGroup.getLicenses()) {
                     if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                         continue;
+                    }
+                    // If no restriction is set, return all values
+                    if (license.isPrivCmsAllSubthemes()) {
+                        return rawValues;
                     }
                     if (!license.getAllowedCmsTemplates().isEmpty()) {
                         ret.addAll(license.getSubthemeDiscriminatorValues());
