@@ -69,8 +69,9 @@ public class MetadataValue implements Serializable {
      * @should not add prefix if first param
      * @should return empty string if value index larger than number of values
      * @should return empty string if value is empty
-     * @should not add null prefix
-     * @should not add null suffix
+     * @should not add empty prefix
+     * @should not add empty suffix
+     * @should add separator between values if no prefix used
      */
     public String getComboValueShort(int index) {
         StringBuilder sb = new StringBuilder();
@@ -80,16 +81,17 @@ public class MetadataValue implements Serializable {
                 if (StringUtils.isEmpty(paramValue)) {
                     continue;
                 }
-                if (sb.length() > 0) {
-                    sb.append(", ");
-                }
+
                 boolean addPrefix = true;
                 if (index == 0) {
                     addPrefix = false;
                 }
                 // Only add prefix if the total parameter value lengths is > 0 so far
-                if (addPrefix && paramPrefixes.size() > index && paramPrefixes.get(index) != null) {
+                if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
                     sb.append(paramPrefixes.get(index));
+                } else if (sb.length() > 0) {
+                    // Use separator between values if no prefix is used
+                    sb.append(", ");
                 }
                 if (paramUrls.size() > index && StringUtils.isNotEmpty(paramUrls.get(index))) {
                     sb.append("<a href=\"").append(paramUrls.get(index)).append("\">").append(paramValue).append("</a>");
@@ -98,7 +100,7 @@ public class MetadataValue implements Serializable {
                     //                logger.trace("Non-URL: {}: {}", index, paramValues.get(index));
                     sb.append(paramValue);
                 }
-                if (paramSuffixes.size() > index && paramSuffixes.get(index) != null) {
+                if (paramSuffixes.size() > index && StringUtils.isNotEmpty(paramSuffixes.get(index))) {
                     sb.append(paramSuffixes.get(index));
                 }
             }
