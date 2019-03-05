@@ -62,6 +62,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
+import de.intranda.digiverso.presentation.model.cms.Category;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.License;
@@ -647,7 +648,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
         if (!isCmsAdmin()) {
             return Collections.emptyList();
         }
-        // Full admins get all templates
+        // Full admins get all values
         if (isSuperuser()) {
             return allTemplates;
         }
@@ -695,6 +696,53 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
     /**
      * 
+     * @param allCategories
+     * @return
+     */
+    public List<Category> getAllowedCategories(List<Category> allCategories) {
+        if (allCategories == null || allCategories.isEmpty()) {
+            return allCategories;
+        }
+        // Abort if user not a CMS admin
+        if (!isCmsAdmin()) {
+            return Collections.emptyList();
+        }
+        // Full admins get all values
+        if (isSuperuser()) {
+            return allCategories;
+        }
+
+        List<Category> ret = new ArrayList<>(allCategories.size());
+        // Check user licenses
+        for (License license : licenses) {
+            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                continue;
+            }
+            if (!license.getAllowedCategories().isEmpty()) {
+                ret.addAll(license.getAllowedCategories());
+            }
+        }
+        // Check user group licenses
+        try {
+            for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                for (License license : userGroup.getLicenses()) {
+                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+                        continue;
+                    }
+                    if (!license.getAllowedCategories().isEmpty()) {
+                        ret.addAll(license.getAllowedCategories());
+                    }
+                }
+            }
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
      * @param rawValues All possible values
      * @return filtered list of allowed values
      */
@@ -706,11 +754,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
         if (!isCmsAdmin()) {
             return Collections.emptyList();
         }
+        // Full admins get all values
         if (isSuperuser()) {
             return rawValues;
         }
 
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<>(rawValues.size());
         // Check user licenses
         for (License license : licenses) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {

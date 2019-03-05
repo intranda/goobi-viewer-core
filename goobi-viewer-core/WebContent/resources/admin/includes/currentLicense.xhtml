@@ -74,7 +74,19 @@
                     </div>
                 </div>
             </div>
-        
+            
+            <!-- ALLOWED CATEGORIES -->
+            <div class="form-group">
+                <h:outputLabel for="categories" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_categories}" />
+                <div class="col-sm-8">
+                    <div class="custom-control custom-control--select" style="min-height: 200px">
+                        <h:selectManyListbox id="categories" value="#{adminBean.currentLicense.allowedCategories}">
+                            <f:selectItems value="#{cmsBean.allCategories}" var="category" itemLabel="#{category.name}" itemValue="#{category}" />
+                        </h:selectManyListbox>
+                    </div>
+                </div>
+            </div>
+
             <!-- ALLOWED TEMPLATES -->
             <div class="form-group">
                 <h:outputLabel for="templates" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
