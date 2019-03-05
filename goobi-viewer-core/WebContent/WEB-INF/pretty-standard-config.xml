@@ -660,7 +660,12 @@
 		<pattern value="/admin/comments/" />
 		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>	
+	</url-mapping>
+	<url-mapping id="adminRights">
+		<pattern value="/admin/rights/" />
+		<view-id value="/resources/admin/views/adminRights.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">

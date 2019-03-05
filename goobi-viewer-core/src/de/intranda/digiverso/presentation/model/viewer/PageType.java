@@ -58,6 +58,7 @@ public enum PageType {
     adminIpRange("admin/network"),
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
+    adminRights("admin/rights"),
     adminUserComments("admin/comments"),
     adminUserActivity("admin/user/activity/"),
     //admin/cms
