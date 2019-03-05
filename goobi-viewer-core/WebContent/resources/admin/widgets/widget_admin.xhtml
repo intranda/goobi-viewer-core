@@ -34,11 +34,11 @@
                                 <span>#{msg.admin__licenses}</span>
                             </h:outputLink>
                         </li>
-                        <li>
-                            <a href="#">
+                        <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
                                 <span>#{msg.admin__rights}</span>
-                            </a>
+                            </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
