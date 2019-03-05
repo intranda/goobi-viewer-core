@@ -32,6 +32,9 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
+    public static final String PRIV_CMS_ALL_SUBTHEMES = "CMS_ALL_SUBTHEMES";
+    public static final String PRIV_CMS_ALL_CATEGORIES = "CMS_ALL_CATEGORIES";
+    public static final String PRIV_CMS_ALL_TEMPLATES = "CMS_ALL_TEMPLATES";
     public static final String PRIV_CMS_MENU = "CMS_MENU";
     public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
@@ -81,6 +84,18 @@ public interface IPrivilegeHolder {
     public boolean isPrivCmsMenu();
 
     public void setPrivCmsMenu(boolean priv);
+
+    public boolean isPrivCmsAllSubthemes();
+
+    public void setPrivCmsAllSubthemes(boolean priv);
+
+    public boolean isPrivCmsAllCategories();
+
+    public void setPrivCmsAllCategories(boolean priv);
+
+    public boolean isPrivCmsAllTemplates();
+
+    public void setPrivCmsAllTemplates(boolean priv);
 
     public boolean isPrivCmsStaticPages();
 

@@ -138,7 +138,8 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** List of allowed CMS categories. */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
@@ -314,6 +315,66 @@ public class License implements IPrivilegeHolder, Serializable {
             privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
         } else {
             privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
+     */
+    @Override
+    public boolean isPrivCmsAllSubthemes() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
+     */
+    @Override
+    public void setPrivCmsAllSubthemes(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
+     */
+    @Override
+    public boolean isPrivCmsAllCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsAllCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
+     */
+    @Override
+    public boolean isPrivCmsAllTemplates() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
+     */
+    @Override
+    public void setPrivCmsAllTemplates(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
         }
     }
 
