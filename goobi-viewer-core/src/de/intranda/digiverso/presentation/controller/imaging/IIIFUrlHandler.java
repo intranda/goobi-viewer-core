@@ -196,7 +196,7 @@ public class IIIFUrlHandler {
     public String getModifiedIIIFFUrl(String url, String region, String size, String rotation, String quality, String format) {
         Pattern pattern = Pattern.compile(IIIF_IMAGE_REGEX);
         //        Matcher matcher = Pattern.compile(IIIF_IMAGE_REGEX).matcher(url);
-        if (pattern.matcher(url).matches()) {
+        if (url != null && pattern.matcher(url).matches()) {
             url = replaceGroup(url, region, pattern.matcher(url), IIIF_IMAGE_REGEX_REGION_GROUP);
             url = replaceGroup(url, size, pattern.matcher(url), IIIF_IMAGE_REGEX_SIZE_GROUP);
             url = replaceGroup(url, rotation, pattern.matcher(url), IIIF_IMAGE_REGEX_ROTATION_GROUP);
