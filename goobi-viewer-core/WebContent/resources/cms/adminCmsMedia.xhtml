@@ -134,9 +134,12 @@
                                                         <!-- TODO: Logik zum entfernen von Kategorien einbauen -->
                                                         <dt>#{msg.admin__categories}:</dt>
                                                         <dd>
-                                                            <span class="label label-default">Allgemein <i class="fa fa-times" aria-hidden="true"></i></span>
-                                                            <span class="label label-default">Backend <i class="fa fa-times" aria-hidden="true"></i></span>
-                                                            <span class="label label-default">Test <i class="fa fa-times" aria-hidden="true"></i></span>
+                                                        	<ui:repeat var="category" value="#{media.categories}">
+                                                        	    	<span class="label label-default">#{category.name}</span>
+                                                        	</ui:repeat>
+<!--                                                             <span class="label label-default">Allgemein</span> -->
+<!--                                                             <span class="label label-default">Backend </span> -->
+<!--                                                             <span class="label label-default">Test </span> -->
                                                         </dd>
                                                     </dl>
                                                 </h:panelGroup>
@@ -223,24 +226,14 @@
                                                                     #{msg.admin__category_select}
                                                                 </div>
                                                                 <ul>
-                                                                    <li>
-                                                                        <label>
-                                                                            <input type="checkbox" />
-                                                                            Allgemein
-                                                                        </label>
-                                                                    </li>
-                                                                    <li>
-                                                                        <label>
-                                                                            <input type="checkbox" />
-                                                                            Backend
-                                                                        </label>
-                                                                    </li>
-                                                                    <li>
-                                                                        <label>
-                                                                            <input type="checkbox" />
-                                                                            Test
-                                                                        </label>
-                                                                    </li>
+                                                                	<ui:repeat var="entry" value="#{media.selectableCategories}">
+	                                                                    <li>
+	                                                                        <label>
+	                                                                            <h:selectBooleanCheckbox type="checkbox" value="#{entry.value}"/>
+	                                                                            #{entry.key.name}
+	                                                                        </label>
+	                                                                    </li>
+                                                                    </ui:repeat>
                                                                 </ul>
                                                             </div>
                                                             <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>

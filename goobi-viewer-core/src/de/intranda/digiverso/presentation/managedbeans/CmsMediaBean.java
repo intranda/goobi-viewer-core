@@ -169,9 +169,6 @@ public class CmsMediaBean implements Serializable {
             items = items.filter(item -> item.getFileName().matches(filenameFilter));
         }
         List<CMSMediaItem> list = items.sorted().collect(Collectors.toList());
-        list.forEach(item -> {
-        	System.out.println("Item " + item.toString() + " Name = " + item.getName());
-        });
         return list;
     }
 
@@ -249,16 +246,15 @@ public class CmsMediaBean implements Serializable {
 
 
     public void saveMedia(CMSMediaItem media) throws DAOException {
-        if (media != null && media.getId() == null) {
-            // currentMediaItem.setFileName(mediaFile.getName());
-            //            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().addCMSMediaItem(media);
-            //            setCurrentMediaItem(null);
-        } else if (media != null && media.getId() != null) {
-        	media.processMediaFile(media.getFilePath());
-            DataManager.getInstance().getDao().updateCMSMediaItem(media);
-            //            setCurrentMediaItem(null);
-        }
+    	if(media != null) {    	
+    		media.serializeCategories();
+    		if (media.getId() == null) {
+    			DataManager.getInstance().getDao().addCMSMediaItem(media);
+    		} else {
+    			media.processMediaFile(media.getFilePath());
+    			DataManager.getInstance().getDao().updateCMSMediaItem(media);
+    		}
+    	}
     }
 
     public static String getFileName(Part filePart) {

@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
@@ -54,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.TEITools;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -110,6 +114,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	@Transient
 	private Locale selectedLocale = BeanUtils.getLocale();
+	
+	/**
+	 * Hold all available categories and whether they are selected in the GUI
+	 */
+	@Transient Map<Category, Boolean> categoryMap = null;
 
 	@Transient
 	private FileTime lastModifiedTime = null;
@@ -699,5 +708,36 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 				DataManager.getInstance().getConfiguration().getCmsMediaFolder());
 		Path file = folder.resolve(getFileName());
 		return file;
+	}
+	
+	/**
+	 * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
+	 * @throws DAOException 
+	 * TODO: check for licenses
+	 */
+	public synchronized Set<Entry<Category, Boolean>> getSelectableCategories() throws DAOException {
+		if(this.categoryMap == null) {
+			this.categoryMap = DataManager.getInstance().getDao().getAllCategories().stream()
+			.collect(Collectors.toMap(cat -> cat, cat -> this.getCategories().contains(cat)));
+		}
+		Set<Entry<Category, Boolean>> entries = this.categoryMap.entrySet();
+		return entries;
+	}
+
+	/**
+	 * Set the categories from categoryMap
+	 */
+	public void serializeCategories() {
+		if(this.categoryMap != null) {			
+			for (Category category : this.categoryMap.keySet()) {
+				Boolean selected = this.categoryMap.get(category);
+				if(selected) {
+					addCategory(category);
+				} else {
+					removeCategory(category);
+				}
+			}
+		}
+		
 	}
 }
