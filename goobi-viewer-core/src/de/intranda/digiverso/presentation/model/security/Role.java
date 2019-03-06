@@ -419,6 +419,26 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCategories()
+     */
+    @Override
+    public boolean isPrivCmsCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+        }
+    }
+
     /*********************************** Getter and Setter ***************************************/
 
     /**

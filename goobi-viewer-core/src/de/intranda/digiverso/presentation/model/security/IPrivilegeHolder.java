@@ -38,6 +38,7 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_MENU = "CMS_MENU";
     public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
+    public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
 
     public boolean hasPrivilege(String privilege);
 
@@ -104,4 +105,8 @@ public interface IPrivilegeHolder {
     public boolean isPrivCmsCollections();
 
     public void setPrivCmsCollections(boolean priv);
+
+    public boolean isPrivCmsCategories();
+
+    public void setPrivCmsCategories(boolean priv);
 }
