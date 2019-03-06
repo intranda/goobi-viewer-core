@@ -45,14 +45,12 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
  */
 public class DatabaseUpdater {
 
-	private final EntityManager em;
 	private final IDAO dao;
 
 	/**
 	 * 
 	 */
-	public DatabaseUpdater(IDAO dao, EntityManager em) {
-		this.em = em;
+	public DatabaseUpdater(IDAO dao) {
 		this.dao = dao;
 	}
 
@@ -69,10 +67,11 @@ public class DatabaseUpdater {
 	@SuppressWarnings({ "unchecked" })
 	private void convertCMSCategories() throws DAOException {
 		Map<String, Map<String, List<Long>>> entityMap = new HashMap<>();
-		em.getTransaction().begin();
+		dao.startTransaction();
 		try {
-			if (tableExists("cms_page_classifications")) {
-				Query qClassifications = em.createNativeQuery("SELECT * FROM cms_page_classifications");
+			if (dao.tableExists("cms_page_classifications")) {
+				String query = "SELECT * FROM cms_page_classifications";
+				Query qClassifications = dao.createNativeQuery(query);
 				List<Object[]> classificationResults = qClassifications.getResultList();
 				Map<String, List<Long>> classifications = classificationResults.stream()
 						.collect(Collectors.toMap(array -> (String) array[1],
@@ -83,19 +82,21 @@ public class DatabaseUpdater {
 				populateCategoryMap(entityMap, classifications, "page");
 			}
 			
-			if (tableExists("cms_media_item_tags")) {
-				Query qTags = em.createNativeQuery("SELECT * FROM cms_media_item_tags");
+			if (dao.tableExists("cms_media_item_tags")) {
+				String query = "SELECT * FROM cms_media_item_tags";
+				Query qTags = dao.createNativeQuery(query);
 				List<Object[]> tagResults = qTags.getResultList();
 				Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(array -> (String) array[1],
 						array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
 							list1.addAll(list2);
 							return list1;
 						}));
-				populateCategoryMap(entityMap, tags, "media");
+				populateCategoryMap(entityMap, tags, "content");
 			}
 			
-			if (tableExists("cms_media_item_tags")) {
-				Query qTags = em.createNativeQuery("SELECT * FROM cms_media_item_tags");
+			if (dao.tableExists("cms_media_item_tags")) {
+				String query = "SELECT * FROM cms_media_item_tags";
+				Query qTags = dao.createNativeQuery(query);
 				List<Object[]> tagResults = qTags.getResultList();
 				Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(array -> (String) array[1],
 						array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
@@ -108,7 +109,7 @@ public class DatabaseUpdater {
 		} catch (PersistenceException | SQLException e) {
 			throw new DAOException(e.toString());
 		} finally {
-			em.getTransaction().commit();
+			dao.commitTransaction();
 		}
 	}
 
@@ -132,35 +133,20 @@ public class DatabaseUpdater {
 		}
 	}
 
-	/**
-	 * @param string
-	 * @return
-	 * @throws SQLException
-	 */
-	private boolean tableExists(String tableName) throws SQLException {
-		EntityTransaction transaction = em.getTransaction();
-		transaction.begin();
-		Connection connection = em.unwrap(Connection.class);
-		DatabaseMetaData metaData = connection.getMetaData();
-		try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
-			return tables.next();
-		} finally {
-			transaction.commit();
-		}
-	}
+
 
 	/**
 	 * @throws DAOException
 	 * 
 	 */
 	private void createDiscriminatorRow() throws DAOException {
-		em.getTransaction().begin();
+		dao.startTransaction();
 		try {
-			Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '"
+			Query q = dao.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '"
 					+ CMSSidebarElement.class.getSimpleName() + "' WHERE element.widgetType IS NULL");
 			q.executeUpdate();
 		} finally {
-			em.getTransaction().commit();
+			dao.commitTransaction();
 		}
 
 	}

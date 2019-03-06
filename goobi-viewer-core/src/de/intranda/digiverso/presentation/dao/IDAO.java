@@ -15,10 +15,13 @@
  */
 package de.intranda.digiverso.presentation.dao;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.persistence.Query;
 
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -392,6 +395,16 @@ public interface IDAO {
 
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
+	boolean tableExists(String tableName) throws SQLException;
+
+	void startTransaction();
+
+	void commitTransaction();
+
+	Query createNativeQuery(String string);
+
+	Query createQuery(String string);
 
 
 }

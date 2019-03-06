@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
@@ -118,7 +119,6 @@ public class JPADAO implements IDAO {
 
             em = factory.createEntityManager();
             preQuery();
-//            new DatabaseUpdater(em).update();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
@@ -3330,6 +3330,39 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
         return category;
+	}
+	
+	@Override
+	public boolean tableExists(String tableName) throws SQLException {
+		EntityTransaction transaction = em.getTransaction();
+		transaction.begin();
+		Connection connection = em.unwrap(Connection.class);
+		DatabaseMetaData metaData = connection.getMetaData();
+		try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+			return tables.next();
+		} finally {
+			transaction.commit();
+		}
+	}
+
+	@Override
+	public void startTransaction() {
+		em.getTransaction().begin();
+	}
+	
+	@Override
+	public void commitTransaction() {
+		em.getTransaction().commit();
+	}
+
+	@Override
+	public Query createNativeQuery(String string) {
+		return em.createNativeQuery(string);
+	}
+	
+	@Override
+	public Query createQuery(String string) {
+		return em.createQuery(string);
 	}
 
 }
