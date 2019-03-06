@@ -226,11 +226,11 @@
                                                                     #{msg.admin__category_select}
                                                                 </div>
                                                                 <ul>
-                                                                	<ui:repeat var="entry" value="#{media.selectableCategories}">
+                                                                	<ui:repeat var="selectable" value="#{media.selectableCategories}">
 	                                                                    <li>
 	                                                                        <label>
-	                                                                            <h:selectBooleanCheckbox type="checkbox" value="#{entry.value}"/>
-	                                                                            #{entry.key.name}
+	                                                                            <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}"/>
+	                                                                            #{selectable.value.name}
 	                                                                        </label>
 	                                                                    </li>
                                                                     </ui:repeat>
@@ -271,7 +271,7 @@
                                             <div class="admin-cms-media__file-actions-edit cms-module__actions">
                                                 <button id="cancel-btn-#{status.index}" type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
                                                 <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$('#cancel-btn-#{status.index}').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
-                                                	<f:ajax execute="edit-fields" render="display-fields edit-fields"></f:ajax>
+                                                	<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
                                                 </h:commandButton>
                                             </div>
                                         </div>
@@ -284,7 +284,7 @@
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
                                                     	<h:commandLink actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
-                                                    		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select"></f:ajax>
+                                                    		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
                                                     	</h:commandLink>
                                                     </li>  
                                                 </c:forEach>

@@ -29,10 +29,10 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 
 /**
- * Managed Bean for editing, deleting and creating {@link Category categories}
+ * Managed Bean for editing, deleting and creating {@link CMSCategory categories}
  * 
  * @author florian
  *
@@ -59,7 +59,7 @@ public class CmsCategoriesBean implements Serializable {
 	/**
 	 * A category currently being edited. If null, no category is being edited and a new one can be created
 	 */
-	private Category selectedCategory = null;
+	private CMSCategory selectedCategory = null;
 
 	/**
 	 * Check if {@link #getCategoryName()} is empty or equal (ignoring case) to the name of any existing category. 
@@ -70,7 +70,7 @@ public class CmsCategoriesBean implements Serializable {
 	 */
 	public boolean isValid() throws DAOException {
 		if(StringUtils.isNotBlank(getCategoryName())) {
-			Stream<Category> stream = getAllCategories().stream();
+			Stream<CMSCategory> stream = getAllCategories().stream();
 			if(getSelectedCategory() != null) {
 				stream = stream.filter(cat -> !getSelectedCategory().equals(cat));
 			}
@@ -85,7 +85,7 @@ public class CmsCategoriesBean implements Serializable {
 	 * 
 	 * @param category	The category to edit
 	 */
-	public void edit(Category category) {
+	public void edit(CMSCategory category) {
 		this.selectedCategory = category;
 		this.setCategoryName(category.getName());
 		this.setCategoryDescription(category.getDescription());
@@ -107,7 +107,7 @@ public class CmsCategoriesBean implements Serializable {
 				this.selectedCategory.setDescription(getCategoryDescription());
 				DataManager.getInstance().getDao().updateCategory(this.selectedCategory);
 			} else {
-				Category category = new Category();
+				CMSCategory category = new CMSCategory();
 				category.setName(getCategoryName());
 				category.setDescription(getCategoryDescription());
 				DataManager.getInstance().getDao().addCategory(category);
@@ -122,7 +122,7 @@ public class CmsCategoriesBean implements Serializable {
 	 * @param category
 	 * @throws DAOException
 	 */
-	public void delete(Category category) throws DAOException {
+	public void delete(CMSCategory category) throws DAOException {
 		if(getSelectedCategory() != null && getSelectedCategory().equals(category)) {
 			endEditing();
 		}
@@ -158,8 +158,8 @@ public class CmsCategoriesBean implements Serializable {
 	 * @return a newly created list of all saved categories
 	 * @throws DAOException
 	 */
-	public List<Category> getAllCategories() throws DAOException {
-		return new ArrayList<Category>(DataManager.getInstance().getDao().getAllCategories());
+	public List<CMSCategory> getAllCategories() throws DAOException {
+		return new ArrayList<CMSCategory>(DataManager.getInstance().getDao().getAllCategories());
 	}
 	
 	/**
@@ -193,7 +193,7 @@ public class CmsCategoriesBean implements Serializable {
 	/**
 	 * @return the selectedCategory
 	 */
-	public Category getSelectedCategory() {
+	public CMSCategory getSelectedCategory() {
 		return selectedCategory;
 	}
 	

@@ -25,7 +25,7 @@ import org.junit.Test;
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 
 public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -59,13 +59,13 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testGetAllMediaCategories() throws DAOException {
-        List<Category> tags = bean.getAllMediaCategories();
+        List<CMSCategory> tags = bean.getAllMediaCategories();
         Assert.assertEquals(7, tags.size());
     }
 
     @Test
     public void testGetMediaItems() throws DAOException {
-    	Category tag1 = DataManager.getInstance().getDao().getCategoryByName("tag1");
+    	CMSCategory tag1 = DataManager.getInstance().getDao().getCategoryByName("tag1");
     	
         Assert.assertEquals(4, bean.getMediaItems(null, "").size());
         Assert.assertEquals(3, bean.getMediaItems(tag1, "").size());

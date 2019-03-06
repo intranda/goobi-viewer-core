@@ -29,7 +29,7 @@ import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 public class TileGridBuilderTest {
@@ -53,9 +53,9 @@ public class TileGridBuilderTest {
     @Test
     public void testCountTags() {
         List<String> itemTags = Arrays.asList(new String[] { "tag1", "tag2", "tag3", "other"});
-        List<Category> categories = itemTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
+        List<CMSCategory> categories = itemTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
         List<String> selectionTags = Arrays.asList(new String[] { "tag2", "tag3", "news" });
-        List<Category> selectionCategories = selectionTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
+        List<CMSCategory> selectionCategories = selectionTags.stream().map(tag -> getCategory(tag)).collect(Collectors.toList());
         CMSMediaItem item = new CMSMediaItem();
         item.setCategories(categories);
         Assert.assertEquals(2, TileGridBuilder.countTags(item, selectionCategories.stream().map(c -> c.getName()).collect(Collectors.toList())));
@@ -68,8 +68,8 @@ public class TileGridBuilderTest {
 	 * @return
 	 * @throws DAOException
 	 */
-	private Category getCategory(String tag) {
-		Category cat = new Category(tag);
+	private CMSCategory getCategory(String tag) {
+		CMSCategory cat = new CMSCategory(tag);
 		return cat;
 	}
 

@@ -107,7 +107,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_media_item_cms_categories", joinColumns = @JoinColumn(name = "media_item_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories = new ArrayList<>();
+    private List<CMSCategory> categories = new ArrayList<>();
 
 	@Column(name = "display_order", nullable = true)
 	private int displayOrder = 0;
@@ -118,7 +118,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	/**
 	 * Hold all available categories and whether they are selected in the GUI
 	 */
-	@Transient Map<Category, Boolean> categoryMap = null;
+	@Transient List<Selectable<CMSCategory>> selectableCategories = null;
 
 	@Transient
 	private FileTime lastModifiedTime = null;
@@ -398,19 +398,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	}
 
 	@Override
-	public List<Category> getCategories() {
+	public List<CMSCategory> getCategories() {
 		return this.categories;
 	}
 
-	public void setCategories(List<Category> categories) {
+	public void setCategories(List<CMSCategory> categories) {
 		this.categories = categories;
 	}
 
-	public boolean removeCategory(Category cat) {
+	public boolean removeCategory(CMSCategory cat) {
 		return this.categories.remove(cat);
 	}
 
-	public boolean addCategory(Category cat) {
+	public boolean addCategory(CMSCategory cat) {
 		if (this.categories.contains(cat)) {
 			return false;
 		}
@@ -715,26 +715,25 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * @throws DAOException 
 	 * TODO: check for licenses
 	 */
-	public synchronized Set<Entry<Category, Boolean>> getSelectableCategories() throws DAOException {
-		if(this.categoryMap == null) {
-			this.categoryMap = DataManager.getInstance().getDao().getAllCategories().stream()
-			.collect(Collectors.toMap(cat -> cat, cat -> this.getCategories().contains(cat)));
+	public synchronized List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+		if(this.selectableCategories == null) {
+			this.selectableCategories = DataManager.getInstance().getDao().getAllCategories().stream()
+					.map(cat -> new Selectable<>(cat, this.getCategories().contains(cat)))
+					.collect(Collectors.toList());
 		}
-		Set<Entry<Category, Boolean>> entries = this.categoryMap.entrySet();
-		return entries;
+		return selectableCategories;
 	}
 
 	/**
 	 * Set the categories from categoryMap
 	 */
 	public void serializeCategories() {
-		if(this.categoryMap != null) {			
-			for (Category category : this.categoryMap.keySet()) {
-				Boolean selected = this.categoryMap.get(category);
-				if(selected) {
-					addCategory(category);
+		if(this.selectableCategories != null) {			
+			for (Selectable<CMSCategory> selectable : this.selectableCategories) {
+				if(selectable.isSelected()) {
+					addCategory(selectable.getValue());
 				} else {
-					removeCategory(category);
+					removeCategory(selectable.getValue());
 				}
 			}
 		}

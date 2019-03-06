@@ -58,7 +58,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -276,7 +276,7 @@ public class CMSMediaResource {
             this.description = source.getTranslationsForDescription();
             this.image = new ImageContent(source.getIconURI(), true);
             this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
-            this.tags = source.getCategories().stream().map(Category::getName).collect(Collectors.toList());
+            this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         }
 
         /**

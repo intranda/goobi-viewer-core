@@ -140,7 +140,7 @@ public class CMSPage implements Comparable<CMSPage> {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories = new ArrayList<>();
+    private List<CMSCategory> categories = new ArrayList<>();
     
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
@@ -457,24 +457,24 @@ public class CMSPage implements Comparable<CMSPage> {
     /**
      * @return the classifications
      */
-    public List<Category> getCategories() {
+    public List<CMSCategory> getCategories() {
         return categories;
     }
 
     /**
      * @param classifications the classifications to set
      */
-    public void setCategories(List<Category> categories) {
+    public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
-    public void addCategory(Category category) {
+    public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
         	categories.add(category);
         }
     }
 
-    public void removeCategory(Category category) {
+    public void removeCategory(CMSCategory category) {
     	categories.remove(category);
     }
 

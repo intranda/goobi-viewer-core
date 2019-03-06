@@ -41,7 +41,7 @@ import javax.persistence.TemporalType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
@@ -139,7 +139,7 @@ public class License implements IPrivilegeHolder, Serializable {
     /** List of allowed CMS categories. */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> allowedCategories = new ArrayList<>();
+    private List<CMSCategory> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
     @ElementCollection(fetch = FetchType.LAZY)
@@ -535,14 +535,14 @@ public class License implements IPrivilegeHolder, Serializable {
     /**
      * @return the allowedCategories
      */
-    public List<Category> getAllowedCategories() {
+    public List<CMSCategory> getAllowedCategories() {
         return allowedCategories;
     }
 
     /**
      * @param allowedCategories the allowedCategories to set
      */
-    public void setAllowedCategories(List<Category> allowedCategories) {
+    public void setAllowedCategories(List<CMSCategory> allowedCategories) {
         this.allowedCategories = allowedCategories;
     }
 

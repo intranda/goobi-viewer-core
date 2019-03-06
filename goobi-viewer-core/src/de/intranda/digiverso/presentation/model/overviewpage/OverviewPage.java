@@ -66,7 +66,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.misc.Harvestable;
@@ -676,9 +676,9 @@ public class OverviewPage implements Harvestable, Serializable {
         loadConfig(configXml);
         parseConfig(config);
         
-        Category overviewPageCategory = DataManager.getInstance().getDao().getCategoryByName("overviewpage");
+        CMSCategory overviewPageCategory = DataManager.getInstance().getDao().getCategoryByName("overviewpage");
         if(overviewPageCategory == null) {
-        	overviewPageCategory = new Category("overviewpage");
+        	overviewPageCategory = new CMSCategory("overviewpage");
         	DataManager.getInstance().getDao().addCategory(overviewPageCategory);
         }
 

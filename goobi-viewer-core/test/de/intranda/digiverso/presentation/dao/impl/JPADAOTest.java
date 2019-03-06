@@ -46,7 +46,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.DownloadJob.JobStatus;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -1484,7 +1484,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesByClassification_shouldReturnAllPagesWithGivenClassification() throws Exception {
-    	Category news = DataManager.getInstance().getDao().getCategoryByName("news");
+    	CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
         Assert.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByCategory(news).size());
     }
 
@@ -1494,7 +1494,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
-    	Category c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+    	CMSCategory c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
         Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", c).size());
     }
 
@@ -1539,7 +1539,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.setPublished(true);
         page.setUseDefaultSidebar(false);
         
-    	Category cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+    	CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
         page.getCategories().add(cClass);
 
         CMSPageLanguageVersion version = new CMSPageLanguageVersion();
@@ -1560,8 +1560,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setSolrSortFields("SORT_TITLE,DATECREATED");
         version.getContentItems().add(item);
         
-    	Category news = DataManager.getInstance().getDao().getCategoryByName("news");
-    	Category other = DataManager.getInstance().getDao().getCategoryByName("other");
+    	CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
+    	CMSCategory other = DataManager.getInstance().getDao().getCategoryByName("other");
     	item.addCategory(news);
     	item.addCategory(other);
 
@@ -1608,7 +1608,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersions().remove(0);
         page.getProperty("TEST_PROPERTY").setValue("true");
 
-    	Category cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+    	CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
         page.getCategories().add(cClass);
 
         Date now = new Date();

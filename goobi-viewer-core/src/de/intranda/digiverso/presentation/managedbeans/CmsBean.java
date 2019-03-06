@@ -73,7 +73,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -130,7 +130,7 @@ public class CmsBean implements Serializable {
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
-    private List<Category> selectableCategories;
+    private List<CMSCategory> selectableCategories;
 
     @PostConstruct
     public void init() {
@@ -504,7 +504,7 @@ public class CmsBean implements Serializable {
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        for (Category category : item.getCategories()) {
+        for (CMSCategory category : item.getCategories()) {
             for (CMSPage cmsPage : cmsPages) {
                 if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
                     counter++;
@@ -949,7 +949,7 @@ public class CmsBean implements Serializable {
         this.displaySidebarEditor = displaySidebarEditor;
     }
 
-    public List<Category> getCategoriesToSelect() throws DAOException {
+    public List<CMSCategory> getCategoriesToSelect() throws DAOException {
         User user = null;
         if (userBean != null) {
             user = userBean.getUser();
@@ -957,7 +957,7 @@ public class CmsBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-        List<Category> categories = new ArrayList<>(user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories()));
+        List<CMSCategory> categories = new ArrayList<>(user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories()));
         if (this.selectedPage != null) {
             this.selectedPage.getCategories().forEach(cat -> categories.remove(cat));
         }
@@ -972,21 +972,21 @@ public class CmsBean implements Serializable {
         this.selectedCategoryId = categoryId;
     }
 
-    public Category getSelectedCategory() {
+    public CMSCategory getSelectedCategory() {
         if (this.selectedCategoryId != null) {
-            Category category =
+            CMSCategory category =
                     getSelectableCategories().stream().filter(cat -> this.selectedCategoryId.equals(cat.getId())).findFirst().orElse(null);
             return category;
         }
         return null;
     }
 
-    public List<Category> getSelectableCategories() {
+    public List<CMSCategory> getSelectableCategories() {
         return selectableCategories;
     }
 
     public void addSelectedCategoryToPage() {
-        Category cat = getSelectedCategory();
+        CMSCategory cat = getSelectedCategory();
         if (this.selectedPage != null && cat != null) {
             this.selectedPage.addCategory(cat);
             this.selectableCategories.remove(cat);
@@ -995,7 +995,7 @@ public class CmsBean implements Serializable {
         }
     }
 
-    public void removeCategoryFromPage(Category cat) {
+    public void removeCategoryFromPage(CMSCategory cat) {
         if (this.selectedPage != null && cat != null) {
             this.selectedPage.removeCategory(cat);
             this.selectableCategories.add(cat);
@@ -1004,12 +1004,12 @@ public class CmsBean implements Serializable {
         }
     }
 
-    public List<Category> getAllCategories() throws DAOException {
+    public List<CMSCategory> getAllCategories() throws DAOException {
         return DataManager.getInstance().getDao().getAllCategories();
     }
 
     public void resetSelectedCategoryId() {
-        this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(Category::getId).orElse(null);
+        this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(CMSCategory::getId).orElse(null);
     }
 
     public boolean hasSelectedCategoryId() {
@@ -1570,7 +1570,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<Category> getAllowedCategories(User user) throws DAOException {
+    public List<CMSCategory> getAllowedCategories(User user) throws DAOException {
         if (user == null) {
             return Collections.emptyList();
         }
@@ -1639,7 +1639,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<CMSPage> getRelatedPages(String pi, Category category) throws DAOException {
+    public List<CMSPage> getRelatedPages(String pi, CMSCategory category) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
                 .getCMSPagesForRecord(pi, category)

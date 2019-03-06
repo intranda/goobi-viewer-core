@@ -194,7 +194,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cms_content_item_cms_categories", joinColumns = @JoinColumn(name = "content_item_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<Category> categories = new ArrayList<>();
+    private List<CMSCategory> categories = new ArrayList<>();
 
     /** Lucence field on which to base a collecion view */
     @Column(name = "collection_field")
@@ -557,31 +557,31 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * @return the pageClassification
      */
-    public List<Category> getCategories() {
+    public List<CMSCategory> getCategories() {
         return this.categories;
     }
     
     /**
      * @param classifications the classifications to set
      */
-    public void setCategories(List<Category> categories) {
+    public void setCategories(List<CMSCategory> categories) {
         this.categories = categories;
     }
 
-    public void addCategory(Category category) {
+    public void addCategory(CMSCategory category) {
         if (!categories.contains(category)) {
         	categories.add(category);
         }
     }
 
-    public void removeCategory(Category category) {
+    public void removeCategory(CMSCategory category) {
     	categories.remove(category);
     }
 
-    public List<Category> getSortedCategories() throws DAOException {
+    public List<CMSCategory> getSortedCategories() throws DAOException {
         if (!this.categories.isEmpty()) {
-            SortedMap<Long, Category> sortMap = new TreeMap<>();
-            for (Category category : getCategories()) {
+            SortedMap<Long, CMSCategory> sortMap = new TreeMap<>();
+            for (CMSCategory category : getCategories()) {
                 long order = getNestedPages(category).stream()
                         .filter(page -> page.getPageSorting() != null)
                         .mapToLong(CMSPage::getPageSorting)
@@ -626,7 +626,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return nestedPages;
     }
 
-    public List<CMSPage> getNestedPages(Category category) throws DAOException {
+    public List<CMSPage> getNestedPages(CMSCategory category) throws DAOException {
         if (nestedPages == null) {
             return loadNestedPages();
         }
@@ -648,7 +648,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (getCategories().isEmpty()) {
             allPages = DataManager.getInstance().getDao().getAllCMSPages();
         } else {
-            for (Category category : getCategories()) {
+            for (CMSCategory category : getCategories()) {
             	allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
             }
         }

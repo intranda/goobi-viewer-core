@@ -59,7 +59,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
-import de.intranda.digiverso.presentation.model.cms.Category;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -88,7 +88,6 @@ public class JPADAO implements IDAO {
 
     public JPADAO() throws DAOException {
         this(null);
-        logger.trace("JPADAO()");
     }
 
     public EntityManagerFactory getFactory() {
@@ -3231,7 +3230,7 @@ public class JPADAO implements IDAO {
 	 */
 	@Override
     @SuppressWarnings("unchecked")
-	public List<CMSPage> getCMSPagesByCategory(Category category) throws DAOException {
+	public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
 		preQuery();
         Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
         q.setParameter("id", category.getId());
@@ -3243,7 +3242,7 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, de.intranda.digiverso.presentation.model.cms.Category)
 	 */
 	@Override
-	public List<CMSPage> getCMSPagesForRecord(String pi, Category category) throws DAOException {
+	public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
 		preQuery();
 		Query q;
 		if(category != null) {			
@@ -3261,11 +3260,11 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
 	 */
 	@Override
-	public List<Category> getAllCategories() throws DAOException {
+	public List<CMSCategory> getAllCategories() throws DAOException {
 		preQuery();
-        Query q = em.createQuery("SELECT c FROM Category c");
+        Query q = em.createQuery("SELECT c FROM CMSCategory c");
         q.setFlushMode(FlushModeType.COMMIT);
-        List<Category> list = q.getResultList();
+        List<CMSCategory> list = q.getResultList();
         return list;
 	}
 
@@ -3273,7 +3272,7 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
 	 */
 	@Override
-	public void addCategory(Category category) throws DAOException {
+	public void addCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
@@ -3289,7 +3288,7 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
 	 */
 	@Override
-	public void updateCategory(Category category) throws DAOException {
+	public void updateCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
@@ -3305,12 +3304,12 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
 	 */
 	@Override
-	public boolean deleteCategory(Category category) throws DAOException {
+	public boolean deleteCategory(CMSCategory category) throws DAOException {
 		preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            Category o = em.getReference(Category.class, category.getId());
+            CMSCategory o = em.getReference(CMSCategory.class, category.getId());
             em.remove(o);
             em.getTransaction().commit();
             return true;
@@ -3323,13 +3322,13 @@ public class JPADAO implements IDAO {
 	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
 	 */
 	@Override
-	public Category getCategoryByName(String name) throws DAOException {
+	public CMSCategory getCategoryByName(String name) throws DAOException {
 		preQuery();
-        Query q = em.createQuery("SELECT c FROM Category c WHERE c.name = :name");
+        Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
         q.setParameter("name", name);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        Category category = (Category) getSingleResult(q).orElse(null);
+        CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
         return category;
 	}
 

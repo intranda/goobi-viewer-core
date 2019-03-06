@@ -28,7 +28,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "cms_categories")
-public class Category {
+public class CMSCategory {
 
     /** Unique database ID. */
     @Id
@@ -42,17 +42,17 @@ public class Category {
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
-    public Category() {
+    public CMSCategory() {
 
     }
 
-    public Category(String name) {
+    public CMSCategory(String name) {
         this.name = name;
         this.id = null;
         this.description = "";
     }
 
-    public Category(Category blueprint, boolean keepId) {
+    public CMSCategory(CMSCategory blueprint, boolean keepId) {
         this.id = keepId ? blueprint.id : null;
         this.name = blueprint.name;
         this.description = blueprint.description;
@@ -105,9 +105,9 @@ public class Category {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj.getClass().equals(Category.class)) {
-            if (((Category) obj).getId() != null && this.getId() != null) {
-                return ((Category) obj).getId().equals(this.getId());
+        if (obj != null && obj.getClass().equals(CMSCategory.class)) {
+            if (((CMSCategory) obj).getId() != null && this.getId() != null) {
+                return ((CMSCategory) obj).getId().equals(this.getId());
             }
             return false;
         }
