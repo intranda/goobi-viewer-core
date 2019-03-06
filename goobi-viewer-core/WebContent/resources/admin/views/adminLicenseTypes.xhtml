@@ -71,8 +71,7 @@
                                                 <h:outputText value="#{licenseType.conditions}" />
                                             </td>
                                             <td>
-                                                <h:selectBooleanCheckbox rendered="#{licenseType.openAccess}" value="true" disabled="true" />
-                                                <h:selectBooleanCheckbox rendered="#{!licenseType.openAccess}" value="false" disabled="true" />
+                                                <h:selectBooleanCheckbox value="#{licenseType.openAccess}" disabled="true" />
                                             </td>
                                             <td>
                                                 <ul>
