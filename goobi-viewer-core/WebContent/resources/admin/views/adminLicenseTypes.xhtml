@@ -138,7 +138,7 @@
 												</ul>
 											</td>
 											<td class="admin-table__action">
-												<h:commandLink styleClass="btn btn--icon" action="pretty:adminLicenseType" disabled="#{licenseType.editLocked}" title="#{msg.edit}">
+												<h:commandLink styleClass="btn btn--icon" action="pretty:adminLicenseType" disabled="#{licenseType.core}" title="#{msg.edit}">
 													<f:setPropertyActionListener value="#{licenseType}" target="#{adminBean.currentLicenseType}" />
 													<i class="fa fa-pencil" aria-hidden="true"></i>										
 												</h:commandLink> 
@@ -147,7 +147,7 @@
                                                 <h:commandLink styleClass="btn btn--icon"
 													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
                                                     action="adminLicenseTypes" actionListener="#{adminBean.deleteLicenseTypeAction(licenseType)}"
-                                                    disabled="#{licenseType.deleteLocked}" title="#{msg.delete}">
+                                                    disabled="#{licenseType.core}" title="#{msg.delete}">
 													<i class="fa fa-trash-o" aria-hidden="true"></i>
 												</h:commandLink>
 											</td>

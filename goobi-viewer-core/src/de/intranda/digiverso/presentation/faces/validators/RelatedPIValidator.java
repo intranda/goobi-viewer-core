@@ -60,7 +60,8 @@ public class RelatedPIValidator extends PIValidator {
         try {
             String key = validatePi(value, user);
             if (key != null) {
-                FacesMessage msg = new FacesMessage(Helper.getTranslation(key, null), "");
+                String message = Helper.getTranslation(key, null).replace("{0}", value);
+                FacesMessage msg = new FacesMessage(message, "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
@@ -93,14 +94,14 @@ public class RelatedPIValidator extends PIValidator {
             return null;
         }
         if (StringUtils.containsAny(pi, PIValidator.ILLEGAL_CHARS)) {
-            return "cms_related_pi_illegal_chars";
+            return "cms_page_related_pi_illegal_chars";
         }
         if (user == null || !user.isCmsAdmin()) {
-            return "cms_related_pi_forbidden";
+            return "cms_page_related_pi_forbidden";
         }
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ':' + pi, null);
         if (doc == null) {
-            return "cms_related_pi_not_found";
+            return "cms_page_related_pi_not_found";
         }
         if (user.isSuperuser()) {
             return null;
@@ -114,7 +115,7 @@ public class RelatedPIValidator extends PIValidator {
                 List<String> allValues = SearchHelper.getFacetValues(discriminatorField + ":*", discriminatorField, 0);
                 List<String> allowedValues = user.getAllowedSubthemeDiscriminatorValues(allValues);
                 if (!allowedValues.contains(doc.getFieldValue(discriminatorField))) {
-                    return "cms_related_pi_not_allowed";
+                    return "cms_page_related_pi_forbidden";
                 }
             }
         }

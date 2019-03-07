@@ -53,5 +53,21 @@
                 value="#{adminBean.currentLicense.privCmsCollections}"
                 label="privCmsCollections" /> #{msg.license_privCmsCollections}
         </label>
+        <br />
+        <!-- CMS categories -->
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privCmsCategoriesDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privCmsCategories}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privCmsCategories" />
+            <h:selectBooleanCheckbox 
+                id="privCmsCategories"
+                rendered="#{!adminBean.currentLicense.licenseType.privCmsCategories}" 
+                value="#{adminBean.currentLicense.privCmsCategories}"
+                label="privCmsCategories" /> #{msg.license_privCmsCategories}
+        </label>
     </div>
 </ui:composition>

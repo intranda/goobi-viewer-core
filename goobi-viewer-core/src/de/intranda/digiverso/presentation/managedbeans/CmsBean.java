@@ -279,56 +279,11 @@ public class CmsBean implements Serializable {
      */
     public List<CMSPageTemplate> getAllowedTemplates(User user) {
         logger.trace("getAllowedTemplates");
-        // Abort if user not a CMS admin
-        if (user == null || !user.isCmsAdmin()) {
+        if(user == null) {
             return Collections.emptyList();
         }
-
-        List<CMSPageTemplate> allTemplates = getTemplates();
-        // Full admins get all templates
-        if (allTemplates.isEmpty() || user.isSuperuser()) {
-            return allTemplates;
-        }
-
-        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
-        // Check user licenses
-        for (License license : user.getLicenses()) {
-            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                continue;
-            }
-            if (!license.getAllowedCmsTemplates().isEmpty()) {
-                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
-            }
-        }
-        // Check user group licenses
-        try {
-            for (UserGroup userGroup : user.getUserGroupsWithMembership()) {
-                for (License license : userGroup.getLicenses()) {
-                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                        continue;
-                    }
-                    if (!license.getAllowedCmsTemplates().isEmpty()) {
-                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
-                    }
-                }
-            }
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        }
-        //        allowedTemplateIds.add("template_general_generic");
-        if (allowedTemplateIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
-        for (CMSPageTemplate template : allTemplates) {
-            if (allowedTemplateIds.contains(template.getId())) {
-                ret.add(template);
-            }
-        }
-
-        logger.trace("getAllowedTemplates END");
-        return ret;
+        
+        return user.getAllowedTemplates(getTemplates());
     }
 
     /**

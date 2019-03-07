@@ -26,13 +26,13 @@ import javax.persistence.Query;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
-import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -143,12 +143,17 @@ public interface IDAO {
     // LicenseType
 
     public List<LicenseType> getAllLicenseTypes() throws DAOException;
-
+    
     public long getLicenseTypeCount(Map<String, String> filters) throws DAOException;
+    
+    public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException;
 
     public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException;
 
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+    
+    public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
     public LicenseType getLicenseType(long id) throws DAOException;

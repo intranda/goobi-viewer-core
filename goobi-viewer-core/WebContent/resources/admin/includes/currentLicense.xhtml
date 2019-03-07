@@ -52,12 +52,14 @@
         </div>
         
         <!-- LICENSE CONDITIONS -->
-        <div class="form-group">
-            <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_conditions}" />
-            <div class="col-sm-8">
-                <h:inputTextarea value="#{adminBean.currentLicense.conditions}" id="conditions" styleClass="form-control" />
+        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.cmsType}">
+            <div class="form-group">
+                <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_conditions}" />
+                <div class="col-sm-8">
+                    <h:inputTextarea value="#{adminBean.currentLicense.conditions}" id="conditions" styleClass="form-control" />
+                </div>
             </div>
-        </div>
+        </ui:fragment>
         
         <!-- CMS SETTINGS -->
         <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">

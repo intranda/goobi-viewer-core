@@ -76,8 +76,8 @@ public class AdminBean implements Serializable {
 
     private TableDataProvider<User> lazyModelUsers;
     private TableDataProvider<UserGroup> lazyModelUserGroups;
-    //    private TableDataProvider<Role> lazyModelRoles;
     private TableDataProvider<LicenseType> lazyModelLicenseTypes;
+    private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
     private TableDataProvider<IpRange> lazyModelIpRanges;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -168,36 +168,7 @@ public class AdminBean implements Serializable {
         lazyModelUserGroups.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelUserGroups.setFilters("name");
 
-        //        lazyModelRoles = new TableDataProvider<>(new TableDataSource<Role>() {
-        //
-        //            @Override
-        //            public List<Role> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-        //                List<Role> roleList = new ArrayList<>();
-        //                if (sortField == null) {
-        //                    sortField = "id";
-        //                }
-        //                try {
-        //                    roleList = DataManager.getInstance().getDao().getRoles(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-        //                } catch (DAOException e) {
-        //                    logger.error(e.getMessage());
-        //                }
-        //
-        //                return roleList;
-        //            }
-        //
-        //            @Override
-        //            public long getTotalNumberOfRecords() {
-        //                try {
-        //                    return DataManager.getInstance().getDao().getRoleCount(lazyModelRoles.getFiltersAsMap());
-        //                } catch (DAOException e) {
-        //                    logger.error(e.getMessage(), e);
-        //                    return 0;
-        //                }
-        //            }
-        //        });
-        //        lazyModelRoles.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        //        lazyModelRoles.setFilters("name");
-
+        // License types
         lazyModelLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
 
             @Override
@@ -231,6 +202,42 @@ public class AdminBean implements Serializable {
         lazyModelLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelLicenseTypes.setFilters("name");
 
+        // Core license types
+        lazyModelCoreLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
+
+            @Override
+            public List<LicenseType> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                if (StringUtils.isEmpty(sortField)) {
+                    sortField = "name";
+                }
+                try {
+                    return DataManager.getInstance().getDao().getCoreLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                }
+
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    logger.trace("core license types: {}", DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters));
+                    return DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+            }
+        });
+        lazyModelCoreLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        lazyModelCoreLicenseTypes.setFilters("name");
+
+        // IP ranges
         lazyModelIpRanges = new TableDataProvider<>(new TableDataSource<IpRange>() {
 
             @Override
@@ -492,7 +499,7 @@ public class AdminBean implements Serializable {
             logger.trace("currentUserRole not set");
             return;
         }
-        
+
         logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
         if (getCurrentUserRole().getId() != null) {
             // existing
@@ -919,8 +926,19 @@ public class AdminBean implements Serializable {
         return lazyModelLicenseTypes;
     }
 
+    /**
+     * @return the lazyModelCoreLicenseTypes
+     */
+    public TableDataProvider<LicenseType> getLazyModelCoreLicenseTypes() {
+        return lazyModelCoreLicenseTypes;
+    }
+
     public List<LicenseType> getPageLicenseTypes() {
         return lazyModelLicenseTypes.getPaginatorList();
+    }
+
+    public List<LicenseType> getPageCoreLicenseTypes() {
+        return lazyModelCoreLicenseTypes.getPaginatorList();
     }
 
     /**

@@ -138,7 +138,8 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** List of allowed CMS categories. */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
@@ -434,6 +435,26 @@ public class License implements IPrivilegeHolder, Serializable {
             privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
         } else {
             privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCategories()
+     */
+    @Override
+    public boolean isPrivCmsCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         }
     }
 
