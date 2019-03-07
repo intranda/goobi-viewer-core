@@ -15,25 +15,27 @@
  */
 package de.intranda.digiverso.presentation.dao;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 
 /**
@@ -44,6 +46,13 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
  *
  */
 public class DatabaseUpdater {
+
+	/**
+	 * Separates the individual classifications in the classification string
+	 */
+	private static final String CLASSIFICATION_SEPARATOR = "::";
+
+	private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
 
 	private final IDAO dao;
 
@@ -67,9 +76,9 @@ public class DatabaseUpdater {
 	@SuppressWarnings({ "unchecked" })
 	private void convertCMSCategories() throws DAOException {
 		Map<String, Map<String, List<Long>>> entityMap = new HashMap<>();
-		dao.startTransaction();
 		try {
 			if (dao.tableExists("cms_page_classifications")) {
+				dao.startTransaction();
 				String query = "SELECT * FROM cms_page_classifications";
 				Query qClassifications = dao.createNativeQuery(query);
 				List<Object[]> classificationResults = qClassifications.getResultList();
@@ -79,38 +88,164 @@ public class DatabaseUpdater {
 									list1.addAll(list2);
 									return list1;
 								}));
-				populateCategoryMap(entityMap, classifications, "page");
+				entityMap.put("page", classifications);
+				dao.commitTransaction();
 			}
-			
+
 			if (dao.tableExists("cms_media_item_tags")) {
+				dao.startTransaction();
 				String query = "SELECT * FROM cms_media_item_tags";
 				Query qTags = dao.createNativeQuery(query);
 				List<Object[]> tagResults = qTags.getResultList();
-				Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(array -> (String) array[1],
+				Map<String, List<Long>> tags = tagResults.stream().filter(array -> !array[1].equals("-")).collect(Collectors.toMap(array -> (String) array[1],
 						array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
 							list1.addAll(list2);
 							return list1;
 						}));
-				populateCategoryMap(entityMap, tags, "content");
+				entityMap.put("page", tags);
+				dao.commitTransaction();
 			}
+
+			if (dao.tableExists("cms_content_items")) {
+				dao.startTransaction();
+				String query = "SELECT cms_content_item_id, allowed_tags FROM cms_content_items";
+				Query qClassifications = dao.createNativeQuery(query);
+				List<Object[]> classificationsResults = qClassifications.getResultList();
+				Map<String, List<Long>> classifications = classificationsResults.stream()
+						.collect(Collectors.toMap(array -> (String) array[1],
+								array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
+									list1.addAll(list2);
+									return list1;
+								}));
+				entityMap.put("content", classifications);
+				dao.commitTransaction();
+			}
+			List<CMSCategory> categories = createCategories(entityMap);
+			synchronizeWithDatabase(categories);
 			
-			if (dao.tableExists("cms_media_item_tags")) {
-				String query = "SELECT * FROM cms_media_item_tags";
-				Query qTags = dao.createNativeQuery(query);
-				List<Object[]> tagResults = qTags.getResultList();
-				Map<String, List<Long>> tags = tagResults.stream().collect(Collectors.toMap(array -> (String) array[1],
-						array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
-							list1.addAll(list2);
-							return list1;
-						}));
-				populateCategoryMap(entityMap, tags, "media");
-			}
+			dao.startTransaction();
+			
+			linkToPages(categories, entityMap.get("page"));
+			linkToContentItems(categories, entityMap.get("content"));
+			linkToMedia(categories, entityMap.get("media"));
+			
+			dao.createNativeQuery("DROP TABLE cms_media_item_tags").executeUpdate();
+			dao.createNativeQuery("DOP TABLE cms_page_classifications").executeUpdate();
+			
+			dao.commitTransaction();
+			
+			
 			
 		} catch (PersistenceException | SQLException e) {
 			throw new DAOException(e.toString());
-		} finally {
-			dao.commitTransaction();
 		}
+	}
+
+	/**
+	 * @param categories
+	 * @param map
+	 */
+	private void linkToPages(List<CMSCategory> categories, Map<String, List<Long>> map) {
+		for (String categoryName : map.keySet()) {
+			CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(categoryName))
+					.findFirst().orElse(null);
+			if (category == null) {
+				logger.error("Error creating categories. No category by name {} found or created", categoryName);
+			} else {
+				List<Long> pageIds = map.get(categoryName);
+				for (Long pageId : pageIds) {
+					try {
+						CMSPage page = dao.getCMSPage(pageId);
+						if (page == null) {
+							throw new DAOException("No page found by Id " + pageId);
+						} else {
+							page.addCategory(category);
+						}
+					} catch (DAOException e) {
+						logger.error("Error getting pages for category {}. Failed to load page for id {}", categoryName,
+								pageId);
+					}
+				}
+			}
+		}
+	}
+	
+	private void linkToMedia(List<CMSCategory> categories, Map<String, List<Long>> map) {
+		for (String categoryName : map.keySet()) {
+			CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(categoryName))
+					.findFirst().orElse(null);
+			if (category == null) {
+				logger.error("Error creating categories. No category by name {} found or created", categoryName);
+			} else {
+				List<Long> mediaIds = map.get(categoryName);
+				for (Long mediaId : mediaIds) {
+					try {
+						CMSMediaItem media = dao.getCMSMediaItem(mediaId);
+						if (media == null) {
+							throw new DAOException("No page found by Id " + mediaId);
+						} else {
+							media.addCategory(category);
+						}
+					} catch (DAOException e) {
+						logger.error("Error getting mediaItems for category {}. Failed to load mediaItem for id {}", categoryName,
+								mediaId);
+					}
+				}
+			}
+		}
+	}
+	
+	private void linkToContentItems(List<CMSCategory> categories, Map<String, List<Long>> map) {
+		for (String categoryName : map.keySet()) {
+			CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(categoryName))
+					.findFirst().orElse(null);
+			if (category == null) {
+				logger.error("Error creating categories. No category by name {} found or created", categoryName);
+			} else {
+				List<Long> itemIds = map.get(categoryName);
+				for (Long itemId : itemIds) {
+					try {
+						Query query = dao.createQuery("SELECT item FROM CMSContentItem WHERE item.id = :itemId");
+						query.setParameter("itemId", itemId);
+						CMSContentItem item = (CMSContentItem)query.getSingleResult();
+						if (item == null) {
+							throw new DAOException("No item found by Id " + itemId);
+						} else {
+							item.addCategory(category);
+						}
+					} catch (DAOException e) {
+						logger.error("Error getting mediaItems for category {}. Failed to load contentItem for id {}", categoryName,
+								itemId);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param categories
+	 * @throws DAOException
+	 */
+	private void synchronizeWithDatabase(List<CMSCategory> categories) throws DAOException {
+		ListIterator<CMSCategory> iterator = categories.listIterator();
+		while (iterator.hasNext()) {
+			CMSCategory category = iterator.next();
+			if (dao.getCategoryByName(category.getName()) == null) {
+				dao.addCategory(category);
+			} else {
+				iterator.set(dao.getCategoryByName(category.getName()));
+			}
+		}
+	}
+
+	/**
+	 * @param collect
+	 * @return
+	 */
+	protected List<CMSCategory> createCategories(Map<String, Map<String, List<Long>>> entityMap) {
+		return entityMap.values().stream().flatMap(map -> map.keySet().stream())
+				.flatMap(name -> Arrays.stream(name.split("::"))).filter(name -> StringUtils.isNotBlank(name))
+				.distinct().map(name -> new CMSCategory(name)).collect(Collectors.toList());
 	}
 
 	/**
@@ -132,8 +267,6 @@ public class DatabaseUpdater {
 			mappings.put(entityName, categories.get(category));
 		}
 	}
-
-
 
 	/**
 	 * @throws DAOException

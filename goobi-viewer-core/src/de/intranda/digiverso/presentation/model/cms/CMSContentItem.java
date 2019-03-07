@@ -80,11 +80,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 public class CMSContentItem implements Comparable<CMSContentItem> {
 
     /**
-     * Separates the individual classifications in the classification string
-     */
-    private static final String CLASSIFICATION_SEPARATOR = "::";
-
-    /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
      * item
      * 
