@@ -16,12 +16,7 @@
 package de.intranda.digiverso.presentation.dao.impl;
 
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,11 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
-import de.intranda.digiverso.presentation.dao.DatabaseUpdater;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -59,7 +54,6 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
-import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -118,14 +112,12 @@ public class JPADAO implements IDAO {
 
             em = factory.createEntityManager();
             preQuery();
-//            new DatabaseUpdater(em).update();
+            //            new DatabaseUpdater(em).update();
         } catch (DatabaseException | PersistenceException e) {
             logger.error(e.getMessage(), e);
             throw new DAOException(e.getMessage());
         }
     }
-
-
 
     /*
      * (non-Javadoc)
@@ -150,7 +142,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("User", filters);
+        return getRowCount("User", null, filters);
     }
 
     /**
@@ -1026,17 +1018,55 @@ public class JPADAO implements IDAO {
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o");
+        StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=false");
         List<String> filterKeys = new ArrayList<>();
         if (filters != null && !filters.isEmpty()) {
-            sbQuery.append(" WHERE ");
             filterKeys.addAll(filters.keySet());
             Collections.sort(filterKeys);
             int count = 0;
             for (String key : filterKeys) {
-                if (count > 0) {
-                    sbQuery.append(" AND ");
-                }
+                sbQuery.append(" AND ");
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
+                count++;
+            }
+        }
+        if (StringUtils.isNotEmpty(sortField)) {
+            sbQuery.append(" ORDER BY o.").append(sortField);
+            if (descending) {
+                sbQuery.append(" DESC");
+            }
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        for (String key : filterKeys) {
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
+        }
+        q.setFirstResult(first);
+        q.setMaxResults(pageSize);
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        return q.getResultList();
+    }
+
+    /**
+     * @throws DAOException
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCoreLicenseTypes(int, int, java.lang.String, boolean, java.util.Map)
+     * @should sort results correctly
+     * @should filter results correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT o FROM LicenseType o WHERE o.core=true");
+        List<String> filterKeys = new ArrayList<>();
+        if (filters != null && !filters.isEmpty()) {
+            filterKeys.addAll(filters.keySet());
+            Collections.sort(filterKeys);
+            int count = 0;
+            for (String key : filterKeys) {
+                sbQuery.append(" AND ");
                 sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
@@ -2131,11 +2161,11 @@ public class JPADAO implements IDAO {
             em.getTransaction().begin();
             em.merge(downloadJob);
             em.getTransaction().commit();
-            
-            if(this.em.contains(downloadJob)) {            	
-            	this.em.refresh(downloadJob);
+
+            if (this.em.contains(downloadJob)) {
+                this.em.refresh(downloadJob);
             }
-            
+
             return true;
         } finally {
             em.close();
@@ -2207,7 +2237,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCMSPageCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("CMSPage", filters);
+        return getRowCount("CMSPage", null, filters);
     }
 
     /* (non-Javadoc)
@@ -2224,7 +2254,7 @@ public class JPADAO implements IDAO {
 
                 Map<String, String> params = new HashMap<>();
 
-                String filterString = createFilterQuery(filters, params);
+                String filterString = createFilterQuery(null, filters, params);
 
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
@@ -2258,11 +2288,14 @@ public class JPADAO implements IDAO {
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
      */
-    public String createFilterQuery(Map<String, String> filters, Map<String, String> params) {
+    public String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder join = new StringBuilder();
 
         List<String> filterKeys = new ArrayList<>();
         StringBuilder where = new StringBuilder();
+        if (StringUtils.isNotEmpty(staticFilterQuery)) {
+            where.append(staticFilterQuery);
+        }
         if (filters != null && !filters.isEmpty()) {
             AlphabetIterator abc = new AlphabetIterator();
             String pageKey = abc.next();
@@ -2280,7 +2313,7 @@ public class JPADAO implements IDAO {
                         key = key.substring(key.indexOf("::") + 2);
                         tableKey = abc.next();
                     }
-                    if (count > 0) {
+                    if (count > 0 || StringUtils.isNotEmpty(staticFilterQuery)) {
                         where.append(" AND (");
                     } else {
                         where.append(" WHERE ");
@@ -2335,8 +2368,6 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
-
-
 
     /**
      * @throws DAOException
@@ -2918,7 +2949,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getUserGroupCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("UserGroup", filters);
+        return getRowCount("UserGroup", null, filters);
     }
 
     /**
@@ -2927,7 +2958,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getRoleCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Role", filters);
+        return getRowCount("Role", null, filters);
     }
 
     /**
@@ -2936,7 +2967,16 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getLicenseTypeCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("LicenseType", filters);
+        return getRowCount("LicenseType", " WHERE a.core=false", filters);
+    }
+
+    /**
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCoreLicenseTypeCount()
+     * @should return correct count
+     */
+    @Override
+    public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("LicenseType", " WHERE a.core=true", filters);
     }
 
     /**
@@ -2945,7 +2985,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getIpRangeCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("IpRange", filters);
+        return getRowCount("IpRange", null, filters);
     }
 
     /**
@@ -2955,7 +2995,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCommentCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("Comment", filters);
+        return getRowCount("Comment", null, filters);
     }
 
     /**
@@ -2963,54 +3003,28 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCMSPagesCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("CMSPage", filters);
+        return getRowCount("CMSPage", null, filters);
     }
 
     /**
      * Universal method for returning the row count for the given class and filters.
      * 
      * @param className
+     * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
      * @param filters
      * @return
      * @throws DAOException
      */
-    private long getRowCount(String className, Map<String, String> filters) throws DAOException {
+    private long getRowCount(String className, String staticFilterQuery, Map<String, String> filters) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
         Map<String, String> params = new HashMap<>();
-        String filterQuery = createFilterQuery(filters, params);
-        //        StringBuilder sbFilterQuery = null;
-        //        if (filters != null && !filters.isEmpty()) {
-        //            sbFilterQuery = new StringBuilder();
-        //            for (String key : filters.keySet()) {
-        //                if (StringUtils.isEmpty(filters.get(key))) {
-        //                    continue;
-        //                } else if (sbFilterQuery.length() == 0) {
-        //                    sbFilterQuery.append(" WHERE ");
-        //                } else {
-        //                    sbFilterQuery.append(" AND ");
-        //                }
-        //                String[] keyParts = key.split(MULTIKEY_SEPARATOR);
-        //                int keyPartCount = 0;
-        //                sbFilterQuery.append(" ( ");
-        //                for (String keyPart : keyParts) {
-        //                    if (keyPartCount > 0) {
-        //                        sbFilterQuery.append(" OR ");
-        //                    }
-        //
-        //                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
-        //                    keyPartCount++;
-        //                }
-        //                sbFilterQuery.append(" ) ");
-        //            }
-        //            sbQuery.append(sbFilterQuery.toString());
-        //        }
-        Query q = em.createQuery(sbQuery.append(filterQuery).toString());
+        Query q = em.createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
+        logger.trace(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();
     }
-
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getAllStaticPages()
@@ -3225,54 +3239,55 @@ public class JPADAO implements IDAO {
         }
     }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByCategory(de.intranda.digiverso.presentation.model.cms.Category)
-	 */
-	@Override
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesByCategory(de.intranda.digiverso.presentation.model.cms.Category)
+     */
+    @Override
     @SuppressWarnings("unchecked")
-	public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
-		preQuery();
+    public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException {
+        preQuery();
         Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id");
         q.setParameter("id", category.getId());
         List<CMSPage> pageList = q.getResultList();
         return pageList;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, de.intranda.digiverso.presentation.model.cms.Category)
-	 */
-	@Override
-	public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
-		preQuery();
-		Query q;
-		if(category != null) {			
-			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
-			q.setParameter("id", category.getId());
-		} else {
-			q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.relatedPI = :pi");
-		}
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesForRecord(java.lang.String, de.intranda.digiverso.presentation.model.cms.Category)
+     */
+    @Override
+    public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
+        preQuery();
+        Query q;
+        if (category != null) {
+            q = em.createQuery(
+                    "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
+            q.setParameter("id", category.getId());
+        } else {
+            q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.relatedPI = :pi");
+        }
         q.setParameter("pi", pi);
         List<CMSPage> pageList = q.getResultList();
         return pageList;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
-	 */
-	@Override
-	public List<CMSCategory> getAllCategories() throws DAOException {
-		preQuery();
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
+     */
+    @Override
+    public List<CMSCategory> getAllCategories() throws DAOException {
+        preQuery();
         Query q = em.createQuery("SELECT c FROM CMSCategory c");
         q.setFlushMode(FlushModeType.COMMIT);
         List<CMSCategory> list = q.getResultList();
         return list;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
-	 */
-	@Override
-	public void addCategory(CMSCategory category) throws DAOException {
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+     */
+    @Override
+    public void addCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
@@ -3282,13 +3297,13 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
-	}
-	
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
-	 */
-	@Override
-	public void updateCategory(CMSCategory category) throws DAOException {
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+     */
+    @Override
+    public void updateCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
@@ -3298,14 +3313,14 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
-	 */
-	@Override
-	public boolean deleteCategory(CMSCategory category) throws DAOException {
-		preQuery();
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
+     */
+    @Override
+    public boolean deleteCategory(CMSCategory category) throws DAOException {
+        preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -3316,20 +3331,20 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
-	 */
-	@Override
-	public CMSCategory getCategoryByName(String name) throws DAOException {
-		preQuery();
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
+     */
+    @Override
+    public CMSCategory getCategoryByName(String name) throws DAOException {
+        preQuery();
         Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
         q.setParameter("name", name);
         q.setFlushMode(FlushModeType.COMMIT);
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
         return category;
-	}
+    }
 
 }

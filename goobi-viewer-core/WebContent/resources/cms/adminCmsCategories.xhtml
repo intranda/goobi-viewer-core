@@ -18,7 +18,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_CATEGORIES')}">
+        <ui:fragment id="cmsCategoriesAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_CATEGORIES')}">
         <div id="adminCmsCategories" class="admin-cms-categories">
             <h2 class="admin__content-inner-title">#{msg.admin__categories}</h2>
     
