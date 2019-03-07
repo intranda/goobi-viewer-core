@@ -187,7 +187,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
 			Map<String, List<Long>> classifications = classificationsResults.stream()
 					.map(array -> new Object[] { array[0], (String) array[1] + "$" + (String) array[2] })
 					.flatMap(array -> Arrays.stream(((String) array[1]).split(CLASSIFICATION_SEPARATOR_REGEX))
-							.filter(string -> StringUtils.isNotBlank(string) && !"-".equals(string))
+							.filter(string -> StringUtils.isNotBlank(string) && !"-".equals(string) && !"null".equals(string))
 							.map(string -> new Object[] { array[0], string }))
 					.collect(Collectors.toMap(array -> (String) array[1],
 							array -> new ArrayList<Long>(Arrays.asList((Long) array[0])), (list1, list2) -> {
