@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -489,6 +488,28 @@ public class ViewManager implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @return true if this record contains URN or IMAGEURN fields; false otherwise
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isHasUrns() throws PresentationException, IndexUnreachableException {
+        return topDocument.getMetadataFields().containsKey(SolrConstants.URN) || topDocument.getFirstPageFieldValue(SolrConstants.IMAGEURN) != null;
+    }
+
+    /**
+     * 
+     * @return true if this is an anchor record and has indexed volumes; false otherwise
+     */
+    public boolean isHasVolumes() {
+        if (!topDocument.isAnchor()) {
+            return false;
+        }
+
+        return topDocument.getNumVolumes() > 0;
+    }
+
     public boolean isHasPages() throws IndexUnreachableException {
         return pageLoader != null && pageLoader.getNumPages() > 0;
     }
@@ -510,6 +531,11 @@ public class ViewManager implements Serializable {
         return filesOnly;
     }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     private boolean isChildFilesOnly() throws IndexUnreachableException {
         boolean childIsFilesOnly = false;
         if (currentDocument != null && (currentDocument.isAnchor() || currentDocument.isGroup())) {
@@ -1128,9 +1154,9 @@ public class ViewManager implements Serializable {
      * Reset the pdf access permissions. They will be evaluated again on the next call to {@link #isAccessPermissionPdf()}
      */
     public void resetAccessPermissionPdf() {
-    	this.accessPermissionPdf = null;
+        this.accessPermissionPdf = null;
     }
-    
+
     public boolean isAccessPermissionPdf() {
         try {
             if (topDocument == null || !topDocument.isWork() || !isHasPages()) {
@@ -1165,9 +1191,9 @@ public class ViewManager implements Serializable {
      * Reset the permissions for writing user comments. They will be evaluated again on the next call to {@link #isAllowUserComments()}
      */
     public void resetAllowUserComments() {
-    	this.allowUserComments = null;
+        this.allowUserComments = null;
     }
-    
+
     /**
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
@@ -1620,8 +1646,10 @@ public class ViewManager implements Serializable {
                 if (sourceFileDir.isDirectory()) {
                     List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
                     if (!files.isEmpty()) {
-                        return AccessConditionUtils.checkContentFileAccessPermission(pi,
-                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files).containsValue(Boolean.TRUE);
+                        return AccessConditionUtils
+                                .checkContentFileAccessPermission(pi,
+                                        (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files)
+                                .containsValue(Boolean.TRUE);
                     } else {
                         return false;
                     }
@@ -1673,13 +1701,11 @@ public class ViewManager implements Serializable {
                 if (sourcesArray != null && sourcesArray.length > 0) {
                     List<File> sourcesList = Arrays.asList(sourcesArray);
                     Collections.sort(sourcesList, filenameComparator);
-                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(
-                            getPi(),
-                            BeanUtils.getRequest(),
+                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
                             sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
                     for (File file : sourcesList) {
                         if (file.isFile()) {
-                            Boolean access= fileAccess.get(file.toPath().toString());
+                            Boolean access = fileAccess.get(file.toPath().toString());
                             if (access != null && access) {
                                 String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
                                         + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
@@ -1713,7 +1739,7 @@ public class ViewManager implements Serializable {
      *
      * @return
      * @throws IndexUnreachableException
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException {
         List<LabeledLink> ret = new ArrayList<>();

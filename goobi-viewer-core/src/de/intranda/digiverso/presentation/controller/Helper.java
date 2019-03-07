@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -560,6 +561,29 @@ public class Helper {
         }
 
         return false;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param leaveTraceDoc
+     * @return
+     * @throws IOException
+     * @should create delete file correctly
+     * @should create purge file correctly
+     */
+    public static synchronized boolean deleteRecord(String pi, boolean leaveTraceDoc) throws IOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        String fileName = pi + (leaveTraceDoc ? ".delete" : ".purge");
+        Path file = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), fileName);
+        try {
+            Files.createFile(file);
+        } catch (FileAlreadyExistsException e) {
+            logger.warn(e.getMessage());
+        }
+        return (Files.isRegularFile(file));
     }
 
     /**

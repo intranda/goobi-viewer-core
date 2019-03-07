@@ -26,13 +26,7 @@
     			                        </h:commandLink>
                                     </li>
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{userBean.admin}">
-                                    <li>
-                                        <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">
-                                            #{msg.reIndexRecord}
-                                        </h:commandLink>
-                                    </li>
-                                </h:panelGroup>
+
                                 <!-- TODO rendered=#{docstruct in allowed doctypes} -->
                                 <!-- TODO record already added to Transkribus -->
                                 <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
@@ -78,6 +72,44 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </li>
+                                </h:panelGroup>
+                                
+                                <!-- RE-INDEX RECORD -->
+                                <h:panelGroup rendered="#{userBean.admin}">
+                                    <li>
+                                        <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">
+                                            #{msg.reIndexRecord}
+                                        </h:commandLink>
+                                    </li>
+                                </h:panelGroup>
+                                
+                                <!-- DELETE RECORD -->
+                                <h:panelGroup rendered="#{userBean.admin}">
+                                    <br />
+                                    <li>
+                                        <!-- No URNs -->
+                                        <h:commandLink
+                                            rendered="#{!activeDocumentBean.viewManager.hasUrns}"
+                                            onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" 
+                                            action="#{activeDocumentBean.deleteRecordAction(false)}">
+                                            #{msg.deleteRecord}
+                                        </h:commandLink>
+                                        <!-- Yes, URNs! -->
+                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.hasUrns}">
+                                            <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
+                                                <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
+                                                <f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}" />
+                                                <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
+                                                <f:ajax render="@form" />
+                                            </h:selectOneMenu>
+                                            <h:commandLink
+                                                onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" 
+                                                action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}"
+                                                disabled="#{activeDocumentBean.deleteRecordKeepTrace == null}">
+                                                #{msg.deleteRecord}
+                                            </h:commandLink>
+                                        </ui:fragment>
                                     </li>
                                 </h:panelGroup>
                             </ul>
