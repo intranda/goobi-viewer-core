@@ -137,44 +137,6 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /**
-     * Checks conditions under which the edit button for this object shall be disabled.
-     *
-     * @return
-     */
-    public boolean isEditLocked() {
-        return isStaticLicenseType();
-    }
-
-    /**
-     * Checks conditions under which the delete button for this object shall be disabled.
-     *
-     * @return
-     */
-    public boolean isDeleteLocked() {
-        return isStaticLicenseType();
-    }
-
-    /**
-     * Checks whether this is a static license type by the name.
-     *
-     * @return true if license type name is one of the static name strings; false otherwise
-     */
-    public boolean isStaticLicenseType() {
-        if (name == null) {
-            return false;
-        }
-
-        switch (name) {
-            case LICENSE_TYPE_CMS:
-            case LICENSE_TYPE_DELETE_OCR_PAGE:
-            case LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
      * @return the id
      */
     public Long getId() {
