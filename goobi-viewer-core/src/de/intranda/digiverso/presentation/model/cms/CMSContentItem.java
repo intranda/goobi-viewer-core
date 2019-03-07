@@ -231,12 +231,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * For TileGrid
      */
-    @Column(name = "allowed_tags")
-    private String allowedTags = "-";
-
-    /**
-     * For TileGrid
-     */
     @Column(name = "important_count")
     private int numberOfImportantTiles = 0;
 
@@ -318,7 +312,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setNumberOfTiles(blueprint.numberOfTiles);
         this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
         this.setIgnoreCollections(blueprint.getIgnoreCollections());
-        this.allowedTags = blueprint.allowedTags;
         this.glossaryName = blueprint.glossaryName;
         this.searchPrefix = blueprint.searchPrefix;
         this.tocPI = blueprint.tocPI;
@@ -831,34 +824,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         });
         return collection;
-    }
-
-    /**
-     * @return the allowedTags
-     */
-    public String getAllowedTags() {
-        return allowedTags;
-    }
-
-    /**
-     * @param allowedTags the allowedTags to set
-     */
-    public void setAllowedTags(String allowedTags) {
-        this.allowedTags = allowedTags;
-    }
-
-    public String[] getAllowedTagsAsArray() {
-        if (StringUtils.isBlank(this.allowedTags)) {
-            return new String[0];
-        }
-        return this.allowedTags.split(TileGridResource.TAG_SEPARATOR_REGEX);
-    }
-
-    public void setAllowedTagsAsArray(String[] tags) {
-        if (tags == null || tags.length == 0) {
-            this.allowedTags = "-";
-        }
-        this.allowedTags = StringUtils.join(tags, TileGridResource.TAG_SEPARATOR);
     }
 
     /**

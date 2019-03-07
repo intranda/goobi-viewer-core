@@ -21,7 +21,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,11 +47,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
-import de.intranda.digiverso.presentation.dao.DatabaseUpdater;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -60,7 +59,6 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
-import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -3340,6 +3338,19 @@ public class JPADAO implements IDAO {
 		DatabaseMetaData metaData = connection.getMetaData();
 		try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
 			return tables.next();
+		} finally {
+			transaction.commit();
+		}
+	}
+	
+	@Override
+	public boolean columnsExists(String tableName, String columnName) throws SQLException {
+		EntityTransaction transaction = em.getTransaction();
+		transaction.begin();
+		Connection connection = em.unwrap(Connection.class);
+		DatabaseMetaData metaData = connection.getMetaData();
+		try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+			return columns.next();
 		} finally {
 			transaction.commit();
 		}

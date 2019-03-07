@@ -114,25 +114,25 @@
 	    new_hits_notification="0" />
 	    
 	        
-    <cms_categories id="1" name="tag1" description="description1" />
-    <cms_categories id="2" name="tag2" description="description2" />
-    <cms_categories id="3" name="tag3" description="description3" />
-    <cms_categories id="4" name="news" description="description_news"/>
-    <cms_categories id="5" name="other" description="description_other"/>
-    <cms_categories id="6" name="overviewpage" description="description_overviewpage"/>
-    <cms_categories id="7" name="class" description="description_class"/>
+    <cms_categories category_id="1" name="tag1" description="description1" />
+    <cms_categories category_id="2" name="tag2" description="description2" />
+    <cms_categories category_id="3" name="tag3" description="description3" />
+    <cms_categories category_id="4" name="news" description="description_news"/>
+    <cms_categories category_id="5" name="other" description="description_other"/>
+    <cms_categories category_id="6" name="overviewpage" description="description_overviewpage"/>
+    <cms_categories category_id="7" name="class" description="description_class"/>
 		
 	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
     <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
     <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
     <cms_media_items cms_media_item_id="4" file_name="image4.jpg" />
     
-    <join_categories_media_items media_item_id="1" category_id="1" /> 
-    <join_categories_media_items media_item_id="1" category_id="2" /> 
-    <join_categories_media_items media_item_id="1" category_id="3" /> 
-    <join_categories_media_items media_item_id="2" category_id="1" /> 
-    <join_categories_media_items media_item_id="4" category_id="1" /> 
-    <join_categories_media_items media_item_id="2" category_id="2" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="2" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="3" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="4" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="2" /> 
     
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
@@ -164,12 +164,12 @@
     <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" mandatory="false" owner_page_language_version_id="1" 
     	elements_per_page="5" />
     
-    <join_categories_pages page_id="1" category_id="4" />
-    <join_categories_pages page_id="1" category_id="5" />
-    <join_categories_pages page_id="2" category_id="4" />
-    <join_categories_pages page_id="3" category_id="6" />
+    <cms_page_cms_categories page_id="1" category_id="4" />
+    <cms_page_cms_categories page_id="1" category_id="5" />
+    <cms_page_cms_categories page_id="2" category_id="4" />
+    <cms_page_cms_categories page_id="3" category_id="6" />
     
-    <join_categories_content_items content_item_id="4" category_id="4" />
+    <cms_content_item_cms_categories content_item_id="4" category_id="4" />
     
     <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     

@@ -23,8 +23,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -83,6 +83,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     public void testGetTileGridUrl() {
 
         String allowedTags = "a$b$cde";
+        List<CMSCategory> categories = new ArrayList<>();
+        for (String catName : allowedTags.split("\\$")) {
+			categories.add(new CMSCategory(catName));
+		}
         boolean preferImportant = true;
         int numTiles = 12;
 
@@ -99,7 +103,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersions().add(de);
 
         CMSContentItem gridItem = new CMSContentItem();
-        gridItem.setAllowedTags(allowedTags);
+        gridItem.setCategories(categories);
         gridItem.setNumberOfImportantTiles(preferImportant ? numTiles : 0);
         gridItem.setNumberOfTiles(numTiles);
         gridItem.setId(1l);

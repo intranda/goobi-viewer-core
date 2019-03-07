@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -77,6 +78,7 @@ import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunc
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
+import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
@@ -1029,7 +1031,7 @@ public class CMSPage implements Comparable<CMSPage> {
                     .append("/")
                     .append(item.getNumberOfImportantTiles())
                     .append("/")
-                    .append(item.getAllowedTags())
+                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
                     .append("/");
             return sb.toString();
         }

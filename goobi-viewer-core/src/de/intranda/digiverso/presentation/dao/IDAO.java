@@ -398,6 +398,8 @@ public interface IDAO {
 
 	boolean tableExists(String tableName) throws SQLException;
 
+	boolean columnsExists(String tableName, String columnName) throws SQLException;
+	
 	void startTransaction();
 
 	void commitTransaction();
@@ -405,6 +407,8 @@ public interface IDAO {
 	Query createNativeQuery(String string);
 
 	Query createQuery(String string);
+
+
 
 
 }
