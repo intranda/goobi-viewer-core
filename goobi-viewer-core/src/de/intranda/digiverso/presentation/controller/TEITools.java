@@ -39,6 +39,7 @@ public class TEITools {
      * @return TEI full-text element
      * @throws JDOMException
      * @throws IOException
+     * @should extract fulltext correctly
      */
     public static String getTeiFulltext(String tei) throws JDOMException, IOException {
         if (tei == null) {
@@ -58,7 +59,9 @@ public class TEITools {
                 for (Element ele : eleBody.getChildren()) {
                     eleNewRoot.addContent(ele.clone());
                 }
-                return XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                String ret= XmlTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                ret = ret.replaceAll("<note>[\\s\\S]*?<\\/note>", "");
+                return ret;
             }
         }
 

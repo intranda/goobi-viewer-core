@@ -2326,4 +2326,13 @@ public class ConfigurationTest {
     public void getDocstrctWhitelistFilterSuffix_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("ISWORK:true OR ISANCHOR:true", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery());
     }
+    
+    @Test
+    public void testGetIIIFMetadataLabel() {
+    	Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("MD_*"));
+    	Assert.assertEquals("label_year", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("YEAR"));
+    	Assert.assertEquals("label_provenienz", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("Provenienz/MD_EVENT_DETAILS"));
+    	Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("/YEAR"));
+
+    }
 }

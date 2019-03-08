@@ -205,6 +205,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         }
     }
 
+    /**
+     * Determines this media item's file's content type via the extension.
+     * 
+     * @return Content type string
+     */
     public String getContentType() {
         if (fileName == null) {
             return "";
@@ -226,6 +231,23 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
                 return CONTENT_TYPE_RTF;
             default:
                 return "";
+        }
+    }
+
+    /**
+     * Checks whether this media item contains a text file that can be exported for indexing.
+     * 
+     * @return true if item content types allows for text export; false otherwise
+     */
+    public boolean isHasExportableText() {
+        switch (getContentType()) {
+            case CMSMediaItem.CONTENT_TYPE_DOC:
+            case CMSMediaItem.CONTENT_TYPE_DOCX:
+            case CMSMediaItem.CONTENT_TYPE_RTF:
+            case CMSMediaItem.CONTENT_TYPE_HTML:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -257,6 +279,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.fileName = fileName;
     }
 
+    /**
+     * 
+     * @param locale
+     * @return media item metadata for the given locale; null if no locale given
+     */
     public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
         if (locale != null) {
             return getMetadataForLanguage(locale.getLanguage());
@@ -265,6 +292,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return null;
     }
 
+    /**
+     * 
+     * @param language
+     * @return media item metadata for the given locale
+     */
     public CMSMediaItemMetadata getMetadataForLanguage(String language) {
         for (CMSMediaItemMetadata md : metadata) {
             if (md.getLanguage().equals(language)) {
@@ -295,7 +327,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     /**
      * Adds a metadata item to the list of image metadata. If a metadata item with the same language string exists, it is replaced
      *
-     * @param metadata_de
+     * @param metadata
      */
     public void addMetadata(CMSMediaItemMetadata metadata) {
         String language = metadata.getLanguage();
@@ -305,6 +337,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         getMetadata().add(metadata);
     }
 
+    /**
+     * 
+     * @return metadata list for the current language
+     */
     public CMSMediaItemMetadata getCurrentLanguageMetadata() {
         CMSMediaItemMetadata version = null;
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
@@ -373,23 +409,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     public URI getLinkURI() {
         return getLinkURI(BeanUtils.getRequest());
-    }
-
-    public static void main(String[] args) {
-
-        String uriString =
-                "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
-        try {
-            URI uri = new URI(uriString);
-            System.out.println(uri);
-
-            CMSMediaItem item = new CMSMediaItem();
-            item.setLink(uriString);
-            URI linkURI = item.getLinkURI(null);
-            System.out.println(linkURI);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -663,4 +682,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return new MultiLanguageMetadataValue(names);
     }
 
+    public static void main(String[] args) {
+        String uriString =
+                "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
+        try {
+            URI uri = new URI(uriString);
+            System.out.println(uri);
+
+            CMSMediaItem item = new CMSMediaItem();
+            item.setLink(uriString);
+            URI linkURI = item.getLinkURI(null);
+            System.out.println(linkURI);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 }

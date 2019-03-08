@@ -12,7 +12,6 @@
 @import "general.less";
 @import "print.less";
 @import "fonts.less";
-@import "grid.less";
 @import "resets.less";
 @import "helper.less";
 @import "IE.less";
@@ -52,15 +51,6 @@
 @import "components/userComments.less";
 @import "components/userGeneratedContent.less";
 @import "components/viewerControls.less";
-
-/* ADMIN VIEWS */
-@import "views/admin/admin.less";
-@import "views/admin/adminBackendTables.less";
-@import "views/admin/adminIpRange.less";
-@import "views/admin/adminLicenseType.less";
-@import "views/admin/adminUser.less";
-@import "views/admin/adminUserGroup.less";
-@import "views/admin/tabUserLicenses.less";
 
 /* COMMON VIEWS */
 @import "views/common/browse.less";
@@ -114,18 +104,15 @@
 
 /* WIDGETS */
 @import "widgets/widgets.less";
-@import "widgets/widgetAdmin.less";
 @import "widgets/widgetBookshelves.less";
 @import "widgets/widgetBookshelfList.less";
 @import "widgets/widgetBrowsing.less";
 @import "widgets/widgetChronology.less";
-@import "widgets/widgetCms.less";
 @import "widgets/widgetCmsPageLinks.less";
 @import "widgets/widgetConvolutes.less";
 @import "widgets/widgetCrowdsourcing.less";
 @import "widgets/widgetCustom.less";
 @import "widgets/widgetCustomDrillDown.less";
-@import "widgets/widgetDownloads.less";
 @import "widgets/widgetMetadata.less";
 @import "widgets/widgetMySearches.less";
 @import "widgets/widgetRSS.less";
@@ -141,6 +128,18 @@
 @import "widgets/widgetNerFacetting.less";
 @import "widgets/widgetWorkCount.less";
 @import "widgets/widgetGeoLocations.less";
+
+/* ADMIN BACKEND */
+@import "admin/admin.less";
+@import "admin/adminBackendTables.less";
+@import "admin/views/adminIpRange.less";
+@import "admin/views/adminLicenseType.less";
+@import "admin/views/adminUser.less";
+@import "admin/views/adminUserGroup.less";
+@import "admin/views/tabUserLicenses.less";
+@import "admin/widgets/widgets.less";
+@import "admin/widgets/widgetAdmin.less";
+@import "admin/widgets/widgetCms.less";
 
 /* CMS MODULES */
 @import "cms/modules/options.less";
@@ -186,4 +185,3 @@
 @import "cms/views/cmsStaticPages.less";
 @import "cms/views/cmsCollections.less";
 @import "cms/views/cmsEditCollection.less";
-

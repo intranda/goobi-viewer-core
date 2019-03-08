@@ -507,7 +507,7 @@ public class TocMaker {
         if (pi == null) {
             logger.error("No PI found for: {}", doc.getFieldValue(SolrConstants.IDDOC));
         }
-        logger.trace("populateTocTree: {}", pi);
+        logger.info("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check PDF download permissions for all docstructs and save into map
         Map<String, Boolean> pdfPermissionMap = null;
@@ -579,13 +579,14 @@ public class TocMaker {
                             SolrSearchIndex.MAX_HITS, DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(
                                     SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
                             null);
-            logger.trace("Loose children of {}: {}", queryValue, childDocs.size());
+            boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
+            logger.info("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
             if (!childDocs.isEmpty()) {
                 for (SolrDocument childDoc : childDocs) {
                     // Add child, if either all siblings are requested or the path leads to the main record
-                    if (addAllSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
+                    if (addSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
                         populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
-                                addAllSiblings, footerId);
+                        		addSiblings, footerId);
                     }
                 }
             }
@@ -713,7 +714,7 @@ public class TocMaker {
                     }
                 }
                 // Translate parameter value, if so configured and not already translated
-                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType()) && !(value instanceof MultiLanguageMetadataValue)) {
+                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
                     value = IMetadataValue.getTranslations(value.getValue().orElse(""));
                 }
@@ -731,21 +732,21 @@ public class TocMaker {
                 Set<String> languages = new HashSet<>(value.getLanguages());
                 
                 languages.addAll(label.getLanguages());
-                if (MetadataParameterType.FIELD.equals(param.getType())) {
+//                if (MetadataParameterType.FIELD.equals(param.getType())) {
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(labelConfig.getMasterValue()).replace(placeholder,
                                 value.getValue(language).orElse(value.getValue().orElse("")));
                         label.setValue(langValue, language);
                     }
-                } else {
-                    for (String language : languages) {
-                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
-                        //                        String langValue =
-                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
-                        label.setValue(langValue, language);
-                    }
-                }
+//                } else {
+//                    for (String language : languages) {
+//                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
+//                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
+//                        //                        String langValue =
+//                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+//                        label.setValue(langValue, language);
+//                    }
+//                }
             }
         } else {
             // Old style layout

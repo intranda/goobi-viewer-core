@@ -472,39 +472,40 @@ public class ViewerResourceBundle extends ResourceBundle {
             locales.addAll(defaultBundles.keySet());
             locales.addAll(localBundles.keySet());
             allLocales = new ArrayList<>(locales);
-
-            //deprecated?
-            Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-            try (Stream<Path> messageFiles =
-                    Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-                allLocales.addAll(messageFiles.map(
-                        path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
-                        .filter(lang -> lang != null)
-                        .sorted((l1, l2) -> {
-                            if (l1.equals(l2)) {
-                                return 0;
-                            }
-                            switch (l1) {
-                                case "en":
-                                    return -1;
-                                case "de":
-                                    return l2.equals("en") ? 1 : -1;
-                                default:
-                                    switch (l2) {
-                                        case "en":
-                                        case "de":
-                                            return 1;
-                                    }
-                            }
-                            return l1.compareTo(l2);
-                        })
-                        .map(language -> Locale.forLanguageTag(language))
-                        .collect(Collectors.toList()));
-            } catch (IOException e) {
-                logger.error("Error reading config directory " + configPath);
-            }
+            synchronized (allLocales) {
+            	//deprecated?
+            	Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+            	try (Stream<Path> messageFiles =
+            			Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
+            		allLocales.addAll(messageFiles.map(
+            				path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
+            				.filter(lang -> lang != null)
+            				.sorted((l1, l2) -> {
+            					if (l1.equals(l2)) {
+            						return 0;
+            					}
+            					switch (l1) {
+            					case "en":
+            						return -1;
+            					case "de":
+            						return l2.equals("en") ? 1 : -1;
+            					default:
+            						switch (l2) {
+            						case "en":
+            						case "de":
+            							return 1;
+            						}
+            					}
+            					return l1.compareTo(l2);
+            				})
+            				.map(language -> Locale.forLanguageTag(language))
+            				.collect(Collectors.toList()));
+            		allLocales = allLocales.stream().distinct().collect(Collectors.toList());
+            	} catch (IOException e) {
+            		logger.error("Error reading config directory " + configPath);
+            	}
+			}
         }
-
-        return allLocales.stream().distinct().collect(Collectors.toList());
+        return allLocales;
     }
 }

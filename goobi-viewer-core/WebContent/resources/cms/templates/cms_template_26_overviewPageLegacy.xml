@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="templateOverviewPageLegacy" version="2018-11-28">
-	<name>Overview page (legacy)</name>
-	<description>Overview page (legacy) template.</description>
+	<name>Übersichtsseite (legacy)</name>
+	<description>Dieses Template wurde für die Migration der bisherigen Übersichtsseiten in das CMS entwickelt.</description>
 	<icon>cms_template_26_overviewPageLegacy.png</icon>
 	<html>cms_template_26_overviewPageLegacy.xhtml</html>
 

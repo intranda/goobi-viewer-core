@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -300,8 +301,8 @@ public class ALTOTools {
         return strings.toString();
     }
 
-    public static List<String> getWordCoords(Document altoDoc, Set<String> searchTerms) {
-        return getWordCoords(altoDoc, searchTerms, 0, 0);
+    public static List<String> getWordCoords(String altoString, Set<String> searchTerms) {
+        return getWordCoords(altoString, searchTerms, 0, 0);
     }
 
     public static String getRotatedCoordinates(String coords, int rotation, Dimension pageSize) {
@@ -327,14 +328,14 @@ public class ALTOTools {
      * @return
      * @should throw IllegalArgumentException if altoDoc is null
      */
-    public static List<String> getWordCoords(Document altoDoc, Set<String> searchTerms, int rotation, int imageFooterHeight) {
-        if (altoDoc == null) {
+    public static List<String> getWordCoords(String altoString, Set<String> searchTerms, int rotation, int imageFooterHeight) {
+        if (altoString == null) {
             throw new IllegalArgumentException("altoDoc may not be null");
         }
         List<Word> words = new ArrayList<>();
         Dimension pageSize = new Dimension(0, 0);
         try {
-            AltoDocument document = new AltoDocument(altoDoc.getRootElement());
+            AltoDocument document = AltoDocument.getDocumentFromString(altoString);
             HyphenationLinker linker = new HyphenationLinker();
             linker.linkWords(document);
             Page page = document.getFirstPage();
@@ -347,7 +348,11 @@ public class ALTOTools {
             logger.error("Could not parse ALTO: No width or height specified in 'page' element.");
         } catch (NumberFormatException e) {
             logger.error("Could not parse ALTO: Could not parse page width or height.");
-        }
+        } catch (IOException e) {
+        	logger.error("Could not parse ALTO: ", e);
+		} catch (JDOMException e) {
+        	logger.error("Could not parse ALTO: ", e);
+		}
         logger.trace("{} ALTO words found for this page.", words.size());
         List<String> coordList = new ArrayList<>();
         for (String s : searchTerms) {

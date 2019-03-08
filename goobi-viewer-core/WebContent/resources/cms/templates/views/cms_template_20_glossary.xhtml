@@ -36,7 +36,7 @@
                     <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </h:panelGroup>
 
-                <h1>#{cmsPage.title}</h1>
+                <h2>#{cmsPage.title}</h2>
 
                 <!-- TEXT -->
                 <div class="tpl-glossary__text">
@@ -52,7 +52,7 @@
                                 <ui:fragment rendered="#{record.title != ''}">
                                     <a title="#{record.title}" name="glossary#{counter.index}"></a>
                                     <div class="tpl-glossary__glossary-title">
-                                        <a href="#{request.contextPath}/search/-/SUPERFULLTEXT:(#{record.title}) OR FULLTEXT:(#{record.title})/1/-/-/">
+                                        <a href='#{request.contextPath}/search/-/SUPERFULLTEXT:("#{record.title}") OR FULLTEXT:("#{record.title}")/1/-/-/'>
                                             <h:outputText value="#{record.title}" escape="false" />
                                         </a>
                                     </div>

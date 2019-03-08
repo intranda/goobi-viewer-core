@@ -1059,11 +1059,11 @@
 				elements -->
 			<metadataFields>
 				<field>MD_*</field>
-				<field>YEAR</field>
+				<field label="label_year">YEAR</field>
 				<event>Expression Creation/MD_EVENTARTIST</event>
        		 	<event>Provenienz/MD_EVENT_DESCRIPTION</event>
-       		 	<event>Provenienz/MD_EVENT_DETAILS</event>
-       		 	<event>YEAR</event>
+       		 	<event label="label_provenienz">Provenienz/MD_EVENT_DETAILS</event>
+       		 	<event>/YEAR</event>
        		 	<event>/MD_EVENTACTOR</event>
 			</metadataFields>
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->

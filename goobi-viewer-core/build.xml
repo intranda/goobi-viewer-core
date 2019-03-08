@@ -87,12 +87,10 @@
 				<patternset>
 					<include name="*.*" />
 					<include name="META-INF/*.*" />
-					<!-- include name="menuUser/*.*" / -->
 					<include name="resources/components/**/*.*" />
 					<include name="resources/includes/**/*.*" />
 					<include name="resources/javascript/**/*.*" />
 					<include name="resources/xslt/**/*.*" />
-					<!-- <include name="resources/themes/${theme}/**/*.*" /> -->
 					<include name="resources/images/**/*.*" />
 					<include name="resources/css/**/*.*" />
 					<include name="resources/fonts/**/*.*" />
@@ -110,6 +108,7 @@
 			<fileset dir="WebContent" includes="*.xhtml">
 				<patternset>
 					<include name="resources/cms/**/*.*" />
+					<include name="resources/admin/**/*.*" />
 				</patternset>
 			</fileset>
 		</copy>
@@ -1518,9 +1517,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://texte.volare.vorarlberg.at/viewer/" />
+		<property name="server.url" value="https://texte.volare.vorarlberg.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Ftexte.volare.vorarlberg.at%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Ftexte.volare.vorarlberg.at%2Fviewer%2Foai" />
 		<property name="theme" value="vlb" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />

@@ -75,7 +75,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     public void testGetContentHtml() throws IOException, DAOException, ServletException {
         String output = resource.getContentHtml(1l, "de", "C1");
         String expectedOutput = "&lt;b&gt;Hello CMS&lt;/b&gt;";
-        Assert.assertEquals(resource.wrap(expectedOutput), output);
+        Assert.assertEquals(resource.wrap(expectedOutput, true), output);
     }
 
     /**
@@ -89,7 +89,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     public void testGetSidebarElementHtml() throws IOException, DAOException, ServletException {
         String output = resource.getSidebarElementHtml(1l);
         String expectedOutput = "&lt;h1&gt;Hello Sidebar&lt;/h1&gt;";
-        Assert.assertEquals(resource.wrap(expectedOutput), output);
+        Assert.assertEquals(resource.wrap(expectedOutput, true), output);
     }
 
     /**
@@ -97,7 +97,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
      * {@link de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource#getContentUrl(de.intranda.digiverso.presentation.model.cms.CMSContentItem)}.
      * 
      * @throws DAOException
-     * @throws CmsElementNotFoundException 
+     * @throws CmsElementNotFoundException
      */
     @Test
     public void testGetContentUrl() throws DAOException, CmsElementNotFoundException {

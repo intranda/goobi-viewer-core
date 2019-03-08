@@ -1106,7 +1106,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     }
 
     /**
-     * Writes HTML fragment value as file for re-indexing.
+     * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
+     * their content type is one of the supported text document formats.
      * 
      * @param pageId ID of the owning CMS page
      * @param hotfolder
@@ -1122,7 +1123,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         if (StringUtils.isEmpty(namingScheme)) {
             throw new IllegalArgumentException("namingScheme may not be null or empty");
         }
-        if (StringUtils.isEmpty(htmlFragment) && (mediaItem == null || !CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType()))) {
+        if (StringUtils.isEmpty(htmlFragment) && mediaItem == null) {
             return;
         }
 
@@ -1142,16 +1143,17 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         }
         // Export media item HTML content
-        if (mediaItem != null && CMSMediaItem.CONTENT_TYPE_HTML.equals(mediaItem.getContentType())) {
+        if (mediaItem != null && mediaItem.isHasExportableText()) {
+            String html = null;
             try {
-                String html = CmsMediaBean.getMediaFileAsString(mediaItem);
-                if (StringUtils.isNotEmpty(html)) {
-                    File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
-                    FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
-                    logger.debug("Wrote media content: {}", file.getName());
-                }
+                html = CmsMediaBean.getMediaFileAsString(mediaItem);
             } catch (ViewerConfigurationException e) {
                 logger.error(e.getMessage(), e);
+            }
+            if (StringUtils.isNotEmpty(html)) {
+                File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
+                FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
+                logger.debug("Wrote media content: {}", file.getName());
             }
         }
     }
