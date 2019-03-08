@@ -27,11 +27,13 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -53,12 +55,14 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.StringTools;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -171,7 +175,7 @@ public class CMSMediaResource {
 	public Response uploadMediaFiles(
 			@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail) {
+            @FormDataParam("file") FormDataContentDisposition fileDetail) throws DAOException {
 		
 		if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -180,38 +184,68 @@ public class CMSMediaResource {
 		Optional<User> user = getUser();
 		if(!user.isPresent()) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
+		} else if(!user.get().isCmsAdmin()) {
+			return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
 		} else {
-			//TODO: Check if user has rights to upload cms media files
-		}
-		Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-		String filename = fileDetail.getFileName();
-		Path mediaFile = cmsMediaFolder.resolve(filename);
-		try {			
-			if(!Files.exists(cmsMediaFolder)) {
-				Files.createDirectory(cmsMediaFolder);
-			}
-			Files.copy(uploadedInputStream, mediaFile);
-			
-			if(Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
-				logger.debug("Successfully downloaded file {}", mediaFile);
-				//upload successful. TODO: check file integrity?
-				CMSMediaItem item = createMediaItem(mediaFile);
-				//TODO: Add user category to item?
-				DataManager.getInstance().getDao().addCMSMediaItem(item);
-				MediaItem jsonItem = new MediaItem(item);
-				return Response.status(Status.ACCEPTED).entity(jsonItem).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to create file " + mediaFile).build();
 
-			}
-			
-		} catch(IOException | DAOException e) {
-			logger.error("Error uploading media file", e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        	Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        	String filename = fileDetail.getFileName();
+        	Path mediaFile = cmsMediaFolder.resolve(filename);
+        	try {			
+        		Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
+
+        		
+        		if(!Files.exists(cmsMediaFolder)) {
+        			Files.createDirectory(cmsMediaFolder);
+        		}
+        		Files.copy(uploadedInputStream, mediaFile);
+        		
+        		if(Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
+        			logger.debug("Successfully downloaded file {}", mediaFile);
+        			//upload successful. TODO: check file integrity?
+        			CMSMediaItem item = createMediaItem(mediaFile);
+        			requiredCategory.ifPresent(cat -> item.addCategory(cat));        			
+        			
+        			
+        			DataManager.getInstance().getDao().addCMSMediaItem(item);
+        			MediaItem jsonItem = new MediaItem(item);
+        			return Response.status(Status.ACCEPTED).entity(jsonItem).build();
+        		} else {
+        			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to create file " + mediaFile).build();
+        			
+        		}
+        	} catch (AccessDeniedException e) {
+        		return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
+        	} catch(IOException | DAOException e) {
+        		logger.error("Error uploading media file", e);
+        		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        	}
 		}
 	}
 	
-    public CMSMediaItem createMediaItem(Path filePath) {
+    /**
+     * Return an Optional containing a {@link CMSCategory} for which the user has access rights if the user in a CmsAdmin but has limited category rights
+     * If the user has unlimited category rights, return an empty optional
+     * 
+	 * @param user
+	 * @return
+     * @throws DAOException 
+     * @throws AccessDeniedException	if the user is not allowed to use any categories whatsoever
+	 */
+	private Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
+
+		if(!user.hasPriviledgeForAllCategories()) {
+			List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+			if(!allowedCategories.isEmpty()) {
+				return Optional.of(allowedCategories.get(0));
+			} else {
+				throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
+			}
+		}
+    	return Optional.empty();
+	}
+
+	public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();
 		item.setFileName(filePath.getFileName().toString());
         for (Locale locale : CmsBean.getAllLocales()) {
