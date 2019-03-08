@@ -16,13 +16,10 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -38,7 +35,6 @@ import javax.inject.Named;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -46,19 +42,15 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.cms.CMSCategory;
-import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 
 @Named
 @SessionScoped

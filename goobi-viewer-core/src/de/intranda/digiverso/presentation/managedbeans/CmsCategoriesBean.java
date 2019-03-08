@@ -16,12 +16,14 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import javax.persistence.RollbackException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 
 /**
@@ -122,11 +125,24 @@ public class CmsCategoriesBean implements Serializable {
 	 * @param category
 	 * @throws DAOException
 	 */
-	public void delete(CMSCategory category) throws DAOException {
+	public void delete(CMSCategory category) {
 		if(getSelectedCategory() != null && getSelectedCategory().equals(category)) {
 			endEditing();
 		}
-		DataManager.getInstance().getDao().deleteCategory(category);
+		try {			
+			DataManager.getInstance().getDao().deleteCategory(category);
+			Messages.info("admin__category_delete_success");
+		}catch(RollbackException e) {
+			if(e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
+				Messages.error("admin__category_delete_error_inuse");
+			} else {
+				logger.error("Error deleting category ", e);
+				Messages.error("admin__category_delete_error");
+			}
+		} catch(DAOException e) {
+			logger.error("Error deleting category ", e);
+			Messages.error("admin__category_delete_error");
+		}
 	}
 
 	
