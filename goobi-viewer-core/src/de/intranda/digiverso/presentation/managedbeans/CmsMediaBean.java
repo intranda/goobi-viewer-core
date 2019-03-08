@@ -31,9 +31,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -51,6 +53,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 @Named
 @SessionScoped
@@ -60,6 +63,9 @@ public class CmsMediaBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(CmsMediaBean.class);
 
+    @Inject
+    private UserBean userBean;
+    
     private String selectedTag;
     //    private List<CMSMediaItem> mediaItems;
 
@@ -148,8 +154,22 @@ public class CmsMediaBean implements Serializable {
         }
     }
 
-    public static List<CMSMediaItem> getAllMedia() throws DAOException {
-        return DataManager.getInstance().getDao().getAllCMSMediaItems();
+    public List<CMSMediaItem> getAllMedia() throws DAOException {
+        List<CMSMediaItem> items = new ArrayList<>(DataManager.getInstance().getDao().getAllCMSMediaItems());
+        
+        if(userBean != null && userBean.getUser() != null && userBean.getUser().isCmsAdmin()) {
+        	User user = userBean.getUser();
+        	if(user.hasPriviledgeForAllCategories()) {
+        		return items;
+        	} else {
+        		List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+        		items = items.stream().filter(item -> ListUtils.intersection(item.getCategories(), allowedCategories).size() > 0).collect(Collectors.toList());
+        		return items;        		
+        	}
+        } else {
+        	return new ArrayList<>();
+        }
+        
     }
 
     public List<CMSMediaItem> getMediaItems(CMSCategory category, String filenameFilter) throws DAOException {
