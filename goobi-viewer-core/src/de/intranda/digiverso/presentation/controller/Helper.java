@@ -573,7 +573,7 @@ public class Helper {
      * @throws IndexUnreachableException
      * @throws IOException
      */
-    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
+    public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
@@ -613,7 +613,7 @@ public class Helper {
         boolean writeTriggerFile = true;
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
-                if (!module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString())) {
+                if (!module.augmentReIndexPage(pi, page, doc, dataRepository, sbNamingScheme.toString())) {
                     writeTriggerFile = false;
                 }
             } catch (Exception e) {
@@ -628,6 +628,12 @@ public class Helper {
         }
 
         return true;
+    }
+
+    @Deprecated
+    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
+            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+        return reIndexPage(pi, page);
     }
 
     /**

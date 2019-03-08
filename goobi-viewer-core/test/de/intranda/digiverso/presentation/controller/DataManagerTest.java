@@ -117,6 +117,14 @@ public class DataManagerTest {
             }
 
             /* (non-Javadoc)
+             * @see de.intranda.digiverso.presentation.modules.IModule#augmentReIndexPage(java.lang.String, int, org.apache.solr.common.SolrDocument, java.lang.String, java.lang.String)
+             */
+            @Override
+            public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception {
+                return false;
+            }
+
+            /* (non-Javadoc)
              * @see de.intranda.digiverso.presentation.modules.IModule#augmentReIndexPage(java.lang.String, int, org.apache.solr.common.SolrDocument, java.lang.String, java.lang.String, java.lang.String)
              */
             @Override
@@ -140,7 +148,6 @@ public class DataManagerTest {
             public Optional<IURLBuilder> getURLBuilder() {
                 return Optional.empty();
             }
-
         }
         Assert.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
         Assert.assertFalse(DataManager.getInstance().registerModule(new TestModule()));

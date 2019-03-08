@@ -280,6 +280,9 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         String path = getImagePath(page);
+        if (path == null) {
+            return "";
+        }
         if (isStaticImageResource(path)) {
             return path;
         } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
@@ -316,6 +319,9 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
+        if (path == null) {
+            return "";
+        }
         if (isStaticImageResource(path)) {
             return path;
         } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
@@ -490,6 +496,9 @@ public class ThumbnailHandler {
      * @return
      */
     private String getImagePath(PhysicalElement page) {
+        if (page == null) {
+            return "";
+        }
 
         String thumbnailUrl = null;
 
@@ -547,7 +556,8 @@ public class ThumbnailHandler {
                     logger.error("Unable to retrieve first volume of " + doc + "from index", e);
                 }
             } else {
-                logger.error("Unknown value in viewer.anchorThumbnailMode: " + this.anchorThumbnailMode + ". No thumbnail can be rendered for " + doc);
+                logger.error(
+                        "Unknown value in viewer.anchorThumbnailMode: " + this.anchorThumbnailMode + ". No thumbnail can be rendered for " + doc);
             }
         } else {
             DocType docType = getDocType(doc).orElse(DocType.DOCSTRCT);
@@ -777,6 +787,9 @@ public class ThumbnailHandler {
      * @return true if the url starts with the viewer url path to image resources
      */
     public boolean isStaticImageResource(String thumbnailUrl) {
+        if (thumbnailUrl == null) {
+            throw new IllegalArgumentException("thumbnailUrl may not be null");
+        }
         return thumbnailUrl.contains(staticImagesPath);
     }
 

@@ -90,6 +90,21 @@ public interface IModule {
      * @param namingScheme
      * @return true if successful; false otherwise
      */
+    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
+            throws Exception;
+    
+    /**
+     * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
+     * 
+     * @param pi
+     * @param page
+     * @param doc
+     * @param recordType
+     * @param dataRepository
+     * @param namingScheme
+     * @return true if successful; false otherwise
+     */
+    @Deprecated
     public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String recordType, String dataRepository, String namingScheme)
             throws Exception;
 
