@@ -536,9 +536,52 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns all existing license types. Required for admin tabs.
+     * 
+     * @return all license types in the database
+     * @throws DAOException
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenseTypes();
+    }
+
+    /**
+     * 
+     * @param core
+     * @return all license types in the database where this.core=core
+     * @throws DAOException
+     */
+    private List<LicenseType> getFilteredLicenseTypes(boolean core) throws DAOException {
+        List<LicenseType> all = getAllLicenseTypes();
+        if (all.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> ret = new ArrayList<>(all.size());
+        for (LicenseType lt : all) {
+            if (lt.isCore() == core) {
+                ret.add(lt);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @return all license types in the database where core=true
+     * @throws DAOException
+     */
+    public List<LicenseType> getAllCoreLicenseTypes() throws DAOException {
+        return getFilteredLicenseTypes(true);
+    }
+
+    /**
+     * 
+     * @return all license types in the database where core=false
+     * @throws DAOException
+     */
+    public List<LicenseType> getAllNonCoreLicenseTypes() throws DAOException {
+        return getFilteredLicenseTypes(false);
     }
 
     /**

@@ -27,11 +27,8 @@
 			<h:panelGroup id="editLicense" rendered="#{adminBean.currentLicense != null}">
 				<fieldset>
                     <ui:include src="/resources/admin/includes/currentLicense.xhtml" />
-                    <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.cmsType}">
+                    <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
                         <ui:include src="/resources/admin/includes/currentLicensePrivileges.xhtml" />
-                    </ui:fragment>
-                    <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
-                        <ui:include src="/resources/admin/includes/currentLicensePrivilegesCMS.xhtml" />
                     </ui:fragment>
 				</fieldset>
 				<br />
