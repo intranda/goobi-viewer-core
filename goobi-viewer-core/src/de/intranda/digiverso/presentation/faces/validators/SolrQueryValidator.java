@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
 
 /**
  * Validates the entered PI belonging to a record for which the current user may create CMS content.
@@ -49,40 +47,26 @@ public class SolrQueryValidator implements Validator<String> {
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-        if (validateQuery(value)) {
+        // Empty query is ok
+        if (StringUtils.isEmpty(value)) {
             return;
         }
 
-        String message = Helper.getTranslation("cms_itemSolrQuery_invalid", null);
-        FacesMessage msg = new FacesMessage(message, "");
-        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-        throw new ValidatorException(msg);
-    }
-
-    /**
-     *
-     * @param pi
-     * @param user
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public static boolean validateQuery(String query) {
-        // Empty query is ok
-        if (StringUtils.isEmpty(query)) {
-            return true;
-        }
-
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(query);
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(value);
+            long hits = resp.getResults().getNumFound();
+            String message = Helper.getTranslation("cms_itemSolrQuery_numhits", null).replace("{0}", String.valueOf(hits));
+            FacesMessage msg = new FacesMessage(message, "");
+            msg.setSeverity(FacesMessage.SEVERITY_INFO);
         } catch (SolrServerException | RemoteSolrException e) {
             if (SolrSearchIndex.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
-                return false;
+                String message = Helper.getTranslation("cms_itemSolrQuery_invalid", null);
+                FacesMessage msg = new FacesMessage(message, "");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                throw new ValidatorException(msg);
             }
             logger.error(e.getMessage(), e);
         }
-
-        return true;
     }
 }
