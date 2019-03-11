@@ -41,7 +41,7 @@
     					</h:panelGroup>
     					
     					<!-- BACK -->
-    					<div class="widget-bookshelf-list__back">
+    					<div class="widget-bookshelf-list__back #{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty() ? 'has-items' : ''}">
     						<a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
     					</div>
                     </h:panelGroup>
