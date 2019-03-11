@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.messages.Messages;
 
 /**
  * Validates the entered PI belonging to a record for which the current user may create CMS content.
@@ -55,9 +56,17 @@ public class SolrQueryValidator implements Validator<String> {
         try {
             QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(value);
             long hits = resp.getResults().getNumFound();
+            logger.trace("{} hits", hits);
             String message = Helper.getTranslation("cms_itemSolrQuery_numhits", null).replace("{0}", String.valueOf(hits));
-            FacesMessage msg = new FacesMessage(message, "");
-            msg.setSeverity(FacesMessage.SEVERITY_INFO);
+            //            FacesMessage msg = new FacesMessage(message, "");
+            //            msg.setSeverity(hits > 0 ? FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_WARN);
+            if (hits > 0) {
+                Messages.info(component.getClientId(), message);
+            } else {
+                Messages.warn(component.getClientId(), message);
+            }
+
+            return;
         } catch (SolrServerException | RemoteSolrException e) {
             if (SolrSearchIndex.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
