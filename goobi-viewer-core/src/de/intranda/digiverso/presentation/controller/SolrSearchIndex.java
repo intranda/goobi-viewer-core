@@ -118,6 +118,14 @@ public final class SolrSearchIndex {
         return server;
     }
 
+    public QueryResponse testQuery(String query) throws SolrServerException {
+        SolrQuery solrQuery = new SolrQuery(query);
+        solrQuery.setStart(0);
+        solrQuery.setRows(0);
+
+        return server.query(solrQuery);
+    }
+
     /**
      * Main Solr search method.
      *
@@ -1111,7 +1119,7 @@ public final class SolrSearchIndex {
      * @param e
      * @return
      */
-    private static boolean isQuerySyntaxError(Exception e) {
+    public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().startsWith("Invalid Number") || e.getMessage().startsWith("undefined field"));
     }
