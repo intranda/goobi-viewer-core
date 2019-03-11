@@ -7269,7 +7269,7 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-bookshelf-list ul {
   margin-bottom: 15px;
 }
-.widget-bookshelf-list__back {
+.widget-bookshelf-list__back.has-items {
   padding-top: 10px;
   border-top: 1px solid #ccc;
 }
