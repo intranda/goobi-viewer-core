@@ -20,7 +20,8 @@
             <div class="col-sm-8">
                 <div class="custom-control custom-control--select">
                     <h:selectOneMenu id="name" value="#{adminBean.currentLicense.licenseType}" converter="licenseTypeConverter" required="true">
-                        <f:selectItems value="#{adminBean.allLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                        <!-- TODO different modes for core and other license types -->
+                        <f:selectItems value="#{adminBean.allNonCoreLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                         <f:ajax render="@form" />
                     </h:selectOneMenu>
                 </div>
@@ -36,23 +37,23 @@
         </div>
         
         <!-- LICENSE START -->
-        <div class="form-group">
-            <h:outputLabel for="dateStart" styleClass="col-sm-4 control-label" value="#{msg.license_start}" />
-            <div class="col-sm-8">
-                <p:calendar id="dateStart" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.start}" showOn="button" />
-            </div>
-        </div>
+<!--         <div class="form-group"> -->
+<!--             <h:outputLabel for="dateStart" styleClass="col-sm-4 control-label" value="#{msg.license_start}" /> -->
+<!--             <div class="col-sm-8"> -->
+<!--                 <p:calendar id="dateStart" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.start}" showOn="button" /> -->
+<!--             </div> -->
+<!--         </div> -->
         
         <!-- LICENSE END -->
-        <div class="form-group">
-            <h:outputLabel for="dateEnd" styleClass="col-sm-4 control-label" value="#{msg.license_end}" />
-            <div class="col-sm-8">
-                <p:calendar id="dateEnd" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.end}" showOn="button" />
-            </div>
-        </div>
+<!--         <div class="form-group"> -->
+<!--             <h:outputLabel for="dateEnd" styleClass="col-sm-4 control-label" value="#{msg.license_end}" /> -->
+<!--             <div class="col-sm-8"> -->
+<!--                 <p:calendar id="dateEnd" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.end}" showOn="button" /> -->
+<!--             </div> -->
+<!--         </div> -->
         
         <!-- LICENSE CONDITIONS -->
-        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.cmsType}">
+        <ui:fragment>
             <div class="form-group">
                 <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_conditions}" />
                 <div class="col-sm-8">
@@ -61,111 +62,5 @@
             </div>
         </ui:fragment>
         
-        <!-- CMS SETTINGS -->
-        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
-        
-            <ui:fragment rendered="#{configurationBean.subthemeDiscriminatorFieldSet}">
-                <!-- SUBTHEME FILTERING ON/OFF -->
-                <label>
-                    <h:selectBooleanCheckbox 
-                        id="privCmsAllSubthemesDisabled"
-                        rendered="#{adminBean.currentLicense.licenseType.privCmsAllSubthemes}" 
-                        disabled="true" 
-                        selected="true"
-                        title="#{msg.license_privInheritedFromLicenseType}" 
-                        label="privCmsAllSubthemes" />
-                    <h:selectBooleanCheckbox 
-                        id="privCmsAllSubthemes"
-                        rendered="#{!adminBean.currentLicense.licenseType.privCmsAllSubthemes}" 
-                        value="#{adminBean.currentLicense.privCmsAllSubthemes}"
-                        label="privCmsAllSubthemes">
-                        <f:ajax render="@form" />
-                    </h:selectBooleanCheckbox> #{msg.license_privCmsAllSubthemes}
-                </label>
-                <br />
-        
-                <!-- ALLOWED SUBTHEMES -->
-                <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllSubthemes}">
-                <div class="form-group">
-                    <h:outputLabel for="subthemes" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_subthemes}" />
-                    <div class="col-sm-8">
-                        <div class="custom-control custom-control--select" style="min-height: 200px">
-                            <h:selectManyListbox id="subthemes" value="#{adminBean.currentLicense.subthemeDiscriminatorValues}"
-                                disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}">
-                                <f:selectItems value="#{cmsBean.subthemeDiscriminatorValues}" />
-                            </h:selectManyListbox>
-                        </div>
-                    </div>
-                </div>
-                </ui:fragment>
-            </ui:fragment>
-            
-            <!-- CATEGORY FILTERING ON/OFF -->
-            <label>
-                <h:selectBooleanCheckbox 
-                    id="privCmsAllCategoriesDisabled"
-                    rendered="#{adminBean.currentLicense.licenseType.privCmsAllCategories}" 
-                    disabled="true" 
-                    selected="true"
-                    title="#{msg.license_privInheritedFromLicenseType}" 
-                    label="privCmsAllCategories" />
-                <h:selectBooleanCheckbox 
-                    id="privCmsAllCategories"
-                    rendered="#{!adminBean.currentLicense.licenseType.privCmsAllCategories}" 
-                    value="#{adminBean.currentLicense.privCmsAllCategories}"
-                    label="privCmsAllCategories">
-                    <f:ajax render="@form" />
-                </h:selectBooleanCheckbox> #{msg.license_privCmsAllCategories}
-            </label>
-            <br />
-            
-            <!-- ALLOWED CATEGORIES -->
-            <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllCategories}">
-            <div class="form-group">
-                <h:outputLabel for="categories" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_categories}" />
-                <div class="col-sm-8">
-                    <div class="custom-control custom-control--select" style="min-height: 200px">
-                        <h:selectManyListbox id="categories" value="#{adminBean.currentLicense.allowedCategories}">
-                            <f:selectItems value="#{cmsBean.allCategories}" var="category" itemLabel="#{category.name}" itemValue="#{category}" />
-                        </h:selectManyListbox>
-                    </div>
-                </div>
-            </div>
-            </ui:fragment>
-            
-            <!-- TEMPLATE FILTERING ON/OFF -->
-            <label>
-                <h:selectBooleanCheckbox 
-                    id="privCmsAllTemplatesDisabled"
-                    rendered="#{adminBean.currentLicense.licenseType.privCmsAllTemplates}" 
-                    disabled="true" 
-                    selected="true"
-                    title="#{msg.license_privInheritedFromLicenseType}" 
-                    label="privCmsAllTemplates" />
-                <h:selectBooleanCheckbox 
-                    id="privCmsAllTemplates"
-                    rendered="#{!adminBean.currentLicense.licenseType.privCmsAllTemplates}" 
-                    value="#{adminBean.currentLicense.privCmsAllTemplates}"
-                    label="privCmsAllTemplates">
-                    <f:ajax render="@form" />
-                </h:selectBooleanCheckbox> #{msg.license_privCmsAllTemplates}
-            </label>
-            <br />
-
-            <!-- ALLOWED TEMPLATES -->
-            <ui:fragment rendered="#{!adminBean.currentLicense.privCmsAllTemplates}">
-            <div class="form-group">
-                <h:outputLabel for="templates" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_templates}" />
-                <div class="col-sm-8">
-                    <div class="custom-control custom-control--select" style="min-height: 200px">
-                        <h:selectManyListbox id="templates" value="#{adminBean.currentLicense.allowedCmsTemplates}">
-                            <f:selectItems value="#{cmsBean.templates}" var="template" itemLabel="#{template.name}" itemValue="#{template.id}" />
-                        </h:selectManyListbox>
-                    </div>
-                </div>
-            </div>
-            </ui:fragment>
-            
-        </ui:fragment>
     </div>
 </ui:composition>

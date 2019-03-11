@@ -3024,7 +3024,6 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM ").append(className).append(" a");
         Map<String, String> params = new HashMap<>();
         Query q = em.createQuery(sbQuery.append(createFilterQuery(staticFilterQuery, filters, params)).toString());
-        logger.trace(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
         return (long) q.getSingleResult();

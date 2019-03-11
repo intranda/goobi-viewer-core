@@ -41,6 +41,10 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 
+/**
+ * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
+ * known as core license types.
+ */
 @Entity
 @Table(name = "license_types")
 public class LicenseType implements IPrivilegeHolder {
@@ -53,15 +57,8 @@ public class LicenseType implements IPrivilegeHolder {
     public static final String LICENSE_TYPE_DELETE_OCR_PAGE = "licenseType_deleteOcrPage";
     private static final String LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE_DESCRIPTION = "licenseType_setRepresentativeImage_desc";
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
-
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
-    //    private static final String LICENSE_TYPE_CMS_MENU = "licenseType_cms_navigation";
-    //    private static final String LICENSE_TYPE_DESC_CMS_MENU = "licenseType_cms_menu_desc";
-    //    private static final String LICENSE_TYPE_CMS_STATIC_PAGES = "licenseType_cms_static_pages";
-    //    private static final String LICENSE_TYPE_DESC_CMS_STATIC_PAGES = "licenseType_cms_static_pages_desc";
-    //    private static final String LICENSE_TYPE_CMS_COLLECTIONS = "licenseType_cms_collections";
-    //    private static final String LICENSE_TYPE_DESC_CMS_COLLECTIONS = "licenseType_cms_collections_desc";
 
     //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
     private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
@@ -254,9 +251,6 @@ public class LicenseType implements IPrivilegeHolder {
 
         switch (name) {
             case LICENSE_TYPE_CMS:
-                //            case LICENSE_TYPE_CMS_MENU:
-                //            case LICENSE_TYPE_CMS_STATIC_PAGES:
-                //            case LICENSE_TYPE_CMS_COLLECTIONS:
                 return true;
             default:
                 return false;
