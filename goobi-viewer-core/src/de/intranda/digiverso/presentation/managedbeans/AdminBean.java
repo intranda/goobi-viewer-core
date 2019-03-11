@@ -222,7 +222,6 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    logger.trace("core license types: {}", DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters));
                     return DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);

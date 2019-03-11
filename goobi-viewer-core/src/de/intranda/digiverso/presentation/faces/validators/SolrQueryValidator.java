@@ -35,7 +35,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.messages.Messages;
 
 /**
- * Validates the entered PI belonging to a record for which the current user may create CMS content.
+ * Validates the query syntax and displays the number of hits.
  */
 @FacesValidator("solrQueryValidator")
 public class SolrQueryValidator implements Validator<String> {
