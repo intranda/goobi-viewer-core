@@ -666,6 +666,11 @@
 		<view-id value="/resources/admin/views/adminRights.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminRight">
+        <pattern value="/admin/right/" />
+        <view-id value="/resources/admin/views/adminRight.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">

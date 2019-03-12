@@ -41,6 +41,11 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
                                     <li role="presentation">
+                                        <a href="#userGroupRights" aria-controls="messages" role="tab" data-toggle="tab">#{msg.rights}</a>
+                                    </li>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <li role="presentation">
                                         <a href="#userGroupLicenses" aria-controls="messages" role="tab" data-toggle="tab">#{msg.licenses}</a>
                                     </li>
                                 </h:panelGroup>
@@ -53,14 +58,21 @@
                                     <ui:include src="/resources/admin/includes/tabUserGroupGeneral.xhtml" />
                                 </div>
     
-                                <!-- user group member -->
+                                <!-- user group members -->
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
                                     <div role="tabpanel" class="tab-pane" id="userGroupMembers">
                                         <ui:include src="/resources/admin/includes/tabUserGroupMembers.xhtml" />
                                     </div>
                                 </h:panelGroup>
+                                
+                                <!-- user group rights -->
+                                <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
+                                    <div role="tabpanel" class="tab-pane" id="userGroupRights">
+                                        <ui:include src="/resources/admin/includes/tabUserGroupRights.xhtml" />
+                                    </div>
+                                </h:panelGroup>
     
-                                <!-- user group license -->
+                                <!-- user group licenses -->
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
                                     <div role="tabpanel" class="tab-pane" id="userGroupLicenses">
                                         <ui:include src="/resources/admin/includes/tabUserGroupLicenses.xhtml" />

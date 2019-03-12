@@ -85,7 +85,7 @@ public class UserGroup implements ILicensee {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        if(id != null) {            
+        if (id != null) {
             result = prime * result + (int) (id ^ id >>> 32);
         }
         result = prime * result + (name == null ? 0 : name.hashCode());
@@ -202,8 +202,9 @@ public class UserGroup implements ILicensee {
                         } else if (StringUtils.isNotEmpty(pi)) {
                             // If PI and Solr condition subquery are present, check via Solr
                             String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
-                            if (DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(
-                                    SolrConstants.IDDOC)) != null) {
+                            if (DataManager.getInstance()
+                                    .getSearchIndex()
+                                    .getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
                                 logger.debug("Permission found for user group: {} (query: {})", name, query);
                                 return true;
                             }
@@ -339,6 +340,26 @@ public class UserGroup implements ILicensee {
     }
 
     /**
+     * 
+     * @param core
+     * @return List of filtered licenses whose type's core attribute matches the given value
+     */
+    public List<License> getLicenses(boolean core) {
+        if (licenses == null || licenses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<License> ret = new ArrayList<>(licenses.size());
+        for (License license : licenses) {
+            if (license.getLicenseType().isCore() == core) {
+                ret.add(license);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * @throws DAOException
      *
      */
@@ -355,7 +376,7 @@ public class UserGroup implements ILicensee {
 
         return ret;
     }
-    
+
     @Override
     public String toString() {
         return name;

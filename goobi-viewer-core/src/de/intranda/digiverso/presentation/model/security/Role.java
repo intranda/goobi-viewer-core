@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Represents a role a user can have (e.g. administrator, lecturer, student, etc.). Contains a set of privileges. A role can also inherit from other
+ * Represents a role a user can have within a user group. Contains a set of privileges. A role can also inherit from other
  * roles. The full potential of this class is not in use at the moment.
  */
 @Entity

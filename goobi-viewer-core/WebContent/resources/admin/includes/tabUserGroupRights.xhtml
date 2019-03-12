@@ -10,9 +10,9 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:form id="licenseForm" rendered="#{userBean.admin}" prependId="true">
-			<h:panelGroup id="listUserGroupLicenses" rendered="#{adminBean.currentLicense == null}">
-				<h3>#{msg.licenses}</h3>
+		<h:form id="rightsForm" rendered="#{userBean.admin}" prependId="true">
+			<h:panelGroup id="listUserGroupRights" rendered="#{adminBean.currentLicense == null}">
+				<h3>#{msg.rights}</h3>
 				
 				<p>
 					<h:commandLink value="#{msg.license_addNew}" action="#{adminBean.resetCurrentLicenseForUserGroupAction}" styleClass="btn btn--default">
@@ -20,24 +20,24 @@
 					</h:commandLink>				
 				</p>
 
-                <adminComponent:licensesTable id="adminLicensesTable" licenses="#{adminBean.currentUserGroup.getLicenses(false)}" />
+                <adminComponent:licensesTable id="adminRightsTable" licenses="#{adminBean.currentUserGroup.getLicenses(true)}" />
 				
 			</h:panelGroup>
 
-			<h:panelGroup id="editLicense" rendered="#{adminBean.currentLicense != null}">
+			<h:panelGroup id="editCoreLicense" rendered="#{adminBean.currentLicense != null}">
 				<fieldset>
-                    <ui:include src="/resources/admin/includes/currentLicense.xhtml" />
-                    <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
-                        <ui:include src="/resources/admin/includes/currentLicensePrivileges.xhtml" />
+                    <ui:include src="/resources/admin/includes/currentCoreLicense.xhtml" />
+                    <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
+                        <ui:include src="/resources/admin/includes/currentLicensePrivilegesCMS.xhtml" />
                     </ui:fragment>
 				</fieldset>
 				<br />
 				<div style="text-align: right;">
-					<h:commandLink id="cancelButton" styleClass="btn" value="#{msg.cancel}" action="adminUserGroup" immediate="true">
+					<h:commandLink id="cancelButton2" styleClass="btn" value="#{msg.cancel}" action="adminUserGroup" immediate="true">
 						<f:setPropertyActionListener target="#{adminBean.currentLicense}" value="#{null}" />
 						<f:ajax render="@form" />
 					</h:commandLink>
-					<h:commandLink id="saveButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
+					<h:commandLink id="saveButton2" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
 						disabled="#{adminBean.currentLicense == null}">
 <!-- 						<f:ajax render="@form" /> -->
 					</h:commandLink>
