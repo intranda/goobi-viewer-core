@@ -661,14 +661,14 @@
 		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="adminRights">
-		<pattern value="/admin/rights/" />
-		<view-id value="/resources/admin/views/adminRights.xhtml" />
+	<url-mapping id="adminRoles">
+		<pattern value="/admin/roles/" />
+		<view-id value="/resources/admin/views/adminRoles.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="adminRight">
-        <pattern value="/admin/right/" />
-        <view-id value="/resources/admin/views/adminRight.xhtml" />
+    <url-mapping id="adminRole">
+        <pattern value="/admin/role/" />
+        <view-id value="/resources/admin/views/adminRole.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 

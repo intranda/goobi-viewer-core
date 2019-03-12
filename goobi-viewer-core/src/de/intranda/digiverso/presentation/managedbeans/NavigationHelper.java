@@ -798,17 +798,17 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getPageUrl(String pageType) {
-    	PageType page = PageType.getByName(pageType);
-        if(page != null) {
-        	return getPageUrl(page);
-        } else {
-        	return "";
+        PageType page = PageType.getByName(pageType);
+        if (page != null) {
+            return getPageUrl(page);
         }
+
+        return "";
     }
+
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-    
 
     public String getSearchUrl(int activeSearchType) {
 
