@@ -41,7 +41,7 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
                                     <li role="presentation">
-                                        <a href="#userGroupRights" aria-controls="messages" role="tab" data-toggle="tab">#{msg.rights}</a>
+                                        <a href="#userGroupRoles" aria-controls="messages" role="tab" data-toggle="tab">#{msg.roles}</a>
                                     </li>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
@@ -65,10 +65,10 @@
                                     </div>
                                 </h:panelGroup>
                                 
-                                <!-- user group rights -->
+                                <!-- user group role -->
                                 <h:panelGroup rendered="#{adminBean.currentUserGroup.id != null}">
-                                    <div role="tabpanel" class="tab-pane" id="userGroupRights">
-                                        <ui:include src="/resources/admin/includes/tabUserGroupRights.xhtml" />
+                                    <div role="tabpanel" class="tab-pane" id="userGroupRoles">
+                                        <ui:include src="/resources/admin/includes/tabUserGroupRoles.xhtml" />
                                     </div>
                                 </h:panelGroup>
     

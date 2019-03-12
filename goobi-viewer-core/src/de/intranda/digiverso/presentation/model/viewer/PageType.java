@@ -35,7 +35,7 @@ public enum PageType {
     viewThumbs("thumbs"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
-//    viewOverview("overview"),
+    //    viewOverview("overview"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
@@ -58,7 +58,7 @@ public enum PageType {
     adminIpRange("admin/network"),
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
-    adminRights("admin/rights"),
+    adminRoles("admin/roles"),
     adminUserComments("admin/comments"),
     adminUserActivity("admin/user/activity/"),
     //admin/cms
@@ -118,7 +118,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-//            case viewOverview:
+                //            case viewOverview:
             case viewThumbs:
             case viewToc:
                 return true;
@@ -141,7 +141,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-//            case viewOverview:
+                //            case viewOverview:
             case viewThumbs:
             case viewToc:
             case viewObject:
@@ -259,9 +259,9 @@ public enum PageType {
     public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
             boolean preferOverviewPage, boolean pageResolverUrl) {
         // Prefer the overview page, if available (and not a page URL)
-//        if (preferOverviewPage && !pageResolverUrl) {
-//            return PageType.viewOverview;
-//        }
+        //        if (preferOverviewPage && !pageResolverUrl) {
+        //            return PageType.viewOverview;
+        //        }
         // Determine preferred target for the docstruct
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {

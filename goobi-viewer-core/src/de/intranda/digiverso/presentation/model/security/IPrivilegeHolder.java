@@ -28,7 +28,7 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
     public static final String PRIV_DOWNLOAD_ORIGINAL_CONTENT = "DOWNLOAD_ORIGINAL_CONTENT";
 
-    // Static privileges
+    // Role privileges
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
     public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
     public static final String PRIV_CMS_PAGES = "CMS_PAGES";
@@ -73,6 +73,10 @@ public interface IPrivilegeHolder {
     public boolean isPrivDownloadOriginalContent();
 
     public void setPrivDownloadOriginalContent(boolean priv);
+    
+    public boolean isPrivDeleteOcrPage();
+
+    public void setPrivDeleteOcrPage(boolean priv);
 
     public boolean isPrivSetRepresentativeImage();
 

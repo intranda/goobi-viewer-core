@@ -284,6 +284,26 @@ public class License implements IPrivilegeHolder, Serializable {
 
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
+     */
+    @Override
+    public boolean isPrivDeleteOcrPage() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
+     */
+    @Override
+    public void setPrivDeleteOcrPage(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+        }
+    }
+
     @Override
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);

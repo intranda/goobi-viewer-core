@@ -570,7 +570,7 @@ public class AdminBean implements Serializable {
      * @return all license types in the database where core=true
      * @throws DAOException
      */
-    public List<LicenseType> getAllCoreLicenseTypes() throws DAOException {
+    public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(true);
     }
 
@@ -579,7 +579,7 @@ public class AdminBean implements Serializable {
      * @return all license types in the database where core=false
      * @throws DAOException
      */
-    public List<LicenseType> getAllNonCoreLicenseTypes() throws DAOException {
+    public List<LicenseType> getAllRecordLicenseTypes() throws DAOException {
         return getFilteredLicenseTypes(false);
     }
 
@@ -640,8 +640,13 @@ public class AdminBean implements Serializable {
     }
 
     public void resetCurrentLicenseTypeAction() {
-        logger.debug("resetCurrentLicenseTypeAction");
+        logger.trace("resetCurrentLicenseTypeAction");
         currentLicenseType = new LicenseType();
+    }
+
+    public void resetCurrentRoleLicenseAction() {
+        currentLicenseType = new LicenseType();
+        currentLicenseType.setCore(true);
     }
 
     // IpRange
