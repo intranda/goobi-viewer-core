@@ -283,17 +283,15 @@ public interface IDAO {
 
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
 
-    public long getCMSPageCount(Map<String, String> filters) throws DAOException;
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
-    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
     public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException;
 
     public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
-
-    long getCMSPagesCount(Map<String, String> filters) throws DAOException;
 
     public boolean addCMSPage(CMSPage page) throws DAOException;
 

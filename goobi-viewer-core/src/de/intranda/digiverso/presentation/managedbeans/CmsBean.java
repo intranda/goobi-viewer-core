@@ -41,6 +41,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
+import org.bouncycastle.cert.dane.DANEException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +114,8 @@ public class CmsBean implements Serializable {
     private SearchBean searchBean;
     @Inject
     private UserBean userBean;
+    @Inject
+    private CmsBean cmsBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page open for editing */
@@ -138,15 +141,22 @@ public class CmsBean implements Serializable {
             lazyModelPages = new TableDataProvider<>(new TableDataSource<CMSPage>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
+				private List<String> allowedSubthemes = null;
+				private List<String> allowedCategories = null;
+				private List<String> allowedTemplates = null;
+				private boolean initialized = false;
+				
 
                 @Override
                 public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    try {
+                	try {
+                		initialize();
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
                         }
-                        List<CMSPage> pages =
-                                DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        
+						List<CMSPage> pages =
+                                DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes, allowedCategories);
                         pages.forEach(page -> {
                             PageValidityStatus validityStatus = isPageValid(page);
                             page.setValidityStatus(validityStatus);
@@ -166,7 +176,8 @@ public class CmsBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters));
+                        	initialize();
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters, allowedTemplates, allowedSubthemes, allowedCategories));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
@@ -174,7 +185,28 @@ public class CmsBean implements Serializable {
                     return numCreatedPages.orElse(0l);
                 }
 
-                @Override
+                private void initialize() throws DAOException {
+					if(!initialized) {	
+						try {
+							if(!userBean.getUser().hasPriviledgeForAllSubthemeDiscriminatorValues()) {								
+								allowedSubthemes = cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser());
+							}
+							if(!userBean.getUser().hasPriviledgeForAllTemplates()) {								
+								allowedTemplates = cmsBean.getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+							}
+							if(!userBean.getUser().hasPriviledgeForAllCategories()) {								
+								allowedCategories = cmsBean.getAllowedCategories(userBean.getUser()).stream().map(CMSCategory::getId).map(l -> l.toString()).collect(Collectors.toList());
+							}
+							initialized = true;
+						} catch (PresentationException | IndexUnreachableException e) {
+							throw new DAOException("Error getting user rights from dao: " +e.toString());
+						} catch(NullPointerException e) {
+							throw new DAOException("No user or userBean available to determine user rights");
+						}
+					}		
+				}
+
+				@Override
                 public void resetTotalNumberOfRecords() {
                     numCreatedPages = Optional.empty();
                 }

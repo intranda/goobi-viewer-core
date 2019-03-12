@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -659,6 +660,30 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
 		throw new AuthenticationException("User not found or passwort incorrect");
 	}
+	
+	public boolean hasPriviledgeForAllTemplates() {
+
+		// Abort if user not a CMS admin
+		if (!isCmsAdmin()) {
+			return false;
+		}
+		// Full admins get all values
+		if (isSuperuser()) {
+			return true;
+		}
+
+		List<License> allLicenses = new ArrayList<>(licenses);
+		try {
+			allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+		} catch (DAOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		
+		
+		return allLicenses.stream()
+				.anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())
+						&& license.isPrivCmsAllTemplates());
+	}
 
 	public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
 		if (allTemplates == null || allTemplates.isEmpty()) {
@@ -733,11 +758,14 @@ public class User implements ILicensee, HttpSessionBindingListener {
 			return true;
 		}
 
-		if (licenses == null || licenses.isEmpty()) {
-			return false;
+		List<License> allLicenses = new ArrayList<>(licenses);
+		try {
+			allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+		} catch (DAOException e) {
+			logger.error(e.getMessage(), e);
 		}
 
-		return licenses.stream()
+		return allLicenses.stream()
 				.anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())
 						&& license.isPrivCmsAllCategories());
 	}
@@ -795,6 +823,29 @@ public class User implements ILicensee, HttpSessionBindingListener {
 		}
 
 		return ret;
+	}
+	
+	public boolean hasPriviledgeForAllSubthemeDiscriminatorValues() {
+
+		// Abort if user not a CMS admin
+		if (!isCmsAdmin()) {
+			return false;
+		}
+		// Full admins get all values
+		if (isSuperuser()) {
+			return true;
+		}
+
+		List<License> allLicenses = new ArrayList<>(licenses);
+		try {
+			allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+		} catch (DAOException e) {
+			logger.error(e.getMessage(), e);
+		}
+
+		return allLicenses.stream()
+				.anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())
+						&& license.isPrivCmsAllSubthemes());
 	}
 
 	/**

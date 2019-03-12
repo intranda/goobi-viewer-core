@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphabetIterator;
 import de.intranda.digiverso.presentation.dao.IDAO;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
@@ -2234,22 +2235,12 @@ public class JPADAO implements IDAO {
         return null;
     }
 
-    /**
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPageCount(java.util.Map)
-     * @should return correct count
-     * @should filter correctly
-     */
-    @Override
-    public long getCMSPageCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("CMSPage", null, filters);
-    }
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPages(int, int, java.lang.String, boolean, java.util.Map)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
+    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
@@ -2259,14 +2250,24 @@ public class JPADAO implements IDAO {
                 Map<String, String> params = new HashMap<>();
 
                 String filterString = createFilterQuery(null, filters, params);
-
+                String rightsFilterString;
+				try {
+					rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+					if(!rightsFilterString.isEmpty()) {
+						rightsFilterString = (StringUtils.isBlank(filterString) ? " WHERE " : " AND ") + rightsFilterString;
+					}
+				} catch (AccessDeniedException e) {
+					//may not request any cms pages at all
+					return Collections.emptyList();
+				}
+                
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
                         order.append(" DESC");
                     }
                 }
-                sbQuery.append(filterString).append(order);
+                sbQuery.append(filterString).append(rightsFilterString).append(order);
 
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
@@ -3006,8 +3007,28 @@ public class JPADAO implements IDAO {
      * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesCount(java.util.Map)
      */
     @Override
-    public long getCMSPagesCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("CMSPage", null, filters);
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
+    	preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSPage").append(" a");
+        Map<String, String> params = new HashMap<>();
+        sbQuery.append(createFilterQuery(null, filters, params));
+        try {
+        	String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+        	if(!rightsFilter.isEmpty()) {
+	        	if(filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
+	        		sbQuery.append(" AND ");
+	        	} else {
+	        		sbQuery.append(" WHERE ");
+	        	}
+				sbQuery.append("(").append(createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories)).append(")");
+        	}
+        } catch (AccessDeniedException e) {
+			return 0;
+		}
+        Query q = em.createQuery(sbQuery.toString());
+        params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+        return (long) q.getSingleResult();
     }
 
     /**
@@ -3273,6 +3294,68 @@ public class JPADAO implements IDAO {
         List<CMSPage> pageList = q.getResultList();
         return pageList;
     }
+    
+    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds, List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
+    	
+    	String query = "";
+    	
+    	int index = 0;
+    	if(allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {    		
+    		query += "(";
+    		for (String template : allowedTemplateIds) {
+    			String templateParameter = "tpl" + ++index;
+    			query += (":" + templateParameter + " = " + pageParameter + ".templateId");
+    			query += " OR ";
+    			params.put(templateParameter, template);
+    		}
+    		if(query.endsWith(" OR ")) {
+    			query = query.substring(0, query.length()-4);
+    		}
+    		query += ") AND";
+    	} else if(allowedTemplateIds != null) {
+    		throw new AccessDeniedException("User may not view pages with any templates");
+    	}
+    	    	
+    	index = 0;
+    	if(allowedSubthemes != null && !allowedSubthemes.isEmpty()) {    		
+    		query += " (";
+    		for (String subtheme : allowedSubthemes) {
+    			String templateParameter = "thm" + ++index;
+    			query += (":" + templateParameter + " = " + pageParameter + ".subThemeDiscriminatorValue");
+    			query += " OR ";
+    			params.put(templateParameter, subtheme);
+    		}
+    		if(query.endsWith(" OR ")) {
+    			query = query.substring(0, query.length()-4);
+    		}
+    		query += ") AND";
+    	} else if(allowedSubthemes != null) {
+    		query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
+    	}
+    	
+    	index = 0;
+    	if(allowedCategoryIds != null && !allowedCategoryIds.isEmpty()) {    		
+    		query += " (";
+    		for (String category : allowedCategoryIds) {
+    			String templateParameter = "cat" + ++index;
+    			query += (":" + templateParameter + " IN (SELECT c.id FROM " + pageParameter +".categories c)");
+    			query += " OR ";
+    			params.put(templateParameter, category);
+    		}
+    		if(query.endsWith(" OR ")) {
+    			query = query.substring(0, query.length()-4);
+    		}
+    		query += ")";
+    	} else if(allowedCategoryIds != null) {
+    		query += " (SELECT COUNT(c) FROM " + pageParameter + ".categories c = 0)";
+    	}
+    	if(query.endsWith(" AND")) {
+    		query = query.substring(0, query.length()-4);
+		}
+    	
+    	return query.trim();
+    }
+    
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
