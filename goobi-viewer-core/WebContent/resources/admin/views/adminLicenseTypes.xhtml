@@ -23,7 +23,7 @@
 
                     <div class="admin__content-inner-content">
                     <h:form id="adminLicenseTypesForm" prependId="false">
-							<h:commandLink action="adminLicenseType" actionListener="#{adminBean.resetCurrentLicenseTypeAction}" value="#{msg.license_licenseType_addNew}"
+							<h:commandLink action="pretty:adminLicenseType" actionListener="#{adminBean.resetCurrentLicenseTypeAction}" value="#{msg.license_licenseType_addNew}"
 									styleClass="btn btn--default pull-right" />
                                     
                             <div class="clearfix"></div>
@@ -121,18 +121,6 @@
                                                         <li>
                                                             <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privDownloadOriginalContent}" />
-                                                        </li>
-                                                    </h:panelGroup>
-													<h:panelGroup rendered="#{licenseType.privSetRepresentativeImage}">
-														<li>
-															<i class="fa fa-check-circle" aria-hidden="true"></i>
-															<h:outputText value="#{msg.license_privSetRepresentativeImage}" />
-														</li>
-													</h:panelGroup>
-                                                    <h:panelGroup rendered="#{licenseType.privCmsPages}">
-                                                        <li>
-                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
-                                                            <h:outputText value="#{msg.license_privCmsPages}" />
                                                         </li>
                                                     </h:panelGroup>
 												</ul>

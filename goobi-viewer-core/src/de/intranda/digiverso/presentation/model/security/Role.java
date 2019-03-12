@@ -33,13 +33,13 @@ import javax.persistence.Transient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Represents a role a user can have within a user group. Contains a set of privileges. A role can also inherit from other
- * roles. The full potential of this class is not in use at the moment.
+ * Represents a role a user can have within a user group. Contains a set of privileges. A role can also inherit from other roles. The full potential
+ * of this class is not in use at the moment.
  */
 @Entity
 @Table(name = "roles")
 @XStreamAlias("role")
-public class Role implements IPrivilegeHolder {
+public class Role {
 
     public static final String SUPERUSER_ROLE = "admin";
 
@@ -128,7 +128,6 @@ public class Role implements IPrivilegeHolder {
      * @param privilegeName The name of the priv to check for.
      * @return true if any of the roles has this privilege; false otherwise.
      */
-    @Override
     public boolean hasPrivilege(String privilegeName) {
         if (name.equals(SUPERUSER_ROLE)) {
             return true;
@@ -146,131 +145,22 @@ public class Role implements IPrivilegeHolder {
         return false;
     }
 
-    @Override
-    public boolean isPrivList() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_LIST);
+    public boolean isPrivDeleteOcrPage() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
     }
 
-    @Override
-    public void setPrivList(boolean priv) {
+    public void setPrivDeleteOcrPage(boolean priv) {
         if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_LIST);
+            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         } else {
-            privileges.remove(IPrivilegeHolder.PRIV_LIST);
+            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         }
     }
 
-    @Override
-    public boolean isPrivViewImages() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    @Override
-    public void setPrivViewImages(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
-    }
-
-    @Override
-    public boolean isPrivViewThumbnails() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    @Override
-    public void setPrivViewThumbnails(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-        }
-    }
-
-    @Override
-    public boolean isPrivViewFulltext() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-    }
-
-    @Override
-    public void setPrivViewFulltext(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        }
-    }
-
-    @Override
-    public boolean isPrivViewVideo() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-    }
-
-    @Override
-    public void setPrivViewVideo(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_VIDEO);
-        }
-    }
-
-    @Override
-    public boolean isPrivViewAudio() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-    }
-
-    @Override
-    public void setPrivViewAudio(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_VIEW_AUDIO);
-        }
-    }
-
-    @Override
-    public boolean isPrivDownloadPdf() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-    }
-
-    @Override
-    public void setPrivDownloadPdf(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
-     */
-    @Override
-    public boolean isPrivDownloadOriginalContent() {
-        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.user.IPrivilegeHolder#setPrivDownloadOriginalContent(boolean)
-     */
-    @Override
-    public void setPrivDownloadOriginalContent(boolean priv) {
-        if (priv) {
-            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        } else {
-            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT);
-        }
-
-    }
-
-    @Override
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
     }
 
-    @Override
     public void setPrivSetRepresentativeImage(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
@@ -279,18 +169,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
-     */
-    @Override
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
-     */
-    @Override
     public void setPrivCmsPages(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
@@ -299,18 +181,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
-     */
-    @Override
     public boolean isPrivCmsAllSubthemes() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
-     */
-    @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
@@ -319,18 +193,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
-     */
-    @Override
     public boolean isPrivCmsAllCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
-     */
-    @Override
     public void setPrivCmsAllCategories(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
@@ -339,18 +205,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
-     */
-    @Override
     public boolean isPrivCmsAllTemplates() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
-     */
-    @Override
     public void setPrivCmsAllTemplates(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
@@ -359,18 +217,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
-     */
-    @Override
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
-     */
-    @Override
     public void setPrivCmsMenu(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
@@ -379,18 +229,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
-     */
-    @Override
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
-     */
-    @Override
     public void setPrivCmsStaticPages(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
@@ -399,18 +241,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCollections()
-     */
-    @Override
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
-     */
-    @Override
     public void setPrivCmsCollections(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
@@ -419,18 +253,10 @@ public class Role implements IPrivilegeHolder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCategories()
-     */
-    @Override
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
-     */
-    @Override
     public void setPrivCmsCategories(boolean priv) {
         if (priv) {
             privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);

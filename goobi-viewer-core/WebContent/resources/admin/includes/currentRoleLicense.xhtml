@@ -16,12 +16,12 @@
     <div class="form-horizontal" role="form">
         <!-- LICENSE TYPE -->
         <div class="form-group">
-            <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.license_licenseType} *" />
+            <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.roles} *" />
             <div class="col-sm-8">
                 <div class="custom-control custom-control--select">
                     <h:selectOneMenu id="name" value="#{adminBean.currentLicense.licenseType}" converter="licenseTypeConverter" required="true">
                         <!-- TODO different modes for core and other license types -->
-                        <f:selectItems value="#{adminBean.allCoreLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                        <f:selectItems value="#{adminBean.allRoleLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                         <f:ajax render="@form" />
                     </h:selectOneMenu>
                 </div>
