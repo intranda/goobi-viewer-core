@@ -159,7 +159,7 @@
                                                                 <!-- related PI -->
                                                                 <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}"
                                                                     label="#{msg.cms_page_related_pi}:" help="#{msg.cms_page_related_pi_help}">
-                                                                    <f:validator validatorId="relatedPiValidator" for="inputField"></f:validator>
+                                                                    <f:validator validatorId="relatedPiValidator" for="inputField" />
                                                                 </cmsComponent:cms_inputText>
                                                                 <!-- subtheme discriminator field -->
                                                                 <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"

@@ -28,6 +28,7 @@
                 <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
             </div>
             <div class="cms-module__option-control">
+                <h:messages for="#{cc.attrs.id}:input" errorClass="alert alert-danger" />
                 <h:inputText
                     id="input"
                     value="#{cc.attrs.field}"
