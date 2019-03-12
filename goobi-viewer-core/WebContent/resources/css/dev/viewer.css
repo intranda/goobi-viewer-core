@@ -4472,6 +4472,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #eee;
   border-radius: 0;
   box-shadow: none;
+  background-color: #fff;
 }
 .ui-autocomplete-panel ul.ui-autocomplete-items {
   padding: 0;
