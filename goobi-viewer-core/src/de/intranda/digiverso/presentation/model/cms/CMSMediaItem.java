@@ -688,6 +688,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 */
 	public synchronized FileTime getLastModifiedTime() {
 		if (lastModifiedTime == null) {
+			lastModifiedTime = FileTime.fromMillis(0);	//fallback
 			Path filePath = getFilePath();
 			if (Files.exists(filePath)) {
 				try {

@@ -25,7 +25,7 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {};
     var _adminCmsMediaGrid = '';
     
@@ -43,23 +43,34 @@ var cmsJS = ( function( cms ) {
             }
             
             $.extend( true, _defaults, config );
-            
+            this.initEventListeners();
+        },
+        
+        onReload: function(data) {
+            if(data && data.status == "begin") {
+            	cms.media.removeEventListeners();
+            } else if(!data || data.status == "success") {
+            	cms.media.initEventListeners();
+            }
+        },
+        
+        initEventListeners: function() {
             // select all media items
             $( '#selectAllMediaItems' ).on( 'change', function() {
             	if ( this.checked ) {
-                    $( 'input[name="selectMediaItem"]' ).each( function() {
-                    	$( this ).prop( 'checked', true );
+                    $( 'input[name*="selectMediaItem"]' ).each( function() {
+                    	$( this ).prop( 'checked', true ).change();
                     } );
                 }
             	else {
-            		$( 'input[name="selectMediaItem"]' ).each( function() {
-            			$( this ).prop( 'checked', false );
+            		$( 'input[name*="selectMediaItem"]' ).each( function() {
+            			$( this ).prop( 'checked', false ).change();
             		} );            		
             	}
             } );
             
             // reset bulk actions
-            $( '#selectAllMediaItems, input[name="selectMediaItem"]' ).on( 'change', function() {
+            $( '#selectAllMediaItems, input[name*="selectMediaItem"]' ).on( 'change', function() {
             	$( '#bulkActionSelect' ).val( 'bulk' );
             	$( '[data-action="cancel"]' ).click();
             } );
@@ -73,7 +84,8 @@ var cmsJS = ( function( cms ) {
             			_bulkActionEdit();
             			break;
             		case 'delete':
-            			return false;            			
+            			console.log("click ", $('#deleteSelectedItemsButton'))
+            			$('#deleteSelectedItemsButton').click();  			
             			break;
             	}
             } );
@@ -141,7 +153,7 @@ var cmsJS = ( function( cms ) {
 			$( '.admin-cms-media__file' ).last().find( '.admin-cms-media__file-next' ).addClass( 'disabled' );
 			
 			$( '.admin-cms-media__file-next' ).on( 'click', function() {
-				if ( $( this ).parent().next().is( ':last-child, :nth-last-child(2)' ) ) {
+				if ( $( this ).parent().next().is( '.admin-cms-media__file:last' ) ) {
 					$( this ).addClass( 'disabled' );
 					return false;
 				}
@@ -151,7 +163,7 @@ var cmsJS = ( function( cms ) {
 				}
 			} );
 			$( '.admin-cms-media__file-prev' ).on( 'click', function() {
-				if ( $( this ).parent().prev().is( ':first-child' ) ) {
+				if ( $( this ).parent().prev().is( '.admin-cms-media__file:first' ) ) {
 					$( this ).addClass( 'disabled' );
 					return false;
 				}
@@ -160,6 +172,37 @@ var cmsJS = ( function( cms ) {
 					$( this ).parent().removeClass( 'fixed' ).prev().addClass( 'fixed' );
 				}
 			} );
+        },
+        
+        removeEventListeners: function() {
+            // select all media items
+            $( '#selectAllMediaItems' ).off();
+            
+            // reset bulk actions
+            $( '#selectAllMediaItems, input[name*="selectMediaItem"]' ).off();
+            
+            // bulk action edit
+            $( '#bulkActionSelect' ).off();
+			
+			// switch file view
+			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
+
+
+			$( '[data-switch="list"]' ).off();
+			$( '[data-switch="grid"]' ).off();
+
+            
+            $( '[data-action="edit"]' ).off();
+			
+			// enlarge file
+			$( '.admin-cms-media__file-image, .admin-cms-media__file-close' ).off();
+			
+			// navigate through overlays			
+			$( '.admin-cms-media__file-next' ).off();
+			$( '.admin-cms-media__file-prev' ).off();
+			
+			$( '.admin-cms-media__file' ).off( 'mouseover' ).off( 'mouseout' ).off( 'keydown' );	
+			$( '[data-action="cancel"]' ).off();
         }
     };
     
@@ -197,7 +240,7 @@ var cmsJS = ( function( cms ) {
     	
     	$( '.admin-cms-media__file' ).each( function() {
     		var $file = $( this ),
-    		    $cbStatus = $file.find( 'input[name="selectMediaItem"]' ).prop( 'checked' ),
+    		    $cbStatus = $file.find( 'input[name*="selectMediaItem"]' ).prop( 'checked' ),
     		    $editButton = $file.find( '[data-action="edit"]' );
     		
     		if ( $cbStatus ) {
@@ -284,7 +327,8 @@ var cmsJS = ( function( cms ) {
 	    				break;
 	    			// left
     				case 37:
-	    				if ( $( this ).prev().is( ':first-child' ) ) {
+    					console.log("navigate left on ", this, $( this ).is( '.admin-cms-media__file:first' ));
+	    				if ( $( this ).is( '.admin-cms-media__file:first' ) ) {
 	    					return false;
 	    				}
 	    				else {
@@ -293,7 +337,7 @@ var cmsJS = ( function( cms ) {
 	    				break;
 	    			// right
     				case 39:
-	    				if ( $( this ).next().is( ':last-child, :nth-last-child(2)' ) ) {
+	    				if ( $( this ).is( '.admin-cms-media__file:last' ) ) {
 	    					return false;
 	    				}
 	    				else {

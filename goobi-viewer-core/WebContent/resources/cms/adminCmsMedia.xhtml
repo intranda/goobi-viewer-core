@@ -31,7 +31,8 @@
                     <adminMediaUpload></adminMediaUpload>
 
                     <!-- ACTIONS -->
-                    <div class="admin-cms-media__actions">
+                    <h:form id="adminCmsMediaFilesForm" prependId="false">
+                      <div class="admin-cms-media__actions">
                         <!-- BULK ACTIONS -->
                         <div class="admin-cms-media__bulk-actions">
                             <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
@@ -49,6 +50,9 @@
                                     <option value="delete">#{msg.admin__media_bulk_delete}</option>
                                 </select>
                             </div>
+                            <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
+                            	<f:ajax render="@form" onevent="reload"></f:ajax>
+                            </h:commandLink>
                         </div>
                     
                         <!-- VIEW SWITCH -->
@@ -63,22 +67,26 @@
                         
                         <!-- FILTER -->
                         <div class="admin-cms-media__filter">
-                            <h:form id="adminCmsMediaFilterForm" prependId="false">
                                 <label class="sr-only" for="adminCmsMediaFilter">#{msg.admin__media_filter}</label>
-                                <input type="text" class="form-control" id="adminCmsMediaFilter" placeholder="#{msg.admin__media_filter}" />
-                            </h:form>
+                                <h:inputText type="text" class="form-control" id="adminCmsMediaFilter" placeholder="#{msg.admin__media_filter}" value="#{cmsMediaBean.filter}">
+                                	<f:passThroughAttribute name="placeholder" value="#{msg.admin__media_filter}"></f:passThroughAttribute>
+                                </h:inputText>
+	                            <h:commandButton id="reloadButton" style="display:none" action="#{cmsMediaBean.reloadMediaList}">
+	                                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
+	                            	<f:ajax execute="adminCmsMediaFilter" render="@form" onevent="reload"></f:ajax>
+	                            </h:commandButton>
                         </div>
 
                         <!-- PAGINATOR -->
                         <div class="admin-cms-media__paginator">
-                            <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
+                            <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
                         </div>
                     </div>
 
                     <!-- MEDIA FILES -->
                     <div class="admin-cms-media__files">
-                        <h:form id="adminCmsMediaFilesForm" prependId="false">
-                            <ui:repeat  value="#{cmsMediaBean.getMediaItems(cmsMediaBean.selectedTag, '')}" var="media" varStatus="status">
+                            <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectable" varStatus="status">
+                               <c:set var="media" value="#{selectable.value}"></c:set>                                                               
                                 <!-- FILE -->
                                 <div class="admin-cms-media__file" tabindex="-1">
                                     <!-- CLOSE -->
@@ -91,8 +99,12 @@
                                     <div class="admin-cms-media__file-top">
                                         <!-- FILE SELECT -->
                                         <div class="admin-cms-media__file-select">
-                                            <label for="selectMediaItem-#{status.index}" class="custom-control custom-control--checkbox">
-                                                <input id="selectMediaItem-#{status.index}" name="selectMediaItem" type="checkbox" />
+                                            <label for="mediaList:#{status.index}:selectMediaItem" class="custom-control custom-control--checkbox">
+                                                <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{selectable.selected}">
+                                                	<f:ajax event="change" render="@none" execute="@this"/>
+                                                </h:selectBooleanCheckbox>
+<!--                                                 <input type="checkbox" id="selectMediaItem-#{status.index}" name="selectMediaItem" > -->
+<!--                                                 </input> -->
                                                 <span class="custom-control__icon">
                                                     <i class="fa fa-square-o" aria-hidden="true"></i>
                                                     <i class="fa fa-check-square-o" aria-hidden="true"></i>
@@ -270,9 +282,9 @@
                                             <!-- ACTIONS EDIT -->
                                             <div class="admin-cms-media__file-actions-edit cms-module__actions">
                                                 <button id="cancel-btn-#{status.index}" type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
-                                                <h:commandButton actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$('#cancel-btn-#{status.index}').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
-                                                	<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
-                                                </h:commandButton>
+                                                <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$('#cancel-btn-#{status.index}').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
+                                               		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
+                                                </h:commandLink>
                                             </div>
                                         </div>
                                         
@@ -294,13 +306,9 @@
                                     </div>
                             	</div>
                             </ui:repeat>
-                            
-                            <h:commandLink id="reloadButton" style="display:none">
-                                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
-                            	<f:ajax execute="@none" render="@all"></f:ajax>
-                            </h:commandLink>
-                        </h:form>
-                    </div>
+
+                    	</div>
+                	</h:form>
                 </div>
             </ui:fragment>
         </div>
@@ -324,6 +332,11 @@
         	viewerJS.clipboard.init( '[data-copy]' );
         	cmsJS.media.init( adminMediaConfig );
         	riot.mount( 'adminMediaUpload', adminMediaConfig );
+        	
+        	function reload() {
+        		cmsJS.media.onReload();
+        		cmsJS.modules.onReload();
+        	}
 		</script>
     </ui:define>                    
 

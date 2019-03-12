@@ -28,7 +28,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "cms_categories")
-public class CMSCategory {
+public class CMSCategory implements Comparable<CMSCategory> {
 
     /** Unique database ID. */
     @Id
@@ -135,5 +135,17 @@ public class CMSCategory {
     public String toString() {
     	return getName();
     }
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(CMSCategory other) {
+		if(other != null) {
+			return this.getName().compareTo(other.getName());
+		} else {
+			return 0;
+		}
+	}
 
 }

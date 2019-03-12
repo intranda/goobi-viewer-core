@@ -24,7 +24,7 @@
 var cmsJS = ( function( cms ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     
     cms.modules = {
         /**

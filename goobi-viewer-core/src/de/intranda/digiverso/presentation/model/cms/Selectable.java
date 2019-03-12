@@ -21,7 +21,7 @@ package de.intranda.digiverso.presentation.model.cms;
  * @author florian
  *
  */
-public class Selectable<T> {
+public class Selectable<T> implements Comparable<Selectable<T>>{
 
 	private final T value;
 	private boolean selected;
@@ -50,6 +50,26 @@ public class Selectable<T> {
 	 */
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Selectable<T> other) {
+		if(this.getValue() instanceof Selectable && other.getValue() instanceof Selectable) {
+			return ((Comparable)this.getValue()).compareTo((Comparable)other.getValue());
+		} else {
+			return 0;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return (isSelected() ? "SELECTED" : "") +  getValue().toString();
 	}
 	
 }
