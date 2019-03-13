@@ -29,14 +29,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.FetchProfile.Item;
 import javax.servlet.http.Part;
 
 import org.apache.commons.collections.ListUtils;
@@ -68,13 +66,10 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 @SessionScoped
 public class CmsMediaBean implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final String GENERAL_FILTER = "GENERAL";
 	private static final String FILENAME_FILTER = "FILENAME";
 
-	private static final int ENTRIES_PER_PAGE = 10;
+	private static final int ENTRIES_PER_PAGE = 40;
 
 	private static final long serialVersionUID = 1156829371382069634L;
 
@@ -86,8 +81,11 @@ public class CmsMediaBean implements Serializable {
 	private String selectedTag;
 //    private List<Selectable<CMSMediaItem>> mediaItems = null;
 	private final TableDataProvider<Selectable<CMSMediaItem>> dataProvider;
+	private CMSMediaItem selectedMediaItem = null;
 	private String filter = "";
 	private String filenameFilter = "";
+	private boolean allSelected = false;
+	
 
 	public CmsMediaBean() {
 		super();
@@ -320,12 +318,16 @@ public class CmsMediaBean implements Serializable {
 	 * @throws DAOException
 	 */
 	public void deleteSelectedItems() throws DAOException {
-				
-			List<CMSMediaItem> itemsToDelete = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
-					.map(Selectable::getValue).collect(Collectors.toList());
+			Stream<Selectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
+			if(!isAllSelected()) {
+				stream = stream.filter(Selectable::isSelected);
+			}
+			List<CMSMediaItem> itemsToDelete = stream.map(Selectable::getValue).collect(Collectors.toList());
 			for (CMSMediaItem item : itemsToDelete) {
 				deleteMedia(item);
 			}
+			//reset selected status after gobal action
+			setAllSelected(false);
 	}
 
 	/**
@@ -522,6 +524,34 @@ public class CmsMediaBean implements Serializable {
 			this.filenameFilter = filter == null ? "" : filter;
 			reloadMediaList(true);
 		}
+	}
+	
+	/**
+	 * @param selectedMediaItem the selectedMediaItem to set
+	 */
+	public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
+		this.selectedMediaItem = selectedMediaItem;
+	}
+	
+	/**
+	 * @return the selectedMediaItem
+	 */
+	public CMSMediaItem getSelectedMediaItem() {
+		return selectedMediaItem;
+	}
+	
+	/**
+	 * @param allSelected the allSelected to set
+	 */
+	public void setAllSelected(boolean allSelected) {
+		this.allSelected = allSelected;
+	}
+	
+	/**
+	 * @return the allSelected
+	 */
+	public boolean isAllSelected() {
+		return allSelected;
 	}
 
 }

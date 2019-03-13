@@ -65,6 +65,7 @@ import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 @Entity
 @Table(name = "cms_media_items")
@@ -81,6 +82,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	public static final String CONTENT_TYPE_RTF4 = "text/richtext";
 	public static final String CONTENT_TYPE_XML = "text/xml";
 	public static final String CONTENT_TYPE_HTML = "text/html";
+	public static final String CONTENT_TYPE_SVG = "image/svg+xml";
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -221,7 +224,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 			return "";
 		}
 
-		String extension = FilenameUtils.getExtension(fileName);
+		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
 		switch (extension) {
 		case "doc":
 			return CONTENT_TYPE_DOC;
@@ -235,6 +238,15 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 			return CONTENT_TYPE_XML;
 		case "rtf":
 			return CONTENT_TYPE_RTF;
+		case "jpg":
+		case "jpeg":
+		case "png":
+		case "tif":
+		case "tiff":
+		case "jp2":
+			return ImageFileFormat.getImageFileFormatFromFileExtension(extension).getMimeType();		
+		case "svg":
+			return CONTENT_TYPE_SVG;
 		default:
 			return "";
 		}

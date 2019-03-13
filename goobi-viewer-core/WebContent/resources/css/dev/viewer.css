@@ -10383,7 +10383,7 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: none;
 }
 /* GRID VIEW */
-.admin-cms-media__files.grid form {
+.admin-cms-media__files.grid {
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: (minmax(100px, 100px))[auto-fit];

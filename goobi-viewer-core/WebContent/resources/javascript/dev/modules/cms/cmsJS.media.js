@@ -59,12 +59,12 @@ var cmsJS = ( function( cms ) {
             $( '#selectAllMediaItems' ).on( 'change', function() {
             	if ( this.checked ) {
                     $( 'input[name*="selectMediaItem"]' ).each( function() {
-                    	$( this ).prop( 'checked', true ).change();
+                    	$( this ).prop( 'checked', true );
                     } );
                 }
             	else {
             		$( 'input[name*="selectMediaItem"]' ).each( function() {
-            			$( this ).prop( 'checked', false ).change();
+            			$( this ).prop( 'checked', false );
             		} );            		
             	}
             } );
@@ -153,7 +153,7 @@ var cmsJS = ( function( cms ) {
 			$( '.admin-cms-media__file' ).last().find( '.admin-cms-media__file-next' ).addClass( 'disabled' );
 			
 			$( '.admin-cms-media__file-next' ).on( 'click', function() {
-				if ( $( this ).parent().next().is( '.admin-cms-media__file:last' ) ) {
+				if ( $( this ).parent().is( '.admin-cms-media__file:last' ) ) {
 					$( this ).addClass( 'disabled' );
 					return false;
 				}
@@ -163,7 +163,7 @@ var cmsJS = ( function( cms ) {
 				}
 			} );
 			$( '.admin-cms-media__file-prev' ).on( 'click', function() {
-				if ( $( this ).parent().prev().is( '.admin-cms-media__file:first' ) ) {
+				if ( $( this ).parent().is( '.admin-cms-media__file:first' ) ) {
 					$( this ).addClass( 'disabled' );
 					return false;
 				}
@@ -327,7 +327,6 @@ var cmsJS = ( function( cms ) {
 	    				break;
 	    			// left
     				case 37:
-    					console.log("navigate left on ", this, $( this ).is( '.admin-cms-media__file:first' ));
 	    				if ( $( this ).is( '.admin-cms-media__file:first' ) ) {
 	    					return false;
 	    				}
