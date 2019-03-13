@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -100,6 +102,16 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
             @Override
             public boolean allowsEmailChange() {
                 return false;
+            }
+
+            @Override
+            public List<String> getAddUserToGroups() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public void setAddUserToGroups(List<String> addUserToGroups) {
+                
             }
         });
     }
