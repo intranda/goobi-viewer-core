@@ -197,6 +197,21 @@
                             </h:form>
                         </div>
                     </div>
+                    <h:panelGroup id="mediaSelectPanel">
+						<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+		                    <div class="admin-cms-media-select-overlay">
+			                    <ui:include src="/resources/cms/includes/mediaSelect.xhtml"></ui:include>
+			                    <h:form>
+				                    <h:commandLink action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem)}" type="button" 
+											class="btn btn--default" 
+											value="#{msg.cms_selectMediaItem_agree}">
+									</h:commandLink>
+			                    </h:form>
+		                    </div>
+						</ui:fragment>
+                    </h:panelGroup>
+                    
+                    
                 </h:panelGroup>
                 <script type="text/javascript">
 	                var createPageConfig = {

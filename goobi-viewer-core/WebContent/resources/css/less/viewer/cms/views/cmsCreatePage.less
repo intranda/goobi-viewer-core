@@ -357,6 +357,37 @@
 	}
 }
 
+.admin-cms-media-select-overlay {
+	
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+    top: 30px;
+    right: 30px;
+    bottom: 30px;
+    left: 30px;
+    padding: 50px;
+    z-index: 2020;
+    background-color: @white;
+    .cms-mediaitem-wrapper {
+    	position: relative;
+    	height: 120px;
+		padding: 10px;
+		width: 120px;
+    }
+    .cms-mediaitem-item {
+    	position: absolute;
+    }
+    .cms-mediaitem-select {
+    	position: absolute;
+    	width: 100%;
+    	height: 100%;
+    }
+    .selected {
+    	background-color: @blue;
+    }
+}
+
 // breakpoint for smartphones
 @media screen and (max-width: @xSmallBreakpoint) {}
 

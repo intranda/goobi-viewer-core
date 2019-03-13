@@ -115,7 +115,7 @@ public class CmsBean implements Serializable {
     @Inject
     private UserBean userBean;
     @Inject
-    private CmsBean cmsBean;
+    private CmsMediaBean cmsMediaBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page open for editing */
@@ -134,6 +134,7 @@ public class CmsBean implements Serializable {
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
     private List<CMSCategory> selectableCategories;
+    private Optional<CMSContentItem> selectedMediaHolder = Optional.empty();
 
     @PostConstruct
     public void init() {
@@ -189,13 +190,13 @@ public class CmsBean implements Serializable {
 					if(!initialized) {	
 						try {
 							if(!userBean.getUser().hasPriviledgeForAllSubthemeDiscriminatorValues()) {								
-								allowedSubthemes = cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser());
+								allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
 							}
 							if(!userBean.getUser().hasPriviledgeForAllTemplates()) {								
-								allowedTemplates = cmsBean.getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+								allowedTemplates = getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
 							}
 							if(!userBean.getUser().hasPriviledgeForAllCategories()) {								
-								allowedCategories = cmsBean.getAllowedCategories(userBean.getUser()).stream().map(CMSCategory::getId).map(l -> l.toString()).collect(Collectors.toList());
+								allowedCategories = getAllowedCategories(userBean.getUser()).stream().map(CMSCategory::getId).map(l -> l.toString()).collect(Collectors.toList());
 							}
 							initialized = true;
 						} catch (PresentationException | IndexUnreachableException e) {
@@ -216,6 +217,7 @@ public class CmsBean implements Serializable {
             lazyModelPages.addFilter("classifications", "classification");
         }
         selectedLocale = getDefaultLocale();
+        selectedMediaHolder = Optional.empty();
     }
 
     /**
@@ -1723,5 +1725,30 @@ public class CmsBean implements Serializable {
     public void resetCurrentWorkPi() {
         this.currentWorkPi = "";
     }
+    
+    /**
+	 * @param selectedMediaHolder the selectedMediaHolder to set
+	 */
+	public void setSelectedMediaHolder(CMSContentItem item) {
+		this.selectedMediaHolder = Optional.ofNullable(item);
+		this.selectedMediaHolder.ifPresent(contentItem -> {
+			String filter = contentItem.getMediaFilter();
+			if(StringUtils.isBlank(filter)) {
+				filter = cmsMediaBean.getImageFilter();
+			}
+			cmsMediaBean.setFilenameFilter(filter);
+		});
+	}
+	
+	public void fillSelectedMediaHolder(CMSMediaItem mediaItem) {
+		this.selectedMediaHolder.ifPresent(item -> {
+			item.setMediaItem(mediaItem);
+		});
+		this.selectedMediaHolder = Optional.empty();
+	}
+	
+	public boolean hasSelectedMediaHolder() {
+		return this.selectedMediaHolder.isPresent();
+	}
 
 }

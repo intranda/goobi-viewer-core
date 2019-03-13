@@ -265,6 +265,9 @@ public class CmsMediaBean implements Serializable {
 				}
 			}
 		}
+		if(this.selectedMediaItem == item ) {
+			this.selectedMediaItem = null;
+		}
 		reloadMediaList(false);
 	}
 
@@ -491,6 +494,10 @@ public class CmsMediaBean implements Serializable {
 	public String getImageFilter() {
 		return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
 	}
+	
+	public String getDocumentFilter() {
+		return "(?i).*\\.(docx?|rtf|x?h?tml|txt)";
+	}
 
 	/**
 	 * @return the filter
@@ -531,6 +538,14 @@ public class CmsMediaBean implements Serializable {
 	 */
 	public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
 		this.selectedMediaItem = selectedMediaItem;
+	}
+	
+	public void toggleSelectedMediaItem(CMSMediaItem selectedMediaItem) {
+		if(this.selectedMediaItem == selectedMediaItem) {
+			setSelectedMediaItem(null);
+		} else {			
+			this.selectedMediaItem = selectedMediaItem;
+		}
 	}
 	
 	/**

@@ -14,6 +14,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsMedia')}" />
             <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
+             <f:event type="preRenderView" listener="#{cmsMediaBean.setFilenameFilter('')}" />
         </f:metadata>
     </ui:define>
 
@@ -32,7 +33,10 @@
 
                     <h:form id="adminCmsMediaFilesForm" prependId="false">
                     
-	                    <ui:include src="/resources/cms/includes/mediaActions.xhtml"></ui:include>
+	                    <ui:include src="/resources/cms/includes/mediaActions.xhtml">
+	                    	<ui:param name="bulkaction" value="#{true}"/>
+		                    <ui:param name="viewswitch" value="#{true}" />
+	                    </ui:include>
 	
 	                    <!-- MEDIA FILES -->
 	                    <div class="admin-cms-media__files">
@@ -72,10 +76,12 @@
         	cmsJS.media.init( adminMediaConfig );
         	riot.mount( 'adminMediaUpload', adminMediaConfig );
         	
-        	function reload() {
-        		cmsJS.media.onReload();
-        		cmsJS.modules.onReload();
-        		riot.mount( 'adminMediaUpload', adminMediaConfig );
+        	function reload(data) {
+        		cmsJS.media.onReload(data);
+        		cmsJS.modules.onReload(data);
+        		if(!data || data.status == "success") {        			
+        			riot.mount( 'adminMediaUpload', adminMediaConfig );
+        		}
         	}
 		</script>
     </ui:define>                    

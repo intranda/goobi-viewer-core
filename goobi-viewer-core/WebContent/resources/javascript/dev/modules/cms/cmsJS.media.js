@@ -25,8 +25,11 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = true;
-    var _defaults = {};
+    var _debug = false;
+    var _defaults = {
+    		allowEdit: true,
+    		forceGrid: false
+    };
     var _adminCmsMediaGrid = '';
     
     cms.media = {
@@ -93,7 +96,11 @@ var cmsJS = ( function( cms ) {
 			// switch file view
 			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 			
-			if ( sessionStorage.getItem( 'adminCmsMediaGrid' ) == undefined || sessionStorage.getItem( 'adminCmsMediaGrid' ) == '' ) {
+			if( _defaults.forceGrid ) {
+				$( '[data-switch="list"]' ).removeClass( 'active' );
+				$( '.admin-cms-media__files' ).addClass( 'grid' );
+			} 
+			else if ( sessionStorage.getItem( 'adminCmsMediaGrid' ) == undefined || sessionStorage.getItem( 'adminCmsMediaGrid' ) == '' ) {
 				sessionStorage.setItem( 'adminCmsMediaGrid', false );
 				_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 				_setMediaGridStatus( _adminCmsMediaGrid );
@@ -126,27 +133,29 @@ var cmsJS = ( function( cms ) {
 			});
 			
 			// enlarge file
-			$( '.admin-cms-media__file-image, .admin-cms-media__file-close' ).on( 'click', function() {
-				var $thisFile = $( this ).parents( '.admin-cms-media__file' ); 
-				
-				// show modal
-				$thisFile.toggleClass( 'fixed' );
-				$( '.admin-cms-media__overlay' ).toggle();
-
-				// set modal events				
-				if ( $thisFile.hasClass( 'fixed' ) ) {
-					_setFileMouseover( true );
-					_setFileCancelClick( true );
-					_setFileKeyEvents( true );
-					_toggleEditMode( $( '.admin-cms-media__file' ), true );					
-				}
-				else {
-					_setFileMouseover( false );
-					_setFileCancelClick( false );
-					_setFileKeyEvents( false );
-					$( '[data-action="cancel"]' ).click();
-				}
-			} );
+            if( _defaults.allowEdit ) {
+				$( '.admin-cms-media__file-image, .admin-cms-media__file-close' ).on( 'click', function() {
+					var $thisFile = $( this ).parents( '.admin-cms-media__file' ); 
+					
+					// show modal
+					$thisFile.toggleClass( 'fixed' );
+					$( '.admin-cms-media__overlay' ).toggle();
+	
+					// set modal events				
+					if ( $thisFile.hasClass( 'fixed' ) ) {
+						_setFileMouseover( true );
+						_setFileCancelClick( true );
+						_setFileKeyEvents( true );
+						_toggleEditMode( $( '.admin-cms-media__file' ), true );					
+					}
+					else {
+						_setFileMouseover( false );
+						_setFileCancelClick( false );
+						_setFileKeyEvents( false );
+						$( '[data-action="cancel"]' ).click();
+					}
+				} );
+            }
 			
 			// navigate through overlays
 			$( '.admin-cms-media__file' ).first().find( '.admin-cms-media__file-prev' ).addClass( 'disabled' );

@@ -10742,6 +10742,37 @@ div[id*="-Modal"] .email-form .form-group {
 .edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
 }
+.admin-cms-media-select-overlay {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  bottom: 30px;
+  left: 30px;
+  padding: 50px;
+  z-index: 2020;
+  background-color: #fff;
+}
+.admin-cms-media-select-overlay .cms-mediaitem-wrapper {
+  position: relative;
+  height: 120px;
+  padding: 10px;
+  width: 120px;
+}
+.admin-cms-media-select-overlay .cms-mediaitem-item {
+  position: absolute;
+}
+.admin-cms-media-select-overlay .cms-mediaitem-select {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.admin-cms-media-select-overlay .selected {
+  background-color: #3365a9;
+}
 /* ==============================================================
    CMS Menu Items
    style declarations for adminCmsMenuItems.xhtml

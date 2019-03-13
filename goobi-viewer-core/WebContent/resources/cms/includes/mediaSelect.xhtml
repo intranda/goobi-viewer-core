@@ -8,7 +8,6 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 	
     <!-- CONTENT -->
-        <div id="adminCmsMedia" class="admin-cms-media">
                 <!-- MEDIA ITEM OVERLAY -->
                 <div class="admin-cms-media__overlay"></div>
             
@@ -18,17 +17,27 @@
 
                     <h:form id="adminCmsMediaFilesForm" prependId="false">
                     
-	                    <ui:include src="/resources/cms/includes/mediaActions.xhtml"></ui:include>
+	                    <ui:include src="/resources/cms/includes/mediaActions.xhtml">
+	                   		<ui:param name="bulkaction" value="#{false}"/>
+		                    <ui:param name="viewswitch" value="#{false}" />
+	                    </ui:include>
 	
 	                    <!-- MEDIA FILES -->
 	                    <div class="admin-cms-media__files">
 		                    <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectableItem" varStatus="status">
 		                       
-		                       <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-		                       		<ui:param name="media" value="#{selectableItem.value}"/>
-		                       		<ui:param name="selectable" value="#{selectableItem}" />
-		                       		<ui:param name="idPrefix" value="mediaList:#{status.index}:" />
-		                       </ui:include>
+		                       <div class="cms-mediaitem-wrapper #{selectableItem.value == cmsMediaBean.selectedMediaItem ? 'selected' : ''}">
+			                       <div class="cms-mediaitem-item">
+				                       <ui:include src="/resources/cms/includes/mediaFile.xhtml">
+				                       		<ui:param name="media" value="#{selectableItem.value}"/>
+				                       		<ui:param name="selectable" value="#{selectableItem}" />
+				                       		<ui:param name="idPrefix" value="mediaList:#{status.index}:" />
+				                       </ui:include>
+			                       </div>
+			                       <h:commandLink styleClass="cms-mediaitem-select" action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem.value)}">
+				                       <f:ajax execute="@this" render="selectedMediaItemPanel" onevent="reload"></f:ajax>
+			                       </h:commandLink>
+		                       </div>
 		                                                                                
 		                        
 		                    </ui:repeat>
@@ -44,7 +53,6 @@
                     	</div>
                 	</h:form>
                 </div>
-        </div>
 
         <script type="text/javascript">
         	var adminMediaConfig = {
@@ -60,16 +68,27 @@
             	onUploadComplete: function() {
             		$("#reloadButton").click();
             	},
+            	forceGrid: true,
+            	allowEdit: false
             };
             
         	viewerJS.clipboard.init( '[data-copy]' );
         	cmsJS.media.init( adminMediaConfig );
         	riot.mount( 'adminMediaUpload', adminMediaConfig );
         	
-        	function reload() {
-        		cmsJS.media.onReload();
-        		cmsJS.modules.onReload();
-        		riot.mount( 'adminMediaUpload', adminMediaConfig );
+        	function reload(data) {
+        		cmsJS.media.onReload(data);
+        		cmsJS.modules.onReload(data);
+        		if(!data || data.status == "success") {        			
+        			riot.mount( 'adminMediaUpload', adminMediaConfig );
+        			if(data) {
+        				var alreadySelected = $(data.source).parent().hasClass('selected');
+        				$(".cms-mediaitem-wrapper.selected").removeClass('selected');
+        				if(!alreadySelected) {        					
+        					$(data.source).parent().addClass('selected');
+        				}
+        			}
+        		}
         	}
 		</script>
     

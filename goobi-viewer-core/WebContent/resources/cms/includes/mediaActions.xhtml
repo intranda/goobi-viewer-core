@@ -10,38 +10,42 @@
 	<!-- ACTIONS -->
     <div class="admin-cms-media__actions">
       <!-- BULK ACTIONS -->
-      <div class="admin-cms-media__bulk-actions">
-          <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
-              <h:selectBooleanCheckbox id="selectAllMediaItems" name="selectAllMediaItems" value="#{cmsMediaBean.allSelected}">
-     	<f:ajax render="@none" execute="@this"/>
-     </h:selectBooleanCheckbox>
-              <span class="custom-control__icon">
-                  <i class="fa fa-square-o" aria-hidden="true"></i>
-                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
-              </span>
-          </label>
-
-          <div class="custom-control custom-control--select">
-              <select id="bulkActionSelect" name="bulkActionSelect">
-                  <option value="bulk">#{msg.admin__media_bulk_actions}</option>
-                  <option value="edit">#{msg.admin__media_bulk_edit}</option>
-                  <option value="delete">#{msg.admin__media_bulk_delete}</option>
-              </select>
-          </div>
-          <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
-          	<f:ajax render="@form" onevent="reload"></f:ajax>
-          </h:commandLink>
-      </div>
+	  <ui:fragment rendered="#{bulkaction == true}">
+      	<div class="admin-cms-media__bulk-actions">
+	          <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
+	              <h:selectBooleanCheckbox id="selectAllMediaItems" name="selectAllMediaItems" value="#{cmsMediaBean.allSelected}">
+	     	<f:ajax render="@none" execute="@this"/>
+	     	</h:selectBooleanCheckbox>
+	              <span class="custom-control__icon">
+	                  <i class="fa fa-square-o" aria-hidden="true"></i>
+	                  <i class="fa fa-check-square-o" aria-hidden="true"></i>
+	              </span>
+	          </label>
+	
+	          <div class="custom-control custom-control--select">
+	              <select id="bulkActionSelect" name="bulkActionSelect">
+	                  <option value="bulk">#{msg.admin__media_bulk_actions}</option>
+	                  <option value="edit">#{msg.admin__media_bulk_edit}</option>
+	                  <option value="delete">#{msg.admin__media_bulk_delete}</option>
+	              </select>
+	          </div>
+	          <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
+	          	<f:ajax render="@form" onevent="reload"></f:ajax>
+	          </h:commandLink>
+      	</div>
+      </ui:fragment>
   
       <!-- VIEW SWITCH -->
-      <div class="admin-cms-media__switch">
-          <button type="button" class="btn btn--clean" data-switch="list">
-              <i class="fa fa-list" aria-hidden="true"></i>
-          </button>
-          <button type="button" class="btn btn--clean" data-switch="grid">
-              <i class="fa fa-th" aria-hidden="true"></i>
-          </button>
-      </div>
+      <ui:fragment rendered="#{ viewswitch == true}">
+      	  <div class="admin-cms-media__switch">
+	          <button type="button" class="btn btn--clean" data-switch="list">
+	              <i class="fa fa-list" aria-hidden="true"></i>
+	          </button>
+	          <button type="button" class="btn btn--clean" data-switch="grid">
+	              <i class="fa fa-th" aria-hidden="true"></i>
+	          </button>
+      	  </div>
+      </ui:fragment>
       
       <!-- FILTER -->
       <div class="admin-cms-media__filter">
