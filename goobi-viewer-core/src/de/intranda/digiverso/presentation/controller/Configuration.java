@@ -1286,6 +1286,7 @@ public final class Configuration extends AbstractConfiguration {
      * 
      * @return
      * @should return all properly configured elements
+     * @should load user group names correctly
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
@@ -1307,6 +1308,7 @@ public final class Configuration extends AbstractConfiguration {
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
+                IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
                     case "openid":
                         providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
@@ -1314,23 +1316,33 @@ public final class Configuration extends AbstractConfiguration {
                     case "userpassword":
                         switch (name.toLowerCase()) {
                             case "vufind":
-                                providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
+                                provider = new VuFindProvider(name, endpoint, image, timeoutMillis);
                                 break;
                             case "x-service":
                             case "xservice":
-                                providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
+                                provider = new XServiceProvider(name, endpoint, image, timeoutMillis);
                                 break;
                             case "littera":
-                                providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
+                                provider = new LitteraProvider(name, endpoint, image, timeoutMillis);
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
                         break;
                     case "local":
-                        providers.add(new LocalAuthenticationProvider(name));
+                        provider = new LocalAuthenticationProvider(name);
                         break;
                     default:
                         logger.error("Cannot add authentification provider with name {} and type {}. No implementation found", name, type);
+                }
+                if (provider != null) {
+                    // Look for user group configurations to which users shall be automatically added when logging in
+                    List<String> addToUserGroupList =
+                            getLocalList(myConfigToUse, null, "user.authenticationProviders.provider(" + i + ").addUserToGroup", null);
+                    if (addToUserGroupList != null) {
+                        provider.setAddUserToGroups(addToUserGroupList);
+                        logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
+                    }
+                    providers.add(provider);
                 }
             }
         }

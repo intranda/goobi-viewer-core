@@ -443,7 +443,7 @@ public class ConfigurationTest {
      * @verifies return all properly configured elements
      */
     @Test
-    public void getOpenIdConnectProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
+    public void getAuthenticationProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
         Assert.assertEquals(4, providers.size());
 
@@ -463,6 +463,18 @@ public class ConfigurationTest {
         //local
         Assert.assertEquals("Goobi viewer", providers.get(3).getName());
         Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
+    }
+
+    /**
+     * @see Configuration#getAuthenticationProviders()
+     * @verifies load user group names correctly
+     */
+    @Test
+    public void getAuthenticationProviders_shouldLoadUserGroupNamesCorrectly() throws Exception {
+        List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
+        Assert.assertEquals(4, providers.size());
+        List<String> groups = providers.get(2).getAddUserToGroups();
+        Assert.assertEquals(2, groups.size());
     }
 
     /**
@@ -1621,7 +1633,7 @@ public class ConfigurationTest {
     public void getCmsTextFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("cms", DataManager.getInstance().getConfiguration().getCmsTextFolder());
     }
-    
+
     /**
      * @see Configuration#isForceJpegConversion()
      * @verifies return correct value
@@ -2326,13 +2338,13 @@ public class ConfigurationTest {
     public void getDocstrctWhitelistFilterSuffix_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("ISWORK:true OR ISANCHOR:true", DataManager.getInstance().getConfiguration().getDocstrctWhitelistFilterQuery());
     }
-    
+
     @Test
     public void testGetIIIFMetadataLabel() {
-    	Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("MD_*"));
-    	Assert.assertEquals("label_year", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("YEAR"));
-    	Assert.assertEquals("label_provenienz", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("Provenienz/MD_EVENT_DETAILS"));
-    	Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("/YEAR"));
+        Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("MD_*"));
+        Assert.assertEquals("label_year", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("YEAR"));
+        Assert.assertEquals("label_provenienz", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("Provenienz/MD_EVENT_DETAILS"));
+        Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("/YEAR"));
 
     }
 }

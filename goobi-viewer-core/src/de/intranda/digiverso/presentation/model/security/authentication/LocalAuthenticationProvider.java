@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,13 +40,14 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
     public static final String TYPE_LOCAL = "local";
     private final String name;
-    
+    protected List<String> addUserToGroups;
+
     private BCrypt bcrypt = new BCrypt();
 
     public LocalAuthenticationProvider(String name) {
         this.name = name;
     }
-    
+
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#login()
      */
@@ -57,9 +59,10 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
                 boolean refused = true;
-                if ( user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null && bcrypt.checkpw(password, user.getPasswordHash())) {
+                if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
+                        && bcrypt.checkpw(password, user.getPasswordHash())) {
                     refused = false;
-                } 
+                }
                 return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user), refused));
             } catch (DAOException e) {
                 throw new AuthenticationProviderException(e);
@@ -75,7 +78,6 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     public void logout() throws AuthenticationProviderException {
         //noop
     }
-
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
@@ -93,7 +95,6 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         return name;
     }
 
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getType()
      */
@@ -104,6 +105,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
     /**
      * Set custom bcrypt for testing
+     * 
      * @param bcrypt the bcrypt to set
      */
     protected void setBcrypt(BCrypt bcrypt) {
@@ -124,5 +126,21 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     @Override
     public boolean allowsEmailChange() {
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
+     */
+    @Override
+    public List<String> getAddUserToGroups() {
+        return addUserToGroups;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
+     */
+    @Override
+    public void setAddUserToGroups(List<String> addUserToGroups) {
+        this.addUserToGroups = addUserToGroups;
     }
 }
