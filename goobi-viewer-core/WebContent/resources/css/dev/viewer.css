@@ -4472,6 +4472,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #eee;
   border-radius: 0;
   box-shadow: none;
+  background-color: #fff;
 }
 .ui-autocomplete-panel ul.ui-autocomplete-items {
   padding: 0;
@@ -11145,12 +11146,10 @@ img.cms-static-pages__page-language--complete {
   margin-right: 24px;
 }
 .cms-collections__selection-control .ui-autocomplete {
-  top: 100%;
-}
-.cms-collections__selection-control .ui-widget {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 0.9rem;
-  border-color: #ccc;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 .cms-collections__selection-control .ui-state-focus {
   border-color: #eee;
