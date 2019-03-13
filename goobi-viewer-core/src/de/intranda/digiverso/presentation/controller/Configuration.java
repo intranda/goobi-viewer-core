@@ -313,27 +313,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
-                usingTemplate = subElement;
-                break;
-            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                defaultTemplate = subElement;
-            }
-        }
-
-        // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null) {
-            usingTemplate = defaultTemplate;
-        }
-        if (usingTemplate == null) {
-            return Collections.emptyList();
-        }
-
-        return getMetadataForTemplate(usingTemplate);
+        return getMetadataForTemplate(template, templateList, true);
     }
 
     /**
@@ -352,28 +332,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
-                usingTemplate = subElement;
-                break;
-            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                defaultTemplate = subElement;
-            }
-        }
-
-        // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null) {
-            usingTemplate = defaultTemplate;
-        }
-        if (usingTemplate == null) {
-            return Collections.emptyList();
-        }
-
-        return getMetadataForTemplate(usingTemplate);
-
+        return getMetadataForTemplate(template, templateList, true);
     }
 
     /**
@@ -391,57 +350,18 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        HierarchicalConfiguration usingTemplate = null;
-        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
-                usingTemplate = subElement;
-                break;
-            }
-        }
-        if (usingTemplate == null) {
-            return Collections.emptyList();
-        }
-
-        return getMetadataForTemplate(usingTemplate);
+        return getMetadataForTemplate(template, templateList, false);
     }
 
     /**
+     * Reads metadata configuration for the given template name if it's contained in the given template list.
      * 
-     * @param template Template name
-     * @return List of normdata fields configured for the given template name
-     * @should return correct template configuration
-     */
-    public List<String> getNormdataFieldsForTemplate(String template) {
-        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.normdataList.template");
-        if (templateList == null) {
-            return Collections.emptyList();
-        }
-
-        HierarchicalConfiguration usingTemplate = null;
-        HierarchicalConfiguration defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
-                usingTemplate = subElement;
-                break;
-            }
-        }
-        if (usingTemplate == null) {
-            return Collections.emptyList();
-        }
-
-        return getLocalList(usingTemplate, null, "field", null);
-    }
-
-    /**
-     * 
+     * @param template Requested template name
+     * @param templateList List of templates in which to look
+     * @param fallbackToDefault If true, the _DEFAULT template will be loaded if the given template is not found
      * @return
-     * @should return correct template configuration
-     * @should return default template configuration if template not found
      */
-    public List<Metadata> getTocLabelConfiguration(String template) {
-        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
+    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration> templateList, boolean fallbackToDefault) {
         if (templateList == null) {
             return Collections.emptyList();
         }
@@ -459,7 +379,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null) {
+        if (usingTemplate == null && fallbackToDefault) {
             usingTemplate = defaultTemplate;
         }
         if (usingTemplate == null) {
@@ -467,17 +387,6 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return getMetadataForTemplate(usingTemplate);
-    }
-
-    /**
-     * Returns number of elements displayed per paginator page in a table of contents for anchors and groups. Values below 1 disable pagination (all
-     * elements are displayed on the single page).
-     * 
-     * @return
-     * @should return correct value
-     */
-    public int getTocAnchorGroupElementsPerPage() {
-        return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
     }
 
     /**
@@ -529,6 +438,60 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param template Template name
+     * @return List of normdata fields configured for the given template name
+     * @should return correct template configuration
+     */
+    public List<String> getNormdataFieldsForTemplate(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.normdataList.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            }
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        return getLocalList(usingTemplate, null, "field", null);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     */
+    public List<Metadata> getTocLabelConfiguration(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        return getMetadataForTemplate(template, templateList, true);
+    }
+
+    /**
+     * Returns number of elements displayed per paginator page in a table of contents for anchors and groups. Values below 1 disable pagination (all
+     * elements are displayed on the single page).
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getTocAnchorGroupElementsPerPage() {
+        return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
     }
 
     /**
