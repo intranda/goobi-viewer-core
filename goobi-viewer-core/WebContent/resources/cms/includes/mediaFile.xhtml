@@ -190,7 +190,7 @@
                 <div class="admin-cms-media__file-actions-view cms-module__actions in">
                     <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
                     <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
-                    	<f:ajax render="@all"></f:ajax>
+                    	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
                     </h:commandLink>
                     <button 
                         type="button" 

@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,6 +62,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
@@ -181,6 +183,7 @@ public class CMSMediaResource {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
         }
 		
+		
 		Optional<User> user = getUser();
 		if(!user.isPresent()) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
@@ -211,14 +214,19 @@ public class CMSMediaResource {
         			MediaItem jsonItem = new MediaItem(item);
         			return Response.status(Status.ACCEPTED).entity(jsonItem).build();
         		} else {
-        			return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to create file " + mediaFile).build();
+            		String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+        			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         			
         		}
         	} catch (AccessDeniedException e) {
         		return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
+        	} catch(FileAlreadyExistsException e) {
+        		String message = Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+        		return Response.status(Status.CONFLICT).entity(message).build();
         	} catch(IOException | DAOException e) {
         		logger.error("Error uploading media file", e);
-        		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        		String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(), e.getMessage());
+    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         	}
 		}
 	}

@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.RollbackException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.collections.ListUtils;
@@ -43,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -55,6 +57,7 @@ import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvid
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSourceException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
@@ -251,19 +254,28 @@ public class CmsMediaBean implements Serializable {
 	public void deleteMedia(CMSMediaItem item) throws DAOException {
 		IDAO dao = DataManager.getInstance().getDao();
 		if (dao != null) {
-			if (!dao.deleteCMSMediaItem(item)) {
-				logger.error("Failed to delete media item");
-			} else if (item.getFileName() != null) {
-				try {
-					Path mediaFile = item.getFilePath();
-					Files.delete(mediaFile);
-					if (Files.exists(mediaFile)) {
-						throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
+			try {
+				dao.deleteCMSMediaItem(item);		
+				if (item.getFileName() != null) {
+					try {
+						Path mediaFile = item.getFilePath();
+						Files.delete(mediaFile);
+						if (Files.exists(mediaFile)) {
+							throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
+						}
+					} catch (IOException e) {
+						logger.error("Failed to delete media file: " + e.getMessage());
 					}
-				} catch (IOException e) {
-					logger.error("Failed to delete media file: " + e.getMessage());
+				}
+			} catch(RollbackException e) {				
+				if(e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
+					Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+				} else {
+					logger.error("Error deleting category ", e);
+					Messages.error(null, "admin__media_delete_error", item.getFileName(), e.getMessage());
 				}
 			}
+
 		}
 		if(this.selectedMediaItem == item ) {
 			this.selectedMediaItem = null;

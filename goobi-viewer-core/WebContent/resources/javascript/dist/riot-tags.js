@@ -93,6 +93,10 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
         this.fileUploadError = function(error) {
         	console.log("Error uploading file ", error);
+        	var responseText = error.reason.responseText;
+        	if(responseText) {
+        		$("#messages").append("<li class='alert alert-danger'>" + responseText + "</li>");
+        	}
         }.bind(this)
 
         this.fileUploadComlpete = function(arg) {

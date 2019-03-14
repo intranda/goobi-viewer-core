@@ -30,7 +30,7 @@
 	              </select>
 	          </div>
 	          <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
-	          	<f:ajax render="@form" onevent="reload"></f:ajax>
+	          	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
 	          </h:commandLink>
       	</div>
       </ui:fragment>

@@ -117,6 +117,10 @@
         
         fileUploadError(error) {
         	console.log("Error uploading file ", error);
+        	var responseText = error.reason.responseText;
+        	if(responseText) {
+        		$("#messages").append("<li class='alert alert-danger'>" + responseText + "</li>");
+        	}
         }
         
         fileUploadComlpete(arg) {
