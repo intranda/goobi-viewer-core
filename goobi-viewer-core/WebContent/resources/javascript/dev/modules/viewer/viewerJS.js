@@ -152,7 +152,7 @@ var viewerJS = ( function() {
                         var messageTimer = setTimeout( function() {
                             $( _defaults.messageBoxSelector ).each( function() {
                                 $( this ).fadeOut( 'slow', function() {
-                                    $( this ).parent().remove();
+                                	$( this ).remove();
                                 } )
                             } );
                             

@@ -1,4 +1,4 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> {opts.msg.mediaError}:<span></span></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> {opts.msg.mediaError}:<span></span></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.fileTypes = 'jpg, png, svg, tif, docx, doc, rtf, html, xhtml, xml';
@@ -45,7 +45,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
         }.bind(this));
 
         this.buttonFilesSelected = function(e) {
-            for (var f of e.target.files) {
+			for (var f of e.target.files) {
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
@@ -93,6 +93,10 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
         this.fileUploadError = function(error) {
         	console.log("Error uploading file ", error);
+        	var responseText = error.reason.responseText;
+        	if(responseText) {
+        		$("#messages").append("<li class='alert alert-danger'>" + responseText + "</li>");
+        	}
         }.bind(this)
 
         this.fileUploadComlpete = function(arg) {

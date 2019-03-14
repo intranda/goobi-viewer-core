@@ -30,7 +30,7 @@
 	              </select>
 	          </div>
 	          <h:commandLink id="deleteSelectedItemsButton" action="#{cmsMediaBean.deleteSelectedItems}">
-	          	<f:ajax render="@form" onevent="reload"></f:ajax>
+	          	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
 	          </h:commandLink>
       	</div>
       </ui:fragment>
@@ -60,9 +60,11 @@
       </div>
 
       <!-- PAGINATOR -->
-      <div class="admin-cms-media__paginator">
-          <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
-      </div>
+      <ui:fragment rendered="#{cmsMediaBean.needsPaginator()}">
+	      <div class="admin-cms-media__paginator">
+	          <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
+	      </div>
+      </ui:fragment>
   </div>
 	
 </ui:composition>

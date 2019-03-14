@@ -15,26 +15,26 @@
  */
 package de.intranda.digiverso.presentation.messages;
 
+import java.util.Locale;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
-
-import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 
 public class Messages {
 
-    public static void error(String targetId, String message) {
-        showMessage(targetId, message, FacesMessage.SEVERITY_ERROR);
+    public static void error(String targetId, String message, String... messageParams) {
+        showMessage(targetId, message, FacesMessage.SEVERITY_ERROR, messageParams);
     }
 
     public static void error(String message) {
         showMessage(null, message, FacesMessage.SEVERITY_ERROR);
     }
 
-    public static void info(String targetId, String message) {
-        showMessage(targetId, message, FacesMessage.SEVERITY_INFO);
+    public static void info(String targetId, String message, String... messageParams) {
+        showMessage(targetId, message, FacesMessage.SEVERITY_INFO, messageParams);
     }
 
     public static void info(String message) {
@@ -45,8 +45,8 @@ public class Messages {
         showMessage(null, message, FacesMessage.SEVERITY_WARN);
     }
 
-    public static void warn(String targetId, String message) {
-        showMessage(targetId, message, FacesMessage.SEVERITY_WARN);
+    public static void warn(String targetId, String message, String... messageParams) {
+        showMessage(targetId, message, FacesMessage.SEVERITY_WARN, messageParams);
     }
 
     public static void clear() {
@@ -54,17 +54,32 @@ public class Messages {
         fc.getMessageList().clear();
     }
 
-    private static void showMessage(String targetId, String inMessage, Severity inSeverity) {
+    private static void showMessage(String targetId, String inMessage, Severity inSeverity, String... messageParams) {
         FacesContext fc = FacesContext.getCurrentInstance();
         if (fc == null) {
             return;
         }
-        String translatedMessage = Helper.getTranslation(inMessage, null);
+        String translatedMessage = translate(inMessage, null, messageParams);
         FacesMessage fm = new FacesMessage(translatedMessage);
         fm.setSeverity(inSeverity);
         // remove duplicate
         fm.setDetail("");
         fc.addMessage(targetId, fm);
     }
+
+	/**
+	 * @param inMessage
+	 * @param messageParams
+	 * @return
+	 */
+	public static String translate(String inMessage, Locale locale, String... messageParams) {
+		String translatedMessage = Helper.getTranslation(inMessage, locale);
+        for (int i = 0; i < messageParams.length; i++) {
+        	//two replacements to handle both placeholders with and without numbers
+        	translatedMessage = translatedMessage.replace("{" + i + "}", messageParams[i]);
+        	translatedMessage = translatedMessage.replaceFirst("\\{\\}", messageParams[i]);
+		}
+		return translatedMessage;
+	}
 
 }
