@@ -8,27 +8,47 @@
 
 	<composite:interface />
 
-	<composite:implementation>
-		<h:panelGroup id="content_media_group"
-			rendered="#{contentItem.type == 'MEDIA'}">
-			<ui:fragment rendered="#{contentItem.mediaItem != null}">
-				<ui:include src="/resources/cms/includes/mediaFile.xhtml">
-					<ui:param name="media" value="#{contentItem.mediaItem}" />
-				</ui:include>
-			</ui:fragment>
-			<h:commandLink
-				action="#{cmsBean.setSelectedMediaHolder(contentItem)}"
-				type="button" class="btn btn--default"
-				value="#{msg.cms_selectMedia}">
-				<f:ajax execute="@form" render="mediaSelectPanel"></f:ajax>
-			</h:commandLink>
-			<h:commandLink
-				rendered="#{contentItem.getMediaItem() != null}"
-				action="#{contentItem.setMediaItem(null)}"
-				type="button" class="btn btn--default"
-				value="#{msg.cms_selectMediaItem_deselect}">
-				<f:ajax render="content_media_group"></f:ajax>
-			</h:commandLink>
-		</h:panelGroup>
-	</composite:implementation>
+    <composite:implementation>
+        <!-- must be h:panelgroup for ajax replacement -->
+        <h:panelGroup id="contentMediaGroup" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'MEDIA'}" layout="block">
+            <div class="cms-module__option-label">
+                <label for="">#{msg.admin__cms_media_file}:</label>
+            </div>
+            <div class="cms-module__option-control">
+                <!-- MEDIA FILE -->
+                <ui:fragment rendered="#{contentItem.mediaItem != null}">
+                    <ui:include src="/resources/cms/includes/mediaFile.xhtml">
+                        <ui:param name="media" value="#{contentItem.mediaItem}" />
+                    </ui:include>
+                </ui:fragment>
+
+                <!-- ACTIONS -->
+                <div class="cms-module__actions">
+                    <h:commandLink 
+                        action="#{cmsBean.setSelectedMediaHolder(contentItem)}" 
+                        value="#{msg.cms_selectMedia}" 
+                        class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+                        role="button">
+                        <f:ajax execute="@form" render="mediaSelectPanel" />
+                    </h:commandLink>
+                    <h:commandLink 
+                        rendered="#{contentItem.getMediaItem() != null}" 
+                        action="#{contentItem.setMediaItem(null)}" 
+                        value="#{msg.cms_selectMediaItem_deselect}" 
+                        class="btn btn--clean delete"
+                        role="button">
+                        <f:ajax render="contentMediaGroup" />
+                    </h:commandLink>                    
+                </div>
+
+                <!-- HELP -->
+                <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_media_file}</span>
+            </div>
+            <div class="cms-module__option-help">
+                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
 </ui:composition>

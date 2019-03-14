@@ -7,29 +7,29 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-
 	<!-- FILE -->
     <div class="admin-cms-media__file" tabindex="-1">
         <!-- CLOSE -->
         <div class="admin-cms-media__file-close"></div>
+
         <!-- NAVIGATE -->
         <div class="admin-cms-media__file-prev"></div>
         <div class="admin-cms-media__file-next"></div>
-    
+
         <!-- TOP -->
         <div class="admin-cms-media__file-top">
             <!-- FILE SELECT -->
             <div class="admin-cms-media__file-select">
                 <ui:fragment rendered="#{selectable != null}">
-	                <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
-	                    <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{selectable.selected}">
-	                    	<f:ajax event="change" render="@none" execute="@this"/>
-	                    </h:selectBooleanCheckbox>
-	                    <span class="custom-control__icon">
-	                        <i class="fa fa-square-o" aria-hidden="true"></i>
-	                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
-	                    </span>
-	                </label>
+                    <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
+                        <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{selectable.selected}">
+                            <f:ajax event="change" render="@none" execute="@this" />
+                        </h:selectBooleanCheckbox>
+                        <span class="custom-control__icon">
+                            <i class="fa fa-square-o" aria-hidden="true"></i>
+                            <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                        </span>
+                    </label>
                 </ui:fragment>
             </div>
 
@@ -45,7 +45,6 @@
                 </div>
             </ui:fragment>
 
-
             <!-- FILE METADATA -->
             <div class="admin-cms-media__file-metadata">
                 <!-- FILE METADATA VIEW -->
@@ -55,24 +54,23 @@
                             <!-- TITLE -->
                             <dt>#{msg.admin__media_title}:</dt>
                             <dd>#{media.getMetadataForLocale(media.selectedLocale).name}</dd>
+                            
                             <!-- DESCRIPTION -->
                             <dt>#{msg.admin__media_description}:</dt>
                             <dd>#{media.getMetadataForLocale(media.selectedLocale).description}</dd>
+                            
                             <!-- LINKS TO -->
-                            <ui:fragment rendered="#{media.link != '#'}">
+                            <ui:fragment rendered="#{media.link != '#' or media.link != ''}">
                                 <dt>#{msg.admin__media_links_to}:</dt>
                                 <dd>#{media.link}</dd>
                             </ui:fragment>
                             
-                            <!-- TODO: Logik zum entfernen von Kategorien einbauen -->
+                            <!-- CATEGORIES -->
                             <dt>#{msg.admin__categories}:</dt>
                             <dd>
-                            	<ui:repeat var="category" value="#{media.categories}">
-                            	    	<span class="label label-default">#{category.name}</span>
-                            	</ui:repeat>
-<!--                                                             <span class="label label-default">Allgemein</span> -->
-<!--                                                             <span class="label label-default">Backend </span> -->
-<!--                                                             <span class="label label-default">Test </span> -->
+                                <ui:repeat var="category" value="#{media.categories}">
+                                    <span class="label label-default">#{category.name}</span>
+                                </ui:repeat>
                             </dd>
                         </dl>
                     </h:panelGroup>
@@ -87,8 +85,7 @@
                                 <label for="editMediaTitle">#{msg.admin__media_title}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(media.selectedLocale).name}"
-                                    styleClass="form-control" />
+                                <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(media.selectedLocale).name}" styleClass="form-control" />
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
                             </div>
                             <div class="cms-module__option-help">
@@ -104,8 +101,7 @@
                                 <label for="editMediaDescription">#{msg.admin__media_description}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(media.selectedLocale).description}"
-                                    styleClass="form-control" />
+                                <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(media.selectedLocale).description}" styleClass="form-control" />
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
                             </div>
                             <div class="cms-module__option-help">
@@ -146,26 +142,23 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- ADD CATEGORY -->
-                        <!-- TODO: Logik zum zuweisen von Kategorien einbauen -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
                                 <label for="editMediaCategories">#{msg.admin__categories}:</label>
                             </div>
                             <div class="cms-module__option-control">
                                 <div class="cms-module__option-dropdown">
-                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">
-                                        #{msg.admin__category_select}
-                                    </div>
+                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
                                     <ul>
-                                    	<ui:repeat var="selectableCategory" value="#{media.selectableCategories}">
-                                         <li>
-                                             <label>
-                                                 <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}"/>
-                                                 #{selectableCategory.value.name}
-                                             </label>
-                                         </li>
+                                        <ui:repeat var="selectableCategory" value="#{media.selectableCategories}">
+                                            <li>
+                                                <label>
+                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}" />
+                                                    #{selectableCategory.value.name}
+                                                </label>
+                                            </li>
                                         </ui:repeat>
                                     </ul>
                                 </div>
@@ -190,13 +183,9 @@
                 <div class="admin-cms-media__file-actions-view cms-module__actions in">
                     <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
                     <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
-                    	<f:ajax render="@all"></f:ajax>
+                        <f:ajax render="@all" />
                     </h:commandLink>
-                    <button 
-                        type="button" 
-                        class="btn btn--clean" 
-                        data-copy="img-url" 
-                        data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" 
+                    <button type="button" class="btn btn--clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}"
                         title="#{msg.cms_media_copyUrlToClipboard}">#{msg.admin__cms_media_copy_image_url}</button>
                 </div>
 
@@ -204,28 +193,27 @@
                 <div class="admin-cms-media__file-actions-edit cms-module__actions">
                     <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
                     <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media)}" onclick="$(this).prev().click()" value="#{msg.button__save}" styleClass="btn btn--clean">
-                   		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
+                        <f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload" />
                     </h:commandLink>
                 </div>
             </div>
-            
+
             <!-- FILE LANGUAGE -->
             <div class="admin-cms-media__file-language">
                 <strong>#{msg.admin__available_languages}:</strong>
                 <h:panelGroup id="language-select">
-                  <ul>
-                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                        <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
-                        	<h:commandLink actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
-                        		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
-                        	</h:commandLink>
-                        </li>  
-                    </c:forEach>
-                  </ul>
-                </h:panelGroup>                                          
-            </div>    
+                    <ul>
+                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+                            <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(media.selectedLocale) ? 'active' : ''}">
+                                <h:commandLink actionListener="#{media.setSelectedLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
+                                    <f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload" />
+                                </h:commandLink>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </h:panelGroup>
+            </div>
         </div>
-	</div>
-	
+    </div>
 </ui:composition>
 

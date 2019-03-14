@@ -1,0 +1,123 @@
+/* ==============================================================
+   CMS Media Select
+   ==============================================================*/
+/* MEDIA SELECT */
+.admin-cms-media {
+	&__select {
+		position: fixed;
+	    top: 30px;
+	    right: 30px;
+	    bottom: 30px;
+	    left: 30px;
+	    padding: 50px;
+	    z-index: 2020;
+	    background-color: @white;		
+	    .cms-mediaitem-wrapper {
+	    	position: relative;
+	    	height: 120px;
+			padding: 10px;
+			width: 120px;
+	    }
+	    .cms-mediaitem-item {
+	    	position: absolute;
+	    }
+	    .cms-mediaitem-select {
+	    	position: absolute;
+	    	width: 100%;
+	    	height: 100%;
+	    }
+	    .selected {
+	    	background-color: @blue;
+	    }
+	}
+	&__select-overlay {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: rgba(0,0,0,0.5);
+		z-index: 2010;
+	}
+	&__select-content {
+		.tab-pane {
+			padding: 0;
+			border: 0;
+		}
+	}
+	&__select-files {
+		display: flex;
+	}
+	&__select-files-files {
+		flex-grow: 1;
+	}
+	&__select-files-selected {
+		width: 30%;
+		padding: 15px;
+		background-color: @neutralgray;
+		.admin-cms-media {
+			&__file {
+				margin: 0;
+				background-color: @neutralgray !important;
+			}
+			&__file-image {
+				.mx-hidden;
+			}
+			&__file-metadata {
+				padding-left: 0;
+			}
+			&__file-metadata-view {
+				.dl-horizontal {
+					dt {
+						width: 100%;
+				 	 	margin-right: 0;
+				 	}
+				 	dd {
+						margin-bottom: 10px;				 		
+				 	}
+				 }
+			}
+			&__file-metadata-edit {
+				.cms-module__option-label {
+					flex-basis: 100%;
+					& + .cms-module__option-control {
+						flex-basis: 90%;
+						padding-left: 0;
+					}
+				}
+			}
+			&__file-bottom {
+				flex-direction: column;
+				justify-content: flex-start;
+			}
+			&__file-actions {
+				width: 100%;
+				padding-left: 0;
+				order: 1;
+			}
+			&__file-language {
+				width: 100%;
+				max-width: 100%;
+				margin-bottom: 10px;
+				margin-left: 0;
+				padding-left: 0;
+			}
+		}
+	}
+	&__select-action {
+		padding-top: 10px;
+		text-align: right;
+	}	
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOPS
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}
