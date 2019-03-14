@@ -60,9 +60,11 @@
       </div>
 
       <!-- PAGINATOR -->
-      <div class="admin-cms-media__paginator">
-          <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
-      </div>
+      <ui:fragment rendered="#{cmsMediaBean.needsPaginator()}">
+	      <div class="admin-cms-media__paginator">
+	          <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
+	      </div>
+      </ui:fragment>
   </div>
 	
 </ui:composition>

@@ -580,5 +580,17 @@ public class CmsMediaBean implements Serializable {
 	public boolean isAllSelected() {
 		return allSelected;
 	}
+	
+	/**
+	 * 
+	 * @return true if there is more than one page in the data-provider. False otherwise
+	 */
+	public boolean needsPaginator() {
+		if(this.getDataProvider() != null) {
+			return this.getDataProvider().getLastPageNumber() > 0;
+		} else {
+			return false;
+		}
+	}
 
 }
