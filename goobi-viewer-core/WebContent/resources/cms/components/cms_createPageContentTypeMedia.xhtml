@@ -8,6 +8,7 @@
 
 	<composite:interface />
 
+
     <composite:implementation>
         <!-- must be h:panelgroup for ajax replacement -->
         <h:panelGroup id="contentMediaGroup" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'MEDIA'}" layout="block">
@@ -18,7 +19,7 @@
                 <!-- MEDIA FILE -->
                 <ui:fragment rendered="#{contentItem.mediaItem != null}">
                     <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-                        <ui:param name="media" value="#{contentItem.mediaItem}" />
+                        <ui:param name="item" value="#{contentItem.mediaItemWrapper}" />
                     </ui:include>
                 </ui:fragment>
 

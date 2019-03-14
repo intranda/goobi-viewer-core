@@ -41,6 +41,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -309,9 +310,13 @@ public class CmsCollectionsBean implements Serializable {
 		});
 	}
 	
-	public void fillSelectedMediaHolder(CMSMediaItem mediaItem) {
+	public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem) {
 		this.selectedMediaHolder.ifPresent(item -> {
-			item.setMediaItem(mediaItem);
+			if(mediaItem != null) {
+				item.setMediaItem(mediaItem.getValue());
+			} else {
+				item.setMediaItem(null);
+			}
 		});
 		this.selectedMediaHolder = Optional.empty();
 	}

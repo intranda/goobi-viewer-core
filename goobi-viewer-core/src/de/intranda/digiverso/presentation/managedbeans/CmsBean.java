@@ -74,6 +74,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
@@ -1740,9 +1741,13 @@ public class CmsBean implements Serializable {
 		});
 	}
 	
-	public void fillSelectedMediaHolder(CMSMediaItem mediaItem) {
+	public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem) {
 		this.selectedMediaHolder.ifPresent(item -> {
-			item.setMediaItem(mediaItem);
+			if(mediaItem != null) {
+				item.setMediaItem(mediaItem.getValue());
+			} else {
+				item.setMediaItem(null);
+			}
 		});
 		this.selectedMediaHolder = Optional.empty();
 	}

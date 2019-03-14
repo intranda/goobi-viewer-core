@@ -59,6 +59,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
+import de.intranda.digiverso.presentation.model.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -262,6 +263,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Transient
     private CollectionView collection = null;
 
+    /**
+     * Wrapper for the media item which keeps track of the currently selected language
+     */
+    @Transient
+    private TranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
+    
     /**
      *  
      */
@@ -540,7 +547,24 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
+        this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true);
+        
     }
+    
+    /**
+	 * @return the mediaItemWrapper
+	 */
+	public TranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+		return mediaItemWrapper;
+	}
+	
+	/**
+	 * @param mediaItemWrapper the mediaItemWrapper to set
+	 */
+	public void setMediaItemWrapper(TranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
+		this.mediaItemWrapper = mediaItemWrapper;
+		this.mediaItem = this.mediaItemWrapper.getValue();
+	}
 
     /**
      * @return the pageClassification
