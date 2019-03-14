@@ -115,9 +115,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	@Column(name = "display_order", nullable = true)
 	private int displayOrder = 0;
 
-	@Transient
-	private Locale selectedLocale = BeanUtils.getLocale();
-	
 	/**
 	 * Hold all available categories and whether they are selected in the GUI
 	 */
@@ -313,19 +310,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		this.alternativeText = alternativeText;
 	}
 
-	/**
-	 * @return the selectedLocale
-	 */
-	public Locale getSelectedLocale() {
-		return selectedLocale;
-	}
-
-	/**
-	 * @param selectedLocale the selectedLocale to set
-	 */
-	public void setSelectedLocale(Locale selectedLocale) {
-		this.selectedLocale = selectedLocale;
-	}
 
 	/**
 	 * 

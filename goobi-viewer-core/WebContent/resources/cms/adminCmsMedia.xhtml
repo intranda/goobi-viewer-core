@@ -43,8 +43,7 @@
 		                    <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectableItem" varStatus="status">
 		                       
 		                       <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-		                       		<ui:param name="media" value="#{selectableItem.value}"/>
-		                       		<ui:param name="selectable" value="#{selectableItem}" />
+		                       		<ui:param name="item" value="#{selectableItem}" />
 		                       		<ui:param name="idPrefix" value="mediaList:#{status.index}:" />
 		                       </ui:include>
 		                                                                                

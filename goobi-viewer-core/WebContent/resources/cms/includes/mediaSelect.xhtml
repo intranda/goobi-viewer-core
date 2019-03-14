@@ -26,15 +26,14 @@
 	                    <div class="admin-cms-media__files">
 		                    <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectableItem" varStatus="status">
 		                       
-		                       <div class="cms-mediaitem-wrapper #{selectableItem.value == cmsMediaBean.selectedMediaItem ? 'selected' : ''}">
+		                       <div class="cms-mediaitem-wrapper #{selectableItem == cmsMediaBean.selectedMediaItem ? 'selected' : ''}">
 			                       <div class="cms-mediaitem-item">
 				                       <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-				                       		<ui:param name="media" value="#{selectableItem.value}"/>
-				                       		<ui:param name="selectable" value="#{selectableItem}" />
+				                       		<ui:param name="item" value="#{selectableItem}" />
 				                       		<ui:param name="idPrefix" value="mediaList:#{status.index}:" />
 				                       </ui:include>
 			                       </div>
-			                       <h:commandLink styleClass="cms-mediaitem-select" action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem.value)}">
+			                       <h:commandLink styleClass="cms-mediaitem-select" action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem)}">
 				                       <f:ajax execute="@this" render="selectedMediaItemPanel" onevent="reload"></f:ajax>
 			                       </h:commandLink>
 		                       </div>
@@ -46,7 +45,7 @@
                     		<h:panelGroup id="selectedMediaItemPanel">
 	                    		<ui:fragment rendered="#{cmsMediaBean.selectedMediaItem != null}">
 	                    			<ui:include src="/resources/cms/includes/mediaFile.xhtml">
-		                       			<ui:param name="media" value="#{cmsMediaBean.selectedMediaItem}"/>
+		                       			<ui:param name="item" value="#{cmsMediaBean.selectedMediaItem}"/>
 		                       		</ui:include>
 	                    		</ui:fragment>
                     		</h:panelGroup>

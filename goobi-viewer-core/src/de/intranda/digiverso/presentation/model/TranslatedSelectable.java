@@ -1,0 +1,71 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.intranda.digiverso.presentation.model;
+
+import java.util.Locale;
+
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.Selectable;
+
+/**
+ * @author florian
+ *
+ */
+public class TranslatedSelectable<T> extends Selectable<T> {
+
+	private Locale locale = BeanUtils.getLocale();
+	
+	/**
+	 * @param value
+	 * @param selected
+	 */
+	public TranslatedSelectable(T value, boolean selected) {
+		super(value, selected);
+	}
+	
+	/**
+	 * @return the locale
+	 */
+	public Locale getLocale() {
+		return locale;
+	}
+	
+	/**
+	 * @param locale the locale to set
+	 */
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+	
+	public String getLanguage() {
+		return locale.getLanguage();
+	}
+	
+	public void setLanguage(String language) {
+		this.locale = Locale.forLanguageTag(language);
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Selectable<T> other) {
+		return super.compareTo(other);
+	}
+
+}

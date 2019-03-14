@@ -13,7 +13,7 @@
 			rendered="#{contentItem.type == 'MEDIA'}">
 			<ui:fragment rendered="#{contentItem.mediaItem != null}">
 				<ui:include src="/resources/cms/includes/mediaFile.xhtml">
-					<ui:param name="media" value="#{contentItem.mediaItem}" />
+					<ui:param name="item" value="#{contentItem.mediaItemWrapper}" />
 				</ui:include>
 			</ui:fragment>
 			<h:commandLink
