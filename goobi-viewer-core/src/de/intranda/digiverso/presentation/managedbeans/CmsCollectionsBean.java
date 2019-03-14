@@ -18,12 +18,14 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +42,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
+import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.Translation;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
@@ -59,10 +62,14 @@ public class CmsCollectionsBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
     private static final int MAX_IMAGES_PER_PAGE = 36;
 
+    @Inject
+    CmsMediaBean cmsMediaBean;
+    
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
+    private Optional<CMSCollection> selectedMediaHolder = Optional.empty();
     private CMSMediaItem selectedMediaItem = null;
     private boolean piValid = true;
 
@@ -290,5 +297,27 @@ public class CmsCollectionsBean implements Serializable {
             return true;
         }
     }
+    
+    /**
+	 * @param selectedMediaHolder the selectedMediaHolder to set
+	 */
+	public void setSelectedMediaHolder(CMSCollection item) {
+		this.selectedMediaHolder = Optional.ofNullable(item);
+		this.selectedMediaHolder.ifPresent(contentItem -> {
+			String filter = cmsMediaBean.getImageFilter();
+			cmsMediaBean.setFilenameFilter(filter);
+		});
+	}
+	
+	public void fillSelectedMediaHolder(CMSMediaItem mediaItem) {
+		this.selectedMediaHolder.ifPresent(item -> {
+			item.setMediaItem(mediaItem);
+		});
+		this.selectedMediaHolder = Optional.empty();
+	}
+	
+	public boolean hasSelectedMediaHolder() {
+		return this.selectedMediaHolder.isPresent();
+	}
 
 }
