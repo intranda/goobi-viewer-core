@@ -9002,13 +9002,48 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2010;
 }
+.admin-cms-media__select-content {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  height: 100%;
+}
+.admin-cms-media__select-content .nav-tabs,
+.admin-cms-media__select-content .tab-content {
+  position: absolute;
+  right: 0;
+  left: 0;
+}
+.admin-cms-media__select-content .nav-tabs {
+  top: 0;
+}
+.admin-cms-media__select-content .tab-content {
+  top: 42px;
+  bottom: 0;
+}
 .admin-cms-media__select-content .tab-pane {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   padding: 0;
+  padding-top: 10px;
   border: 0;
+}
+.admin-cms-media__select-content .tab-pane form {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .admin-cms-media__select-files {
   display: -ms-flexbox;
   display: flex;
+  height: calc(100% - 54px);
 }
 .admin-cms-media__select-files-files {
   -ms-flex-positive: 1;
