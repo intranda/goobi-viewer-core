@@ -8735,6 +8735,20 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control.in .cms-module__option-control-checkbox {
   border-color: #468847 !important;
 }
+.cms-module__option-control.in .admin-cms-media__file,
+.cms-module__option-control.in .cms-module__actions {
+  padding: 7px;
+  border: 1px solid #468847;
+}
+.cms-module__option-control.in .admin-cms-media__file {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.cms-module__option-control.in .cms-module__actions {
+  padding-top: 0;
+  border-top: 0;
+}
 .cms-module__option-control.in .cms-module__option-control-checkbox {
   padding: 7px;
 }
@@ -8947,6 +8961,114 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* CMS INCLUDES */
+/* ==============================================================
+   CMS Media Select
+   ==============================================================*/
+/* MEDIA SELECT */
+.admin-cms-media__select {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  bottom: 30px;
+  left: 30px;
+  padding: 50px;
+  z-index: 2020;
+  background-color: #fff;
+}
+.admin-cms-media__select .cms-mediaitem-wrapper {
+  position: relative;
+  height: 120px;
+  padding: 10px;
+  width: 120px;
+}
+.admin-cms-media__select .cms-mediaitem-item {
+  position: absolute;
+}
+.admin-cms-media__select .cms-mediaitem-select {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.admin-cms-media__select .selected {
+  background-color: #3365a9;
+}
+.admin-cms-media__select-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2010;
+}
+.admin-cms-media__select-content .tab-pane {
+  padding: 0;
+  border: 0;
+}
+.admin-cms-media__select-files {
+  display: -ms-flexbox;
+  display: flex;
+}
+.admin-cms-media__select-files-files {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+}
+.admin-cms-media__select-files-selected {
+  width: 30%;
+  padding: 15px;
+  background-color: #f2f3f4;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file {
+  margin: 0;
+  background-color: #f2f3f4 !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-image {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata {
+  padding-left: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dt {
+  width: 100%;
+  margin-right: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dd {
+  margin-bottom: 10px;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label + .cms-module__option-control {
+  -ms-flex-preferred-size: 90%;
+      flex-basis: 90%;
+  padding-left: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-bottom {
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions {
+  width: 100%;
+  padding-left: 0;
+  -ms-flex-order: 1;
+      order: 1;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-language {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+  margin-left: 0;
+  padding-left: 0;
+}
+.admin-cms-media__select-action {
+  padding-top: 10px;
+  text-align: right;
+}
 /* CMS TEMPLATES */
 /* ==============================================================
    CMS Template "Generic"
@@ -10335,6 +10457,8 @@ div[id*="-Modal"] .email-form .form-group {
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
+  -ms-flex-align: center;
+      align-items: center;
   max-width: 50%;
   margin-left: auto;
   padding-left: 10px;
@@ -10413,6 +10537,12 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__files.grid .admin-cms-media__file-bottom.in {
   display: none;
 }
+/* CREATE PAGE VIEW */
+.cms-create-page .admin-cms-media__file {
+  margin-bottom: 10px;
+  padding: 0;
+  background-color: #fff;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
@@ -10421,104 +10551,105 @@ div[id*="-Modal"] .email-form .form-group {
    CMS Create Page
    style declarations for adminCmsCreatePage.xhtml
    ==============================================================*/
-#cmsCreatePage {
+/* CMS CREATE PAGE */
+.cms-create-page {
   position: relative;
 }
-#cmsCreatePage .create-page-left {
+.cms-create-page .create-page-left {
   padding: 0 0 0 15px;
 }
-#cmsCreatePage .create-page-preview {
+.cms-create-page .create-page-preview {
   text-align: right;
 }
-#cmsCreatePage span.btn {
+.cms-create-page span.btn {
   opacity: 0.65;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page {
+.cms-create-page__wrapper .edit-content-page {
   border-bottom: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-content {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-content {
   border-bottom: none;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-solr {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-solr {
   margin-bottom: 15px;
   padding-top: 15px;
   border-top: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-collection {
   margin-bottom: 14px;
   padding: 14px 0px 0px 0px;
   border-top: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection .group-label {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-collection .group-label {
   font-size: 1.2rem;
   margin-bottom: 0px;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media {
   padding: 14px 0 0 0;
   border-bottom: none;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media label {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media label {
   padding: 7px 8px 0 15px;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-preview img {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-preview img {
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item {
   margin: 7px 0;
   border: 1px solid #eee;
   border-radius: 4px;
   background-color: #fff;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item.active-media-item {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item.active-media-item {
   border: 1px solid #666;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image {
   height: 80px;
   border-radius: 4px 4px 0 0;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image img {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image img {
   display: block;
   max-height: 80px;
   margin: 0 auto;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-title {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-title {
   height: 45px;
   padding: 5px;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-action {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-action {
   padding: 5px;
   text-align: center;
   border-top: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-pagelist {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-pagelist {
   margin: 0;
   padding: 15px 0;
   border-top: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-pagelist .form-horizontal .form-group:last-child {
+.cms-create-page__wrapper .edit-content-page.edit-content-page-pagelist .form-horizontal .form-group:last-child {
   margin-bottom: 0;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper {
+.cms-create-page__wrapper #sidebarEditorWrapper {
   padding: 14px 7px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor {
   margin-bottom: 14px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li {
   margin-bottom: 7px;
   border: 1px solid #eee;
   border-radius: 4px;
   background-color: #fff;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header {
   position: relative;
   min-height: 28px;
   line-height: 27px;
@@ -10526,180 +10657,180 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
   padding: 7px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header h4 {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header h4 {
   margin: 0;
   padding-right: 15px;
   color: #1a1a1a;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header .fa {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header .fa {
   position: absolute;
   top: 9px;
   right: 7px;
   cursor: pointer;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body {
   display: none;
   padding: 7px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group {
   margin: 0 0 5px 0;
   padding: 0;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group h4 {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group h4 {
   margin: 0 0 14px 0;
   font-weight: bold;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group table tr td {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group table tr td {
   padding: 0 5px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group table tr td input[type="radio"] {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group table tr td input[type="radio"] {
   margin: -2px 5px 0 0;
   vertical-align: middle;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group textarea {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .form-group textarea {
   resize: vertical;
   min-height: 150px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .sidebar-editor-item-widget-editor-action {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .sidebar-editor-item-widget-editor-action {
   text-align: right;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td {
   display: block;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td label {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td label {
   overflow: hidden;
   max-width: 90%;
   margin-bottom: -5px;
   margin-left: 5px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .btn {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor ul li .btn {
   margin: 0 0 0 5px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor .ui-sortable {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor .ui-sortable {
   min-height: 500px;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-choose-standard {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-choose-standard {
   padding: 14px 0;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-choose-standard input[type="checkbox"] {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-choose-standard input[type="checkbox"] {
   margin: -3px 0 0 7px;
   vertical-align: middle;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-editor #addMenuItemWrapper {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-editor #addMenuItemWrapper {
   margin-bottom: 1.3125rem;
   text-align: right;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-editor #addMenuItemWrapper .btn {
+.cms-create-page__wrapper #sidebarEditorWrapper .sidebar-editor.sidebar-editor-editor #addMenuItemWrapper .btn {
   margin: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper {
+.cms-create-page #cmsCreatePageMetadataItemWrapper {
   border: 2px solid #eee;
   background-color: #fff;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item {
   padding: 14px 7px;
   border-bottom: 1px solid #eee;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item:last-child {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item:last-child {
   border-bottom: none;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item h3 {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item h3 {
   margin: 0 0 1em 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item .row {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item .row {
   margin: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal {
   margin: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal dt {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal dt {
   width: 30%;
   text-align: left;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal dd {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item .dl-horizontal dd {
   margin-left: 30%;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item ul {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type .fa {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type .fa {
   cursor: pointer;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type img {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type img {
   display: block;
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type p {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type p {
   margin: 14px 0;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type div[class^="col-"] {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type div[class^="col-"] {
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul {
   margin-bottom: 14px;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li {
   margin-bottom: 4px;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:before,
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:before,
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
   content: " ";
   display: table;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li:after {
   clear: both;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li span {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li span {
   display: inline-block;
   float: left;
   max-width: 85%;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li a {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification ul li a {
   float: right;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] {
   padding: 0;
   text-align: right;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] select {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] select {
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] .fa {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] .fa {
   margin-top: 4px;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-privacy-status table {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-privacy-status table {
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-privacy-status table tr td input[type="radio"] {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-privacy-status table tr td input[type="radio"] {
   margin: -3px 7px 0 0;
   vertical-align: middle;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action .btn {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action .btn {
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul li {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul li {
   margin-bottom: 4px;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul li #previewDescription {
+.cms-create-page #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-action ul li #previewDescription {
   display: none;
 }
-#cmsCreatePage #addSidebarItemModal .modal-body textarea {
+.cms-create-page #addSidebarItemModal .modal-body textarea {
   resize: vertical;
   min-height: 300px;
 }
@@ -10742,37 +10873,6 @@ div[id*="-Modal"] .email-form .form-group {
 .edit-content-page__subtheme-discriminator .form-group,
 .edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
-}
-.admin-cms-media-select-overlay {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  position: fixed;
-  top: 30px;
-  right: 30px;
-  bottom: 30px;
-  left: 30px;
-  padding: 50px;
-  z-index: 2020;
-  background-color: #fff;
-}
-.admin-cms-media-select-overlay .cms-mediaitem-wrapper {
-  position: relative;
-  height: 120px;
-  padding: 10px;
-  width: 120px;
-}
-.admin-cms-media-select-overlay .cms-mediaitem-item {
-  position: absolute;
-}
-.admin-cms-media-select-overlay .cms-mediaitem-select {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-.admin-cms-media-select-overlay .selected {
-  background-color: #3365a9;
 }
 /* ==============================================================
    CMS Menu Items

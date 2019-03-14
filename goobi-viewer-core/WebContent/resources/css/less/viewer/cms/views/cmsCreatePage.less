@@ -2,7 +2,8 @@
    CMS Create Page
    style declarations for adminCmsCreatePage.xhtml
    ==============================================================*/
-#cmsCreatePage {
+/* CMS CREATE PAGE */
+.cms-create-page {
     position: relative;
     h2 {}
     .create-page-left {
@@ -17,7 +18,7 @@
             opacity: 0.65;
         }
     }
-    #cmsCreatePageWrapper {
+    &__wrapper {
     	.edit-content-page {
             border-bottom: 1px solid #eee;
             &.edit-content-page-content {
@@ -355,37 +356,6 @@
 			margin-bottom: 0;
 		}
 	}
-}
-
-.admin-cms-media-select-overlay {
-	
-	display: flex;
-	flex-direction: column;
-	position: fixed;
-    top: 30px;
-    right: 30px;
-    bottom: 30px;
-    left: 30px;
-    padding: 50px;
-    z-index: 2020;
-    background-color: @white;
-    .cms-mediaitem-wrapper {
-    	position: relative;
-    	height: 120px;
-		padding: 10px;
-		width: 120px;
-    }
-    .cms-mediaitem-item {
-    	position: absolute;
-    }
-    .cms-mediaitem-select {
-    	position: absolute;
-    	width: 100%;
-    	height: 100%;
-    }
-    .selected {
-    	background-color: @blue;
-    }
 }
 
 // breakpoint for smartphones
