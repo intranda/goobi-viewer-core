@@ -7,7 +7,7 @@
                 <small>({opts.msg.allowedFileTypes}: {fileTypes})</small>
             </p>
             <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
-            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple">
+            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
         </div>
         <div class="admin-cms-media__upload-messages">
             <div class="admin-cms-media__upload-message uploading">
@@ -69,7 +69,7 @@
         }.bind(this));
     
         buttonFilesSelected(e) {
-            for (var f of e.target.files) {
+			for (var f of e.target.files) {
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
