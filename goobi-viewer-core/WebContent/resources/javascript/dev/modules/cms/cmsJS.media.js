@@ -28,7 +28,8 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     var _defaults = {
     		allowEdit: true,
-    		forceGrid: false
+    		forceGrid: false,
+    		isMediaSelectModal: false
     };
     var _adminCmsMediaGrid = '';
     
@@ -46,7 +47,14 @@ var cmsJS = ( function( cms ) {
             }
             
             $.extend( true, _defaults, config );
+            
+            // init events
             this.initEventListeners();
+            
+            // check if media select modal is open
+            if ( _defaults.isMediaSelectModal ) {
+            	$( 'html' ).addClass( 'no-overflow' );
+            }
         },
         
         onReload: function(data) {

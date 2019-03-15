@@ -11,10 +11,10 @@
         <!-- NAV TABS -->
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation">
-                <a href="#fileUpload" aria-controls="fileUpload" role="tab" data-toggle="tab">#{msg.admin__cms_media_upload}</a>
+                <a href="#fileUpload" aria-controls="fileUpload" role="tab" data-toggle="tab">#{msg.button__upload}</a>
             </li>
             <li role="presentation" class="active">
-                <a href="#fileSelect" aria-controls="fileSelect" role="tab" data-toggle="tab">#{msg.admin__cms_media_select_file}</a>
+                <a href="#fileSelect" aria-controls="fileSelect" role="tab" data-toggle="tab">#{msg.cms_overviewMedia}</a>
             </li>
         </ul>
 
@@ -97,7 +97,8 @@
 				$( "#reloadButton" ).click();
 			},
 			forceGrid : true,
-			allowEdit : false
+			allowEdit : false,
+			isMediaSelectModal: true
 		};
 
 		viewerJS.clipboard.init( '[data-copy]' );
