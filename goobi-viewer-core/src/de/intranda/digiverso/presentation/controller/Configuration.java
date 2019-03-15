@@ -1340,7 +1340,7 @@ public final class Configuration extends AbstractConfiguration {
                             getLocalList(myConfigToUse, null, "user.authenticationProviders.provider(" + i + ").addUserToGroup", null);
                     if (addToUserGroupList != null) {
                         provider.setAddUserToGroups(addToUserGroupList);
-                        logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
+                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
                     }
                     providers.add(provider);
                 }
