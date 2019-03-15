@@ -28,6 +28,14 @@
 	    	&:nth-child(even) {
 	    		background-color: @neutralgray;
 	    	}
+	    	&:hover {
+		    	.cms-module__actions {
+		    		display: block;
+		    	}	    		
+	    	}
+	    	.cms-module__actions {
+	    		display: none;
+	    	}
 	    }
 	}
 }
@@ -39,7 +47,17 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 // BREAKPOINT FOR TABLETS
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.cms-module {
+		&__table {
+		    & > tbody > tr {
+		    	.cms-module__actions {
+		    		display: block;
+		    	}
+		    }
+		}
+	}
+}
 
 // BREAKPOINT FOR SMARTPHONES
 @media screen and (max-width: @xSmallBreakpoint) {}

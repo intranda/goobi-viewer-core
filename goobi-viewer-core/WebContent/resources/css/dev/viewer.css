@@ -817,6 +817,11 @@ button.btn:active:focus {
 .custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-check-square-o {
   display: inline-block;
 }
+.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-square-o,
+.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-check-square-o {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 .custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-circle-o {
   display: none;
 }
@@ -867,6 +872,10 @@ button.btn:active:focus {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+.custom-control--select select.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 .custom-control--select select[disabled="disabled"] {
   cursor: not-allowed;
@@ -8838,6 +8847,11 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext.in {
   display: inline;
 }
+.cms-module__option-control-helptext.static {
+  display: inline;
+  font-style: italic;
+  color: #ccc;
+}
 .cms-module__option-help {
   -ms-flex-preferred-size: 5%;
       flex-basis: 5%;
@@ -8850,6 +8864,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-help button.in {
   color: #468847;
+}
+.cms-module__option-help.static {
+  display: none;
 }
 .cms-module__option-action {
   text-align: right;
@@ -8899,6 +8916,17 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__table > tbody > tr:nth-child(even) {
   background-color: #f2f3f4;
+}
+.cms-module__table > tbody > tr:hover .cms-module__actions {
+  display: block;
+}
+.cms-module__table > tbody > tr .cms-module__actions {
+  display: none;
+}
+@media screen and (max-width: 768px) {
+  .cms-module__table > tbody > tr .cms-module__actions {
+    display: block;
+  }
 }
 /* CMS VIEWS */
 /* ==============================================================
@@ -9016,8 +9044,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #f2f3f4;
 }
 .admin-cms-media__bulk-actions,
-.admin-cms-media__switch,
-.admin-cms-media__filter {
+.admin-cms-media__switch {
   margin-right: 15px;
 }
 .admin-cms-media__bulk-actions {
@@ -9116,6 +9143,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 100%;
   background-position: center top;
   background-size: contain;
+  box-shadow: none;
 }
 .admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-type,
 .admin-cms-media__file.fixed .admin-cms-media__file-type {
@@ -9319,9 +9347,11 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: underline;
 }
 .admin-cms-media__file-language li.finished a {
+  font-weight: 700;
   color: #1a1a1a;
 }
 .admin-cms-media__file-language a {
+  font-weight: 400;
   color: #ccc;
 }
 .admin-cms-media__file-language a:hover,
@@ -9335,8 +9365,11 @@ div[id*="-Modal"] .email-form .form-group {
   display: grid;
   -ms-grid-columns: (minmax(100px, 100px))[auto-fit];
       grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
-  grid-gap: 10px;
-  padding: 10px;
+  grid-gap: 15px;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 .admin-cms-media__files.grid .admin-cms-media__file {
   padding: 0;
@@ -9344,8 +9377,15 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd) {
   background-color: #fff;
 }
-.admin-cms-media__files.grid .admin-cms-media__file-select {
+.admin-cms-media__files.grid .admin-cms-media__file-select,
+.admin-cms-media__files.grid .admin-cms-media__file-type {
   display: none;
+}
+.admin-cms-media__files.grid .admin-cms-media__file-top {
+  margin-bottom: 0;
+}
+.admin-cms-media__files.grid .admin-cms-media__file-image {
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 .admin-cms-media__files.grid .admin-cms-media__file-metadata,
 .admin-cms-media__files.grid .admin-cms-media__file-metadata-view,
@@ -9368,6 +9408,9 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-create-page .admin-cms-media__file-select {
   display: none !important;
   visibility: hidden !important;
+}
+.cms-create-page .admin-cms-media__file-image {
+  cursor: default;
 }
 .cms-create-page .admin-cms-media__file-bottom {
   display: none;

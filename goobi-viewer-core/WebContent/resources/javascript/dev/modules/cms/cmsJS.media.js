@@ -104,7 +104,7 @@ var cmsJS = ( function( cms ) {
 			// switch file view
 			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 			
-			if( _defaults.forceGrid ) {
+			if ( _defaults.forceGrid ) {
 				$( '[data-switch="list"]' ).removeClass( 'active' );
 				$( '.admin-cms-media__files' ).addClass( 'grid' );
 			} 
@@ -121,12 +121,14 @@ var cmsJS = ( function( cms ) {
 				$( this ).addClass( 'active' );
 				$( '[data-switch="grid"]' ).removeClass( 'active' );
 				$( '.admin-cms-media__files' ).removeClass( 'grid' );
+				$( '#selectAllMediaItems, #bulkActionSelect' ).prop( 'disabled', false ).removeClass( 'disabled' );
 				sessionStorage.setItem( 'adminCmsMediaGrid', false );
 			});
 			$( '[data-switch="grid"]' ).on( 'click', function() {
 				$( this ).addClass( 'active' );
 				$( '[data-switch="list"]' ).removeClass( 'active' );
 				$( '.admin-cms-media__files' ).addClass( 'grid' );
+				$( '#selectAllMediaItems, #bulkActionSelect' ).prop( 'disabled', true ).addClass( 'disabled' );
 				sessionStorage.setItem( 'adminCmsMediaGrid', true );
 			});
 			
@@ -238,11 +240,13 @@ var cmsJS = ( function( cms ) {
 			$( '.admin-cms-media__files' ).addClass( 'grid' );
 			$( '[data-switch="list"]' ).removeClass( 'active' );
 			$( '[data-switch="grid"]' ).addClass( 'active' );
+			$( '#selectAllMediaItems, #bulkActionSelect' ).prop( 'disabled', true ).addClass( 'disabled' );
 		}
 		else {
 			$( '.admin-cms-media__files' ).removeClass( 'grid' );					
 			$( '[data-switch="list"]' ).addClass( 'active' );
 			$( '[data-switch="grid"]' ).removeClass( 'active' );
+			$( '#selectAllMediaItems, #bulkActionSelect' ).prop( 'disabled', false ).removeClass( 'disabled' );
 		}
     }
 

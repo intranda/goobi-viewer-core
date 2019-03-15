@@ -136,6 +136,11 @@
 	    &.in {
 	    	display: inline;
 	    }
+	    &.static {
+	    	display: inline;
+	    	font-style: italic;
+	    	color: @middlegray;
+	    }
 	}
 	&__option-help {
 		flex-basis: 5%;
@@ -148,6 +153,9 @@
 		    	color: @green;
 		    }
 		}
+		&.static {
+	    	display: none;
+	    }
 	}
 	&__option-action {
 		text-align: right;

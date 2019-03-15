@@ -89,8 +89,7 @@
 		background-color: @neutralgray;
 	}
 	&__bulk-actions,
-	&__switch,
-	&__filter {
+	&__switch {
 		margin-right: 15px;
 	}
 	&__bulk-actions {
@@ -176,6 +175,7 @@
 					height: 100%;
 					background-position: center top;
 					background-size: contain;
+					box-shadow: none;
 				}
 				&__file-type {
 					top: 0;
@@ -367,11 +367,13 @@
 			}
 			&.finished {
 				a {
+					font-weight: 700;
 					color: @black;
 				}
 			}
 		}
 		a {
+			font-weight: 400;
 			color: @middlegray;
 			&:hover,
 			&:active,
@@ -388,8 +390,10 @@
 		&.grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
-			grid-gap: 10px;
-			padding: 10px;
+			grid-gap: 15px;
+			justify-content: space-between;
+			padding-top: 15px;
+			padding-bottom: 15px;
 			.admin-cms-media {
 				&__file {
 					padding: 0;
@@ -397,8 +401,15 @@
 						background-color: @white;
 					}
 				}
-				&__file-select {
+				&__file-select,
+				&__file-type {
 					display: none;
+				}
+				&__file-top {
+					margin-bottom: 0;
+				}
+				&__file-image {
+					box-shadow: inset 0 0 15px rgba(0,0,0,.1), inset 0 0 0 1px rgba(0,0,0,.05);
 				}
 				&__file-metadata,
 				&__file-metadata-view,
@@ -424,6 +435,9 @@
 		}
 		&__file-select {
 			.mx-hidden;
+		}
+		&__file-image {
+			cursor: default;
 		}
 		&__file-bottom {
 			display: none;
