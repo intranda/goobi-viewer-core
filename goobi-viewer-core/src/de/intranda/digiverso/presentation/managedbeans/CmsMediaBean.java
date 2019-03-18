@@ -45,7 +45,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.dao.IDAO;
@@ -58,12 +57,12 @@ import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSourceException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.Selectable;
+import de.intranda.digiverso.presentation.model.cms.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 @Named
@@ -168,7 +167,7 @@ public class CmsMediaBean implements Serializable {
 								}
 									
 								
-								this.items = stream.map(item -> new TranslatedSelectable<CMSMediaItem>(item, false)).collect(Collectors.toList());
+								this.items = stream.map(item -> new TranslatedSelectable<CMSMediaItem>(item, false, item.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()))).collect(Collectors.toList());
 								reloadNeeded = false;
 								
 							} catch (DAOException e) {

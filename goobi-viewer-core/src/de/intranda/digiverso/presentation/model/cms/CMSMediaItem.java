@@ -84,7 +84,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	public static final String CONTENT_TYPE_HTML = "text/html";
 	public static final String CONTENT_TYPE_SVG = "image/svg+xml";
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cms_media_item_id")
@@ -107,10 +106,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	@PrivateOwned
 	private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cms_media_item_cms_categories", joinColumns = @JoinColumn(name = "media_item_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private List<CMSCategory> categories = new ArrayList<>();
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "cms_media_item_cms_categories", joinColumns = @JoinColumn(name = "media_item_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+	private List<CMSCategory> categories = new ArrayList<>();
 
 	@Column(name = "display_order", nullable = true)
 	private int displayOrder = 0;
@@ -118,7 +116,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	/**
 	 * Hold all available categories and whether they are selected in the GUI
 	 */
-	@Transient List<Selectable<CMSCategory>> selectableCategories = null;
+	@Transient
+	List<Selectable<CMSCategory>> selectableCategories = null;
 
 	@Transient
 	private FileTime lastModifiedTime = null;
@@ -143,7 +142,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		this.priority = orig.priority;
 		this.displayOrder = orig.displayOrder;
 		this.categories = new ArrayList<>(orig.getCategories());
-		
+
 		for (CMSMediaItemMetadata origMetadata : orig.metadata) {
 			CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
 			this.metadata.add(copy);
@@ -241,7 +240,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		case "tif":
 		case "tiff":
 		case "jp2":
-			return ImageFileFormat.getImageFileFormatFromFileExtension(extension).getMimeType();		
+			return ImageFileFormat.getImageFileFormatFromFileExtension(extension).getMimeType();
 		case "svg":
 			return CONTENT_TYPE_SVG;
 		default:
@@ -309,7 +308,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	public void setAlternativeText(String alternativeText) {
 		this.alternativeText = alternativeText;
 	}
-
 
 	/**
 	 * 
@@ -389,7 +387,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		return version;
 	}
 
-	public boolean hascATEGORIES() {
+	public boolean hasCateories() {
 		return !this.categories.isEmpty();
 	}
 
@@ -658,6 +656,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
 	}
 
+	public List<Locale> getFinishedLocales() {
+		return this.getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName()))
+				.map(md -> Locale.forLanguageTag(md.getLanguage())).collect(Collectors.toList());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -684,7 +687,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 */
 	public synchronized FileTime getLastModifiedTime() {
 		if (lastModifiedTime == null) {
-			lastModifiedTime = FileTime.fromMillis(0);	//fallback
+			lastModifiedTime = FileTime.fromMillis(0); // fallback
 			Path filePath = getFilePath();
 			if (Files.exists(filePath)) {
 				try {
@@ -706,17 +709,16 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 		Path file = folder.resolve(getFileName());
 		return file;
 	}
-	
+
 	/**
-	 * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
-	 * @throws DAOException 
-	 * TODO: check for licenses
+	 * @return the categoryMap. Never null. If it isn't defined yet, create a map
+	 *         from all categories
+	 * @throws DAOException TODO: check for licenses
 	 */
 	public synchronized List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
-		if(this.selectableCategories == null) {
+		if (this.selectableCategories == null) {
 			this.selectableCategories = DataManager.getInstance().getDao().getAllCategories().stream()
-					.map(cat -> new Selectable<>(cat, this.getCategories().contains(cat)))
-					.collect(Collectors.toList());
+					.map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
 		}
 		return selectableCategories;
 	}
@@ -725,15 +727,16 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 * Set the categories from categoryMap
 	 */
 	public void serializeCategories() {
-		if(this.selectableCategories != null) {			
+		if (this.selectableCategories != null) {
 			for (Selectable<CMSCategory> selectable : this.selectableCategories) {
-				if(selectable.isSelected()) {
+				if (selectable.isSelected()) {
 					addCategory(selectable.getValue());
 				} else {
 					removeCategory(selectable.getValue());
 				}
 			}
 		}
-		
+
 	}
+
 }

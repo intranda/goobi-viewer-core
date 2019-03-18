@@ -13,12 +13,9 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model;
+package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.Locale;
-
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.cms.Selectable;
 
 /**
  * @author florian
@@ -26,14 +23,16 @@ import de.intranda.digiverso.presentation.model.cms.Selectable;
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
 
-	private Locale locale = BeanUtils.getLocale();
+	private Locale locale;
 	
 	/**
 	 * @param value
 	 * @param selected
 	 */
-	public TranslatedSelectable(T value, boolean selected) {
+	public TranslatedSelectable(T value, boolean selected, Locale defaultLocale) {
 		super(value, selected);
+		this.locale = defaultLocale;
+		
 	}
 	
 	/**

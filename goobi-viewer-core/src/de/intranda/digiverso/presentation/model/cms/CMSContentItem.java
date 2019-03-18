@@ -59,7 +59,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
-import de.intranda.digiverso.presentation.model.TranslatedSelectable;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -70,7 +70,6 @@ import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
-import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
@@ -547,7 +546,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
-        this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true);
+        this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));;
         
     }
     
