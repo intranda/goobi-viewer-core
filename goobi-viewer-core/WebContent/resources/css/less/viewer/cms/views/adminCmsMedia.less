@@ -177,10 +177,6 @@
 					background-size: contain;
 					box-shadow: none;
 				}
-				&__file-type {
-					top: 0;
-					bottom: auto;
-				}
 				&__file-metadata {
 					display: block;
 					padding-left: 30px;
@@ -271,18 +267,6 @@
 		background-size: cover;
 		cursor: pointer;
 	}
-	&__file-type {
-		position: absolute;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		padding: 5px;
-		font-size: 0.75rem;
-		text-align: center;
-		color: @white;
-		background-color: rgba(0,0,0,0.5);
-		z-index: 10;		
-	}
 	&__file-metadata {
 		flex-grow: 1;
 		padding-left: 10px;
@@ -360,6 +344,13 @@
 					display: none;
 				}
 			}
+			&.active,
+			&.finished {
+				a {
+					font-size: 1rem;
+					font-weight: 700;
+				}
+			}
 			&.active {
 				a {
 					text-decoration: underline;
@@ -367,7 +358,6 @@
 			}
 			&.finished {
 				a {
-					font-weight: 700;
 					color: @black;
 				}
 			}
@@ -401,8 +391,7 @@
 						background-color: @white;
 					}
 				}
-				&__file-select,
-				&__file-type {
+				&__file-select {
 					display: none;
 				}
 				&__file-top {

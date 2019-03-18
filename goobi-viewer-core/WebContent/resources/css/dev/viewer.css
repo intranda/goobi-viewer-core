@@ -8849,6 +8849,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-control-helptext.static {
   display: inline;
+  font-size: 0.75rem;
   font-style: italic;
   color: #ccc;
 }
@@ -8895,6 +8896,10 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__table {
   width: 100%;
   max-width: 100%;
+  border: 1px solid #eee;
+}
+.cms-module__table.invisible {
+  visibility: hidden;
 }
 .cms-module__table > thead > tr > th,
 .cms-module__table > tbody > tr > td,
@@ -8903,25 +8908,21 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__table > thead > tr > th {
   min-width: 175px;
-  border: 1px solid #f2f3f4;
-  border-top-color: #ccc;
-  border-bottom-color: #ccc;
   vertical-align: bottom;
   background-color: #f2f3f4;
 }
 .cms-module__table > tbody > tr > td {
-  border: 1px solid #fff;
-  border-bottom-color: #f2f3f4;
   vertical-align: top;
 }
 .cms-module__table > tbody > tr:nth-child(even) {
   background-color: #f2f3f4;
 }
 .cms-module__table > tbody > tr:hover .cms-module__actions {
-  display: block;
+  position: static;
 }
 .cms-module__table > tbody > tr .cms-module__actions {
-  display: none;
+  position: relative;
+  left: -9999em;
 }
 @media screen and (max-width: 768px) {
   .cms-module__table > tbody > tr .cms-module__actions {
@@ -8937,6 +8938,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-categories {
   /* EDIT */
   /* LIST */
+  /* CREATE */
 }
 .admin-cms-categories__wrapper {
   display: -ms-grid;
@@ -8944,6 +8946,9 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-grid-columns: 1fr 2fr;
       grid-template-columns: 1fr 2fr;
   grid-gap: 15px;
+}
+.admin-cms-categories__create-action {
+  padding-top: 15px;
 }
 /* ==============================================================
    CMS Media
@@ -9145,11 +9150,6 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: contain;
   box-shadow: none;
 }
-.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-type,
-.admin-cms-media__file.fixed .admin-cms-media__file-type {
-  top: 0;
-  bottom: auto;
-}
 .admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata,
 .admin-cms-media__file.fixed .admin-cms-media__file-metadata {
   display: block;
@@ -9245,18 +9245,6 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: cover;
   cursor: pointer;
 }
-.admin-cms-media__file-type {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 5px;
-  font-size: 0.75rem;
-  text-align: center;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 10;
-}
 .admin-cms-media__file-metadata {
   -ms-flex-positive: 1;
       flex-grow: 1;
@@ -9343,11 +9331,15 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__file-language li:last-child:after {
   display: none;
 }
+.admin-cms-media__file-language li.active a,
+.admin-cms-media__file-language li.finished a {
+  font-size: 1rem;
+  font-weight: 700;
+}
 .admin-cms-media__file-language li.active a {
   text-decoration: underline;
 }
 .admin-cms-media__file-language li.finished a {
-  font-weight: 700;
   color: #1a1a1a;
 }
 .admin-cms-media__file-language a {
@@ -9377,8 +9369,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd) {
   background-color: #fff;
 }
-.admin-cms-media__files.grid .admin-cms-media__file-select,
-.admin-cms-media__files.grid .admin-cms-media__file-type {
+.admin-cms-media__files.grid .admin-cms-media__file-select {
   display: none;
 }
 .admin-cms-media__files.grid .admin-cms-media__file-top {

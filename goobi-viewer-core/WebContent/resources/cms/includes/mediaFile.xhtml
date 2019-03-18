@@ -38,9 +38,7 @@
                 <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
-                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')">
-                    <div class="admin-cms-media__file-type">#{media.contentType}</div>
-                </div>
+                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')"></div>
             </ui:fragment>
 
             <!-- FILE METADATA -->
