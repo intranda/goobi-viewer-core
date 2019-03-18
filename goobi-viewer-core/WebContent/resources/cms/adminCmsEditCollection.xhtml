@@ -106,6 +106,7 @@
                                 <strong>#{msg.cms_collections_image}</strong>
                             </div>
                             <div class="cms-edit-collection__text-image">
+                            <h:panelGroup id="mediaGroup">
                                 <!-- THUMBNAIL -->
                                 <div class="cms-edit-collection__text-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
@@ -119,14 +120,23 @@
     
                                 <!-- CHANGE IMAGE -->
                                 <div class="cms-edit-collection__text-image-change">
-                                    <h:commandLink
-										action="#{cmsCollectionsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}"
-										type="button" class="btn btn--default"
-										value="#{msg.cms_collections_changeImage}">
-										 <i class="fa fa-picture-o" aria-hidden="true"></i>
-										<f:ajax execute="@form" render="mediaSelectPanel"></f:ajax>
-									</h:commandLink>
+				                    <h:commandLink 
+				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
+				                        value="#{msg.cms_selectMedia}" 
+				                        class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+				                        role="button">
+				                        <f:ajax execute="@form" render="mediaSelectPanel" />
+				                    </h:commandLink>
+				                    <h:commandLink 
+				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
+				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
+				                        value="#{msg.cms_selectMediaItem_deselect}" 
+				                        class="btn btn--clean delete"
+				                        role="button">
+				                        <f:ajax render="mediaGroup" />
+				                    </h:commandLink>                    
                                 </div>
+							  </h:panelGroup>					
                             </div>
                         </div>
     
@@ -142,15 +152,17 @@
             </div>
             
             <h:panelGroup id="mediaSelectPanel">
-				<ui:fragment rendered="#{cmsCollectionsBean.hasSelectedMediaHolder()}">
+            #{cmsBean.hasSelectedMediaHolder()}
+				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
 	                   <div class="admin-cms-media-select-overlay">
-	                    <ui:include src="/resources/cms/includes/mediaSelect.xhtml"></ui:include>
-	                    <h:form>
-		                    <h:commandLink action="#{cmsCollectionsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem)}" type="button" 
-									class="btn btn--default" 
-									value="#{msg.cms_selectMediaItem_agree}">
-							</h:commandLink>
-	                    </h:form>
+	                    
+	                    <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+                            
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">                            
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
+                            </div>
 	                   </div>
 				</ui:fragment>
 	        </h:panelGroup>

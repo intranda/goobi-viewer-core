@@ -62,6 +62,7 @@ import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaHolder;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -129,7 +130,7 @@ public class CmsBean implements Serializable {
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
     private List<CMSCategory> selectableCategories;
-    private Optional<CMSContentItem> selectedMediaHolder = Optional.empty();
+    private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
 
     @PostConstruct
     public void init() {
@@ -1724,14 +1725,17 @@ public class CmsBean implements Serializable {
     /**
 	 * @param selectedMediaHolder the selectedMediaHolder to set
 	 */
-	public void setSelectedMediaHolder(CMSContentItem item) {
+	public void setSelectedMediaHolder(CMSMediaHolder item) {
 		this.selectedMediaHolder = Optional.ofNullable(item);
 		this.selectedMediaHolder.ifPresent(contentItem -> {
 			String filter = contentItem.getMediaFilter();
 			if(StringUtils.isBlank(filter)) {
-				filter = cmsMediaBean.getImageFilter();
+				filter = CmsMediaBean.getImageFilter();
 			}
 			cmsMediaBean.setFilenameFilter(filter);
+			if(contentItem.hasMediaItem()) {				
+				cmsMediaBean.setSelectedMediaItem(contentItem.getMediaItemWrapper());
+			}
 		});
 	}
 	

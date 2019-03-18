@@ -193,17 +193,17 @@
 		<url-pattern>/jQueryServlet</url-pattern>
 	</servlet-mapping>
 	-->
-<!-- 	<servlet> -->
-<!-- 		<display-name>ContentServer</display-name> -->
-<!-- 		<servlet-name>ContentServer</servlet-name> -->
-<!-- 		<servlet-class> -->
-<!-- 			de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer -->
-<!-- 		</servlet-class> -->
-<!-- 	</servlet> -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>ContentServer</servlet-name> -->
-<!-- 		<url-pattern>/cs/*</url-pattern> -->
-<!-- 	</servlet-mapping> -->
+	<servlet>
+		<display-name>ContentServer</display-name>
+		<servlet-name>ContentServer</servlet-name>
+		<servlet-class>
+			de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ContentServer</servlet-name>
+		<url-pattern>/cs/*</url-pattern>
+	</servlet-mapping>
 <!-- 	<servlet> -->
 <!-- 		<display-name>GoobiContentServer</display-name> -->
 <!-- 		<servlet-name>GoobiContentServer</servlet-name> -->

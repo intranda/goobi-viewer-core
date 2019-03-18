@@ -39,7 +39,7 @@
                         <div class="admin-cms-media__select-files-files">
                             <div class="admin-cms-media__files">
                                 <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectableItem" varStatus="status">
-                                    <div class="cms-mediaitem-wrapper #{selectableItem.value == cmsMediaBean.selectedMediaItem ? 'selected' : ''}">
+                                    <div class="cms-mediaitem-wrapper #{selectableItem.value == cmsMediaBean.selectedMediaItem.value ? 'selected' : ''}">
                                         <div class="cms-mediaitem-item">
                                             <ui:include src="/resources/cms/includes/mediaFile.xhtml">
                                                 <ui:param name="item" value="#{selectableItem}" />

@@ -77,7 +77,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
  */
 @Entity
 @Table(name = "cms_content_items")
-public class CMSContentItem implements Comparable<CMSContentItem> {
+public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolder {
 
     /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
@@ -546,7 +546,11 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
-        this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));;
+        if(mediaItem != null) {        	
+        	this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));;
+        } else {
+        	this.mediaItemWrapper = null;
+        }
         
     }
     
@@ -562,7 +566,11 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 	 */
 	public void setMediaItemWrapper(TranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
 		this.mediaItemWrapper = mediaItemWrapper;
-		this.mediaItem = this.mediaItemWrapper.getValue();
+		if(mediaItemWrapper != null)  {			
+			this.mediaItem = this.mediaItemWrapper.getValue();
+		} else {
+			this.mediaItem = null;
+		}
 	}
 
     /**
@@ -1144,4 +1152,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         }
     }
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.model.cms.CMSMediaHolder#hasMediaItem()
+	 */
+	@Override
+	public boolean hasMediaItem() {
+		return this.mediaItem != null;
+	}
 }

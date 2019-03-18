@@ -503,11 +503,11 @@ public class CmsMediaBean implements Serializable {
 	 * @return a regex matching only filenames ending with one of the supported
 	 *         image format suffixes
 	 */
-	public String getImageFilter() {
+	public static String getImageFilter() {
 		return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
 	}
 	
-	public String getDocumentFilter() {
+	public static String getDocumentFilter() {
 		return "(?i).*\\.(docx?|rtf|x?h?tml|txt)";
 	}
 

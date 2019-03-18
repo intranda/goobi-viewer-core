@@ -69,8 +69,6 @@ public class CmsCollectionsBean implements Serializable {
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
-    private Optional<CMSCollection> selectedMediaHolder = Optional.empty();
-    private CMSMediaItem selectedMediaItem = null;
     private boolean piValid = true;
 
     public CmsCollectionsBean() {
@@ -227,27 +225,6 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsCollections";
     }
 
-    /**
-     * @return the selectedMediaItem
-     */
-    public CMSMediaItem getSelectedMediaItem() {
-        return selectedMediaItem;
-    }
-
-    /**
-     * @param selectedMediaItem the selectedMediaItem to set
-     */
-    public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
-        this.selectedMediaItem = selectedMediaItem;
-    }
-
-    public boolean isSelectedMediaItem(CMSMediaItem item) {
-        if (selectedMediaItem == null && item == null) {
-            return true;
-        } else {
-            return item != null && item.equals(selectedMediaItem);
-        }
-    }
     
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
@@ -297,31 +274,5 @@ public class CmsCollectionsBean implements Serializable {
             return true;
         }
     }
-    
-    /**
-	 * @param selectedMediaHolder the selectedMediaHolder to set
-	 */
-	public void setSelectedMediaHolder(CMSCollection item) {
-		this.selectedMediaHolder = Optional.ofNullable(item);
-		this.selectedMediaHolder.ifPresent(contentItem -> {
-			String filter = cmsMediaBean.getImageFilter();
-			cmsMediaBean.setFilenameFilter(filter);
-		});
-	}
-	
-	public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem) {
-		this.selectedMediaHolder.ifPresent(item -> {
-			if(mediaItem != null) {
-				item.setMediaItem(mediaItem.getValue());
-			} else {
-				item.setMediaItem(null);
-			}
-		});
-		this.selectedMediaHolder = Optional.empty();
-	}
-	
-	public boolean hasSelectedMediaHolder() {
-		return this.selectedMediaHolder.isPresent();
-	}
 
 }

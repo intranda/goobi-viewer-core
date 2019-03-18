@@ -46,6 +46,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -62,7 +63,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
  */
 @Entity
 @Table(name = "cms_collections")
-public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo {
+public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
 
@@ -477,6 +478,26 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return value;
         }
     }
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.model.cms.CMSMediaHolder#getMediaFilter()
+	 */
+	@Override
+	public String getMediaFilter() {
+		return CmsMediaBean.getImageFilter();
+	}
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.model.cms.CMSMediaHolder#getMediaItemWrapper()
+	 */
+	@Override
+	public TranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+		if(hasMediaItem()) {
+			return new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));
+		} else {
+			return null;
+		}
+	}
 
 
 }
