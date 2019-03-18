@@ -57,7 +57,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
     protected static final String TYPE_USER_PASSWORD = "userPassword";
     private static final String USER_GROUP_ROLE_MEMBER = "member";
-    
+
     private VuAuthenticationResponse authenticationResponse;
 
     /**
@@ -86,33 +86,34 @@ public class VuFindProvider extends HttpAuthenticationProvider {
             VuAuthenticationRequest request = new VuAuthenticationRequest(loginName, password);
             this.authenticationResponse = post(new URI(getUrl()), request);
             Optional<User> user = getUser(request);
-            LoginResult result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !this.authenticationResponse.getUser().getIsValid());
+            LoginResult result =
+                    new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !this.authenticationResponse.getUser().getIsValid());
             return CompletableFuture.completedFuture(result);
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
-        } catch(WebApplicationException e) {
+        } catch (WebApplicationException e) {
             throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
         }
     }
 
-    protected VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) throws WebApplicationException{
+    protected VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) throws WebApplicationException {
         Client client = ClientBuilder.newClient();
-        try {            
-            client.property(ClientProperties.CONNECT_TIMEOUT, (int)getTimeoutMillis());
-            client.property(ClientProperties.READ_TIMEOUT, (int)getTimeoutMillis());
+        try {
+            client.property(ClientProperties.CONNECT_TIMEOUT, (int) getTimeoutMillis());
+            client.property(ClientProperties.READ_TIMEOUT, (int) getTimeoutMillis());
             WebTarget vuFindAuthenticationApi = client.target(url);
             Entity<VuAuthenticationRequest> ent = Entity.entity(request, MediaType.APPLICATION_JSON);
             VuAuthenticationResponse response = vuFindAuthenticationApi.request().post(ent, VuAuthenticationResponse.class);
             return response;
-        } catch(ClientErrorException e) {
+        } catch (ClientErrorException e) {
             logger.debug("Authentication request returned error " + e.toString());
             VuAuthenticationResponse.User user = new VuAuthenticationResponse.User();
             VuAuthenticationResponse response = new VuAuthenticationResponse();
             response.setUser(user);
-            if(e instanceof ForbiddenException || e instanceof NotAllowedException || e instanceof NotAuthorizedException) {
+            if (e instanceof ForbiddenException || e instanceof NotAllowedException || e instanceof NotAuthorizedException) {
                 user.setExists(null);
                 user.setIsValid(false);
-            } else if(e instanceof NotFoundException) {
+            } else if (e instanceof NotFoundException) {
                 user.setExists(false);
                 user.setIsValid(false);
             } else {
@@ -132,67 +133,72 @@ public class VuFindProvider extends HttpAuthenticationProvider {
      */
     private Optional<User> getUser(VuAuthenticationRequest request) throws AuthenticationProviderException {
 
-        if (request == null || StringUtils.isBlank(request.getUsername()) || StringUtils.isBlank(request.getPassword()) || !Boolean.TRUE.equals(authenticationResponse.getUser().getExists())) {
+        if (request == null || StringUtils.isBlank(request.getUsername()) || StringUtils.isBlank(request.getPassword())
+                || !Boolean.TRUE.equals(authenticationResponse.getUser().getExists())) {
             return Optional.empty();
         }
 
         User user = null;
         try {
-        user = DataManager.getInstance().getDao().getUserByNickname(request.getUsername());
-        if (user != null) {
-            logger.debug("Found user {} via vuFind username '{}'.", user.getId(), request.getUsername());
-        }
-        // If not found, try email
-        if (user == null) {
-            user = DataManager.getInstance().getDao().getUserByEmail(request.getUsername());
+            user = DataManager.getInstance().getDao().getUserByNickname(request.getUsername());
             if (user != null) {
                 logger.debug("Found user {} via vuFind username '{}'.", user.getId(), request.getUsername());
             }
-        }
-        
-        // If still not found, create a new user
-        if (user == null) {
-            user = new User();
-            user.setNickName(request.getUsername());
-            user.setActive(true);
-            user.setEmail(DEFAULT_EMAIL.replace("{username}",request.getUsername()));
-            logger.debug("Created new user with nickname " + request.getUsername());
-        }
-
-        //set user status
-        if(!user.isSuspended()) {            
-            user.setSuspended(!authenticationResponse.getUser().getIsValid());
-        }
-        
-        // Add to bean and persist
-        if (user.getId() == null) {
-            if (!DataManager.getInstance().getDao().addUser(user)) {
-                throw new AuthenticationProviderException("Could not add user to DB.");
-            }
-        } else {
-            if (!DataManager.getInstance().getDao().updateUser(user)) {
-                throw new AuthenticationProviderException("Could not update user in DB.");
-            }
-        }
-        
-        //add to user group
-        if(authenticationResponse.getUser().getGroup() != null && StringUtils.isNotBlank(authenticationResponse.getUser().getGroup().getDesc())) {
-            UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(authenticationResponse.getUser().getGroup().getDesc());
-            if(userGroup != null && !userGroup.getMembers().contains(user)) {
-//                DataManager.getInstance().getDao().updateUserGroup(userGroup);
-                Role role = DataManager.getInstance().getDao().getRole(USER_GROUP_ROLE_MEMBER);
-                if(role != null) {                    
-                    userGroup.addMember(user, role);
+            // If not found, try email
+            if (user == null) {
+                user = DataManager.getInstance().getDao().getUserByEmail(request.getUsername());
+                if (user != null) {
+                    logger.debug("Found user {} via vuFind username '{}'.", user.getId(), request.getUsername());
                 }
             }
-        }
-        
-        } catch(DAOException | PresentationException e) {
+
+            // If still not found, create a new user
+            if (user == null) {
+                user = new User();
+                user.setNickName(request.getUsername());
+                user.setActive(true);
+                user.setEmail(DEFAULT_EMAIL.replace("{username}", request.getUsername()));
+                logger.debug("Created new user with nickname " + request.getUsername());
+            }
+
+            // set user status
+            if (!user.isSuspended()) {
+                user.setSuspended(!authenticationResponse.getUser().getIsValid());
+            }
+
+            // Add to bean and persist
+            if (user.getId() == null) {
+                if (!DataManager.getInstance().getDao().addUser(user)) {
+                    throw new AuthenticationProviderException("Could not add user to DB.");
+                }
+            } else {
+                if (!DataManager.getInstance().getDao().updateUser(user)) {
+                    throw new AuthenticationProviderException("Could not update user in DB.");
+                }
+            }
+
+            // Add user to user group contained in the VuFind response
+            if (authenticationResponse.getUser().getGroup() != null
+                    && StringUtils.isNotBlank(authenticationResponse.getUser().getGroup().getDesc())) {
+                String userGroupName = authenticationResponse.getUser().getGroup().getDesc();
+                //                UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(userGroupName);
+                //                if (userGroup != null && !userGroup.getMembers().contains(user)) {
+                //                    //                DataManager.getInstance().getDao().updateUserGroup(userGroup);
+                //                    Role role = DataManager.getInstance().getDao().getRole(USER_GROUP_ROLE_MEMBER);
+                //                    if (role != null) {
+                //                        userGroup.addMember(user, role);
+                //                    }
+                //                }
+                if (!addUserToGroups.contains(userGroupName)) {
+                    addUserToGroups.add(userGroupName);
+                }
+            }
+        } catch (DAOException e) {
             throw new AuthenticationProviderException(e);
         }
         return Optional.ofNullable(user);
     }
-    
+
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
      */

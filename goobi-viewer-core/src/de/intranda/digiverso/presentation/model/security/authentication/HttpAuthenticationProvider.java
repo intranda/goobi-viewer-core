@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.security.authentication;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
@@ -31,6 +32,8 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected final String url;
     protected final String image;
     protected final long timeoutMillis;
+    protected List<String> addUserToGroups;
+
     /**
      * @param name
      * @param url
@@ -44,14 +47,14 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         this.type = type;
         this.timeoutMillis = timeoutMillis;
     }
-    
+
     /**
      * @return the timeoutMillis
      */
     public long getTimeoutMillis() {
         return timeoutMillis;
     }
-    
+
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getName()
      */
@@ -59,28 +62,28 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     public String getName() {
         return name;
     }
-    
+
     /**
      * @return the url
      */
     public String getUrl() {
         return url;
     }
-    
+
     /**
      * @return the image
      */
     public String getImage() {
         return image;
     }
-    
+
     public String getImageUrl() {
         try {
             URI uri = new URI(image);
-            if(uri.isAbsolute()) {
+            if (uri.isAbsolute()) {
                 return uri.toString();
             }
-        } catch(NullPointerException | URISyntaxException e) {
+        } catch (NullPointerException | URISyntaxException e) {
             //construct viewer path uri
         }
         StringBuilder url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
@@ -88,12 +91,28 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         url.append(image);
         return url.toString();
     }
-    
+
     /**
      * @return the type
      */
+    @Override
     public String getType() {
         return type;
     }
-    
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
+     */
+    @Override
+    public List<String> getAddUserToGroups() {
+        return addUserToGroups;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
+     */
+    @Override
+    public void setAddUserToGroups(List<String> addUserToGroups) {
+        this.addUserToGroups = addUserToGroups;
+    }
 }

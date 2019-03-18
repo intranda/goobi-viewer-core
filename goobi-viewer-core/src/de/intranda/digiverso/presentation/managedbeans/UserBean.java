@@ -58,10 +58,12 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.Role;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
 import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
 import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -140,8 +142,8 @@ public class UserBean implements Serializable {
                 }
                 return "user?faces-redirect=true";
             }
-            Messages.error(Helper.getTranslation("errSendEmail", null).replace("{0}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errSendEmail", null)
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
@@ -246,6 +248,20 @@ public class UserBean implements Serializable {
                         response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
                     }
                     SearchHelper.updateFilterQuerySuffix(request);
+
+                    // Add this user to configured groups
+                    if (getAuthenticationProvider().getAddUserToGroups() != null && !getAuthenticationProvider().getAddUserToGroups().isEmpty()) {
+                        Role role = DataManager.getInstance().getDao().getRole("member");
+                        if (role != null) {
+                            for (String groupName : getAuthenticationProvider().getAddUserToGroups()) {
+                                UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(groupName);
+                                if (userGroup != null && !userGroup.getMembers().contains(user)) {
+                                    userGroup.addMember(user, role);
+                                    logger.debug("Added user {} to user group '{}'", user.getId(), userGroup.getName());
+                                }
+                            }
+                        }
+                    }
                     return;
                 } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
                     //user may login, but setting up viewer account failed
@@ -459,8 +475,10 @@ public class UserBean implements Serializable {
                     .append(user.getActivationKey())
                     .append("/")
                     .toString();
-            sb.append(Helper.getTranslation("user_activationEmailBody", null).replace("{0}", baseUrl).replace("{1}", activationUrl).replace("{2}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            sb.append(Helper.getTranslation("user_activationEmailBody", null)
+                    .replace("{0}", baseUrl)
+                    .replace("{1}", activationUrl)
+                    .replace("{2}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
 
             // Send
             try {
@@ -503,8 +521,9 @@ public class UserBean implements Serializable {
                     try {
                         if (Helper.postMail(Collections.singletonList(email),
                                 Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
-                                Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null).replace("{0}", requesterIp).replace("{1}",
-                                        resetUrl))) {
+                                Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
+                                        .replace("{0}", requesterIp)
+                                        .replace("{1}", resetUrl))) {
                             email = null;
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
@@ -516,8 +535,8 @@ public class UserBean implements Serializable {
                         logger.error(e.getMessage(), e);
                     }
                 }
-                Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}",
-                        DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
@@ -563,8 +582,8 @@ public class UserBean implements Serializable {
                     logger.error(e.getMessage(), e);
                 }
             }
-            Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
 
@@ -659,17 +678,17 @@ public class UserBean implements Serializable {
                 Messages.info("feedbackSubmitted");
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());
-                Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
-                        DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                        .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                    .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         }
         return "";
     }
@@ -901,15 +920,14 @@ public class UserBean implements Serializable {
     public boolean isAllowPasswordChange() {
         return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
     }
-    
+
     public boolean isAllowNickNameChange() {
         return getAuthenticationProvider() != null && getAuthenticationProvider().allowsNicknameChange();
 
     }
-    
+
     public boolean isAllowEmailChange() {
         return getAuthenticationProvider() != null && getAuthenticationProvider().allowsEmailChange();
 
     }
 }
-
