@@ -8896,6 +8896,7 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__table {
   width: 100%;
   max-width: 100%;
+  border: 1px solid #eee;
 }
 .cms-module__table > thead > tr > th,
 .cms-module__table > tbody > tr > td,
@@ -8904,25 +8905,21 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__table > thead > tr > th {
   min-width: 175px;
-  border: 1px solid #f2f3f4;
-  border-top-color: #ccc;
-  border-bottom-color: #ccc;
   vertical-align: bottom;
   background-color: #f2f3f4;
 }
 .cms-module__table > tbody > tr > td {
-  border: 1px solid #fff;
-  border-bottom-color: #f2f3f4;
   vertical-align: top;
 }
 .cms-module__table > tbody > tr:nth-child(even) {
   background-color: #f2f3f4;
 }
 .cms-module__table > tbody > tr:hover .cms-module__actions {
-  display: block;
+  position: static;
 }
 .cms-module__table > tbody > tr .cms-module__actions {
-  display: none;
+  position: relative;
+  left: -9999em;
 }
 @media screen and (max-width: 768px) {
   .cms-module__table > tbody > tr .cms-module__actions {

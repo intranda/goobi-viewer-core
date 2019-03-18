@@ -6,6 +6,7 @@
 	&__table {
 		width: 100%;
 	    max-width: 100%;
+	    border: 1px solid @lightgray;
 	    & > thead > tr > th,
 	    & > tbody > tr > td,
 	    & > tfoot > tr > th {
@@ -13,15 +14,10 @@
 	    }
 	    & > thead > tr > th {
 	    	min-width: 175px;
-	    	border: 1px solid @neutralgray;
-	    	border-top-color: @middlegray;
-	    	border-bottom-color: @middlegray;
 	    	vertical-align: bottom;
 	    	background-color: @neutralgray;
 	    }
 	    & > tbody > tr > td {
-	    	border: 1px solid @white;
-	    	border-bottom-color: @neutralgray;
 	    	vertical-align: top;
 	    }
 	    & > tbody > tr {
@@ -30,11 +26,12 @@
 	    	}
 	    	&:hover {
 		    	.cms-module__actions {
-		    		display: block;
+		    		position: static;
 		    	}	    		
 	    	}
 	    	.cms-module__actions {
-	    		display: none;
+	    		position: relative;
+	    		left: -9999em;
 	    	}
 	    }
 	}
