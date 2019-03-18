@@ -213,7 +213,6 @@ public class CmsBean implements Serializable {
             lazyModelPages.addFilter("classifications", "classification");
         }
         selectedLocale = getDefaultLocale();
-        selectedMediaHolder = Optional.empty();
     }
 
     /**
@@ -1748,8 +1747,9 @@ public class CmsBean implements Serializable {
 			}
 		});
 		this.selectedMediaHolder = Optional.empty();
+		cmsMediaBean.setSelectedMediaItem(null);
 	}
-	
+		
 	public boolean hasSelectedMediaHolder() {
 		return this.selectedMediaHolder.isPresent();
 	}
