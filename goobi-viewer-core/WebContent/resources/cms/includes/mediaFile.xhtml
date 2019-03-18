@@ -22,15 +22,15 @@
         <div class="admin-cms-media__file-top">
             <!-- FILE SELECT -->
             <div class="admin-cms-media__file-select">
-	                <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
-	                    <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{item.selected}">
-	                    	<f:ajax event="change" render="@none" execute="@this"/>
-	                    </h:selectBooleanCheckbox>
-	                    <span class="custom-control__icon">
-	                        <i class="fa fa-square-o" aria-hidden="true"></i>
-	                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
-	                    </span>
-	                </label>
+                <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
+                    <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{item.selected}">
+                        <f:ajax event="change" render="@none" execute="@this" />
+                    </h:selectBooleanCheckbox>
+                    <span class="custom-control__icon">
+                        <i class="fa fa-square-o" aria-hidden="true"></i>
+                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                    </span>
+                </label>
             </div>
 
             <!-- FILE IMAGE -->

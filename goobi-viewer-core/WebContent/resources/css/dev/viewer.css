@@ -8742,6 +8742,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-left: 0;
 }
 .cms-module__option-control {
+  position: relative;
   -ms-flex-preferred-size: 75%;
       flex-basis: 75%;
   padding-left: 10px;
@@ -8772,6 +8773,42 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control textarea {
   min-height: 68px;
   resize: vertical;
+}
+.cms-module__option-message {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  height: calc(100% - 2px);
+  text-align: right;
+  background-color: #fff;
+}
+.cms-module__option-message.success {
+  color: #155724;
+  border-color: #ABD9B5;
+  background-color: #d4edda;
+}
+.cms-module__option-message.warning {
+  color: #856404;
+  border-color: #ffeeba;
+  background-color: #fff3cd;
+}
+.cms-module__option-message.danger {
+  color: #721c24;
+  border-color: #E3ABB2;
+  background-color: #f8d7da;
+}
+.cms-module__option-message ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cms-module__option-message li {
+  position: relative;
+  width: 100%;
+  margin-top: 1px;
+  padding: 3px 15px;
+  border-radius: 15px;
+  border: 1px solid;
 }
 .cms-module__option-control-checkbox {
   display: inline-block;
