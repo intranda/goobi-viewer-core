@@ -8898,6 +8898,9 @@ div[id*="-Modal"] .email-form .form-group {
   max-width: 100%;
   border: 1px solid #eee;
 }
+.cms-module__table.invisible {
+  visibility: hidden;
+}
 .cms-module__table > thead > tr > th,
 .cms-module__table > tbody > tr > td,
 .cms-module__table > tfoot > tr > th {
@@ -8935,6 +8938,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-categories {
   /* EDIT */
   /* LIST */
+  /* CREATE */
 }
 .admin-cms-categories__wrapper {
   display: -ms-grid;
@@ -8942,6 +8946,9 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-grid-columns: 1fr 2fr;
       grid-template-columns: 1fr 2fr;
   grid-gap: 15px;
+}
+.admin-cms-categories__create-action {
+  padding-top: 15px;
 }
 /* ==============================================================
    CMS Media

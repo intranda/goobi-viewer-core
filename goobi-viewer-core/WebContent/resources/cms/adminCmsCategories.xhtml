@@ -85,7 +85,7 @@
                     <!-- TODO: eventuell noch eine weiter Spalte "Zuweisung", damit die Kategorie Seiten oder Medien zugewiesen werden kann. -->
                     <div class="admin-cms-categories__list">
                       <h:form id="adminCategoryListForm" prependId="false">
-                        <table class="cms-module__table">
+                        <table class="cms-module__table #{categories.editing ? 'invisible' : ''}">
                             <thead>
                                 <tr>
                                     <th>#{msg.admin__category_title}</th>
@@ -100,11 +100,11 @@
                                         <div class="cms-module__actions">
                                             <h:commandLink type="button" class="btn btn--clean" action="#{categories.edit(category)}">
                                             	#{msg.button__edit}
-                                            	<f:ajax render="adminCategoryCreateForm"></f:ajax>
+                                            	<f:ajax render="@all" />
                                             </h:commandLink>
                                             <h:commandLink type="button" class="btn btn--clean delete" action="#{categories.delete(category)}">
                                             	#{msg.button__delete}
-                                            	<f:ajax render="@all"></f:ajax>
+                                            	<f:ajax render="@all" />
                                             </h:commandLink>
                                         </div>
                                     </td>
