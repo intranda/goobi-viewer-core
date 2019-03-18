@@ -39,20 +39,9 @@
 					</h:commandLink>
 					<h:commandLink id="saveButton2" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
 						disabled="#{adminBean.currentLicense == null}">
-<!-- 						<f:ajax render="@form" /> -->
 					</h:commandLink>
 				</div>
 			</h:panelGroup>
 		</h:form>
-		
-		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/jquery.tablesorter.js?v=#{navigationHelper.version}"></script>
-        <script type="text/javascript">
-	        $(document).ready(function() {	        	
-	        	$( ".sortable-table" )
-	        		.tablesorter({
-	        			widgets: [ "zebra" ] 
-	        		});
-	        });
-		</script>
 	</composite:implementation>
 </ui:composition>

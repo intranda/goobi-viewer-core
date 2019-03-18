@@ -69,12 +69,6 @@
 					</div>
 					<h:form styleClass="form-horizontal" role="form" prependId="false">
 						<div class="modal-body">
-<!-- 							<div class="form-group"> -->
-<!-- 								<h:outputLabel for="userGroupNameMember" styleClass="col-sm-5 control-label" value="#{msg.userGroup}" /> -->
-<!-- 								<div class="col-sm-7"> -->
-<!-- 									<h:inputText value="#{adminBean.currentUserRole.userGroup.name}" id="userGroupNameMember" styleClass="form-control" disabled="true" /> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
 							<div class="form-group">
 								<h:outputLabel for="user" styleClass="col-sm-5 control-label" value="#{msg.user} *" />
 								<div class="col-sm-7">
@@ -106,15 +100,5 @@
 				</div>
 			</div>
 		</div>
-
-		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/jquery.tablesorter.js?v=#{navigationHelper.version}"></script>
-		<script type="text/javascript">
-		    $(document).ready(function() {	        	
-		    	$( ".sortable-table" )
-        		.tablesorter({
-        			widgets: [ "zebra" ] 
-        		});
-		    });
-		</script>
 	</composite:implementation>
 </ui:composition>
