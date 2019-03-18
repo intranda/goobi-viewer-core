@@ -9145,11 +9145,6 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: contain;
   box-shadow: none;
 }
-.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-type,
-.admin-cms-media__file.fixed .admin-cms-media__file-type {
-  top: 0;
-  bottom: auto;
-}
 .admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata,
 .admin-cms-media__file.fixed .admin-cms-media__file-metadata {
   display: block;
@@ -9244,18 +9239,6 @@ div[id*="-Modal"] .email-form .form-group {
   background-position: center;
   background-size: cover;
   cursor: pointer;
-}
-.admin-cms-media__file-type {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 5px;
-  font-size: 0.75rem;
-  text-align: center;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 10;
 }
 .admin-cms-media__file-metadata {
   -ms-flex-positive: 1;
@@ -9381,8 +9364,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__files.grid .admin-cms-media__file:nth-child(odd) {
   background-color: #fff;
 }
-.admin-cms-media__files.grid .admin-cms-media__file-select,
-.admin-cms-media__files.grid .admin-cms-media__file-type {
+.admin-cms-media__files.grid .admin-cms-media__file-select {
   display: none;
 }
 .admin-cms-media__files.grid .admin-cms-media__file-top {
