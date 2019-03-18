@@ -8849,6 +8849,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-control-helptext.static {
   display: inline;
+  font-size: 0.75rem;
   font-style: italic;
   color: #ccc;
 }
