@@ -15,7 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.security.authentication;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletRequest;
@@ -86,4 +86,8 @@ public interface IAuthenticationProvider {
      * @return  true if the email may be changed and is not essential for user identification
      */
     public boolean allowsEmailChange();
+    
+    public List<String> getAddUserToGroups();
+    
+    public void setAddUserToGroups(List<String> addUserToGroups);
 }

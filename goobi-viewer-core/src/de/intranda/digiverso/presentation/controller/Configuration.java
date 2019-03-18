@@ -40,7 +40,6 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.configuration.tree.ConfigurationNode;
-import org.apache.commons.configuration.tree.ExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -261,40 +260,41 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return all configured metadata elements
      */
-    @SuppressWarnings("rawtypes")
     public List<Metadata> getTitleBarMetadata() {
-        List<Metadata> ret = new ArrayList<>();
-
-        List elements = getLocalConfigurationsAt("metadata.titleBarMetadataList.metadata");
-        if (elements != null) {
-            for (Iterator it = elements.iterator(); it.hasNext();) {
-                HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-                String label = sub.getString("[@label]");
-                String masterValue = sub.getString("[@value]");
-                boolean group = sub.getBoolean("[@group]", false);
-                int type = sub.getInt("[@type]", 0);
-                List params = sub.configurationsAt("param");
-                List<MetadataParameter> paramList = null;
-                if (params != null) {
-                    paramList = new ArrayList<>();
-                    for (Iterator it2 = params.iterator(); it2.hasNext();) {
-                        HierarchicalConfiguration sub2 = (HierarchicalConfiguration) it2.next();
-                        String fieldType = sub2.getString("[@type]");
-                        String source = sub2.getString("[@source]", null);
-                        String key = sub2.getString("[@key]");
-                        String overrideMasterValue = sub2.getString("[@value]");
-                        String defaultValue = sub2.getString("[@defaultValue]");
-                        String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                        String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                        boolean addUrl = sub2.getBoolean("[@url]", false);
-                        boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                        paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
-                    }
-                }
-                ret.add(new Metadata(label, masterValue, type, paramList, group));
-            }
+        List<HierarchicalConfiguration> elements = getLocalConfigurationsAt("metadata.titleBarMetadataList.metadata");
+        if (elements == null) {
+            return Collections.emptyList();
         }
+
+        List<Metadata> ret = new ArrayList<>(elements.size());
+        for (Iterator<HierarchicalConfiguration> it = elements.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String label = sub.getString("[@label]");
+            String masterValue = sub.getString("[@value]");
+            boolean group = sub.getBoolean("[@group]", false);
+            int type = sub.getInt("[@type]", 0);
+            List<HierarchicalConfiguration> params = sub.configurationsAt("param");
+            List<MetadataParameter> paramList = null;
+            if (params != null) {
+                paramList = new ArrayList<>();
+                for (Iterator<HierarchicalConfiguration> it2 = params.iterator(); it2.hasNext();) {
+                    HierarchicalConfiguration sub2 = it2.next();
+                    String fieldType = sub2.getString("[@type]");
+                    String source = sub2.getString("[@source]", null);
+                    String key = sub2.getString("[@key]");
+                    String overrideMasterValue = sub2.getString("[@value]");
+                    String defaultValue = sub2.getString("[@defaultValue]");
+                    String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                    String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
+                    boolean addUrl = sub2.getBoolean("[@url]", false);
+                    boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                            prefix, suffix, addUrl, dontUseTopstructValue));
+                }
+            }
+            ret.add(new Metadata(label, masterValue, type, paramList, group));
+        }
+
         return ret;
     }
 
@@ -307,31 +307,13 @@ public final class Configuration extends AbstractConfiguration {
      * @should return default template configuration if requested not found
      * @should return default template if template is null
      */
-    @SuppressWarnings({ "rawtypes", })
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
-        HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]").equals(template)) {
-                    usingTemplate = subElement;
-                    break;
-                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                    defaultTemplate = subElement;
-                }
-            }
-
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
-                usingTemplate = defaultTemplate;
-            }
-
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
+        if (templateList == null) {
+            return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(usingTemplate);
+        return getMetadataForTemplate(template, templateList, true);
     }
 
     /**
@@ -343,33 +325,14 @@ public final class Configuration extends AbstractConfiguration {
      * @should return default template configuration if template not found
      * @should return default template if template is null
      */
-    @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getMainMetadataForTemplate(String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
-        HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]").equals(template)) {
-                    usingTemplate = subElement;
-                    break;
-                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                    defaultTemplate = subElement;
-                }
-            }
-
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null && defaultTemplate != null) {
-                usingTemplate = defaultTemplate;
-            }
-
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
+        if (templateList == null) {
+            return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(usingTemplate);
-
+        return getMetadataForTemplate(template, templateList, true);
     }
 
     /**
@@ -381,22 +344,100 @@ public final class Configuration extends AbstractConfiguration {
      * @should return empty list if template not found
      * @should return empty list if template is null
      */
-    @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getSidebarMetadataForTemplate(String template) {
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
+        return getMetadataForTemplate(template, templateList, false);
+    }
+
+    /**
+     * Reads metadata configuration for the given template name if it's contained in the given template list.
+     * 
+     * @param template Requested template name
+     * @param templateList List of templates in which to look
+     * @param fallbackToDefault If true, the _DEFAULT template will be loaded if the given template is not found
+     * @return
+     */
+    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration> templateList, boolean fallbackToDefault) {
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+
         HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("metadata.sideBarMetadataList.template");
-        if (templateList != null) {
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]").equals(template)) {
-                    usingTemplate = subElement;
-                    break;
-                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                }
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+                defaultTemplate = subElement;
             }
         }
 
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null && fallbackToDefault) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
         return getMetadataForTemplate(usingTemplate);
+    }
+
+    /**
+     * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
+     * 
+     * @param templateList
+     * @param template
+     * @return
+     */
+    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration usingTemplate) {
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+        //                logger.debug("template requested: " + template + ", using: " + usingTemplate.getString("[@name]"));
+        List<HierarchicalConfiguration> elements = usingTemplate.configurationsAt("metadata");
+        if (elements == null) {
+            logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRoot().getName());
+            return Collections.emptyList();
+        }
+
+        List<Metadata> ret = new ArrayList<>(elements.size());
+        for (Iterator<HierarchicalConfiguration> it2 = elements.iterator(); it2.hasNext();) {
+            HierarchicalConfiguration sub = it2.next();
+            String label = sub.getString("[@label]");
+            String masterValue = sub.getString("[@value]");
+            boolean group = sub.getBoolean("[@group]", false);
+            int number = sub.getInt("[@number]", -1);
+            int type = sub.getInt("[@type]", 0);
+            List<HierarchicalConfiguration> params = sub.configurationsAt("param");
+            List<MetadataParameter> paramList = null;
+            if (params != null) {
+                paramList = new ArrayList<>(params.size());
+                for (Iterator<HierarchicalConfiguration> it3 = params.iterator(); it3.hasNext();) {
+                    HierarchicalConfiguration sub2 = it3.next();
+                    String fieldType = sub2.getString("[@type]");
+                    String source = sub2.getString("[@source]", null);
+                    String key = sub2.getString("[@key]");
+                    String overrideMasterValue = sub2.getString("[@value]");
+                    String defaultValue = sub2.getString("[@defaultValue]");
+                    String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                    String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
+                    boolean addUrl = sub2.getBoolean("[@url]", false);
+                    boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                            prefix, suffix, addUrl, dontUseTopstructValue));
+                }
+            }
+            ret.add(new Metadata(label, masterValue, type, paramList, group, number));
+        }
+
+        return ret;
     }
 
     /**
@@ -405,34 +446,26 @@ public final class Configuration extends AbstractConfiguration {
      * @return List of normdata fields configured for the given template name
      * @should return correct template configuration
      */
-    @SuppressWarnings("rawtypes")
     public List<String> getNormdataFieldsForTemplate(String template) {
-        HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("metadata.normdataList.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]").equals(template)) {
-                    usingTemplate = subElement;
-                    break;
-                }
-                //                else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                //                    defaultTemplate = subElement;
-                //                }
-            }
-
-            //            // If the requested template does not exist in the config, use _DEFAULT
-            //            if (usingTemplate == null && defaultTemplate != null) {
-            //                usingTemplate = defaultTemplate;
-            //            }
-
-            if (usingTemplate != null) {
-                return getLocalList(usingTemplate, null, "field", null);
-            }
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("metadata.normdataList.template");
+        if (templateList == null) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        HierarchicalConfiguration usingTemplate = null;
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@name]").equals(template)) {
+                usingTemplate = subElement;
+                break;
+            }
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        return getLocalList(usingTemplate, null, "field", null);
     }
 
     /**
@@ -441,31 +474,13 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct template configuration
      * @should return default template configuration if template not found
      */
-    @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getTocLabelConfiguration(String template) {
-        HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("toc.labelConfig.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]").equals(template)) {
-                    usingTemplate = subElement;
-                    break;
-                } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
-                    defaultTemplate = subElement;
-                }
-            }
-
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
-                usingTemplate = defaultTemplate;
-            }
-
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.labelConfig.template");
+        if (templateList == null) {
+            return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(usingTemplate);
+        return getMetadataForTemplate(template, templateList, true);
     }
 
     /**
@@ -477,55 +492,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getTocAnchorGroupElementsPerPage() {
         return getLocalInt("toc.tocAnchorGroupElementsPerPage", 0);
-    }
-
-    /**
-     * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
-     * 
-     * @param templateList
-     * @param template
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration usingTemplate) {
-        List<Metadata> ret = new ArrayList<>();
-
-        if (usingTemplate != null) {
-            //                logger.debug("template requested: " + template + ", using: " + usingTemplate.getString("[@name]"));
-            List elements = usingTemplate.configurationsAt("metadata");
-            if (elements != null) {
-                for (Iterator it2 = elements.iterator(); it2.hasNext();) {
-                    HierarchicalConfiguration sub = (HierarchicalConfiguration) it2.next();
-                    String label = sub.getString("[@label]");
-                    String masterValue = sub.getString("[@value]");
-                    boolean group = sub.getBoolean("[@group]", false);
-                    int number = sub.getInt("[@number]", -1);
-                    int type = sub.getInt("[@type]", 0);
-                    List params = sub.configurationsAt("param");
-                    List<MetadataParameter> paramList = null;
-                    if (params != null) {
-                        paramList = new ArrayList<>(params.size());
-                        for (Iterator it3 = params.iterator(); it3.hasNext();) {
-                            HierarchicalConfiguration sub2 = (HierarchicalConfiguration) it3.next();
-                            String fieldType = sub2.getString("[@type]");
-                            String source = sub2.getString("[@source]", null);
-                            String key = sub2.getString("[@key]");
-                            String overrideMasterValue = sub2.getString("[@value]");
-                            String defaultValue = sub2.getString("[@defaultValue]");
-                            String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                            String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                            boolean addUrl = sub2.getBoolean("[@url]", false);
-                            boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                            paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                    defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
-                        }
-                    }
-                    ret.add(new Metadata(label, masterValue, type, paramList, group, number));
-                }
-            }
-        }
-
-        return ret;
     }
 
     /**
@@ -545,7 +511,7 @@ public final class Configuration extends AbstractConfiguration {
         try {
             sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.licenseText.metadata");
         } catch (IllegalArgumentException e) {
-            //no or multiple occurances 
+            // no or multiple occurrences 
         }
         if (sub != null) {
             Metadata md = getMetadata(sub);
@@ -560,19 +526,18 @@ public final class Configuration extends AbstractConfiguration {
      * @param sub The subnode configuration
      * @return the resulting {@link Metadata} instance
      */
-    @SuppressWarnings("rawtypes")
     private static Metadata getMetadata(HierarchicalConfiguration sub) {
         String label = sub.getString("[@label]");
         String masterValue = sub.getString("[@value]");
         boolean group = sub.getBoolean("[@group]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt("[@type]", 0);
-        List params = sub.configurationsAt("param");
+        List<HierarchicalConfiguration> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
             paramList = new ArrayList<>(params.size());
-            for (Iterator it3 = params.iterator(); it3.hasNext();) {
-                HierarchicalConfiguration sub2 = (HierarchicalConfiguration) it3.next();
+            for (Iterator<HierarchicalConfiguration> it3 = params.iterator(); it3.hasNext();) {
+                HierarchicalConfiguration sub2 = it3.next();
                 String fieldType = sub2.getString("[@type]");
                 String source = sub2.getString("[@source]", null);
                 String key = sub2.getString("[@key]");
@@ -676,23 +641,22 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return all configured elements
      */
-    @SuppressWarnings("rawtypes")
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
-        List<BrowsingMenuFieldConfig> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
+        if (fields == null) {
+            return Collections.emptyList();
+        }
 
-        List fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
-        if (fields != null) {
-            for (Iterator it = fields.iterator(); it.hasNext();) {
-                HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-                String field = sub.getString(".");
-                String sortField = sub.getString("[@sortField]");
-                String filterQuery = sub.getString("[@filterQuery]");
-                String docstructFilterString = sub.getString("[@docstructFilters]");
-                boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
-                BrowsingMenuFieldConfig bmfc =
-                        new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
-                ret.add(bmfc);
-            }
+        List<BrowsingMenuFieldConfig> ret = new ArrayList<>(fields.size());
+        for (Iterator<HierarchicalConfiguration> it = fields.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String field = sub.getString(".");
+            String sortField = sub.getString("[@sortField]");
+            String filterQuery = sub.getString("[@filterQuery]");
+            String docstructFilterString = sub.getString("[@docstructFilters]");
+            boolean recordsAndAnchorsOnly = sub.getBoolean("[@recordsAndAnchorsOnly]", false);
+            BrowsingMenuFieldConfig bmfc = new BrowsingMenuFieldConfig(field, sortField, filterQuery, docstructFilterString, recordsAndAnchorsOnly);
+            ret.add(bmfc);
         }
 
         return ret;
@@ -728,16 +692,17 @@ public final class Configuration extends AbstractConfiguration {
      * @param field
      * @return
      */
-    @SuppressWarnings("rawtypes")
     private HierarchicalConfiguration getCollectionConfiguration(String field) {
-        List collectionList = getLocalConfigurationsAt("collections.collection");
-        if (collectionList != null) {
-            for (Iterator it = collectionList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@field]").equals(field)) {
-                    return subElement;
+        List<HierarchicalConfiguration> collectionList = getLocalConfigurationsAt("collections.collection");
+        if (collectionList == null) {
+            return null;
+        }
 
-                }
+        for (Iterator<HierarchicalConfiguration> it = collectionList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString("[@field]").equals(field)) {
+                return subElement;
+
             }
         }
 
@@ -806,33 +771,34 @@ public final class Configuration extends AbstractConfiguration {
      * @should give priority to exact matches
      * @should return hyphen if collection not found
      */
-    @SuppressWarnings("rawtypes")
     public String getCollectionDefaultSortField(String field, String name) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
         if (collection == null) {
             return "-";
         }
 
-        List fields = collection.configurationsAt("defaultSortFields.field");
-        if (fields != null) {
-            String exactMatch = null;
-            String inheritedMatch = null;
-            for (Iterator it = fields.iterator(); it.hasNext();) {
-                HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-                String key = sub.getString("[@collection]");
-                if (name.equals(key)) {
-                    exactMatch = sub.getString("");
-                } else if (key.endsWith("*") && name.startsWith(key.substring(0, key.length() - 1))) {
-                    inheritedMatch = sub.getString("");
-                }
+        List<HierarchicalConfiguration> fields = collection.configurationsAt("defaultSortFields.field");
+        if (fields == null) {
+            return "-";
+        }
+
+        String exactMatch = null;
+        String inheritedMatch = null;
+        for (Iterator<HierarchicalConfiguration> it = fields.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            String key = sub.getString("[@collection]");
+            if (name.equals(key)) {
+                exactMatch = sub.getString("");
+            } else if (key.endsWith("*") && name.startsWith(key.substring(0, key.length() - 1))) {
+                inheritedMatch = sub.getString("");
             }
-            // Exact match is given priority so that it is possible to override the inherited sort field
-            if (StringUtils.isNotEmpty(exactMatch)) {
-                return exactMatch;
-            }
-            if (StringUtils.isNotEmpty(inheritedMatch)) {
-                return inheritedMatch;
-            }
+        }
+        // Exact match is given priority so that it is possible to override the inherited sort field
+        if (StringUtils.isNotEmpty(exactMatch)) {
+            return exactMatch;
+        }
+        if (StringUtils.isNotEmpty(inheritedMatch)) {
+            return inheritedMatch;
         }
 
         return "-";
@@ -1065,16 +1031,16 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    @SuppressWarnings("rawtypes")
     public boolean isAdvancedSearchFieldHierarchical(String field) {
-        List fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
-        if (fieldList != null) {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return false;
+        }
 
-            for (Iterator it = fieldList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString(".").equals(field)) {
-                    return subElement.getBoolean("[@hierarchical]", false);
-                }
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getBoolean("[@hierarchical]", false);
             }
         }
 
@@ -1087,16 +1053,16 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    @SuppressWarnings("rawtypes")
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
-        List fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
-        if (fieldList != null) {
+        List<HierarchicalConfiguration> fieldList = getLocalConfigurationsAt("search.advanced.searchFields.field");
+        if (fieldList == null) {
+            return false;
+        }
 
-            for (Iterator it = fieldList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString(".").equals(field)) {
-                    return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
-                }
+        for (Iterator<HierarchicalConfiguration> it = fieldList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             }
         }
 
@@ -1320,6 +1286,7 @@ public final class Configuration extends AbstractConfiguration {
      * 
      * @return
      * @should return all properly configured elements
+     * @should load user group names correctly
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = config;
@@ -1341,6 +1308,7 @@ public final class Configuration extends AbstractConfiguration {
             long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 10000);
 
             if (visible) {
+                IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
                     case "openid":
                         providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
@@ -1348,23 +1316,33 @@ public final class Configuration extends AbstractConfiguration {
                     case "userpassword":
                         switch (name.toLowerCase()) {
                             case "vufind":
-                                providers.add(new VuFindProvider(name, endpoint, image, timeoutMillis));
+                                provider = new VuFindProvider(name, endpoint, image, timeoutMillis);
                                 break;
                             case "x-service":
                             case "xservice":
-                                providers.add(new XServiceProvider(name, endpoint, image, timeoutMillis));
+                                provider = new XServiceProvider(name, endpoint, image, timeoutMillis);
                                 break;
                             case "littera":
-                                providers.add(new LitteraProvider(name, endpoint, image, timeoutMillis));
+                                provider = new LitteraProvider(name, endpoint, image, timeoutMillis);
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
                         break;
                     case "local":
-                        providers.add(new LocalAuthenticationProvider(name));
+                        provider = new LocalAuthenticationProvider(name);
                         break;
                     default:
                         logger.error("Cannot add authentification provider with name {} and type {}. No implementation found", name, type);
+                }
+                if (provider != null) {
+                    // Look for user group configurations to which users shall be automatically added when logging in
+                    List<String> addToUserGroupList =
+                            getLocalList(myConfigToUse, null, "user.authenticationProviders.provider(" + i + ").addUserToGroup", null);
+                    if (addToUserGroupList != null) {
+                        provider.setAddUserToGroups(addToUserGroupList);
+                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
+                    }
+                    providers.add(provider);
                 }
             }
         }
@@ -2561,29 +2539,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
     }
 
-    //    /**
-    //     * 
-    //     * @return
-    //     * @should return all configured elements
-    //     */
-    //    @SuppressWarnings("rawtypes")
-    //    public Map<String, String> getSubthemeMap() {
-    //        Map<String, String> ret = new HashMap<>();
-    //
-    //        List subThemes = getLocalConfigurationsAt("viewer.theme.subTheme");
-    //
-    //        if (subThemes != null) {
-    //            for (Iterator it = subThemes.iterator(); it.hasNext();) {
-    //                HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-    //                String key = sub.getString("[@discriminatorValue]");
-    //                String value = sub.getString("[@themeFolder]");
-    //                ret.put(key, value);
-    //            }
-    //        }
-    //
-    //        return ret;
-    //    }
-
     /**
      * 
      * @return
@@ -2609,85 +2564,87 @@ public final class Configuration extends AbstractConfiguration {
      * @should return default template configuration if template not found
      * @should return default template configuration if template is null
      */
-    @SuppressWarnings("rawtypes")
     public List<StringPair> getTocVolumeSortFieldsForTemplate(String template) {
-        List<StringPair> ret = new ArrayList<>();
-
         HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("toc.volumeSortFields.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                String templateName = subElement.getString("[@name]");
-                String groupBy = subElement.getString("[@groupBy]");
-                if (templateName != null) {
-                    if (templateName.equals(template)) {
-                        usingTemplate = subElement;
-                        break;
-                    } else if ("_DEFAULT".equals(templateName)) {
-                        defaultTemplate = subElement;
-                    }
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.volumeSortFields.template");
+        if (templateList == null) {
+            return Collections.emptyList();
+        }
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            String templateName = subElement.getString("[@name]");
+            String groupBy = subElement.getString("[@groupBy]");
+            if (templateName != null) {
+                if (templateName.equals(template)) {
+                    usingTemplate = subElement;
+                    break;
+                } else if ("_DEFAULT".equals(templateName)) {
+                    defaultTemplate = subElement;
                 }
-            }
-
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
-                usingTemplate = defaultTemplate;
             }
         }
 
-        if (usingTemplate != null) {
-            List fields = usingTemplate.configurationsAt("field");
-            if (fields != null) {
-                for (Iterator it2 = fields.iterator(); it2.hasNext();) {
-                    HierarchicalConfiguration sub = (HierarchicalConfiguration) it2.next();
-                    String field = sub.getString(".");
-                    String order = sub.getString("[@order]");
-                    ret.add(new StringPair(field, "desc".equals(order) ? "desc" : "asc"));
-                }
-            }
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return Collections.emptyList();
+        }
+
+        List<HierarchicalConfiguration> fields = usingTemplate.configurationsAt("field");
+        if (fields == null) {
+            return Collections.emptyList();
+        }
+
+        List<StringPair> ret = new ArrayList<>(fields.size());
+        for (Iterator<HierarchicalConfiguration> it2 = fields.iterator(); it2.hasNext();) {
+            HierarchicalConfiguration sub = it2.next();
+            String field = sub.getString(".");
+            String order = sub.getString("[@order]");
+            ret.add(new StringPair(field, "desc".equals(order) ? "desc" : "asc"));
         }
 
         return ret;
     }
 
     /**
-     * Returns the grouping Solr field for the given annchor TOC sort configuration.
+     * Returns the grouping Solr field for the given anchor TOC sort configuration.
      * 
      * @return
      * @should return correct value
      */
-    @SuppressWarnings("rawtypes")
     public String getTocVolumeGroupFieldForTemplate(String template) {
         HierarchicalConfiguration usingTemplate = null;
-        List templateList = getLocalConfigurationsAt("toc.volumeSortFields.template");
-        if (templateList != null) {
-            HierarchicalConfiguration defaultTemplate = null;
-            for (Iterator it = templateList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                String templateName = subElement.getString("[@name]");
-                if (templateName != null) {
-                    if (templateName.equals(template)) {
-                        usingTemplate = subElement;
-                        break;
-                    } else if ("_DEFAULT".equals(templateName)) {
-                        defaultTemplate = subElement;
-                    }
+        List<HierarchicalConfiguration> templateList = getLocalConfigurationsAt("toc.volumeSortFields.template");
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration defaultTemplate = null;
+        for (Iterator<HierarchicalConfiguration> it = templateList.iterator(); it.hasNext();) {
+            HierarchicalConfiguration subElement = it.next();
+            String templateName = subElement.getString("[@name]");
+            if (templateName != null) {
+                if (templateName.equals(template)) {
+                    usingTemplate = subElement;
+                    break;
+                } else if ("_DEFAULT".equals(templateName)) {
+                    defaultTemplate = subElement;
                 }
-            }
-
-            // If the requested template does not exist in the config, use _DEFAULT
-            if (usingTemplate == null) {
-                usingTemplate = defaultTemplate;
             }
         }
 
-        if (usingTemplate != null) {
-            String groupBy = usingTemplate.getString("[@groupBy]");
-            if (StringUtils.isNotEmpty(groupBy)) {
-                return groupBy;
-            }
+        // If the requested template does not exist in the config, use _DEFAULT
+        if (usingTemplate == null) {
+            usingTemplate = defaultTemplate;
+        }
+        if (usingTemplate == null) {
+            return null;
+        }
+        String groupBy = usingTemplate.getString("[@groupBy]");
+        if (StringUtils.isNotEmpty(groupBy)) {
+            return groupBy;
         }
 
         return null;
@@ -2861,20 +2818,20 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return all configured elements
      */
-    @SuppressWarnings("rawtypes")
     public List<Map<String, String>> getWebApiFields() {
-        List<Map<String, String>> ret = new ArrayList<>();
+        List<HierarchicalConfiguration> elements = getLocalConfigurationsAt("webapi.fields.field");
+        if (elements == null) {
+            return Collections.emptyList();
+        }
 
-        List elements = getLocalConfigurationsAt("webapi.fields.field");
-        if (elements != null) {
-            for (Iterator it = elements.iterator(); it.hasNext();) {
-                HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-                Map<String, String> fieldConfig = new HashMap<>();
-                fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
-                fieldConfig.put("luceneField", sub.getString("[@luceneField]", null));
-                fieldConfig.put("multivalue", sub.getString("[@multivalue]", null));
-                ret.add(fieldConfig);
-            }
+        List<Map<String, String>> ret = new ArrayList<>(elements.size());
+        for (Iterator<HierarchicalConfiguration> it = elements.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+            Map<String, String> fieldConfig = new HashMap<>();
+            fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
+            fieldConfig.put("luceneField", sub.getString("[@luceneField]", null));
+            fieldConfig.put("multivalue", sub.getString("[@multivalue]", null));
+            ret.add(fieldConfig);
         }
 
         return ret;
@@ -3172,31 +3129,31 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return the list of all configured event fields for IIIF manifests
-     * All fields must contain a "/" to separate the event type and the actual field name
-     * If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from all events
+     * @return the list of all configured event fields for IIIF manifests All fields must contain a "/" to separate the event type and the actual
+     *         field name If no "/" is present in the configured field it is prepended to the entry to indicate that this field should be taken from
+     *         all events
      */
-	public List<String> getIIIFEventFields() {
-        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", Collections.emptyList());	
+    public List<String> getIIIFEventFields() {
+        List<String> fields = getLocalList("webapi.iiif.metadataFields.event", Collections.emptyList());
         fields = fields.stream().map(field -> field.contains("/") ? field : "/" + field).collect(Collectors.toList());
         return fields;
-	}
-	
-	/**
-	 * @param field	the value of the field
-	 * @return	The attribute "label" of any children of webapi.iiif.metadataFields
-	 */
-	public String getIIIFMetadataLabel(String field) {
-		
-		HierarchicalConfiguration fieldsConfig = getLocalConfigurationAt("webapi.iiif.metadataFields");
-		List<ConfigurationNode> fields = fieldsConfig.getRootNode().getChildren();
-		for (ConfigurationNode fieldNode : fields) {
-			if(fieldNode.getValue().equals(field)) {
-				return fieldNode.getAttributes("label").stream().findFirst().map(node -> node.getValue().toString()).orElse("");
-			}
-		}
-		return "";
-	}
+    }
+
+    /**
+     * @param field the value of the field
+     * @return The attribute "label" of any children of webapi.iiif.metadataFields
+     */
+    public String getIIIFMetadataLabel(String field) {
+
+        HierarchicalConfiguration fieldsConfig = getLocalConfigurationAt("webapi.iiif.metadataFields");
+        List<ConfigurationNode> fields = fieldsConfig.getRootNode().getChildren();
+        for (ConfigurationNode fieldNode : fields) {
+            if (fieldNode.getValue().equals(field)) {
+                return fieldNode.getAttributes("label").stream().findFirst().map(node -> node.getValue().toString()).orElse("");
+            }
+        }
+        return "";
+    }
 
     /**
      * Configured in webapi.iiif.discovery.activitiesPerPage. Default value is 100
@@ -3266,8 +3223,5 @@ public final class Configuration extends AbstractConfiguration {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
     }
-
-
-
 
 }

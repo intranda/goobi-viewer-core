@@ -573,73 +573,55 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPILER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_RECIPIENT" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_AUTHOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPOSER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="einMD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_PHOTOGRAPHER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ERSTELLER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ILLUSTRATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITORCORPORATION" value="">
 					<param type="field" key="MD_EDITORCORPORATION" />
@@ -648,17 +630,13 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_TRANSLATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="CURRENTNO" value="">
 					<param type="field" key="CURRENTNO" />
