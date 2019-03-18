@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -261,6 +263,15 @@ public class TestUtils {
         @Override
         public boolean allowsEmailChange() {
             return false;
+        }
+
+        @Override
+        public List<String> getAddUserToGroups() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void setAddUserToGroups(List<String> addUserToGroups) {
         }
     };
 
