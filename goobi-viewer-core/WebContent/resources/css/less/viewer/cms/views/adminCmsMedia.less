@@ -360,6 +360,13 @@
 					display: none;
 				}
 			}
+			&.active,
+			&.finished {
+				a {
+					font-size: 1rem;
+					font-weight: 700;
+				}
+			}
 			&.active {
 				a {
 					text-decoration: underline;
@@ -367,7 +374,6 @@
 			}
 			&.finished {
 				a {
-					font-weight: 700;
 					color: @black;
 				}
 			}

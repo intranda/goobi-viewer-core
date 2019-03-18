@@ -9343,11 +9343,15 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__file-language li:last-child:after {
   display: none;
 }
+.admin-cms-media__file-language li.active a,
+.admin-cms-media__file-language li.finished a {
+  font-size: 1rem;
+  font-weight: 700;
+}
 .admin-cms-media__file-language li.active a {
   text-decoration: underline;
 }
 .admin-cms-media__file-language li.finished a {
-  font-weight: 700;
   color: #1a1a1a;
 }
 .admin-cms-media__file-language a {
