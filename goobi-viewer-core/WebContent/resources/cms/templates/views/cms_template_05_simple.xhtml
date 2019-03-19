@@ -35,20 +35,26 @@
                     </div>
                 </h:panelGroup>
 				
-				<div class="tpl-simple__text">
-					<ui:include src="#{cmsPage.getContent('text01')}" />
-				</div>
+				<ui:fragment rendered="#{cmsPage.hasContent('text01')}">
+                    <div class="tpl-simple__text">
+    					<ui:include src="#{cmsPage.getContent('text01')}" />
+    				</div>
+                </ui:fragment>
 				
-				<figure class="tpl-simple__image">
-					<img src="#{cmsPage.getContent('image01')}" class="img-responsive" title="#{cmsPage.getMediaName('image01')}" />
-                    <figcaption>
-                        #{cmsPage.getMediaDescription('image01')}
-                    </figcaption>
-				</figure>
+				<ui:fragment rendered="#{cmsPage.hasContent('image01')}">
+                    <figure class="tpl-simple__image">
+    					<img src="#{cmsPage.getContent('image01')}" class="img-responsive" title="#{cmsPage.getMediaName('image01')}" />
+                        <figcaption>
+                            #{cmsPage.getMediaDescription('image01')}
+                        </figcaption>
+    				</figure>
+                </ui:fragment>
 				
-				<div class="tpl-simple__text">
-					<ui:include src="#{cmsPage.getContent('text02')}" />
-				</div>
+				<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
+				    <div class="tpl-simple__text">
+    					<ui:include src="#{cmsPage.getContent('text02')}" />
+    				</div>
+                </ui:fragment>
 			</div>
 		</f:view>
 	</ui:define>

@@ -8750,26 +8750,16 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-control.in input,
 .cms-module__option-control.in .custom-control--select,
-.cms-module__option-control.in .cms-module__option-control-checkbox {
-  border-color: #468847 !important;
-}
+.cms-module__option-control.in .cms-module__option-control-checkbox,
 .cms-module__option-control.in .admin-cms-media__file,
-.cms-module__option-control.in .cms-module__actions {
-  padding: 7px;
-  border: 1px solid #468847;
+.cms-module__option-control.in .mce-tinymce {
+  outline: 1px solid #468847;
+  outline-offset: 2px;
 }
-.cms-module__option-control.in .admin-cms-media__file,
-.cms-module__option-control.in .admin-cms-media__file-top {
-  margin: 0;
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-.cms-module__option-control.in .cms-module__actions {
-  padding-top: 0;
-  border-top: 0;
-}
-.cms-module__option-control.in .cms-module__option-control-checkbox {
-  padding: 7px;
+.cms-module__option-control.in input[type="checkbox"] + .cms-module__option-control-helptext {
+  display: inline;
+  padding: 0;
+  padding-left: 5px;
 }
 .cms-module__option-control textarea {
   min-height: 68px;
@@ -8878,12 +8868,16 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: normal;
   cursor: pointer;
 }
+.cms-module__option-selected {
+  padding: 5px 0;
+}
 .cms-module__option-control-helptext {
   display: none;
+  padding-top: 5px;
   color: #468847;
 }
 .cms-module__option-control-helptext.in {
-  display: inline;
+  display: inline-block;
 }
 .cms-module__option-control-helptext.static {
   display: inline;
@@ -9433,7 +9427,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* CREATE PAGE VIEW */
 .cms-create-page .admin-cms-media__file {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 0;
   background-color: #fff;
 }
@@ -9443,6 +9437,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-create-page .admin-cms-media__file-image {
   cursor: default;
+}
+.cms-create-page .admin-cms-media__file-top {
+  margin: 0;
 }
 .cms-create-page .admin-cms-media__file-bottom {
   display: none;
@@ -10410,6 +10407,10 @@ img.cms-static-pages__page-language--complete {
    CMS Media Select
    ==============================================================*/
 /* MEDIA SELECT */
+.admin-cms-media {
+  /* ITEMS */
+  /* ACTION */
+}
 .admin-cms-media__select {
   position: fixed;
   top: 30px;
@@ -10419,23 +10420,6 @@ img.cms-static-pages__page-language--complete {
   padding: 50px;
   z-index: 2020;
   background-color: #fff;
-}
-.admin-cms-media__select .cms-mediaitem-wrapper {
-  position: relative;
-  height: 120px;
-  padding: 10px;
-  width: 120px;
-}
-.admin-cms-media__select .cms-mediaitem-item {
-  position: absolute;
-}
-.admin-cms-media__select .cms-mediaitem-select {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-.admin-cms-media__select .selected {
-  background-color: #3365a9;
 }
 .admin-cms-media__select-overlay {
   position: fixed;
@@ -10489,6 +10473,7 @@ img.cms-static-pages__page-language--complete {
   width: 70%;
 }
 .admin-cms-media__select-files-files .admin-cms-media__files {
+  padding-right: 15px;
   padding-left: 0 !important;
 }
 .admin-cms-media__select-files-selected {
@@ -10509,12 +10494,20 @@ img.cms-static-pages__page-language--complete {
 .admin-cms-media__select-files-selected .admin-cms-media__file-metadata {
   padding-left: 0;
 }
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view {
+  display: none !important;
+  visibility: hidden !important;
+}
 .admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dt {
   width: 100%;
   margin-right: 0;
 }
 .admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dd {
   margin-bottom: 10px;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit {
+  display: block !important;
+  visibility: visible !important;
 }
 .admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label {
   -ms-flex-preferred-size: 100%;
@@ -10539,16 +10532,75 @@ img.cms-static-pages__page-language--complete {
   -ms-flex-order: 1;
       order: 1;
 }
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view {
+  display: block !important;
+  visibility: visible !important;
+  text-align: right;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view .delete:after {
+  display: none;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-action="edit"],
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-copy="img-url"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-edit {
+  display: none !important;
+  visibility: hidden !important;
+}
 .admin-cms-media__select-files-selected .admin-cms-media__file-language {
   width: 100%;
   max-width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   margin-left: 0;
   padding-left: 0;
+}
+.admin-cms-media__item-wrapper {
+  position: relative;
+  max-height: 100px;
+  overflow: hidden;
+}
+.admin-cms-media__item-select-frame,
+.admin-cms-media__item-select {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.admin-cms-media__item-select-frame {
+  display: none;
+  border: 3px solid #3365a9;
+  z-index: 2040;
+}
+.admin-cms-media__item-select-frame.in {
+  display: block;
+}
+.admin-cms-media__item-select-frame-checkmark {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  text-align: center;
+  border-radius: 5px;
+  background-color: #3365a9;
+}
+.admin-cms-media__item-select-frame-checkmark .fa {
+  font-size: 18px;
+  color: #fff;
+}
+.admin-cms-media__item-select {
+  z-index: 2050;
 }
 .admin-cms-media__select-action {
   padding-top: 10px;
   text-align: right;
+}
+.admin-cms-media__select-action .btn {
+  margin-left: 20px;
 }
 /* CMS TEMPLATES */
 /* ==============================================================

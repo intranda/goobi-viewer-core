@@ -39,26 +39,16 @@
 	    &.in {
 	    	input,
 	    	.custom-control--select,
-	    	.cms-module__option-control-checkbox {
-	    		border-color: @green !important;
-	    	}
+	    	.cms-module__option-control-checkbox,
 	    	.admin-cms-media__file,
-	    	.cms-module__actions {
-	    		padding: 7px;
-	    		border: 1px solid @green;
+	    	.mce-tinymce {
+	    		outline: 1px solid @green;
+				outline-offset: 2px;
 	    	}
-	    	.admin-cms-media__file,
-	    	.admin-cms-media__file-top {
-	    		margin: 0;
-	    		padding-bottom: 0;
-	    		border-bottom: 0;
-	    	}
-	    	.cms-module__actions {
-	    		padding-top: 0;
-	    		border-top: 0;
-	    	}
-	    	.cms-module__option-control-checkbox {
-	    		padding: 7px;
+	    	input[type="checkbox"] + .cms-module__option-control-helptext {
+	    		display: inline;
+	    		padding: 0;
+	    		padding-left: 5px;
 	    	}
 	    }
 	    textarea {
@@ -165,11 +155,15 @@
 			cursor: pointer;
 		}
 	}
+	&__option-selected {
+		padding: 5px 0;
+	}
 	&__option-control-helptext {
 	    display: none;
+	    padding-top: 5px;
 	    color: @green;
 	    &.in {
-	    	display: inline;
+	    	display: inline-block;
 	    }
 	    &.static {
 	    	display: inline;

@@ -27,7 +27,7 @@
                 <div class="cms-module__actions">
                     <h:commandLink 
                         action="#{cmsBean.setSelectedMediaHolder(contentItem)}" 
-                        value="#{msg.cms_selectMedia}" 
+                        value="#{contentItem.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
                         class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
                         role="button">
                         <f:ajax execute="@form" render="mediaSelectPanel" />
