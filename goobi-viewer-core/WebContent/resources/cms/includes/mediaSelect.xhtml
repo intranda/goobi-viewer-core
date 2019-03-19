@@ -38,15 +38,23 @@
                         <!-- MEDIA FILES -->
                         <div class="admin-cms-media__select-files-files">
                             <div class="admin-cms-media__files">
-                                <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" var="selectableItem" varStatus="status">
-                                    <div class="cms-mediaitem-wrapper #{selectableItem.value == cmsMediaBean.selectedMediaItem.value ? 'selected' : ''}">
-                                        <div class="cms-mediaitem-item">
+                                <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" 
+                                    var="selectableItem" varStatus="status">
+                                    <div class="admin-cms-media__item-wrapper">
+                                        <div class="admin-cms-media__item">
                                             <ui:include src="/resources/cms/includes/mediaFile.xhtml">
                                                 <ui:param name="item" value="#{selectableItem}" />
                                                 <ui:param name="idPrefix" value="mediaList:#{status.index}:" />
                                             </ui:include>
                                         </div>
-                                        <h:commandLink styleClass="cms-mediaitem-select" action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem)}">
+                                        <div class="admin-cms-media__item-select-frame #{selectableItem.value == cmsMediaBean.selectedMediaItem.value ? 'in' : ''}">
+                                            <div class="admin-cms-media__item-select-frame-checkmark">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            </div>                                            
+                                        </div>
+                                        <h:commandLink 
+                                            styleClass="admin-cms-media__item-select" 
+                                            action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem)}">
                                             <f:ajax execute="@this" render="selectedMediaItemPanel" onevent="reload" />
                                         </h:commandLink>
                                     </div>
@@ -66,14 +74,20 @@
                     </div>
                 </h:form>
 
-
                 <!-- ACTION -->
                 <div class="admin-cms-media__select-action">
                     <h:form>
                         <h:commandLink 
+                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
+                            value="#{msg.button__abort}" 
+                            class="btn btn--clean" 
+                            role="button">
+                            <f:ajax render="mediaSelectPanel" />
+                        </h:commandLink>
+                        <h:commandLink 
                             action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem)}" 
                             value="#{msg.cms_selectMediaItem_agree}" 
-                            class="btn btn--default"
+                            class="btn btn--full"
                             role="button">
                         </h:commandLink>
                     </h:form>
@@ -105,19 +119,20 @@
 		cmsJS.media.init( adminMediaConfig );
 		riot.mount( 'adminMediaUpload', adminMediaConfig );
 
-		function reload(data) {
-			cmsJS.media.onReload(data);
-			cmsJS.modules.onReload(data);
+		function reload( data ) {
+			cmsJS.media.onReload( data );
+			cmsJS.modules.onReload( data );
 			
-    		if ( !data || data.status == "success" ) {
+    		if ( !data || data.status == 'begin' ) {
 				riot.mount( 'adminMediaUpload', adminMediaConfig );
 				
     			if ( data ) {
-    				var alreadySelected = $( data.source ).parent().hasClass( 'selected' );
-					$('.cms-mediaitem-wrapper.selected').removeClass('selected');
+    				var alreadySelected = $( data.source ).prev().hasClass( 'in' );
+    				
+					$('.admin-cms-media__item-select-frame.in').removeClass('in');
 
 					if ( !alreadySelected ) {
-						$(data.source).parent().addClass('selected');
+						$( data.source ).prev().addClass( 'in' );
 					}
 				}
 			}

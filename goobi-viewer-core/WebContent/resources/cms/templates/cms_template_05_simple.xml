@@ -5,8 +5,8 @@
     <icon>cms_template_05_simple.png</icon>
     <html>cms_template_05_simple.xhtml</html>
     <content>
-        <item id="text01" label="Inhalt über Bild" type="HTML" mandatory="true" />
-        <item id="image01" label="Zentrales Bild" type="MEDIA" />
-        <item id="text02" label="Inhalt unter Bild" type="HTML" />
+        <item id="text01" order="1" label="Inhalt über Bild" type="HTML" />
+        <item id="image01" order="2" type="MEDIA" />
+        <item id="text02" order="3" label="Inhalt unter Bild" type="HTML" />
     </content>
 </cms_page_template>

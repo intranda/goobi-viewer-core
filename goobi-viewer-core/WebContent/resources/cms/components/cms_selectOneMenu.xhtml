@@ -29,35 +29,37 @@
                 <label for="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == '' ? cc.attrs.id.concat(':input1') : cc.attrs.id.concat(':input2')}">#{cc.attrs.label}</label>
             </div>
             <div class="cms-module__option-control">
-                <ui:fragment rendered="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == ''}">
-                    <h:selectOneMenu 
-                        id="input1" 
-                        styleClass="form-control" 
-                        value="#{cc.attrs.field}" 
-                        disabled="#{cc.attrs.disabled}" 
-                        required="#{cc.attrs.required}"
-                        requiredMessage="#{cc.attrs.requiredMessage}">
-                        <f:selectItems 
-                            value="#{cc.attrs.options}" 
-                            var="#{cc.attrs.item}" 
-                            itemValue="#{cc.attrs.itemValue}" 
-                            itemLabel="#{cc.attrs.itemLabel}" />
-                        <f:ajax render="#{cc.attrs.render}" />
-                    </h:selectOneMenu>
-                </ui:fragment>
-                <ui:fragment rendered="#{cc.attrs.defaultItemValue != '' or cc.attrs.defaultItemLabel != ''}">
-                    <h:selectOneMenu 
-                        id="input2" 
-                        styleClass="form-control" 
-                        value="#{cc.attrs.field}" 
-                        disabled="#{cc.attrs.disabled}" 
-                        required="#{cc.attrs.required}"
-                        requiredMessage="#{cc.attrs.requiredMessage}">
-                        <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}" />
-                        <f:selectItems value="#{cc.attrs.options}" var="#{cc.attrs.item}" itemValue="#{cc.attrs.itemValue}" itemLabel="#{cc.attrs.itemLabel}" />
-                        <f:ajax render="#{cc.attrs.render}" />
-                    </h:selectOneMenu>
-                </ui:fragment>
+                <div class="custom-control custom-control--select">
+                    <ui:fragment rendered="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == ''}">
+                        <h:selectOneMenu 
+                            id="input1" 
+                            styleClass="form-control" 
+                            value="#{cc.attrs.field}" 
+                            disabled="#{cc.attrs.disabled}" 
+                            required="#{cc.attrs.required}"
+                            requiredMessage="#{cc.attrs.requiredMessage}">
+                            <f:selectItems 
+                                value="#{cc.attrs.options}" 
+                                var="#{cc.attrs.item}" 
+                                itemValue="#{cc.attrs.itemValue}" 
+                                itemLabel="#{cc.attrs.itemLabel}" />
+                            <f:ajax render="#{cc.attrs.render}" />
+                        </h:selectOneMenu>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{cc.attrs.defaultItemValue != '' or cc.attrs.defaultItemLabel != ''}">
+                        <h:selectOneMenu 
+                            id="input2" 
+                            styleClass="form-control" 
+                            value="#{cc.attrs.field}" 
+                            disabled="#{cc.attrs.disabled}" 
+                            required="#{cc.attrs.required}"
+                            requiredMessage="#{cc.attrs.requiredMessage}">
+                            <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}" />
+                            <f:selectItems value="#{cc.attrs.options}" var="#{cc.attrs.item}" itemValue="#{cc.attrs.itemValue}" itemLabel="#{cc.attrs.itemLabel}" />
+                            <f:ajax render="#{cc.attrs.render}" />
+                        </h:selectOneMenu>
+                    </ui:fragment>
+                </div>
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">

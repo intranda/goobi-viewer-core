@@ -11,24 +11,7 @@
 	    left: 30px;
 	    padding: 50px;
 	    z-index: 2020;
-	    background-color: @white;		
-	    .cms-mediaitem-wrapper {
-	    	position: relative;
-	    	height: 120px;
-			padding: 10px;
-			width: 120px;
-	    }
-	    .cms-mediaitem-item {
-	    	position: absolute;
-	    }
-	    .cms-mediaitem-select {
-	    	position: absolute;
-	    	width: 100%;
-	    	height: 100%;
-	    }
-	    .selected {
-	    	background-color: @blue;
-	    }
+	    background-color: @white;
 	}
 	&__select-overlay {
 		position: fixed;
@@ -79,6 +62,7 @@
 		width: 70%;
 		.admin-cms-media {
 			&__files {
+				padding-right: 15px;
 				padding-left: 0 !important;
 			}
 		}
@@ -101,6 +85,7 @@
 				padding-left: 0;
 			}
 			&__file-metadata-view {
+				.mx-hidden;
 				.dl-horizontal {
 					dt {
 						width: 100%;
@@ -112,6 +97,7 @@
 				 }
 			}
 			&__file-metadata-edit {
+				.mx-visible;
 				.cms-module__option-label {
 					flex-basis: 100%;
 					& + .cms-module__option-control {
@@ -130,18 +116,80 @@
 				padding-left: 0;
 				order: 1;
 			}
+			&__file-actions-view {
+				.mx-visible;
+				text-align: right;
+				.delete {
+					&:after {
+						display: none;
+					}
+				}
+				[data-action="edit"],
+				[data-copy="img-url"] {
+					.mx-hidden;					
+				}
+			}
+			&__file-actions-edit {
+				.mx-hidden;
+			}
 			&__file-language {
 				width: 100%;
 				max-width: 100%;
-				margin-bottom: 10px;
+				margin-bottom: 30px;
 				margin-left: 0;
 				padding-left: 0;
 			}
 		}
 	}
+	/* ITEMS */
+	&__item-wrapper {
+		position: relative;
+		max-height: 100px;
+		overflow: hidden;
+		&.selected {}
+	}
+	&__item {}
+	&__item-select-frame,
+	&__item-select {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+	&__item-select-frame {
+		display: none;
+		border: 3px solid @blue;
+		z-index: 2040;
+		&.in {
+			display: block;
+		}		
+	}
+	&__item-select-frame-checkmark {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		width: 21px;
+		height: 21px;
+    	line-height: 21px;
+		text-align: center;
+		border-radius: 5px;
+		background-color: @blue;
+		.fa {
+			font-size: 18px;
+			color: @white;
+		}
+	}
+	&__item-select {
+		z-index: 2050;
+	}
+	/* ACTION */
 	&__select-action {
 		padding-top: 10px;
 		text-align: right;
+		.btn {
+			margin-left: 20px;
+		}
 	}	
 }
 
