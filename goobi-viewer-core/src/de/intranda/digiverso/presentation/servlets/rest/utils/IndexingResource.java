@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.utils;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -24,10 +26,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -36,6 +45,44 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 @Path(IndexingResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
 public class IndexingResource {
+
+    /**
+     * POST request parameters for IndexingResource.
+     */
+    public class IndexingRequestParameters {
+
+        private String pi;
+        /** If true, a trace document will be added to the index. */
+        private boolean createTraceDocument = false;
+
+        /**
+         * @return the pi
+         */
+        public String getPi() {
+            return pi;
+        }
+
+        /**
+         * @param pi the pi to set
+         */
+        public void setPi(String pi) {
+            this.pi = pi;
+        }
+
+        /**
+         * @return the createTraceDocument
+         */
+        public boolean isCreateTraceDocument() {
+            return createTraceDocument;
+        }
+
+        /**
+         * @param createTraceDocument the createTraceDocument to set
+         */
+        public void setCreateTraceDocument(boolean createTraceDocument) {
+            this.createTraceDocument = createTraceDocument;
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(IndexingResource.class);
 
@@ -68,29 +115,52 @@ public class IndexingResource {
      */
     @SuppressWarnings("unchecked")
     @POST
-    @Path("/delete")
+    @Path("/deleterecord")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public String updateSitemap(SitemapRequestParameters params) {
+    public String deleteRecord(IndexingRequestParameters params) {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         }
 
         JSONObject ret = new JSONObject();
 
-        if (params == null) {
+        if (params == null || StringUtils.isEmpty(params.getPi())) {
             ret.put("status", HttpServletResponse.SC_BAD_REQUEST);
             ret.put("message", "Invalid JSON request object");
             return ret.toJSONString();
         }
-
 
         if (workerThread == null || !workerThread.isAlive()) {
             workerThread = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
-
+                    try {
+                        if (DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_PARENT + ":" + params.getPi()) > 0) {
+                            ret.put("status", HttpServletResponse.SC_FORBIDDEN);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
+                        }
+                        if (Helper.deleteRecord(params.getPi(), params.isCreateTraceDocument())) {
+                            ret.put("status", HttpServletResponse.SC_OK);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
+                        } else {
+                            ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure", null));
+                        }
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    } catch (PresentationException e) {
+                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        ret.put("message", e.getMessage());
+                    }
                 }
             });
 
@@ -102,7 +172,7 @@ public class IndexingResource {
             }
         } else {
             ret.put("status", HttpServletResponse.SC_FORBIDDEN);
-            ret.put("message", "Sitemap generation currently in progress");
+            ret.put("message", "Record deletion currently in progress");
         }
 
         return ret.toJSONString();

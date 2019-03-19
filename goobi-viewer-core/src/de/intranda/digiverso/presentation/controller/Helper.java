@@ -566,17 +566,17 @@ public class Helper {
     /**
      * 
      * @param pi
-     * @param leaveTraceDoc
+     * @param createTraceDocument
      * @return
      * @throws IOException
      * @should create delete file correctly
      * @should create purge file correctly
      */
-    public static synchronized boolean deleteRecord(String pi, boolean leaveTraceDoc) throws IOException {
+    public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument) throws IOException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
-        String fileName = pi + (leaveTraceDoc ? ".delete" : ".purge");
+        String fileName = pi + (createTraceDocument ? ".delete" : ".purge");
         Path file = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), fileName);
         try {
             Files.createFile(file);

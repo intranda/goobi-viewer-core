@@ -1115,12 +1115,12 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * 
-     * @param leaveTraceDoc If true, a .delete file will be created; otherwise a .purge file
+     * @param keepTraceDocument If true, a .delete file will be created; otherwise a .purge file
      * @return outcome
      * @throws IOException
      * @throws IndexUnreachableException
      */
-    public String deleteRecordAction(boolean leaveTraceDoc) throws IOException, IndexUnreachableException {
+    public String deleteRecordAction(boolean keepTraceDocument) throws IOException, IndexUnreachableException {
         try {
             if (viewManager == null) {
                 return "";
@@ -1131,7 +1131,7 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-            if (Helper.deleteRecord(viewManager.getPi(), leaveTraceDoc)) {
+            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument)) {
                 Messages.info("deleteRecord_success");
             } else {
                 Messages.error("deleteRecord_failure");
