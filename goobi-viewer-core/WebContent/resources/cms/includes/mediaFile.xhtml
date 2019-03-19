@@ -50,15 +50,17 @@
                             <!-- TITLE -->
                             <dt>#{msg.admin__media_title}:</dt>
                             <dd>#{media.getMetadataForLocale(item.locale).name}</dd>
+                            
                             <!-- DESCRIPTION -->
                             <dt>#{msg.admin__media_description}:</dt>
                             <dd>#{media.getMetadataForLocale(item.locale).description}</dd>
+                            
                             <!-- LINKS TO -->
-                            <ui:fragment rendered="#{media.link != '#'}">
+                            <ui:fragment rendered="#{media.link != '#' and media.link != null}">
                                 <dt>#{msg.admin__media_links_to}:</dt>
                                 <dd>#{media.link}</dd>
-                            </ui:fragment>
-                            
+                            </ui:fragment>     
+                                                   
                             <!-- CATEGORIES -->
                             <dt>#{msg.admin__categories}:</dt>
                             <dd>
