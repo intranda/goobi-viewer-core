@@ -14,6 +14,7 @@
 /* COLORS BASIC */
 /* MESSAGE COLORS */
 /* LABELS */
+/* INLINE HELP */
 /* BUTTON COLORS */
 /* COLORS STATISTICS */
 /* COLORS NER */
@@ -8888,7 +8889,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline;
   font-size: 0.75rem;
   font-style: italic;
-  color: #ccc;
+  color: #666;
 }
 .cms-module__option-help {
   -ms-flex-preferred-size: 5%;
@@ -8983,6 +8984,9 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-grid-columns: 1fr 2fr;
       grid-template-columns: 1fr 2fr;
   grid-gap: 15px;
+}
+.admin-cms-categories__list {
+  padding-top: 78px;
 }
 .admin-cms-categories__create-action {
   padding-top: 15px;
