@@ -40,49 +40,11 @@ import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * Resource for sitemap generation.
+ * Resource for index operations.
  */
 @Path(IndexingResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
 public class IndexingResource {
-
-    /**
-     * POST request parameters for IndexingResource.
-     */
-    public class IndexingRequestParameters {
-
-        private String pi;
-        /** If true, a trace document will be added to the index. */
-        private boolean createTraceDocument = false;
-
-        /**
-         * @return the pi
-         */
-        public String getPi() {
-            return pi;
-        }
-
-        /**
-         * @param pi the pi to set
-         */
-        public void setPi(String pi) {
-            this.pi = pi;
-        }
-
-        /**
-         * @return the createTraceDocument
-         */
-        public boolean isCreateTraceDocument() {
-            return createTraceDocument;
-        }
-
-        /**
-         * @param createTraceDocument the createTraceDocument to set
-         */
-        public void setCreateTraceDocument(boolean createTraceDocument) {
-            this.createTraceDocument = createTraceDocument;
-        }
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(IndexingResource.class);
 
