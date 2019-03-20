@@ -7824,9 +7824,18 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for widget_user.xhtml
    ==============================================================*/
 /* WIDGET USER INTERACTIONS */
+#widgetUserInteractions ul {
+  border-bottom: 0;
+}
 .widget-user-interactions h4 {
-  margin: 20px 0 5px 0;
+  margin: 0 0 5px 0;
   font-size: 1rem;
+}
+.widget-user-interactions__delete-record {
+  padding: 10px;
+  padding-top: 5px;
+  border: 1px solid #ccc;
+  border-top: 0;
 }
 .widget-user-interactions__delete-record-action {
   padding: 5px 0 10px 0;
