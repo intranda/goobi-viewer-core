@@ -123,9 +123,9 @@ public class HelperTest {
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
-        Path file = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), "PPN123.delete");
+        Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.delete");
         try {
-            Assert.assertTrue(Helper.deleteRecord("PPN123", true));
+            Assert.assertTrue(Helper.deleteRecord("PPN123", true, hotfolder));
             Assert.assertTrue(Files.isRegularFile(file));
         } finally {
             if (Files.isRegularFile(file)) {
@@ -147,9 +147,9 @@ public class HelperTest {
         if (!Files.isDirectory(hotfolder)) {
             Files.createDirectory(hotfolder);
         }
-        Path file = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), "PPN123.purge");
+        Path file = Paths.get(hotfolder.toAbsolutePath().toString(), "PPN123.purge");
         try {
-            Assert.assertTrue(Helper.deleteRecord("PPN123", false));
+            Assert.assertTrue(Helper.deleteRecord("PPN123", false, hotfolder));
             Assert.assertTrue(Files.isRegularFile(file));
         } finally {
             if (Files.isRegularFile(file)) {

@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1131,7 +1132,7 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument)) {
+            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
             } else {
                 Messages.error("deleteRecord_failure");

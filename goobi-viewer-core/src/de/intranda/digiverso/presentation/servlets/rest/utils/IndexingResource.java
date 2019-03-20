@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.utils;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,7 +104,8 @@ public class IndexingResource {
                             ret.put("status", HttpServletResponse.SC_FORBIDDEN);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_failure_volumes_present", null));
                         }
-                        if (Helper.deleteRecord(params.getPi(), params.isCreateTraceDocument())) {
+                        if (Helper.deleteRecord(params.getPi(), params.isCreateTraceDocument(),
+                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                             ret.put("status", HttpServletResponse.SC_OK);
                             ret.put("message", ViewerResourceBundle.getTranslation("deleteRecord_success", null));
                         } else {
