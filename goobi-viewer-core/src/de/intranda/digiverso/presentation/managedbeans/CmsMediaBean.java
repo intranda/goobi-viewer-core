@@ -433,6 +433,12 @@ public class CmsMediaBean implements Serializable {
 	public boolean isText(CMSMediaItem item) {
 		return !item.getFileName().matches(getImageFilter());
 	}
+	
+	public void saveSelectedMediaItem( ) throws DAOException {
+		if(this.selectedMediaItem != null) {
+			saveMedia(this.selectedMediaItem.getValue());
+		}
+	}
 
 	public void saveMedia(CMSMediaItem media) throws DAOException {
 		if (media != null) {
@@ -553,7 +559,7 @@ public class CmsMediaBean implements Serializable {
 	}
 	
 	public void toggleSelectedMediaItem(TranslatedSelectable<CMSMediaItem> selectedMediaItem) {
-		if(this.selectedMediaItem == selectedMediaItem) {
+		if(this.selectedMediaItem != null && this.selectedMediaItem.equals(selectedMediaItem)) {
 			setSelectedMediaItem(null);
 		} else {			
 			setSelectedMediaItem(selectedMediaItem);

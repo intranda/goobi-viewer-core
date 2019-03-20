@@ -1739,9 +1739,20 @@ public class CmsBean implements Serializable {
 	}
 	
 	public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem) {
+		fillSelectedMediaHolder(mediaItem, false);
+	}
+	
+	public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
 		this.selectedMediaHolder.ifPresent(item -> {
 			if(mediaItem != null) {
 				item.setMediaItem(mediaItem.getValue());
+				if(saveMedia) {
+					try {
+						cmsMediaBean.saveMedia(mediaItem.getValue());
+					} catch (DAOException e) {
+						logger.error("Failed to save media item: {}", e.toString());
+					}
+				}
 			} else {
 				item.setMediaItem(null);
 			}

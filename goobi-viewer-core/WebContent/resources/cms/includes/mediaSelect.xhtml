@@ -72,26 +72,24 @@
                             </ui:fragment>
                         </h:panelGroup>
                     </div>
+	                <!-- ACTION -->
+	                <div class="admin-cms-media__select-action">
+	                        <h:commandLink 
+	                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
+	                            value="#{msg.button__abort}" 
+	                            class="btn btn--clean" 
+	                            role="button">
+	                            <f:ajax render="mediaSelectPanel" />
+	                        </h:commandLink>
+	                        <h:commandLink 
+	                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
+	                            value="#{msg.cms_selectMediaItem_agree}" 
+	                            class="btn btn--full"
+	                            role="button">
+	                        </h:commandLink>
+	                </div>
                 </h:form>
 
-                <!-- ACTION -->
-                <div class="admin-cms-media__select-action">
-                    <h:form>
-                        <h:commandLink 
-                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
-                            value="#{msg.button__abort}" 
-                            class="btn btn--clean" 
-                            role="button">
-                            <f:ajax render="mediaSelectPanel" />
-                        </h:commandLink>
-                        <h:commandLink 
-                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem)}" 
-                            value="#{msg.cms_selectMediaItem_agree}" 
-                            class="btn btn--full"
-                            role="button">
-                        </h:commandLink>
-                    </h:form>
-                </div>
             </div>
         </div>
     </div>
