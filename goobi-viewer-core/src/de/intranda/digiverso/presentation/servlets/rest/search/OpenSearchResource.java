@@ -28,6 +28,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -48,11 +49,13 @@ public class OpenSearchResource {
     public String getXml() {
         String xml = null;
         try {
-            String rootUrl =  ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-            String url = rootUrl+ "/resources/opensearch/opensearch.xml";
+            String rootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
+            String url = rootUrl + "/resources/opensearch/opensearch.xml";
             logger.trace(url);
             xml = Helper.getWebContentGET(url);
-            xml = xml.replace("{applicationUrl}", rootUrl);
+            xml = xml.replace("{name}", DataManager.getInstance().getConfiguration().getName())
+                    .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
+                    .replace("{applicationUrl}", rootUrl);
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -328,6 +328,12 @@
 				to the /themes folder, just above the folder named like the theme. -->
 			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-reference/goobi-viewer-theme-reference/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
+		
+		<!-- name: Goobi viewer instance name -->
+		<name>Goobi viewer</name>
+		
+        <!-- name: Goobi viewer instance description -->
+        <description>Goobi viewer desc</description>
 	</viewer>
 
 	<search>
