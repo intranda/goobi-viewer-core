@@ -57,14 +57,11 @@ public class OpenSearchResource {
                     .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
                     .replace("{applicationUrl}", rootUrl);
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (HTTPException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         return xml;
