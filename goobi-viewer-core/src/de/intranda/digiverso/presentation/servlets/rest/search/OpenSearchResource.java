@@ -15,13 +15,9 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.search;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,10 +28,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -59,7 +53,6 @@ public class OpenSearchResource {
             logger.trace(url);
             xml = Helper.getWebContentGET(url);
             xml = xml.replace("{applicationUrl}", rootUrl);
-            logger.trace(xml);
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
