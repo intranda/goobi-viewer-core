@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
+import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
 import de.intranda.digiverso.ocr.tei.convert.HtmlToTEIConvert;
 import de.intranda.digiverso.ocr.tei.header.Identifier;
 import de.intranda.digiverso.ocr.tei.header.Person;
@@ -71,6 +72,7 @@ import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.UncheckedPresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -337,18 +339,20 @@ public class ContentResource {
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
 
-            String text = getFulltext(pi, filename);
-            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
-            text = textConverter.convert(text);
-
-            TEIHeaderBuilder header = createTEIHeader(solrDoc);
-
-            TEIBuilder builder = new TEIBuilder();
-            try {
+        	try {
+	            String text = getFulltext(pi, filename);
+	            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+	            text = convert(textConverter, text, filename);
+	
+	            TEIHeaderBuilder header = createTEIHeader(solrDoc);
+	
+	            TEIBuilder builder = new TEIBuilder();
                 Document xmlDoc = builder.build(header, text);
                 return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
             } catch (JDOMException e) {
                 throw new ContentLibException("Unable to parse xml from alto file " + pi + ", " + filename, e);
+            } catch(UncheckedPresentationException e) {
+                throw new ContentLibException(e);
             }
 
         }
@@ -406,18 +410,20 @@ public class ContentResource {
                     TEIHeaderBuilder header = createTEIHeader(solrDoc);
                     HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
 
-                    List<String> pages = fulltexts.entrySet()
+                    try {
+                    	List<String> pages = fulltexts.entrySet()
                             .stream()
                             .sorted(Comparator.comparing(Map.Entry::getKey))
-                            .map(Map.Entry::getValue)
-                            .map(textConverter::convert)
+                            .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
                             .collect(Collectors.toList());
-
-                    try {
+                    
                         Document xmlDoc = builder.build(header, pages);
                         return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
                     } catch (JDOMException e) {
                         throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
+                    } catch(UncheckedPresentationException e) {
+                        throw new ContentLibException(e);
+
                     }
 
                 }
@@ -429,6 +435,14 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+    
+    private String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
+    	try {
+    		return converter.convert(input);
+    	} catch(Throwable e) {
+    		throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
+    	}
     }
 
     /**
