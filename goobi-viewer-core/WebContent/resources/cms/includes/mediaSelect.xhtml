@@ -72,24 +72,23 @@
                             </ui:fragment>
                         </h:panelGroup>
                     </div>
+                    
 	                <!-- ACTION -->
-	                <div class="admin-cms-media__select-action">
-	                        <h:commandLink 
-	                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
-	                            value="#{msg.button__abort}" 
-	                            class="btn btn--clean" 
-	                            role="button">
-	                            <f:ajax render="mediaSelectPanel" />
-	                        </h:commandLink>
-	                        <h:commandLink 
-	                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
-	                            value="#{msg.cms_selectMediaItem_agree}" 
-	                            class="btn btn--full"
-	                            role="button">
-	                        </h:commandLink>
-	                </div>
+                    <div class="admin-cms-media__select-action">
+                        <h:commandLink 
+                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
+                            value="#{msg.button__abort}" 
+                            class="btn btn--clean" 
+                            role="button">
+                            <f:ajax render="mediaSelectPanel" onevent="cmsJS.media.checkMediaSelectModal( false )" />
+                        </h:commandLink>
+                        <h:commandLink 
+                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
+                            value="#{msg.cms_selectMediaItem_agree}"
+                            class="btn btn--full" role="button">
+                        </h:commandLink>
+                    </div>
                 </h:form>
-
             </div>
         </div>
     </div>
@@ -106,11 +105,11 @@
 				mediaError : "#{msg.admin__media_upload_error}"
 			},
 			onUploadComplete : function() {
-				$( "#reloadButton" ).click();
+				$("#reloadButton").click();
 			},
 			forceGrid : true,
 			allowEdit : false,
-			isMediaSelectModal: true
+			isMediaSelectModal : true
 		};
 
 		viewerJS.clipboard.init( '[data-copy]' );
@@ -120,14 +119,13 @@
 		function reload( data ) {
 			cmsJS.media.onReload( data );
 			cmsJS.modules.onReload( data );
-			
-    		if ( !data || data.status == 'begin' ) {
+
+			if ( !data || data.status == 'begin' ) {
 				riot.mount( 'adminMediaUpload', adminMediaConfig );
-				
-    			if ( data ) {
-    				var alreadySelected = $( data.source ).prev().hasClass( 'in' );
-    				
-					$('.admin-cms-media__item-select-frame.in').removeClass('in');
+
+				if ( data ) {
+					var alreadySelected = $( data.source ).prev().hasClass( 'in' );
+					$( '.admin-cms-media__item-select-frame.in' ).removeClass( 'in' );
 
 					if ( !alreadySelected ) {
 						$( data.source ).prev().addClass( 'in' );
@@ -135,7 +133,7 @@
 				}
 			}
 		}
-	</script>
+    </script>
 </ui:composition>
 
 

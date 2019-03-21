@@ -37,6 +37,7 @@ var cmsJS = ( function( cms ) {
         /**
          * @description Method which initializes the medie module.
          * @method init
+         * @param {Object} config The config object.
          */
         init: function( config ) {
             if ( _debug ) {
@@ -52,19 +53,48 @@ var cmsJS = ( function( cms ) {
             this.initEventListeners();
             
             // check if media select modal is open
-            if ( _defaults.isMediaSelectModal ) {
-            	$( 'html' ).addClass( 'no-overflow' );
-            }
+            this.checkMediaSelectModal( _defaults.isMediaSelectModal );
         },
-        
-        onReload: function(data) {
-            if(data && data.status == "begin") {
+        /**
+         * @description Method to check if the media select modal exist.
+         * @method checkMediaSelectModal
+         * @param {Boolean} modal The status of the media select modal.
+         * */
+        checkMediaSelectModal: function( modal ) {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: checkMediaSelectModal' );
+        		console.log( '--> modal: ', modal );
+        	}
+        	
+        	if ( modal ) {
+        		$( 'html' ).addClass( 'no-overflow' );
+        	}
+        	else {
+        		$( 'html' ).removeClass( 'no-overflow' );            	
+        	}        	
+        },
+        /**
+         * @description Method to ...
+         * @method onReload
+         * @param {Object} data The ...
+         * */
+        onReload: function( data ) {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: onReload' );
+        		console.log( '--> data: ', data );
+        	}
+
+        	if ( data && data.status == 'begin' ) {
             	cms.media.removeEventListeners();
-            } else if(!data || data.status == "success") {
+            } 
+            else if ( !data || data.status == 'success' ) {
             	cms.media.initEventListeners();
             }
         },
-        
+        /**
+         * @description Method to initialize all events.
+         * @method initEventListeners
+         * */
         initEventListeners: function() {
             // select all media items
             $( '#selectAllMediaItems' ).on( 'change', function() {
@@ -192,7 +222,10 @@ var cmsJS = ( function( cms ) {
 				}
 			} );
         },
-        
+        /**
+         * @description Method to remove all events.
+         * @method removeEventListeners
+         * */
         removeEventListeners: function() {
             // select all media items
             $( '#selectAllMediaItems' ).off();
@@ -206,11 +239,8 @@ var cmsJS = ( function( cms ) {
 			// switch file view
 			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 
-
 			$( '[data-switch="list"]' ).off();
-			$( '[data-switch="grid"]' ).off();
-
-            
+			$( '[data-switch="grid"]' ).off();            
             $( '[data-action="edit"]' ).off();
 			
 			// enlarge file
@@ -218,8 +248,7 @@ var cmsJS = ( function( cms ) {
 			
 			// navigate through overlays			
 			$( '.admin-cms-media__file-next' ).off();
-			$( '.admin-cms-media__file-prev' ).off();
-			
+			$( '.admin-cms-media__file-prev' ).off();			
 			$( '.admin-cms-media__file' ).off( 'mouseover' ).off( 'mouseout' ).off( 'keydown' );	
 			$( '[data-action="cancel"]' ).off();
         }
