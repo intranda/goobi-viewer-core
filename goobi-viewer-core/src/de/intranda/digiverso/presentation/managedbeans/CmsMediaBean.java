@@ -267,6 +267,10 @@ public class CmsMediaBean implements Serializable {
 						logger.error("Failed to delete media file: " + e.getMessage());
 					}
 				}
+				if(this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item ) {
+					this.selectedMediaItem = null;
+				}
+				reloadMediaList(false);
 			} catch(RollbackException e) {				
 				if(e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
 					Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
@@ -277,10 +281,6 @@ public class CmsMediaBean implements Serializable {
 			}
 
 		}
-		if(this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item ) {
-			this.selectedMediaItem = null;
-		}
-		reloadMediaList(false);
 	}
 
 	public List<CMSMediaItem> getAllMedia() throws DAOException {
