@@ -10599,14 +10599,15 @@ img.cms-static-pages__page-language--complete {
 }
 .admin-cms-media__item-select-frame-checkmark {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0;
+  right: 0;
   width: 21px;
   height: 21px;
   line-height: 21px;
   text-align: center;
-  border-radius: 5px;
+  border-radius: 3px;
   background-color: #3365a9;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
 }
 .admin-cms-media__item-select-frame-checkmark .fa {
   font-size: 18px;
