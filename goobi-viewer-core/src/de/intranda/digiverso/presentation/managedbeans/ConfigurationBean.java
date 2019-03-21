@@ -84,6 +84,10 @@ public class ConfigurationBean implements Serializable {
     public String getContentServletUrl() {
         return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
     }
+    
+    public String getName() {
+        return DataManager.getInstance().getConfiguration().getName();
+    }
 
     /**
      * Access the height of the image Footer for OpenLayers. With apache commons it is not possible to read the xml root element, therefore this

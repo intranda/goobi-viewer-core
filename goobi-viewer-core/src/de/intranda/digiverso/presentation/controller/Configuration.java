@@ -1464,6 +1464,25 @@ public final class Configuration extends AbstractConfiguration {
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getName() {
+        return getLocalString("viewer.name", "Goobi viewer");
+    }
+    
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getDescription() {
+        return getLocalString("viewer.description", "Goobi viewer");
+    }
 
     /**
      * TagCloud auf der Startseite anzeigen lassen
