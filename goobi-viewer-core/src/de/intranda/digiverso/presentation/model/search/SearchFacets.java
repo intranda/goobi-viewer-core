@@ -112,37 +112,37 @@ public class SearchFacets {
      * @should return null if facet list is empty
      */
     String generateHierarchicalFacetFilterQuery(int advancedSearchGroupOperator) {
-        if (!currentFacets.isEmpty()) {
-            StringBuilder sbQuery = new StringBuilder();
-            int count = 0;
-            for (FacetItem facetItem : currentFacets) {
-                if (!facetItem.isHierarchial()) {
-                    continue;
-                }
-                if (count > 0) {
-                    if (advancedSearchGroupOperator == 1) {
-                        sbQuery.append(" OR ");
-                    } else {
-                        sbQuery.append(" AND ");
-                    }
-                }
-                String field = SearchHelper.facetifyField(facetItem.getField());
-                sbQuery.append('(')
-                        .append(field)
-                        .append(':')
-                        .append("\"" + facetItem.getValue() + "\"")
-                        .append(" OR ")
-                        .append(field)
-                        .append(':')
-                        .append(facetItem.getValue())
-                        .append(".*)");
-                count++;
+        if (currentFacets.isEmpty()) {
+            return null;
+        }
+        
+        StringBuilder sbQuery = new StringBuilder();
+        int count = 0;
+        for (FacetItem facetItem : currentFacets) {
+            if (!facetItem.isHierarchial()) {
+                continue;
             }
-
-            return sbQuery.toString();
+            if (count > 0) {
+                if (advancedSearchGroupOperator == 1) {
+                    sbQuery.append(" OR ");
+                } else {
+                    sbQuery.append(" AND ");
+                }
+            }
+            String field = SearchHelper.facetifyField(facetItem.getField());
+            sbQuery.append('(')
+                    .append(field)
+                    .append(':')
+                    .append("\"" + facetItem.getValue() + "\"")
+                    .append(" OR ")
+                    .append(field)
+                    .append(':')
+                    .append(facetItem.getValue())
+                    .append(".*)");
+            count++;
         }
 
-        return null;
+        return sbQuery.toString();
     }
 
     /**
@@ -156,33 +156,29 @@ public class SearchFacets {
      * @should skip subelement fields
      */
     String generateFacetFilterQuery(boolean includeRangeFacets) {
-        if (!currentFacets.isEmpty()) {
-            StringBuilder sbQuery = new StringBuilder();
-            //            if (sbQuery.length() > 0) {
-            //                sbQuery.insert(0, '(');
-            //                sbQuery.append(')');
-            //            }
-            for (FacetItem facetItem : currentFacets) {
-                if (facetItem.isHierarchial()) {
-                    continue;
-                }
-                if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
-                    continue;
-                }
-                if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
-                    continue;
-                }
-                if (sbQuery.length() > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append(facetItem.getQueryEscapedLink());
-                logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
-            }
-
-            return sbQuery.toString();
+        if (currentFacets.isEmpty()) {
+            return null;
         }
 
-        return null;
+        StringBuilder sbQuery = new StringBuilder();
+        for (FacetItem facetItem : currentFacets) {
+            if (facetItem.isHierarchial()) {
+                continue;
+            }
+            if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
+                continue;
+            }
+            if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
+                continue;
+            }
+            if (sbQuery.length() > 0) {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append(facetItem.getQueryEscapedLink());
+            logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
+        }
+
+        return sbQuery.toString();
     }
 
     /**
