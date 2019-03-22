@@ -8323,10 +8323,6 @@ div[id*="-Modal"] .email-form .form-group {
 .admin button.btn:active:focus {
   color: #1a1a1a;
 }
-.admin button.btn[data-toggle="helptext"]:focus,
-.admin button.btn[data-toggle="helptext"]:active:focus {
-  color: #468847;
-}
 .admin__sidebar {
   position: fixed;
   top: 0;
@@ -8766,14 +8762,6 @@ div[id*="-Modal"] .email-form .form-group {
       flex-basis: 75%;
   padding-left: 10px;
 }
-.cms-module__option-control.in input,
-.cms-module__option-control.in .custom-control--select,
-.cms-module__option-control.in .cms-module__option-control-checkbox,
-.cms-module__option-control.in .admin-cms-media__file,
-.cms-module__option-control.in .mce-tinymce {
-  outline: 1px solid #468847;
-  outline-offset: 2px;
-}
 .cms-module__option-control.in input[type="checkbox"] + .cms-module__option-control-helptext {
   display: inline;
   padding: 0;
@@ -8835,9 +8823,6 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   background-color: #fff;
 }
-.cms-module__option-dropdown.in {
-  border-color: #468847;
-}
 .cms-module__option-dropdown-trigger {
   position: relative;
   height: 32px;
@@ -8894,16 +8879,13 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext {
   display: none;
   padding-top: 5px;
-  color: #468847;
-}
-.cms-module__option-control-helptext.in {
-  display: inline-block;
-}
-.cms-module__option-control-helptext.static {
-  display: inline;
   font-size: 0.75rem;
   font-style: italic;
   color: #666;
+}
+.cms-module__option-control-helptext.in,
+.cms-module__option-control-helptext.static {
+  display: inline-block;
 }
 .cms-module__option-help {
   -ms-flex-preferred-size: 5%;
@@ -8914,9 +8896,6 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
   padding: 7px 0;
   text-align: right;
-}
-.cms-module__option-help button.in {
-  color: #468847;
 }
 .cms-module__option-help.static {
   display: none;

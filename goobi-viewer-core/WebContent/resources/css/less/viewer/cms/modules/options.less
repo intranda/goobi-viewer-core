@@ -37,14 +37,6 @@
 		flex-basis: 75%;
 		padding-left: 10px;
 	    &.in {
-	    	input,
-	    	.custom-control--select,
-	    	.cms-module__option-control-checkbox,
-	    	.admin-cms-media__file,
-	    	.mce-tinymce {
-	    		outline: 1px solid @green;
-				outline-offset: 2px;
-	    	}
 	    	input[type="checkbox"] + .cms-module__option-control-helptext {
 	    		display: inline;
 	    		padding: 0;
@@ -105,9 +97,7 @@
 	    color: @black;
 		border: 1px solid @middlegray;
 	    background-color: @white;
-	    &.in {
-	    	border-color: @green;
-	    }
+	    &.in {}
 		&-trigger {
 			position: relative;
 			height: 32px;
@@ -163,15 +153,12 @@
 	&__option-control-helptext {
 	    display: none;
 	    padding-top: 5px;
-	    color: @green;
-	    &.in {
-	    	display: inline-block;
-	    }
+	    font-size: 0.75rem;
+	    font-style: italic;
+	    color: @inlineStatic;
+	    &.in,
 	    &.static {
-	    	display: inline;
-	    	font-size: 0.75rem;
-	    	font-style: italic;
-	    	color: @inlineStatic;
+	    	display: inline-block;
 	    }
 	}
 	&__option-help {
@@ -181,9 +168,7 @@
 			width: 100%;
 		    padding: 7px 0;
 		    text-align: right;
-		    &.in {
-		    	color: @green;
-		    }
+		    &.in {}
 		}
 		&.static {
 	    	display: none;
