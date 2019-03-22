@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.servlets;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.SocketException;
-import java.util.Collections;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -30,10 +29,10 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.digiverso.presentation.servlets.oembed.RichOEmbedResponse;
 
 /**
  * Servlet for original content file download.
@@ -89,45 +88,53 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         }
 
         // Check access conditions, if an actual document with a PI is involved
-        boolean access = false;
-//        try {
-//            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path))
-//                    .containsValue(Boolean.FALSE);
-            if (!access) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
+        boolean access = true;
+        //        try {
+        //            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path))
+        //                    .containsValue(Boolean.FALSE);
+        if (!access) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+            return;
+        }
+
+        try {
+            String ret = "TODO";
+            switch (format) {
+                case "json":
+                    response.setContentType("application/json");
+                    break;
+                case "xml":
+                    response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "XML is not yet supported");
+                    return;
             }
 
-            try {
-                String ret = "TODO";
-                switch (format) {
-                    case "json":
-                        response.setContentType("application/json");
-                        break;
-                    case "xml":
-                        response.setContentType("text/xml");
-                        break;
-                }
-                response.getWriter().write(ret);
-            } catch (ClientAbortException | SocketException e) {
-                logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
+            RichOEmbedResponse oembed = new RichOEmbedResponse();
+            oembed.setType("rich");
+            oembed.setHtml("<div></div>");
 
-//        } catch (IndexUnreachableException e) {
-//            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-//            return;
-//        } catch (DAOException e) {
-//            logger.debug("DAOException thrown here: {}", e.getMessage());
-//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-//            return;
-//        } catch (PresentationException e) {
-//            logger.debug("PresentationException thrown here: {}", e.getMessage());
-//            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-//            return;
-//        }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(Include.NON_NULL);
+            ret = mapper.writeValueAsString(oembed);
+            response.getWriter().write(ret);
+        } catch (ClientAbortException | SocketException e) {
+            logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        //        } catch (IndexUnreachableException e) {
+        //            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        //            return;
+        //        } catch (DAOException e) {
+        //            logger.debug("DAOException thrown here: {}", e.getMessage());
+        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        //            return;
+        //        } catch (PresentationException e) {
+        //            logger.debug("PresentationException thrown here: {}", e.getMessage());
+        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        //            return;
+        //        }
 
     }
 }
