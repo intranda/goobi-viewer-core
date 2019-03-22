@@ -60,6 +60,8 @@ public class SolrQueryValidator implements Validator<String> {
             if (hits == 0) {
                 String message = Helper.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
                 Messages.warn(component.getClientId(), message);
+            } else {
+                Messages.info(component.getClientId(), "");
             }
 
             return;
