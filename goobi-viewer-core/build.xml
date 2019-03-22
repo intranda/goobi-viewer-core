@@ -83,7 +83,7 @@
 		<copy tofile="${dir.build.classes}/contentServerConfig.xml" file="resources/build/config_contentServer.default.xml" overwrite="true" />
 
 		<copy todir="${dir.build}">
-			<fileset dir="WebContent" includes="*.xhtml">
+			<fileset dir="WebContent" includes="*.xhtml,*.xml">
 				<patternset>
 					<include name="*.*" />
 					<include name="META-INF/*.*" />
@@ -94,6 +94,7 @@
 					<include name="resources/images/**/*.*" />
 					<include name="resources/css/**/*.*" />
 					<include name="resources/fonts/**/*.*" />
+					<include name="resources/opensearch/**/*.*" />
 				</patternset>
 			</fileset>
 		</copy>

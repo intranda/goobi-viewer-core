@@ -883,6 +883,26 @@ public class ConfigurationTest {
     public void getTheme_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("mainTheme_value", DataManager.getInstance().getConfiguration().getTheme());
     }
+    
+
+    /**
+     * @see Configuration#getName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("Goobi viewer TEST", DataManager.getInstance().getConfiguration().getName());
+    }
+    
+
+    /**
+     * @see Configuration#getDescription()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDescription_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("Goobi viewer TEST desc", DataManager.getInstance().getConfiguration().getDescription());
+    }
 
     /**
      * @see Configuration#getThumbnailsHeight()

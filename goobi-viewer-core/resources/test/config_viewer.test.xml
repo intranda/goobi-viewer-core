@@ -318,6 +318,12 @@
 			discriminatorField="discriminatorField_value" autoSwitch="true"
 			addFilterQuery="true" filterQueryVisible="true">
 		</theme>
+		
+        <!-- name: Goobi viewer instance name -->
+        <name>Goobi viewer TEST</name>
+        
+        <!-- name: Goobi viewer instance description -->
+        <description>Goobi viewer TEST desc</description>
 	</viewer>
 
 	<search>

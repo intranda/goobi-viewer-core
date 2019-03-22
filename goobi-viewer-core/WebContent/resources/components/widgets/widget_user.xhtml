@@ -14,7 +14,7 @@
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <!-- user interactions -->
                 <h:panelGroup rendered="#{activeDocumentBean.recordLoaded}">
-                    <div id="widgetUserInteractions" class="widget #{cc.attrs.widget.cssClass}">
+                    <div id="widgetUserInteractions" class="widget widget-user-interactions #{cc.attrs.widget.cssClass}">
                         <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                             <h3>#{msg.menuUser_workInteractions}</h3>
 
@@ -82,37 +82,53 @@
                                             #{msg.reIndexRecord}
                                         </h:commandLink>
                                     </li>
-                                </h:panelGroup>
-                                
-                                <!-- DELETE RECORD -->
-                                <h:panelGroup rendered="#{userBean.admin}">
-                                    <br />
-                                    <li>
-                                        <!-- No URNs -->
-                                        <h:commandLink
-                                            rendered="#{!activeDocumentBean.viewManager.hasUrns}"
-                                            onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" 
-                                            action="#{activeDocumentBean.deleteRecordAction(false)}">
-                                            #{msg.deleteRecord}
-                                        </h:commandLink>
-                                        <!-- Yes, URNs! -->
-                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.hasUrns}">
+                                </h:panelGroup>                                
+                            </ul>
+
+                            <!-- DELETE RECORD -->
+                            <ui:fragment rendered="#{userBean.admin}">
+                                <div class="widget-user-interactions__delete-record">
+                                    <h4>#{msg.deleteRecord}</h4>
+                                    
+                                    <!-- HAS NO URNS -->
+                                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}">
+                                        <div class="widget-user-interactions__delete-record-action">
+                                            <h:commandLink
+                                                styleClass="btn btn--clean"
+                                                role="button"
+                                                onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
+                                                action="#{activeDocumentBean.deleteRecordAction(false)}">
+                                                #{msg.button__delete}
+                                            </h:commandLink>
+                                        </div>
+                                    </ui:fragment>
+                                    
+                                    <!-- HAS URNS -->
+                                    <ui:fragment rendered="#{activeDocumentBean.viewManager.hasUrns}">
+                                        <div class="custom-control custom-control--select">
                                             <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
                                                 <f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}" />
                                                 <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
                                                 <f:ajax render="@form" />
                                             </h:selectOneMenu>
-                                            <h:commandLink
-                                                onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" 
-                                                action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}"
-                                                disabled="#{activeDocumentBean.deleteRecordKeepTrace == null}">
-                                                #{msg.deleteRecord}
-                                            </h:commandLink>
+                                        </div>
+                                        
+                                        <!-- ACTION -->
+                                        <ui:fragment rendered="#{activeDocumentBean.deleteRecordKeepTrace != null}">
+                                            <div class="widget-user-interactions__delete-record-action">
+                                                <h:commandLink
+                                                    styleClass="btn btn--clean"
+                                                    role="button" 
+                                                    onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
+                                                    action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}">
+                                                    #{msg.button__delete}
+                                                </h:commandLink>
+                                            </div>
                                         </ui:fragment>
-                                    </li>
-                                </h:panelGroup>
-                            </ul>
+                                    </ui:fragment>
+                                </div>
+                            </ui:fragment>
                         </h:form>
                     </div>
                 </h:panelGroup>
