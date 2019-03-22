@@ -1734,6 +1734,8 @@ public class CmsBean implements Serializable {
 			cmsMediaBean.setFilenameFilter(filter);
 			if(contentItem.hasMediaItem()) {				
 				cmsMediaBean.setSelectedMediaItem(contentItem.getMediaItemWrapper());
+			} else {
+				cmsMediaBean.setSelectedMediaItem(null);
 			}
 		});
 	}

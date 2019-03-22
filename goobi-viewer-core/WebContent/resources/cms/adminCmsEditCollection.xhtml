@@ -117,13 +117,14 @@
                                             class="img-responsive viewer-thumbnail" alt="" />
                                     </ui:fragment>
                                 </div>
-    
-                                <!-- CHANGE IMAGE -->
-                                <div class="cms-edit-collection__text-image-change">
+
+                                
+				                <!-- ACTIONS -->
+				                <div class="cms-module__actions">
 				                    <h:commandLink 
 				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
-				                        value="#{msg.cms_selectMedia}" 
-				                        class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+				                        class="btn #{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
 				                        role="button">
 				                        <f:ajax execute="@form" render="mediaSelectPanel" />
 				                    </h:commandLink>
@@ -135,7 +136,8 @@
 				                        role="button">
 				                        <f:ajax render="mediaGroup" />
 				                    </h:commandLink>                    
-                                </div>
+				                </div>
+                                
 							  </h:panelGroup>					
                             </div>
                         </div>
