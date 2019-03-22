@@ -57,12 +57,8 @@ public class SolrQueryValidator implements Validator<String> {
             QueryResponse resp = DataManager.getInstance().getSearchIndex().testQuery(value);
             long hits = resp.getResults().getNumFound();
             logger.trace("{} hits", hits);
-            String message = Helper.getTranslation("cms_itemSolrQuery_numhits", null).replace("{0}", String.valueOf(hits));
-            //            FacesMessage msg = new FacesMessage(message, "");
-            //            msg.setSeverity(hits > 0 ? FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_WARN);
-            if (hits > 0) {
-                Messages.info(component.getClientId(), message);
-            } else {
+            if (hits == 0) {
+                String message = Helper.getTranslation("inline_help__solr_query_warning", null).replace("{0}", String.valueOf(hits));
                 Messages.warn(component.getClientId(), message);
             }
 
@@ -70,7 +66,7 @@ public class SolrQueryValidator implements Validator<String> {
         } catch (SolrServerException | RemoteSolrException e) {
             if (SolrSearchIndex.isQuerySyntaxError(e)) {
                 logger.debug(e.getMessage());
-                String message = Helper.getTranslation("cms_itemSolrQuery_invalid", null);
+                String message = Helper.getTranslation("inline_help__solr_query_danger", null);
                 FacesMessage msg = new FacesMessage(message, "");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
