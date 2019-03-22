@@ -9271,9 +9271,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__file-image {
   position: relative;
-  width: 100px;
-  min-width: 100px;
-  height: 100px;
+  width: 140px;
+  min-width: 140px;
+  height: 140px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -9389,8 +9389,8 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__files.grid {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: (minmax(100px, 100px))[auto-fit];
-      grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
+  -ms-grid-columns: (minmax(140px, 140px))[auto-fit];
+      grid-template-columns: repeat(auto-fit, minmax(140px, 140px));
   grid-gap: 15px;
   -ms-flex-pack: justify;
       justify-content: space-between;
@@ -10470,9 +10470,10 @@ img.cms-static-pages__page-language--complete {
 }
 .admin-cms-media__select-files-files {
   width: 70%;
+  padding: 5px;
 }
 .admin-cms-media__select-files-files .admin-cms-media__files {
-  padding-right: 15px;
+  padding-right: 10px;
   padding-left: 0 !important;
 }
 .admin-cms-media__select-files-selected {
@@ -10557,8 +10558,7 @@ img.cms-static-pages__page-language--complete {
 }
 .admin-cms-media__item-wrapper {
   position: relative;
-  max-height: 100px;
-  overflow: hidden;
+  max-height: 140px;
 }
 .admin-cms-media__item-select-frame,
 .admin-cms-media__item-select {
@@ -10570,7 +10570,8 @@ img.cms-static-pages__page-language--complete {
 }
 .admin-cms-media__item-select-frame {
   display: none;
-  border: 3px solid #3365a9;
+  border: 1px solid #3365a9;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
   z-index: 2040;
 }
 .admin-cms-media__item-select-frame.in {
@@ -10578,13 +10579,12 @@ img.cms-static-pages__page-language--complete {
 }
 .admin-cms-media__item-select-frame-checkmark {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -8px;
+  right: -8px;
   width: 21px;
   height: 21px;
   line-height: 21px;
   text-align: center;
-  border-radius: 3px;
   background-color: #3365a9;
   box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
 }
