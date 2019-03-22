@@ -24,7 +24,7 @@
 var cmsJS = ( function( cms ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     
     cms.modules = {
         /**
@@ -37,6 +37,60 @@ var cmsJS = ( function( cms ) {
                 console.log( '##############################' );
             }
             this.initEventListeners();
+            this.cleanUp();
+            
+            // jsj ajax event
+            jsf.ajax.addOnEvent( function( data ) {
+				var ajaxstatus = data.status;
+
+				switch (ajaxstatus) {
+					case 'begin':
+						break;
+					case 'complete':
+						break;
+					case 'success':
+						cmsJS.modules.setValidationStatus();
+						
+						break;
+				}
+			});
+        },
+        /**
+		 * @description Method to set the validation status.
+		 * @method setValidationStatus
+		 */
+        setValidationStatus: function() {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: setValidationStatus' );
+        	}
+        	
+        	var message = $( '.cms-module__option-message' ); 
+
+        	if ( message.hasClass( 'success' ) ) {
+        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'success' );
+        		message.parents( '.cms-module__option-message' ).next().addClass( 'success' );
+        	}
+        	else if ( message.hasClass( 'warning' ) ) {
+        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'warning' );
+        		message.parents( '.cms-module__option-message' ).next().addClass( 'warning' );
+        	}
+        	else if ( message.hasClass( 'danger' ) ) {
+        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'danger' );
+        		message.parents( '.cms-module__option-message' ).next().addClass( 'danger' );
+        	}
+        },
+        /**
+         * @description Method to clean up modules.
+         * @method cleanUp
+         */
+        cleanUp: function() {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: cleanUp' );
+        	}
+        	
+        	if ( $( '.cms-module__option-message ul' ).length > 0 ) {
+        		$( '.cms-module__option-message ul' ).remove();
+        	}
         },
         
         onReload: function(data) {

@@ -23,6 +23,11 @@
             <div class="cms-module__option-control">
                 <div class="cms-module__option-message">
                     <h:messages for="#{cc.attrs.id}:input" errorClass="cms-module__option-message danger" />
+                    
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
                 </div>
                 <h:inputText id="input" value="#{cc.attrs.field}" styleClass="form-control" />
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>

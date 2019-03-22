@@ -19,6 +19,11 @@
                     <h:panelGroup id="solrQueryInputGroup">
                         <div class="cms-module__option-message">
                             <h:messages for="solrQueryInput" infoClass="cms-module__option-message success" warnClass="cms-module__option-message warning" errorClass="cms-module__option-message danger" />
+                            
+                            <div class="cms-module__option-message-mark">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                                <i class="fa fa-exclamation" aria-hidden="true"></i>
+                            </div>                            
                         </div>
                         <h:inputText id="solrQueryInput" value="#{contentItem.solrQuery}" styleClass="form-control">
                             <f:validator validatorId="solrQueryValidator" for="solrQueryInput" />

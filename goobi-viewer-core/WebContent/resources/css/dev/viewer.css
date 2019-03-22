@@ -15,6 +15,7 @@
 /* MESSAGE COLORS */
 /* LABELS */
 /* INLINE HELP */
+/* VALIDATION */
 /* BUTTON COLORS */
 /* COLORS STATISTICS */
 /* COLORS NER */
@@ -8772,28 +8773,16 @@ div[id*="-Modal"] .email-form .form-group {
   resize: vertical;
 }
 .cms-module__option-message {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  height: calc(100% - 2px);
-  max-height: 32px;
-  text-align: right;
-  background-color: #fff;
+  position: relative;
 }
 .cms-module__option-message.success {
-  color: #155724;
-  border-color: #ABD9B5;
-  background-color: #d4edda;
+  color: #087f0d;
 }
 .cms-module__option-message.warning {
-  color: #856404;
-  border-color: #ffeeba;
-  background-color: #fff3cd;
+  color: #ff7e51;
 }
 .cms-module__option-message.danger {
-  color: #721c24;
-  border-color: #E3ABB2;
-  background-color: #f8d7da;
+  color: #fe0900;
 }
 .cms-module__option-message ul {
   margin: 0;
@@ -8801,13 +8790,49 @@ div[id*="-Modal"] .email-form .form-group {
   list-style: none;
 }
 .cms-module__option-message li {
-  position: relative;
-  width: 100%;
-  min-height: 30px;
-  line-height: 28px;
-  padding: 0 15px;
-  border-radius: 15px;
-  border: 1px solid;
+  padding: 7px 5px 1px 0;
+}
+.cms-module__option-message + .form-control.success {
+  border-color: #087f0d;
+}
+.cms-module__option-message + .form-control.warning {
+  border-color: #ff7e51;
+}
+.cms-module__option-message + .form-control.danger {
+  border-color: #fe0900;
+}
+.cms-module__option-message-mark {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 0.7rem;
+  text-align: center;
+  border-radius: 50%;
+  color: #fff;
+}
+.cms-module__option-message-mark.success {
+  background-color: #087f0d;
+}
+.cms-module__option-message-mark.success .fa-check {
+  display: inline-block;
+}
+.cms-module__option-message-mark.warning {
+  background-color: #ff7e51;
+}
+.cms-module__option-message-mark.warning .fa-check {
+  display: inline-block;
+}
+.cms-module__option-message-mark.danger {
+  background-color: #fe0900;
+}
+.cms-module__option-message-mark.danger .fa-exclamation {
+  display: inline-block;
+}
+.cms-module__option-message-mark .fa {
+  display: none;
 }
 .cms-module__option-control-checkbox {
   display: inline-block;

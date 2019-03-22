@@ -27,9 +27,6 @@
                 </h:form>
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
-                    <!-- AJAX LOADER -->
-                    <div id="AJAXLoader"></div>
-
                     <h2 class="admin__content-inner-title">#{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{cmsBean.selectedPage.template.name}</h2>
 
                     <div class="admin__content-inner-content">

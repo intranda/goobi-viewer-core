@@ -49,39 +49,65 @@
 	    }
 	}
 	&__option-message {
-		position: absolute;
-	    top: 1px;
-	    right: 1px;
-	    height: calc(~"100% - 2px");
-	    max-height: 32px;
-	    text-align: right;
-	    background-color: @white;
+		position: relative;
 	    &.success {
-	    	color: @btnSuccess;
-	    	border-color: @btnSuccessBorder;
-	    	background-color: @btnSuccessBgc;
+	    	color: @validSuccess;
 	    }
 	    &.warning {
-	    	color: @btnWarning;
-	    	border-color: @btnWarningBorder;
-	    	background-color: @btnWarningBgc;	    	
+	    	color: @validWarning;	    	
 	    }
 	    &.danger {
-	    	color: @btnDanger;
-	    	border-color: @btnDangerBorder;
-	    	background-color: @btnDangerBgc;
+	    	color: @validDanger;
 	    }
 		ul {
 			.mx-list-reset;
 		}
 		li {
-			position: relative;
-			width: 100%;
-			min-height: 30px;
-			line-height: 28px;
-			padding: 0 15px;
-			border-radius: 15px;
-			border: 1px solid;
+			padding: 7px 5px 1px 0;
+		}
+		& + .form-control {
+			&.success {
+		    	border-color: @validSuccess;
+		    }
+		    &.warning {
+		    	border-color: @validWarning;	    	
+		    }
+		    &.danger {
+		    	border-color: @validDanger;
+		    }
+		}
+	}
+	&__option-message-mark {
+		position: absolute;
+		right: -8px;
+		bottom: -8px;
+		width: 16px;
+		height: 16px;
+		line-height: 16px;
+		font-size: 0.7rem;
+		text-align: center;
+		border-radius: 50%;
+		color: @white;
+		&.success {
+		    background-color: @validSuccess;
+		    .fa-check {
+		    	display: inline-block;
+		    }
+		}
+		&.warning {
+			background-color: @validWarning;
+		    .fa-check {
+		    	display: inline-block;
+		    }
+		}
+		&.danger {
+			background-color: @validDanger;
+		    .fa-exclamation {
+		    	display: inline-block;
+		    }
+		}
+		.fa {
+			display: none;
 		}
 	}
 	&__option-control-checkbox {
