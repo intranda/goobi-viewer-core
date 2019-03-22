@@ -71,8 +71,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (pathInfo == null) {
             return false;
         }
+        //        logger.trace("pathInfo: {}", pathInfo);
         if (pathInfo.contains(SitemapResource.RESOURCE_PATH) || pathInfo.contains(SearchHitsNotificationResource.RESOURCE_PATH + "/sendnotifications")
-                || pathInfo.contains(IndexingResource.RESOURCE_PATH)) {
+                || pathInfo.startsWith(IndexingResource.RESOURCE_PATH)) {
             if (token == null) {
                 logger.trace("No token");
                 return false;
