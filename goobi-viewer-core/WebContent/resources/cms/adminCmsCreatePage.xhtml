@@ -197,10 +197,40 @@
                                                                 label="#{msg.cms_page_url_parameters}:" help="#{msg.cms_page_url_parameters_help}"
                                                                 onclick="cmsJS.createPage.disablePreview();" />
                                                             <!-- related PI -->
-                                                            <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:"
-                                                                help="#{msg.cms_page_related_pi_help}">
-                                                                <f:validator validatorId="relatedPiValidator" for="inputField" />
-                                                            </cmsComponent:cms_inputText>
+<!--                                                             <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:" -->
+<!--                                                                 help="#{msg.cms_page_related_pi_help}"> -->
+<!--                                                                 <f:validator validatorId="relatedPiValidator" for="inputField" /> -->
+
+<!--                                                             </cmsComponent:cms_inputText> -->
+        <div class="cms-module__option-group">
+            <div class="cms-module__option-label">
+                <label for="relatedPI:input">#{msg.cms_page_related_pi}:</label>
+            </div>
+            <div class="cms-module__option-control">
+                <h:panelGroup id="relatedPiInputGroup">
+                <div class="cms-module__option-message">
+                    <h:messages for="relatedPiInput" errorClass="cms-module__option-message danger" />
+                    
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
+                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
+                    <f:ajax event="blur" render="relatedPiInputGroup" />
+                </h:inputText>
+                <span class="cms-module__option-control-helptext">#{msg.cms_page_related_pi_help}</span>
+                </h:panelGroup>
+            </div>
+            <div class="cms-module__option-help">
+                <ui:fragment rendered="#{cc.attrs.help != ''}">
+                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                </ui:fragment>
+            </div>
+        </div>
                                                             <!-- subtheme discriminator field -->
                                                             <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
                                                                 label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"

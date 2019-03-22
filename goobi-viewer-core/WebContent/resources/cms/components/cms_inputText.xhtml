@@ -29,7 +29,9 @@
                         <i class="fa fa-exclamation" aria-hidden="true"></i>
                     </div>
                 </div>
-                <h:inputText id="input" value="#{cc.attrs.field}" styleClass="form-control" />
+                <h:inputText id="input" value="#{cc.attrs.field}" styleClass="form-control">
+<!--                                                                                  <f:ajax event="blur" render="input" /> -->
+                </h:inputText>
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">
