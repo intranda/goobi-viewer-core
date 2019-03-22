@@ -35,6 +35,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
@@ -65,6 +66,7 @@ public class RelatedPIValidator extends PIValidator {
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
             }
+            Messages.info(component.getClientId(), "");
         } catch (PresentationException e) {
             logger.error(e.getMessage());
             FacesMessage msg = new FacesMessage(e.getMessage(), "");
