@@ -31,6 +31,7 @@
             <div class="cms-module__option-control">
                 <div class="custom-control custom-control--select">
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == ''}">
+                        <h:messages for="input1" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
                         <h:selectOneMenu 
                             id="input1" 
                             styleClass="form-control" 
@@ -47,6 +48,7 @@
                         </h:selectOneMenu>
                     </ui:fragment>
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue != '' or cc.attrs.defaultItemLabel != ''}">
+                        <h:messages for="input2" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
                         <h:selectOneMenu 
                             id="input2" 
                             styleClass="form-control" 
