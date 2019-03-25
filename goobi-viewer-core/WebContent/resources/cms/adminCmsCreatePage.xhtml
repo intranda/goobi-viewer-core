@@ -202,58 +202,58 @@
 <!--                                                                 <f:validator validatorId="relatedPiValidator" for="inputField" /> -->
 
 <!--                                                             </cmsComponent:cms_inputText> -->
-        <div class="cms-module__option-group">
-            <div class="cms-module__option-label">
-                <label for="relatedPI:input">#{msg.cms_page_related_pi}:</label>
-            </div>
-            <div class="cms-module__option-control">
-                <h:panelGroup id="relatedPiInputGroup">
-                <div class="cms-module__option-message">
-                    <h:messages for="relatedPiInput" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
-                    
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    </div>
-                </div>
-                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
-                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
-                    <f:ajax event="blur" render="relatedPiInputGroup" />
-                </h:inputText>
-                <span class="cms-module__option-control-helptext">#{msg.cms_page_related_pi_help}</span>
-                </h:panelGroup>
-            </div>
-            <div class="cms-module__option-help">
-                <ui:fragment rendered="#{cc.attrs.help != ''}">
-                    <button type="button" class="btn btn--clean" data-toggle="helptext">
-                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                    </button>
-                </ui:fragment>
-            </div>
-        </div>
-                                                            <!-- subtheme discriminator field -->
-                                                            <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
-                                                                label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
-                                                                options="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" defaultItemValue="#{null}"
-                                                                defaultItemLabel="-" disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
-                                                                required="#{!userBean.admin and configurationBean.subthemeDiscriminatorFieldSet}"
-                                                                requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}" />
-                                                            <!-- parent page for breadcrumbs -->
-                                                            <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
-                                                                label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"
-                                                                options="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" item="availablePage"
-                                                                itemValue="#{availablePage.id}" itemLabel="#{availablePage.title}" defaultItemValue=""
-                                                                defaultItemLabel="#{msg.index}" />
-                                                        </div>
-                                                    </div>
-                                                </h:panelGroup>
-
-                                                <!-- SIDEBAR EDITOR TAB -->
-                                                <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+								        <div class="cms-module__option-group">
+								            <div class="cms-module__option-label">
+								                <label for="relatedPI:input">#{msg.cms_page_related_pi}:</label>
+								            </div>
+								            <div class="cms-module__option-control">
+								                <h:panelGroup id="relatedPiInputGroup">
+								                <div class="cms-module__option-message">
+								                    <h:messages for="relatedPiInput" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
+								                    
+								                    <div class="cms-module__option-message-mark">
+								                        <i class="fa fa-check" aria-hidden="true"></i>
+								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+								                    </div>
+								                </div>
+								                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
+								                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
+								                    <f:ajax event="blur" render="relatedPiInputGroup" />
+								                </h:inputText>
+								                <span class="cms-module__option-control-helptext">#{msg.cms_page_related_pi_help}</span>
+								                </h:panelGroup>
+								            </div>
+								            <div class="cms-module__option-help">
+								                <ui:fragment rendered="#{cc.attrs.help != ''}">
+								                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+								                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+								                    </button>
+								                </ui:fragment>
+								            </div>
+								        </div>
+									       <!-- subtheme discriminator field -->
+									       <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
+									           label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
+									           options="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" defaultItemValue="#{null}"
+									           defaultItemLabel="-" disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
+									           required="#{!userBean.user.hasPriviledgeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+									           requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}" />
+									       <!-- parent page for breadcrumbs -->
+									       <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
+									           label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"
+									           options="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" item="availablePage"
+									           itemValue="#{availablePage.id}" itemLabel="#{availablePage.title}" defaultItemValue=""
+									           defaultItemLabel="#{msg.index}" />
+								        </div>
+								                         </div>
+								                     </h:panelGroup>
+								
+								                     <!-- SIDEBAR EDITOR TAB -->
+								                     <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
+								                 </div>
+								             </div>
+								         </div>
+								     </div>
 
                                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
                                     <!-- METADATA WRAPPER -->
