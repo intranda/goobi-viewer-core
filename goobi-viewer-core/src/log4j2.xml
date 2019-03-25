@@ -14,36 +14,14 @@
 	</Appenders>
 	
 	<Loggers>
-		<Logger name="de.intranda" level="TRACE" additivity="true" />
+		<Logger name="de.intranda" level="INFO" additivity="true" />
+		<Logger name="de.intranda.digiverso.presentation" level="TRACE" additivity="true" />
 		<Logger name="org.goobi.viewer" level="DEBUG" additivity="true" />
 		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
 		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
 		<Logger name="de.unigoettingen" level="DEBUG" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.imagelib"
-			level="INFO" additivity="true" />
-		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetErrorReportAction"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetImageAction"
-			level="INFO" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction"
-			level="DEBUG" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.JspOnlyAction"
-			level="ERROR" additivity="true" />
-		<Logger
-			name="de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig"
-			level="ERROR" additivity="true" />
         <Logger
-            name="de.unigoettingen.sub.commons.contentlib.servlet.rest"
+            name="de.unigoettingen.sub.commons.contentlib"
             level="INFO" additivity="true" />
 		<Logger name="httpclient" level="ERROR" additivity="true" />
 		<Logger name="java.net.SocketOutputStream" level="ERROR"

@@ -1,12 +1,29 @@
 /* ==============================================================
-   Widget User
-   style declarations for widget_user.xhtml
+   Widget User Interactions
+   style declarations for widget_userInteractions.xhtml
    ==============================================================*/
-/* WIDGET USER */
-#widgetUser {}
-
-.widget-user {}
-
+/* WIDGET USER INTERACTIONS */
+#widgetUserInteractions {
+	ul {
+		border-bottom: 0;
+	}
+}
+.widget-user-interactions {
+	h4 {
+		margin: 0 0 5px 0;
+		font-size: 1rem;
+	}
+	&__delete-record {
+		padding: 10px;
+		padding-top: 5px;
+		border: 1px solid @middlegray;
+		border-top: 0;
+	}
+	&__delete-record-action {
+		padding: 5px 0 10px 0;
+		text-align: right;
+	}
+}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
