@@ -584,7 +584,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Returns all existing license types minus this one. Required for admin tabs.
+     * Returns all existing non-core license types minus this one. Required for admin tabs.
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
         List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
@@ -594,7 +594,7 @@ public class AdminBean implements Serializable {
 
         List<LicenseType> ret = new ArrayList<>(all.size() - 1);
         for (LicenseType licenseType : all) {
-            if (licenseType.equals(this.currentLicenseType)) {
+            if (licenseType.equals(this.currentLicenseType) || licenseType.isCore()) {
                 continue;
             }
             ret.add(licenseType);
