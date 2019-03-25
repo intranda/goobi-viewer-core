@@ -858,6 +858,12 @@ button.btn:active:focus {
   border-bottom: .35rem solid transparent;
   border-left: .35rem solid transparent;
 }
+.custom-control--select.multiple {
+  min-height: 200px;
+}
+.custom-control--select.multiple:after {
+  display: none;
+}
 .custom-control--select select {
   display: inline-block;
   width: 100%;
