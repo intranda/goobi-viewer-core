@@ -7823,6 +7823,15 @@ div[id*="-Modal"] .email-form .form-group {
    Widget User
    style declarations for widget_user.xhtml
    ==============================================================*/
+/* WIDGET USER */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget User Interactions
+   style declarations for widget_userInteractions.xhtml
+   ==============================================================*/
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions ul {
   border-bottom: 0;
