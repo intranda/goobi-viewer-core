@@ -13,7 +13,7 @@
 			<div class="edit-content-page edit-content-page-pagelist">
 				<div class="form-horizontal">
 					<div class="form-group">
-						<label class="col-sm-3 control-label">#{msg.cms_itemClassification}#{contentItem.mandatory?'*':''}:</label>
+						<label class="col-sm-3 control-label">#{msg.admin__cms_category}#{contentItem.mandatory?'*':''}:</label>
 						<div class="col-sm-9">
 								<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.categories}">
 									<f:selectItems value="#{cmsBean.allCategories}" var="field" itemValue="#{field}" itemLabel="#{field.name}" />
@@ -27,7 +27,7 @@
 						</div>
 					</div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">#{msg.cms_displayTagsAsHeaders}:</label>
+                        <label class="col-sm-3 control-label">#{msg.cms_displayCategoriesAsHeaders}:</label>
                         <div class="col-sm-9">
                         	<h:selectBooleanCheckbox id="checkboxTagsAsHeaders" 
                             value="#{cmsBean.selectedPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').value}" 

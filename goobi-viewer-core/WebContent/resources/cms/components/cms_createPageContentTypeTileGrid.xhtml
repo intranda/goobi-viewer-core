@@ -16,7 +16,7 @@
 						<label class="col-sm-12 group-label">#{msg.cms_itemTileGrid}#{contentItem.mandatory?'*':''}:</label>
 					</div>
 					<div class="form-group" id="control_tags">
-						<label class="col-sm-6 control-label">#{msg.cms_itemTileGrid_tags}:</label>
+						<label class="col-sm-6 control-label">#{msg.cms_itemTileGrid_categories}:</label>
 						<div class="col-sm-6">
 							<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.categories}">
 									<f:selectItems value="#{cmsBean.allCategories}" var="field" itemValue="#{field}" itemLabel="#{field.name}" />
