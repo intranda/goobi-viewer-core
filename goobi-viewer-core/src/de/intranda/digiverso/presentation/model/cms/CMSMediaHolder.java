@@ -29,5 +29,5 @@ public interface CMSMediaHolder {
 
 	public boolean hasMediaItem();
 
-	public TranslatedSelectable<CMSMediaItem> getMediaItemWrapper();
+	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper();
 }

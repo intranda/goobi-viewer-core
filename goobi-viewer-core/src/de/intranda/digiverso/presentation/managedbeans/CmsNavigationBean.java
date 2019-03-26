@@ -204,7 +204,7 @@ public class CmsNavigationBean implements Serializable {
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if (selectableThemes == null) {
             selectableThemes = new ArrayList<>(cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser()));
-            if(userBean.getUser().hasPriviledgeForAllSubthemeDiscriminatorValues()) {            	
+            if(userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {            	
             	selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
             }
         }

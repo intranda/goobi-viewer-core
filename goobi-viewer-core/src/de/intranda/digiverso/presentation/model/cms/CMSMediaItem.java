@@ -110,12 +110,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	@Column(name = "display_order", nullable = true)
 	private int displayOrder = 0;
 
-	/**
-	 * Hold all available categories and whether they are selected in the GUI
-	 */
-	@Transient
-	List<Selectable<CMSCategory>> selectableCategories = null;
-
 	@Transient
 	private FileTime lastModifiedTime = null;
 
@@ -712,28 +706,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	 *         from all categories
 	 * @throws DAOException TODO: check for licenses
 	 */
-	public synchronized List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
-		if (this.selectableCategories == null) {
-			this.selectableCategories = DataManager.getInstance().getDao().getAllCategories().stream()
+	public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories){
+		List<Selectable<CMSCategory>> wrappedCategories = categories.stream()
 					.map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
-		}
-		return selectableCategories;
+		return wrappedCategories;
 	}
 
-	/**
-	 * Set the categories from categoryMap
-	 */
-	public void serializeCategories() {
-		if (this.selectableCategories != null) {
-			for (Selectable<CMSCategory> selectable : this.selectableCategories) {
-				if (selectable.isSelected()) {
-					addCategory(selectable.getValue());
-				} else {
-					removeCategory(selectable.getValue());
-				}
-			}
-		}
-
-	}
 
 }

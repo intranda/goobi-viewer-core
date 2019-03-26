@@ -236,7 +236,7 @@
 									           label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
 									           options="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" defaultItemValue="#{null}"
 									           defaultItemLabel="-" disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
-									           required="#{!userBean.user.hasPriviledgeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+									           required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
 									           requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}" />
 									       <!-- parent page for breadcrumbs -->
 									       <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"

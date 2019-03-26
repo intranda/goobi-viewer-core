@@ -61,6 +61,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.CategorizableTranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.Selectable;
 import de.intranda.digiverso.presentation.model.cms.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.security.user.User;
@@ -83,8 +84,8 @@ public class CmsMediaBean implements Serializable {
 
 	private String selectedTag;
 //    private List<Selectable<CMSMediaItem>> mediaItems = null;
-	private final TableDataProvider<TranslatedSelectable<CMSMediaItem>> dataProvider;
-	private TranslatedSelectable<CMSMediaItem> selectedMediaItem = null;
+	private final TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
+	private CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem = null;
 	private String filter = "";
 	private String filenameFilter = "";
 	private boolean allSelected = false;
@@ -98,18 +99,18 @@ public class CmsMediaBean implements Serializable {
 	/**
 	 * 
 	 */
-	private TableDataProvider<TranslatedSelectable<CMSMediaItem>> initDataProvider() {
-		TableDataProvider<TranslatedSelectable<CMSMediaItem>> dataProvider = new TableDataProvider<TranslatedSelectable<CMSMediaItem>>(
-				new TableDataSource<TranslatedSelectable<CMSMediaItem>>() {
+	private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> initDataProvider() {
+		TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider = new TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>>(
+				new TableDataSource<CategorizableTranslatedSelectable<CMSMediaItem>>() {
 
-					private List<TranslatedSelectable<CMSMediaItem>> items = null;
+					private List<CategorizableTranslatedSelectable<CMSMediaItem>> items = null;
 					private boolean reloadNeeded = true;
 					
 					@Override
-					public List<TranslatedSelectable<CMSMediaItem>> getEntries(int first, int pageSize, String sortField,
+					public List<CategorizableTranslatedSelectable<CMSMediaItem>> getEntries(int first, int pageSize, String sortField,
 							SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException {
 
-						Stream<TranslatedSelectable<CMSMediaItem>> stream = getItems(filters).stream();
+						Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = getItems(filters).stream();
 
 						
 						if (StringUtils.isNotBlank(sortField)) {
@@ -130,7 +131,7 @@ public class CmsMediaBean implements Serializable {
 						} else {
 							stream = stream.sorted((i1, i2) -> i2.getValue().getLastModifiedTime().compareTo(i1.getValue().getLastModifiedTime()));
 						}
-						List<TranslatedSelectable<CMSMediaItem>> list = stream.skip(first).limit(pageSize).collect(Collectors.toList());
+						List<CategorizableTranslatedSelectable<CMSMediaItem>> list = stream.skip(first).limit(pageSize).collect(Collectors.toList());
 
 						return list;
 					}
@@ -145,7 +146,7 @@ public class CmsMediaBean implements Serializable {
 						reloadNeeded = true;
 					}
 					
-					private List<TranslatedSelectable<CMSMediaItem>> getItems(Map<String, String> filters) {
+					private List<CategorizableTranslatedSelectable<CMSMediaItem>> getItems(Map<String, String> filters) {
 						if (this.items == null || this.reloadNeeded) {
 							try {
 								Stream<CMSMediaItem> stream = getAllMedia().stream();
@@ -166,8 +167,8 @@ public class CmsMediaBean implements Serializable {
 									}
 								}
 									
-								
-								this.items = stream.map(item -> new TranslatedSelectable<CMSMediaItem>(item, false, item.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()))).collect(Collectors.toList());
+								List<CMSCategory> categories = userBean.getUser().getAllowedCategories(getAllMediaCategories());
+								this.items = stream.map(item -> new CategorizableTranslatedSelectable<CMSMediaItem>(item, false, item.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), item.wrapCategories(categories))).collect(Collectors.toList());
 								reloadNeeded = false;
 								
 							} catch (DAOException e) {
@@ -288,7 +289,7 @@ public class CmsMediaBean implements Serializable {
 
 		if (userBean != null && userBean.getUser() != null && userBean.getUser().isCmsAdmin()) {
 			User user = userBean.getUser();
-			if (user.hasPriviledgeForAllCategories()) {
+			if (user.hasPrivilegeForAllCategories()) {
 				return items;
 			} else {
 				List<CMSCategory> allowedCategories = user
@@ -304,11 +305,11 @@ public class CmsMediaBean implements Serializable {
 
 	}
 	
-	public TableDataProvider<TranslatedSelectable<CMSMediaItem>> getDataProvider() {
+	public TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> getDataProvider() {
 		return this.dataProvider;
 	}
 
-	public List<TranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
+	public List<CategorizableTranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
 		return this.dataProvider.getPaginatorList();
 	}
 
@@ -333,7 +334,7 @@ public class CmsMediaBean implements Serializable {
 	 * @throws DAOException
 	 */
 	public void deleteSelectedItems() throws DAOException {
-			Stream<TranslatedSelectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
+			Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
 			if(!isAllSelected()) {
 				stream = stream.filter(Selectable::isSelected);
 			}
@@ -439,10 +440,25 @@ public class CmsMediaBean implements Serializable {
 			saveMedia(this.selectedMediaItem.getValue());
 		}
 	}
+	
+	public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
+		if(media != null) {
+			if(categories != null) {
+				for (Selectable<CMSCategory> category : categories) {
+					if(category.isSelected()) {
+						media.addCategory(category.getValue());
+					} else {
+						media.removeCategory(category.getValue());
+					}
+				}
+			}
+			saveMedia(media);
+		}
+	}
+
 
 	public void saveMedia(CMSMediaItem media) throws DAOException {
 		if (media != null) {
-			media.serializeCategories();
 			if (media.getId() == null) {
 				DataManager.getInstance().getDao().addCMSMediaItem(media);
 			} else {
@@ -554,11 +570,11 @@ public class CmsMediaBean implements Serializable {
 	/**
 	 * @param selectedMediaItem the selectedMediaItem to set
 	 */
-	public void setSelectedMediaItem(TranslatedSelectable<CMSMediaItem> selectedMediaItem) {
+	public void setSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
 		this.selectedMediaItem = selectedMediaItem;
 	}
 	
-	public void toggleSelectedMediaItem(TranslatedSelectable<CMSMediaItem> selectedMediaItem) {
+	public void toggleSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
 		if(this.selectedMediaItem != null && this.selectedMediaItem.equals(selectedMediaItem)) {
 			setSelectedMediaItem(null);
 		} else {			
