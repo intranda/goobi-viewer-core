@@ -22,12 +22,19 @@
 
             <!-- ACTIONS -->
             <div class="cms-module__actions">
-                <h:commandLink action="#{cmsBean.setSelectedMediaHolder(contentItem)}" value="#{contentItem.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                    class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" role="button">
+                <h:commandLink 
+                    action="#{cmsBean.setSelectedMediaHolder(contentItem)}" 
+                    value="#{contentItem.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                    class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+                    role="button">
                     <f:ajax execute="@form" render="mediaSelectPanel" />
                 </h:commandLink>
-                <h:commandLink rendered="#{contentItem.getMediaItem() != null}" action="#{contentItem.setMediaItem(null)}" value="#{msg.cms_selectMediaItem_deselect}"
-                    class="btn btn--clean delete" role="button">
+                <h:commandLink 
+                    rendered="#{contentItem.getMediaItem() != null}" 
+                    action="#{contentItem.setMediaItem(null)}" 
+                    value="#{msg.cms_selectMediaItem_deselect}"
+                    class="btn btn--clean delete" 
+                    role="button">
                     <f:ajax render="contentMediaGroup" />
                 </h:commandLink>
             </div>
