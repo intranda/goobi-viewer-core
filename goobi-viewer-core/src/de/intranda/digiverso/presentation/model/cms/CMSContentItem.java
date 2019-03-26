@@ -268,6 +268,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Transient
     private CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
     
+    @Transient 
+    private List<Selectable<CMSCategory>> selectableCategories = null;
     /**
      *  
      */
@@ -1099,6 +1101,30 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private CMSContentItemTemplate getTemplateItem() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
+    
+    public void writeSelectableCategories() {
+    	if(this.selectableCategories != null) {
+    		for (Selectable<CMSCategory> selectable : this.selectableCategories) {
+				if(selectable.isSelected()) {
+					addCategory(selectable.getValue());
+				} else {
+					removeCategory(selectable.getValue());
+				}
+			}
+    	}
+    }
+	
+	/**
+	 * @return the selectableCategories
+	 * @throws DAOException 
+	 */
+	public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+		if(selectableCategories == null) {
+			List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
+			selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+		}
+		return selectableCategories;
+	}
 
     /**
      * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as

@@ -29,17 +29,13 @@
                 </div>
                 
                 <!-- MULTI SELECT MENU -->
-                <div class="custom-control custom-control--select multiple">
-                    <h:selectManyListbox
-                        id="pageListCategory" 
-                        styleClass="form-control" 
-                        value="#{contentItem.categories}">
-                        <f:selectItems 
-                            value="#{cmsBean.allCategories}" 
-                            var="field" itemValue="#{field}" 
-                            itemLabel="#{field.name}" />
-                    </h:selectManyListbox>
-                </div>
+                	<ui:repeat var="selectable" value="#{contentItem.selectableCategories}">
+                	 <div>
+	                	 <h:selectBooleanCheckbox value="#{selectable.selected}"/>
+	                	 <label>#{selectable.value.name}</label>            	
+                	 </div>
+                	</ui:repeat>
+
             </h:panelGroup>
             
             <!-- INLINE HELP -->

@@ -620,6 +620,7 @@ public class CmsBean implements Serializable {
             validatePage(selectedPage, getDefaultLocale().getLanguage());
             logger.trace("reset item data");
             selectedPage.resetItemData();
+            selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
