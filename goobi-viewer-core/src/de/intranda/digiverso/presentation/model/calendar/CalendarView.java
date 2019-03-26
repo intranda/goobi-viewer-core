@@ -103,7 +103,7 @@ public class CalendarView {
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
         if (anchorPi != null) {
-            return SearchHelper.getFacetValues("+" + SolrConstants.PI_PARENT + ":" + anchorPi + " +" + SolrConstants._CALENDAR_DAY + ":*",
+            return SearchHelper.getFacetValues("+" + SolrConstants.PI_PARENT + ":" + anchorPi + " +" + SolrConstants._CALENDAR_YEAR + ":*",
                     SolrConstants._CALENDAR_YEAR, 1);
         }
 
