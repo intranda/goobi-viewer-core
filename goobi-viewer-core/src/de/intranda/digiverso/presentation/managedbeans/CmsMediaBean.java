@@ -295,6 +295,7 @@ public class CmsMediaBean implements Serializable {
 				List<CMSCategory> allowedCategories = user
 						.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
 				items = items.stream()
+//						.peek(item -> System.out.println(StringUtils.join(item.getCategories(), ", ")))
 						.filter(item -> ListUtils.intersection(item.getCategories(), allowedCategories).size() > 0)
 						.collect(Collectors.toList());
 				return items;
@@ -353,10 +354,10 @@ public class CmsMediaBean implements Serializable {
 	 * @throws DAOException
 	 */
 	public void saveSelectedItems() throws DAOException {
-			List<CMSMediaItem> itemsToSave = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
-					.map(Selectable::getValue).collect(Collectors.toList());
-			for (CMSMediaItem item : itemsToSave) {
-				saveMedia(item);
+			List<CategorizableTranslatedSelectable<CMSMediaItem>> itemsToSave = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
+					.collect(Collectors.toList());
+			for (CategorizableTranslatedSelectable<CMSMediaItem> item : itemsToSave) {
+				saveMedia(item.getValue(), item.getCategories());
 			}
 	}
 
@@ -441,16 +442,30 @@ public class CmsMediaBean implements Serializable {
 		}
 	}
 	
+	/**
+	 * Save media item, adding or removing the given categories, depending wether they are selected or not.
+	 * if {@link User#hasPrivilegeForAllSubthemeDiscriminatorValues()} is false for the current user
+	 *  and none of the given categories is selected, then don't change the media categories since doing so would break category restrictions
+	 * 
+	 * @param media
+	 * @param categories
+	 * @throws DAOException
+	 */
 	public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
 		if(media != null) {
 			if(categories != null) {
-				for (Selectable<CMSCategory> category : categories) {
-					if(category.isSelected()) {
-						media.addCategory(category.getValue());
-					} else {
-						media.removeCategory(category.getValue());
+				if(BeanUtils.getUserBean().getUser().hasPrivilegeForAllSubthemeDiscriminatorValues() || categories.stream().anyMatch(Selectable::isSelected)) {					
+					for (Selectable<CMSCategory> category : categories) {
+						if(category.isSelected()) {
+							media.addCategory(category.getValue());
+						} else {
+							media.removeCategory(category.getValue());
+						}
 					}
+				} else {
+					Messages.error(null, "admin__media_save_error_must_have_category", media.toString());
 				}
+				
 			}
 			saveMedia(media);
 		}

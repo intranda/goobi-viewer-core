@@ -378,7 +378,7 @@ public class CmsBean implements Serializable {
 	private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
 		if(!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
 			List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
-			if(allowedSubThemeDiscriminatorValues.size() > 0) {				
+			if(StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && allowedSubThemeDiscriminatorValues.size() > 0) {				
 				page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
 			} else {
 				logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
@@ -387,11 +387,13 @@ public class CmsBean implements Serializable {
 		}
 		if(!user.hasPrivilegeForAllCategories()) {
 			List<CMSCategory> allowedCategories = user.getAllowedCategories(getAllCategories());
-			if(allowedCategories.size() > 0) {				
+			if(page.getCategories().isEmpty() && allowedCategories.size() > 0) {				
 				page.setCategories(allowedCategories.subList(0, 1));
 			}
 			for (CMSContentItem contentItem : page.getGlobalContentItems()) {
-				contentItem.setCategories(allowedCategories.subList(0, 1));
+				if(contentItem.getCategories().isEmpty() && allowedCategories.size() > 0) {				
+					contentItem.setCategories(allowedCategories.subList(0, 1));
+				}
 			}
 		}
 		
@@ -1591,16 +1593,8 @@ public class CmsBean implements Serializable {
      */
     public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
         logger.trace("isSubthemeRequired");
-        try {
-        if (user == null || user.isSuperuser() || StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())) {
-            return false;
-        }
-
-        List<String> all = getSubthemeDiscriminatorValues();
-        return user.getAllowedSubthemeDiscriminatorValues(all).size() < all.size();
-        } finally {
-            logger.trace("isSubthemeRequired END");
-        }
+        
+        return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
     }
 
     /**
