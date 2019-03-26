@@ -162,8 +162,10 @@
     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCollection.xhtml" />
 </ui:fragment>
 
-                                                                <!-- CONTENT TYPE TILEGRID -->
-                                                                <cmsComponent:cms_createPageContentTypeTileGrid />
+<!-- CONTENT TYPE TILEGRID -->
+<ui:fragment rendered="#{contentItem.type == 'TILEGRID'}">
+    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTileGrid.xhtml" />
+</ui:fragment>
 
                                                                 <!-- CONTENT TYPE TOC -->
                                                                 <cmsComponent:cms_createPageContentTypeToc />
