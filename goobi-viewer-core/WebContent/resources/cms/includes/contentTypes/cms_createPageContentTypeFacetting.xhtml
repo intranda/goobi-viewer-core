@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    
+    <!-- CONTENT TYPE FACETTING -->
+    <div class="cms-module__option-group">
+        <!-- LABEL -->
+        <div class="cms-module__option-label">
+            <label for="facetting">#{msg.cms_searchPrefix}#{contentItem.mandatory ? '*' : ''}:</label>
+        </div>
+        
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="facettingGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="facetting" 
+                        infoClass="cms-module__option-message success" 
+                        warnClass="cms-module__option-message warning"
+                        errorClass="cms-module__option-message danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- INPUT TEXT -->
+                <h:inputText
+                    id="facetting" 
+                    styleClass="form-control" 
+                    value="#{contentItem.searchPrefix}" />
+            </h:panelGroup>
+            
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_contnet_type_facetting}</span>
+        </div>
+        
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</ui:composition>
