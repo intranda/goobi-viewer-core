@@ -962,7 +962,7 @@
 		<property name="server.url" value="https://goobi.tib.eu/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fgoobi.tib.eu%2Fviewer%2Foai" />
-		<property name="theme" value="tib2" />
+		<property name="theme" value="reference" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
