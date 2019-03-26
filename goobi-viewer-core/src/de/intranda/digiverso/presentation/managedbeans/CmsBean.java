@@ -1612,9 +1612,7 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
-        logger.trace("isSubthemeRequired");
-        
+    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {        
         return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
     }
 
