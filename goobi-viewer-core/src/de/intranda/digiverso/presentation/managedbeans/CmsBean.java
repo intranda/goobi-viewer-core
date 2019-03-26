@@ -620,6 +620,7 @@ public class CmsBean implements Serializable {
             validatePage(selectedPage, getDefaultLocale().getLanguage());
             logger.trace("reset item data");
             selectedPage.resetItemData();
+            selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
@@ -1611,9 +1612,7 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
-        logger.trace("isSubthemeRequired");
-        
+    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {        
         return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
     }
 

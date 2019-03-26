@@ -6,22 +6,19 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-    <!-- INPUT MODULE TEMPLATE -->
+    <!-- CONTENT TYPE COMPONENT -->
     <div class="cms-module__option-group">
         <!-- LABEL -->
         <div class="cms-module__option-label">
-            <!-- fill in: FOR, STRING -->
-            <label for="">#{msg.admin__cms_}:</label>
+            <label for="component">#{msg.cms_component}#{contentItem.mandatory ? '*' : ''}:</label>
         </div>
         
         <div class="cms-module__option-control">
             <!-- AREA FOR AJAX REFRESH -->
-            <!-- fill in: ID -->
-            <h:panelGroup id="">
+            <h:panelGroup id="componentGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <!-- fill in: FOR -->
-                    <h:messages for="" 
+                    <h:messages for="component"
                         infoClass="cms-module__option-message success" 
                         warnClass="cms-module__option-message warning"
                         errorClass="cms-module__option-message danger" />
@@ -33,28 +30,14 @@
                 </div>
                 
                 <!-- INPUT TEXT -->
-                <!-- fill in: ID, VALUE -->
-                <h:inputText id="" value="" styleClass="form-control">
-                    <!-- fill in: VALIDATORID, FOR -->
-                    <f:validator validatorId="" for="" />
-                    <!-- fill in: RENDER -->
-                    <f:ajax event="blur" render="" />
-                </h:inputText>
-                
-                <!-- SELECT MENU -->
-                <div class="custom-control custom-control--select">
-                    <h:selectOneMenu>...</h:selectOneMenu>
-                </div>
-                
-                <!-- MULTI SELECT MENU -->
-                <div class="custom-control custom-control--select multiple">
-                    <h:selectManyListbox>...</h:selectManyListbox>
-                </div>
+                <h:inputText
+                    id="component" 
+                    styleClass="form-control" 
+                    value="#{contentItem.component}" />
             </h:panelGroup>
             
             <!-- INLINE HELP -->
-            <!-- fill in: STRING -->
-            <span class="cms-module__option-control-helptext">#{msg.inline_help__}</span>
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_component}</span>
         </div>
         
         <!-- TOGGLE INLINE HELP -->
