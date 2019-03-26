@@ -32,11 +32,12 @@
                     <h:selectOneMenu 
                         id="subthemeDiscriminator" 
                         styleClass="form-control" 
-                        value="#{cmsBean.selectedPage.parentPageId}"
+                        value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
                         disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
                         required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
                         requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
                         <f:selectItem 
+                        	itemDisabled="#{cmsBean.isSubthemeRequired(userBean.user)}"
                             itemValue="#{null}"
                             itemLabel="-" />
                         <f:selectItems value="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" />
