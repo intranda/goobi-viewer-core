@@ -50,15 +50,6 @@
 	}
 	&__option-message {
 		position: relative;
-	    &.success {
-	    	color: @validSuccess;
-	    }
-	    &.warning {
-	    	color: @validWarning;	    	
-	    }
-	    &.danger {
-	    	color: @validDanger;
-	    }
 		ul {
 			.mx-list-reset;
 		}
@@ -76,6 +67,17 @@
 		    	border-color: @validDanger;
 		    }
 		}
+	}
+	&__option-message-status {
+	    &.success {
+	    	color: @validSuccess;
+	    }
+	    &.warning {
+	    	color: @validWarning;	    	
+	    }
+	    &.danger {
+	    	color: @validDanger;
+	    }		
 	}
 	&__option-message-mark {
 		position: absolute;

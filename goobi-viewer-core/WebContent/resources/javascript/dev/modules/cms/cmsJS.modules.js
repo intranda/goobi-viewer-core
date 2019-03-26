@@ -49,7 +49,7 @@ var cmsJS = ( function( cms ) {
 					case 'complete':
 						break;
 					case 'success':
-						cmsJS.modules.setValidationStatus();
+						cmsJS.modules.setValidationStatus( data.source.id );
 						
 						break;
 				}
@@ -58,25 +58,37 @@ var cmsJS = ( function( cms ) {
         /**
 		 * @description Method to set the validation status.
 		 * @method setValidationStatus
+		 * @param {String} source The id of the element which fired the ajax request,
 		 */
-        setValidationStatus: function() {
+        setValidationStatus: function( source ) {
         	if ( _debug ) {
         		console.log( 'EXECUTE: setValidationStatus' );
+        		console.log( '--> source: ', source );
         	}
         	
-        	var message = $( '.cms-module__option-message' ); 
+        	var stripedSource,
+        		status;
+        	
+        	if ( source.indexOf( 'j_idt' ) > -1 ) {
+        		stripedSource = source.match(/.*:(.*)/)[1];        		
+        		status = $( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        	}
+        	else {
+        		stripedSource = source;       		
+        		status = $( '#' + stripedSource ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        	}
 
-        	if ( message.hasClass( 'success' ) ) {
-        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'success' );
-        		message.parents( '.cms-module__option-message' ).next().addClass( 'success' );
+        	if ( status.hasClass( 'success' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'success' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'success' );
         	}
-        	else if ( message.hasClass( 'warning' ) ) {
-        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'warning' );
-        		message.parents( '.cms-module__option-message' ).next().addClass( 'warning' );
+        	else if ( status.hasClass( 'warning' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'warning' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'warning' );
         	}
-        	else if ( message.hasClass( 'danger' ) ) {
-        		message.parents( '.cms-module__option-message' ).find( '.cms-module__option-message-mark' ).addClass( 'danger' );
-        		message.parents( '.cms-module__option-message' ).next().addClass( 'danger' );
+        	else if ( status.hasClass( 'danger' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'danger' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'danger' );
         	}
         },
         /**
@@ -89,7 +101,7 @@ var cmsJS = ( function( cms ) {
         	}
         	
         	if ( $( '.cms-module__option-message ul' ).length > 0 ) {
-        		$( '.cms-module__option-message ul' ).remove();
+        		$( '.cms-module__option-message ul' ).empty();
         	}
         },
         
