@@ -859,10 +859,14 @@ button.btn:active:focus {
   border-left: .35rem solid transparent;
 }
 .custom-control--select.multiple {
-  min-height: 200px;
+  min-height: 150px;
+  padding: 0;
 }
 .custom-control--select.multiple:after {
   display: none;
+}
+.custom-control--select.multiple select {
+  padding: 12px;
 }
 .custom-control--select select {
   display: inline-block;

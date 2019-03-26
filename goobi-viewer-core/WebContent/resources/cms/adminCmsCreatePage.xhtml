@@ -112,7 +112,7 @@
                                                                 <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageContenttypeText">#{contentItem.itemLabel}#{contentItem.mandatory?'*':''}:</label>
+                                                                            <label for="cmsCreatePageContenttypeText">#{contentItem.itemLabel}#{contentItem.mandatory ? '*' : ''}:</label>
                                                                         </div>
                                                                         <div class="cms-module__option-control">
                                                                             <h:inputText id="cmsCreatePageContenttypeText" styleClass="form-control" value="#{contentItem.htmlFragment}" />
@@ -152,11 +152,15 @@
     <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSolr.xhtml" />
 </ui:fragment>
 
-                                                                <!-- CONTENT TYPE PAGELIST -->
-                                                                <cmsComponent:cms_createPageContentTypePagelist />
+<!-- CONTENT TYPE PAGELIST -->
+<ui:fragment rendered="#{contentItem.type == 'PAGELIST'}">
+    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageList.xhtml" />
+</ui:fragment>
 
-                                                                <!-- CONTENT TYPE COLLECTION -->
-                                                                <cmsComponent:cms_createPageContentTypeCollection />
+<!-- CONTENT TYPE COLLECTION -->
+<ui:fragment rendered="#{contentItem.type == 'COLLECTION'}">
+    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCollection.xhtml" />
+</ui:fragment>
 
                                                                 <!-- CONTENT TYPE TILEGRID -->
                                                                 <cmsComponent:cms_createPageContentTypeTileGrid />
