@@ -41,7 +41,7 @@
                             var="field"
                             itemValue="#{field}"
                             itemLabel="#{field}" />
-                        <f:ajax render="baseCollection" />
+                        <f:ajax render="baseCollection ignoreCollectionGroup" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
@@ -93,7 +93,7 @@
                             var="field" 
                             itemValue="#{field}" 
                             itemLabel="#{msg[field]}" />
-                        <f:ajax render="ignoreCollectionsMenu" />
+                        <f:ajax render="ignoreCollectionGroup" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
