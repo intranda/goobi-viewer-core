@@ -242,7 +242,7 @@ public class CMSMediaResource {
 	 */
 	private Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
 
-		if(!user.hasPriviledgeForAllCategories()) {
+		if(!user.hasPrivilegeForAllCategories()) {
 			List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
 			if(!allowedCategories.isEmpty()) {
 				return Optional.of(allowedCategories.get(0));

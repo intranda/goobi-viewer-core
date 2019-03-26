@@ -73,9 +73,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.CategorizableTranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
-import de.intranda.digiverso.presentation.model.cms.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.glossary.Glossary;
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
@@ -186,29 +186,25 @@ public class CmsBean implements Serializable {
                 }
 
                 private void initialize() throws DAOException {
-                    if (!initialized) {
-                        try {
-                            if (!userBean.getUser().hasPriviledgeForAllSubthemeDiscriminatorValues()) {
-                                allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
-                            }
-                            if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
-                                allowedTemplates =
-                                        getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
-                            }
-                            if (!userBean.getUser().hasPriviledgeForAllCategories()) {
-                                allowedCategories = getAllowedCategories(userBean.getUser()).stream()
-                                        .map(CMSCategory::getId)
-                                        .map(l -> l.toString())
-                                        .collect(Collectors.toList());
-                            }
-                            initialized = true;
-                        } catch (PresentationException | IndexUnreachableException e) {
-                            throw new DAOException("Error getting user rights from dao: " + e.toString());
-                        } catch (NullPointerException e) {
-                            throw new DAOException("No user or userBean available to determine user rights");
-                        }
-                    }
-                }
+					if(!initialized) {	
+						try {
+							if(!userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {								
+								allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
+							}
+							if(!userBean.getUser().hasPriviledgeForAllTemplates()) {								
+								allowedTemplates = getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+							}
+							if(!userBean.getUser().hasPrivilegeForAllCategories()) {								
+								allowedCategories = getAllowedCategories(userBean.getUser()).stream().map(CMSCategory::getId).map(l -> l.toString()).collect(Collectors.toList());
+							}
+							initialized = true;
+						} catch (PresentationException | IndexUnreachableException e) {
+							throw new DAOException("Error getting user rights from dao: " +e.toString());
+						} catch(NullPointerException e) {
+							throw new DAOException("No user or userBean available to determine user rights");
+						}
+					}		
+				}
 
                 @Override
                 public void resetTotalNumberOfRecords() {
@@ -360,15 +356,50 @@ public class CmsBean implements Serializable {
         return lazyModelPages;
     }
 
-    public CMSPage createNewPage(CMSPageTemplate template) {
+    public CMSPage createNewPage(CMSPageTemplate template) throws PresentationException, IndexUnreachableException, DAOException {
         List<Locale> locales = getAllLocales();
         CMSPage page = template.createNewPage(locales);
+        setUserRestrictedValues(page, userBean.getUser());
         // page.setId(System.currentTimeMillis());
         page.setDateCreated(new Date());
         return page;
     }
 
     /**
+     * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted
+     * privileges for that property
+     * 
+	 * @param page
+	 * @param user
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws DAOException 
+	 */
+	private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
+		if(!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+			List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
+			if(StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && allowedSubThemeDiscriminatorValues.size() > 0) {				
+				page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
+			} else {
+				logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
+				//do something??			
+			}
+		}
+		if(!user.hasPrivilegeForAllCategories()) {
+			List<CMSCategory> allowedCategories = user.getAllowedCategories(getAllCategories());
+			if(page.getCategories().isEmpty() && allowedCategories.size() > 0) {				
+				page.setCategories(allowedCategories.subList(0, 1));
+			}
+			for (CMSContentItem contentItem : page.getGlobalContentItems()) {
+				if(contentItem.getCategories().isEmpty() && allowedCategories.size() > 0) {				
+					contentItem.setCategories(allowedCategories.subList(0, 1));
+				}
+			}
+		}
+		
+	}
+
+	/**
      * Current page URL getter for PrettyFaces. Page must be either published or the current user must be an admin.
      *
      * @return
@@ -1562,16 +1593,8 @@ public class CmsBean implements Serializable {
      */
     public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
         logger.trace("isSubthemeRequired");
-        try {
-        if (user == null || user.isSuperuser() || StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())) {
-            return false;
-        }
-
-        List<String> all = getSubthemeDiscriminatorValues();
-        return user.getAllowedSubthemeDiscriminatorValues(all).size() < all.size();
-        } finally {
-            logger.trace("isSubthemeRequired END");
-        }
+        
+        return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
     }
 
     /**
@@ -1750,49 +1773,56 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * @param selectedMediaHolder the selectedMediaHolder to set
-     */
-    public void setSelectedMediaHolder(CMSMediaHolder item) {
-        this.selectedMediaHolder = Optional.ofNullable(item);
-        this.selectedMediaHolder.ifPresent(contentItem -> {
-            String filter = contentItem.getMediaFilter();
-            if (StringUtils.isBlank(filter)) {
-                filter = CmsMediaBean.getImageFilter();
-            }
-            cmsMediaBean.setFilenameFilter(filter);
-            if (contentItem.hasMediaItem()) {
-                cmsMediaBean.setSelectedMediaItem(contentItem.getMediaItemWrapper());
-            } else {
-                cmsMediaBean.setSelectedMediaItem(null);
-            }
-        });
-    }
-
-    public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem) {
-        fillSelectedMediaHolder(mediaItem, false);
-    }
-
-    public void fillSelectedMediaHolder(TranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
-        this.selectedMediaHolder.ifPresent(item -> {
-            if (mediaItem != null) {
-                item.setMediaItem(mediaItem.getValue());
-                if (saveMedia) {
-                    try {
-                        cmsMediaBean.saveMedia(mediaItem.getValue());
-                    } catch (DAOException e) {
-                        logger.error("Failed to save media item: {}", e.toString());
-                    }
-                }
-            } else {
-                item.setMediaItem(null);
-            }
-        });
-        this.selectedMediaHolder = Optional.empty();
-        cmsMediaBean.setSelectedMediaItem(null);
-    }
-
-    public boolean hasSelectedMediaHolder() {
-        return this.selectedMediaHolder.isPresent();
-    }
+	 * @param selectedMediaHolder the selectedMediaHolder to set
+	 */
+	public void setSelectedMediaHolder(CMSMediaHolder item) {
+		this.selectedMediaHolder = Optional.ofNullable(item);
+		this.selectedMediaHolder.ifPresent(contentItem -> {
+			String filter = contentItem.getMediaFilter();
+			if(StringUtils.isBlank(filter)) {
+				filter = CmsMediaBean.getImageFilter();
+			}
+			cmsMediaBean.setFilenameFilter(filter);
+			if(contentItem.hasMediaItem()) {		
+				CategorizableTranslatedSelectable<CMSMediaItem> wrapper = contentItem.getMediaItemWrapper();
+				try {
+					List<CMSCategory> categories = BeanUtils.getUserBean().getUser().getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+					wrapper.setCategories(contentItem.getMediaItem().wrapCategories(categories));
+				} catch (DAOException e) {
+					logger.error("Unable to determine allowed categories for media holder", e);
+				}
+				cmsMediaBean.setSelectedMediaItem(wrapper);
+			} else {
+				cmsMediaBean.setSelectedMediaItem(null);
+			}
+		});
+	}
+	
+	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem) {
+		fillSelectedMediaHolder(mediaItem, false);
+	}
+	
+	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
+		this.selectedMediaHolder.ifPresent(item -> {
+			if(mediaItem != null) {
+				item.setMediaItem(mediaItem.getValue());
+				if(saveMedia) {
+					try {
+						cmsMediaBean.saveMedia(mediaItem.getValue(), mediaItem.getCategories());
+					} catch (DAOException e) {
+						logger.error("Failed to save media item: {}", e.toString());
+					}
+				}
+			} else {
+				item.setMediaItem(null);
+			}
+		});
+		this.selectedMediaHolder = Optional.empty();
+		cmsMediaBean.setSelectedMediaItem(null);
+	}
+		
+	public boolean hasSelectedMediaHolder() {
+		return this.selectedMediaHolder.isPresent();
+	}
 
 }

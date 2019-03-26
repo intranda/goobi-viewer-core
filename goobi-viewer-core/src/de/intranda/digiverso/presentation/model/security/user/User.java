@@ -747,7 +747,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
 		return ret;
 	}
 
-	public boolean hasPriviledgeForAllCategories() {
+	public boolean hasPrivilegeForAllCategories() {
 
 		// Abort if user not a CMS admin
 		if (!isCmsAdmin()) {
@@ -825,7 +825,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
 		return ret;
 	}
 	
-	public boolean hasPriviledgeForAllSubthemeDiscriminatorValues() {
+	public boolean hasPrivilegeForAllSubthemeDiscriminatorValues() {
 
 		// Abort if user not a CMS admin
 		if (!isCmsAdmin()) {

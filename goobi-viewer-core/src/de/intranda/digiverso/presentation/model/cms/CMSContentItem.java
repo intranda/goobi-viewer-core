@@ -266,7 +266,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * Wrapper for the media item which keeps track of the currently selected language
      */
     @Transient
-    private TranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
+    private CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
     
     /**
      *  
@@ -547,7 +547,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
         if(mediaItem != null) {        	
-        	this.mediaItemWrapper = new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));;
+        	this.mediaItemWrapper = new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());;
         } else {
         	this.mediaItemWrapper = null;
         }
@@ -557,14 +557,14 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
 	 * @return the mediaItemWrapper
 	 */
-	public TranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
 		return mediaItemWrapper;
 	}
 	
 	/**
 	 * @param mediaItemWrapper the mediaItemWrapper to set
 	 */
-	public void setMediaItemWrapper(TranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
+	public void setMediaItemWrapper(CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
 		this.mediaItemWrapper = mediaItemWrapper;
 		if(mediaItemWrapper != null)  {			
 			this.mediaItem = this.mediaItemWrapper.getValue();

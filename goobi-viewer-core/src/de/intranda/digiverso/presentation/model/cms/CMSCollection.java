@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
@@ -491,9 +493,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 	 * @see de.intranda.digiverso.presentation.model.cms.CMSMediaHolder#getMediaItemWrapper()
 	 */
 	@Override
-	public TranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
 		if(hasMediaItem()) {
-			return new TranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()));
+			return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
 		} else {
 			return null;
 		}

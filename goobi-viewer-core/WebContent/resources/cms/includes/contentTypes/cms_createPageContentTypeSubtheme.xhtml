@@ -34,7 +34,7 @@
                         styleClass="form-control" 
                         value="#{cmsBean.selectedPage.parentPageId}"
                         disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
-                        required="#{!userBean.user.hasPriviledgeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
                         requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
                         <f:selectItem 
                             itemValue="#{null}"

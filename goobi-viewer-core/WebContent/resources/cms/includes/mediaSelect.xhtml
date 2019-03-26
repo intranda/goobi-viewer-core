@@ -114,6 +114,7 @@
 
 		viewerJS.clipboard.init( '[data-copy]' );
 		cmsJS.media.init( adminMediaConfig );
+		cmsJS.modules.onReload();
 		riot.mount( 'adminMediaUpload', adminMediaConfig );
 
 		function reload( data ) {
