@@ -40,16 +40,16 @@
 
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
-	
+
 	<!-- teiFolder: contains TEI metadata/fulltext files -->
 	<teiFolder>tei</teiFolder>
-    
+
 	<!-- cmdiFolder: contains CMDI metadata/fulltext files -->
 	<cmdiFolder>cmdi</cmdiFolder>
 
 	<!-- hotfolder: defines the hotfolder from the Goobi viewer Indexer for indexing uploaded born-digital-material (see <content> also) -->
 	<hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>
-	
+
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>/opt/digiverso/viewer/apache-solr/collection1/conf/lang/stopwords.txt</stopwordsFile>
 
@@ -90,7 +90,7 @@
 		<!-- userRegistrationEnabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<userRegistrationEnabled>true</userRegistrationEnabled>
 
-		<!-- List of authentication providers. Each <provider> element defines an authentication provider. 
+		<!-- List of authentication providers. Each <provider> element defines an authentication provider.
 		     Possible attributes for providers are: type, show, name, endpoint (auth URL), clientId, clientSecret, image, timeout. -->
 	        <authenticationProviders>
 	        	<provider type="local" show="true" name="Goobi viewer"/>
@@ -222,9 +222,9 @@
 
 		<!-- TODO DOCUMENTATION-->
 		<rememberImageRotation>false</rememberImageRotation>
-        
+
 	        <!-- URL patterns for external image urls which should be served via the contentServner
-	        All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls 
+	        All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls
 	        Will not be delivered to the client directly, but rather embedded within a contentServer IIIF url, so the actual image
 	        is requested by the viewer/contentServer and not the client
 	         -->
@@ -268,11 +268,11 @@
 
 		<!-- set solr field that is used to define different watermark configuration ids -->
 		<watermarkIdField>MD_GEIFOOTERID</watermarkIdField>
-		
-		<!-- pageSelectionFormat: Format for the page selection drop-down menu items. 
+
+		<!-- pageSelectionFormat: Format for the page selection drop-down menu items.
 		     Values that are not among the following allowed variables will be displayed as-is.
 		     Allowed variables: {order},{orderlabel},{numpages},{msg.xx} (xx being a message key) -->
-		<pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat> 
+		<pageSelectionFormat>{order}:{orderlabel}</pageSelectionFormat>
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
 		     Custom URL names must be mapped in the faces config, too. -->
@@ -298,28 +298,28 @@
 			<Periodical>toc</Periodical>
 			<newspaper>calendar</newspaper>
 		</docstructTargetPageTypes>
-		
+
 		<!-- If a record's percentage of pages having full-Text/ALTO documents
 		     falls below the configured value, a warning will be displayed for that record. -->
 		<fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
-        
-		<!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
+
+		<!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will
 		     also change the preferred language for record metadata. Default is false. -->
 		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="false">
-			<!-- rootPath: If the theme is localed externally, the CMS template loading 
-			     mechanism needs the root path of the theme. The path must be defined down 
+			<!-- rootPath: If the theme is localed externally, the CMS template loading
+			     mechanism needs the root path of the theme. The path must be defined down
 			     to the /themes folder, just above the folder named like the theme. -->
 			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
-		
-		<!-- name: Goobi viewer instance name -->
-        <name>Goobi viewer</name>
-        
-        <!-- name: Goobi viewer instance description -->
-        <description>Goobi viewer</description>
+
+		<!-- name: Name of the Goobi viewer instance. This is shown in the OpenSearch description file -->
+		<name>Goobi viewer</name>
+
+		<!-- description: Goobi viewer instance description. This is shown in the OpenSearch description file -->
+		<description>Open source software for presenting your digital library or digital heritage online</description>
 	</viewer>
 
 
@@ -398,13 +398,13 @@
 			<enabled>true</enabled>
 
 			<!-- TODO DOCUMENTATION-->
-			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch Minus) sowie fuer Startjahr weiter der Wert MIN 
-			     und fuer Endjahr der Wert MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert genommen, 
+			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch Minus) sowie fuer Startjahr weiter der Wert MIN
+			     und fuer Endjahr der Wert MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert genommen,
 			     bei MAX das groesste verfuegbare als Endjahr -->
 			<startyear>1500</startyear>
 			<endyear>2019</endyear>
 
-			<!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
+			<!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the
 			     maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
 			<hits>108</hits>
 		</timeline>
@@ -458,7 +458,7 @@
 
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
-		
+
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
             (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
         <!-- Example query for also including periodical volumes:
@@ -492,12 +492,12 @@
 
 
 	<collections>
-    
+
 		<collection field="DC">
-		
+
 			<!-- splitingCharacter: defines symbol that splits collections into subcollections -->
 			<splittingCharacter>.</splittingCharacter>
-		
+
 			<!-- In the following section you can define an index field that is used for default sorting when opening. Only non-multivalued fields may be used! -->
 			<defaultSortFields>
 				<field collection="varia">SORT_TITLE</field>
@@ -528,7 +528,7 @@
                         <defaultBrowseIcon></defaultBrowseIcon>
 
 		</collection>
-          
+
 		<!-- true if opening a collection containing only a single work should redirect to that work -->
 		<redirectToWork>true</redirectToWork>
 	</collections>
@@ -587,73 +587,55 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPILER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_RECIPIENT" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_AUTHOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPOSER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_PHOTOGRAPHER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ERSTELLER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ILLUSTRATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITORCORPORATION" value="">
 					<param type="field" key="MD_EDITORCORPORATION" />
@@ -662,17 +644,13 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_TRANSLATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="CURRENTNO" value="">
 					<param type="field" key="CURRENTNO" />
@@ -904,7 +882,7 @@
 				</metadata>
 			</template>
 		</sideBarMetadataList>
-		
+
 
 		<!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
 		<normdataList>
@@ -1067,7 +1045,7 @@
 
 	<!-- Show or hide sections in the sidebar globally -->
 	<sidebar>
-    
+
 		<!-- overview: if false, the image view is hidden -->
 		<overview>
 			<visible>true</visible>
@@ -1291,15 +1269,15 @@
 		<siteID>1</siteID>
 	</piwik>
 
-	
+
 	<sitemap>
 		<!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
 		<sitelinksField>YEAR</sitelinksField>
-		<!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
+		<!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)-->
 		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
 	</sitemap>
 
-	
+
 	<!-- Web API configuration -->
 	<webapi>
 		<!-- fields: Custom JSON fields. Each <field> element must contain the
@@ -1311,14 +1289,14 @@
 		</fields>
 
 		<iiif>
-			<!-- A list of all metadata fields which should be included within 
+			<!-- A list of all metadata fields which should be included within
 			     the IIIF Presentation response for manifests and ranges representing structural elements -->
 			<metadataFields>
                 		<field>MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<!--field>MD_*</field-->
 			</metadataFields>
-            
+
 			<!-- A list of solr fieldnames which may serve as manifest description metadata. The first existing field is used to provide the medatada description -->
 			<descriptionFields>
 				<field>MD_CONTENTDESCRIPTION</field>
@@ -1331,9 +1309,9 @@
 			     provided as attribution values -->
 			<attribution>iiif_attribution</attribution>
 
-			<!-- URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url, 
+			<!-- URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url,
 			     the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
-			     that file. If it is just a filename or relative filepath, it will be assumed to be a file in the 
+			     that file. If it is just a filename or relative filepath, it will be assumed to be a file in the
 			     resources/themes/<theme>/images/ folder and linked appropriately
 			     If no logo is configured, the image footer will be used-->
 			<logo>dfgviewer_intranda.jpg</logo>
