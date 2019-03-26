@@ -138,22 +138,23 @@ public class CmsBean implements Serializable {
             lazyModelPages = new TableDataProvider<>(new TableDataSource<CMSPage>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
-				private List<String> allowedSubthemes = null;
-				private List<String> allowedCategories = null;
-				private List<String> allowedTemplates = null;
-				private boolean initialized = false;
-				
+                private List<String> allowedSubthemes = null;
+                private List<String> allowedCategories = null;
+                private List<String> allowedTemplates = null;
+                private boolean initialized = false;
 
                 @Override
                 public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                	try {
-                		initialize();
+                    try {
+                        initialize();
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
                         }
-                        
-						List<CMSPage> pages =
-                                DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes, allowedCategories);
+
+                        List<CMSPage> pages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes,
+                                        allowedCategories);
                         pages.forEach(page -> {
                             PageValidityStatus validityStatus = isPageValid(page);
                             page.setValidityStatus(validityStatus);
@@ -173,8 +174,10 @@ public class CmsBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
-                        	initialize();
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters, allowedTemplates, allowedSubthemes, allowedCategories));
+                            initialize();
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance()
+                                    .getDao()
+                                    .getCMSPageCount(filters, allowedTemplates, allowedSubthemes, allowedCategories));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
@@ -203,7 +206,7 @@ public class CmsBean implements Serializable {
 					}		
 				}
 
-				@Override
+                @Override
                 public void resetTotalNumberOfRecords() {
                     numCreatedPages = Optional.empty();
                 }
@@ -308,10 +311,10 @@ public class CmsBean implements Serializable {
      */
     public List<CMSPageTemplate> getAllowedTemplates(User user) {
         logger.trace("getAllowedTemplates");
-        if(user == null) {
+        if (user == null) {
             return Collections.emptyList();
         }
-        
+
         return user.getAllowedTemplates(getTemplates());
     }
 
@@ -1580,6 +1583,27 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * 
+     * @param user
+     * @return true if user is limited to a subset of all available subtheme discriminator values; false otherwise
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {
+        logger.trace("isSubthemeRequired");
+        try {
+        if (user == null || user.isSuperuser() || StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())) {
+            return false;
+        }
+
+        List<String> all = getSubthemeDiscriminatorValues();
+        return user.getAllowedSubthemeDiscriminatorValues(all).size() < all.size();
+        } finally {
+            logger.trace("isSubthemeRequired END");
+        }
+    }
+
+    /**
      * Returns a filtered category list for the given user, unless the user is a superuser. Other CMS admins get a list matching values list attached
      * to their CMS license.
      * 
@@ -1753,7 +1777,7 @@ public class CmsBean implements Serializable {
     public void resetCurrentWorkPi() {
         this.currentWorkPi = "";
     }
-    
+
     /**
 	 * @param selectedMediaHolder the selectedMediaHolder to set
 	 */

@@ -8927,6 +8927,9 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext.static {
   display: inline-block;
 }
+.cms-module__option-control-helptext.in.inline {
+  display: inline;
+}
 .cms-module__option-help {
   -ms-flex-preferred-size: 5%;
       flex-basis: 5%;

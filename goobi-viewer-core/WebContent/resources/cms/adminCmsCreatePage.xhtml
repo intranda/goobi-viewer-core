@@ -144,11 +144,13 @@
                                                                     </div>
                                                                 </ui:fragment>
 
-                                                                <!-- CONTENT TYPE MEDIA -->
-                                                                <cmsComponent:cms_createPageContentTypeMedia />
+<!-- CONTENT TYPE MEDIA -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMedia.xhtml" />
 
-                                                                <!-- CONTENT TYPE SOLRQUERY -->
-                                                                <cmsComponent:cms_createPageContentTypeSolr />
+<!-- CONTENT TYPE SOLRQUERY -->
+<ui:fragment rendered="#{contentItem.type == 'SOLRQUERY'}">
+    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSolr.xhtml" />
+</ui:fragment>
 
                                                                 <!-- CONTENT TYPE PAGELIST -->
                                                                 <cmsComponent:cms_createPageContentTypePagelist />
@@ -176,84 +178,41 @@
 
                                                                 <!-- CONTENT TYPE METADATA -->
                                                                 <cmsComponent:cms_createPageContentTypeMetadata />
-
                                                             </ui:repeat>
 
-                                                            <!-- LOCALE -->
-                                                            <h:panelGroup rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
-                                                                <cmsComponent:cms_selectOneMenu id="creationStatus"
-                                                                    field="#{cmsBean.selectedPage.getLanguageVersion(locale).status}"
-                                                                    label="#{msg.cms_languageVersion_creationStatus}:" options="#{cmsBean.languageStatusValues}" render="@none"
-                                                                    item="var" itemValue="#{var}" itemLabel="#{var.name()}" />
-                                                            </h:panelGroup>
-                                                            <!-- css class -->
-                                                            <cmsComponent:cms_inputText id="wrapperElementClass" field="#{cmsBean.selectedPage.wrapperElementClass}"
-                                                                label="#{msg.cms_wrapperElementClass}:" help="#{msg.cms_wrapperElementClass_help}" />
-                                                            <!-- prettified url -->
-                                                            <cmsComponent:cms_inputText id="prettyUrl" field="#{cmsBean.selectedPage.persistentUrl}"
-                                                                label="#{msg.cms_page_pretty_url}:" help="#{msg.cms_page_pretty_url_help}" />
-                                                            <!-- url params -->
-                                                            <cmsComponent:cms_checkbox id="urlParameters" field="#{cmsBean.selectedPage.mayContainUrlParameters}"
-                                                                label="#{msg.cms_page_url_parameters}:" help="#{msg.cms_page_url_parameters_help}"
-                                                                onclick="cmsJS.createPage.disablePreview();" />
-                                                            <!-- related PI -->
-<!--                                                             <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:" -->
-<!--                                                                 help="#{msg.cms_page_related_pi_help}"> -->
-<!--                                                                 <f:validator validatorId="relatedPiValidator" for="inputField" /> -->
+<!-- CONTENT TYPE LOCALE -->
+<ui:fragment rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
+    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeLocale.xhtml" />
+</ui:fragment>
 
-<!--                                                             </cmsComponent:cms_inputText> -->
-								        <div class="cms-module__option-group">
-								            <div class="cms-module__option-label">
-								                <label for="relatedPI:input">#{msg.cms_page_related_pi}:</label>
-								            </div>
-								            <div class="cms-module__option-control">
-								                <h:panelGroup id="relatedPiInputGroup">
-								                <div class="cms-module__option-message">
-								                    <h:messages for="relatedPiInput" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
-								                    
-								                    <div class="cms-module__option-message-mark">
-								                        <i class="fa fa-check" aria-hidden="true"></i>
-								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-								                    </div>
-								                </div>
-								                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
-								                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
-								                    <f:ajax event="blur" render="relatedPiInputGroup" />
-								                </h:inputText>
-								                <span class="cms-module__option-control-helptext">#{msg.cms_page_related_pi_help}</span>
-								                </h:panelGroup>
-								            </div>
-								            <div class="cms-module__option-help">
-								                <ui:fragment rendered="#{cc.attrs.help != ''}">
-								                    <button type="button" class="btn btn--clean" data-toggle="helptext">
-								                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-								                    </button>
-								                </ui:fragment>
-								            </div>
-								        </div>
-									       <!-- subtheme discriminator field -->
-									       <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
-									           label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
-									           options="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" defaultItemValue="#{null}"
-									           defaultItemLabel="-" disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
-									           required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
-									           requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}" />
-									       <!-- parent page for breadcrumbs -->
-									       <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
-									           label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"
-									           options="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" item="availablePage"
-									           itemValue="#{availablePage.id}" itemLabel="#{availablePage.title}" defaultItemValue=""
-									           defaultItemLabel="#{msg.index}" />
-								        </div>
-								                         </div>
-								                     </h:panelGroup>
-								
-								                     <!-- SIDEBAR EDITOR TAB -->
-								                     <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
-								                 </div>
-								             </div>
-								         </div>
-								     </div>
+<!-- CONTENT TYPE CSS CLASS -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" />
+
+<!-- CONTENT TYPE PRETTY URL -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" />
+                                                            
+<!-- CONTENT TYPE URL PARAMS -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" />
+
+<!-- CONTENT TYPE RELATED PI -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" />
+
+<!-- CONTENT TYPE SUBTHEME -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSubtheme.xhtml" />
+
+<!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
+<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageBreadcrumbParent.xhtml" />
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+
+
+                                                <!-- SIDEBAR EDITOR TAB -->
+                                                <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
                                     <!-- METADATA WRAPPER -->

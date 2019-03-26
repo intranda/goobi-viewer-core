@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- CONTENT TYPE SUBTHEME -->
+    <div class="cms-module__option-group">
+        <div class="cms-module__option-label">
+            <label for="subthemeDiscriminator">#{msg.cms_page_subtheme_discriminator}:</label>
+        </div>
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="subthemeDiscriminatorGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="subthemeDiscriminator" 
+                        infoClass="cms-module__option-message success" 
+                        warnClass="cms-module__option-message warning"
+                        errorClass="cms-module__option-message danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu 
+                        id="subthemeDiscriminator" 
+                        styleClass="form-control" 
+                        value="#{cmsBean.selectedPage.parentPageId}"
+                        disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
+                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+                        requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
+                        <f:selectItem 
+                            itemValue="#{null}"
+                            itemLabel="-" />
+                        <f:selectItems value="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" />
+                        <f:ajax event="change" render="subthemeDiscriminatorGroup" />
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.cms_page_subtheme_discriminator_help}</span>
+        </div>
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</ui:composition>
