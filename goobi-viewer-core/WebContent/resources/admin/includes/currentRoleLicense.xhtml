@@ -63,13 +63,11 @@
                         rendered="#{adminBean.currentLicense.licenseType.privCmsAllSubthemes}" 
                         disabled="true" 
                         selected="true"
-                        title="#{msg.license_privInheritedFromLicenseType}" 
-                        label="privCmsAllSubthemes" />
+                        title="#{msg.license_privInheritedFromLicenseType}" />
                     <h:selectBooleanCheckbox 
                         id="privCmsAllSubthemes"
                         rendered="#{!adminBean.currentLicense.licenseType.privCmsAllSubthemes}" 
-                        value="#{adminBean.currentLicense.privCmsAllSubthemes}"
-                        label="privCmsAllSubthemes">
+                        value="#{adminBean.currentLicense.privCmsAllSubthemes}">
                         <f:ajax render="@form" />
                     </h:selectBooleanCheckbox> #{msg.license_privCmsAllSubthemes}
                 </label>
@@ -131,13 +129,11 @@
                     rendered="#{adminBean.currentLicense.licenseType.privCmsAllTemplates}" 
                     disabled="true" 
                     selected="true"
-                    title="#{msg.license_privInheritedFromLicenseType}" 
-                    label="privCmsAllTemplates" />
+                    title="#{msg.license_privInheritedFromLicenseType}" />
                 <h:selectBooleanCheckbox 
                     id="privCmsAllTemplates"
                     rendered="#{!adminBean.currentLicense.licenseType.privCmsAllTemplates}" 
-                    value="#{adminBean.currentLicense.privCmsAllTemplates}"
-                    label="privCmsAllTemplates">
+                    value="#{adminBean.currentLicense.privCmsAllTemplates}">
                     <f:ajax render="@form" />
                 </h:selectBooleanCheckbox> #{msg.license_privCmsAllTemplates}
             </label>

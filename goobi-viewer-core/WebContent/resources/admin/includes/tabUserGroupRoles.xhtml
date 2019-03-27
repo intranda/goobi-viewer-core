@@ -10,7 +10,7 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:form id="rolesForm" rendered="#{userBean.admin}" prependId="true">
+		<h:form id="rolesForm" rendered="#{userBean.admin}" prependId="false">
 			<h:panelGroup id="listUserGroupRoles" rendered="#{adminBean.currentLicense == null}">
 				<h3>#{msg.roles}</h3>
 				

@@ -39,7 +39,7 @@ var cmsJS = ( function( cms ) {
             this.initEventListeners();
             this.cleanUp();
             
-            // jsj ajax event
+            // jsf ajax event
             jsf.ajax.addOnEvent( function( data ) {
 				var ajaxstatus = data.status;
 
@@ -49,7 +49,9 @@ var cmsJS = ( function( cms ) {
 					case 'complete':
 						break;
 					case 'success':
-						cmsJS.modules.setValidationStatus( data.source.id );
+						if ( $( '.cms-module__option-message' ).length > 0 ) {
+							cmsJS.modules.setValidationStatus( data.source.id );							
+						}
 						
 						break;
 				}

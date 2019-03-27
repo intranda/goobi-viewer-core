@@ -13,13 +13,11 @@
                 rendered="#{adminBean.currentLicense.licenseType.privCmsMenu}" 
                 disabled="true" 
                 selected="true"
-                title="#{msg.license_privInheritedFromLicenseType}" 
-                label="privCmsMenu" />
+                title="#{msg.license_privInheritedFromLicenseType}" />
             <h:selectBooleanCheckbox 
                 id="privCmsMenu"
                 rendered="#{!adminBean.currentLicense.licenseType.privCmsMenu}" 
-                value="#{adminBean.currentLicense.privCmsMenu}"
-                label="privCmsMenu" /> #{msg.license_privCmsMenu}
+                value="#{adminBean.currentLicense.privCmsMenu}" /> #{msg.license_privCmsMenu}
         </label>
         <br />
         <!-- CMS static pages -->
@@ -29,13 +27,11 @@
                 rendered="#{adminBean.currentLicense.licenseType.privCmsStaticPages}" 
                 disabled="true" 
                 selected="true"
-                title="#{msg.license_privInheritedFromLicenseType}" 
-                label="privCmsStaticPages" />
+                title="#{msg.license_privInheritedFromLicenseType}" />
             <h:selectBooleanCheckbox 
                 id="privCmsStaticPages"
                 rendered="#{!adminBean.currentLicense.licenseType.privCmsStaticPages}" 
-                value="#{adminBean.currentLicense.privCmsStaticPages}"
-                label="privCmsStaticPages" /> #{msg.license_privCmsStaticPages}
+                value="#{adminBean.currentLicense.privCmsStaticPages}" /> #{msg.license_privCmsStaticPages}
         </label>
         <br />
         <!-- CMS collections -->
@@ -45,13 +41,11 @@
                 rendered="#{adminBean.currentLicense.licenseType.privCmsCollections}" 
                 disabled="true" 
                 selected="true"
-                title="#{msg.license_privInheritedFromLicenseType}" 
-                label="privCmsCollections" />
+                title="#{msg.license_privInheritedFromLicenseType}" />
             <h:selectBooleanCheckbox 
                 id="privCmsCollections"
                 rendered="#{!adminBean.currentLicense.licenseType.privCmsCollections}" 
-                value="#{adminBean.currentLicense.privCmsCollections}"
-                label="privCmsCollections" /> #{msg.license_privCmsCollections}
+                value="#{adminBean.currentLicense.privCmsCollections}" /> #{msg.license_privCmsCollections}
         </label>
         <br />
         <!-- CMS categories -->
@@ -61,13 +55,11 @@
                 rendered="#{adminBean.currentLicense.licenseType.privCmsCategories}" 
                 disabled="true" 
                 selected="true"
-                title="#{msg.license_privInheritedFromLicenseType}" 
-                label="privCmsCategories" />
+                title="#{msg.license_privInheritedFromLicenseType}" />
             <h:selectBooleanCheckbox 
                 id="privCmsCategories"
                 rendered="#{!adminBean.currentLicense.licenseType.privCmsCategories}" 
-                value="#{adminBean.currentLicense.privCmsCategories}"
-                label="privCmsCategories" /> #{msg.license_privCmsCategories}
+                value="#{adminBean.currentLicense.privCmsCategories}" /> #{msg.license_privCmsCategories}
         </label>
     </div>
 </ui:composition>
