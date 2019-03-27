@@ -17,7 +17,7 @@
                 <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
             </div>
             <div class="admin-cms-media__upload-message error">
-                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> {opts.msg.mediaError}:<span></span>
+                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
             </div>        
         </div>
     </div>
@@ -30,21 +30,21 @@
     
         this.on('mount', function () {
             var dropZone = (this.refs.dropZone);
-            
+    
             dropZone.addEventListener('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
-                
+    
                 this.isDragover = true;
                 this.update();
             }.bind(this));
-
-            dropZone.addEventListener('dragleave', function (e) {                
+    
+            dropZone.addEventListener('dragleave', function (e) {
                 this.isDragover = false;
                 this.update();
             }.bind(this));
-            
+    
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -69,11 +69,11 @@
         }.bind(this));
     
         buttonFilesSelected(e) {
-			for (var f of e.target.files) {
+            for (var f of e.target.files) {
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
-                
+    
                 if (size > 1024) {
                     size = size / 1024;
                     sizeUnit = 'MB';
@@ -82,7 +82,7 @@
                     size = size / 1024;
                     sizeUnit = 'GB';
                 }
-                
+    
                 this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
             }
     
@@ -90,50 +90,47 @@
         }
     
         uploadFiles() {
-        	var uploads = [];
-        	for (i = 0; i < this.files.length; i++) {         		
-            	uploads.push(Q(this.uploadFile(i)));
-        	}
-        	Q.allSettled(uploads)
-        	.then(function(results) {
-        		results.forEach(function (result) {
-        	        if (result.state === "fulfilled") {
-        	            var value = result.value;
-        	            this.fileUploaded(value);
-        	        } else {
-        	            var reason = result.reason;
-        	            this.fileUploadError(result);
-        	        }
-        	    }.bind(this));
-        		if(this.opts.onUploadComplete) {
-        			this.opts.onUploadComplete();
-        		}
-        	}.bind(this))
+            var uploads = [];
+            for (i = 0; i < this.files.length; i++) {
+                uploads.push(Q(this.uploadFile(i)));
+            }
+            Q.allSettled(uploads)
+                .then(function (results) {
+                    results.forEach(function (result) {
+                        if (result.state === "fulfilled") {
+                            var value = result.value;
+                            this.fileUploaded(value);
+                        } else {
+                            var reason = result.reason;
+                            this.fileUploadError(result);
+                        }
+                    }.bind(this));
+                    //         		if(this.opts.onUploadComplete) {
+                    //         			this.opts.onUploadComplete();
+                    //         		}
+                }.bind(this))
         }
-        
+    
         fileUploaded(fileInfo) {
-        	console.log("uploaded file ", fileInfo);
+            $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
         }
-        
+    
         fileUploadError(error) {
-        	console.log("Error uploading file ", error);
-        	var responseText = error.reason.responseText;
-        	if(responseText) {
-        		$("#messages").append("<li class='alert alert-danger'>" + responseText + "</li>");
-        	}
+            var responseText = error.reason.responseText;
+            
+            if (responseText) {
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
+                $('.admin-cms-media__upload-message.error span').text(responseText);
+            }
         }
-        
-        fileUploadComlpete(arg) {
-        	console.log("Completed uploading file ", arg);
-        }
-        
+    
         uploadFile(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
-                
+    
                 return;
             }
-            
+    
             var displayFile = this.displayFiles[i];
             var config = {
                 onUploadProgress: (progressEvent) => {
@@ -142,9 +139,9 @@
                 }
             };
             var data = new FormData();
-            
+    
             data.append('file', this.files[i])
-            
+    
             return $.ajax({
                 url: this.opts.postUrl,
                 type: 'POST',
@@ -152,10 +149,7 @@
                 dataType: 'json',
                 cache: false,
                 contentType: false,
-                processData: false,
-//                 complete: this.fileUploadComplete,
-//                 success: this.fileUploaded,
-//                 error: this.fileUploadError
+                processData: false
             });
         }
     </script> 
