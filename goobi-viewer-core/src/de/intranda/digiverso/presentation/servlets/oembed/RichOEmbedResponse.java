@@ -15,7 +15,10 @@
  */
 package de.intranda.digiverso.presentation.servlets.oembed;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 
 public class RichOEmbedResponse extends OEmbedResponse {
 
@@ -25,11 +28,13 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * Constructor.
      * 
      * @param record
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public RichOEmbedResponse(OEmbedRecord record) throws ViewerConfigurationException {
         this.type = "rich";
-        generateHtml(record);
+        this.width = 300;
+        this.height = 450;
+        generateHtml(record, width);
     }
 
     /**
@@ -37,14 +42,18 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * @param se
      * @throws ViewerConfigurationException
      */
-    private void generateHtml(OEmbedRecord record) throws ViewerConfigurationException {
+    private void generateHtml(OEmbedRecord record, int size) throws ViewerConfigurationException {
         if (record == null) {
             throw new IllegalArgumentException("record may not be null");
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append("<div>");
-        sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl()).append("\">");
+        switch (record.getPhysicalElement().getMimeType()) {
+            case PhysicalElement.MIME_TYPE_IMAGE:
+                sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
+                break;
+        }
         sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
 
         record.getStructElement().getPi();
