@@ -139,7 +139,7 @@ var cmsJS = ( function( cms ) {
 				$( '.admin-cms-media__files' ).addClass( 'grid' );
 			} 
 			else if ( sessionStorage.getItem( 'adminCmsMediaGrid' ) == undefined || sessionStorage.getItem( 'adminCmsMediaGrid' ) == '' ) {
-				sessionStorage.setItem( 'adminCmsMediaGrid', false );
+				sessionStorage.setItem( 'adminCmsMediaGrid', true );
 				_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
 				_setMediaGridStatus( _adminCmsMediaGrid );
 			}
