@@ -150,6 +150,11 @@
 		&:nth-child(odd) {
 			background-color: @neutralgray;
 		}
+		&:hover {
+			.admin-cms-media__file-actions {
+				position: static;
+			}
+		}
 		&.fixed {
 			display: flex;
 			flex-direction: column;
@@ -305,7 +310,8 @@
 		min-height: 34px;
 	}
 	&__file-actions {
-		display: none;
+		position: relative;
+		left: -9999em;
 		padding-left: 22px;
 	}
 	&__file-actions-view,

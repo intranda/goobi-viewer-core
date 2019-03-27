@@ -9193,6 +9193,10 @@ div[id*="-Modal"] .email-form .form-group {
 .admin-cms-media__file:nth-child(odd) {
   background-color: #f2f3f4;
 }
+.admin-cms-media__files.grid .admin-cms-media__file:hover .admin-cms-media__file-actions,
+.admin-cms-media__file:hover .admin-cms-media__file-actions {
+  position: static;
+}
 .admin-cms-media__files.grid .admin-cms-media__file.fixed,
 .admin-cms-media__file.fixed {
   display: -ms-flexbox;
@@ -9365,7 +9369,8 @@ div[id*="-Modal"] .email-form .form-group {
   min-height: 34px;
 }
 .admin-cms-media__file-actions {
-  display: none;
+  position: relative;
+  left: -9999em;
   padding-left: 22px;
 }
 .admin-cms-media__file-actions-view,
