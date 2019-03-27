@@ -30,16 +30,16 @@ import de.intranda.digiverso.presentation.controller.Helper;
  * Syntax validator for passwords addresses.
  */
 @FacesValidator("piValidator")
-public class PIValidator implements Validator {
+public class PIValidator implements Validator<String> {
 
-    private static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
+    protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
      */
     @Override
-    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        if (!validatePi((String) value)) {
+    public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
+        if (!validatePi(value)) {
             FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_errInvalid", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);

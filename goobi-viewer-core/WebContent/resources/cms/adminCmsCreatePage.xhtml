@@ -12,31 +12,29 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsBean.editMode ? 'adminCmsEditPage':'adminCmsCreatePage')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsBean.editMode ? 'adminCmsEditPage' : 'adminCmsCreatePage')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled}">
-            <h:panelGroup layout="block" id="cmsCreatePage">
-                <h:form rendered="#{userBean.admin and cmsBean.selectedPage == null}">
+        <h:panelGroup id="cmsCreatePageAccessControl" rendered="#{userBean.user.cmsAdmin}">
+            <div id="cmsCreatePage" class="cms-create-page">
+                <!-- BACK TO OVERVIEW -->
+                <h:form rendered="#{cmsBean.selectedPage == null}">
                     <h:commandLink action="pretty:adminCmsOverview">
                         <h:outputText value="#{msg.cms_backToOverview}" />
                     </h:commandLink>
                 </h:form>
-                
-                <h:panelGroup rendered="#{userBean.admin and cmsBean.selectedPage != null}">
-                    <!-- AJAX LOADER -->
-                    <div id="AJAXLoader"></div>
 
+                <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
                     <h2 class="admin__content-inner-title">#{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{cmsBean.selectedPage.template.name}</h2>
-                    
+
                     <div class="admin__content-inner-content">
                         <div class="row">
                             <h:form id="create_page_form" prependId="false">
                                 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 create-page-left">
                                     <!-- CREATE PAGE WRAPPER -->
-                                    <div id="cmsCreatePageWrapper">
+                                    <div class="cms-create-page__wrapper">
                                         <div role="tabpanel">
                                             <!-- NAV TABS -->
                                             <ul class="nav nav-tabs" role="tablist">
@@ -49,7 +47,7 @@
                                                     <h:commandLink value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" />
                                                 </li>
                                             </ul>
-    
+
                                             <div class="tab-content">
                                                 <!-- LOCALIZE TABS -->
                                                 <h:panelGroup rendered="#{cmsBean.selectedLocale != null}">
@@ -57,161 +55,233 @@
                                                     <div role="tabpanel" class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
                                                         <!-- PAGE CONTENT -->
                                                         <div class="edit-content-page edit-content-page-content">
-                                                            <div class="form-horizontal">
-                                                                <div class="form-group">
-                                                                    <label class="col-sm-3 control-label">#{msg.cms_pageTitle}*:</label>
-                                                                    <div class="col-sm-9">
-                                                                        <h:inputText value="#{cmsBean.selectedPage.getLanguageVersion(locale).title}"
-                                                                            styleClass="form-control content-input" />
-                                                                    </div>
+                                                            <!-- TITLE -->
+                                                            <div class="cms-module__option-group">
+                                                                <div class="cms-module__option-label">
+                                                                    <label for="cmsCreatePageTitle">#{msg.cms_pageTitle}*:</label>
                                                                 </div>
-                                                                <div class="form-group">
-                                                                    <label class="col-sm-3 control-label">#{msg.cms_pageMenuTitle}:</label>
-                                                                    <div class="col-sm-9">
-                                                                        <h:inputText value="#{cmsBean.selectedPage.getLanguageVersion(locale).menuTitle}"
-                                                                            styleClass="form-control content-input" />
-                                                                    </div>
+                                                                <div class="cms-module__option-control">
+                                                                    <h:inputText id="cmsCreatePageTitle" styleClass="form-control"
+                                                                        value="#{cmsBean.selectedPage.getLanguageVersion(locale).title}" />
+                                                                    <span class="cms-module__option-control-helptext">[Hilfetext]</span>
                                                                 </div>
-                                                                <h:panelGroup rendered="#{cmsBean.selectedPage.template.displaySortingField}">
-                                                                    <div class="form-group">
-                                                                        <label class="col-sm-3 control-label">#{msg.cms_pageSortingField}:</label>
-                                                                        <div class="col-sm-9">
-                                                                            <h:inputText value="#{cmsBean.selectedPage.pageSorting}" styleClass="form-control content-input">
-                                                                                <f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
-                                                                            </h:inputText>
-                                                                        </div>
-                                                                    </div>
-                                                                </h:panelGroup>
-                                                                <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale)}">
-                                                                    <!-- HTML SNIPPET -->
-                                                                    <h:panelGroup rendered="#{contentItem.type == 'TEXT'}">
-                                                                        <div class="form-group">
-                                                                            <label class="col-sm-3 control-label">#{contentItem.itemLabel}#{contentItem.mandatory?'*':''}:</label>
-                                                                            <div class="col-sm-9">
-                                                                                <h:inputText value="#{contentItem.htmlFragment}" styleClass="form-control content-input" />
-                                                                            </div>
-                                                                        </div>
-                                                                    </h:panelGroup>
-    
-                                                                    <!-- TINYMCE -->
-                                                                    <h:panelGroup rendered="#{contentItem.type == 'HTML'}">
-                                                                        <div class="form-group">
-                                                                            <label class="col-sm-3 control-label">#{contentItem.itemLabel}#{contentItem.mandatory?'*':''}:</label>
-                                                                            <div class="col-sm-9">
-                                                                                <h:inputTextarea styleClass="form-control tinyMCE" value="#{contentItem.htmlFragment}">
-                                                                                </h:inputTextarea>
-                                                                            </div>
-                                                                        </div>
-                                                                    </h:panelGroup>
-    
-                                                                    <!-- CONTENT TYPE MEDIA -->
-                                                                    <cmsComponent:cms_createPageContentTypeMedia />
-    
-                                                                    <!-- CONTENT TYPE SOLRQUERY -->
-                                                                    <cmsComponent:cms_createPageContentTypeSolr />
-    
-                                                                    <!-- CONTENT TYPE PAGELIST -->
-                                                                    <cmsComponent:cms_createPageContentTypePagelist />
-    
-                                                                    <!-- CONTENT TYPE COLLECTION -->
-                                                                    <cmsComponent:cms_createPageContentTypeCollection />
-    
-                                                                    <!-- CONTENT TYPE TILEGRID -->
-                                                                    <cmsComponent:cms_createPageContentTypeTileGrid />
-    
-                                                                    <!-- CONTENT TYPE TOC -->
-                                                                    <cmsComponent:cms_createPageContentTypeToc />
-    
-                                                                    <!-- CONTENT TYPE RSS -->
-                                                                    <cmsComponent:cms_createPageContentTypeRss />
-    
-                                                                    <!-- CONTENT TYPE SEARCH -->
-                                                                    <cmsComponent:cms_createPageContentTypeSearch />
-    
-                                                                    <!-- CONTENT TYPE COMPONENT -->
-                                                                    <cmsComponent:cms_createPageContentTypeComponent />
-    
-                                                                    <!-- CONTENT TYPE GLOSSARY -->
-                                                                    <cmsComponent:cms_createPageContentTypeGlossary />
-    
-                                                                    <!-- CONTENT TYPE METADATA -->
-                                                                    <cmsComponent:cms_createPageContentTypeMetadata />
-    
-                                                                </ui:repeat>
-    
-                                                                <!-- LOCALE -->
-                                                                <h:panelGroup rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
-                                                                    <cmsComponent:cms_selectOneMenu id="creationStatus"
-                                                                        field="#{cmsBean.selectedPage.getLanguageVersion(locale).status}"
-                                                                        label="#{msg.cms_languageVersion_creationStatus}:" options="#{cmsBean.languageStatusValues}" render="@none"
-                                                                        item="var" itemValue="#{var}" itemLabel="#{var.name()}" />
-                                                                </h:panelGroup>
-                                                                <!-- css class -->
-                                                                <cmsComponent:cms_inputText id="wrapperElementClass" field="#{cmsBean.selectedPage.wrapperElementClass}"
-                                                                    label="#{msg.cms_wrapperElementClass}:" help="#{msg.cms_wrapperElementClass_help}" />
-                                                                <!-- prettified url -->
-                                                                <cmsComponent:cms_inputText id="prettyUrl" field="#{cmsBean.selectedPage.persistentUrl}"
-                                                                    label="#{msg.cms_page_pretty_url}:" help="#{msg.cms_page_pretty_url_help}" />
-                                                                <!-- url params -->
-                                                                <cmsComponent:cms_checkbox id="urlParameters" field="#{cmsBean.selectedPage.mayContainUrlParameters}"
-                                                                    label="#{msg.cms_page_url_parameters}:" help="#{msg.cms_page_url_parameters_help}"
-                                                                    onclick="cmsJS.createPage.disablePreview();" />
-                                                                <!-- related PI -->
-                                                                <cmsComponent:cms_inputText id="relatedPI" field="#{cmsBean.selectedPage.relatedPI}" label="#{msg.cms_page_related_pi}:"
-                                                                    help="#{msg.cms_page_related_pi_help}" />
-                                                                <!-- subtheme discriminator field -->
-                                                                <cmsComponent:cms_selectOneMenu id="subthemeDiscriminator" field="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
-                                                                    label="#{msg.cms_page_subtheme_discriminator}:" help="#{msg.cms_page_subtheme_discriminator_help}"
-                                                                    options="#{cmsBean.subThemeDiscriminatorValues}" defaultItemValue="" defaultItemLabel="-" />
-                                                                <!-- parent page for breadcrumbs -->
-                                                                <cmsComponent:cms_selectOneMenu id="pageBreadcrumbParent" field="#{cmsBean.selectedPage.parentPageId}"
-                                                                    label="#{msg.cms_page_breadcrumb_parent}:" help="#{msg.cms_page_breadcrumb_parent_help}:"
-                                                                    options="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" item="availablePage"
-                                                                    itemValue="#{availablePage.id}" itemLabel="#{availablePage.title}" defaultItemValue=""
-                                                                    defaultItemLabel="#{msg.index}" />
-    
-    
+                                                                <div class="cms-module__option-help">
+                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
                                                             </div>
+
+                                                            <!-- MENUTITLE -->
+                                                            <div class="cms-module__option-group">
+                                                                <div class="cms-module__option-label">
+                                                                    <label for="cmsCreatePageMenutitle">#{msg.cms_pageMenuTitle}:</label>
+                                                                </div>
+                                                                <div class="cms-module__option-control">
+                                                                    <h:inputText id="cmsCreatePageMenutitle" styleClass="form-control"
+                                                                        value="#{cmsBean.selectedPage.getLanguageVersion(locale).menuTitle}" />
+                                                                    <span class="cms-module__option-control-helptext">[Hilfetext]</span>
+                                                                </div>
+                                                                <div class="cms-module__option-help">
+                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- PAGE SORTING -->
+                                                            <ui:fragment rendered="#{cmsBean.selectedPage.template.displaySortingField}">
+                                                                <div class="cms-module__option-group">
+                                                                    <div class="cms-module__option-label">
+                                                                        <label for="cmsCreatePageSortingField">#{msg.cms_pageSortingField}:</label>
+                                                                    </div>
+                                                                    <div class="cms-module__option-control">
+                                                                        <h:inputText id="cmsCreatePageSortingField" styleClass="form-control"
+                                                                            value="#{cmsBean.selectedPage.pageSorting}">
+                                                                            <f:passThroughAttribute name="type" value="number" />
+                                                                        </h:inputText>
+                                                                        <span class="cms-module__option-control-helptext">[Hilfetext]</span>
+                                                                    </div>
+                                                                    <div class="cms-module__option-help">
+                                                                        <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </ui:fragment>
+
+                                                            <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale)}">
+                                                                <!-- HTML SNIPPET -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
+                                                                    <div class="cms-module__option-group">
+                                                                        <div class="cms-module__option-label">
+                                                                            <label for="cmsCreatePageContenttypeText">#{contentItem.itemLabel}#{contentItem.mandatory ? '*'
+                                                                                : ''}:</label>
+                                                                        </div>
+                                                                        <div class="cms-module__option-control">
+                                                                            <h:inputText id="cmsCreatePageContenttypeText" styleClass="form-control"
+                                                                                value="#{contentItem.htmlFragment}" />
+                                                                            <span class="cms-module__option-control-helptext">[Hilfetext]</span>
+                                                                        </div>
+                                                                        <div class="cms-module__option-help">
+                                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </ui:fragment>
+
+                                                                <!-- TINYMCE -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'HTML'}">
+                                                                    <div class="cms-module__option-group">
+                                                                        <div class="cms-module__option-label">
+                                                                            <label for="cmsCreatePageContenttypeHtml">#{contentItem.itemLabel}#{contentItem.mandatory?'*':''}:</label>
+                                                                        </div>
+                                                                        <div class="cms-module__option-control">
+                                                                            <h:inputTextarea id="cmsCreatePageContenttypeHtml" styleClass="form-control tinyMCE"
+                                                                                value="#{contentItem.htmlFragment}" />
+                                                                            <span class="cms-module__option-control-helptext">[Hilfetext]</span>
+                                                                        </div>
+                                                                        <div class="cms-module__option-help">
+                                                                            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE MEDIA -->
+                                                                <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMedia.xhtml" />
+
+                                                                <!-- CONTENT TYPE SOLRQUERY -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'SOLRQUERY'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSolr.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE PAGELIST -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'PAGELIST'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageList.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE COLLECTION -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'COLLECTION'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCollection.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE TILEGRID -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'TILEGRID'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTileGrid.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE TOC -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'TOC'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeToc.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE RSS -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'RSS'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRss.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE FACETTING -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'SEARCH' or contentItem.type == 'COLLECTION'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeFacetting.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE SEARCH -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'SEARCH'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSearch.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE COMPONENT -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'COMPONENT'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeComponent.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE GLOSSARY -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'GLOSSARY'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGlossary.xhtml" />
+                                                                </ui:fragment>
+
+                                                                <!-- CONTENT TYPE METADATA -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'METADATA'}">
+                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMetadata.xhtml" />
+                                                                </ui:fragment>
+                                                            </ui:repeat>
+
+                                                            <!-- CONTENT TYPE LOCALE -->
+                                                            <ui:fragment rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
+                                                                <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeLocale.xhtml" />
+                                                            </ui:fragment>
+
+                                                            <!-- CONTENT TYPE CSS CLASS -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" />
+
+                                                            <!-- CONTENT TYPE PRETTY URL -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" />
+
+                                                            <!-- CONTENT TYPE URL PARAMS -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" />
+
+                                                            <!-- CONTENT TYPE RELATED PI -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" />
+
+                                                            <!-- CONTENT TYPE SUBTHEME -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSubtheme.xhtml" />
+
+                                                            <!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
+                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageBreadcrumbParent.xhtml" />
                                                         </div>
                                                     </div>
                                                 </h:panelGroup>
-    
+
                                                 <!-- SIDEBAR EDITOR TAB -->
                                                 <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
-    
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-    
+
                                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
-                                    <!-- metadata wrapper -->
+                                    <!-- METADATA WRAPPER -->
                                     <cmsComponent:cms_createPageMetadataItemWrapper id="metadata_component" />
                                 </div>
                             </h:form>
                         </div>
                     </div>
+                    
+                    <!-- MEDIA SELECT PANEL -->
+                    <h:panelGroup id="mediaSelectPanel">
+                        <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                            <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+                            
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">                            
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
+                            </div>
+                        </ui:fragment>
+                    </h:panelGroup>
                 </h:panelGroup>
+                
                 <script type="text/javascript">
-	                var createPageConfig = {
-	                    selectedPageID: "#{cmsBean.selectedPage.id}",
-	                    inputFields: $( ".content-input" ),
-	                    prevBtn: $( "#preview-button" ),
-	                    prevDescription: $( "#previewDescription" ),
-	                    saveBtn: $( 'a[id*="save-button"]' ),
-	                    sortablesConfig: {
-                                                                            componentListInput: document
-                                                                                    .getElementById( "sidebar_editor_component:itemOrderInput" ),
-	                        editButton: $( ".widget-edit" ),
-	                        availableItemList:  "#availableItemList" ,
-	                        visibleItemList:  "#visibleItemList" 
-	                    }
-	                };
-	                
-	                cmsJS.createPage.init( createPageConfig );
-	            </script>
-            </h:panelGroup>
+                	var createPageConfig = {
+						selectedPageID : "#{cmsBean.selectedPage.id}",
+						inputFields : $(".content-input"),
+						prevBtn : $("#preview-button"),
+						prevDescription : $("#previewDescription"),
+						saveBtn : $('a[id*="save-button"]'),
+						sortablesConfig : {
+							componentListInput : document.getElementById("sidebar_editor_component:itemOrderInput"),
+							editButton : $(".widget-edit"),
+							availableItemList : "#availableItemList",
+							visibleItemList : "#visibleItemList"
+						}
+					};
 
+					cmsJS.createPage.init(createPageConfig);
+                </script>
+            </div>
         </h:panelGroup>
     </ui:define>
 

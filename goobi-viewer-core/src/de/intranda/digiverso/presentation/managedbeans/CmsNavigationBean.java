@@ -20,13 +20,12 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +47,11 @@ public class CmsNavigationBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(CmsNavigationBean.class);
 
+    @Inject
+    CmsBean cmsBean;
+    @Inject
+    UserBean userBean;
+    
     private String menuItemList = null;
     private CMSNavigationItem selectedNavigationItem = null;
     private CMSNavigationManager itemManager;
@@ -56,7 +60,13 @@ public class CmsNavigationBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        itemManager = new CMSNavigationManager(DataManager.getInstance().getConfiguration().getTheme());
+    	try {
+			List<String> allowedThemes = getSelectableThemes();
+			itemManager = new CMSNavigationManager(allowedThemes.get(0));
+		} catch (PresentationException | IndexUnreachableException | IndexOutOfBoundsException e) {
+			logger.error(e.toString(), e);
+			itemManager = new CMSNavigationManager("");
+		}
     }
 
     public String getMenuItemList() {
@@ -193,8 +203,10 @@ public class CmsNavigationBean implements Serializable {
      */
     public List<String> getSelectableThemes() throws PresentationException, IndexUnreachableException {
         if (selectableThemes == null) {
-            selectableThemes = new ArrayList<>(BeanUtils.getCmsBean().getSubThemeDiscriminatorValues());
-            selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
+            selectableThemes = new ArrayList<>(cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser()));
+            if(userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {            	
+            	selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
+            }
         }
         return selectableThemes;
     }

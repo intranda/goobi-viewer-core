@@ -8,65 +8,43 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface>
-        <composite:attribute
-            name="field"
-            required="true" />
-        <composite:attribute
-            name="options"
-            required="true"/>
-        <composite:attribute
-            name="label"
-            required="true" />
-        <composite:attribute
-            name="help"
-            required="true" />
-        <composite:attribute
-            name="render"
-            required="false"
-            default="@none" />
-        <composite:attribute name="defaultItemLabel" required="false" default=""/>
-        <composite:attribute name="defaultItemValue" required="false" default=""/>
-        <composite:attribute name="item" default="item"/>
-        <composite:attribute name="itemValue" default="#{item.value}"/>
+        <composite:attribute name="field" required="true" />
+        <composite:attribute name="options" required="true" />
+        <composite:attribute name="label" required="true" />
+        <composite:attribute name="help" required="true" />
+        <composite:attribute name="render" required="false" default="@none" />
+        <composite:attribute name="defaultItemLabel" required="false" default="" />
+        <composite:attribute name="defaultItemValue" required="false" default="" />
+        <composite:attribute name="item" default="item" />
+        <composite:attribute name="itemValue" default="#{item.value}" />
         <composite:attribute name="itemLabel" default="#{msg[item]}" />
+        <composite:attribute name="disabled" default="false" />
+        <composite:attribute name="required" default="false" />
+        <composite:attribute name="requiredMessage" default="" />
     </composite:interface>
 
     <composite:implementation>
-
         <div class="cms-module__option-group">
             <div class="cms-module__option-label">
                 <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
             </div>
             <div class="cms-module__option-control">
-                <h:selectManyMenu
-                    id="input"
-                    styleClass="form-control"
-                    value="#{cc.attrs.field}">
+                <h:selectManyMenu id="input" styleClass="form-control" value="#{cc.attrs.field}" disabled="#{cc.attrs.disabled}" required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue != ''}">
-                        <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}"></f:selectItem>
+                        <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}" />
                     </ui:fragment>
-                    <f:selectItems
-                        value="#{cc.attrs.options}"
-                        var="#{cc.attrs.item}"
-                        itemValue="#{cc.attrs.itemValue}"
-                        itemLabel="#{cc.attrs.itemLabel}" />
+                    <f:selectItems value="#{cc.attrs.options}" var="#{cc.attrs.item}" itemValue="#{cc.attrs.itemValue}" itemLabel="#{cc.attrs.itemLabel}" />
                     <f:ajax render="#{cc.attrs.render}" />
                 </h:selectManyMenu>
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">
                 <ui:fragment rendered="#{cc.attrs.help != ''}">
-                    <button
-                        type="button"
-                        class="btn btn--clean"
-                        data-toggle="helptext">
-                        <i
-                            class="fa fa-question-circle"
-                            aria-hidden="true"></i>
+                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
                     </button>
                 </ui:fragment>
             </div>
         </div>
-
     </composite:implementation>
 </ui:composition>

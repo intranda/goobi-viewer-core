@@ -36,23 +36,27 @@
 
 	<license_types license_type_id="1" name="license type 1 name"
 		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
-		open_access="false" />
+		open_access="false" core="false" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
 
 	<license_types license_type_id="2" name="license type 2 name"
 		description="license type 2 (unused)"
-		open_access="true" />
+		open_access="true" core="false" />
 	<license_type_privileges license_type_id="2"
 		privilege_name="LIST" />
 
 	<license_types license_type_id="3" name="license type 3 name"
 		description="no listing"
-		open_access="false" />
+		open_access="false" core="false" />
 		
     <license_types license_type_id="4" name="license type 4 name"
         description="no listing, overridden by license type 1"
-        open_access="false" />
+        open_access="false" core="false" />
+        
+    <license_types license_type_id="5" name="CMS"
+        description="CMS role"
+        open_access="false" core="true" />
 		
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 
@@ -112,18 +116,27 @@
 	<searches search_id="3" owner_id="1" name="search 3" query="query 3"
 		page="1" date_updated="2013-07-15 12:00:00.000000000"
 	    new_hits_notification="0" />
+	    
+	        
+    <cms_categories category_id="1" name="tag1" description="description1" />
+    <cms_categories category_id="2" name="tag2" description="description2" />
+    <cms_categories category_id="3" name="tag3" description="description3" />
+    <cms_categories category_id="4" name="news" description="description_news"/>
+    <cms_categories category_id="5" name="other" description="description_other"/>
+    <cms_categories category_id="6" name="overviewpage" description="description_overviewpage"/>
+    <cms_categories category_id="7" name="class" description="description_class"/>
 		
 	<cms_media_items cms_media_item_id="1" file_name="image1.jpg" />
     <cms_media_items cms_media_item_id="2" file_name="image2.jpg" />
     <cms_media_items cms_media_item_id="3" file_name="image3.jpg" />
     <cms_media_items cms_media_item_id="4" file_name="image4.jpg" />
     
-    <cms_media_item_tags owner_media_item_id="1" tag_name="tag1" /> 
-    <cms_media_item_tags owner_media_item_id="1" tag_name="tag2" /> 
-    <cms_media_item_tags owner_media_item_id="1" tag_name="tag3" /> 
-    <cms_media_item_tags owner_media_item_id="2" tag_name="tag1" /> 
-    <cms_media_item_tags owner_media_item_id="4" tag_name="tag1" /> 
-    <cms_media_item_tags owner_media_item_id="2" tag_name="tag2" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="2" /> 
+    <cms_media_item_cms_categories media_item_id="1" category_id="3" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="4" category_id="1" /> 
+    <cms_media_item_cms_categories media_item_id="2" category_id="2" /> 
     
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
@@ -152,13 +165,15 @@
         media_item_id="1" />
     <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" mandatory="false" owner_page_language_version_id="1"
         solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
-    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" mandatory="false" owner_page_language_version_id="1"
-        page_classification="news" elements_per_page="5" />
+    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" mandatory="false" owner_page_language_version_id="1" 
+    	elements_per_page="5" />
     
-    <cms_page_classifications page_id="1" classification="news" />
-    <cms_page_classifications page_id="1" classification="other" />
-    <cms_page_classifications page_id="2" classification="news" />
-    <cms_page_classifications page_id="3" classification="overviewpage" />
+    <cms_page_cms_categories page_id="1" category_id="4" />
+    <cms_page_cms_categories page_id="1" category_id="5" />
+    <cms_page_cms_categories page_id="2" category_id="4" />
+    <cms_page_cms_categories page_id="3" category_id="6" />
+    
+    <cms_content_item_cms_categories content_item_id="4" category_id="4" />
     
     <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     

@@ -15,14 +15,15 @@
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">        
+        <f:view contentType="text/html" encoding="utf-8">       
+            <ui:fragment rendered="#{userBean.admin}">
             <div id="adminDashboard">
                 <h2 class="admin__content-inner-title">#{msg.admin__dashboard}</h2>
                 
                 <div class="admin__content-inner-content">
-                    [CONTENT]
                 </div>
             </div>
+            </ui:fragment> 
         </f:view>
     </ui:define>
 

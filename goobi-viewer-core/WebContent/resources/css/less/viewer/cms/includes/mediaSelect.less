@@ -1,0 +1,207 @@
+/* ==============================================================
+   CMS Media Select
+   ==============================================================*/
+/* MEDIA SELECT */
+.admin-cms-media {
+	&__select {
+		position: fixed;
+	    top: 30px;
+	    right: 30px;
+	    bottom: 30px;
+	    left: 30px;
+	    padding: 50px;
+	    z-index: 2020;
+	    background-color: @white;
+	}
+	&__select-overlay {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: rgba(0,0,0,0.5);
+		z-index: 2010;
+	}
+	&__select-content {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		.nav-tabs {
+			a {
+				border-color: @white;
+				border-bottom-color: @middlegray;
+				background-color: @white;
+			}
+		}
+		.tab-pane {
+			padding: 0;
+			padding-top: 10px;
+			border: 0;
+			height: calc(~"100vh - 246px");
+		}
+		.admin-cms-media {
+			&__filter {
+				margin: 0;
+			}
+			&__upload {
+				height: 100%;
+			}
+		}
+	}
+	&__select-files {
+		.mx-clearfloats;
+	}
+	&__select-files-files,
+	&__select-files-selected {
+		float: left;
+		height: calc(~"100vh - 311px");
+		overflow-y: auto;
+	}
+	&__select-files-files {
+		width: 70%;
+		padding: 5px;
+		.admin-cms-media {
+			&__files {
+				padding-right: 10px;
+				padding-left: 0 !important;
+			}
+		}
+	}
+	&__select-files-selected {
+		width: 30%;
+		padding: 15px;
+		background-color: @neutralgray;
+		.admin-cms-media {
+			&__file {
+				height: 100%;
+				margin: 0 !important;
+				background-color: @neutralgray !important;
+			}
+			&__file-select,
+			&__file-image {
+				.mx-hidden;
+			}
+			&__file-metadata {
+				padding-left: 0;
+			}
+			&__file-metadata-view {
+				.mx-hidden;
+				.dl-horizontal {
+					dt {
+						width: 100%;
+				 	 	margin-right: 0;
+				 	}
+				 	dd {
+						margin-bottom: 10px;				 		
+				 	}
+				 }
+			}
+			&__file-metadata-edit {
+				.mx-visible;
+				.cms-module__option-label {
+					flex-basis: 100%;
+					& + .cms-module__option-control {
+						flex-basis: 90%;
+						padding-left: 0;
+					}
+				}
+			}
+			&__file-bottom {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+			}
+			&__file-actions {
+				width: 100%;
+				padding-left: 0;
+				order: 1;
+			}
+			&__file-actions-view {
+				.mx-visible;
+				text-align: right;
+				.delete {
+					&:after {
+						display: none;
+					}
+				}
+				[data-action="edit"],
+				[data-copy="img-url"] {
+					.mx-hidden;					
+				}
+			}
+			&__file-actions-edit {
+				.mx-hidden;
+			}
+			&__file-language {
+				width: 100%;
+				max-width: 100%;
+				margin-bottom: 30px;
+				margin-left: 0;
+				padding-left: 0;
+			}
+		}
+	}
+	/* ITEMS */
+	&__item-wrapper {
+		position: relative;
+		max-height: 140px;
+		&.selected {}
+	}
+	&__item {}
+	&__item-select-frame,
+	&__item-select {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+	&__item-select-frame {
+		display: none;
+		border: 1px solid @blue;
+		box-shadow: 0 0 0 1px @white, 0 0 0 4px @blue;
+		z-index: 2040;
+		&.in {
+			display: block;
+		}		
+	}
+	&__item-select-frame-checkmark {
+		position: absolute;
+		top: -8px;
+		right: -8px;
+		width: 21px;
+		height: 21px;
+    	line-height: 21px;
+		text-align: center;
+		background-color: @blue;
+		box-shadow: 0 0 0 1px @white, 0 0 0 2px @blue;
+		.fa {
+			font-size: 18px;
+			color: @white;
+		}
+	}
+	&__item-select {
+		z-index: 2050;
+	}
+	/* ACTION */
+	&__select-action {
+		padding-top: 10px;
+		text-align: right;
+		.btn {
+			margin-left: 20px;
+		}
+	}	
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOPS
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}

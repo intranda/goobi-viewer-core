@@ -221,37 +221,10 @@ public class CollectionView {
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
             this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
         } catch (PresentationException | DAOException e) {
             logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
-    }
-
-    /**
-     * @param visibleCollectionList2
-     * @return
-     * @throws DAOException
-     * @throws PresentationException
-     */
-    private static List<HierarchicalBrowseDcElement> associateWithCMSMediaItems(List<HierarchicalBrowseDcElement> collections)
-            throws DAOException, PresentationException {
-        List<CMSMediaItem> mediaItems = DataManager.getInstance().getDao().getAllCMSCollectionItems();
-        if (mediaItems != null) {
-            for (CMSMediaItem cmsMediaItem : mediaItems) {
-                String collectionName = cmsMediaItem.getCollectionName();
-                if (StringUtils.isBlank(collectionName)) {
-                    continue;
-                }
-                HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
-                int index = collections.indexOf(searchItem);
-                if (index > -1) {
-                    HierarchicalBrowseDcElement element = collections.get(index);
-                    element.setInfo(cmsMediaItem);
-                }
-            }
-        }
-        return collections;
     }
 
     private static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)

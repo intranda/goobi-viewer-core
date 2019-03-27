@@ -1,0 +1,63 @@
+/* ==============================================================
+   CMS Module Tables
+   ==============================================================*/
+/* TABLES */
+.cms-module {
+	&__table {
+		width: 100%;
+	    max-width: 100%;
+	    border: 1px solid @lightgray;
+	    &.invisible {
+	    	visibility: hidden;
+	    }
+	    & > thead > tr > th,
+	    & > tbody > tr > td,
+	    & > tfoot > tr > th {
+	    	padding: 8px;
+	    }
+	    & > thead > tr > th {
+	    	min-width: 175px;
+	    	vertical-align: bottom;
+	    	background-color: @neutralgray;
+	    }
+	    & > tbody > tr > td {
+	    	vertical-align: top;
+	    }
+	    & > tbody > tr {
+	    	&:nth-child(even) {
+	    		background-color: @neutralgray;
+	    	}
+	    	&:hover {
+		    	.cms-module__actions {
+		    		position: static;
+		    	}	    		
+	    	}
+	    	.cms-module__actions {
+	    		position: relative;
+	    		left: -9999em;
+	    	}
+	    }
+	}
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOPS
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {
+	.cms-module {
+		&__table {
+		    & > tbody > tr {
+		    	.cms-module__actions {
+		    		display: block;
+		    	}
+		    }
+		}
+	}
+}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}

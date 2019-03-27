@@ -36,6 +36,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -59,8 +60,10 @@ import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaHolder;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -71,7 +74,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.CategorizableTranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
+import de.intranda.digiverso.presentation.model.cms.Selectable;
 import de.intranda.digiverso.presentation.model.cms.SelectableNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.glossary.Glossary;
@@ -79,6 +84,7 @@ import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
@@ -104,6 +110,10 @@ public class CmsBean implements Serializable {
     private CmsNavigationBean cmsNavigationBean;
     @Inject
     private SearchBean searchBean;
+    @Inject
+    private UserBean userBean;
+    @Inject
+    private CmsMediaBean cmsMediaBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page open for editing */
@@ -113,7 +123,7 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private String selectedClassification;
+    private Long selectedCategoryId;
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
@@ -121,6 +131,8 @@ public class CmsBean implements Serializable {
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
+    private List<Selectable<CMSCategory>> pageCategories;
+    private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
 
     @PostConstruct
     public void init() {
@@ -128,15 +140,23 @@ public class CmsBean implements Serializable {
             lazyModelPages = new TableDataProvider<>(new TableDataSource<CMSPage>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
+                private List<String> allowedSubthemes = null;
+                private List<String> allowedCategories = null;
+                private List<String> allowedTemplates = null;
+                private boolean initialized = false;
 
                 @Override
                 public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
                     try {
+                        initialize();
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
                         }
-                        List<CMSPage> pages =
-                                DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+
+                        List<CMSPage> pages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters, allowedTemplates, allowedSubthemes,
+                                        allowedCategories);
                         pages.forEach(page -> {
                             PageValidityStatus validityStatus = isPageValid(page);
                             page.setValidityStatus(validityStatus);
@@ -156,13 +176,37 @@ public class CmsBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters));
+                            initialize();
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance()
+                                    .getDao()
+                                    .getCMSPageCount(filters, allowedTemplates, allowedSubthemes, allowedCategories));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
                     }
                     return numCreatedPages.orElse(0l);
                 }
+
+                private void initialize() throws DAOException {
+					if(!initialized) {	
+						try {
+							if(!userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {								
+								allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
+							}
+							if(!userBean.getUser().hasPriviledgeForAllTemplates()) {								
+								allowedTemplates = getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+							}
+							if(!userBean.getUser().hasPrivilegeForAllCategories()) {								
+								allowedCategories = getAllowedCategories(userBean.getUser()).stream().map(CMSCategory::getId).map(l -> l.toString()).collect(Collectors.toList());
+							}
+							initialized = true;
+						} catch (PresentationException | IndexUnreachableException e) {
+							throw new DAOException("Error getting user rights from dao: " +e.toString());
+						} catch(NullPointerException e) {
+							throw new DAOException("No user or userBean available to determine user rights");
+						}
+					}		
+				}
 
                 @Override
                 public void resetTotalNumberOfRecords() {
@@ -242,6 +286,10 @@ public class CmsBean implements Serializable {
                 .updateTemplates(CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
     }
 
+    /**
+     * 
+     * @return all existing templates
+     */
     public List<CMSPageTemplate> getTemplates() {
         try {
             List<CMSPageTemplate> list = CMSTemplateManager.getInstance()
@@ -254,6 +302,22 @@ public class CmsBean implements Serializable {
             logger.warn("Error loading templates", e);
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Returns a filtered page template list for the given user, unless the user is a superuser. Other CMS admins get a list matching the template ID
+     * list attached to ther CMS license.
+     * 
+     * @param user
+     * @return List of CMS templates whose IDs are among allowed template IDs
+     */
+    public List<CMSPageTemplate> getAllowedTemplates(User user) {
+        logger.trace("getAllowedTemplates");
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return user.getAllowedTemplates(getTemplates());
     }
 
     /**
@@ -294,23 +358,61 @@ public class CmsBean implements Serializable {
         return lazyModelPages;
     }
 
-    public CMSPage createNewPage(CMSPageTemplate template) {
+    public CMSPage createNewPage(CMSPageTemplate template) throws PresentationException, IndexUnreachableException, DAOException {
         List<Locale> locales = getAllLocales();
         CMSPage page = template.createNewPage(locales);
+        setUserRestrictedValues(page, userBean.getUser());
         // page.setId(System.currentTimeMillis());
         page.setDateCreated(new Date());
         return page;
     }
 
     /**
+     * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted
+     * privileges for that property
+     * 
+	 * @param page
+	 * @param user
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws DAOException 
+	 */
+	private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
+		if(!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+			List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
+			if(StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && allowedSubThemeDiscriminatorValues.size() > 0) {				
+				page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
+			} else {
+				logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
+				//do something??			
+			}
+		}
+		if(!user.hasPrivilegeForAllCategories()) {
+			List<CMSCategory> allowedCategories = user.getAllowedCategories(getAllCategories());
+			if(page.getCategories().isEmpty() && allowedCategories.size() > 0) {				
+				page.setCategories(allowedCategories.subList(0, 1));
+			}
+			for (CMSContentItem contentItem : page.getGlobalContentItems()) {
+				if(contentItem.getCategories().isEmpty() && allowedCategories.size() > 0) {				
+					contentItem.setCategories(allowedCategories.subList(0, 1));
+				}
+			}
+		}
+		
+	}
+
+	/**
      * Current page URL getter for PrettyFaces. Page must be either published or the current user must be an admin.
      *
      * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public String getCurrentPageUrl() {
         logger.trace("getCurrentPageUrl");
         if (currentPage != null && (currentPage.isPublished()
-                || (getUserBean() != null && getUserBean().getUser() != null && getUserBean().getUser().isSuperuser()))) {
+                || (getUserBean() != null && getUserBean().getUser() != null && getUserBean().getUser().isCmsAdmin()))) {
             String url = getTemplateUrl(currentPage.getTemplateId(), false);
             return url;
         }
@@ -318,8 +420,8 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is
-     * superuser.
+     * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is CMS
+     * admin.
      *
      * @param page
      * @return
@@ -426,14 +528,12 @@ public class CmsBean implements Serializable {
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
         List<CMSPage> cmsPages = getAllCMSPages();
-        for (String classification : item.getPageClassification()) {
-            if (!StringUtils.isEmpty(classification)) {
-                for (CMSPage cmsPage : cmsPages) {
-                    if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
-                        counter++;
-                        if (counter > offset && counter <= size + offset) {
-                            nestedPages.add(cmsPage);
-                        }
+        for (CMSCategory category : item.getCategories()) {
+            for (CMSPage cmsPage : cmsPages) {
+                if (cmsPage.isPublished() && cmsPage.getCategories().contains(category)) {
+                    counter++;
+                    if (counter > offset && counter <= size + offset) {
+                        nestedPages.add(cmsPage);
                     }
                 }
             }
@@ -487,15 +587,16 @@ public class CmsBean implements Serializable {
     public CMSSidebarElement getSidebarElement(String type) {
         return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
     }
-    
+
     public boolean isRelatedWorkLoaded() throws IndexUnreachableException {
-    	if(getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
-    		ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-    		if(adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier()) && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
-    			return true;
-    		}
-    	}
-    	return false;
+        if (getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier())
+                    && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -504,10 +605,11 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      *
      */
-    public void saveSelectedPage() throws DAOException {
+    @SuppressWarnings("unused")
+	public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
-        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isSuperuser()) {
-            // Only superusers may save
+        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isCmsAdmin()) {
+            // Only authorized CMS admins may save
             return;
         }
         // resetImageDisplay();
@@ -519,6 +621,8 @@ public class CmsBean implements Serializable {
             validatePage(selectedPage, getDefaultLocale().getLanguage());
             logger.trace("reset item data");
             selectedPage.resetItemData();
+            writeCategoriesToPage();
+            
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
@@ -558,6 +662,16 @@ public class CmsBean implements Serializable {
         }
         logger.trace("Done saving page");
     }
+
+	/**
+	 * This is kind of a hack to avoid a ConcurrentModificationException when persisting page after changing categories.
+	 * The exception is probably caused by the categories taken from License object, since it only occurs if the categories are
+	 * actually taken from Licenses due to limited rights of the user
+	 */
+	private void writeCategoriesToPage() {
+		selectedPage.writeSelectableCategories(this.pageCategories);		
+		selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
+	}
 
     /**
      * @param id
@@ -629,7 +743,7 @@ public class CmsBean implements Serializable {
                             }
                             break;
                         case PAGELIST:
-                            if (item.getPageClassification().length == 0) {
+                            if (item.getCategories().size() == 0) {
                                 languageIncomplete = true;
                             }
                             break;
@@ -783,6 +897,15 @@ public class CmsBean implements Serializable {
             }
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
+
+            try {
+                this.pageCategories = getCategoriesToSelect();
+                resetSelectedCategoryId();
+            } catch (DAOException e) {
+                logger.error("Unable to get available categories", e);
+
+            }
+
         } else {
             this.selectedPage = null;
         }
@@ -855,14 +978,6 @@ public class CmsBean implements Serializable {
 
     }
 
-    public List<String> getClassifications() {
-        List<String> ret = new ArrayList<>();
-        ret.add("");
-        ret.addAll(DataManager.getInstance().getConfiguration().getCmsClassifications());
-
-        return ret;
-    }
-
     public boolean isDisplaySidebarEditor() {
         return displaySidebarEditor;
     }
@@ -871,12 +986,87 @@ public class CmsBean implements Serializable {
         this.displaySidebarEditor = displaySidebarEditor;
     }
 
-    public String getSelectedClassification() {
-        return selectedClassification;
+    public List<Selectable<CMSCategory>> getCategoriesToSelect() throws DAOException {
+        User user = null;
+        if (userBean != null) {
+            user = userBean.getUser();
+        }
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        List<CMSCategory> categories = new ArrayList<>(user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories()));
+        categories.sort( (c1,c2) -> c1.getId().compareTo(c2.getId()));
+        List<Selectable<CMSCategory>> selectables = new ArrayList<>();
+         if (this.selectedPage != null) {
+            for (CMSCategory category : categories) {
+				boolean used = this.selectedPage.getCategories().contains(category);
+				Selectable<CMSCategory> selectable = new Selectable<CMSCategory>(category, used);
+				selectables.add(selectable);
+			}
+        }
+        return selectables;
     }
 
-    public void setSelectedClassification(String selectedClassification) {
-        this.selectedClassification = selectedClassification;
+    public Long getSelectedCategoryId() {
+        return selectedCategoryId;
+    }
+
+    public void setSelectedCategoryId(Long categoryId) {
+        this.selectedCategoryId = categoryId;
+    }
+
+    public Selectable<CMSCategory> getSelectedCategory() {
+        if (this.selectedCategoryId != null) {
+        	Selectable<CMSCategory> category = pageCategories.stream().filter(selectable -> selectable.getValue().getId().equals(this.selectedCategoryId)).findFirst().orElse(null);
+            return category;
+        }
+        return null;
+    }
+
+    public List<CMSCategory> getSelectableCategories() {
+        return pageCategories.stream().filter(selectable -> !selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
+    }
+    
+    public List<CMSCategory> getSelectedCategories() {
+        return pageCategories.stream().filter(selectable -> selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
+    }
+
+    public void addSelectedCategoryToPage() throws DAOException {
+    	Selectable<CMSCategory> cat = getSelectedCategory();
+        if (this.selectedPage != null && cat != null) {
+        	cat.setSelected(true);
+            resetSelectedCategoryId();
+        }
+    }
+
+    public void removeCategoryFromPage(CMSCategory cat) {
+    	Selectable<CMSCategory> selectable = pageCategories.stream().filter(sel -> sel.getValue().equals(cat)).findFirst().orElse(null);
+        if (this.selectedPage != null && selectable != null) {
+            selectable.setSelected(false);
+            resetSelectedCategoryId();
+        }
+    }
+    
+    public boolean mayRemoveCategoryFromPage() {
+        if (this.selectedPage != null) {
+        	return userBean.getUser().hasPrivilegeForAllCategories() || 
+        			getSelectedCategories().size() > 1;
+        } else {
+        	return true;
+        }
+
+    }
+
+    public List<CMSCategory> getAllCategories() throws DAOException {
+        return DataManager.getInstance().getDao().getAllCategories();
+    }
+
+    public void resetSelectedCategoryId() {
+        this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(CMSCategory::getId).orElse(null);
+    }
+
+    public boolean hasSelectedCategoryId() {
+        return this.selectedCategoryId != null;
     }
 
     public CMSMediaItem getSelectedMediaItem() {
@@ -1334,7 +1524,7 @@ public class CmsBean implements Serializable {
 
         for (CMSStaticPage staticPage : getStaticPages()) {
             if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPageOptional());
+                allPages.remove(staticPage.getCmsPageOptional().get());
             }
         }
         return allPages;
@@ -1398,7 +1588,7 @@ public class CmsBean implements Serializable {
         return FacesContext.getCurrentInstance();
     }
 
-    public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
+    public List<String> getSubthemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
         String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
             subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
@@ -1406,6 +1596,50 @@ public class CmsBean implements Serializable {
             return values;
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns a filtered subtheme discriminator value list for the given user, unless the user is a superuser. Other CMS admins get a list matching
+     * values list attached to their CMS license.
+     * 
+     * @param user
+     * @return List of CMS templates whose IDs are among allowed template IDs
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<String> getAllowedSubthemeDiscriminatorValues(User user) throws PresentationException, IndexUnreachableException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
+    }
+
+    /**
+     * 
+     * @param user
+     * @return true if user is limited to a subset of all available subtheme discriminator values; false otherwise
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean isSubthemeRequired(User user) throws PresentationException, IndexUnreachableException {        
+        return user != null && !user.hasPrivilegeForAllSubthemeDiscriminatorValues();
+    }
+
+    /**
+     * Returns a filtered category list for the given user, unless the user is a superuser. Other CMS admins get a list matching values list attached
+     * to their CMS license.
+     * 
+     * @param user
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSCategory> getAllowedCategories(User user) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return user.getAllowedCategories(getAllCategories());
     }
 
     /**
@@ -1469,10 +1703,10 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
+    public List<CMSPage> getRelatedPages(String pi, CMSCategory category) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getCMSPagesForRecord(pi, classification)
+                .getCMSPagesForRecord(pi, category)
                 .stream()
                 //                .filter(page -> pi.equals(page.getRelatedPI()))
                 //                .filter(page -> page.getClassifications().contains(classification))
@@ -1566,5 +1800,58 @@ public class CmsBean implements Serializable {
     public void resetCurrentWorkPi() {
         this.currentWorkPi = "";
     }
+
+    /**
+	 * @param selectedMediaHolder the selectedMediaHolder to set
+	 */
+	public void setSelectedMediaHolder(CMSMediaHolder item) {
+		this.selectedMediaHolder = Optional.ofNullable(item);
+		this.selectedMediaHolder.ifPresent(contentItem -> {
+			String filter = contentItem.getMediaFilter();
+			if(StringUtils.isBlank(filter)) {
+				filter = CmsMediaBean.getImageFilter();
+			}
+			cmsMediaBean.setFilenameFilter(filter);
+			if(contentItem.hasMediaItem()) {		
+				CategorizableTranslatedSelectable<CMSMediaItem> wrapper = contentItem.getMediaItemWrapper();
+				try {
+					List<CMSCategory> categories = BeanUtils.getUserBean().getUser().getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+					wrapper.setCategories(contentItem.getMediaItem().wrapCategories(categories));
+				} catch (DAOException e) {
+					logger.error("Unable to determine allowed categories for media holder", e);
+				}
+				cmsMediaBean.setSelectedMediaItem(wrapper);
+			} else {
+				cmsMediaBean.setSelectedMediaItem(null);
+			}
+		});
+	}
+	
+	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem) {
+		fillSelectedMediaHolder(mediaItem, false);
+	}
+	
+	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
+		this.selectedMediaHolder.ifPresent(item -> {
+			if(mediaItem != null) {
+				item.setMediaItem(mediaItem.getValue());
+				if(saveMedia) {
+					try {
+						cmsMediaBean.saveMedia(mediaItem.getValue(), mediaItem.getCategories());
+					} catch (DAOException e) {
+						logger.error("Failed to save media item: {}", e.toString());
+					}
+				}
+			} else {
+				item.setMediaItem(null);
+			}
+		});
+		this.selectedMediaHolder = Optional.empty();
+		cmsMediaBean.setSelectedMediaItem(null);
+	}
+		
+	public boolean hasSelectedMediaHolder() {
+		return this.selectedMediaHolder.isPresent();
+	}
 
 }

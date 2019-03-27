@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <div class="admin-cms-media__select-content">
+        <!-- NAV TABS -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation">
+                <a href="#fileUpload" aria-controls="fileUpload" role="tab" data-toggle="tab">#{msg.button__upload}</a>
+            </li>
+            <li role="presentation" class="active">
+                <a href="#fileSelect" aria-controls="fileSelect" role="tab" data-toggle="tab">#{msg.cms_overviewMedia}</a>
+            </li>
+        </ul>
+
+        <!-- TAB PANES -->
+        <div class="tab-content">
+            <!-- UPLOAD -->
+            <div role="tabpanel" class="tab-pane" id="fileUpload">
+                <adminMediaUpload></adminMediaUpload>
+            </div>
+            
+            <!-- FILE SELECT -->
+            <div role="tabpanel" class="tab-pane active" id="fileSelect">
+                <h:form id="adminCmsMediaFilesForm" prependId="false">
+                    <!-- MEDIA ACTIONS -->
+                    <ui:include src="/resources/cms/includes/mediaActions.xhtml">
+                        <ui:param name="bulkaction" value="#{false}" />
+                        <ui:param name="viewswitch" value="#{false}" />
+                    </ui:include>
+        
+                    <div class="admin-cms-media__select-files">
+                        <!-- MEDIA FILES -->
+                        <div class="admin-cms-media__select-files-files">
+                            <div class="admin-cms-media__files">
+                                <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" 
+                                    var="selectableItem" varStatus="status">
+                                    <div class="admin-cms-media__item-wrapper">
+                                        <div class="admin-cms-media__item">
+                                            <ui:include src="/resources/cms/includes/mediaFile.xhtml">
+                                                <ui:param name="item" value="#{selectableItem}" />
+                                                <ui:param name="idPrefix" value="mediaList:#{status.index}:" />
+                                            </ui:include>
+                                        </div>
+                                        <div class="admin-cms-media__item-select-frame #{selectableItem.value == cmsMediaBean.selectedMediaItem.value ? 'in' : ''}">
+                                            <div class="admin-cms-media__item-select-frame-checkmark">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            </div>                                            
+                                        </div>
+                                        <h:commandLink 
+                                            styleClass="admin-cms-media__item-select" 
+                                            action="#{cmsMediaBean.toggleSelectedMediaItem(selectableItem)}">
+                                            <f:ajax execute="@this" render="selectedMediaItemPanel" onevent="reload" />
+                                        </h:commandLink>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                        
+                        <!-- SELECTED MEDIA FILES -->
+                        <!-- must be h:panelgroup for ajax refresh -->
+                        <h:panelGroup id="selectedMediaItemPanel" styleClass="admin-cms-media__select-files-selected" layout="block">
+                            <ui:fragment rendered="#{cmsMediaBean.selectedMediaItem != null}">
+                                <ui:include src="/resources/cms/includes/mediaFile.xhtml">
+                                    <ui:param name="item" value="#{cmsMediaBean.selectedMediaItem}" />
+                                </ui:include>
+                            </ui:fragment>
+                        </h:panelGroup>
+                    </div>
+                    
+	                <!-- ACTION -->
+                    <div class="admin-cms-media__select-action">
+                        <h:commandLink 
+                            action="#{cmsBean.setSelectedMediaHolder(null)}" 
+                            value="#{msg.button__abort}" 
+                            class="btn btn--clean" 
+                            role="button">
+                            <f:ajax render="mediaSelectPanel" onevent="cmsJS.media.checkMediaSelectModal( false )" />
+                        </h:commandLink>
+                        <h:commandLink 
+                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
+                            value="#{msg.cms_selectMediaItem_agree}"
+                            class="btn btn--full" role="button">
+                        </h:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+		var adminMediaConfig = {
+			postUrl : '#{navigationHelper.applicationUrl}rest/cms/media/upload/',
+			msg : {
+				buttonUpload : "#{msg.button__upload}",
+				uploadText : "#{msg.admin__media_upload_text}",
+				allowedFileTypes : "#{msg.admin__media_upload_filetypes}",
+				mediaUploading : "#{msg.admin__media_upload_uploading}",
+				mediaFinished : "#{msg.admin__media_upload_finished}",
+				mediaError : "#{msg.admin__media_upload_error}",
+				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}"
+			},
+			onUploadComplete : function() {
+				$("#reloadButton").click();
+			},
+			forceGrid : true,
+			allowEdit : false,
+			isMediaSelectModal : true
+		};
+
+		viewerJS.clipboard.init( '[data-copy]' );
+		cmsJS.media.init( adminMediaConfig );
+		cmsJS.modules.onReload();
+		riot.mount( 'adminMediaUpload', adminMediaConfig );
+
+		function reload( data ) {
+			cmsJS.media.onReload( data );
+			cmsJS.modules.onReload( data );
+
+			if ( !data || data.status == 'begin' ) {
+				riot.mount( 'adminMediaUpload', adminMediaConfig );
+
+				if ( data ) {
+					var alreadySelected = $( data.source ).prev().hasClass( 'in' );
+					$( '.admin-cms-media__item-select-frame.in' ).removeClass( 'in' );
+
+					if ( !alreadySelected ) {
+						$( data.source ).prev().addClass( 'in' );
+					}
+				}
+			}
+		}
+    </script>
+</ui:composition>
+
+

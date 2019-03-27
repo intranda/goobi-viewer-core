@@ -660,7 +660,17 @@
 		<pattern value="/admin/comments/" />
 		<view-id value="/resources/admin/views/adminUserComments.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>	
+	</url-mapping>
+	<url-mapping id="adminRoles">
+		<pattern value="/admin/roles/" />
+		<view-id value="/resources/admin/views/adminRoles.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+    <url-mapping id="adminRole">
+        <pattern value="/admin/role/" />
+        <view-id value="/resources/admin/views/adminRole.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- CMS ADMIN -->
 	<url-mapping id="adminCms">
@@ -692,7 +702,7 @@
 	</url-mapping>
 	<url-mapping id="adminCmsMedia">
 		<pattern value="/admin/cms/media/" />
-		<view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
+		<view-id value="/resources/cms/adminCmsMedia.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="adminCmsMenuItems">
@@ -709,6 +719,11 @@
     <url-mapping id="adminCmsEditCollection">
         <pattern value="/admin/cms/collections/edit/" />
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsCategories">
+        <pattern value="/admin/cms/categories/" />
+        <view-id value="/resources/cms/adminCmsCategories.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     

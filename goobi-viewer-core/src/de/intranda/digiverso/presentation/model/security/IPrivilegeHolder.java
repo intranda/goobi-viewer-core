@@ -27,9 +27,18 @@ public interface IPrivilegeHolder {
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
     public static final String PRIV_DOWNLOAD_ORIGINAL_CONTENT = "DOWNLOAD_ORIGINAL_CONTENT";
-    public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
-    public static final String PRIV_EDIT_OVERVIEW_PAGE = "FORCE_OVERVIEW_PAGE";
+
+    // Role privileges
     public static final String PRIV_DELETE_OCR_PAGE = "DELETE_OCR_PAGE";
+    public static final String PRIV_SET_REPRESENTATIVE_IMAGE = "SET_REPRESENTATIVE_IMAGE";
+    public static final String PRIV_CMS_PAGES = "CMS_PAGES";
+    public static final String PRIV_CMS_ALL_SUBTHEMES = "CMS_ALL_SUBTHEMES";
+    public static final String PRIV_CMS_ALL_CATEGORIES = "CMS_ALL_CATEGORIES";
+    public static final String PRIV_CMS_ALL_TEMPLATES = "CMS_ALL_TEMPLATES";
+    public static final String PRIV_CMS_MENU = "CMS_MENU";
+    public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
+    public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
+    public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
 
     public boolean hasPrivilege(String privilege);
 
@@ -64,8 +73,44 @@ public interface IPrivilegeHolder {
     public boolean isPrivDownloadOriginalContent();
 
     public void setPrivDownloadOriginalContent(boolean priv);
+    
+    public boolean isPrivDeleteOcrPage();
+
+    public void setPrivDeleteOcrPage(boolean priv);
 
     public boolean isPrivSetRepresentativeImage();
 
     public void setPrivSetRepresentativeImage(boolean priv);
+
+    public boolean isPrivCmsPages();
+
+    public void setPrivCmsPages(boolean priv);
+
+    public boolean isPrivCmsMenu();
+
+    public void setPrivCmsMenu(boolean priv);
+
+    public boolean isPrivCmsAllSubthemes();
+
+    public void setPrivCmsAllSubthemes(boolean priv);
+
+    public boolean isPrivCmsAllCategories();
+
+    public void setPrivCmsAllCategories(boolean priv);
+
+    public boolean isPrivCmsAllTemplates();
+
+    public void setPrivCmsAllTemplates(boolean priv);
+
+    public boolean isPrivCmsStaticPages();
+
+    public void setPrivCmsStaticPages(boolean priv);
+
+    public boolean isPrivCmsCollections();
+
+    public void setPrivCmsCollections(boolean priv);
+
+    public boolean isPrivCmsCategories();
+
+    public void setPrivCmsCategories(boolean priv);
 }

@@ -63,6 +63,7 @@
 		<project>goobi-viewer-theme-cbl</project>
 		<project>goobi-viewer-theme-vlb</project>
 		<project>goobi-viewer-theme-ksw-kulturportal</project>
+		<project>goobi-viewer-theme-denkmalatlas</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -77,16 +78,6 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.wst.validation.validationbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>net.sourceforge.pmd.eclipse.plugin.pmdBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>org.openmrs.generatetestcases.bddBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

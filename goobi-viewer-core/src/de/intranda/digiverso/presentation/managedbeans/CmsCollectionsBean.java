@@ -18,12 +18,14 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.TranslatedSelectable;
 import de.intranda.digiverso.presentation.model.cms.Translation;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 
@@ -59,11 +62,13 @@ public class CmsCollectionsBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
     private static final int MAX_IMAGES_PER_PAGE = 36;
 
+    @Inject
+    CmsMediaBean cmsMediaBean;
+    
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
-    private CMSMediaItem selectedMediaItem = null;
     private boolean piValid = true;
 
     public CmsCollectionsBean() {
@@ -220,27 +225,6 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsCollections";
     }
 
-    /**
-     * @return the selectedMediaItem
-     */
-    public CMSMediaItem getSelectedMediaItem() {
-        return selectedMediaItem;
-    }
-
-    /**
-     * @param selectedMediaItem the selectedMediaItem to set
-     */
-    public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
-        this.selectedMediaItem = selectedMediaItem;
-    }
-
-    public boolean isSelectedMediaItem(CMSMediaItem item) {
-        if (selectedMediaItem == null && item == null) {
-            return true;
-        } else {
-            return item != null && item.equals(selectedMediaItem);
-        }
-    }
     
     /**
      * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr

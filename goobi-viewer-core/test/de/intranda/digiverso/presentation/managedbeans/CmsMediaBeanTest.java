@@ -23,7 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
+import de.intranda.digiverso.presentation.TestUtils;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 
 public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -37,6 +40,13 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         bean = new CmsMediaBean();
+        
+        UserBean userBean = new UserBean();
+        userBean.setAuthenticationProvider(TestUtils.testAuthenticationProvider);
+        userBean.setEmail("1@users.org");
+        userBean.setPassword("abcdef1"); 
+        userBean.login();
+        bean.userBean = userBean;
     }
 
     /**
@@ -56,17 +66,23 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetAllMediaTags() throws DAOException {
-        List<String> tags = bean.getAllMediaTags();
-        Assert.assertEquals(3, tags.size());
+    public void testGetAllMediaCategories() throws DAOException {
+        List<CMSCategory> tags = bean.getAllMediaCategories();
+        Assert.assertEquals(7, tags.size());
     }
 
     @Test
     public void testGetMediaItems() throws DAOException {
-        Assert.assertEquals(4, bean.getMediaItems("", "").size());
-        Assert.assertEquals(3, bean.getMediaItems("tag1", "").size());
-        Assert.assertEquals(4, bean.getMediaItems("", bean.getImageFilter()).size());
-        Assert.assertEquals(0, bean.getMediaItems("", ".*\\.xml").size());
+
+    	bean.setFilter("");
+        Assert.assertEquals(4, bean.getMediaItems().size());
+    	bean.setFilter("tag1");
+        Assert.assertEquals(3, bean.getMediaItems().size());
+        bean.setFilter("");
+    	bean.setFilenameFilter(bean.getImageFilter());
+        Assert.assertEquals(4, bean.getMediaItems().size());
+    	bean.setFilenameFilter(".*\\.xml");
+        Assert.assertEquals(0, bean.getMediaItems().size());
     }
     
     @Test

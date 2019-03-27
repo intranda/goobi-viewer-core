@@ -840,9 +840,10 @@ public final class SearchHelper {
         List<String> relevantLicenseTypes = new ArrayList<>();
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
-            if (licenseType.isStaticLicenseType() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+            if (licenseType.isCore() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
                 continue;
             }
+            
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
                     new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types

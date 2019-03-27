@@ -20,43 +20,47 @@
             <div class="col-sm-8">
                 <div class="custom-control custom-control--select">
                     <h:selectOneMenu id="name" value="#{adminBean.currentLicense.licenseType}" converter="licenseTypeConverter" required="true">
-                        <f:selectItems value="#{adminBean.allLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                        <!-- TODO different modes for core and other license types -->
+                        <f:selectItems value="#{adminBean.allRecordLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                         <f:ajax render="@form" />
                     </h:selectOneMenu>
                 </div>
             </div>
         </div>
-        
-        <!-- LIZENSE START -->
-        <div class="form-group">
-            <h:outputLabel for="dateStart" styleClass="col-sm-4 control-label" value="#{msg.license_start}" />
-            <div class="col-sm-8">
-                <p:calendar id="dateStart" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.start}" showOn="button" />
-            </div>
-        </div>
-        
-        <!-- LIZENSE END -->
-        <div class="form-group">
-            <h:outputLabel for="dateEnd" styleClass="col-sm-4 control-label" value="#{msg.license_end}" />
-            <div class="col-sm-8">
-                <p:calendar id="dateEnd" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.end}" showOn="button" />
-            </div>
-        </div>
-        
-        <!-- LIZENSE CONDITIONS -->
-        <div class="form-group">
-            <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.conditions}" />
-            <div class="col-sm-8">
-                <h:inputTextarea value="#{adminBean.currentLicense.conditions}" id="conditions" styleClass="form-control" />
-            </div>
-        </div>
-        
-        <!-- LIZENSE DESCRIPTION -->
+       
+        <!-- LICENSE DESCRIPTION -->
         <div class="form-group">
             <h:outputLabel for="description" styleClass="col-sm-4 control-label" value="#{msg.description}" />
             <div class="col-sm-8">
                 <h:inputTextarea value="#{adminBean.currentLicense.description}" id="description" styleClass="form-control" />
             </div>
         </div>
+        
+        <!-- LICENSE START -->
+<!--         <div class="form-group"> -->
+<!--             <h:outputLabel for="dateStart" styleClass="col-sm-4 control-label" value="#{msg.license_start}" /> -->
+<!--             <div class="col-sm-8"> -->
+<!--                 <p:calendar id="dateStart" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.start}" showOn="button" /> -->
+<!--             </div> -->
+<!--         </div> -->
+        
+        <!-- LICENSE END -->
+<!--         <div class="form-group"> -->
+<!--             <h:outputLabel for="dateEnd" styleClass="col-sm-4 control-label" value="#{msg.license_end}" /> -->
+<!--             <div class="col-sm-8"> -->
+<!--                 <p:calendar id="dateEnd" locale="#{navigationHelper.locale}" pattern="#{navigationHelper.datePattern}" value="#{adminBean.currentLicense.end}" showOn="button" /> -->
+<!--             </div> -->
+<!--         </div> -->
+        
+        <!-- LICENSE CONDITIONS -->
+        <ui:fragment>
+            <div class="form-group">
+                <h:outputLabel for="conditions" styleClass="col-sm-4 control-label" value="#{msg.license_conditions}" />
+                <div class="col-sm-8">
+                    <h:inputTextarea value="#{adminBean.currentLicense.conditions}" id="conditions" styleClass="form-control" />
+                </div>
+            </div>
+        </ui:fragment>
+        
     </div>
 </ui:composition>

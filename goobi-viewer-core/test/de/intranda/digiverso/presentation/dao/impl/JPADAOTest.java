@@ -32,10 +32,12 @@ import org.junit.Test;
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -839,7 +841,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getAllLicenseTypesTest() throws DAOException {
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     /**
@@ -879,14 +881,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void addLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = new LicenseType();
         licenseType.setName("license type to add name");
         licenseType.setDescription("license type to add desc");
         licenseType.getPrivileges().add("license type to add priv 1");
         Assert.assertTrue(DataManager.getInstance().getDao().addLicenseType(licenseType));
         Assert.assertNotNull(licenseType.getId());
-        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(6, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
         Assert.assertNotNull(licenseType2);
@@ -898,7 +900,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void updateLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
         Assert.assertNotNull(licenseType);
         Assert.assertEquals(1, licenseType.getPrivileges().size());
@@ -907,7 +909,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         licenseType.setDescription("license type 1 new desc");
         licenseType.getPrivileges().add("license type 1 priv 2");
         Assert.assertTrue(DataManager.getInstance().getDao().updateLicenseType(licenseType));
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
         Assert.assertNotNull(licenseType2);
@@ -919,22 +921,22 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void deleteUsedLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
         Assert.assertNotNull(licenseType);
         Assert.assertFalse(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
         Assert.assertNotNull(DataManager.getInstance().getDao().getLicenseType(1));
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     @Test
     public void deleteUnusedLicenseTypeTest() throws DAOException {
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(2);
         Assert.assertNotNull(licenseType);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
         Assert.assertNull(DataManager.getInstance().getDao().getLicenseType(2));
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     // Roles
@@ -1474,7 +1476,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPageCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCMSPageCount(null));
+        Assert.assertEquals(3L, DataManager.getInstance().getDao().getCMSPageCount(null, null, null, null));
     }
 
     /**
@@ -1483,7 +1485,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesByClassification_shouldReturnAllPagesWithGivenClassification() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByClassification("news").size());
+        CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByCategory(news).size());
     }
 
     /**
@@ -1492,7 +1495,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", CMSPage.CLASSIFICATION_OVERVIEWPAGE).size());
+        CMSCategory c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI 1", c).size());
     }
 
     /**
@@ -1535,7 +1539,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.setDateCreated(new Date());
         page.setPublished(true);
         page.setUseDefaultSidebar(false);
-        page.getClassifications().add("class");
+
+        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+        page.getCategories().add(cClass);
 
         CMSPageLanguageVersion version = new CMSPageLanguageVersion();
         version.setLanguage("en");
@@ -1555,6 +1561,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setSolrSortFields("SORT_TITLE,DATECREATED");
         version.getContentItems().add(item);
 
+        CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
+        CMSCategory other = DataManager.getInstance().getDao().getCategoryByName("other");
+        item.addCategory(news);
+        item.addCategory(other);
+
         // TODO add sidebar elements
 
         Assert.assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
@@ -1565,8 +1576,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(page2);
         Assert.assertEquals(page.getTemplateId(), page2.getTemplateId());
         Assert.assertEquals(page.getDateCreated(), page2.getDateCreated());
-        Assert.assertEquals(1, page2.getClassifications().size());
-        Assert.assertEquals("class", page2.getClassifications().get(0));
+        Assert.assertEquals(1, page2.getCategories().size());
+        Assert.assertEquals(cClass, page2.getCategories().get(0));
         Assert.assertEquals(1, page.getLanguageVersions().size());
         Assert.assertEquals(version.getLanguage(), page.getLanguageVersions().get(0).getLanguage());
         Assert.assertEquals(version.getTitle(), page.getLanguageVersions().get(0).getTitle());
@@ -1579,6 +1590,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
         Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
         Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());
+        Assert.assertEquals(2, item.getCategories().size());
+        Assert.assertTrue(item.getCategories().contains(news));
     }
 
     /**
@@ -1594,8 +1607,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersion("en").setTitle("English title");
         page.getLanguageVersion("fr").setTitle("Titre français");
         page.getLanguageVersions().remove(0);
-        page.getClassifications().add("new class");
         page.getProperty("TEST_PROPERTY").setValue("true");
+
+        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
+        page.getCategories().add(cClass);
 
         Date now = new Date();
         page.setDateUpdated(now);
@@ -1607,15 +1622,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
         Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
         Assert.assertEquals(2, page2.getLanguageVersions().size());
-        Assert.assertEquals(3, page2.getClassifications().size());
+        Assert.assertEquals(3, page2.getCategories().size());
+        Assert.assertTrue(page.getCategories().contains(cClass));
         Assert.assertEquals(now, page2.getDateUpdated());
         Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
 
         page.getLanguageVersion("fr").setTitle("");
-        page.removeClassification("new class");
+        page.removeCategory(cClass);
         Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
         Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page.getClassifications().size(), 0);
+        Assert.assertEquals(2, page.getCategories().size(), 0);
+        Assert.assertFalse(page.getCategories().contains(cClass));
     }
 
     /**
@@ -1934,7 +1951,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         job.getObservers().add("newobserver@example.com");
 
         Assert.assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        Assert.assertEquals("Too many observers after updateDownloadJob", 2, job.getObservers().size());
+        List<DownloadJob> allJobs = DataManager.getInstance().getDao().getAllDownloadJobs();
+        Assert.assertEquals(2, allJobs.size());
+        Assert.assertEquals("Too many observers after getAllDownloadJobs", 2, job.getObservers().size());
 
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
         Assert.assertNotNull(job2);
@@ -1959,7 +1979,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getCMSPagesCount_shouldReturnCorrectCount() throws Exception {
-        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.emptyMap());
+        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.emptyMap(), null, null, null);
         Assert.assertEquals(3, numPages);
     }
 
@@ -1977,4 +1997,65 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             }
         }
     }
+
+    @Test
+    public void testCreateCMSPageFilter_createValidQueryWithAllParams() throws AccessDeniedException {
+
+        List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
+        List<String> subThemes = Arrays.asList(new String[] { "s1" });
+        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+
+        Map<String, String> params = new HashMap<>();
+
+        String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
+
+        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
+                + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
+        Assert.assertEquals(shouldQuery, query);
+
+        Assert.assertEquals("c1", params.get("cat1"));
+        Assert.assertEquals("c2", params.get("cat2"));
+        Assert.assertEquals("c3", params.get("cat3"));
+        Assert.assertEquals("s1", params.get("thm1"));
+        Assert.assertEquals("t1", params.get("tpl1"));
+        Assert.assertEquals("t2", params.get("tpl2"));
+
+    }
+
+    @Test
+    public void testCreateCMSPageFilter_createValidQueryWithTwoParams() throws AccessDeniedException {
+
+        List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
+        List<String> subThemes = Arrays.asList(new String[] { "s1" });
+
+        Map<String, String> params = new HashMap<>();
+
+        String query = JPADAO.createCMSPageFilter(params, "p", null, subThemes, categories);
+
+        String shouldQuery = "(:thm1 = p.subThemeDiscriminatorValue) AND "
+                + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
+        Assert.assertEquals(shouldQuery, query);
+
+        Assert.assertEquals("c1", params.get("cat1"));
+        Assert.assertEquals("c2", params.get("cat2"));
+        Assert.assertEquals("c3", params.get("cat3"));
+        Assert.assertEquals("s1", params.get("thm1"));
+    }
+
+    @Test
+    public void testCreateCMSPageFilter_createValidQueryWithOneParam() throws AccessDeniedException {
+
+        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+
+        Map<String, String> params = new HashMap<>();
+
+        String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
+
+        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId)";
+        Assert.assertEquals(shouldQuery, query);
+
+        Assert.assertEquals("t1", params.get("tpl1"));
+        Assert.assertEquals("t2", params.get("tpl2"));
+    }
+
 }

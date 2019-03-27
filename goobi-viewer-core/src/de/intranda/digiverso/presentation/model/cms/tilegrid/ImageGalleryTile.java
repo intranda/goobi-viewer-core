@@ -22,12 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
+
 /**
  * Represents a tile within a tile grid of images that link to some URL.
  */
 public interface ImageGalleryTile {
-
-    public DisplaySize getSize();
 
     public Priority getPriority();
 
@@ -43,11 +43,7 @@ public interface ImageGalleryTile {
 
     public boolean isImportant();
 
-    public List<String> getTags();
-
-    public boolean isCollection();
-
-    public String getCollectionName();
+    public List<CMSCategory> getCategories();
 
     public int getDisplayOrder();
 

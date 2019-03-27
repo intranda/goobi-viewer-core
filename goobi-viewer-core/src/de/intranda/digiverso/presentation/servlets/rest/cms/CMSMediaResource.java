@@ -17,23 +17,35 @@ package de.intranda.digiverso.presentation.servlets.rest.cms;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +56,19 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.StringTools;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
+import de.intranda.digiverso.presentation.managedbeans.UserBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.MetadataSerializer;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -56,7 +77,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
  * @author Florian Alpers
  *
  */
-@Path("/cms/media")
+@javax.ws.rs.Path("/cms/media")
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
@@ -67,7 +88,7 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
 
     @GET
-    @Path("/get/{tag}")
+    @javax.ws.rs.Path("/get/{tag}")
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaList getMediaByTag(@PathParam("tag") String tag) throws DAOException {
 
@@ -75,15 +96,15 @@ public class CMSMediaResource {
                 .getDao()
                 .getAllCMSMediaItems()
                 .stream()
-                .filter(item -> item.getTags().contains(tag))
+                .filter(item -> item.getCategories().stream().anyMatch(c -> c.getName().equalsIgnoreCase(tag)))
                 .collect(Collectors.toList());
         return new MediaList(items);
     }
 
     @GET
-    @Path("/get")
+    @javax.ws.rs.Path("/get")
     @Produces({ MediaType.APPLICATION_JSON })
-    public MediaList getAllMedia(@PathParam("tag") String tag) throws DAOException {
+    public MediaList getAllMedia() throws DAOException {
 
         List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
         return new MediaList(items);
@@ -97,7 +118,7 @@ public class CMSMediaResource {
      * @throws DAOException
      */
     @GET
-    @Path("/get/item/{id}")
+    @javax.ws.rs.Path("/get/item/{id}")
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("id") Long id) throws ContentNotFoundException, DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
@@ -148,6 +169,122 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("Resource not found");
     }
+    
+	@POST
+	@javax.ws.rs.Path("/upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadMediaFiles(
+			@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("filename") String filename,
+            @FormDataParam("file") InputStream uploadedInputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetail) throws DAOException {
+		
+		if (uploadedInputStream == null) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
+        }
+		
+		
+		Optional<User> user = getUser();
+		if(!user.isPresent()) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
+		} else if(!user.get().isCmsAdmin()) {
+			return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
+		} else {
+
+        	Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        	Path mediaFile = cmsMediaFolder.resolve(filename);
+        	try {			
+        		Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
+
+        		
+        		if(!Files.exists(cmsMediaFolder)) {
+        			Files.createDirectory(cmsMediaFolder);
+        		}
+        		Files.copy(uploadedInputStream, mediaFile);
+        		
+        		if(Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
+        			logger.debug("Successfully downloaded file {}", mediaFile);
+        			//upload successful. TODO: check file integrity?
+        			CMSMediaItem item = createMediaItem(mediaFile);
+        			requiredCategory.ifPresent(cat -> item.addCategory(cat));        			
+        			
+        			
+        			DataManager.getInstance().getDao().addCMSMediaItem(item);
+        			MediaItem jsonItem = new MediaItem(item);
+        			return Response.status(Status.ACCEPTED).entity(jsonItem).build();
+        		} else {
+            		String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+        			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+        			
+        		}
+        	} catch (AccessDeniedException e) {
+        		return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
+        	} catch(FileAlreadyExistsException e) {
+        		String message = Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+        		return Response.status(Status.CONFLICT).entity(message).build();
+        	} catch(IOException | DAOException e) {
+        		logger.error("Error uploading media file", e);
+        		String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(), e.getMessage());
+    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+        	}
+		}
+	}
+	
+    /**
+     * Return an Optional containing a {@link CMSCategory} for which the user has access rights if the user in a CmsAdmin but has limited category rights
+     * If the user has unlimited category rights, return an empty optional
+     * 
+	 * @param user
+	 * @return
+     * @throws DAOException 
+     * @throws AccessDeniedException	if the user is not allowed to use any categories whatsoever
+	 */
+	private Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
+
+		if(!user.hasPrivilegeForAllCategories()) {
+			List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+			if(!allowedCategories.isEmpty()) {
+				return Optional.of(allowedCategories.get(0));
+			} else {
+				throw new AccessDeniedException("The user " + user + " has no rights to any categories and may therefore not upload any media files");
+			}
+		}
+    	return Optional.empty();
+	}
+
+	public CMSMediaItem createMediaItem(Path filePath) {
+        CMSMediaItem item = new CMSMediaItem();
+		item.setFileName(filePath.getFileName().toString());
+        for (Locale locale : CmsBean.getAllLocales()) {
+            CMSMediaItemMetadata metadata = new CMSMediaItemMetadata();
+            metadata.setLanguage(locale.getLanguage());
+            item.addMetadata(metadata);
+        }
+        return item;
+    }
+	
+    /**
+     * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
+     * no user is logged in, NULL is returned
+     * 
+     * @param session
+     * @return
+     */
+    private Optional<User> getUser() {
+    	UserBean userBean = BeanUtils.getUserBean();
+        if (userBean == null) {
+            logger.trace("Unable to get user: No UserBean found in session store.");
+            return Optional.empty();
+        }
+        User user = userBean.getUser();
+        if (user == null) {
+            logger.trace("Unable to get user: No user found in session store UserBean instance");
+            return Optional.empty();
+        }
+        // logger.trace("Found user {}", user);
+        return Optional.of(user);
+    }
 
     public class MediaList {
 
@@ -181,7 +318,7 @@ public class CMSMediaResource {
             this.description = source.getTranslationsForDescription();
             this.image = new ImageContent(source.getIconURI(), true);
             this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
-            this.tags = source.getTags();
+            this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         }
 
         /**

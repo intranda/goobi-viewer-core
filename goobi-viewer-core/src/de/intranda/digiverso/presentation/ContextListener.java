@@ -67,7 +67,7 @@ public class ContextListener implements ServletContextListener {
                     logger.error("Could not add static role 'member'.");
                 }
             }
-            LicenseType.addStaticLicenseTypesToDB();
+            LicenseType.addCoreLicenseTypesToDB();
         } catch (DAOException e) {
             logger.error(e.getMessage());
         }

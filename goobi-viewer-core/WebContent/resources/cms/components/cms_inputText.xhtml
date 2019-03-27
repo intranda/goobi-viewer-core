@@ -8,43 +8,37 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface>
-        <composite:attribute
-            name="field"
-            required="true" />
-        <composite:attribute
-            name="label"
-            required="true" />
-        <composite:attribute
-            name="help"
-            required="true" />
+        <composite:attribute name="field" required="true" />
+        <composite:attribute name="label" required="true" />
+        <composite:attribute name="help" required="true" />
+        <!-- Value holder for using a validator inside components -->
+        <composite:editableValueHolder name="inputField" targets="input" />
     </composite:interface>
 
     <composite:implementation>
-
         <div class="cms-module__option-group">
             <div class="cms-module__option-label">
                 <label for="#{cc.attrs.id}:input">#{cc.attrs.label}</label>
             </div>
             <div class="cms-module__option-control">
-                <h:inputText
-                    id="input"
-                    value="#{cc.attrs.field}"
-                    styleClass="form-control" />
+                <div class="cms-module__option-message">
+                    <h:messages for="#{cc.attrs.id}:input" errorClass="cms-module__option-message danger" />
+                    
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <h:inputText id="input" value="#{cc.attrs.field}" styleClass="form-control" />
                 <span class="cms-module__option-control-helptext">#{cc.attrs.help}</span>
             </div>
             <div class="cms-module__option-help">
                 <ui:fragment rendered="#{cc.attrs.help != ''}">
-                    <button
-                        type="button"
-                        class="btn btn--clean"
-                        data-toggle="helptext">
-                        <i
-                            class="fa fa-question-circle"
-                            aria-hidden="true"></i>
+                    <button type="button" class="btn btn--clean" data-toggle="helptext">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
                     </button>
                 </ui:fragment>
             </div>
         </div>
-
     </composite:implementation>
 </ui:composition>

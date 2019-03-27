@@ -26,4 +26,5 @@ public interface TableDataSource<T> {
 
     long getTotalNumberOfRecords(Map<String, String> filters);
     void resetTotalNumberOfRecords();
+
 }

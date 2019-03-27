@@ -15,9 +15,13 @@
  */
 package de.intranda.digiverso.presentation;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -28,7 +32,13 @@ import javax.servlet.http.HttpSessionContext;
 
 import org.mockito.Mockito;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
+import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
+import de.intranda.digiverso.presentation.model.security.authentication.IAuthenticationProvider;
+import de.intranda.digiverso.presentation.model.security.authentication.LoginResult;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 public class TestUtils {
 
@@ -206,5 +216,63 @@ public class TestUtils {
         }
 
     }
+    
+   public static IAuthenticationProvider testAuthenticationProvider = new IAuthenticationProvider() {
+        
+        private User user = null;
+        
+        @Override
+        public void logout() throws AuthenticationProviderException {}
+        
+        @Override
+        public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
+            LoginResult result;
+            try {
+                user = DataManager.getInstance().getDao().getUserByEmail(loginName);
+                if(user != null && user.getPasswordHash().equals(password)) {
+                    result = new LoginResult(null, null, Optional.ofNullable(user), false);
+                } else {
+                    result = new LoginResult(null, null, Optional.empty(), true);
+                }
+            } catch (DAOException e) {
+                throw new AuthenticationProviderException(e);
+            }
+            return CompletableFuture.completedFuture(result);
+        }
+        
+        @Override
+        public String getType() {
+            return "test";
+        }
+        
+        @Override
+        public String getName() {
+            return "test";
+        }
+        
+        @Override
+        public boolean allowsPasswordChange() {
+            return false;
+        }
+
+        @Override
+        public boolean allowsNicknameChange() {
+            return true;
+        }
+
+        @Override
+        public boolean allowsEmailChange() {
+            return false;
+        }
+
+        @Override
+        public List<String> getAddUserToGroups() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void setAddUserToGroups(List<String> addUserToGroups) {
+        }
+    };
 
 }

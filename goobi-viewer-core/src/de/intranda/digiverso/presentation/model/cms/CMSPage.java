@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -41,6 +42,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -75,6 +78,7 @@ import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunc
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
+import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
@@ -135,12 +139,11 @@ public class CMSPage implements Comparable<CMSPage> {
     @Transient
     private List<CMSSidebarElement> unusedSidebarElements;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_page_classifications", joinColumns = @JoinColumn(name = "page_id"))
-    @Column(name = "classification")
-    @PrivateOwned
-    private List<String> classifications = new ArrayList<>();
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<CMSCategory> categories = new ArrayList<>();
+    
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
@@ -221,7 +224,7 @@ public class CMSPage implements Comparable<CMSPage> {
         this.persistentUrl = original.persistentUrl;
         this.relatedPI = original.relatedPI;
         this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
-        this.classifications = new ArrayList<>(original.classifications);
+        this.categories = new ArrayList<>(original.categories);
         this.parentPageId = original.parentPageId;
         this.mayContainUrlParameters = original.mayContainUrlParameters;
         this.wrapperElementClass = original.wrapperElementClass;
@@ -456,25 +459,25 @@ public class CMSPage implements Comparable<CMSPage> {
     /**
      * @return the classifications
      */
-    public List<String> getClassifications() {
-        return classifications;
+    public List<CMSCategory> getCategories() {
+        return categories;
     }
 
     /**
      * @param classifications the classifications to set
      */
-    public void setClassifications(List<String> classifications) {
-        this.classifications = classifications;
+    public void setCategories(List<CMSCategory> categories) {
+        this.categories = categories;
     }
 
-    public void addClassification(String classification) {
-        if (StringUtils.isNotBlank(classification) && !classifications.contains(classification)) {
-            classifications.add(classification);
+    public void addCategory(CMSCategory category) {
+        if (category != null && !categories.contains(category)) {
+        	categories.add(category);
         }
     }
 
-    public void removeClassification(String classification) {
-        classifications.remove(classification);
+    public void removeCategory(CMSCategory category) {
+    	categories.remove(category);
     }
 
     /**
@@ -1028,7 +1031,7 @@ public class CMSPage implements Comparable<CMSPage> {
                     .append("/")
                     .append(item.getNumberOfImportantTiles())
                     .append("/")
-                    .append(item.getAllowedTags())
+                    .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(TileGridResource.TAG_SEPARATOR)))
                     .append("/");
             return sb.toString();
         }
@@ -1445,5 +1448,29 @@ public class CMSPage implements Comparable<CMSPage> {
             default:
                 break;
         }
+    }
+    
+    /**
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
+     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     */
+    public void writeSelectableCategories(List<Selectable<CMSCategory>> selectableCategories) {
+    	
+    	if(selectableCategories != null) {
+	    	try {
+				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+				List<CMSCategory> tempCats = new ArrayList<>();
+				for (CMSCategory cat : allCats) {
+					if(this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+						tempCats.add(cat);
+					} else if(selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+						tempCats.add(cat);
+					}
+				}
+				this.categories = tempCats;
+	    	} catch (DAOException e) {
+	    		logger.error(e.toString(), e);
+			}
+    	}
     }
 }
