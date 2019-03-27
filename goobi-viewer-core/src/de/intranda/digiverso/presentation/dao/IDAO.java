@@ -350,6 +350,8 @@ public interface IDAO {
     
     public CMSCategory getCategoryByName(String name) throws DAOException;
 
+    public CMSCategory getCategory(Long id) throws DAOException;
+
 
     // Transkribus
 
