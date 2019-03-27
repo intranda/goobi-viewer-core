@@ -163,7 +163,6 @@ var cmsJS = ( function( cms ) {
 			});
 			
             // show/hide edit actions for media file
-            _setFileMouseover( false );
             _setFileCancelClick( false );
             
             $( '[data-action="edit"]' ).on( 'click', function() {
@@ -183,13 +182,11 @@ var cmsJS = ( function( cms ) {
 	
 					// set modal events				
 					if ( $thisFile.hasClass( 'fixed' ) ) {
-						_setFileMouseover( true );
 						_setFileCancelClick( true );
 						_setFileKeyEvents( true );
 						_toggleEditMode( $( '.admin-cms-media__file' ), true );					
 					}
 					else {
-						_setFileMouseover( false );
 						_setFileCancelClick( false );
 						_setFileKeyEvents( false );
 						$( '[data-action="cancel"]' ).click();
@@ -326,33 +323,6 @@ var cmsJS = ( function( cms ) {
     	}
     	
     }
-
-    /**
-     * @description Method to set the mouseover events for media files.
-     * @method _setFileMouseover
-     * @param {Boolean} modal Trigger to switch between modal and list files.
-     * */
-    function _setFileMouseover( modal ) {
-    	if ( _debug ) {
-    		console.log( 'EXECUTE: _setFileMouseover' );
-    		console.log( '--> modal: ', modal );
-    	}
-    	
-    	if ( modal ) {
-    		$( '.admin-cms-media__file' ).off( 'mouseover' ).off( 'mouseout' );
-    		$( '.admin-cms-media__file-actions' ).show();
-    	}
-    	else {
-    		$( '.admin-cms-media__file' ).off().on( {
-    			'mouseover': function() {
-    				$( this ).find( '.admin-cms-media__file-actions' ).show();
-    			},
-    			'mouseout': function() {
-    				$( this ).find( '.admin-cms-media__file-actions' ).hide();
-    			}
-    		} );
-    	}
-    }
     
     /**
      * @description Method to set the keyboard events for the media file modal.
@@ -373,7 +343,6 @@ var cmsJS = ( function( cms ) {
     				// esc
 	    			case 27:
 	    				$( this ).find( '[data-action="cancel"]' ).click();
-	    				$( '.admin-cms-media__file-actions' ).hide();
 	    				break;
 	    			// left
     				case 37:
@@ -416,7 +385,6 @@ var cmsJS = ( function( cms ) {
     		$( '[data-action="cancel"]' ).off().on( 'click', function() {
 				$( this ).parents( '.admin-cms-media__file' ).toggleClass( 'fixed' );
 				$( '.admin-cms-media__overlay' ).toggle();
-				_setFileMouseover( false );
 				_setFileCancelClick( false );
 				$( '[data-action="cancel"]' ).click();
 			});
