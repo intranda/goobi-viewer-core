@@ -139,38 +139,42 @@ public class TocMaker {
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
         boolean sourceFormatPdfAllowed = StructElementStub.SOURCE_DOC_FORMAT_METS.equals(structElement.getSourceDocFormat());
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
-                getSolrFieldsToFetch(structElement.getDocStructType()));
-        if (doc != null) {
-            if (structElement.isGroup()) {
-                // Group
-                int level = 0;
-                // Try LABEL first (should equal MD_TITLE or MD_SERIESTITLE)
-                IMetadataValue label = new SimpleMetadataValue(structElement.getLabel());
-                // Shelfmark fallback
-                if (StringUtils.isEmpty(label.toString())) {
-                    label.setValue(structElement.getMetadataValue("MD_SHELFMARK"));
-                }
-                // PI fallback
-                if (StringUtils.isEmpty(label.toString())) {
-                    label.setValue(structElement.getPi());
-                }
-                String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-                //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-                String docstruct = "_GROUPS";
-                ret.get(TOC.DEFAULT_GROUP).add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level,
-                        structElement.getPi(), null, false, true, false, mimeType, docstruct, footerId));
-                ++level;
-                buildGroupToc(ret.get(TOC.DEFAULT_GROUP), structElement.getGroupIdField(), structElement.getPi(), sourceFormatPdfAllowed, mimeType);
-            } else if (structElement.isAnchor()) {
-                // MultiVolume
-                int numVolumes = buildAnchorToc(ret, doc, sourceFormatPdfAllowed, mimeType, tocCurrentPage, hitsPerPage);
-                toc.setTotalTocSize(numVolumes);
-            } else {
-                // Standalone or volume
-                ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
+                        getSolrFieldsToFetch(structElement.getDocStructType()));
+        if (doc == null) {
+            return ret;
+        }
+        
+        if (structElement.isGroup()) {
+            // Group
+            int level = 0;
+            // Try LABEL first (should equal MD_TITLE or MD_SERIESTITLE)
+            IMetadataValue label = new SimpleMetadataValue(structElement.getLabel());
+            // Shelfmark fallback
+            if (StringUtils.isEmpty(label.toString())) {
+                label.setValue(structElement.getMetadataValue("MD_SHELFMARK"));
             }
+            // PI fallback
+            if (StringUtils.isEmpty(label.toString())) {
+                label.setValue(structElement.getPi());
+            }
+            String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
+            //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+            String docstruct = "_GROUPS";
+            ret.get(TOC.DEFAULT_GROUP)
+                    .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
+                            false, true, false, mimeType, docstruct, footerId));
+            ++level;
+            buildGroupToc(ret.get(TOC.DEFAULT_GROUP), structElement.getGroupIdField(), structElement.getPi(), sourceFormatPdfAllowed, mimeType);
+        } else if (structElement.isAnchor()) {
+            // MultiVolume
+            int numVolumes = buildAnchorToc(ret, doc, sourceFormatPdfAllowed, mimeType, tocCurrentPage, hitsPerPage);
+            toc.setTotalTocSize(numVolumes);
+        } else {
+            // Standalone or volume
+            ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
         }
 
         logger.trace("generateToc end: {} groups, {} elements in DEFAULT", ret.size(), ret.get(TOC.DEFAULT_GROUP).size());
@@ -285,16 +289,17 @@ public class TocMaker {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         String template = "_GROUPS";
         String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
-        SolrDocumentList groupMemberDocs = DataManager.getInstance().getSearchIndex().search(
-                new StringBuilder("(").append(SolrConstants.ISWORK)
+        SolrDocumentList groupMemberDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(new StringBuilder("(").append(SolrConstants.ISWORK)
                         .append(":true OR ")
                         .append(SolrConstants.ISANCHOR)
                         .append(":true) AND ")
                         .append(groupIdField)
                         .append(':')
                         .append(groupIdValue)
-                        .toString(),
-                SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(groupSortField, "asc")), getSolrFieldsToFetch(template));
+                        .toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(groupSortField, "asc")),
+                        getSolrFieldsToFetch(template));
         if (groupMemberDocs != null) {
             HttpServletRequest request = BeanUtils.getRequest();
             for (SolrDocument doc : groupMemberDocs) {
@@ -387,8 +392,10 @@ public class TocMaker {
             volumeFieldList.add(tocGroupField);
             logger.trace("group field: {}", tocGroupField);
         }
-        QueryResponse queryResponse = DataManager.getInstance().getSearchIndex().search(query, offset, hitsPerPage,
-                DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(anchorDocstructType), null, volumeFieldList);
+        QueryResponse queryResponse = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, offset, hitsPerPage,
+                        DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(anchorDocstructType), null, volumeFieldList);
         if (queryResponse != null) {
             HttpServletRequest request = BeanUtils.getRequest();
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
@@ -477,8 +484,9 @@ public class TocMaker {
         // Add anchor document
         IMetadataValue label = buildLabel(anchorDoc, (String) anchorDoc.getFirstValue(SolrConstants.DOCSTRCT));
         String footerId = getFooterId(anchorDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-        ret.get(TOC.DEFAULT_GROUP).add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null,
-                sourceFormatPdfAllowed, true, false, mimeType, anchorDocstructType, footerId));
+        ret.get(TOC.DEFAULT_GROUP)
+                .add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null, sourceFormatPdfAllowed, true,
+                        false, mimeType, anchorDocstructType, footerId));
 
         return hits;
     }
@@ -574,10 +582,12 @@ public class TocMaker {
             //                    .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
-            SolrDocumentList childDocs =
-                    DataManager.getInstance().getSearchIndex().search(new StringBuilder(ancestorField).append(':').append(queryValue).toString(),
-                            SolrSearchIndex.MAX_HITS, DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(
-                                    SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
+            SolrDocumentList childDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(new StringBuilder(ancestorField).append(':').append(queryValue).toString(), SolrSearchIndex.MAX_HITS,
+                            DataManager.getInstance()
+                                    .getConfiguration()
+                                    .getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
                             null);
             boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
             logger.info("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
@@ -586,7 +596,7 @@ public class TocMaker {
                     // Add child, if either all siblings are requested or the path leads to the main record
                     if (addSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
                         populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
-                        		addSiblings, footerId);
+                                addSiblings, footerId);
                     }
                 }
             }
@@ -730,23 +740,24 @@ public class TocMaker {
                     value.addSuffix(suffix);
                 }
                 Set<String> languages = new HashSet<>(value.getLanguages());
-                
+
                 languages.addAll(label.getLanguages());
-//                if (MetadataParameterType.FIELD.equals(param.getType())) {
-                    for (String language : languages) {
-                        String langValue = label.getValue(language).orElse(labelConfig.getMasterValue()).replace(placeholder,
-                                value.getValue(language).orElse(value.getValue().orElse("")));
-                        label.setValue(langValue, language);
-                    }
-//                } else {
-//                    for (String language : languages) {
-//                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
-//                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
-//                        //                        String langValue =
-//                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
-//                        label.setValue(langValue, language);
-//                    }
-//                }
+                //                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                for (String language : languages) {
+                    String langValue = label.getValue(language)
+                            .orElse(labelConfig.getMasterValue())
+                            .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
+                    label.setValue(langValue, language);
+                }
+                //                } else {
+                //                    for (String language : languages) {
+                //                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
+                //                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(labelConfig.getMasterValue()));
+                //                        //                        String langValue =
+                //                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+                //                        label.setValue(langValue, language);
+                //                    }
+                //                }
             }
         } else {
             // Old style layout

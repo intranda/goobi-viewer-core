@@ -861,7 +861,18 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-
+            <!-- _GROUPS: Group documents -->
+            <template name="_GROUPS">
+                <metadata label="MD_TITLE" value="">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_PUBLISHER" value="">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH" value="">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+            </template>
 			<!-- Map: sample definition of metadata for a special struct element -->
 			<template name="Map">
 				<metadata label="MD_TITLE" value="">
