@@ -3355,8 +3355,8 @@ public class JPADAO implements IDAO {
     }
     
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllCategories()
+    /**
+     * @return a list of all persisted {@link CMSCategory CMSCategories}
      */
     @Override
     public List<CMSCategory> getAllCategories() throws DAOException {
@@ -3367,8 +3367,8 @@ public class JPADAO implements IDAO {
         return list;
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+    /**
+     * Persist a new {@link CMSCategory} object
      */
     @Override
     public void addCategory(CMSCategory category) throws DAOException {
@@ -3383,8 +3383,8 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#addCategory(de.intranda.digiverso.presentation.model.cms.Category)
+    /**
+     * Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
     public void updateCategory(CMSCategory category) throws DAOException {
@@ -3399,8 +3399,8 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCategory(de.intranda.digiverso.presentation.model.cms.Category)
+    /**
+     * Delete a {@link CMSCategory} object from the persistence context
      */
     @Override
     public boolean deleteCategory(CMSCategory category) throws DAOException {
@@ -3417,8 +3417,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#getCategoryByName()
+    /**
+     * Search the persistence context for a {@link CMSCategory} with the given name.
+     * @return A CMSCategory with the given name, or null if no matching entity was found
+     * @throws NonUniqueResultException if the query matches more than one result
+     * @throws DAOException if another error occurs
      */
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
@@ -3431,6 +3434,12 @@ public class JPADAO implements IDAO {
         return category;
     }
 	
+    /**
+     * Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * @return A CMSCategory with the given id, or null if no matching entity was found
+     * @throws NonUniqueResultException if the query matches more than one result (should never happen since the id is the primary key
+     * @throws DAOException if another error occurs
+     */
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
         preQuery();
@@ -3442,6 +3451,9 @@ public class JPADAO implements IDAO {
         return category;
     }
     
+    /**
+     * Check if the database contains a table of the given name. Used by backward-compatibility routines
+     */
 	@Override
 	public boolean tableExists(String tableName) throws SQLException {
 		EntityTransaction transaction = em.getTransaction();
@@ -3455,6 +3467,9 @@ public class JPADAO implements IDAO {
 		}
 	}
 	
+	/**
+     * Check if the database contains a column in  a table with the given names. Used by backward-compatibility routines
+     */
 	@Override
 	public boolean columnsExists(String tableName, String columnName) throws SQLException {
 		EntityTransaction transaction = em.getTransaction();
@@ -3468,21 +3483,37 @@ public class JPADAO implements IDAO {
 		}
 	}
 
+	/**
+	 * Start a persistence context transaction. 
+	 * Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
+	 */
 	@Override
 	public void startTransaction() {
 		em.getTransaction().begin();
 	}
 	
+	/**
+	 * Commits a persistence context transaction
+	 * Only to be used following a  {@link  #startTransaction()} call
+	 */
 	@Override
 	public void commitTransaction() {
 		em.getTransaction().commit();
 	}
 
+	/**
+	 * Create a query in native sql syntax in the persistence context. Does not provide its own transaction.
+	 * Use {@link #startTransaction()} and {@link #commitTransaction()} for this
+	 */
 	@Override
 	public Query createNativeQuery(String string) {
 		return em.createNativeQuery(string);
 	}
 	
+	/**
+	 * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction.
+	 * Use {@link #startTransaction()} and {@link #commitTransaction()} for this
+	 */
 	@Override
 	public Query createQuery(String string) {
 		return em.createQuery(string);

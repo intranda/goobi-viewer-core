@@ -42,7 +42,8 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 
 /**
  * Includes methods to convert deprecated database structures into a form
- * compatible with the current viewer version
+ * compatible with the current viewer version.
+ * 
  * 
  * @author florian
  *
