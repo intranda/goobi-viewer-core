@@ -605,7 +605,8 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      *
      */
-    public void saveSelectedPage() throws DAOException {
+    @SuppressWarnings("unused")
+	public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
         if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isCmsAdmin()) {
             // Only authorized CMS admins may save
@@ -620,7 +621,8 @@ public class CmsBean implements Serializable {
             validatePage(selectedPage, getDefaultLocale().getLanguage());
             logger.trace("reset item data");
             selectedPage.resetItemData();
-            selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
+            writeCategoriesToPage();
+            
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
@@ -660,6 +662,16 @@ public class CmsBean implements Serializable {
         }
         logger.trace("Done saving page");
     }
+
+	/**
+	 * This is kind of a hack to avoid a ConcurrentModificationException when persisting page after changing categories.
+	 * The exception is probably caused by the categories taken from License object, since it only occurs if the categories are
+	 * actually taken from Licenses due to limited rights of the user
+	 */
+	private void writeCategoriesToPage() {
+		selectedPage.writeSelectableCategories(this.pageCategories);		
+		selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
+	}
 
     /**
      * @param id
@@ -1019,11 +1031,10 @@ public class CmsBean implements Serializable {
         return pageCategories.stream().filter(selectable -> selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
     }
 
-    public void addSelectedCategoryToPage() {
+    public void addSelectedCategoryToPage() throws DAOException {
     	Selectable<CMSCategory> cat = getSelectedCategory();
         if (this.selectedPage != null && cat != null) {
         	cat.setSelected(true);
-            this.selectedPage.addCategory(cat.getValue());
             resetSelectedCategoryId();
         }
     }
@@ -1031,7 +1042,6 @@ public class CmsBean implements Serializable {
     public void removeCategoryFromPage(CMSCategory cat) {
     	Selectable<CMSCategory> selectable = pageCategories.stream().filter(sel -> sel.getValue().equals(cat)).findFirst().orElse(null);
         if (this.selectedPage != null && selectable != null) {
-            this.selectedPage.removeCategory(cat);
             selectable.setSelected(false);
             resetSelectedCategoryId();
         }

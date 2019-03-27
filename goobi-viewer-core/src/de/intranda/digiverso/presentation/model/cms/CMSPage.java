@@ -1449,4 +1449,28 @@ public class CMSPage implements Comparable<CMSPage> {
                 break;
         }
     }
+    
+    /**
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
+     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     */
+    public void writeSelectableCategories(List<Selectable<CMSCategory>> selectableCategories) {
+    	
+    	if(selectableCategories != null) {
+	    	try {
+				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+				List<CMSCategory> tempCats = new ArrayList<>();
+				for (CMSCategory cat : allCats) {
+					if(this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+						tempCats.add(cat);
+					} else if(selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+						tempCats.add(cat);
+					}
+				}
+				this.categories = tempCats;
+	    	} catch (DAOException e) {
+	    		logger.error(e.toString(), e);
+			}
+    	}
+    }
 }

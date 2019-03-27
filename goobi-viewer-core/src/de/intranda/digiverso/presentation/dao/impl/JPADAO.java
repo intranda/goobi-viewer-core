@@ -3431,6 +3431,17 @@ public class JPADAO implements IDAO {
         return category;
     }
 	
+    @Override
+    public CMSCategory getCategory(Long id) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.id = :id");
+        q.setParameter("id", id);
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
+        return category;
+    }
+    
 	@Override
 	public boolean tableExists(String tableName) throws SQLException {
 		EntityTransaction transaction = em.getTransaction();

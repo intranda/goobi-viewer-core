@@ -1102,16 +1102,29 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
     
+    /**
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
+     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     */
     public void writeSelectableCategories() {
+    	
     	if(this.selectableCategories != null) {
-    		for (Selectable<CMSCategory> selectable : this.selectableCategories) {
-				if(selectable.isSelected()) {
-					addCategory(selectable.getValue());
-				} else {
-					removeCategory(selectable.getValue());
+	    	try {
+				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+				List<CMSCategory> tempCats = new ArrayList<>();
+				for (CMSCategory cat : allCats) {
+					if(this.categories.contains(cat) && this.selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+						tempCats.add(cat);
+					} else if(this.selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+						tempCats.add(cat);
+					}
 				}
+				this.categories = tempCats;
+	    	} catch (DAOException e) {
+	    		logger.error(e.toString(), e);
 			}
     	}
+    	this.selectableCategories = null;
     }
 	
 	/**
