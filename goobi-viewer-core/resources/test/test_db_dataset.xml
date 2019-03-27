@@ -36,23 +36,27 @@
 
 	<license_types license_type_id="1" name="license type 1 name"
 		description="license type 1 desc" conditions="YEAR:[* TO 3000]"
-		open_access="false" />
+		open_access="false" core="false" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
 
 	<license_types license_type_id="2" name="license type 2 name"
 		description="license type 2 (unused)"
-		open_access="true" />
+		open_access="true" core="false" />
 	<license_type_privileges license_type_id="2"
 		privilege_name="LIST" />
 
 	<license_types license_type_id="3" name="license type 3 name"
 		description="no listing"
-		open_access="false" />
+		open_access="false" core="false" />
 		
     <license_types license_type_id="4" name="license type 4 name"
         description="no listing, overridden by license type 1"
-        open_access="false" />
+        open_access="false" core="false" />
+        
+    <license_types license_type_id="5" name="CMS"
+        description="CMS role"
+        open_access="false" core="true" />
 		
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 

@@ -1002,7 +1002,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess");
+            Query q = em.createQuery("SELECT lt FROM LicenseType lt WHERE lt.openAccess = :openAccess AND lt.core = false");
             q.setParameter("openAccess", false);
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -2240,7 +2240,8 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
+    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
         synchronized (cmsRequestLock) {
             try {
                 preQuery();
@@ -2251,16 +2252,16 @@ public class JPADAO implements IDAO {
 
                 String filterString = createFilterQuery(null, filters, params);
                 String rightsFilterString;
-				try {
-					rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
-					if(!rightsFilterString.isEmpty()) {
-						rightsFilterString = (StringUtils.isBlank(filterString) ? " WHERE " : " AND ") + rightsFilterString;
-					}
-				} catch (AccessDeniedException e) {
-					//may not request any cms pages at all
-					return Collections.emptyList();
-				}
-                
+                try {
+                    rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+                    if (!rightsFilterString.isEmpty()) {
+                        rightsFilterString = (StringUtils.isBlank(filterString) ? " WHERE " : " AND ") + rightsFilterString;
+                    }
+                } catch (AccessDeniedException e) {
+                    //may not request any cms pages at all
+                    return Collections.emptyList();
+                }
+
                 if (StringUtils.isNotEmpty(sortField)) {
                     order.append(" ORDER BY a.").append(sortField);
                     if (descending) {
@@ -2679,6 +2680,9 @@ public class JPADAO implements IDAO {
                 em.remove(o);
                 em.getTransaction().commit();
                 return true;
+            } catch (RollbackException e) {
+                logger.error(e.getMessage());
+                return false;
             } finally {
                 em.close();
             }
@@ -3005,24 +3009,25 @@ public class JPADAO implements IDAO {
      * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesCount(java.util.Map)
      */
     @Override
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
-    	preQuery();
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+            List<String> allowedCategories) throws DAOException {
+        preQuery();
         StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSPage").append(" a");
         Map<String, String> params = new HashMap<>();
         sbQuery.append(createFilterQuery(null, filters, params));
         try {
-        	String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
-        	if(!rightsFilter.isEmpty()) {
-	        	if(filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
-	        		sbQuery.append(" AND ");
-	        	} else {
-	        		sbQuery.append(" WHERE ");
-	        	}
-				sbQuery.append("(").append(createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories)).append(")");
-        	}
+            String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+            if (!rightsFilter.isEmpty()) {
+                if (filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                }
+                sbQuery.append("(").append(createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories)).append(")");
+            }
         } catch (AccessDeniedException e) {
-			return 0;
-		}
+            return 0;
+        }
         Query q = em.createQuery(sbQuery.toString());
         params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
@@ -3292,68 +3297,68 @@ public class JPADAO implements IDAO {
         List<CMSPage> pageList = q.getResultList();
         return pageList;
     }
-    
-    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds, List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
-    	
-    	String query = "";
-    	
-    	int index = 0;
-    	if(allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {    		
-    		query += "(";
-    		for (String template : allowedTemplateIds) {
-    			String templateParameter = "tpl" + ++index;
-    			query += (":" + templateParameter + " = " + pageParameter + ".templateId");
-    			query += " OR ";
-    			params.put(templateParameter, template);
-    		}
-    		if(query.endsWith(" OR ")) {
-    			query = query.substring(0, query.length()-4);
-    		}
-    		query += ") AND";
-    	} else if(allowedTemplateIds != null) {
-    		throw new AccessDeniedException("User may not view pages with any templates");
-    	}
-    	    	
-    	index = 0;
-    	if(allowedSubthemes != null && !allowedSubthemes.isEmpty()) {    		
-    		query += " (";
-    		for (String subtheme : allowedSubthemes) {
-    			String templateParameter = "thm" + ++index;
-    			query += (":" + templateParameter + " = " + pageParameter + ".subThemeDiscriminatorValue");
-    			query += " OR ";
-    			params.put(templateParameter, subtheme);
-    		}
-    		if(query.endsWith(" OR ")) {
-    			query = query.substring(0, query.length()-4);
-    		}
-    		query += ") AND";
-    	} else if(allowedSubthemes != null) {
-    		query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
-    	}
-    	
-    	index = 0;
-    	if(allowedCategoryIds != null && !allowedCategoryIds.isEmpty()) {    		
-    		query += " (";
-    		for (String category : allowedCategoryIds) {
-    			String templateParameter = "cat" + ++index;
-    			query += (":" + templateParameter + " IN (SELECT c.id FROM " + pageParameter +".categories c)");
-    			query += " OR ";
-    			params.put(templateParameter, category);
-    		}
-    		if(query.endsWith(" OR ")) {
-    			query = query.substring(0, query.length()-4);
-    		}
-    		query += ")";
-    	} else if(allowedCategoryIds != null) {
-    		query += " (SELECT COUNT(c) FROM " + pageParameter + ".categories c = 0)";
-    	}
-    	if(query.endsWith(" AND")) {
-    		query = query.substring(0, query.length()-4);
-		}
-    	
-    	return query.trim();
+
+    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds,
+            List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
+
+        String query = "";
+
+        int index = 0;
+        if (allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {
+            query += "(";
+            for (String template : allowedTemplateIds) {
+                String templateParameter = "tpl" + ++index;
+                query += (":" + templateParameter + " = " + pageParameter + ".templateId");
+                query += " OR ";
+                params.put(templateParameter, template);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ") AND";
+        } else if (allowedTemplateIds != null) {
+            throw new AccessDeniedException("User may not view pages with any templates");
+        }
+
+        index = 0;
+        if (allowedSubthemes != null && !allowedSubthemes.isEmpty()) {
+            query += " (";
+            for (String subtheme : allowedSubthemes) {
+                String templateParameter = "thm" + ++index;
+                query += (":" + templateParameter + " = " + pageParameter + ".subThemeDiscriminatorValue");
+                query += " OR ";
+                params.put(templateParameter, subtheme);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ") AND";
+        } else if (allowedSubthemes != null) {
+            query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
+        }
+
+        index = 0;
+        if (allowedCategoryIds != null && !allowedCategoryIds.isEmpty()) {
+            query += " (";
+            for (String category : allowedCategoryIds) {
+                String templateParameter = "cat" + ++index;
+                query += (":" + templateParameter + " IN (SELECT c.id FROM " + pageParameter + ".categories c)");
+                query += " OR ";
+                params.put(templateParameter, category);
+            }
+            if (query.endsWith(" OR ")) {
+                query = query.substring(0, query.length() - 4);
+            }
+            query += ")";
+        } else if (allowedCategoryIds != null) {
+            query += " (SELECT COUNT(c) FROM " + pageParameter + ".categories c = 0)";
+        }
+        if (query.endsWith(" AND")) {
+            query = query.substring(0, query.length() - 4);
+        }
+
+        return query.trim();
     }
-    
 
     /**
      * @return a list of all persisted {@link CMSCategory CMSCategories}
@@ -3419,6 +3424,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Search the persistence context for a {@link CMSCategory} with the given name.
+     * 
      * @return A CMSCategory with the given name, or null if no matching entity was found
      * @throws NonUniqueResultException if the query matches more than one result
      * @throws DAOException if another error occurs
@@ -3433,9 +3439,10 @@ public class JPADAO implements IDAO {
         CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
         return category;
     }
-	
+
     /**
      * Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * 
      * @return A CMSCategory with the given id, or null if no matching entity was found
      * @throws NonUniqueResultException if the query matches more than one result (should never happen since the id is the primary key
      * @throws DAOException if another error occurs
@@ -3450,73 +3457,71 @@ public class JPADAO implements IDAO {
         CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
         return category;
     }
-    
+
     /**
      * Check if the database contains a table of the given name. Used by backward-compatibility routines
      */
-	@Override
-	public boolean tableExists(String tableName) throws SQLException {
-		EntityTransaction transaction = em.getTransaction();
-		transaction.begin();
-		Connection connection = em.unwrap(Connection.class);
-		DatabaseMetaData metaData = connection.getMetaData();
-		try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
-			return tables.next();
-		} finally {
-			transaction.commit();
-		}
-	}
-	
-	/**
-     * Check if the database contains a column in  a table with the given names. Used by backward-compatibility routines
+    @Override
+    public boolean tableExists(String tableName) throws SQLException {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        Connection connection = em.unwrap(Connection.class);
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+            return tables.next();
+        } finally {
+            transaction.commit();
+        }
+    }
+
+    /**
+     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
      */
-	@Override
-	public boolean columnsExists(String tableName, String columnName) throws SQLException {
-		EntityTransaction transaction = em.getTransaction();
-		transaction.begin();
-		Connection connection = em.unwrap(Connection.class);
-		DatabaseMetaData metaData = connection.getMetaData();
-		try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
-			return columns.next();
-		} finally {
-			transaction.commit();
-		}
-	}
+    @Override
+    public boolean columnsExists(String tableName, String columnName) throws SQLException {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        Connection connection = em.unwrap(Connection.class);
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+            return columns.next();
+        } finally {
+            transaction.commit();
+        }
+    }
 
-	/**
-	 * Start a persistence context transaction. 
-	 * Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
-	 */
-	@Override
-	public void startTransaction() {
-		em.getTransaction().begin();
-	}
-	
-	/**
-	 * Commits a persistence context transaction
-	 * Only to be used following a  {@link  #startTransaction()} call
-	 */
-	@Override
-	public void commitTransaction() {
-		em.getTransaction().commit();
-	}
+    /**
+     * Start a persistence context transaction. Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
+     */
+    @Override
+    public void startTransaction() {
+        em.getTransaction().begin();
+    }
 
-	/**
-	 * Create a query in native sql syntax in the persistence context. Does not provide its own transaction.
-	 * Use {@link #startTransaction()} and {@link #commitTransaction()} for this
-	 */
-	@Override
-	public Query createNativeQuery(String string) {
-		return em.createNativeQuery(string);
-	}
-	
-	/**
-	 * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction.
-	 * Use {@link #startTransaction()} and {@link #commitTransaction()} for this
-	 */
-	@Override
-	public Query createQuery(String string) {
-		return em.createQuery(string);
-	}
+    /**
+     * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
+     */
+    @Override
+    public void commitTransaction() {
+        em.getTransaction().commit();
+    }
+
+    /**
+     * Create a query in native sql syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
+     * {@link #commitTransaction()} for this
+     */
+    @Override
+    public Query createNativeQuery(String string) {
+        return em.createNativeQuery(string);
+    }
+
+    /**
+     * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
+     * {@link #commitTransaction()} for this
+     */
+    @Override
+    public Query createQuery(String string) {
+        return em.createQuery(string);
+    }
 
 }
