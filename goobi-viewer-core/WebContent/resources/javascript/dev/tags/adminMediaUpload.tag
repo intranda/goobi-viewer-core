@@ -131,6 +131,10 @@
     
         fileUploaded(fileInfo) {
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
+        	
+            setTimeout( function() {
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').removeClass('in-progress');        		
+        	}, 5000 );
         }
     
         fileUploadError(responseText) {

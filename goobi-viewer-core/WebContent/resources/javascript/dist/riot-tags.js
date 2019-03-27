@@ -107,6 +107,10 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
         this.fileUploaded = function(fileInfo) {
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
+
+            setTimeout( function() {
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').removeClass('in-progress');
+        	}, 5000 );
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
