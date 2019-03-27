@@ -1,7 +1,7 @@
 riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, svg, tif, docx, doc, rtf, html, xhtml, xml';
+        this.fileTypes = 'jpg, png, docx, doc, rtf, html, xhtml, xml';
         this.isDragover = false;
 
         this.on('mount', function () {

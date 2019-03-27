@@ -25,7 +25,7 @@
     <script>
         this.files = [];
         this.displayFiles = [];
-        this.fileTypes = 'jpg, png, svg, tif, docx, doc, rtf, html, xhtml, xml';
+        this.fileTypes = 'jpg, png, docx, doc, rtf, html, xhtml, xml';
         this.isDragover = false;
     
         this.on('mount', function () {
