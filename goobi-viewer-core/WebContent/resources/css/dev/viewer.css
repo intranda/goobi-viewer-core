@@ -10618,7 +10618,7 @@ img.cms-static-pages__page-language--complete {
 .admin-cms-media__item-select-frame {
   display: none;
   border: 1px solid #3365a9;
-  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 4px #3365a9;
   z-index: 2040;
 }
 .admin-cms-media__item-select-frame.in {
