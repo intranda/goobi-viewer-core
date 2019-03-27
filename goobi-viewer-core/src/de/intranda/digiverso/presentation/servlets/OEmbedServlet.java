@@ -18,6 +18,9 @@ package de.intranda.digiverso.presentation.servlets;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -32,6 +35,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.oembed.RichOEmbedResponse;
 
 /**
@@ -87,6 +95,25 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             return;
         }
 
+        StructElement se = null;
+        try {
+            se = parseUrl(url);
+        } catch (URISyntaxException e) {
+            logger.error(e.getMessage());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not parse URL");
+            return;
+        } catch (PresentationException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
+            return;
+        } catch (IndexUnreachableException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
+            return;
+        }
+        if (se == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not load record described by the URL");
+            return;
+        }
+
         // Check access conditions, if an actual document with a PI is involved
         boolean access = true;
         //        try {
@@ -108,9 +135,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                     return;
             }
 
-            RichOEmbedResponse oembed = new RichOEmbedResponse();
-            oembed.setType("rich");
-            oembed.setHtml("<div></div>");
+            RichOEmbedResponse oembed = new RichOEmbedResponse(se);
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
@@ -135,6 +160,27 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         //            return;
         //        }
+    }
 
+    static StructElement parseUrl(String url) throws URISyntaxException, PresentationException, IndexUnreachableException {
+        if (url == null) {
+            return null;
+        }
+
+        URI uri = new URI(url);
+        logger.trace(uri.getPath());
+        url = uri.getPath().substring(1);
+        url = url.replace("viewer/", "");
+
+        String[] urlSplit = url.split("/");
+        logger.trace(Arrays.toString(urlSplit));
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(urlSplit[1]);
+        if (iddoc == 0) {
+            return null;
+        }
+
+        StructElement ret = new StructElement(iddoc);
+
+        return ret;
     }
 }

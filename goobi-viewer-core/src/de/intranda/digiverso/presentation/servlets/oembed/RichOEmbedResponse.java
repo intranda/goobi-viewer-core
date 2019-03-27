@@ -15,9 +15,37 @@
  */
 package de.intranda.digiverso.presentation.servlets.oembed;
 
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
+
 public class RichOEmbedResponse extends OEmbedResponse {
 
     private String html;
+
+    public RichOEmbedResponse(StructElement se) {
+        this.type = "rich";
+        generateHtml(se);
+    }
+
+    /**
+     * 
+     * @param se
+     */
+    private void generateHtml(StructElement se) {
+        if (se == null) {
+            throw new IllegalArgumentException("se may not be null");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div>");
+        sb.append("<img src=\"\">");
+        sb.append("<h3>").append(se.getLabel()).append("</h3>");
+
+        se.getPi();
+
+        sb.append("</div>");
+        html = sb.toString();
+    }
 
     /**
      * @return the html
