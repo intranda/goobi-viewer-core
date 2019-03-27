@@ -8794,15 +8794,6 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-message {
   position: relative;
 }
-.cms-module__option-message.success {
-  color: #087f0d;
-}
-.cms-module__option-message.warning {
-  color: #ff7e51;
-}
-.cms-module__option-message.danger {
-  color: #fe0900;
-}
 .cms-module__option-message ul {
   margin: 0;
   padding: 0;
@@ -8819,6 +8810,15 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-module__option-message + .form-control.danger {
   border-color: #fe0900;
+}
+.cms-module__option-message-status.success {
+  color: #087f0d;
+}
+.cms-module__option-message-status.warning {
+  color: #ff7e51;
+}
+.cms-module__option-message-status.danger {
+  color: #fe0900;
 }
 .cms-module__option-message-mark {
   position: absolute;
