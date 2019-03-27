@@ -38,8 +38,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.AbstractPageLoader;
+import de.intranda.digiverso.presentation.servlets.oembed.OEmbedRecord;
 import de.intranda.digiverso.presentation.servlets.oembed.RichOEmbedResponse;
 
 /**
@@ -95,9 +98,9 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             return;
         }
 
-        StructElement se = null;
+        OEmbedRecord record = null;
         try {
-            se = parseUrl(url);
+            record = parseUrl(url);
         } catch (URISyntaxException e) {
             logger.error(e.getMessage());
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not parse URL");
@@ -109,7 +112,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
             return;
         }
-        if (se == null) {
+        if (record == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not load record described by the URL");
             return;
         }
@@ -135,34 +138,23 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                     return;
             }
 
-            RichOEmbedResponse oembed = new RichOEmbedResponse(se);
-
+            RichOEmbedResponse oembedResponse = new RichOEmbedResponse(record);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
-            ret = mapper.writeValueAsString(oembed);
+            ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
         } catch (ClientAbortException | SocketException e) {
             logger.warn("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage(), e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        //        } catch (IndexUnreachableException e) {
-        //            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        //            return;
-        //        } catch (DAOException e) {
-        //            logger.debug("DAOException thrown here: {}", e.getMessage());
-        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        //            return;
-        //        } catch (PresentationException e) {
-        //            logger.debug("PresentationException thrown here: {}", e.getMessage());
-        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        //            return;
-        //        }
     }
 
-    static StructElement parseUrl(String url) throws URISyntaxException, PresentationException, IndexUnreachableException {
+    static OEmbedRecord parseUrl(String url) throws URISyntaxException, PresentationException, IndexUnreachableException {
         if (url == null) {
             return null;
         }
@@ -174,12 +166,18 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
         String[] urlSplit = url.split("/");
         logger.trace(Arrays.toString(urlSplit));
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(urlSplit[1]);
+        String pi = urlSplit[1];
+        int page = Integer.valueOf(urlSplit[2]);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
         if (iddoc == 0) {
             return null;
         }
 
-        StructElement ret = new StructElement(iddoc);
+        OEmbedRecord ret = new OEmbedRecord();
+        StructElement se = new StructElement(iddoc);
+        ret.setStructElement(se);
+        PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
+        ret.setPhysicalElement(pe);
 
         return ret;
     }
