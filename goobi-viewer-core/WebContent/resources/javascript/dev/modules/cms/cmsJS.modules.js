@@ -27,9 +27,11 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     
     cms.modules = {
-        /**
-         * @method init
-         */
+    		/**
+             * @description Method which initializes the cms modules.
+             * @method init
+             * @param {Object} config The config object.
+             */
         init: function() {
             if ( _debug ) {
                 console.log( '##############################' );
@@ -106,21 +108,32 @@ var cmsJS = ( function( cms ) {
         		$( '.cms-module__option-message ul' ).empty();
         	}
         },
-        
-        onReload: function(data) {
-            if(data && data.status == "begin") {
+        /**
+		 * @description Method to reload all event listeners.
+		 * @method onReload
+		 * @param {Object} data The ajax data object from jsf.
+		 */
+        onReload: function( data ) {
+            if ( data && data.status == 'begin' ) {
             	cms.modules.removeEventListeners();
-            } else if(!data || data.status == "success") {
+            } 
+            else if ( !data || data.status == 'success' ) {
             	cms.modules.initEventListeners();
             }
         },
-
+        /**
+		 * @description Method to remove all event listeners.
+		 * @method removeEventListeners
+		 */
         removeEventListeners: function() {
             $( '[data-toggle="helptext"]' ).off( 'click' );
             $( '[data-toggle="available-items"]' ).off( 'click' );
             $( '[data-toggle="option-dropdown"]' ).off( 'click' );
         },
-
+        /**
+         * @description Method to initialize all event listeners.
+         * @method initEventListeners
+         */
         initEventListeners: function() {
             // toggle input helptext
             $( '[data-toggle="helptext"]' ).on( 'click', function() {

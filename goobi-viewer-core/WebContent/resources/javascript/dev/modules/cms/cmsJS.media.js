@@ -35,7 +35,7 @@ var cmsJS = ( function( cms ) {
     
     cms.media = {
         /**
-         * @description Method which initializes the medie module.
+         * @description Method which initializes the media module.
          * @method init
          * @param {Object} config The config object.
          */
@@ -74,9 +74,9 @@ var cmsJS = ( function( cms ) {
         	}        	
         },
         /**
-         * @description Method to ...
+         * @description Method to reload all event listeners.
          * @method onReload
-         * @param {Object} data The ...
+         * @param {Object} data The ajax data object from jsf.
          * */
         onReload: function( data ) {
         	if ( _debug ) {
