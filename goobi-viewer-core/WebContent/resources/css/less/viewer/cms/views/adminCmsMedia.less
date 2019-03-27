@@ -59,6 +59,7 @@
 	}
 	&__upload-message {
 		display: none;
+		overflow: hidden;
 		.fa {
 			margin-right: 20px;
 			font-size: 3rem;
@@ -78,7 +79,11 @@
 			color: @btnSuccess;
 		}
 		&.error {
-			color: @btnDanger;			
+			color: @btnDanger;	
+			span {
+				display: inline-block;
+				text-align: left;
+			}		
 		}
 	}
 	/* ACTIONS */

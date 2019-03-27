@@ -9101,6 +9101,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__upload-message {
   display: none;
+  overflow: hidden;
 }
 .admin-cms-media__upload-message .fa {
   margin-right: 20px;
@@ -9120,6 +9121,10 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__upload-message.error {
   color: #721c24;
+}
+.admin-cms-media__upload-message.error span {
+  display: inline-block;
+  text-align: left;
 }
 .admin-cms-media__actions {
   display: -ms-flexbox;

@@ -12,6 +12,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
+
                 this.isDragover = true;
                 this.update();
             }.bind(this));
@@ -26,6 +28,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 e.preventDefault();
                 this.files = [];
                 for (var f of e.dataTransfer.files) {
+
                     this.files.push(f);
                     var sizeUnit = 'KB';
                     var size = f.size / 1000;
@@ -46,6 +49,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
         this.buttonFilesSelected = function(e) {
             for (var f of e.target.files) {
+
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
@@ -66,22 +70,32 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
         }.bind(this)
 
         this.uploadFiles = function() {
+
+            $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
+
             var uploads = [];
             for (i = 0; i < this.files.length; i++) {
                 uploads.push(Q(this.uploadFile(i)));
             }
             Q.allSettled(uploads)
                 .then(function (results) {
+                	var errorMsg = "";
                     results.forEach(function (result) {
                         if (result.state === "fulfilled") {
-                            var value = result.value;
-                            this.fileUploaded(value);
+                        	var value = result.value;
+                        	this.fileUploaded(value);
                         } else {
-                            var reason = result.reason;
-                            this.fileUploadError(result);
+                            var responseText = result.reason.responseText;
+                            errorMsg += (responseText + "</br>");
                         }
                     }.bind(this));
-
+                    	console.log("error uploading files", errorMsg);
+                    if(errorMsg) {
+                    	this.fileUploadError(errorMsg);
+                    }
+               		if(this.opts.onUploadComplete) {
+               			this.opts.onUploadComplete();
+               		}
                 }.bind(this))
         }.bind(this)
 
@@ -89,12 +103,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
         }.bind(this)
 
-        this.fileUploadError = function(error) {
-            var responseText = error.reason.responseText;
+        this.fileUploadError = function(responseText) {
 
             if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
-                $('.admin-cms-media__upload-message.error span').text(responseText);
+                $('.admin-cms-media__upload-message.error span').html(responseText);
             }
         }.bind(this)
 
@@ -115,6 +128,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             var data = new FormData();
 
             data.append('file', this.files[i])
+            data.append("filename", this.files[i].name)
 
             return $.ajax({
                 url: this.opts.postUrl,

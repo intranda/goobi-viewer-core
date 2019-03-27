@@ -176,6 +176,7 @@ public class CMSMediaResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response uploadMediaFiles(
 			@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+            @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) throws DAOException {
 		
@@ -192,7 +193,6 @@ public class CMSMediaResource {
 		} else {
 
         	Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        	String filename = fileDetail.getFileName();
         	Path mediaFile = cmsMediaFolder.resolve(filename);
         	try {			
         		Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
