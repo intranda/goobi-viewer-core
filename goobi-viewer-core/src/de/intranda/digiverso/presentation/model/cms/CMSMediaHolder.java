@@ -15,7 +15,12 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+
 /**
+ * Any object which may directly contain a {@link CMSMediaItem}. Only classes implementing this interface may be given a mediaItem 
+ * in the selectMedia dialog, since the dialog uses {@link CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
+ * 
  * @author florian
  *
  */

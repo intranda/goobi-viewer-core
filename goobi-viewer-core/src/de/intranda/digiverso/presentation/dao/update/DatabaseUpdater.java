@@ -41,9 +41,8 @@ import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 
 /**
- * Includes methods to convert deprecated database structures into a form
- * compatible with the current viewer version.
- * 
+ * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing the dao
+ * Appplies a fixed list of {@link IModelUpdate IModelUpdates} to the {@link IDAO} which are responsible to make the required changes
  * 
  * @author florian
  *
