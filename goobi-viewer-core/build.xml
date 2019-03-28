@@ -1215,9 +1215,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="https://collections.mnha.lu/viewer/" />
+		<property name="server.url" value="https://collections.mnha.lu/" />
 		<property name="solr.url" value="https://collections.mnha.lu/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fcollections.mnha.lu%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fcollections.mnha.lu%2Foai" />
 		<property name="theme" value="mnha" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
