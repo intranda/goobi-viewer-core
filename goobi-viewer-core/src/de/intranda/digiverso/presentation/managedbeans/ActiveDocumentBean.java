@@ -1127,10 +1127,10 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-            if (viewManager.isHasVolumes()) {
-                Messages.error("deleteRecord_failure_volumes_present");
-                return "";
-            }
+//            if (viewManager.isHasVolumes()) {
+//                Messages.error("deleteRecord_failure_volumes_present");
+//                return "";
+//            }
 
             if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");
