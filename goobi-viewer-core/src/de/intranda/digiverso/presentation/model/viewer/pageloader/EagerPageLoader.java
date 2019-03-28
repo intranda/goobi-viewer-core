@@ -199,19 +199,6 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         SolrDocumentList result = DataManager.getInstance()
                 .getSearchIndex()
                 .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
-        if (result == null || result.isEmpty()) {
-            sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
-                    .append(topElement.getPi())
-                    .append(" AND ")
-                    .append(SolrConstants.FILENAME)
-                    .append(":*");
-            result = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
-                            null);
-        }
         if (result.isEmpty()) {
             return ret;
         }
