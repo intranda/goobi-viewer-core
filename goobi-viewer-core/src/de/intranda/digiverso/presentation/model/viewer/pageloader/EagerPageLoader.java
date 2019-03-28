@@ -217,7 +217,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         }
 
         for (SolrDocument doc : result) {
-            PhysicalElement pe = loadPageFromDoc(result.get(0), pi, topElement, pageOwnerIddocMap);
+            PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
             ret.put(pe.getOrder(), pe);
         }
 
