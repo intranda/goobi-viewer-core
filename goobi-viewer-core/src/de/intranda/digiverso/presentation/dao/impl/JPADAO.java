@@ -3291,7 +3291,10 @@ public class JPADAO implements IDAO {
                     "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
             q.setParameter("id", category.getId());
         } else {
-            q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.relatedPI = :pi");
+        	StringBuilder sbQuery = new StringBuilder(70);
+            sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
+
+            q = em.createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
         }
         q.setParameter("pi", pi);
         List<CMSPage> pageList = q.getResultList();

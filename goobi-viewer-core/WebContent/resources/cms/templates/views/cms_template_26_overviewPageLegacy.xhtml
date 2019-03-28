@@ -33,6 +33,16 @@
                 <ui:fragment rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </ui:fragment>
+                
+                <!-- CMS OPTIONS -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <h:form>
+	                    <h:commandLink
+	                     	action="#{cmsBean.editPage(cmsPage)}">
+	                     	#{msg.cms_editPage}
+	                     </h:commandLink>
+                    </h:form>
+                </ui:fragment>
 
                 <!-- OVERVIEW METADATA -->
                 <div class="tpl-overviewpage-legacy__overview">

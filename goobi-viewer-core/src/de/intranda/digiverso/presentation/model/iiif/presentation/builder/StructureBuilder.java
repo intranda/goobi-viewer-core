@@ -84,14 +84,15 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws PresentationException
      * @throws URISyntaxException
      */
-    public List<Range> generateStructure(List<StructElement> elements, boolean useMembers)
+    public List<Range> generateStructure(List<StructElement> elements, String pi, boolean useMembers)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
         List<Range> ranges = new ArrayList<>();
         Map<String, String> idMap = new HashMap<>();
         if (elements != null && !elements.isEmpty()) {
-            
+
+        	StructElement work = null;
             for (StructElement structElement : elements) {
-                URI rangeURI = getRangeURI(structElement.getPi(), structElement.getLogid());
+                URI rangeURI = getRangeURI(pi, structElement.getLogid());
                 Range range = new Range(rangeURI);
                 range.setUseMembers(useMembers);
                 idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
@@ -99,17 +100,18 @@ public class StructureBuilder extends AbstractBuilder {
                     IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
                     range.setLabel(label);
                     range.setViewingHint(ViewingHint.top);
+                    work = structElement;
                 } else {
                     IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
                     range.setLabel(label);
                     String parentId = idMap.get(structElement.getMetadataValue(SolrConstants.IDDOC_PARENT));
                     if(StringUtils.isNotBlank(parentId)) {                        
-                        range.addWithin(new Range(getRangeURI(structElement.getPi(), parentId)));
+                        range.addWithin(new Range(getRangeURI(pi, parentId)));
                     }
-                    populate(structElement, range);
                     populatePages(structElement, range);
+                    populate(structElement, range);
                 }                
-                populateChildren(elements, structElement.getLuceneId(),structElement.getPi(), range);
+                populateChildren(elements, structElement.getLuceneId(), pi, range);
                 ranges.add(range);
             }
 

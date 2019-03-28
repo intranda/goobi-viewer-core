@@ -133,6 +133,7 @@ public class CmsBean implements Serializable {
     private String currentWorkPi = "";
     private List<Selectable<CMSCategory>> pageCategories;
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
+    private HashMap<Long, Boolean> editablePages = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -366,6 +367,41 @@ public class CmsBean implements Serializable {
         page.setDateCreated(new Date());
         return page;
     }
+    
+	
+	/**
+	 * Create a new CMSPage based on the given template. title and relatedPI are set on the page if given
+	 * Opens the view to create/edit the cmsPage
+	 * 
+	 * @param templateId	The id of the template to base the page on
+	 * @param title			The title to be used for the current locale, optional
+	 * @param relatedPI		The PI of a related work, optional
+	 */
+	public String createAndOpenNewPage(String templateId, String title, String relatedPI) {
+		CMSPageTemplate template = CMSTemplateManager.getInstance().getTemplate(templateId);
+		if(template != null) {
+			try {
+				CMSPage page = createNewPage(template);
+				if(StringUtils.isNotBlank(title)) {
+					page.getLanguageVersion(getCurrentLocale()).setTitle(title);
+				}
+				if(StringUtils.isNotBlank(relatedPI)) {
+					page.setRelatedPI(relatedPI);
+				}
+				
+				setSelectedPage(page);
+				
+				return "pretty:adminCmsCreatePage";
+				
+			} catch (PresentationException | IndexUnreachableException | DAOException e) {
+				logger.error("Error creating new page", e);
+			}
+			
+		} else {
+			logger.error("No template found with id {}. Cannot create new page", templateId);
+		}
+		return "";
+	}
 
     /**
      * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted
@@ -412,7 +448,7 @@ public class CmsBean implements Serializable {
     public String getCurrentPageUrl() {
         logger.trace("getCurrentPageUrl");
         if (currentPage != null && (currentPage.isPublished()
-                || (getUserBean() != null && getUserBean().getUser() != null && getUserBean().getUser().isCmsAdmin()))) {
+                || (userBean != null && userBean.getUser() != null && userBean.getUser().isCmsAdmin()))) {
             String url = getTemplateUrl(currentPage.getTemplateId(), false);
             return url;
         }
@@ -612,7 +648,7 @@ public class CmsBean implements Serializable {
     @SuppressWarnings("unused")
 	public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
-        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isCmsAdmin()) {
+        if (userBean == null || userBean == null || !userBean.getUser().isCmsAdmin()) {
             // Only authorized CMS admins may save
             return;
         }
@@ -1401,15 +1437,6 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * TODO Is this necessary?
-     * 
-     * @return
-     */
-    public UserBean getUserBean() {
-        return BeanUtils.getUserBean();
-    }
-
-    /**
      * Get the {@link CollectionView} of the given content item in the given page. If the view hasn't been initialized yet, do so and add it to the
      * Bean's CollectionView map
      * 
@@ -1732,12 +1759,12 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public List<CMSPage> getRelatedPages(String pi) throws DAOException {
-        return DataManager.getInstance()
+    	List<CMSPage> relatedPages = DataManager.getInstance()
                 .getDao()
-                .getCMSPagesForRecord(pi, null)
+                .getCMSPagesForRecord(pi, null);
+        return relatedPages
                 .stream()
-                //                .filter(page -> pi.equals(page.getRelatedPI()))
-                .filter(page -> page.isPublished())
+//                .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }
 
@@ -1910,6 +1937,59 @@ public class CmsBean implements Serializable {
 	 */
 	public boolean hasSelectedMediaHolder() {
 		return this.selectedMediaHolder.isPresent();
+	}
+
+	public boolean mayEdit(CMSPage page) throws DAOException, PresentationException, IndexUnreachableException {
+		
+		if(userBean.getUser() != null) {
+			synchronized (editablePages) {				
+				Boolean mayEdit = editablePages.get(page.getId());
+				if(mayEdit == null) {
+					mayEdit = hasPrivilegesToEdit(userBean.getUser(), page);
+					editablePages.put(page.getId(), mayEdit);
+				}
+				return mayEdit;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @param user
+	 * @param page
+	 * @return
+	 * @throws DAOException
+	 * @throws PresentationException
+	 * @throws IndexUnreachableException
+	 */
+	private boolean hasPrivilegesToEdit(User user, CMSPage page)
+			throws DAOException, PresentationException, IndexUnreachableException {
+		if(user == null || !user.isCmsAdmin()) {
+			return false;
+		} else if(user.isSuperuser()) {
+			return true;
+		} else {
+			if(!user.hasPriviledgeForAllTemplates() && user.hasPrivilegesForTemplate(page.getTemplateId())) {
+				return false;
+			}
+			if(!user.hasPrivilegeForAllCategories() && ListUtils.intersection(getAllowedCategories(user), page.getCategories()).isEmpty()) {
+				return false;
+			}
+			if(!user.hasPrivilegeForAllSubthemeDiscriminatorValues() && !getAllowedSubthemeDiscriminatorValues(user).contains(page.getSubThemeDiscriminatorValue())) {
+				return false;
+			}
+			return true;
+		}
+	}
+	
+	public String editPage(CMSPage page) throws DAOException, PresentationException, IndexUnreachableException {
+		if(mayEdit(page)) {
+			setSelectedPage(page);
+			return "pretty:adminCmsCreatePage";
+		} else {
+			return "";
+		}
 	}
 
 }

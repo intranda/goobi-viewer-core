@@ -39,6 +39,16 @@
                 <ui:fragment rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </ui:fragment>
+                
+                <!-- CMS OPTIONS -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <h:form>
+	                    <h:commandLink
+	                     	action="#{cmsBean.editPage(cmsPage)}">
+	                     	#{msg.cms_editPage}
+	                     </h:commandLink>
+                    </h:form>
+                </ui:fragment>
 
                 <!-- OVERVIEW METADATA -->
                 <div class="tpl-overviewpage__overview">
@@ -151,15 +161,20 @@
                 </div>
             </div>
             
-            <script type="text/javascript">                         
+            <script type="text/javascript">
+            var url = "#{cmsPage.getContent('literature')}";
+            if(url) {            	
                 $.ajax({
-                	url: "#{cmsPage.getContent('literature')}",
+                	url: url,
                 	type: "GET",
                 	datatype: "HTML"                                
                 }).then(function(data) {
                 	$('#literature').html(data);
                 	$('#literatureLoader').hide();
                 });
+            } else {
+            	$('#literatureLoader').hide();
+            }
             </script>
         </f:view>
     </ui:define>

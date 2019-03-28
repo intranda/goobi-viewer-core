@@ -684,6 +684,50 @@ public class User implements ILicensee, HttpSessionBindingListener {
 				.anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())
 						&& license.isPrivCmsAllTemplates());
 	}
+	
+	/**
+	 * 
+	 * @param templateId
+	 * @return	true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed
+	 * templates for the user of a usergroup she is in
+	 */
+	public boolean hasPrivilegesForTemplate(String templateId) {
+		// Abort if user not a CMS admin
+		if (!isCmsAdmin()) {
+			return false;
+		}
+		// Full admins get all values
+		if (hasPriviledgeForAllTemplates()) {
+			return true;
+		}
+
+		// Check user licenses
+		for (License license : licenses) {
+			if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+				continue;
+			}
+			if(license.getAllowedCmsTemplates().contains(templateId)) {
+				return true;
+			}
+		}
+		
+		// Check user group licenses
+		try {
+			for (UserGroup userGroup : getUserGroupsWithMembership()) {
+				for (License license : userGroup.getLicenses()) {
+					if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
+						continue;
+					}
+					if(license.getAllowedCmsTemplates().contains(templateId)) {
+						return true;
+					}
+				}
+			}
+		} catch (DAOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return false;
+	}
 
 	public List<CMSPageTemplate> getAllowedTemplates(List<CMSPageTemplate> allTemplates) {
 		if (allTemplates == null || allTemplates.isEmpty()) {

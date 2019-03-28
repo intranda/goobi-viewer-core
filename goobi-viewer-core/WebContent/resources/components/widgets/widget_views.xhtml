@@ -136,12 +136,14 @@
                     <h:panelGroup
                         rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
                         <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
-	                        <li
-	                            class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''}">
-	                            <h:outputLink value="#{relatedPage.pageUrl}">
-	                                <h:outputText value="#{msg[relatedPage.menuTitle]}" />
-	                            </h:outputLink>
-	                        </li>
+	                        <ui:fragment rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
+		                        <li
+		                            class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''}">
+		                            <h:outputLink value="#{relatedPage.pageUrl}">
+		                                <h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
+		                            </h:outputLink>
+		                        </li>
+	                        </ui:fragment>
                        </ui:repeat>
                     </h:panelGroup>
 

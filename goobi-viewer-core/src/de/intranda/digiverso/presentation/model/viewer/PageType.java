@@ -72,6 +72,8 @@ public enum PageType {
     adminCmsMenuItems("admin/cms/menus"),
     adminCmsCollections("admin/cms/collections"),
     adminCmsEditCollection("admin/cms/collections/edit"),
+    cmsPageOfWork("page"),
+    cmsPage("cms"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),

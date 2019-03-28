@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -177,11 +178,12 @@ public class ViewerPathBuilder {
      * @return
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
-        Optional<PageType> pageNameOfType = Arrays.stream(PageType.values())
-        .filter(type -> type.matches(servicePath))
-        .sorted((type1, type2) -> Integer.compare(type1.getName().length(), type2.getName().length()))
-        .findFirst();
-        return pageNameOfType;
+    	
+    	List<PageType> matchingTypes = Arrays.stream(PageType.values()).filter(type -> type.matches(servicePath)).collect(Collectors.toList());
+    	matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
+    	
+    	return matchingTypes.stream().findFirst();
+
     }
 
     /**
@@ -194,6 +196,9 @@ public class ViewerPathBuilder {
      */
     public static boolean startsWith(URI uri, String string) {
         if(uri != null) {
+        	if(uri.toString().endsWith("/") && !string.endsWith("/")) {
+        		string = string + "/";
+        	}
             String[] uriParts = uri.toString().split("/");
             String[] stringParts = string.toString().split("/");
             if(uriParts.length < stringParts.length) {
