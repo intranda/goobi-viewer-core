@@ -21,6 +21,8 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 
 /**
+ * Interface for classes which manipulate the database to conform to the setup required by the viewer
+ * 
  * @author florian
  *
  */

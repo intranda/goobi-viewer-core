@@ -41,6 +41,9 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 
 /**
+ * Converts all Tags and Classifications from previous viewer-cms versions to the {@link CMSCategory} system.
+ * This includes updating references in CMSPages CMSContentItems and CMSMediaItems to keep the existing structure intact
+ * 
  * @author florian
  *
  */

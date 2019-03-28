@@ -588,6 +588,10 @@ public class CmsBean implements Serializable {
         return getSidebarElements(true).stream().filter(widget -> widget.getType().equalsIgnoreCase(type)).findFirst().orElse(null);
     }
 
+    /**
+     * @return true if an {@link ActiveDocumentBean} is registered and the the {@link CMSPage#getRelatedPI()} 
+     * of {@link #getCurrentPage()} is loaded
+     */
     public boolean isRelatedWorkLoaded() throws IndexUnreachableException {
         if (getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -986,6 +990,12 @@ public class CmsBean implements Serializable {
         this.displaySidebarEditor = displaySidebarEditor;
     }
 
+    /**
+     * Create a list of {@link Selectable} containing all {@link CMSCategory CMSCategories} which the current user may access
+     * and select those which are included in the {@link #getSelectedPage()}
+     * 
+     * @return the list of selectable categories which may be applied to the selected page
+     */
     public List<Selectable<CMSCategory>> getCategoriesToSelect() throws DAOException {
         User user = null;
         if (userBean != null) {
@@ -1007,14 +1017,23 @@ public class CmsBean implements Serializable {
         return selectables;
     }
 
+    /**
+     * @return the identifier of the selected category, used in the dropdown menu to add categories to the selected page
+     */
     public Long getSelectedCategoryId() {
         return selectedCategoryId;
     }
 
+    /**
+     * Sets the identifier of the selected category, used in the dropdown menu to add categories to the selected page
+     */
     public void setSelectedCategoryId(Long categoryId) {
         this.selectedCategoryId = categoryId;
     }
 
+    /**
+     * @return a {@link Selectable} containing the {@link CMSCategory} with the identifier given by #{@link #getSelectedCategoryId()}
+     */
     public Selectable<CMSCategory> getSelectedCategory() {
         if (this.selectedCategoryId != null) {
         	Selectable<CMSCategory> category = pageCategories.stream().filter(selectable -> selectable.getValue().getId().equals(this.selectedCategoryId)).findFirst().orElse(null);
@@ -1023,14 +1042,23 @@ public class CmsBean implements Serializable {
         return null;
     }
 
+    /**
+     * @return all categories which may be added to the selected page
+     */
     public List<CMSCategory> getSelectableCategories() {
         return pageCategories.stream().filter(selectable -> !selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
     }
     
+    /**
+     * @return all categories wich are already added to the selected page
+     */
     public List<CMSCategory> getSelectedCategories() {
         return pageCategories.stream().filter(selectable -> selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
     }
 
+    /**
+     * Add the category given by {@link #getSelectedCategory()} to the selected page
+     */
     public void addSelectedCategoryToPage() throws DAOException {
     	Selectable<CMSCategory> cat = getSelectedCategory();
         if (this.selectedPage != null && cat != null) {
@@ -1039,6 +1067,9 @@ public class CmsBean implements Serializable {
         }
     }
 
+    /**
+     * Remove the given category from the selected page
+     */
     public void removeCategoryFromPage(CMSCategory cat) {
     	Selectable<CMSCategory> selectable = pageCategories.stream().filter(sel -> sel.getValue().equals(cat)).findFirst().orElse(null);
         if (this.selectedPage != null && selectable != null) {
@@ -1047,6 +1078,9 @@ public class CmsBean implements Serializable {
         }
     }
     
+    /**
+     * @return false only if the user has limited privileges for categories and only one category is set for the selected page
+     */
     public boolean mayRemoveCategoryFromPage() {
         if (this.selectedPage != null) {
         	return userBean.getUser().hasPrivilegeForAllCategories() || 
@@ -1057,18 +1091,29 @@ public class CmsBean implements Serializable {
 
     }
 
+    /**
+     * @return the return value of {@link IDAO#getAllCategories()}
+     */
     public List<CMSCategory> getAllCategories() throws DAOException {
         return DataManager.getInstance().getDao().getAllCategories();
     }
 
+    /**
+     * Set the id given by #{@link #getSelectedCategoryId()} given to that of the first category given by {@link #getSelectableCategories()}
+     * or, if none exist, null
+     */
     public void resetSelectedCategoryId() {
         this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(CMSCategory::getId).orElse(null);
     }
 
+    /**
+     * @return false exactly if no categoryId is selected, i.e. no categories may be added to the page
+     */
     public boolean hasSelectedCategoryId() {
         return this.selectedCategoryId != null;
     }
 
+    
     public CMSMediaItem getSelectedMediaItem() {
         return selectedMediaItem;
     }
@@ -1802,6 +1847,9 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Set a {@link CMSMediaHolder} in the {@link CmsMediaBean} which may receive a {@link CMSMediaItem} selected in 
+     * the selectMedia dialog
+     * 
 	 * @param selectedMediaHolder the selectedMediaHolder to set
 	 */
 	public void setSelectedMediaHolder(CMSMediaHolder item) {
@@ -1827,10 +1875,17 @@ public class CmsBean implements Serializable {
 		});
 	}
 	
+	/**
+	 * Set the given (wrapped) {@link CMSMediaItem} to Media holder set by {@link #setSelectedMediaHolder}
+	 */
 	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem) {
 		fillSelectedMediaHolder(mediaItem, false);
 	}
 	
+	/**
+	 * Set the given (wrapped) {@link CMSMediaItem} to Media holder set by {@link #setSelectedMediaHolder}
+     * Additionally save the given media item if the parameter saveMedia is set to true
+	 */
 	public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
 		this.selectedMediaHolder.ifPresent(item -> {
 			if(mediaItem != null) {
@@ -1850,6 +1905,9 @@ public class CmsBean implements Serializable {
 		cmsMediaBean.setSelectedMediaItem(null);
 	}
 		
+	/**
+	 * @return true if a mediaHolder is present
+	 */
 	public boolean hasSelectedMediaHolder() {
 		return this.selectedMediaHolder.isPresent();
 	}

@@ -170,6 +170,11 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("Resource not found");
     }
     
+    /**
+     * May receive a file from a multipart form and saves the file in the cms media folder
+     * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does not have rights to upload media,
+     *  or a CONFLICT response if a file of the same name already exists in the cms media foler
+     */
 	@POST
 	@javax.ws.rs.Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)

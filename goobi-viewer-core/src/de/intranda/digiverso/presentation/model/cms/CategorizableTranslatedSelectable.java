@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
+ * A {@link TranslatedSelectable} which may also contain a list of {@link CMSCategory categories}
+ * 
  * @author florian
  *
  */
