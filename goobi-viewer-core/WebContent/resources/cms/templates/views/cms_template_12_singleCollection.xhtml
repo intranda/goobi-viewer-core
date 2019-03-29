@@ -32,6 +32,11 @@
         <f:param name="currentPage" value="#{cmsBean.random}" />
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateSingleCollection" class="tpl-single-collection #{cmsPage.wrapperElementClass}">
+                <!-- PAGE UNPUBLISHED -->
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
+                </h:panelGroup>
+
                 <!-- HEADER -->
                 <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
                     <!-- IMAGE -->
@@ -44,11 +49,6 @@
                     <div class="tpl-single-collection__description">
                         <ui:include src="#{cmsPage.getContent('A2')}" />
                     </div>
-                </h:panelGroup>
-
-                <!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </h:panelGroup>
 
                 <!-- SEARCH LIST -->

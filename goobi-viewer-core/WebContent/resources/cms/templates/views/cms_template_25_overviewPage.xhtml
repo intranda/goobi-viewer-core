@@ -29,15 +29,15 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="templateOverviewPage" class="tpl-overviewpage">
+                <!-- PAGE UNPUBLISHED -->
+                <ui:fragment rendered="#{!cmsPage.published}">
+                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
+                </ui:fragment>
+
                 <h2>#{cmsPage.title}</h2>
 
                 <ui:fragment rendered="#{cmsPage.hasContent('subtitle')}">
                     <p class="tpl-overviewpage__subtitle">#{cmsPage.getContent('subtitle')}</p>
-                </ui:fragment>
-
-                <!-- PAGE UNPUBLISHED -->
-                <ui:fragment rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </ui:fragment>
                 
                 <!-- CMS OPTIONS -->
