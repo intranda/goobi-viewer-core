@@ -9192,6 +9192,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__paginator {
   margin-left: auto;
+  padding-left: 15px;
 }
 .admin-cms-media__paginator .data-table-paginator {
   margin: 0;
