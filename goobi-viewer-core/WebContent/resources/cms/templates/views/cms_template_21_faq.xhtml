@@ -28,6 +28,11 @@
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateFaq" class="tpl-faq #{cmsPage.wrapperElementClass}">
+                <!-- EDIT PAGE -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
+                </ui:fragment>
+                
                 <!-- PAGE UNPUBLISHED -->
                 <ui:fragment rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">

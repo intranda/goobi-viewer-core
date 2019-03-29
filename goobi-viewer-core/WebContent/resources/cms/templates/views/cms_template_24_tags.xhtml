@@ -27,7 +27,12 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-			<div id="templateTags" class="tpl-tags #{cmsPage.wrapperElementClass}">				
+			<div id="templateTags" class="tpl-tags #{cmsPage.wrapperElementClass}">
+                <!-- EDIT PAGE -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
+                </ui:fragment>
+                				
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">

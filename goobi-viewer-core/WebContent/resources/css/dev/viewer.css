@@ -10673,6 +10673,14 @@ img.cms-static-pages__page-language--complete {
 }
 /* CMS TEMPLATES */
 /* ==============================================================
+   CMS Page
+   ==============================================================*/
+/* CMS PAGE */
+.cms-page__edit-page {
+  margin-bottom: 15px;
+  text-align: right;
+}
+/* ==============================================================
    CMS Template "Generic"
    style declarations for cms_template_01_generic.xhtml
    ==============================================================*/
