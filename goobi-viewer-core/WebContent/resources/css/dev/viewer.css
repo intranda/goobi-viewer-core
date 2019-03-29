@@ -7864,19 +7864,30 @@ div[id*="-Modal"] .email-form .form-group {
 #widgetUserInteractions ul {
   border-bottom: 0;
 }
-.widget-user-interactions h4 {
-  margin: 0 0 5px 0;
-  font-size: 1rem;
-}
-.widget-user-interactions__delete-record {
+.widget-user-interactions__delete-record,
+.widget-user-interactions__delete-record-message {
   padding: 10px;
   padding-top: 5px;
   border: 1px solid #ccc;
   border-top: 0;
 }
+.widget-user-interactions__delete-record-message span {
+  display: inline-block;
+  padding: 10px;
+  font-size: 0.85rem;
+  line-height: 1rem;
+  color: #1a1a1a;
+  border: 1px solid #ff7e51;
+  background-color: #fff3cd;
+}
 .widget-user-interactions__delete-record-action {
   padding: 5px 0 10px 0;
-  text-align: right;
+}
+.widget-user-interactions__delete-record-action.has-no-urn .btn {
+  text-align: left;
+}
+.widget-user-interactions__delete-record-action.has-urn .btn {
+  width: 100%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
