@@ -9463,8 +9463,6 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-grid-columns: (minmax(140px, 140px))[auto-fit];
       grid-template-columns: repeat(auto-fit, minmax(140px, 140px));
   grid-gap: 15px;
-  -ms-flex-pack: justify;
-      justify-content: space-between;
   padding-top: 15px;
   padding-bottom: 15px;
 }
