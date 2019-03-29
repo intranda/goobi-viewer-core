@@ -92,17 +92,15 @@
                     <!-- DELETE RECORD -->
                     <ui:fragment rendered="#{userBean.admin and !activeDocumentBean.viewManager.hasVolumes}">
                         <div class="widget-user-interactions__delete-record">
-                            <h4>#{msg.deleteRecord}</h4>
-
                             <!-- HAS NO URNS -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}">
-                                <div class="widget-user-interactions__delete-record-action">
+                                <div class="widget-user-interactions__delete-record-action has-no-urn">
                                     <h:commandLink 
-                                        styleClass="btn btn--clean" 
+                                        styleClass="btn btn--link" 
                                         role="button"
                                         onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
                                         action="#{activeDocumentBean.deleteRecordAction(false)}">
-                                        #{msg.button__delete}
+                                        #{msg.deleteRecord}
                                     </h:commandLink>
                                 </div>
                             </ui:fragment>
@@ -120,8 +118,8 @@
 
                                 <!-- ACTION -->
                                 <ui:fragment rendered="#{activeDocumentBean.deleteRecordKeepTrace != null}">
-                                    <div class="widget-user-interactions__delete-record-action">
-                                        <h:commandLink styleClass="btn btn--clean" role="button"
+                                    <div class="widget-user-interactions__delete-record-action has-urn">
+                                        <h:commandLink styleClass="btn btn--danger" role="button"
                                             onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
                                             action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}">
                                             #{msg.button__delete}
@@ -130,11 +128,14 @@
                                 </ui:fragment>
                             </ui:fragment>
                         </div>
+                        
                     </ui:fragment>
+
                     <!-- CANNOT DELETE ANCHOR DUE TO VOLUMES PRESENT -->
                     <ui:fragment rendered="#{userBean.admin and activeDocumentBean.viewManager.hasVolumes}">
-                        <!-- TODO Marc -->
-                        <h:outputText value="#{msg.deleteRecord_failure_volumes_present}" />
+                        <div class="widget-user-interactions__delete-record-message">
+                            <span>#{msg.deleteRecord_failure_volumes_present}</span>
+                        </div>
                     </ui:fragment>
                 </h:form>
             </div>
