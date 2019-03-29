@@ -137,7 +137,7 @@
                         rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
                         <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
 	                        <ui:fragment rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
-		                        <li class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'inactive'}">
+		                        <li class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
 		                            <h:outputLink value="#{relatedPage.pageUrl}">
 		                                <h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
 		                            </h:outputLink>
