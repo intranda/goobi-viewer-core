@@ -22,24 +22,6 @@
             <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('webm')}" type="video/webm" />
             <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mp4')}" type="video/mp4" />
             <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="video/ogg" />
-            <object 
-                width="#{activeDocumentBean.viewManager.currentPage.videoWidth}" 
-                height="#{activeDocumentBean.viewManager.currentPage.videoHeight}"
-                data="#{navigationHelper.applicationUrl}resources/components/flowplayer-3.2.7.swf" 
-                type="application/x-shockwave-flash">
-                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/flowplayer-3.2.7.swf" />
-                <param name="allowfullscreen" value="true" />
-                <param name="flashvars" value="config={'clip': {'url': '#{activeDocumentBean.viewManager.currentPage.getMediaUrl('x-flv')}', 'autoPlay':true, 'autoBuffering':true}}" />
-                <embed 
-                    type="application/x-shockwave-flash" 
-                    src="#{navigationHelper.applicationUrl}resources/components/flowplayer-3.2.7.swf"
-                    width="#{activeDocumentBean.viewManager.currentPage.videoWidth}" 
-                    height="#{activeDocumentBean.viewManager.currentPage.videoHeight}" 
-                    allowfullscreen="true"
-                    play="true" 
-                    flashvars="config={'clip': {'url': '#{activeDocumentBean.viewManager.currentPage.getMediaUrl('x-flv')}', 'autoPlay':true, 'autoBuffering':true}}"
-                    pluginspage="http://www.macromedia.com/go/getflashplayer" />
-            </object>
         </video>
     </div>
 </ui:composition>
