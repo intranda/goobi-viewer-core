@@ -109,10 +109,8 @@
 					</h:panelGroup>
 
 					<!-- NER -->
-					<h:panelGroup
-						rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
-						<li
-							class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
+						<li class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
 							<h:outputLink
 								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
 								<h:outputText value="#{msg.widgetNerFacetting}" />
@@ -120,21 +118,20 @@
 						</li>
 					</h:panelGroup>
 
-					<!-- External URL -->
-					<h:panelGroup
-						rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
-						<li class="">
-							<!--                             <h:outputLink value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}" -->
-							<!--                                  target="_blank"> --> <!--                                 <h:outputText value="#{msg.externalRepository}" /> -->
-							<!--                             </h:outputLink> --> <a
-							href="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
-							target="_blank"> #{msg.externalRepository} </a>
+					<!-- EXTERNAL URL -->
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
+						<li> 
+                            <a 
+                                href="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+                                target="_blank"
+                                rel="noopner">
+                                #{msg.externalRepository}
+                            </a>
 						</li>
 					</h:panelGroup>
 					
-                    <!-- Related CMS pages -->
-                    <h:panelGroup
-                        rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
+                    <!-- RELATED CMS PAGES -->
+                    <h:panelGroup rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
                         <ui:repeat var="relatedPage" value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
 	                        <ui:fragment rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
 		                        <li class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
@@ -145,8 +142,6 @@
 	                        </ui:fragment>
                        </ui:repeat>
                     </h:panelGroup>
-
-
 				</ul>
 			</h:form>
 		</div>

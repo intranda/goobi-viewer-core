@@ -12,27 +12,35 @@
         list-style: none;
         margin: 0;
         padding: 0;
-        li {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            a {
-                &:hover {}
-            }
-            &.active {
-                a {}
-            }
-        }
+    }
+    li {
+    	text-overflow: ellipsis;
+    	overflow: hidden;
+    	&.active {
+    		a {}
+    	}
+    	&.unpublished {
+    		a {
+    			font-style: italic;
+    			opacity: 0.5;
+    		}
+    	}
+    }
+    a {
+    	&:hover,
+    	&:active,
+    	&:focus {}
     }
     dl {
         margin: 0;
-        dt,
-        dd {
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-        dt {}
-        dd {}
     }
+    dt,
+    dd {
+    	text-overflow: ellipsis;
+    	overflow: hidden;
+    }
+    dt {}
+    dd {}
     &__title {
     	display: flex;
     	align-items: center;

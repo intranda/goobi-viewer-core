@@ -7232,15 +7232,19 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
   padding: 0;
 }
-.widget ul li {
+.widget li {
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.widget li.unpublished a {
+  font-style: italic;
+  opacity: 0.5;
 }
 .widget dl {
   margin: 0;
 }
-.widget dl dt,
-.widget dl dd {
+.widget dt,
+.widget dd {
   text-overflow: ellipsis;
   overflow: hidden;
 }
