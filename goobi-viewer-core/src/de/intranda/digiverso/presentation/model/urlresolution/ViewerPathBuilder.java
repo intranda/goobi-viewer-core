@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -179,7 +180,7 @@ public class ViewerPathBuilder {
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
     	
-    	List<PageType> matchingTypes = Arrays.stream(PageType.values()).filter(type -> type.matches(servicePath)).collect(Collectors.toList());
+    	List<PageType> matchingTypes = EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
     	matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
     	
     	return matchingTypes.stream().findFirst();
