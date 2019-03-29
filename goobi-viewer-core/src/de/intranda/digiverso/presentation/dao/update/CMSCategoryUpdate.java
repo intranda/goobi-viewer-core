@@ -104,7 +104,8 @@ public class CMSCategoryUpdate implements IModelUpdate {
             dao.createNativeQuery("DROP TABLE cms_page_classifications").executeUpdate();
         }
         if (this.entityMap.containsKey("content")) {
-            dao.createNativeQuery("ALTER TABLE cms_content_items DROP COLUMN allowed_tags, DROP COLUMN page_classification").executeUpdate();
+            dao.createNativeQuery("ALTER TABLE cms_content_items DROP COLUMN allowed_tags").executeUpdate();
+            dao.createNativeQuery("ALTER TABLE cms_content_items DROP COLUMN page_classification").executeUpdate();
         }
         dao.commitTransaction();
     }
