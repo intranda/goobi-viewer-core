@@ -8423,17 +8423,14 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #f2f3f4;
 }
 .admin__content-inner-title-exit {
+  display: inline-block;
   float: right;
-  display: inline-block;
-}
-.admin__content-inner-title-exit a {
-  display: inline-block;
   width: 32px;
   height: 32px;
   background-image: url("../../images/icons/icon_fs-exit.svg");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 28px;
+  background-size: 24px;
 }
 .admin__content-inner-content {
   padding: 15px;
