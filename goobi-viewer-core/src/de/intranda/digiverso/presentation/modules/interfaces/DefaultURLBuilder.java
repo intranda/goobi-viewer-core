@@ -36,13 +36,13 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 public class DefaultURLBuilder implements IURLBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultURLBuilder.class);
-    
+
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.modules.interfaces.IURLBuilder#generateURL(de.intranda.digiverso.presentation.model.search.BrowseElement)
      */
     @Override
     public String generateURL(BrowseElement ele) {
-        
+
         // For aggregated person search hits, start another search (label contains the person's name in this case)
         String url = "";
         if (ele.getMetadataGroupType() != null) {
@@ -69,7 +69,7 @@ public class DefaultURLBuilder implements IURLBuilder {
 
         // logger.trace("generateUrl: {}", sb.toString());
         return url;
-        
+
     }
 
     /**
@@ -77,20 +77,25 @@ public class DefaultURLBuilder implements IURLBuilder {
      * @param sb
      * @param pageType
      */
-    protected String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
+    @Override
+    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         StringBuilder sb = new StringBuilder();
-        sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
+        sb.append(pageType.getName()).append('/').append(pi).append('/');
         // Hack for viewers that need a language parameter instead of LOGID
         String theme = DataManager.getInstance().getConfiguration().getTheme();
         if (theme != null) {
             switch (theme) {
                 case "geiwv":
                 case "wienerlibrary-novemberpogrom":
-                    sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
+                    sb.append(imageNo)
+                            .append('/')
+                            .append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
                             .append("/");
                     break;
+                case "mnha":
+                    break;
                 default:
-                    sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+                    sb.append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
             }
         }
         return sb.toString();
@@ -128,8 +133,7 @@ public class DefaultURLBuilder implements IURLBuilder {
         } catch (UnsupportedEncodingException e) {
             logger.error("{}: {}", e.getMessage(), fieldValue);
             sb = new StringBuilder();
-            sb.append('/').append(PageType.search.getName()).append("/-/").append(fieldName).append(":\"").append(fieldValue).append(
-                    "\"/1/-/-/");
+            sb.append('/').append(PageType.search.getName()).append("/-/").append(fieldName).append(":\"").append(fieldValue).append("\"/1/-/-/");
         }
         return sb.toString();
     }
