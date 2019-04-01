@@ -92,7 +92,7 @@ public class RSSFeed {
     }
 
     public static SyndFeed createRss(String rootPath, String query, String language)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -130,7 +130,7 @@ public class RSSFeed {
             feed.setEntries(entries);
             return feed;
         }
-        
+
         for (SolrDocument doc : docs) {
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
             boolean child = !anchor
@@ -199,7 +199,7 @@ public class RSSFeed {
                 if (value == null) {
                     continue;
                 }
-                
+
                 switch (field) {
                     case SolrConstants.LABEL:
                         // It is important that LABEL comes before IDDOC_PARENT in the static field list!
@@ -278,18 +278,14 @@ public class RSSFeed {
                 placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
             }
 
+            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
             String imageHtmlElement = null;
             if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
                 imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath)
                         .append('/')
-                        .append(pageType.getName())
-                        .append('/')
-                        .append(pi)
-                        .append('/')
-                        .append("1")
-                        .append('/')
+                        .append(recordUrl)
                         .append("\">")
                         .append("<img style=\"margin-right:10px;\" src=\"")
                         .append(imageUrl)
@@ -299,7 +295,7 @@ public class RSSFeed {
 
             entry.setAuthor(authorRss);
             entry.setTitle(label);
-            entry.setLink(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType));
+            entry.setLink(recordUrl);
             if (modified != null) {
                 try {
                     entry.setPublishedDate(new Date(modified));
