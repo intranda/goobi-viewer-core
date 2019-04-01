@@ -106,8 +106,10 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 			       osViewer.controls.zoomTo(expectedLocation.zoom);
 			})
 			.do(function(osViewer) {
-				onbeforeunload();
-				expect(JSON.parse(localStorage.imageLocation)).toEqual(expectedLocation)
+				$(window).trigger('onbeforeunload');
+				setTimeout( function() {					
+					expect(JSON.parse(localStorage.imageLocation)).toEqual(expectedLocation)
+				},0)
 			})
 			.catch(function(error){
 			    	console.log(error);
