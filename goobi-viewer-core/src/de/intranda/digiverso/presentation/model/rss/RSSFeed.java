@@ -334,12 +334,12 @@ public class RSSFeed {
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return createRssFeed(rootPath, query, rssFeedItems, null);
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
