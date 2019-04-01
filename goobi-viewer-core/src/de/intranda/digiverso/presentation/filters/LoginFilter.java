@@ -109,6 +109,8 @@ public class LoginFilter implements Filter {
                 }
                 ((HttpServletResponse) response).sendRedirect(
                         ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+            } else {
+                chain.doFilter(request, response); // continue
             }
         } else {
             chain.doFilter(request, response); // continue
