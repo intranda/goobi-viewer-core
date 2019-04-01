@@ -42,22 +42,24 @@ var cmsJS = ( function( cms ) {
             this.cleanUp();
             
             // jsf ajax event
-            jsf.ajax.addOnEvent( function( data ) {
-				var ajaxstatus = data.status;
-
-				switch (ajaxstatus) {
-					case 'begin':
-						break;
-					case 'complete':
-						break;
-					case 'success':
-						if ( $( '.cms-module__option-message' ).length > 0 ) {
-							cmsJS.modules.setValidationStatus( data.source.id );							
-						}
-						
-						break;
-				}
-			});
+            if ( typeof jsf !== 'undefined' ) {
+            	jsf.ajax.addOnEvent( function( data ) {
+            		var ajaxstatus = data.status;
+            		
+            		switch (ajaxstatus) {
+            		case 'begin':
+            			break;
+            		case 'complete':
+            			break;
+            		case 'success':
+            			if ( $( '.cms-module__option-message' ).length > 0 ) {
+            				cmsJS.modules.setValidationStatus( data.source.id );							
+            			}
+            			
+            			break;
+            		}
+            	});            	
+            }
         },
         /**
 		 * @description Method to set the validation status.
