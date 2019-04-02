@@ -249,7 +249,7 @@ public enum PageType {
      * @param mimeType
      * @param anchorOrGroup
      * @param hasImages
-     * @param pageResolverUrl If this page type is for a page resover url, ignore certain preferences
+     * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
      * @return
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
