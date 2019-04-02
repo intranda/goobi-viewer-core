@@ -8717,6 +8717,276 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* CMS COMPONENTS */
+/* ==============================================================
+   CMS Component "Collection Tiled"
+   ==============================================================*/
+/* COLLECTION TILED */
+/* BLOCK */
+.collection-tiled {
+  /* ELEMENT */
+}
+.collection-tiled__tile {
+  height: 250px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+.collection-tiled__header {
+  height: 57px;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+.collection-tiled__header a {
+  display: block;
+  max-height: 27px;
+  font-size: 1.1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.collection-tiled__body img {
+  width: 100%;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Component "SOLR Query Collection"
+   ==============================================================*/
+/* SOLR QUERY COLLECTION */
+/* BLOCK */
+.solr-query-collection {
+  margin-bottom: 15px;
+  /* ELEMENT */
+}
+.solr-query-collection__thumb {
+  height: 250px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+.solr-query-collection__image,
+.solr-query-collection__title {
+  overflow: hidden;
+}
+.solr-query-collection__image {
+  height: 190px;
+  border-bottom: 1px solid #eee;
+}
+.solr-query-collection__image img {
+  width: 100%;
+}
+.solr-query-collection__title {
+  padding: 10px;
+  height: 60px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* CMS INCLUDES */
+/* ==============================================================
+   CMS Media Select
+   ==============================================================*/
+/* MEDIA SELECT */
+.admin-cms-media {
+  /* ITEMS */
+  /* ACTION */
+}
+.admin-cms-media__select {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  bottom: 30px;
+  left: 30px;
+  padding: 50px;
+  z-index: 2020;
+  background-color: #fff;
+}
+.admin-cms-media__select-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2010;
+}
+.admin-cms-media__select-content {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  height: 100%;
+}
+.admin-cms-media__select-content .nav-tabs a {
+  border-color: #fff;
+  border-bottom-color: #ccc;
+  background-color: #fff;
+}
+.admin-cms-media__select-content .tab-pane {
+  padding: 0;
+  padding-top: 10px;
+  border: 0;
+  height: calc(100vh - 246px);
+}
+.admin-cms-media__select-content .admin-cms-media__filter {
+  margin: 0;
+}
+.admin-cms-media__select-content .admin-cms-media__upload {
+  height: 100%;
+}
+.admin-cms-media__select-files:before,
+.admin-cms-media__select-files:after {
+  content: " ";
+  display: table;
+}
+.admin-cms-media__select-files:after {
+  clear: both;
+}
+.admin-cms-media__select-files-files,
+.admin-cms-media__select-files-selected {
+  float: left;
+  height: calc(100vh - 311px);
+  overflow-y: auto;
+}
+.admin-cms-media__select-files-files {
+  width: 70%;
+  padding: 5px;
+}
+.admin-cms-media__select-files-files .admin-cms-media__files {
+  padding-right: 10px;
+  padding-left: 0 !important;
+}
+.admin-cms-media__select-files-selected {
+  width: 30%;
+  padding: 15px;
+  background-color: #f2f3f4;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file {
+  height: 100%;
+  margin: 0 !important;
+  background-color: #f2f3f4 !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-select,
+.admin-cms-media__select-files-selected .admin-cms-media__file-image {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata {
+  padding-left: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dt {
+  width: 100%;
+  margin-right: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dd {
+  margin-bottom: 10px;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit {
+  display: block !important;
+  visibility: visible !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label + .cms-module__option-control {
+  -ms-flex-preferred-size: 90%;
+      flex-basis: 90%;
+  padding-left: 0;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions {
+  width: 100%;
+  padding-left: 0;
+  -ms-flex-order: 1;
+      order: 1;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view {
+  display: block !important;
+  visibility: visible !important;
+  text-align: right;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view .delete:after {
+  display: none;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-action="edit"],
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-copy="img-url"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-actions-edit {
+  display: none !important;
+  visibility: hidden !important;
+}
+.admin-cms-media__select-files-selected .admin-cms-media__file-language {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 30px;
+  margin-left: 0;
+  padding-left: 0;
+}
+.admin-cms-media__item-wrapper {
+  position: relative;
+  max-height: 140px;
+}
+.admin-cms-media__item-select-frame,
+.admin-cms-media__item-select {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.admin-cms-media__item-select-frame {
+  display: none;
+  border: 1px solid #3365a9;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 4px #3365a9;
+  z-index: 2040;
+}
+.admin-cms-media__item-select-frame.in {
+  display: block;
+}
+.admin-cms-media__item-select-frame-checkmark {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 21px;
+  height: 21px;
+  line-height: 21px;
+  text-align: center;
+  background-color: #3365a9;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
+}
+.admin-cms-media__item-select-frame-checkmark .fa {
+  font-size: 18px;
+  color: #fff;
+}
+.admin-cms-media__item-select {
+  z-index: 2050;
+}
+.admin-cms-media__select-action {
+  padding-top: 10px;
+  text-align: right;
+}
+.admin-cms-media__select-action .btn {
+  margin-left: 20px;
+}
 /* CMS MODULES */
 /* ==============================================================
    CMS Module Actions
@@ -9030,6 +9300,1104 @@ div[id*="-Modal"] .email-form .form-group {
 @media screen and (max-width: 768px) {
   .cms-module__table > tbody > tr .cms-module__actions {
     display: block;
+  }
+}
+/* CMS TAGS */
+/* ==============================================================
+   CMS Slideshow
+   ==============================================================*/
+/* SLIDESHOW */
+.slideshow__image {
+  position: relative;
+  overflow: hidden;
+}
+.slideshow__image > a {
+  display: block;
+  height: 100%;
+}
+.slideshow__image img {
+  display: block;
+  height: 400px;
+  max-width: 100%;
+  margin: 0 auto;
+  transition: all .3s ease;
+  opacity: 0;
+}
+.slideshow__image img.active {
+  opacity: 1;
+}
+.slideshow figcaption {
+  position: relative;
+  padding: 10px;
+  line-height: normal;
+  font-size: 0.8125rem;
+  color: #ccc;
+}
+.slideshow figcaption h4,
+.slideshow figcaption p {
+  max-width: calc(100% - 135px);
+}
+.slideshow figcaption h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #ccc;
+}
+.slideshow figcaption p {
+  margin: 0;
+}
+.slideshow__dots {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  max-width: 135px;
+  z-index: 20;
+}
+.slideshow__dots ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+}
+.slideshow__dots li {
+  margin-left: 10px;
+}
+.slideshow__dots li:last-cild {
+  margin-right: 0;
+}
+.slideshow__dots button {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background-color: #ccc;
+  cursor: pointer;
+}
+.slideshow__dots button.active {
+  border-color: #3365a9;
+  background-color: #3365a9;
+}
+/* CMS TEMPLATES */
+/* ==============================================================
+   CMS Page
+   ==============================================================*/
+/* CMS PAGE */
+.cms-page__edit-page {
+  margin-bottom: 15px;
+  text-align: right;
+}
+/* ==============================================================
+   CMS Template "Generic"
+   style declarations for cms_template_01_generic.xhtml
+   ==============================================================*/
+/* GENERIC */
+/* BLOCK */
+.tpl-generic {
+  /* ELEMENT */
+  /* SOLR-QUERY */
+}
+.tpl-generic__content {
+  margin-bottom: 20px;
+}
+.tpl-generic__image {
+  float: left;
+  width: 25%;
+  margin-right: 15px;
+}
+.tpl-generic__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-generic .solr-query-collection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-generic__image {
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+}
+/* ==============================================================
+   CMS Template "News Overview"
+   style declarations for cms_template_02_overview.xhtml
+   ==============================================================*/
+/* NEWS OVERVIEW */
+/* BLOCK */
+.tpl-news-overview {
+  /* ELEMENT */
+}
+.tpl-news-overview__content {
+  margin-bottom: 30px;
+}
+.tpl-news-overview__image {
+  float: left;
+  width: 25%;
+  margin: 0 10px 10px 0;
+  margin-bottom: 15px;
+}
+.tpl-news-overview__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-news-overview__list-item {
+  margin-bottom: 15px;
+}
+.tpl-news-overview__list-image {
+  max-height: 150px;
+  overflow: hidden;
+}
+.tpl-news-overview__preview-date {
+  margin-bottom: 15px;
+}
+.tpl-news-overview__preview-text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-news-overview__image {
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+}
+/* ==============================================================
+   CMS Template "News Detail"
+   style declarations for cms_template_03_newsdetail.xhtml
+   ==============================================================*/
+/* NEWS DETAIL */
+/* BLOCK */
+.tpl-news-detail {
+  /* ELEMENT */
+  /* SOLR-QUERY */
+}
+.tpl-news-detail__date,
+.tpl-news-detail__content {
+  margin-bottom: 20px;
+}
+.tpl-news-detail__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-news-detail .solr-query-collection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "News"
+   style declarations for cms_template_04_news.xhtml
+   ==============================================================*/
+/* NEWS */
+/* BLOCK */
+.tpl-news {
+  /* ELEMENT */
+}
+.tpl-news__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Simple"
+   style declarations for cms_template_05_simple.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-simple {
+  /* ELEMENT */
+}
+.tpl-simple__text,
+.tpl-simple__image {
+  margin-bottom: 15px;
+}
+.tpl-simple__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "SOLR QUERY"
+   style declarations for cms_template_06_solrquery.xhtml
+   ==============================================================*/
+/* SOLR QUERY */
+/* BLOCK */
+.tpl-solr-query {
+  /* ELEMENT */
+}
+.tpl-solr-query__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Collection"
+   style declarations for cms_template_08_collection.xhtml
+   ==============================================================*/
+/* COLLECTION */
+/* BLOCK */
+.tpl-collection {
+  /* ELEMENT */
+}
+.tpl-collection__text,
+.tpl-collection__wrapper {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Collection Tiled"
+   style declarations for cms_template_09_collectionTiled.xhtml
+   ==============================================================*/
+/* COLLECTION TILED */
+/* BLOCK */
+.tpl-collection-tiled {
+  /* ELEMENT */
+}
+.tpl-collection-tiled__text,
+.tpl-collection-tiled__wrapper {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Single Page"
+   style declarations for cms_template_10_singlePage.xhtml
+   ==============================================================*/
+/* SINGLE PAGE */
+/* BLOCK */
+.tpl-single {
+  /* ELEMENT */
+}
+.tpl-single__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Search List Custom"
+   style declarations for cms_template_10_searchListCustom.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST CUSTOM */
+/* BLOCK */
+.tpl-search-list-custom {
+  /* ELEMENT */
+}
+.tpl-search-list-custom__list-element {
+  margin-right: 15px;
+  margin-bottom: 10px;
+  margin-left: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-search-list-custom__list-image {
+  overflow: hidden;
+}
+.tpl-search-list-custom__list-text .dl-horizontal {
+  margin: 0;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dt,
+.tpl-search-list-custom__list-text .dl-horizontal dd {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dt {
+  width: 100px;
+  font-weight: normal;
+  text-align: left;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dd {
+  margin-left: 100px;
+}
+.tpl-search-list-custom__list-text-person:after {
+  content: ";";
+  margin-left: -3px;
+}
+.tpl-search-list-custom__list-text-person:last-child:after {
+  content: "";
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-search-list-custom__list-text .dl-horizontal dt,
+  .tpl-search-list-custom__list-text .dl-horizontal dd {
+    width: 100%;
+    margin: 0;
+  }
+}
+/* ==============================================================
+   CMS Template "Masonry"
+   style declarations for cms_template_11_masonry.xhtml
+   ==============================================================*/
+/* TPL MASONRY */
+/* BLOCK */
+.tpl-masonry {
+  /* ELEMENT */
+}
+.tpl-masonry__text {
+  margin-bottom: 15px;
+}
+.tpl-masonry .grid {
+  margin-bottom: 15px;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.tpl-masonry .grid.ready {
+  opacity: 1;
+}
+.tpl-masonry .grid-sizer,
+.tpl-masonry .grid-item {
+  width: calc(31.33333333% + 12px);
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.tpl-masonry .grid-sizer img,
+.tpl-masonry .grid-item img {
+  position: relative;
+  min-width: 100%;
+  transition: all 0.3s ease-in;
+  z-index: 9;
+}
+.tpl-masonry .grid-sizer:hover .grid-item-title,
+.tpl-masonry .grid-item:hover .grid-item-title {
+  opacity: 0;
+}
+.tpl-masonry .grid-sizer:hover .grid-item-caption,
+.tpl-masonry .grid-item:hover .grid-item-caption {
+  opacity: 1;
+}
+.tpl-masonry .grid-sizer:hover img,
+.tpl-masonry .grid-item:hover img {
+  transform: scale(1.2);
+}
+.tpl-masonry .grid-item-title,
+.tpl-masonry .grid-item-caption {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.65);
+  transition: all 0.3s ease-in;
+  z-index: 10;
+}
+.tpl-masonry .grid-item-title {
+  bottom: 0;
+  opacity: 1;
+}
+.tpl-masonry .grid-item-caption {
+  bottom: 0;
+  opacity: 0;
+}
+.tpl-masonry .grid-item-caption h4 {
+  margin: 0 0 10px 0;
+}
+.tpl-masonry .grid-item-caption a {
+  display: block;
+  padding: 0 10px;
+  font-size: 24px;
+  text-align: right;
+  color: #fff;
+}
+.tpl-masonry .grid-item-caption .fa {
+  margin-left: 10px;
+}
+.tpl-masonry .gutter-sizer {
+  width: 6px;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: 1200px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 9px);
+  }
+}
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: 992px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 5px);
+  }
+}
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 9px);
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: 100%;
+  }
+}
+/* ==============================================================
+   CMS Template Single Collection
+   style declarations for cms_template_12_singleCollection.xhtml
+   ==============================================================*/
+/* TPL SINGLE COLLECTION */
+/* BLOCK */
+.tpl-single-collection {
+  /* ELEMENT */
+}
+.tpl-single-collection__image {
+  position: relative;
+  max-height: 400px;
+  overflow: hidden;
+}
+.tpl-single-collection__image img {
+  width: 100%;
+}
+.tpl-single-collection__image h2 {
+  position: absolute;
+  right: 0;
+  bottom: 60px;
+  left: 0;
+  margin: 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.75);
+}
+.tpl-single-collection__description {
+  margin-bottom: 20px;
+  padding: 15px;
+  color: #fff;
+  background-color: #6f6f6f;
+}
+.tpl-single-collection__description a {
+  color: #fff;
+}
+.tpl-single-collection__description a:hover,
+.tpl-single-collection__description a:active,
+.tpl-single-collection__description a:focus {
+  color: #fff;
+}
+.tpl-single-collection .search-list {
+  /* OPTIONS */
+}
+.tpl-single-collection .search-list__options {
+  margin-bottom: 15px;
+}
+.tpl-single-collection .search-list__hitcount {
+  display: none !important;
+  visibility: hidden !important;
+}
+.tpl-single-collection .search-list__rss {
+  border: none;
+}
+.tpl-single-collection .search-list__save-search {
+  display: none !important;
+  visibility: hidden !important;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template Static Grid
+   style declarations for cms_template_13_staticGrid.xhtml
+   ==============================================================*/
+/* TPL STATIC GRID */
+/* BLOCK */
+.tpl-static-grid {
+  /* ELEMENT */
+}
+.tpl-static-grid__text {
+  margin-bottom: 30px;
+}
+.grid-tile {
+  margin-bottom: 30px;
+  padding: 3px;
+  padding-top: 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.grid-tile__title {
+  height: 50px;
+  padding: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.grid-tile__title h4 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 21px;
+}
+.grid-tile__image {
+  height: 150px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.grid-tile__image a {
+  display: block;
+  height: 150px;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template RSS Feed
+   style declarations for cms_template_14_RSSFeed.xhtml
+   ==============================================================*/
+/* TPL RSS FEED */
+/* BLOCK */
+.tpl-rss {
+  /* ELEMENT */
+}
+.tpl-rss__text {
+  margin-bottom: 15px;
+}
+.tpl-rss__item {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+.tpl-rss__item-title {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-rss__item-title h3 {
+  margin: 0;
+}
+.tpl-rss__item-date {
+  margin-bottom: 10px;
+}
+.tpl-rss__item-metadata dt {
+  text-align: left;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template Stacked Collection
+   style declarations for cms_template_15_stackedCollection.xhtml
+   ==============================================================*/
+/* TPL STACKED COLLECTION */
+/* BLOCK */
+.tpl-stacked-collection {
+  /* ELEMENT */
+}
+.tpl-stacked-collection__text {
+  margin-bottom: 15px;
+}
+.tpl-stacked-collection__collections {
+  width: 80%;
+  margin: 0 auto;
+}
+.tpl-stacked-collection .panel {
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background-color: #eee;
+  box-shadow: none;
+}
+.tpl-stacked-collection .panel-heading {
+  padding: 0;
+}
+.tpl-stacked-collection .panel-heading:before,
+.tpl-stacked-collection .panel-heading:after {
+  content: " ";
+  display: table;
+}
+.tpl-stacked-collection .panel-heading:after {
+  clear: both;
+}
+.tpl-stacked-collection .panel-thumbnail,
+.tpl-stacked-collection .panel-title,
+.tpl-stacked-collection .panel-rss {
+  float: left;
+  height: 64px;
+  line-height: 64px;
+  overflow: hidden;
+}
+.tpl-stacked-collection .panel-thumbnail {
+  width: 64px;
+}
+.tpl-stacked-collection .panel-title {
+  width: calc(90% - 64px);
+  padding: 0 15px;
+}
+.tpl-stacked-collection .panel-title a {
+  display: block;
+}
+.tpl-stacked-collection .panel-title a:hover,
+.tpl-stacked-collection .panel-title a:active,
+.tpl-stacked-collection .panel-title a:focus {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.tpl-stacked-collection .panel-rss {
+  width: 10%;
+  text-align: center;
+}
+.tpl-stacked-collection .panel-rss .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
+}
+.tpl-stacked-collection .panel-body {
+  padding-left: 79px;
+  border-top-color: #ccc !important;
+  background-color: #fff;
+}
+.tpl-stacked-collection .panel-body__collection,
+.tpl-stacked-collection .panel-body__rss {
+  display: inline-block;
+  float: left;
+}
+.tpl-stacked-collection .panel-body__collection {
+  width: 90%;
+}
+.tpl-stacked-collection .panel-body__rss {
+  width: 10%;
+}
+.tpl-stacked-collection .panel-body__rss .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Searchlist"
+   style declarations for cms_template_16_searchList.xhtml
+   ==============================================================*/
+/* SEARCHLIST */
+/* BLOCK */
+.tpl-search-list {
+  /* ELEMENT */
+}
+.tpl-search-list__intro {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Searchlist Advanced"
+   style declarations for cms_template_16_searchListAdvanced.xhtml
+   ==============================================================*/
+/* SEARCHLIST ADVANCED */
+/* BLOCK */
+.tpl-search-list-advanced {
+  /* ELEMENT */
+}
+.tpl-search-list-advanced__intro {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Privacy"
+   style declarations for cms_template_18_privacy.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-privacy {
+  /* ELEMENT */
+}
+.tpl-privacy iframe {
+  width: 100%;
+  height: 165px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Feedback"
+   style declarations for cms_template_19_feedback.xhtml
+   ==============================================================*/
+/* TPL FEEDBACK */
+/* BLOCK */
+.tpl-feedback {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-feedback__text {
+  margin-bottom: 20px;
+}
+.tpl-feedback .form-group .btn {
+  margin: 0;
+}
+.tpl-feedback .form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Glossary"
+   style declarations for cms_template_20_glossary.xhtml
+   ==============================================================*/
+/* TPL GLOSSARY */
+/* BLOCK */
+.tpl-glossary {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-glossary__text {
+  margin-bottom: 20px;
+}
+.tpl-glossary__glossary {
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #eee;
+}
+.tpl-glossary__glossary hr {
+  border-top-color: #ccc;
+}
+.tpl-glossary__glossary-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.tpl-glossary__glossary-description {
+  margin-bottom: 15px;
+}
+.tpl-glossary__glossary-description p:last-child {
+  margin: 0;
+}
+.tpl-glossary__glossary-keywords .fa,
+.tpl-glossary__glossary-source .fa,
+.tpl-glossary__glossary-keywords strong,
+.tpl-glossary__glossary-source strong {
+  margin-right: 3px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "FAQ"
+   style declarations for cms_template_21_faq.xhtml
+   ==============================================================*/
+/* FAQ */
+/* BLOCK */
+.tpl-faq {
+  /* ELEMENT */
+}
+.tpl-faq__description {
+  margin-bottom: 15px;
+}
+.tpl-faq__list {
+  margin-bottom: 15px;
+}
+.tpl-faq__list .panel {
+  border-radius: 0;
+  border-color: transparent;
+  box-shadow: none;
+}
+.tpl-faq__list .panel-heading {
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 0;
+}
+.tpl-faq__list .panel-heading__fragment-link {
+  padding-left: 10px;
+  font-size: 0.9rem;
+  opacity: 0.1;
+}
+.tpl-faq__list .panel-heading__fragment-link:hover {
+  opacity: 1;
+}
+.tpl-faq__list .panel-title {
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+.tpl-faq__list .panel-title a:hover,
+.tpl-faq__list .panel-title a:active,
+.tpl-faq__list .panel-title a:focus {
+  text-decoration: none;
+}
+.tpl-faq__list .panel-title a .fa {
+  margin-right: 5px;
+}
+.tpl-faq__list .panel-title a .fa-chevron-down {
+  display: none;
+}
+.tpl-faq__list .panel-title a .fa-chevron-up {
+  display: inline-block;
+}
+.tpl-faq__list .panel-title a.collapsed .fa-chevron-down {
+  display: inline-block;
+}
+.tpl-faq__list .panel-title a.collapsed .fa-chevron-up {
+  display: none;
+}
+.tpl-faq__subheader {
+  margin: 20px 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "FAQ Single"
+   style declarations for cms_template_22_faqSingle.xhtml
+   ==============================================================*/
+/* FAQ SINGLE */
+/* BLOCK */
+.tpl-faq-single {
+  /* ELEMENT */
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Search"
+   style declarations for cms_template_23_search.xhtml
+   ==============================================================*/
+/* SEARCH */
+/* BLOCK */
+.tpl-search {
+  /* ELEMENT */
+}
+.tpl-search__content .search-list__options {
+  margin-bottom: 15px;
+}
+.tpl-search__content .search-advanced {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-search__text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Tags"
+   style declarations for cms_template_24_tags.xhtml
+   ==============================================================*/
+/* TAGS */
+/* BLOCK */
+.tpl-tags {
+  /* ELEMENT */
+}
+.tpl-tags__text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Overview Page"
+   style declarations for cms_template_25_overviewPage.xhtml
+   ==============================================================*/
+/* OVERVIEW PAGE */
+.tpl-overviewpage {
+  /* OVERVIEW */
+  /* LITERATURE / HISTORY */
+  /* LITERATURE */
+  /* HISTORY */
+}
+.tpl-overviewpage h2 {
+  margin: 0;
+  margin-bottom: 5px;
+}
+.tpl-overviewpage__overview {
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.tpl-overviewpage__overview-thumbnail {
+  max-width: 25%;
+  margin-right: 30px;
+}
+.tpl-overviewpage__overview-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  margin-left: auto;
+}
+.tpl-overviewpage__overview-metadata dl {
+  margin-bottom: 10px;
+}
+.tpl-overviewpage__overview-metadata dt {
+  text-align: left;
+}
+.tpl-overviewpage__overview-metadata dd {
+  word-break: break-word;
+}
+.tpl-overviewpage__literature,
+.tpl-overviewpage__history {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.tpl-overviewpage__literature {
+  position: relative;
+  min-height: 72px;
+}
+.tpl-overviewpage__literature > img {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  margin-left: -34px;
+}
+.tpl-overviewpage__history table {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-overviewpage__overview {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .tpl-overviewpage__overview-thumbnail {
+    -ms-flex-positive: 1;
+        flex-grow: 1;
+    max-width: inherit;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .tpl-overviewpage__overview-thumbnail img {
+    margin: 0 auto;
+  }
+}
+/* ==============================================================
+   CMS Template "Overview Page Legacy"
+   style declarations for cms_template_25_overviewPage.xhtml
+   ==============================================================*/
+/* OVERVIEW PAGE LEGACY */
+.tpl-overviewpage-legacy {
+  /* OVERVIEW */
+  /* DESCRIPTION / LITERATURE / HISTORY */
+  /* DESCRIPTION */
+  /* LITERATURE */
+  /* HISTORY */
+}
+.tpl-overviewpage-legacy__overview {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 30px;
+}
+.tpl-overviewpage-legacy__overview-thumbnail {
+  max-width: 25%;
+  margin-right: 30px;
+}
+.tpl-overviewpage-legacy__overview-metadata {
+  -ms-flex-positive: 1;
+      flex-grow: 1;
+  margin-left: auto;
+}
+.tpl-overviewpage-legacy__overview-metadata dl {
+  margin-bottom: 10px;
+}
+.tpl-overviewpage-legacy__overview-metadata dt {
+  text-align: left;
+}
+.tpl-overviewpage-legacy__overview-metadata dd {
+  word-break: break-word;
+}
+.tpl-overviewpage-legacy__description,
+.tpl-overviewpage-legacy__literature,
+.tpl-overviewpage-legacy__history {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.tpl-overviewpage-legacy__history table {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-overviewpage-legacy__overview {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+  .tpl-overviewpage-legacy__overview-thumbnail {
+    -ms-flex-positive: 1;
+        flex-grow: 1;
+    max-width: inherit;
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+  .tpl-overviewpage-legacy__overview-thumbnail img {
+    margin: 0 auto;
   }
 }
 /* CMS VIEWS */
@@ -10411,1292 +11779,5 @@ img.cms-static-pages__page-language--complete {
   .cms-edit-collection__translation {
     -ms-grid-columns: 1fr;
         grid-template-columns: 1fr;
-  }
-}
-/* CMS COMPONENTS */
-/* ==============================================================
-   CMS Component "Collection Tiled"
-   ==============================================================*/
-/* COLLECTION TILED */
-/* BLOCK */
-.collection-tiled {
-  /* ELEMENT */
-}
-.collection-tiled__tile {
-  height: 250px;
-  margin-bottom: 15px;
-  border: 1px solid #eee;
-  overflow: hidden;
-}
-.collection-tiled__header {
-  height: 57px;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  overflow: hidden;
-}
-.collection-tiled__header a {
-  display: block;
-  max-height: 27px;
-  font-size: 1.1rem;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.collection-tiled__body img {
-  width: 100%;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Component "SOLR Query Collection"
-   ==============================================================*/
-/* SOLR QUERY COLLECTION */
-/* BLOCK */
-.solr-query-collection {
-  margin-bottom: 15px;
-  /* ELEMENT */
-}
-.solr-query-collection__thumb {
-  height: 250px;
-  margin-bottom: 10px;
-  border: 1px solid #eee;
-  overflow: hidden;
-}
-.solr-query-collection__image,
-.solr-query-collection__title {
-  overflow: hidden;
-}
-.solr-query-collection__image {
-  height: 190px;
-  border-bottom: 1px solid #eee;
-}
-.solr-query-collection__image img {
-  width: 100%;
-}
-.solr-query-collection__title {
-  padding: 10px;
-  height: 60px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* CMS INCLUDES */
-/* ==============================================================
-   CMS Media Select
-   ==============================================================*/
-/* MEDIA SELECT */
-.admin-cms-media {
-  /* ITEMS */
-  /* ACTION */
-}
-.admin-cms-media__select {
-  position: fixed;
-  top: 30px;
-  right: 30px;
-  bottom: 30px;
-  left: 30px;
-  padding: 50px;
-  z-index: 2020;
-  background-color: #fff;
-}
-.admin-cms-media__select-overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 2010;
-}
-.admin-cms-media__select-content {
-  position: relative;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  height: 100%;
-}
-.admin-cms-media__select-content .nav-tabs a {
-  border-color: #fff;
-  border-bottom-color: #ccc;
-  background-color: #fff;
-}
-.admin-cms-media__select-content .tab-pane {
-  padding: 0;
-  padding-top: 10px;
-  border: 0;
-  height: calc(100vh - 246px);
-}
-.admin-cms-media__select-content .admin-cms-media__filter {
-  margin: 0;
-}
-.admin-cms-media__select-content .admin-cms-media__upload {
-  height: 100%;
-}
-.admin-cms-media__select-files:before,
-.admin-cms-media__select-files:after {
-  content: " ";
-  display: table;
-}
-.admin-cms-media__select-files:after {
-  clear: both;
-}
-.admin-cms-media__select-files-files,
-.admin-cms-media__select-files-selected {
-  float: left;
-  height: calc(100vh - 311px);
-  overflow-y: auto;
-}
-.admin-cms-media__select-files-files {
-  width: 70%;
-  padding: 5px;
-}
-.admin-cms-media__select-files-files .admin-cms-media__files {
-  padding-right: 10px;
-  padding-left: 0 !important;
-}
-.admin-cms-media__select-files-selected {
-  width: 30%;
-  padding: 15px;
-  background-color: #f2f3f4;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file {
-  height: 100%;
-  margin: 0 !important;
-  background-color: #f2f3f4 !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-select,
-.admin-cms-media__select-files-selected .admin-cms-media__file-image {
-  display: none !important;
-  visibility: hidden !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata {
-  padding-left: 0;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view {
-  display: none !important;
-  visibility: hidden !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dt {
-  width: 100%;
-  margin-right: 0;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-view .dl-horizontal dd {
-  margin-bottom: 10px;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit {
-  display: block !important;
-  visibility: visible !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label {
-  -ms-flex-preferred-size: 100%;
-      flex-basis: 100%;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-metadata-edit .cms-module__option-label + .cms-module__option-control {
-  -ms-flex-preferred-size: 90%;
-      flex-basis: 90%;
-  padding-left: 0;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-bottom {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  -ms-flex-pack: start;
-      justify-content: flex-start;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions {
-  width: 100%;
-  padding-left: 0;
-  -ms-flex-order: 1;
-      order: 1;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view {
-  display: block !important;
-  visibility: visible !important;
-  text-align: right;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view .delete:after {
-  display: none;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-action="edit"],
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions-view [data-copy="img-url"] {
-  display: none !important;
-  visibility: hidden !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-actions-edit {
-  display: none !important;
-  visibility: hidden !important;
-}
-.admin-cms-media__select-files-selected .admin-cms-media__file-language {
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 30px;
-  margin-left: 0;
-  padding-left: 0;
-}
-.admin-cms-media__item-wrapper {
-  position: relative;
-  max-height: 140px;
-}
-.admin-cms-media__item-select-frame,
-.admin-cms-media__item-select {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-.admin-cms-media__item-select-frame {
-  display: none;
-  border: 1px solid #3365a9;
-  box-shadow: 0 0 0 1px #fff, 0 0 0 4px #3365a9;
-  z-index: 2040;
-}
-.admin-cms-media__item-select-frame.in {
-  display: block;
-}
-.admin-cms-media__item-select-frame-checkmark {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 21px;
-  height: 21px;
-  line-height: 21px;
-  text-align: center;
-  background-color: #3365a9;
-  box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
-}
-.admin-cms-media__item-select-frame-checkmark .fa {
-  font-size: 18px;
-  color: #fff;
-}
-.admin-cms-media__item-select {
-  z-index: 2050;
-}
-.admin-cms-media__select-action {
-  padding-top: 10px;
-  text-align: right;
-}
-.admin-cms-media__select-action .btn {
-  margin-left: 20px;
-}
-/* CMS TEMPLATES */
-/* ==============================================================
-   CMS Page
-   ==============================================================*/
-/* CMS PAGE */
-.cms-page__edit-page {
-  margin-bottom: 15px;
-  text-align: right;
-}
-/* ==============================================================
-   CMS Template "Generic"
-   style declarations for cms_template_01_generic.xhtml
-   ==============================================================*/
-/* GENERIC */
-/* BLOCK */
-.tpl-generic {
-  /* ELEMENT */
-  /* SOLR-QUERY */
-}
-.tpl-generic__content {
-  margin-bottom: 20px;
-}
-.tpl-generic__image {
-  float: left;
-  width: 25%;
-  margin-right: 15px;
-}
-.tpl-generic__image figcaption {
-  padding: 5px 0;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-.tpl-generic .solr-query-collection {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ccc;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-generic__image {
-    width: 100%;
-    margin: 0 0 10px 0;
-  }
-}
-/* ==============================================================
-   CMS Template "News Overview"
-   style declarations for cms_template_02_overview.xhtml
-   ==============================================================*/
-/* NEWS OVERVIEW */
-/* BLOCK */
-.tpl-news-overview {
-  /* ELEMENT */
-}
-.tpl-news-overview__content {
-  margin-bottom: 30px;
-}
-.tpl-news-overview__image {
-  float: left;
-  width: 25%;
-  margin: 0 10px 10px 0;
-  margin-bottom: 15px;
-}
-.tpl-news-overview__image figcaption {
-  padding: 5px 0;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-.tpl-news-overview__list-item {
-  margin-bottom: 15px;
-}
-.tpl-news-overview__list-image {
-  max-height: 150px;
-  overflow: hidden;
-}
-.tpl-news-overview__preview-date {
-  margin-bottom: 15px;
-}
-.tpl-news-overview__preview-text {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-news-overview__image {
-    width: 100%;
-    margin: 0 0 10px 0;
-  }
-}
-/* ==============================================================
-   CMS Template "News Detail"
-   style declarations for cms_template_03_newsdetail.xhtml
-   ==============================================================*/
-/* NEWS DETAIL */
-/* BLOCK */
-.tpl-news-detail {
-  /* ELEMENT */
-  /* SOLR-QUERY */
-}
-.tpl-news-detail__date,
-.tpl-news-detail__content {
-  margin-bottom: 20px;
-}
-.tpl-news-detail__image figcaption {
-  padding: 5px 0;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-.tpl-news-detail .solr-query-collection {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ccc;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "News"
-   style declarations for cms_template_04_news.xhtml
-   ==============================================================*/
-/* NEWS */
-/* BLOCK */
-.tpl-news {
-  /* ELEMENT */
-}
-.tpl-news__content {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Simple"
-   style declarations for cms_template_05_simple.xhtml
-   ==============================================================*/
-/* SIMPLE */
-/* BLOCK */
-.tpl-simple {
-  /* ELEMENT */
-}
-.tpl-simple__text,
-.tpl-simple__image {
-  margin-bottom: 15px;
-}
-.tpl-simple__image figcaption {
-  padding: 5px 0;
-  font-style: italic;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "SOLR QUERY"
-   style declarations for cms_template_06_solrquery.xhtml
-   ==============================================================*/
-/* SOLR QUERY */
-/* BLOCK */
-.tpl-solr-query {
-  /* ELEMENT */
-}
-.tpl-solr-query__content {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Collection"
-   style declarations for cms_template_08_collection.xhtml
-   ==============================================================*/
-/* COLLECTION */
-/* BLOCK */
-.tpl-collection {
-  /* ELEMENT */
-}
-.tpl-collection__text,
-.tpl-collection__wrapper {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Collection Tiled"
-   style declarations for cms_template_09_collectionTiled.xhtml
-   ==============================================================*/
-/* COLLECTION TILED */
-/* BLOCK */
-.tpl-collection-tiled {
-  /* ELEMENT */
-}
-.tpl-collection-tiled__text,
-.tpl-collection-tiled__wrapper {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Single Page"
-   style declarations for cms_template_10_singlePage.xhtml
-   ==============================================================*/
-/* SINGLE PAGE */
-/* BLOCK */
-.tpl-single {
-  /* ELEMENT */
-}
-.tpl-single__content {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Search List Custom"
-   style declarations for cms_template_10_searchListCustom.xhtml
-   ==============================================================*/
-/* TPL SEARCH LIST CUSTOM */
-/* BLOCK */
-.tpl-search-list-custom {
-  /* ELEMENT */
-}
-.tpl-search-list-custom__list-element {
-  margin-right: 15px;
-  margin-bottom: 10px;
-  margin-left: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-}
-.tpl-search-list-custom__list-image {
-  overflow: hidden;
-}
-.tpl-search-list-custom__list-text .dl-horizontal {
-  margin: 0;
-}
-.tpl-search-list-custom__list-text .dl-horizontal dt,
-.tpl-search-list-custom__list-text .dl-horizontal dd {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.tpl-search-list-custom__list-text .dl-horizontal dt {
-  width: 100px;
-  font-weight: normal;
-  text-align: left;
-}
-.tpl-search-list-custom__list-text .dl-horizontal dd {
-  margin-left: 100px;
-}
-.tpl-search-list-custom__list-text-person:after {
-  content: ";";
-  margin-left: -3px;
-}
-.tpl-search-list-custom__list-text-person:last-child:after {
-  content: "";
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-search-list-custom__list-text .dl-horizontal dt,
-  .tpl-search-list-custom__list-text .dl-horizontal dd {
-    width: 100%;
-    margin: 0;
-  }
-}
-/* ==============================================================
-   CMS Template "Masonry"
-   style declarations for cms_template_11_masonry.xhtml
-   ==============================================================*/
-/* TPL MASONRY */
-/* BLOCK */
-.tpl-masonry {
-  /* ELEMENT */
-}
-.tpl-masonry__text {
-  margin-bottom: 15px;
-}
-.tpl-masonry .grid {
-  margin-bottom: 15px;
-  opacity: 0;
-  transition: all 0.3s ease-in;
-}
-.tpl-masonry .grid.ready {
-  opacity: 1;
-}
-.tpl-masonry .grid-sizer,
-.tpl-masonry .grid-item {
-  width: calc(31.33333333% + 12px);
-  margin-bottom: 6px;
-  overflow: hidden;
-}
-.tpl-masonry .grid-sizer img,
-.tpl-masonry .grid-item img {
-  position: relative;
-  min-width: 100%;
-  transition: all 0.3s ease-in;
-  z-index: 9;
-}
-.tpl-masonry .grid-sizer:hover .grid-item-title,
-.tpl-masonry .grid-item:hover .grid-item-title {
-  opacity: 0;
-}
-.tpl-masonry .grid-sizer:hover .grid-item-caption,
-.tpl-masonry .grid-item:hover .grid-item-caption {
-  opacity: 1;
-}
-.tpl-masonry .grid-sizer:hover img,
-.tpl-masonry .grid-item:hover img {
-  transform: scale(1.2);
-}
-.tpl-masonry .grid-item-title,
-.tpl-masonry .grid-item-caption {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  padding: 5px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.65);
-  transition: all 0.3s ease-in;
-  z-index: 10;
-}
-.tpl-masonry .grid-item-title {
-  bottom: 0;
-  opacity: 1;
-}
-.tpl-masonry .grid-item-caption {
-  bottom: 0;
-  opacity: 0;
-}
-.tpl-masonry .grid-item-caption h4 {
-  margin: 0 0 10px 0;
-}
-.tpl-masonry .grid-item-caption a {
-  display: block;
-  padding: 0 10px;
-  font-size: 24px;
-  text-align: right;
-  color: #fff;
-}
-.tpl-masonry .grid-item-caption .fa {
-  margin-left: 10px;
-}
-.tpl-masonry .gutter-sizer {
-  width: 6px;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: 1200px) {
-  .tpl-masonry .grid-sizer,
-  .tpl-masonry .grid-item {
-    width: calc(31.33333333% + 9px);
-  }
-}
-/* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: 992px) {
-  .tpl-masonry .grid-sizer,
-  .tpl-masonry .grid-item {
-    width: calc(31.33333333% + 5px);
-  }
-}
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .tpl-masonry .grid-sizer,
-  .tpl-masonry .grid-item {
-    width: calc(31.33333333% + 9px);
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-masonry .grid-sizer,
-  .tpl-masonry .grid-item {
-    width: 100%;
-  }
-}
-/* ==============================================================
-   CMS Template Single Collection
-   style declarations for cms_template_12_singleCollection.xhtml
-   ==============================================================*/
-/* TPL SINGLE COLLECTION */
-/* BLOCK */
-.tpl-single-collection {
-  /* ELEMENT */
-}
-.tpl-single-collection__image {
-  position: relative;
-  max-height: 400px;
-  overflow: hidden;
-}
-.tpl-single-collection__image img {
-  width: 100%;
-}
-.tpl-single-collection__image h2 {
-  position: absolute;
-  right: 0;
-  bottom: 60px;
-  left: 0;
-  margin: 0;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.75);
-}
-.tpl-single-collection__description {
-  margin-bottom: 20px;
-  padding: 15px;
-  color: #fff;
-  background-color: #6f6f6f;
-}
-.tpl-single-collection__description a {
-  color: #fff;
-}
-.tpl-single-collection__description a:hover,
-.tpl-single-collection__description a:active,
-.tpl-single-collection__description a:focus {
-  color: #fff;
-}
-.tpl-single-collection .search-list {
-  /* OPTIONS */
-}
-.tpl-single-collection .search-list__options {
-  margin-bottom: 15px;
-}
-.tpl-single-collection .search-list__hitcount {
-  display: none !important;
-  visibility: hidden !important;
-}
-.tpl-single-collection .search-list__rss {
-  border: none;
-}
-.tpl-single-collection .search-list__save-search {
-  display: none !important;
-  visibility: hidden !important;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template Static Grid
-   style declarations for cms_template_13_staticGrid.xhtml
-   ==============================================================*/
-/* TPL STATIC GRID */
-/* BLOCK */
-.tpl-static-grid {
-  /* ELEMENT */
-}
-.tpl-static-grid__text {
-  margin-bottom: 30px;
-}
-.grid-tile {
-  margin-bottom: 30px;
-  padding: 3px;
-  padding-top: 0;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.grid-tile__title {
-  height: 50px;
-  padding: 5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.grid-tile__title h4 {
-  margin: 0;
-  font-size: 16px;
-  line-height: 21px;
-}
-.grid-tile__image {
-  height: 150px;
-  overflow: hidden;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-}
-.grid-tile__image a {
-  display: block;
-  height: 150px;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template RSS Feed
-   style declarations for cms_template_14_RSSFeed.xhtml
-   ==============================================================*/
-/* TPL RSS FEED */
-/* BLOCK */
-.tpl-rss {
-  /* ELEMENT */
-}
-.tpl-rss__text {
-  margin-bottom: 15px;
-}
-.tpl-rss__item {
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 15px;
-}
-.tpl-rss__item-title {
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-}
-.tpl-rss__item-title h3 {
-  margin: 0;
-}
-.tpl-rss__item-date {
-  margin-bottom: 10px;
-}
-.tpl-rss__item-metadata dt {
-  text-align: left;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template Stacked Collection
-   style declarations for cms_template_15_stackedCollection.xhtml
-   ==============================================================*/
-/* TPL STACKED COLLECTION */
-/* BLOCK */
-.tpl-stacked-collection {
-  /* ELEMENT */
-}
-.tpl-stacked-collection__text {
-  margin-bottom: 15px;
-}
-.tpl-stacked-collection__collections {
-  width: 80%;
-  margin: 0 auto;
-}
-.tpl-stacked-collection .panel {
-  border: 1px solid #ccc;
-  border-radius: 0;
-  background-color: #eee;
-  box-shadow: none;
-}
-.tpl-stacked-collection .panel-heading {
-  padding: 0;
-}
-.tpl-stacked-collection .panel-heading:before,
-.tpl-stacked-collection .panel-heading:after {
-  content: " ";
-  display: table;
-}
-.tpl-stacked-collection .panel-heading:after {
-  clear: both;
-}
-.tpl-stacked-collection .panel-thumbnail,
-.tpl-stacked-collection .panel-title,
-.tpl-stacked-collection .panel-rss {
-  float: left;
-  height: 64px;
-  line-height: 64px;
-  overflow: hidden;
-}
-.tpl-stacked-collection .panel-thumbnail {
-  width: 64px;
-}
-.tpl-stacked-collection .panel-title {
-  width: calc(90% - 64px);
-  padding: 0 15px;
-}
-.tpl-stacked-collection .panel-title a {
-  display: block;
-}
-.tpl-stacked-collection .panel-title a:hover,
-.tpl-stacked-collection .panel-title a:active,
-.tpl-stacked-collection .panel-title a:focus {
-  color: #1a1a1a;
-  text-decoration: none;
-}
-.tpl-stacked-collection .panel-rss {
-  width: 10%;
-  text-align: center;
-}
-.tpl-stacked-collection .panel-rss .fa {
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  font-size: 14px;
-  text-align: center;
-  color: #fff;
-  background-color: #f08421;
-}
-.tpl-stacked-collection .panel-body {
-  padding-left: 79px;
-  border-top-color: #ccc !important;
-  background-color: #fff;
-}
-.tpl-stacked-collection .panel-body__collection,
-.tpl-stacked-collection .panel-body__rss {
-  display: inline-block;
-  float: left;
-}
-.tpl-stacked-collection .panel-body__collection {
-  width: 90%;
-}
-.tpl-stacked-collection .panel-body__rss {
-  width: 10%;
-}
-.tpl-stacked-collection .panel-body__rss .fa {
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  font-size: 14px;
-  text-align: center;
-  color: #fff;
-  background-color: #f08421;
-}
-/* MODIFICATION */
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Searchlist"
-   style declarations for cms_template_16_searchList.xhtml
-   ==============================================================*/
-/* SEARCHLIST */
-/* BLOCK */
-.tpl-search-list {
-  /* ELEMENT */
-}
-.tpl-search-list__intro {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Searchlist Advanced"
-   style declarations for cms_template_16_searchListAdvanced.xhtml
-   ==============================================================*/
-/* SEARCHLIST ADVANCED */
-/* BLOCK */
-.tpl-search-list-advanced {
-  /* ELEMENT */
-}
-.tpl-search-list-advanced__intro {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Privacy"
-   style declarations for cms_template_18_privacy.xhtml
-   ==============================================================*/
-/* SIMPLE */
-/* BLOCK */
-.tpl-privacy {
-  /* ELEMENT */
-}
-.tpl-privacy iframe {
-  width: 100%;
-  height: 165px;
-  border: none;
-  border-top: 1px solid #ccc;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Feedback"
-   style declarations for cms_template_19_feedback.xhtml
-   ==============================================================*/
-/* TPL FEEDBACK */
-/* BLOCK */
-.tpl-feedback {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.tpl-feedback__text {
-  margin-bottom: 20px;
-}
-.tpl-feedback .form-group .btn {
-  margin: 0;
-}
-.tpl-feedback .form-group textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Glossary"
-   style declarations for cms_template_20_glossary.xhtml
-   ==============================================================*/
-/* TPL GLOSSARY */
-/* BLOCK */
-.tpl-glossary {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.tpl-glossary__text {
-  margin-bottom: 20px;
-}
-.tpl-glossary__glossary {
-  padding: 20px;
-  border: 1px solid #ccc;
-  background-color: #eee;
-}
-.tpl-glossary__glossary hr {
-  border-top-color: #ccc;
-}
-.tpl-glossary__glossary-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-.tpl-glossary__glossary-description {
-  margin-bottom: 15px;
-}
-.tpl-glossary__glossary-description p:last-child {
-  margin: 0;
-}
-.tpl-glossary__glossary-keywords .fa,
-.tpl-glossary__glossary-source .fa,
-.tpl-glossary__glossary-keywords strong,
-.tpl-glossary__glossary-source strong {
-  margin-right: 3px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "FAQ"
-   style declarations for cms_template_21_faq.xhtml
-   ==============================================================*/
-/* FAQ */
-/* BLOCK */
-.tpl-faq {
-  /* ELEMENT */
-}
-.tpl-faq__description {
-  margin-bottom: 15px;
-}
-.tpl-faq__list {
-  margin-bottom: 15px;
-}
-.tpl-faq__list .panel {
-  border-radius: 0;
-  border-color: transparent;
-  box-shadow: none;
-}
-.tpl-faq__list .panel-heading {
-  background-color: #fff;
-  border: 1px solid transparent;
-  border-radius: 0;
-}
-.tpl-faq__list .panel-heading__fragment-link {
-  padding-left: 10px;
-  font-size: 0.9rem;
-  opacity: 0.1;
-}
-.tpl-faq__list .panel-heading__fragment-link:hover {
-  opacity: 1;
-}
-.tpl-faq__list .panel-title {
-  text-transform: uppercase;
-  font-size: 1.1rem;
-}
-.tpl-faq__list .panel-title a:hover,
-.tpl-faq__list .panel-title a:active,
-.tpl-faq__list .panel-title a:focus {
-  text-decoration: none;
-}
-.tpl-faq__list .panel-title a .fa {
-  margin-right: 5px;
-}
-.tpl-faq__list .panel-title a .fa-chevron-down {
-  display: none;
-}
-.tpl-faq__list .panel-title a .fa-chevron-up {
-  display: inline-block;
-}
-.tpl-faq__list .panel-title a.collapsed .fa-chevron-down {
-  display: inline-block;
-}
-.tpl-faq__list .panel-title a.collapsed .fa-chevron-up {
-  display: none;
-}
-.tpl-faq__subheader {
-  margin: 20px 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "FAQ Single"
-   style declarations for cms_template_22_faqSingle.xhtml
-   ==============================================================*/
-/* FAQ SINGLE */
-/* BLOCK */
-.tpl-faq-single {
-  /* ELEMENT */
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Search"
-   style declarations for cms_template_23_search.xhtml
-   ==============================================================*/
-/* SEARCH */
-/* BLOCK */
-.tpl-search {
-  /* ELEMENT */
-}
-.tpl-search__content .search-list__options {
-  margin-bottom: 15px;
-}
-.tpl-search__content .search-advanced {
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #ccc;
-}
-.tpl-search__text {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Tags"
-   style declarations for cms_template_24_tags.xhtml
-   ==============================================================*/
-/* TAGS */
-/* BLOCK */
-.tpl-tags {
-  /* ELEMENT */
-}
-.tpl-tags__text {
-  margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "Overview Page"
-   style declarations for cms_template_25_overviewPage.xhtml
-   ==============================================================*/
-/* OVERVIEW PAGE */
-.tpl-overviewpage {
-  /* OVERVIEW */
-  /* LITERATURE / HISTORY */
-  /* LITERATURE */
-  /* HISTORY */
-}
-.tpl-overviewpage h2 {
-  margin: 0;
-  margin-bottom: 5px;
-}
-.tpl-overviewpage__overview {
-  display: -ms-flexbox;
-  display: flex;
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-.tpl-overviewpage__overview-thumbnail {
-  max-width: 25%;
-  margin-right: 30px;
-}
-.tpl-overviewpage__overview-metadata {
-  -ms-flex-positive: 1;
-      flex-grow: 1;
-  margin-left: auto;
-}
-.tpl-overviewpage__overview-metadata dl {
-  margin-bottom: 10px;
-}
-.tpl-overviewpage__overview-metadata dt {
-  text-align: left;
-}
-.tpl-overviewpage__overview-metadata dd {
-  word-break: break-word;
-}
-.tpl-overviewpage__literature,
-.tpl-overviewpage__history {
-  margin-bottom: 30px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.tpl-overviewpage__literature {
-  position: relative;
-  min-height: 72px;
-}
-.tpl-overviewpage__literature > img {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  margin-left: -34px;
-}
-.tpl-overviewpage__history table {
-  margin: 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-overviewpage__overview {
-    -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
-  }
-  .tpl-overviewpage__overview-thumbnail {
-    -ms-flex-positive: 1;
-        flex-grow: 1;
-    max-width: inherit;
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-  .tpl-overviewpage__overview-thumbnail img {
-    margin: 0 auto;
-  }
-}
-/* ==============================================================
-   CMS Template "Overview Page Legacy"
-   style declarations for cms_template_25_overviewPage.xhtml
-   ==============================================================*/
-/* OVERVIEW PAGE LEGACY */
-.tpl-overviewpage-legacy {
-  /* OVERVIEW */
-  /* DESCRIPTION / LITERATURE / HISTORY */
-  /* DESCRIPTION */
-  /* LITERATURE */
-  /* HISTORY */
-}
-.tpl-overviewpage-legacy__overview {
-  display: -ms-flexbox;
-  display: flex;
-  margin-bottom: 30px;
-}
-.tpl-overviewpage-legacy__overview-thumbnail {
-  max-width: 25%;
-  margin-right: 30px;
-}
-.tpl-overviewpage-legacy__overview-metadata {
-  -ms-flex-positive: 1;
-      flex-grow: 1;
-  margin-left: auto;
-}
-.tpl-overviewpage-legacy__overview-metadata dl {
-  margin-bottom: 10px;
-}
-.tpl-overviewpage-legacy__overview-metadata dt {
-  text-align: left;
-}
-.tpl-overviewpage-legacy__overview-metadata dd {
-  word-break: break-word;
-}
-.tpl-overviewpage-legacy__description,
-.tpl-overviewpage-legacy__literature,
-.tpl-overviewpage-legacy__history {
-  margin-bottom: 30px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-}
-.tpl-overviewpage-legacy__history table {
-  margin: 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .tpl-overviewpage-legacy__overview {
-    -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
-  }
-  .tpl-overviewpage-legacy__overview-thumbnail {
-    -ms-flex-positive: 1;
-        flex-grow: 1;
-    max-width: inherit;
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-  .tpl-overviewpage-legacy__overview-thumbnail img {
-    margin: 0 auto;
   }
 }
