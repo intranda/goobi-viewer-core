@@ -31,6 +31,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
         this.type = "photo";
         this.width = 300;
         this.height = 450;
+        this.title = record.getStructElement().getLabel();
         generateUrl(record, width);
     }
 
