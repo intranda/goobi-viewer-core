@@ -43,7 +43,8 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.AbstractPageLoader;
 import de.intranda.digiverso.presentation.servlets.oembed.OEmbedRecord;
-import de.intranda.digiverso.presentation.servlets.oembed.RichOEmbedResponse;
+import de.intranda.digiverso.presentation.servlets.oembed.OEmbedResponse;
+import de.intranda.digiverso.presentation.servlets.oembed.PhotoOEmbedResponse;
 
 /**
  * Servlet for original content file download.
@@ -138,7 +139,8 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                     return;
             }
 
-            RichOEmbedResponse oembedResponse = new RichOEmbedResponse(record);
+            // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
+            OEmbedResponse oembedResponse = new PhotoOEmbedResponse(record);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
             ret = mapper.writeValueAsString(oembedResponse);
