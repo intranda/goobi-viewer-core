@@ -38,7 +38,7 @@
         		adaptContainerHeight: true,
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
-        		persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+        		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
         		maxZoomLevel: 5,
         		controls : {
         		    rotateLeft: '.rotate-left',
@@ -98,7 +98,6 @@
        	// desktop object view
        	if ( access ) {
            	var viewImage = new ImageView.Image( configViewer )
-           	
            	viewImage.load().then( function( osViewer ) {} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );

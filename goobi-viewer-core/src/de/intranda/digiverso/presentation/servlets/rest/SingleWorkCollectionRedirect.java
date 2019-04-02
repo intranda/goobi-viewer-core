@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets;
+package de.intranda.digiverso.presentation.servlets.rest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -34,11 +35,13 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 @Path("/redirect/toFirstWork")
+@ViewerRestServiceBinding
 public class SingleWorkCollectionRedirect {
 
     @Context
     private HttpServletRequest servletRequest;
 
+    @GET
     @Path("/{luceneField}/{fieldValue}")
     public Response redirectToWork(@PathParam("luceneField") String field, @PathParam("fieldValue") String value, @Context HttpServletRequest request,
             @Context HttpServletResponse response) {

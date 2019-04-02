@@ -22,32 +22,34 @@
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
-    
 
     <ui:define name="content">
-    
-		<f:param name="currentPage" value="#{cmsBean.random}" />
-		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateMasonry" class="tpl-masonry #{cmsPage.wrapperElementClass}">
-                <h2>#{cmsPage.title}</h2>
+        <f:param name="currentPage" value="#{cmsBean.random}" />
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="templateMasonry" class="tpl-masonry #{cmsPage.wrapperElementClass}">
+                <!-- EDIT PAGE -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
+                </ui:fragment>
                 
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
-                        #{msg.cms_pagePreviewNotPublished}
-                    </div>
+                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
                 </h:panelGroup>
-                
+
+                <h2>#{cmsPage.title}</h2>
+
                 <div class="tpl-masonry__text">
                     <ui:include src="#{cmsPage.getContent('text')}" />
                 </div>
-                
-                <!-- LOADER -->
-				<div class="tpl-masonry__loader" style="display: none;">
-					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" alt="Masonry Loader" /> #{msg.cms_masonryLoading}...
-				</div>
 
-				<!-- MASONRY -->
+                <!-- LOADER -->
+                <div class="tpl-masonry__loader" style="display: none;">
+                    <img src="#{request.contextPath}/resources/images/infinity_loader.gif" alt="Masonry Loader" />
+                    #{msg.cms_masonryLoading}...
+                </div>
+
+                <!-- MASONRY -->
                 <div class="grid">
                     <div class="grid-sizer"></div>
                     <div class="gutter-sizer"></div>
@@ -56,21 +58,21 @@
                 <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js"></script>
                 <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/masonry/imagesloaded.min.js"></script>
                 <script type="text/javascript">
-                    $.ajax( {
-                        url: "#{cmsPage.getTileGridUrl('grid')}",
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                        var masonryConfig = {
-                            $grid: $( ".grid" )
-                        };
-                            
-                        cmsJS.masonry.init( masonryConfig, data );
-                    } );
-                </script>
+                	$.ajax( {
+						url : "#{cmsPage.getTileGridUrl('grid')}",
+						type : "GET",
+						datatype : "JSON"
+					}).then( function( data ) {
+						var masonryConfig = {
+								$grid : $(".grid")
+						};
+
+						cmsJS.masonry.init( masonryConfig, data);
+					});
+				</script>
             </div>
-		</f:view>
-	</ui:define>
+        </f:view>
+    </ui:define>
 
     <!-- SIDEBAR -->
 	<ui:define name="sidebar">

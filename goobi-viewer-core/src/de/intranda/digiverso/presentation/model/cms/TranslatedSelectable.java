@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.util.Locale;
 
 /**
+ * A {@link Selectable} which may also hold a locale to indicate the currently visible language/translation
+ * 
  * @author florian
  *
  */

@@ -45,8 +45,8 @@
             
             <!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
         
-            <property name="logging.level" value="ALL"/> 
-            <property name="eclipselink.logging.level" value="ALL" />
+            <property name="logging.level" value="WARNING"/> 
+            <property name="eclipselink.logging.level" value="FINER" />
             <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" />
             <property name="eclipselink.id-validation" value="NONE"/> 
 <!--             <property name="eclipselink.logging.logger" value="ServerLogger" /> -->

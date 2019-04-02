@@ -252,7 +252,6 @@ public class CMSPage implements Comparable<CMSPage> {
                 this.languageVersions.add(copy);
             }
         }
-
     }
 
     public boolean saveSidebarElements() {
@@ -596,6 +595,28 @@ public class CMSPage implements Comparable<CMSPage> {
             return getMenuTitle();
         }
     }
+    
+    public String getMenuTitleOrTitle() {
+        String title;
+        try {
+            title = getBestLanguage().getMenuTitleOrTitle();
+        } catch (CmsElementNotFoundException e) {
+            try {
+                title = getBestLanguageIncludeUnfinished().getMenuTitleOrTitle();
+            } catch (CmsElementNotFoundException e1) {
+                title = "";
+            }
+        }
+        return title;
+    }
+
+    public String getMenuTitleOrTitle(Locale locale) {
+        try {
+            return getLanguageVersion(locale.getLanguage()).getMenuTitleOrTitle();
+        } catch (CmsElementNotFoundException e) {
+            return getMenuTitle();
+        }
+    }
 
     public Long getPageSorting() {
         return pageSorting;
@@ -742,6 +763,7 @@ public class CMSPage implements Comparable<CMSPage> {
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
+                .sorted( (p1, p2) -> p2.getStatus().compareTo(p1.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
         return language;
@@ -1246,7 +1268,11 @@ public class CMSPage implements Comparable<CMSPage> {
     @Override
     public String toString() {
         try {
-            return getBestLanguageIncludeUnfinished(Locale.ENGLISH).getTitle();
+            String title = getBestLanguageIncludeUnfinished(Locale.ENGLISH).getTitle();
+            if(StringUtils.isBlank(title)) {
+                return "ID: " + this.getId() + " (no title)";
+
+            } else return title;
         } catch (CmsElementNotFoundException e) {
             return "ID: " + this.getId() + " (no title)";
         }

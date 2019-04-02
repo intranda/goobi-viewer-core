@@ -150,6 +150,157 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+    	this.pis = this.opts.pis.split(/[\s,;]+/);
+        this.metadataList = this.opts.metadata.split(/[,;]+/);
+        this.manifest = undefined;
+        this.manifests = new Map();
+        this.active = false;
+
+        this.on( 'mount', function() {
+        	this.pi = this.pis[0];
+        	this.loadManifest( this.pi );
+        }.bind( this ));
+
+        this.setPi = function( event ) {
+        	let pi = event.item.imagepi;
+
+        	if ( pi != this.pi ) {
+        		this.pi = pi;
+        		this.active = false;
+
+        		return this.loadManifest( pi );
+        	}
+        }.bind(this)
+
+        this.setImageActive = function() {
+        	this.active = true;
+        	this.update();
+        }.bind(this)
+
+        this.loadManifest = function( pi ) {
+        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
+        	let json = this.manifests.get( url );
+
+        	if ( !json ) {
+        		$.getJSON( url, function( manifest ) {
+        			if ( manifest ) {
+
+        				this.manifest = manifest;
+        				this.manifests.set( url, manifest );
+        				this.update();
+        			}
+        		}.bind( this ));
+        	}
+        	else {
+
+            	setTimeout( function() {
+            		this.manifest = json;
+            		this.update();
+            	}.bind( this ), 300 );
+        	}
+        }.bind(this)
+        this.getThumbnail = function( manifest, width, height ) {
+        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
+        		return manifest.thumbnail['@id'];
+        	}
+        	else {
+        		let sizePrefix = width && height ? "!" : "";
+
+        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
+        	}
+        }.bind(this)
+
+        this.getLink = function( manifest ) {
+        	rendering = manifest.rendering;
+
+        	if ( Array.isArray( rendering ) ) {
+        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
+        	}
+        	if ( rendering ) {
+        		return rendering['@id'];
+        	}
+        	else {
+        		return '';
+        	}
+        }.bind(this)
+
+        this.getLabel = function( manifest ) {
+        	return this.getValue(manifest.label, this.opts.locale);
+        }.bind(this)
+
+        this.getMetadataValue = function( manifest, metadataLabel ) {
+        	if ( manifest && metadataLabel ) {
+        		let metadata = manifest.metadata.find( ( md ) => {
+        			let label = md.label;
+        			if ( Array.isArray( label ) ) {
+        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
+        				if ( label ) {
+        					label = label['@value']
+        				}
+        			}
+
+        			return label && label.trim() == metadataLabel.trim();
+        		});
+
+        		if ( metadata ) {
+        			let value = this.getValue( metadata.value, this.opts.locale );
+
+        			return value;
+        		}
+        	}
+        }.bind(this)
+
+        this.getValue = function ( element, locale ) {
+            if ( element ) {
+            	if ( typeof element === 'string' ) {
+            		return element;
+            	}
+        		else if ( Array.isArray( element ) ) {
+            		var fallback;
+
+            		for ( var index in element  ) {
+            			var item = element[index];
+
+            			if ( typeof item === 'string' ) {
+            				return item;
+            			}
+            			else {
+            				var value = item['@value'];
+            				var language = item['@language'];
+
+            				if ( locale == language ) {
+            					return value;
+            				}
+            				else if ( !fallback || language == 'en' ) {
+            					fallback = value;
+            				}
+            			}
+            		}
+
+            		return fallback;
+            	}
+            	else {
+            		return element['@value'];
+            	}
+            }
+        }.bind(this)
+});
+
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 

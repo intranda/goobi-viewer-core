@@ -7,7 +7,7 @@
  */
 describe( 'ImageView coordinate conversion Tests', function() {
 
-		fit(" correctly rotates (0,1) around center", function() {
+		it(" correctly rotates (0,1) around center", function() {
 			
 			let p = {x: 0, y:1};
 			let pr = ImageView.CoordinateConversion.rotate(p, -45, false);
@@ -28,7 +28,7 @@ describe( 'ImageView coordinate conversion Tests', function() {
 			
 		})
 		
-		fit(" correctly rotates (1/sqrt(2), -1/sqrt(2)) around center", function() {
+		it(" correctly rotates (1/sqrt(2), -1/sqrt(2)) around center", function() {
 			
 			let p = {x: 1/Math.sqrt(2), y: -1/Math.sqrt(2)};
 			let pr = ImageView.CoordinateConversion.rotate(p, -45, false);

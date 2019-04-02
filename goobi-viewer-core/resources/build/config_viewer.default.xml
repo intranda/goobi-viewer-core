@@ -128,9 +128,9 @@
 	</accessConditions>
 
 
-	<!-- TODO DOCUMENTATION-->
+	<!-- enables reCaptcha integration for the feedback formular -->
 	<reCaptcha show="false">
-		<provider name="Google" siteKey="TODO" />
+		<provider name="Google" siteKey="CHANGEME" />
 	</reCaptcha>
 
 
@@ -153,10 +153,10 @@
 		<!-- pagePdfEnabled: if true, a special icon allows PDF download of single pages in the image view (default is false) -->
 		<pagePdfEnabled>true</pagePdfEnabled>
 
-		<!-- Folder for generated download files -->
+		<!-- downloadFolder: Folder for generated download files -->
 		<downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- docHierarchyPdfEnabled: shows an icon to generate a PDF out of the Table of Contents -->
 		<docHierarchyPdfEnabled>false</docHierarchyPdfEnabled>
 	</pdf>
 
@@ -185,7 +185,7 @@
 			<pageBrowseStep>10</pageBrowseStep>
 		</pageBrowse>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- doublePageMode: if enabled, offers an option to switch to a double page view -->
 		<doublePageMode>
 			<enabled>true</enabled>
 		</doublePageMode>
@@ -217,10 +217,10 @@
 			</tileSize>
 		</zoomImageView>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- rememberImageZoom: if true, the image zoom is saved in the user session and persistent during browsing-->
 		<rememberImageZoom>false</rememberImageZoom>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- rememberImageRotation: if true, the image rotation is saved in the user session and persistent during browsing -->
 		<rememberImageRotation>false</rememberImageRotation>
 
 	        <!-- URL patterns for external image urls which should be served via the contentServner
@@ -247,7 +247,7 @@
 		<thumbnailsWidth>400</thumbnailsWidth>
 		<thumbnailsHeight>400</thumbnailsHeight>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- thumbnailsCompression: JPEG thumbnail compression in percent. Default is 85 -->
 		<thumbnailsCompression>85</thumbnailsCompression>
 
 		<!-- anchorThumbnailMode: Determines what kind of thumbnail to use foranchors.
@@ -357,7 +357,7 @@
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
 
-		<!-- TODO DOCUMENTATION-->
+		<!-- drillDown: Contains a list of fields that are available for facetting in a search result list -->
 		<drillDown>
 			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
 			<field initialElementNumber="3">DOCSTRCT_TOP</field>
@@ -375,7 +375,6 @@
 			<defaultItemNumber>2</defaultItemNumber>
 
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
-			<!-- TODO DOCUMENTATION-->
 			<searchFields>
 				<field>DEFAULT</field>
 				<field>FULLTEXT</field>
@@ -459,11 +458,11 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
 
-        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
-            (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
-        <!-- Example query for also including periodical volumes:
-            ((ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
-        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*</docstrctWhitelistFilterQuery>
+	        <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
+	            (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
+	        <!-- Example query for also including periodical volumes:
+	            ((ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
+	        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*</docstrctWhitelistFilterQuery>
 
 	        <!-- versioning -->
 	        <versioning>
@@ -861,18 +860,18 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-            <!-- _GROUPS: Group documents -->
-            <template name="_GROUPS">
-                <metadata label="MD_TITLE" value="">
-                    <param type="field" key="MD_TITLE" />
-                </metadata>
-                <metadata label="MD_PUBLISHER" value="">
-                    <param type="field" key="MD_PUBLISHER" />
-                </metadata>
-                <metadata label="MD_PLACEPUBLISH" value="">
-                    <param type="field" key="MD_PLACEPUBLISH" />
-                </metadata>
-            </template>
+			<!-- _GROUPS: Group documents -->
+			<template name="_GROUPS">
+				<metadata label="MD_TITLE" value="">
+					<param type="field" key="MD_TITLE" />
+				</metadata>
+				<metadata label="MD_PUBLISHER" value="">
+					<param type="field" key="MD_PUBLISHER" />
+				</metadata>
+				<metadata label="MD_PLACEPUBLISH" value="">
+					<param type="field" key="MD_PLACEPUBLISH" />
+				</metadata>
+			</template>
 			<!-- Map: sample definition of metadata for a special struct element -->
 			<template name="Map">
 				<metadata label="MD_TITLE" value="">
@@ -1223,16 +1222,7 @@
 		<!-- templateFolder: contains template files for CMS. Only used if template views are rendered from an external folder using a base template -->
 		<templateFolder>resources/cms/templates/</templateFolder>
 
-		<!-- classifications: Classifications are character sequences for tagging CMS pages -->
-		<classifications>
-			<classification>general</classification>
-			<classification>collection</classification>
-			<classification>news</classification>
-			<classification>team</classification>
-			<classification>overviewpage</classification>
-		</classifications>
-
-		<!-- TODO DOCUMENTATION -->
+		<!-- mediaDisplayWidth: defines the width in pixels that is used for cms media items for example in the tile grids or collection representant -->
 		<mediaDisplayWidth>400</mediaDisplayWidth>
 	</cms>
 

@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.modules.interfaces;
 import java.util.Optional;
 
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
  * Interface for creating module-specific urls for viewer pages
@@ -26,12 +27,21 @@ import de.intranda.digiverso.presentation.model.search.BrowseElement;
  *
  */
 public interface IURLBuilder {
-    
+
     /**
      * 
      * @param browseElement The browseElement for which we want to build a url
-     * @return  The url the the given BrowseElement should link to
+     * @return The url the the given BrowseElement should link to
      */
     public String generateURL(BrowseElement browseElement);
 
+    /**
+     * 
+     * @param pi
+     * @param imageNo
+     * @param logId
+     * @param pageType
+     * @return
+     */
+    public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType);
 }

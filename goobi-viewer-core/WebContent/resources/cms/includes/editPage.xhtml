@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- EDIT CMS PAGE -->
+    <div class="cms-page__edit-page">
+        <h:form>
+            <h:commandLink action="#{cmsBean.editPage(cmsPage)}">
+                <i class="fa fa-pencil" aria-hidden="true"></i> #{msg.cms_editPage}
+            </h:commandLink>
+        </h:form>
+    </div>
+</ui:composition>
+
+

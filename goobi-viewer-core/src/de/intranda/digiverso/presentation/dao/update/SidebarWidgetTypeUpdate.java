@@ -24,6 +24,8 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 
 /**
+ * Sets a default value for all {@link CMSSidebarElement#widgetType} which governs the exact class to be used for entities from that table
+ * 
  * @author florian
  *
  */

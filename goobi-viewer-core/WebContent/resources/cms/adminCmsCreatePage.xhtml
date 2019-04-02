@@ -27,7 +27,18 @@
                 </h:form>
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
-                    <h2 class="admin__content-inner-title">#{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{cmsBean.selectedPage.template.name}</h2>
+                    <h2 class="admin__content-inner-title clearfix">
+                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{cmsBean.selectedPage.template.name}
+                    
+	                    <!-- EXIT -->
+                        <a 
+                            href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
+                            class="admin__content-inner-title-exit"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            title="#{msg.admin__cms_back_to_page}">
+                        </a>
+                    </h2>
 
                     <div class="admin__content-inner-content">
                         <div class="row">
