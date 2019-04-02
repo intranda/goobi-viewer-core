@@ -295,7 +295,7 @@ public class RSSFeed {
 
             entry.setAuthor(authorRss);
             entry.setTitle(label);
-            entry.setLink(recordUrl);
+            entry.setLink(rootPath + "/" + recordUrl);
             if (modified != null) {
                 try {
                     entry.setPublishedDate(new Date(modified));
