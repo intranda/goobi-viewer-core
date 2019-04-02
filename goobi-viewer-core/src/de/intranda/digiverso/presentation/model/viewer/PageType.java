@@ -249,7 +249,6 @@ public enum PageType {
      * @param mimeType
      * @param anchorOrGroup
      * @param hasImages
-     * @param preferOverviewPage Use the overview page type, if not a page resolver URL
      * @param pageResolverUrl If this page type is for a page resover url, ignore certain preferences
      * @return
      * @should return configured page type correctly
@@ -259,12 +258,10 @@ public enum PageType {
      * @should return medatata page type if nothing else matches
      */
     public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
-            boolean preferOverviewPage, boolean pageResolverUrl) {
-        // Prefer the overview page, if available (and not a page URL)
-        //        if (preferOverviewPage && !pageResolverUrl) {
-        //            return PageType.viewOverview;
-        //        }
+            boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
+        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType,
+        //                anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
@@ -276,7 +273,7 @@ public enum PageType {
             return PageType.viewToc;
         }
         if (hasImages) {
-            return PageType.viewImage;
+            return PageType.viewObject;
         }
 
         return PageType.viewMetadata;

@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.modules.interfaces;
 
-import java.util.Optional;
-
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 

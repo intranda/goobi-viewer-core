@@ -182,7 +182,7 @@ public class RSSFeed {
             boolean hasImages = isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
 
             for (String field : FIELDS) {
                 Object value = doc.getFirstValue(field);
@@ -421,7 +421,7 @@ public class RSSFeed {
                 boolean hasImages = isHasImages(doc);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
                 entry.setDocType(Helper.getTranslation(docStructType, locale));
 
                 for (String field : FIELDS) {

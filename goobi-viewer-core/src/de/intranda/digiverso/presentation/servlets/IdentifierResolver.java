@@ -375,7 +375,7 @@ public class IdentifierResolver extends HttpServlet {
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
 
-        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false, pageResolverUrl);
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
         sb.append(pageType.getName()).append('/').append(topstructPi).append('/');
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO) && (Integer) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO) > 1) {
             sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO))).append('/');

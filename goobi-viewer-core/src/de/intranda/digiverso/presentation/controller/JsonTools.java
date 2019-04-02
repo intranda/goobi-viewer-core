@@ -166,6 +166,7 @@ public class JsonTools {
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String fileName = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
+        String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
@@ -185,30 +186,29 @@ public class JsonTools {
             jsonObj.put("mediumimage", sbMediumImage.toString());
         }
 
-        // TODO link to overview page, where applicable
-        String view = PageType.viewImage.getName();
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         boolean isAnchor = doc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
-        if (StringUtils.isEmpty(fileName) || "application".equals(doc.getFieldValue(SolrConstants.MIMETYPE))) {
-            view = PageType.viewMetadata.getName();
-        } else if (isAnchor || DocType.GROUP.name().equals(docType)) {
-            view = PageType.viewToc.getName();
-        }
+        PageType pageType = PageType.determinePageType(docStructType, (String) doc.getFieldValue(SolrConstants.MIMETYPE),
+                isAnchor || DocType.GROUP.name().equals(docType), StringUtils.isNotEmpty(fileName), false);
 
-        String url = new StringBuilder().append(rootUrl).append('/').append(view).append('/').append(pi).append("/1/LOG_0000/").toString();
+        String url = new StringBuilder().append(rootUrl)
+                .append('/')
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, "LOG_0000", pageType))
+                .toString();
         jsonObj.put("url", url);
 
         // Load remaining fields from config
         for (Map<String, String> fieldConfig : DataManager.getInstance().getConfiguration().getWebApiFields()) {
-            if (StringUtils.isNotEmpty(fieldConfig.get("jsonField")) && StringUtils.isNotEmpty(fieldConfig.get("luceneField"))) {
-                if ("true".equals(fieldConfig.get("multivalue"))) {
-                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));
-                    if (values != null) {
-                        jsonObj.put(fieldConfig.get("jsonField"), values);
-                    }
-                } else {
-                    jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("luceneField")));
+            if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("luceneField"))) {
+                continue;
+            }
+            if ("true".equals(fieldConfig.get("multivalue"))) {
+                Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));
+                if (values != null) {
+                    jsonObj.put(fieldConfig.get("jsonField"), values);
                 }
+            } else {
+                jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("luceneField")));
             }
         }
 

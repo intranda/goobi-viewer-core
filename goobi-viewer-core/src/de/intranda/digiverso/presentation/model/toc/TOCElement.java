@@ -103,7 +103,7 @@ public class TOCElement implements Serializable {
         this.recordMimeType = recordMimeType;
         this.footerId = footerId;
 
-        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false, false);
+        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false);
         urlPrefix = new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').toString();
         urlSuffix = DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, pageType);
     }
