@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,9 +280,7 @@ public class RSSFeed {
             }
 
             String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
-            if(rootPath != null) {
-            	recordUrl = rootPath  + "/" + recordUrl;
-            }
+
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
             String imageHtmlElement = null;
