@@ -13,7 +13,7 @@
 <!-- riot.mount( 'slideshow' ); -->
 
 <slideshow>
-    <figure class="slideshow" if="{manifest !== undefined}"> 
+    <figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"> 
         <!-- IMAGE -->
         <div class="slideshow__image">
             <a href="{getLink(manifest)}">
@@ -43,23 +43,83 @@
     </figure>
     
     <script>
+    	/**
+    	 * @description JQuery method which checks, if element is in viewport.
+    	 * @method isInViewport
+    	 * @returns {Boolean} Returns true if element is in viewport.
+    	 */
+    	$.fn.isInViewport = function() {
+        	var elementTop = $( this ).offset().top;
+        	var elementBottom = elementTop + $( this ).outerHeight();
+        	var elementHeight = $( this ).outerHeight();
+        	var viewportTop = $( window ).scrollTop();
+        	var viewportBottom = viewportTop + $( window ).height();
+        	
+        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
+    	};
+    	 
     	this.pis = this.opts.pis.split(/[\s,;]+/);
+    	this.pis = this.pis.filter( function( pi ) {
+    		return pi != undefined && pi.length > 0;
+    	} );
         this.metadataList = this.opts.metadata.split(/[,;]+/);
         this.manifest = undefined;
         this.manifests = new Map();
         this.active = false;
+        this.visible = false;
+        this.mouseover = false;
         
         this.on( 'mount', function() {
-        	this.pi = this.pis[0];
-        	this.loadManifest( this.pi );        	
+        	this.loadManifest( this.pis[0] );
         }.bind( this ));
+        
+        mouseenter() {
+        	this.mouseover = true;
+        }
+
+        mouseleave() {
+        	this.mouseover = false;
+        }
+        
+        checkPosition() {
+        	var slideshow = $( '#' + this.opts.id + ' figure' );
+        	
+        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
+        		this.visible = true;        	
+            	this.moveSlides( this.pis, true );            	
+        	}
+        	else if ( this.visible && !slideshow.isInViewport() ) {
+        		this.visible = false;            	
+        		this.moveSlides( this.pis, false );
+        	}        	
+        }
+        
+        moveSlides( pis, move ) {
+        	var index = 1;
+        	
+        	if ( move ) {
+        		clearInterval( this.interval );
+        		
+        		this.interval = setInterval( function() {
+                	if ( index === pis.length ) {
+                		index = 0;
+                	}
+                	if ( !this.mouseover ) {
+            			this.loadManifest( pis[ index ] );
+                    	index++;
+                	}
+                }.bind( this ), 4000 );
+        	}
+        	else {
+        		clearInterval( this.interval );
+        	}        	
+        }
         
         setPi( event ) {
         	let pi = event.item.imagepi;
         	
         	if ( pi != this.pi ) {
         		this.pi = pi;
-        		this.active = false;
         		
         		return this.loadManifest( pi );
         	}
@@ -73,14 +133,23 @@
         loadManifest( pi ) {
         	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
         	let json = this.manifests.get( url );
+        	this.pi = pi;
+        	this.active = false;
+        	this.update();
         	
-        	if ( !json ) {		
+        	if ( !json ) {
         		$.getJSON( url, function( manifest ) {
         			if ( manifest ) {
         				// TODO: 404 abfangen, dass nicht ausgestiegen wird
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
+        				
+            			this.checkPosition();
+            			
+        				$( window ).on( 'resize scroll', function() {
+            				this.checkPosition();
+        				}.bind( this ) );
         			}
         		}.bind( this ));
         	} 
