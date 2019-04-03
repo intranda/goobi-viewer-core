@@ -414,7 +414,6 @@ var viewerJS = ( function( viewer ) {
     		minWidth: 500,
     		maxWidth: 900,
     		resize: function( event, ui ) {
-    			console.log("resize ", event, ui);
     			if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
     				setTimeout( function() {
     					$( '.fullscreen__view-image-thumbs-wrapper' ).outerWidth( $( '#fullscreenView' ).outerWidth() - $( '#fullscreenViewSidebar' ).outerWidth() );    					
