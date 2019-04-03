@@ -172,59 +172,12 @@
     <servlet>
         <display-name>DFGViewerImage</display-name>
         <servlet-name>DFGViewerImage</servlet-name>
-        <servlet-class>
-            de.intranda.digiverso.presentation.servlets.DFGViewerImage
-        </servlet-class>
+        <servlet-class> de.intranda.digiverso.presentation.servlets.DFGViewerImage</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DFGViewerImage</servlet-name>
         <url-pattern>/content/*</url-pattern>
     </servlet-mapping>
-
-	<!--
-	<servlet>
-		<description></description>
-		<display-name>JQueryServlet</display-name>
-		<servlet-name>JQueryServlet</servlet-name>
-		<servlet-class>de.intranda.digiverso.presentation.servlets.jQueryServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>JQueryServlet</servlet-name>
-		<url-pattern>/jQueryServlet</url-pattern>
-	</servlet-mapping>
-	-->
-	<servlet>
-		<display-name>ContentServer</display-name>
-		<servlet-name>ContentServer</servlet-name>
-		<servlet-class>
-			de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer
-		</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ContentServer</servlet-name>
-		<url-pattern>/cs/*</url-pattern>
-	</servlet-mapping>
-<!-- 	<servlet> -->
-<!-- 		<display-name>GoobiContentServer</display-name> -->
-<!-- 		<servlet-name>GoobiContentServer</servlet-name> -->
-<!-- 		<servlet-class> -->
-<!-- 			org.goobi.presentation.contentServlet.controller.GoobiContentServer -->
-<!-- 		</servlet-class> -->
-<!-- 	</servlet> -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>GoobiContentServer</servlet-name> -->
-<!-- 		<url-pattern>/gcs</url-pattern> -->
-<!-- 	</servlet-mapping> -->
-<!-- 	<servlet> -->
-<!-- 		<description></description> -->
-<!-- 		<display-name>Content</display-name> -->
-<!-- 		<servlet-name>Content</servlet-name> -->
-<!-- 		<servlet-class>de.intranda.digiverso.presentation.servlets.ContentServerWrapperServlet</servlet-class> -->
-<!-- 	</servlet> -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>Content</servlet-name> -->
-<!-- 		<url-pattern>/content/*</url-pattern> -->
-<!-- 	</servlet-mapping> -->
 	<servlet>
 		<display-name>PpnResolver</display-name>
 		<servlet-name>PpnResolver</servlet-name>
@@ -276,15 +229,16 @@
         <servlet-name>HarvestServlet</servlet-name>
         <url-pattern>/harvest</url-pattern>
     </servlet-mapping>
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>CMSPageServlet</servlet-name> -->
-<!-- 		<servlet-class>de.intranda.digiverso.presentation.servlets.CMSPageServlet</servlet-class> -->
-<!-- 		<load-on-startup>1</load-on-startup> -->
-<!-- 	</servlet> -->
-<!-- 	<servlet-mapping> -->
-<!-- 		<servlet-name>CMSPageServlet</servlet-name> -->
-<!-- 		<url-pattern>/cmspage/*</url-pattern> -->
-<!-- 	</servlet-mapping> -->
+    <servlet>
+        <description></description>
+        <display-name>OEmbedServlet</display-name>
+        <servlet-name>OEmbedServlet</servlet-name>
+        <servlet-class>de.intranda.digiverso.presentation.servlets.OEmbedServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OEmbedServlet</servlet-name>
+        <url-pattern>/oembed</url-pattern>
+    </servlet-mapping>
 	<listener>
 		<listener-class>de.unigoettingen.sub.commons.util.ImageIOInitializer</listener-class>
 	</listener>

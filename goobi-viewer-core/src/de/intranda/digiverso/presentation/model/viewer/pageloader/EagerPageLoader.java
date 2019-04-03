@@ -196,116 +196,16 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
                 .append(SolrConstants.DOCTYPE)
                 .append(':')
                 .append(DocType.PAGE);
-        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS,
-                Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
-        if (result == null || result.isEmpty()) {
-            sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.FILENAME).append(
-                    ":*");
-            result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS,
-                    Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null);
+        SolrDocumentList result = DataManager.getInstance()
+                .getSearchIndex()
+                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
+        if (result.isEmpty()) {
+            return ret;
         }
+
         for (SolrDocument doc : result) {
-            // PHYSID
-            String physId = "";
-            if (doc.getFieldValue(SolrConstants.PHYSID) != null) {
-                physId = (String) doc.getFieldValue(SolrConstants.PHYSID);
-            }
-            // ORDER
-            int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
-            // ORDERLABEL
-            String orderLabel = "";
-            if (doc.getFieldValue(SolrConstants.ORDERLABEL) != null) {
-                orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
-            }
-            // IDDOC_OWNER
-            if (doc.getFieldValue(SolrConstants.IDDOC_OWNER) != null) {
-                String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC_OWNER);
-                pageOwnerIddocMap.put(order, Long.valueOf(iddoc));
-            }
-            // Mime type
-            String mimeType = null;
-            if (doc.getFieldValue(SolrConstants.MIMETYPE) != null) {
-                mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            }
-            // Main file name
-            String fileName = "";
-            //            if (doc.getFieldValue(LuceneConstants.FILENAME) != null) {
-            //                fileName = (String) doc.getFieldValue(LuceneConstants.FILENAME);
-            //            } else if (doc.getFieldValue(LuceneConstants.FILENAME_HTML_SANDBOXED) != null) {
-            //                fileName = (String) doc.getFieldValue(LuceneConstants.FILENAME_HTML_SANDBOXED);
-            //            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED) != null) {
-                fileName = (String) doc.getFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
-            } else if (doc.getFieldValue(SolrConstants.FILENAME) != null) {
-                fileName = (String) doc.getFieldValue(SolrConstants.FILENAME);
-            }
-
-            String dataRepository = "";
-            if (doc.getFieldValue(SolrConstants.DATAREPOSITORY) != null) {
-                dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
-            } else {
-                dataRepository = topElement.getDataRepository();
-            }
-
-            // URN
-            String urn = "";
-            if (doc.getFieldValue(SolrConstants.IMAGEURN) != null && !doc.getFirstValue(SolrConstants.IMAGEURN).equals("NULL")) {
-                urn = (String) doc.getFieldValue(SolrConstants.IMAGEURN);
-            }
-            StringBuilder sbPurlPart = new StringBuilder();
-            sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
-
-            PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
-            ret.put(order, pe);
-
-            if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
-                pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
-            }
-            if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
-                pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-            }
-
-            // Full-text filename
-            pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
-            // ALTO filename
-            pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
-
-            // Access conditions
-            if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {
-                for (Object o : doc.getFieldValues(SolrConstants.ACCESSCONDITION)) {
-                    String accessCondition = (String) o;
-                    if (StringUtils.isNotEmpty(accessCondition)) {
-                        pe.getAccessConditions().add(accessCondition);
-                    }
-                }
-            }
-
-            // File names for different formats (required for A/V)
-            String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
-            for (String fieldName : doc.getFieldNames()) {
-                if (fieldName.startsWith(filenameRoot)) {
-                    // logger.trace("Format: {}", fieldName);
-                    String format = fieldName.split("_")[1].toLowerCase();
-                    String value = (String) doc.getFieldValue(fieldName);
-                    pe.getFileNames().put(format, value);
-                }
-            }
-
-            // METS file ID root
-            if (doc.getFieldValue(SolrConstants.FILEIDROOT) != null) {
-                pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
-            }
-
-            // File size
-            if (doc.getFieldValue("MDNUM_FILESIZE") != null) {
-                pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
-            }
-
-            // Full-text available
-            if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
-                pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
-            }
+            PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
+            ret.put(pe.getOrder(), pe);
         }
 
         logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
