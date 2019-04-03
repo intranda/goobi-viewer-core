@@ -92,8 +92,6 @@ public class DefaultURLBuilder implements IURLBuilder {
                             .append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
                             .append("/");
                     break;
-                case "mnha":
-                    break;
                 default:
                     sb.append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
             }

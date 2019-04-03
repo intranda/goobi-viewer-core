@@ -51,7 +51,6 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.viewer.object.ObjectInfo;
 
-
 /**
  * @author Florian Alpers
  *
@@ -65,15 +64,16 @@ public class ObjectResource {
     @GET
     @Path("/{pi}/{filename}/info.json")
     @Produces({ MediaType.APPLICATION_JSON })
-    public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi, @PathParam("filename") String filename) throws PresentationException {
+    public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("filename") String filename) throws PresentationException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         String objectURI = request.getRequestURL().toString().replace("/info.json", "");
         String baseURI = objectURI.replace(filename, "");
         String baseFilename = FilenameUtils.getBaseName(filename);
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
-
+        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
 
         try {
             List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, baseURI);
@@ -91,22 +91,22 @@ public class ObjectResource {
      * @param baseFilename
      * @param baseURI
      * @param process
-     * @return 
+     * @return
      * @throws IOException
      * @throws InterruptedException
      * @throws SwapException
      * @throws DAOException
      * @throws URISyntaxException
      */
-    private List<URI> getResources(String baseFolder, String baseFilename, String baseURI) throws IOException, InterruptedException,
-            URISyntaxException {
+    private static List<URI> getResources(String baseFolder, String baseFilename, String baseURI)
+            throws IOException, InterruptedException, URISyntaxException {
         List<URI> resourceURIs = new ArrayList<>();
 
         java.nio.file.Path mtlFilePath = Paths.get(baseFolder, baseFilename + ".mtl");
-        if(mtlFilePath.toFile().isFile()) {
+        if (mtlFilePath.toFile().isFile()) {
             resourceURIs.add(new URI(baseURI + Paths.get(baseFolder).relativize(mtlFilePath)));
         }
-        
+
         java.nio.file.Path resourceFolderPath = Paths.get(baseFolder, baseFilename);
         if (resourceFolderPath.toFile().isDirectory()) {
             try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(resourceFolderPath)) {
@@ -123,13 +123,13 @@ public class ObjectResource {
     @GET
     @Path("/{pi}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("pi") String pi, @PathParam("filename") final String filename)
-            throws IOException, InterruptedException {
+    public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("filename") final String filename) throws IOException {
 
         //        response.addHeader("Access-Control-Allow-Origin", "*");
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(filename);
         if (!objectPath.toFile().isFile()) {
             //try subfolders
@@ -139,78 +139,77 @@ public class ObjectResource {
                 public boolean accept(java.nio.file.Path entry) throws IOException {
                     return entry.endsWith(FilenameUtils.getBaseName(filename));
                 }
-                
+
             };
-            
+
             try (DirectoryStream<java.nio.file.Path> folders = Files.newDirectoryStream(mediaDirectory, filter)) {
                 for (java.nio.file.Path folder : folders) {
                     java.nio.file.Path filePath = folder.resolve(filename);
-                    if(Files.isRegularFile(filePath)) {
+                    if (Files.isRegularFile(filePath)) {
                         return new ObjectStreamingOutput(filePath);
                     }
                 }
             }
-            
+
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
-        } else {
-            return new ObjectStreamingOutput(objectPath);
         }
+
+        return new ObjectStreamingOutput(objectPath);
     }
 
     @GET
     @Path("/{pi}/{subfolder}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("pi") String pi, @PathParam("subfolder") String subfolder,
-            @PathParam("filename") final String filename) throws IOException, InterruptedException {
-
+    public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException {
         //        response.addHeader("Access-Control-Allow-Origin", "*");
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
-        } else {
-            return new ObjectStreamingOutput(objectPath);
         }
+
+        return new ObjectStreamingOutput(objectPath);
     }
-    
+
     @GET
     @Path("/{pi}/{subfolder}//{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("pi") String pi, @PathParam("subfolder") String subfolder,
-            @PathParam("filename") final String filename) throws IOException, InterruptedException {
-        return getObjectResource(request, response, pi, subfolder, filename);      
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException, InterruptedException {
+        return getObjectResource(request, response, pi, subfolder, filename);
     }
-    
+
     @GET
     @Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("pi") String pi, @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2,
-            @PathParam("filename") String filename) throws IOException, InterruptedException {
+    public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
+            throws IOException {
 
         //        response.addHeader("Access-Control-Allow-Origin", "*");
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder1).resolve(subfolder2).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
-        } else {
-            return new ObjectStreamingOutput(objectPath);
         }
+
+        return new ObjectStreamingOutput(objectPath);
     }
 
     @GET
     @Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @PathParam("pi") String pi, @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2,
-            @PathParam("filename") String filename) throws IOException, InterruptedException {
+    public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
+            @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
+            throws IOException {
         return getObjectResource(request, response, pi, subfolder1, subfolder2, filename);
     }
-    
+
     public static class ObjectStreamingOutput implements StreamingOutput {
 
         private java.nio.file.Path filePath;
