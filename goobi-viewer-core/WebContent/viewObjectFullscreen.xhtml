@@ -51,6 +51,18 @@
                 	}
                 };
                 riot.mount( 'fsThumbnails, fsThumbnailImage', fsConfig );
+                
+                var normdataConfig = {
+                        path: "#{request.contextPath}",
+                        lang: {
+                            popoverTitle: "#{msg.normdataPopverTitle}",
+                            popoverClose: "#{msg.normdataPopoverClose}",
+                            showNormdata: "#{msg.normdataExpand}"
+                        },
+                        elemWrapper: $( "#metadataElementWrapper" )
+                    };
+                    console.log("init normdata ", normdataConfig);
+                    viewerJS.normdata.init( normdataConfig );
             </script>
         </f:view>
     </ui:define>
