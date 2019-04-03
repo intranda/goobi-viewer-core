@@ -279,6 +279,9 @@ public class RSSFeed {
             }
 
             String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
+            if(rootPath != null) {
+            	recordUrl = rootPath  + "/" + recordUrl;
+            }
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
             String imageHtmlElement = null;
