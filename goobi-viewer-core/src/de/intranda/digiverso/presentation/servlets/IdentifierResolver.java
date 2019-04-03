@@ -366,7 +366,6 @@ public class IdentifierResolver extends HttpServlet {
      * @should construct application mime type url correctly
      */
     static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
-        StringBuilder sb = new StringBuilder("/");
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -375,18 +374,18 @@ public class IdentifierResolver extends HttpServlet {
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
 
-        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false, pageResolverUrl);
-        sb.append(pageType.getName()).append('/').append(topstructPi).append('/');
-        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO) && (Integer) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO) > 1) {
-            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO))).append('/');
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
+        int order = 1;
+        if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
+            order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
         } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
-            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.ORDER))).append('/');
-        } else {
-            sb.append("1/");
+            order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
         }
-        if (targetDoc.containsKey(SolrConstants.LOGID)) {
-            sb.append(targetDoc.getFieldValue(SolrConstants.LOGID)).append('/');
-        }
+        
+        StringBuilder sb = new StringBuilder("/");
+        sb.append(DataManager.getInstance()
+                .getUrlBuilder()
+                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType));
 
         logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();

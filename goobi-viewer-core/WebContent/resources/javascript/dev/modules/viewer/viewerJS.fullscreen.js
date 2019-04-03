@@ -106,8 +106,12 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // set sidebar and panel status
-            _setSidebarStatus();
+            //restorePanelPosition is called twice to restore both width and scroll-position correctly
             _setPanelStatus();
+            _restorePanelPosition();
+            _setSidebarStatus();
+            _restorePanelPosition();
+
 
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
@@ -157,6 +161,7 @@ var viewerJS = ( function( viewer ) {
             		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
             	}
 
+            	
             	// slide in sidebar
             	$( '#fullscreenViewSidebar' ).animate( {
             		right: 0
@@ -174,6 +179,7 @@ var viewerJS = ( function( viewer ) {
             		
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', true );
+
             	} );
             	
             	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
@@ -265,8 +271,7 @@ var viewerJS = ( function( viewer ) {
             $(document.body).off("keyup", _handleKeypress);
             $(document.body).on("keyup", _handleKeypress);
             
-            _restorePanelState();
-            window.addEventListener("beforeunload", _storePanelState);
+            window.addEventListener("beforeunload", _storePanelPosition);
 
         },
     };
@@ -375,6 +380,9 @@ var viewerJS = ( function( viewer ) {
     	}
     	else {
     		panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+    		if(_debug) {
+    			console.log("panelStatus ", panelStatus);
+    		}
     		
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
@@ -385,6 +393,8 @@ var viewerJS = ( function( viewer ) {
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
     		} );
+
+    		
     	}
     }
 
@@ -463,28 +473,36 @@ var viewerJS = ( function( viewer ) {
     	}
     }
     
-    function _storePanelState(event) {
-   	 var panelState = {
-   			width : $('#fullscreenViewSidebar').width(),
-   			scrollTop : $('#fullscreenViewSidebar').scrollTop()
-   	 }
-        localStorage.fullscreenPanelState = JSON.stringify( panelState );
+    function _restorePanelPosition() {
+		var panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+		if(panelStatus) {		
+			if(panelStatus.width !== undefined) {    			
+				$('#fullscreenViewSidebar').width(panelStatus.width);
+			}
+			if(panelStatus.scrollTop !== undefined) {    			
+				$('#fullscreenViewSidebar').scrollTop(panelStatus.scrollTop);
+			}
+		}
+	}
+    
+    /**
+     * Stores sidebar panel width and scroll position to session storage using the 'rmPanelStatus' key
+     */
+    function _storePanelPosition(event) {
+    	var sidebarStatus = JSON.parse(sessionStorage.getItem( 'fsSidebarStatus' ));
+    	var panelStatus = JSON.parse(sessionStorage.getItem( 'rmPanelStatus' ));
+    	
+    	if(panelStatus) {
+    		panelStatus.width = $('#fullscreenViewSidebar').width();
+    		panelStatus.scrollTop = $('#fullscreenViewSidebar').scrollTop();
+    	}
+
+        sessionStorage.setItem( "rmPanelStatus", JSON.stringify( panelStatus ) );
         if ( _debug ) {
-            console.log( "storing panel state " + localStorage.fullscreenPanelState );
+            console.log( "storing panel state ", panelStatus );
         }
    };
-   
-   function _restorePanelState() {
-   	var panelStateString = localStorage.fullscreenPanelState;
-   	if(panelStateString) {
-   		var panelState = JSON.parse(panelStateString);
-   		if(_debug) {
-   			console.log("restoring panel state ", panelState);
-   		}
-   		$('#fullscreenViewSidebar').width(panelState.width);
-   		$('#fullscreenViewSidebar').scrollTop(panelState.scrollTop);
-   	}
-   };
+
    
    function _handleKeypress(event) {
 	   if (event.originalEvent) {

@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -53,7 +54,6 @@ public class TOCElement implements Serializable {
     private final String recordMimeType;
     private final boolean anchorOrGroup;
     private String urlPrefix = "";
-    private String view;
     private String urlSuffix = "";
     private final boolean accessPermissionPdf;
     /** Element is visible in the current tree. */
@@ -103,16 +103,10 @@ public class TOCElement implements Serializable {
         this.recordMimeType = recordMimeType;
         this.footerId = footerId;
 
-        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false, false);
-        view = pageType.getName();
+        pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, hasImages, false);
         urlPrefix = new StringBuilder().append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').toString();
-        urlSuffix = new StringBuilder().append('/')
-                .append(topStructPi)
-                .append('/')
-                .append(StringUtils.isNotEmpty(pageNo) ? pageNo : '1')
-                .append('/')
-                .append(StringUtils.isNotEmpty(logId) ? logId + '/' : "")
-                .toString();
+        urlSuffix =
+                DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType);
     }
 
     /* (non-Javadoc)
@@ -167,16 +161,15 @@ public class TOCElement implements Serializable {
         return true;
     }
 
-    /****************************************************************************************************************
-     * Diese Methode verkürzt das String auf Anzahl an Zeichen
-     *
+    /**
      * @param str {@link String}
      * @return {@link String}
      * @throws ViewerConfigurationException
-     ***************************************************************************************************************/
+     */
     public String getContentServerPdfUrl() throws ViewerConfigurationException {
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()),
-                Optional.empty(), label.getValue());
+        return BeanUtils.getImageDeliveryBean()
+                .getPdf()
+                .getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
 
     }
 
@@ -190,32 +183,10 @@ public class TOCElement implements Serializable {
      * @return
      */
     public boolean isAccessPermissionPdf() {
-        //        if (!DataManager.getInstance().getConfiguration().isTocPdfEnabled() || !sourceFormatPdfAllowed) {
-        //            return false;
-        //        }
-        //        if (accessPermissionPdf == null) {
-        //            try {
-        //                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, logId,
-        //                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
-        //            } catch (IndexUnreachableException e) {
-        //                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        //                return false;
-        //            } catch (DAOException e) {
-        //                logger.debug("DAOException thrown here: {}", e.getMessage());
-        //                return false;
-        //            }
-        //        }
-
         return accessPermissionPdf;
     }
 
     public String getThumbnailUrl() {
-        //        if (thumbnailUrl == null && thumbFileName != null) {
-        //            int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-        //            int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
-        //            return Helper.getImageUrl(topStructPi, thumbFileName, dataRepository, thumbWidth, thumbHeight, 0, true, true);
-        //        }
-
         return thumbnailUrl;
     }
 
@@ -326,7 +297,7 @@ public class TOCElement implements Serializable {
     }
 
     public String getUrl() {
-        return urlPrefix + view + urlSuffix;
+        return urlPrefix + urlSuffix;
     }
 
     /**
@@ -339,29 +310,33 @@ public class TOCElement implements Serializable {
      */
     public String getUrl(String viewType) {
         if (anchorOrGroup) {
-            return urlPrefix + view + urlSuffix;
+            return urlPrefix + urlSuffix;
         }
 
         PageType pageType = PageType.getByName(viewType);
         if (pageType != null) {
             switch (pageType) {
                 case viewFullscreen:
-                    if (PageType.viewImage.equals(this.pageType)) {
-                        return urlPrefix + PageType.viewFullscreen.getName() + urlSuffix;
+                    if (PageType.viewObject.equals(this.pageType) || PageType.viewImage.equals(this.pageType)) {
+                        return urlPrefix + DataManager.getInstance()
+                                .getUrlBuilder()
+                                .buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewFullscreen);
                     }
                     break;
                 case viewImage:
-                    return urlPrefix + PageType.viewImage.getName() + urlSuffix;
+                    return urlPrefix
+                            + DataManager.getInstance().getUrlBuilder().buildPageUrl(topStructPi, Integer.valueOf(pageNo), logId, PageType.viewImage);
                 default:
-                    return urlPrefix + view + urlSuffix;
+                    return urlPrefix + urlSuffix;
             }
         }
 
-        return urlPrefix + view + urlSuffix + "";
+        return urlPrefix + urlSuffix;
     }
 
     /**
      * @return the fullscreenUrl
+     * @deprecated
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());

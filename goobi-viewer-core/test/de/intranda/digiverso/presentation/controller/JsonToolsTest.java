@@ -36,7 +36,7 @@ public class JsonToolsTest extends AbstractSolrEnabledTest {
         // URL root depends on the current config state and may variate, so only compare the args
         Assert.assertTrue("Image url was " + ((String) json.get("thumbnailUrl")), ((String) json.get("mediumimage"))
                 .contains("image/" + PI + "/" + doc.getFieldValue(SolrConstants.THUMBNAIL) + "/full/!600,500/0/default.jpg"));
-        Assert.assertEquals(rootUrl + "/" + PageType.viewImage.getName() + "/" + PI + "/1/LOG_0000/", json.get("url"));
-        Assert.assertEquals(doc.getFieldValue("YEAR"), json.get("date"));
+        Assert.assertEquals(rootUrl + "/" + PageType.viewObject.getName() + "/" + PI + "/1/LOG_0000/", json.get("url"));
+        Assert.assertEquals(doc.getFieldValue(SolrConstants._CALENDAR_YEAR), json.get("date"));
     }
 }

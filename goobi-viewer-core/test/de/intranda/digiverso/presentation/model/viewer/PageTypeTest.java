@@ -36,7 +36,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnConfiguredPageTypeCorrectly() throws Exception {
-        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Catalogue", null, false, true, false, false));
+        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Catalogue", null, false, true, false));
     }
 
     /**
@@ -45,7 +45,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnMetadataPageTypeForApplicationMimeType() throws Exception {
-        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", "application", false, false, false, false));
+        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", "application", false, false, false));
     }
 
     /**
@@ -54,7 +54,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnTocPageTypeForAnchors() throws Exception {
-        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Periodical", null, true, false, false, false));
+        Assert.assertEquals(PageType.viewToc, PageType.determinePageType("Periodical", null, true, false, false));
     }
 
     /**
@@ -63,7 +63,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnImagePageTypeCorrectly() throws Exception {
-        Assert.assertEquals(PageType.viewImage, PageType.determinePageType("Monograph", null, false, true, false, false));
+        Assert.assertEquals(PageType.viewObject, PageType.determinePageType("Monograph", null, false, true, false));
     }
 
     /**
@@ -72,7 +72,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnMedatataPageTypeIfNothingElseMatches() throws Exception {
-        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", null, false, false, false, false));
+        Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", null, false, false, false));
     }
 
     /**
