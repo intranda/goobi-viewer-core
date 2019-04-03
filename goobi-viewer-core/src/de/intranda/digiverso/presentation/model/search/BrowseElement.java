@@ -1129,7 +1129,7 @@ public class BrowseElement implements Serializable {
     }
 
     public PageType determinePageType() {
-        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false, false);
+        return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false);
     }
 
     /**

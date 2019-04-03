@@ -1350,7 +1350,7 @@ public class ViewManager implements Serializable {
             PageType pageType = null;
             if (topDocument != null) {
                 boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
-                pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
+                pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
             }
             if (pageType == null) {
                 if (isHasPages()) {
@@ -2296,11 +2296,13 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
-        if (isDoublePageMode()) {
-            PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
-            if (currentRightPage != null) {
-                return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
-            }
+        if (!isDoublePageMode()) {
+            return 0;
+        }
+        
+        PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
+        if (currentRightPage != null) {
+            return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
         }
 
         return 0;
@@ -2310,40 +2312,37 @@ public class ViewManager implements Serializable {
         return getDocumentTitle(this.topDocument);
     }
 
-    //    public List<List<String>> getCurrentUGCCoords() throws ModuleMissingException {
-    //        if(DataManager.getInstance().isModuleLoaded("viewer-module-crowdsourcing")) {            
-    //            CrowdsourcingModule module = DataManager.getInstance().getModule("viewer-module-crowdsourcing");
-    //        }
-    //    }
-
     public String getDocumentTitle(StructElement document) {
-        StringBuilder sb = new StringBuilder();
-        if (document != null) {
-            switch (document.docStructType) {
-                case "Comment":
-                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
-                    }
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
-                    }
-                    break;
-                case "FormationHistory":
-                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
-                    //TODO: Add Einsatzland z.b.: (Deutschland)
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
-                    }
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
-                    }
-                    break;
-                case "Source":
-                default:
-                    sb.append(document.getDisplayLabel());
-            }
+        if (document == null) {
+            return "";
         }
+
+        StringBuilder sb = new StringBuilder();
+        switch (document.docStructType) {
+            case "Comment":
+                sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                }
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                }
+                break;
+            case "FormationHistory":
+                sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                //TODO: Add Einsatzland z.b.: (Deutschland)
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                }
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                }
+                break;
+            case "Source":
+            default:
+                sb.append(document.getDisplayLabel());
+        }
+
         return sb.toString();
     }
 
@@ -2371,11 +2370,12 @@ public class ViewManager implements Serializable {
      */
 
     private static String getFilenameFromPathString(String pathString) {
-        if (StringUtils.isNotBlank(pathString)) {
-            Path path = Paths.get(pathString);
-            return path.getFileName().toString();
+        if (StringUtils.isBlank(pathString)) {
+            return "";
         }
-        return "";
+
+        Path path = Paths.get(pathString);
+        return path.getFileName().toString();
     }
 
     /**
@@ -2388,35 +2388,34 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
-        if (topDocument != null) {
-            String customPURL = topDocument.getMetadataValue("MD_PURL");
-            if (StringUtils.isNotEmpty(customPURL)) {
-                return customPURL;
-            } else if (StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
-                String urn = topDocument.getMetadataValue(SolrConstants.URN);
-                return getPersistentUrl(urn);
-            } else {
-                StringBuilder url = new StringBuilder();
-                boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
-                PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
-                if (pageType == null) {
-                    if (isHasPages()) {
-                        pageType = PageType.viewImage;
-                    } else {
-                        pageType = PageType.viewMetadata;
-                    }
-                }
-                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
-                if (getRepresentativePage() != null) {
-                    url.append(getRepresentativePage().getOrder()).append('/');
-                }
-                return url.toString();
-            }
-        } else {
+        if (topDocument == null) {
             return "";
         }
 
+        String customPURL = topDocument.getMetadataValue("MD_PURL");
+        if (StringUtils.isNotEmpty(customPURL)) {
+            return customPURL;
+        } else if (StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
+            String urn = topDocument.getMetadataValue(SolrConstants.URN);
+            return getPersistentUrl(urn);
+        } else {
+            StringBuilder url = new StringBuilder();
+            boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+            PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            if (pageType == null) {
+                if (isHasPages()) {
+                    pageType = PageType.viewImage;
+                } else {
+                    pageType = PageType.viewMetadata;
+                }
+            }
+            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+            if (getRepresentativePage() != null) {
+                url.append(getRepresentativePage().getOrder()).append('/');
+            }
+            return url.toString();
+        }
     }
 
     public boolean isDisplayCiteLinkWork() {
@@ -2427,10 +2426,10 @@ public class ViewManager implements Serializable {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return "";
-        } else {
-            String urn = currentPage.getUrn();
-            return getPersistentUrl(urn);
         }
+
+        String urn = currentPage.getUrn();
+        return getPersistentUrl(urn);
     }
 
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {

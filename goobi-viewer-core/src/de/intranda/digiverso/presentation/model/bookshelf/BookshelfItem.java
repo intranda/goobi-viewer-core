@@ -58,7 +58,8 @@ public class BookshelfItem implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfItem.class);
 
-    private static final String[] FIELDS = { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI };
+    private static final String[] FIELDS =
+            { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI };
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,7 +82,7 @@ public class BookshelfItem implements Serializable {
 
     @Column(name = "logid")
     private String logId;
-    
+
     @Column(name = "page_order")
     private Integer order;
 
@@ -106,18 +107,18 @@ public class BookshelfItem implements Serializable {
         this.name = name;
         this.dateAdded = new Date();
     }
-    
+
     /**
-     * Creates a new Bookshelf item based in book pi, section logId and page order
-     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
-     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * Creates a new Bookshelf item based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
+     * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
+     * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      * 
-     * @param pi    
+     * @param pi
      * @param logId
      * @param order
-     * @throws IndexUnreachableException    if the Solr index could not be reached
-     * @throws PresentationException        if the pi/logId could not be resolved
-     * @throws NullPointerException         if pi is null or blank
+     * @throws IndexUnreachableException if the Solr index could not be reached
+     * @throws PresentationException if the pi/logId could not be resolved
+     * @throws NullPointerException if pi is null or blank
      */
     public BookshelfItem(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
@@ -126,28 +127,29 @@ public class BookshelfItem implements Serializable {
         this.name = getDocumentTitle();
         this.dateAdded = new Date();
     }
-    
+
     /**
-     * Creates a new Bookshelf item based in book pi, section logId and page order
-     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
-     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * Creates a new Bookshelf item based in book pi, section logId and page order logId and order my be empty or null, if only the book itself is
+     * references. PI must be non-empty, otherwise a NullPointerException is thrown The item name will be inferred from the book/section title from
+     * Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
      * 
-     * @param pi    
+     * @param pi
      * @param logId
      * @param order
-     * @param ignoreMissingSolrDoc  should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
-     * @throws IndexUnreachableException    if the Solr index could not be reached
-     * @throws PresentationException        if the pi/logId could not be resolved
-     * @throws NullPointerException         if pi is null or blank
+     * @param ignoreMissingSolrDoc should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
+     * @throws IndexUnreachableException if the Solr index could not be reached
+     * @throws PresentationException if the pi/logId could not be resolved
+     * @throws NullPointerException if pi is null or blank
      */
-    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
+    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc)
+            throws IndexUnreachableException, PresentationException {
         this.pi = pi;
         this.logId = logId;
         this.order = order;
-        try {            
+        try {
             this.name = getDocumentTitle();
-        } catch(SolrException | IndexUnreachableException | PresentationException e) {
-            if(ignoreMissingSolrDoc) {
+        } catch (SolrException | IndexUnreachableException | PresentationException e) {
+            if (ignoreMissingSolrDoc) {
                 this.name = "";
             } else {
                 throw e;
@@ -195,7 +197,7 @@ public class BookshelfItem implements Serializable {
         }
         return o1.equals(o2);
     }
-    
+
     /**
      * @param other
      * @return
@@ -203,7 +205,7 @@ public class BookshelfItem implements Serializable {
     public boolean bothEqualOrBlank(String o1, String o2) {
         if (StringUtils.isBlank(o1)) {
             return StringUtils.isBlank(o2);
-        } else if(StringUtils.isBlank(o2)) {
+        } else if (StringUtils.isBlank(o2)) {
             return false;
         } else {
             return o1.trim().equals(o2.trim());
@@ -222,21 +224,13 @@ public class BookshelfItem implements Serializable {
         if (StringUtils.isNotEmpty(urn)) {
             url.append("/resolver?identifier=").append(urn);
         } else {
-            url.append('/').append(PageType.viewMetadata.getName()).append('/').append(pi);
-            if(order != null) {
-                url.append("/"+order+"/");
-            } else {                
-                url.append("/1/");
-            }
-            //hack for gei worldviews
-            if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
-                url.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
-            } else if (StringUtils.isNotEmpty(logId)) {
-                url.append(logId).append('/');
-            }
+            url.append('/')
+                    .append(DataManager.getInstance()
+                            .getUrlBuilder()
+                            .buildPageUrl(pi, order != null ? Integer.valueOf(order) : 1, logId, PageType.viewMetadata));
         }
-        
-        // logger.debug("URL: " + url.toString());
+
+        // logger.debug("URL: {}", url.toString());
         return url.toString();
     }
 
@@ -253,53 +247,54 @@ public class BookshelfItem implements Serializable {
         int height = 120;
         return getRepresentativeImageUrl(width, height);
     }
-        
+
     /**
      * Returns the URL to the representative image thumbnail for the record represented by this item.
      *
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
-        public String getRepresentativeImageUrl(int width, int height) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null,
-                Arrays.asList(FIELDS));
+    public String getRepresentativeImageUrl(int width, int height)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null, Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
-            
-            
+
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
             return thumbs.getThumbnailUrl(doc, width, height);
         }
-        
+
         return "";
     }
-    
+
     /**
      * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId
      * 
      * @return
-     * @throws IndexUnreachableException    if the Solr index could not be reached
-     * @throws PresentationException        if the pi/logId could not be resolved
+     * @throws IndexUnreachableException if the Solr index could not be reached
+     * @throws PresentationException if the pi/logId could not be resolved
      */
     @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
         Long iddoc = null;
-        if( StringUtils.isNotBlank(logId)) {
+        if (StringUtils.isNotBlank(logId)) {
             iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(pi, logId);
-        } else if(StringUtils.isNotBlank(pi)) {
+        } else if (StringUtils.isNotBlank(pi)) {
             iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
         }
-        
+
         String title = "";
-        if(iddoc != null) {
+        if (iddoc != null) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(iddoc.toString());
-            if(doc != null) {
+            if (doc != null) {
                 StructElement se = new StructElement(iddoc, doc);
                 title = se.getDisplayLabel();
-//                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+                //                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
                 return title;
             }
             throw new PresentationException("No document found with iddoc = " + iddoc);
@@ -425,14 +420,14 @@ public class BookshelfItem implements Serializable {
     public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
-    
+
     /**
      * @return the order
      */
     public Integer getOrder() {
         return order;
     }
-    
+
     /**
      * @param order the order to set
      */
@@ -447,7 +442,7 @@ public class BookshelfItem implements Serializable {
     public String getMainTitle() {
         return mainTitle;
     }
-    
+
     /**
      * @param mainTitle the mainTitle to set
      */
@@ -455,5 +450,5 @@ public class BookshelfItem implements Serializable {
     public void setMainTitle(String mainTitle) {
         this.mainTitle = mainTitle;
     }
-    
+
 }

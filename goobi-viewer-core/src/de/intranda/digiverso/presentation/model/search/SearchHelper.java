@@ -408,31 +408,33 @@ public final class SearchHelper {
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null);
         logger.trace("query done");
 
-        if (resp.getResults().size() > 0) {
-            String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
-            try {
-                for (SolrDocument doc : resp.getResults()) {
-                    Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                    if (fieldList != null) {
-                        for (Object o : fieldList) {
-                            String dc = SolrSearchIndex.getAsString(o);
-                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
-                                continue;
-                            }
-                            String pi = (String) doc.getFieldValue(SolrConstants.PI);
-                            String url = "/ppnresolver?id=" + pi;
-                            return url;
-                            // StructElement struct = new StructElement(luceneId, doc);
-                            // BrowseElement ele = new BrowseElement(struct, false, null, locale);
-                            // return ele.getUrl();
+        if (resp.getResults().size() == 0) {
+            return null;
+        }
+
+        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
+        try {
+            for (SolrDocument doc : resp.getResults()) {
+                Collection<Object> fieldList = doc.getFieldValues(luceneField);
+                if (fieldList != null) {
+                    for (Object o : fieldList) {
+                        String dc = SolrSearchIndex.getAsString(o);
+                        if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
+                            continue;
                         }
+                        String pi = (String) doc.getFieldValue(SolrConstants.PI);
+                        String url = "/ppnresolver?id=" + pi;
+                        return url;
+                        // StructElement struct = new StructElement(luceneId, doc);
+                        // BrowseElement ele = new BrowseElement(struct, false, null, locale);
+                        // return ele.getUrl();
                     }
                 }
-            } catch (Throwable e) {
-                logger.error("Failed to retrieve work", e);
-                return null;
             }
+        } catch (Throwable e) {
+            logger.error("Failed to retrieve work", e);
         }
+
         return null;
     }
 
@@ -843,7 +845,7 @@ public final class SearchHelper {
             if (licenseType.isCore() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
                 continue;
             }
-            
+
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
                     new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types

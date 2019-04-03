@@ -59,7 +59,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
 /**
- * Resource for delivering norm data.
+ * Resource for JSON datasets containing records that match the given query, range, etc. Replaces <code>WebApiServlet</code>.
  */
 @Path("/records")
 @ViewerRestServiceBinding
