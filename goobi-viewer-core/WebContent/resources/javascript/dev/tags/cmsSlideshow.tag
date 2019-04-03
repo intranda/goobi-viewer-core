@@ -1,19 +1,19 @@
 <!-- HOW TO USE IN XHTML -->
 <!-- <slideshow  -->
-<!-- Textfeld aus CMS-Template, kann mehrere PIs, mit Leerzeichen getrennt, enthalten. -->
+<!-- Text field from CMS template, can contain several PIs separated by spaces. -->
 <!--     pis="#{cmsPage.getContent('pi01')}"  -->
-<!-- URL zum IIIF Manifest der PI. -->
+<!-- URL to the IIIF Manifesto of PI. -->
 <!--     manifest_base_url="#{navigationHelper.applicationUrl}rest/iiif/manifests/\{pi\}/manifest/simple" -->
-<!-- Metadatenfelder, übergeben als message key. -->
+<!-- Metadata fields, passed as a message key. -->
 <!--     metadata="#{msg.MD_ARTIST}, #{msg.MD_YEARPUBLISH}"  -->
-<!-- Aktuelle Sprachversion -->
+<!-- Current language version -->
 <!--     locale="#{navigationHelper.localeString}"></slideshow> -->
 
 <!-- MOUNT IN XHTML -->
 <!-- riot.mount( 'slideshow' ); -->
 
 <slideshow>
-    <figure class="slideshow" if="{manifest !== undefined}">
+    <figure class="slideshow" if="{manifest !== undefined}"> 
         <!-- IMAGE -->
         <div class="slideshow__image">
             <a href="{getLink(manifest)}">
