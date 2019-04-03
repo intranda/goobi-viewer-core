@@ -63,7 +63,7 @@ public class PageTypeTest {
      */
     @Test
     public void determinePageType_shouldReturnImagePageTypeCorrectly() throws Exception {
-        Assert.assertEquals(PageType.viewImage, PageType.determinePageType("Monograph", null, false, true, false));
+        Assert.assertEquals(PageType.viewObject, PageType.determinePageType("Monograph", null, false, true, false));
     }
 
     /**
