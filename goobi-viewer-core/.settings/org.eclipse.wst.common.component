@@ -10,12 +10,16 @@
         <dependent-module archiveName="viewer-module-crowdsourcing.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-crowdsourcing/viewer-module-crowdsourcing">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-worldviews/goobi-viewer-module-worldviews">
+        <dependent-module archiveName="goobi-viewer-module-mnha.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-mnha/goobi-viewer-module-mnha">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="goobi-viewer-module-wienerlibrary.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-wienerlibrary/goobi-viewer-module-wienerlibrary">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-worldviews/goobi-viewer-module-worldviews">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        
         <dependent-module archiveName="goobi-viewer-theme-oolbib.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oolbib/goobi-viewer-theme-oolbib">
             <dependency-type>uses</dependency-type>
         </dependent-module>

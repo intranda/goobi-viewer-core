@@ -182,7 +182,7 @@ public class RSSFeed {
             boolean hasImages = isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
 
             for (String field : FIELDS) {
                 Object value = doc.getFirstValue(field);
@@ -279,6 +279,9 @@ public class RSSFeed {
             }
 
             String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
+            if(rootPath != null) {
+            	recordUrl = rootPath  + "/" + recordUrl;
+            }
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
             String imageHtmlElement = null;
@@ -295,7 +298,7 @@ public class RSSFeed {
 
             entry.setAuthor(authorRss);
             entry.setTitle(label);
-            entry.setLink(recordUrl);
+            entry.setLink(rootPath + "/" + recordUrl);
             if (modified != null) {
                 try {
                     entry.setPublishedDate(new Date(modified));
@@ -334,12 +337,12 @@ public class RSSFeed {
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return createRssFeed(rootPath, query, rssFeedItems, null);
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -421,7 +424,7 @@ public class RSSFeed {
                 boolean hasImages = isHasImages(doc);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
                 entry.setDocType(Helper.getTranslation(docStructType, locale));
 
                 for (String field : FIELDS) {

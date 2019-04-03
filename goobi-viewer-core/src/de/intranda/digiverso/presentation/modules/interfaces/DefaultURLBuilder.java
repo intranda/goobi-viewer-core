@@ -22,10 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
@@ -73,31 +71,25 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * @param ele
-     * @param sb
+     * 
+     * @param pi
+     * @param imageNo
+     * @param logId
      * @param pageType
+     * @return the constructed URL
      */
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         StringBuilder sb = new StringBuilder();
-        sb.append(pageType.getName()).append('/').append(pi).append('/');
-        // Hack for viewers that need a language parameter instead of LOGID
-        String theme = DataManager.getInstance().getConfiguration().getTheme();
-        if (theme != null) {
-            switch (theme) {
-                case "geiwv":
-                case "wienerlibrary-novemberpogrom":
-                    sb.append(imageNo)
-                            .append('/')
-                            .append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                            .append("/");
-                    break;
-                case "mnha":
-                    break;
-                default:
-                    sb.append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-            }
-        }
+        sb.append(pageType.getName())
+                .append('/')
+                .append(pi)
+                .append('/')
+                .append(imageNo)
+                .append('/')
+                .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                .append('/');
+
         return sb.toString();
     }
 

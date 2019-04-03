@@ -75,7 +75,7 @@ var cmsJS = ( function( cms ) {
         	var stripedSource,
         		status;
         	
-        	if ( source.indexOf( 'j_idt' ) > -1 ) {
+        	if ( source.indexOf( ':' ) > -1 ) {
         		stripedSource = source.match(/.*:(.*)/)[1];        		
         		status = $( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
         	}

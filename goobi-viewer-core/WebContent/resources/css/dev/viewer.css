@@ -6675,7 +6675,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 70px;
   background-color: rgba(255, 255, 255, 0.9);
   overflow-y: auto;
-  z-index: 1030;
+  z-index: 100;
 }
 .fullscreen__view-sidebar .ui-resizable-handle {
   left: 0;
