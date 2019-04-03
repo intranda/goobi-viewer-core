@@ -109,9 +109,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl-api-1.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl-impl-1.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jul-to-slf4j-1.7.26.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-api-2.8.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-core-2.8.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-slf4j-impl-2.8.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mariadb-java-client-2.2.5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/metadata-extractor-2.8.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mets-1.10.jar"/>
