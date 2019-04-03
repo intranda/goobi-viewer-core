@@ -80,22 +80,15 @@ public class DefaultURLBuilder implements IURLBuilder {
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         StringBuilder sb = new StringBuilder();
-        sb.append(pageType.getName()).append('/').append(pi).append('/');
-        // Hack for viewers that need a language parameter instead of LOGID
-        String theme = DataManager.getInstance().getConfiguration().getTheme();
-        if (theme != null) {
-            switch (theme) {
-                case "geiwv":
-                case "wienerlibrary-novemberpogrom":
-                    sb.append(imageNo)
-                            .append('/')
-                            .append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                            .append("/");
-                    break;
-                default:
-                    sb.append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
-            }
-        }
+        sb.append(pageType.getName())
+                .append('/')
+                .append(pi)
+                .append('/')
+                .append(imageNo)
+                .append('/')
+                .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                .append('/');
+
         return sb.toString();
     }
 
