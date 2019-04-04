@@ -290,7 +290,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default", "jpg",
                     thumbCompression);
         }
     }

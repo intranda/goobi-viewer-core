@@ -311,9 +311,9 @@ public class ViewManager implements Serializable {
                 .getConfiguration()
                 .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
                 .stream()
-                .mapToInt(string -> "max".equalsIgnoreCase(string) ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
-                        : Integer.parseInt(string))
-                .max()
+                .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
+                .sorted( (s1,s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1))  )
+                .findFirst()
                 .orElse(800);
         return getCurrentImageUrl(view, size);
     }
