@@ -26,10 +26,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -88,7 +87,7 @@ public class ALTOToolsTest {
     //    }
 
     @Test
-    public void testGetWordCoords() throws JDOMException, IOException {
+    public void testGetWordCoords() throws IOException {
         File testFile = new File("resources/test/data/sample_alto.xml");
         String searchTerms = "105";
         int rotation = 0;
@@ -137,6 +136,21 @@ public class ALTOToolsTest {
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);
         String text = ALTOTools.alto2Txt(alto, null);
+        Assert.assertNotNull(text);
+        Assert.assertTrue(text.length() > 100);
+    }
+
+    /**
+     * @see ALTOTools#getFullText(String,HttpServletRequest)
+     * @verifies extract fulltext correctly
+     */
+    @Test
+    public void getFullText_shouldExtractFulltextCorrectly() throws Exception {
+        File file = new File("resources/test/data/viewer/alto/00000010.xml");
+        Assert.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, "utf-8");
+        Assert.assertNotNull(alto);
+        String text = ALTOTools.getFullText(alto, null);
         Assert.assertNotNull(text);
         System.out.println(text);
         Assert.assertTrue(text.length() > 100);

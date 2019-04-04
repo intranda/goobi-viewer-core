@@ -40,7 +40,8 @@ public abstract class AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        System.out.println("setUpClass");
+        System.setProperty("log4j.configurationFile", "log4j2.xml");
+        
         String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0) {
             solrPath = "C:/digiverso/viewer/apache-solr-test/";
