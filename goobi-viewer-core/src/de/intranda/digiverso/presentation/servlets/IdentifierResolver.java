@@ -110,9 +110,9 @@ public class IdentifierResolver extends HttpServlet {
             return;
         }
 
-        if (customMode) {
-            // fieldValue = fieldValue.toLowerCase();
-        }
+        //        if (customMode) {
+        // fieldValue = fieldValue.toLowerCase();
+        //        }
 
         StringBuilder sbQuery = new StringBuilder(fieldName.toUpperCase());
         try {
@@ -134,6 +134,7 @@ public class IdentifierResolver extends HttpServlet {
                 if (!customMode) {
                     doPageSearch(fieldValue, request, response);
                 } else {
+                    logger.trace("not found: {}:{}", fieldName, fieldValue);
                     redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                     return;
                 }

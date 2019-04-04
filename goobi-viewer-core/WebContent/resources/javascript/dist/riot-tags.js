@@ -164,24 +164,80 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
 
 
-riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+
+    	$.fn.isInViewport = function() {
+        	var elementTop = $( this ).offset().top;
+        	var elementBottom = elementTop + $( this ).outerHeight();
+        	var elementHeight = $( this ).outerHeight();
+        	var viewportTop = $( window ).scrollTop();
+        	var viewportBottom = viewportTop + $( window ).height();
+
+        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
+    	};
+
     	this.pis = this.opts.pis.split(/[\s,;]+/);
+    	this.pis = this.pis.filter( function( pi ) {
+    		return pi != undefined && pi.length > 0;
+    	} );
         this.metadataList = this.opts.metadata.split(/[,;]+/);
         this.manifest = undefined;
         this.manifests = new Map();
         this.active = false;
+        this.visible = false;
+        this.mouseover = false;
 
         this.on( 'mount', function() {
-        	this.pi = this.pis[0];
-        	this.loadManifest( this.pi );
+        	this.loadManifest( this.pis[0] );
         }.bind( this ));
+
+        this.mouseenter = function() {
+        	this.mouseover = true;
+        }.bind(this)
+
+        this.mouseleave = function() {
+        	this.mouseover = false;
+        }.bind(this)
+
+        this.checkPosition = function() {
+        	var slideshow = $( '#' + this.opts.id + ' figure' );
+
+        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
+        		this.visible = true;
+            	this.moveSlides( this.pis, true );
+        	}
+        	else if ( this.visible && !slideshow.isInViewport() ) {
+        		this.visible = false;
+        		this.moveSlides( this.pis, false );
+        	}
+        }.bind(this)
+
+        this.moveSlides = function( pis, move ) {
+        	var index = 1;
+
+        	if ( move ) {
+        		clearInterval( this.interval );
+
+        		this.interval = setInterval( function() {
+                	if ( index === pis.length ) {
+                		index = 0;
+                	}
+                	if ( !this.mouseover ) {
+            			this.loadManifest( pis[ index ] );
+                    	index++;
+                	}
+                }.bind( this ), 4000 );
+        	}
+        	else {
+        		clearInterval( this.interval );
+        	}
+        }.bind(this)
 
         this.setPi = function( event ) {
         	let pi = event.item.imagepi;
 
         	if ( pi != this.pi ) {
         		this.pi = pi;
-        		this.active = false;
 
         		return this.loadManifest( pi );
         	}
@@ -195,6 +251,9 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}">
         this.loadManifest = function( pi ) {
         	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
         	let json = this.manifests.get( url );
+        	this.pi = pi;
+        	this.active = false;
+        	this.update();
 
         	if ( !json ) {
         		$.getJSON( url, function( manifest ) {
@@ -203,6 +262,12 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}">
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
+
+            			this.checkPosition();
+
+        				$( window ).on( 'resize scroll', function() {
+            				this.checkPosition();
+        				}.bind( this ) );
         			}
         		}.bind( this ));
         	}

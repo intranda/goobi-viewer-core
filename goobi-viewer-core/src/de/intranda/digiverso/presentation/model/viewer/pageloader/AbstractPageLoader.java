@@ -15,14 +15,35 @@
  */
 package de.intranda.digiverso.presentation.model.viewer.pageloader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 public abstract class AbstractPageLoader implements IPageLoader {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractPageLoader.class);
 
     /**
      * Replaces the static variable placeholders (the ones that don't change depending on the page) of the given label format with values.
@@ -46,5 +67,152 @@ public abstract class AbstractPageLoader implements IPageLoader {
             labelTemplate = labelTemplate.replace(labelTemplate.substring(m.start(), m.end()), ViewerResourceBundle.getTranslation(key, locale));
         }
         return labelTemplate;
+    }
+
+    public static PhysicalElement loadPage(StructElement topElement, int page) throws PresentationException, IndexUnreachableException {
+        if (topElement.isAnchor() || topElement.isGroup()) {
+            logger.debug("Anchor or group document, no pages.");
+            return null;
+        }
+
+        String pi = topElement.getPi();
+        logger.trace("Loading pages for '{}'...", pi);
+        List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("+")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(':')
+                .append(topElement.getPi())
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.PAGE)
+                .append(" +")
+                .append(SolrConstants.ORDER)
+                .append(':')
+                .append(page);
+        SolrDocumentList result = DataManager.getInstance()
+                .getSearchIndex()
+                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+
+        return loadPageFromDoc(result.get(0), pi, topElement, null);
+    }
+
+    /**
+     * 
+     * @param doc Solr document from which to construct the page
+     * @param pi Record identifier
+     * @param topElement StructElement of the top record element
+     * @param pageOwnerIddocMap Optional map containing relationships between pages and owner IDDOCs
+     * @return Constructed PhysicalElement
+     */
+    protected static PhysicalElement loadPageFromDoc(SolrDocument doc, String pi, StructElement topElement, Map<Integer, Long> pageOwnerIddocMap) {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+
+        // PHYSID
+        String physId = "";
+        if (doc.getFieldValue(SolrConstants.PHYSID) != null) {
+            physId = (String) doc.getFieldValue(SolrConstants.PHYSID);
+        }
+        // ORDER
+        int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
+        // ORDERLABEL
+        String orderLabel = "";
+        if (doc.getFieldValue(SolrConstants.ORDERLABEL) != null) {
+            orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
+        }
+        // IDDOC_OWNER
+        if (doc.getFieldValue(SolrConstants.IDDOC_OWNER) != null && pageOwnerIddocMap != null) {
+            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC_OWNER);
+            pageOwnerIddocMap.put(order, Long.valueOf(iddoc));
+        }
+        // Mime type
+        String mimeType = null;
+        if (doc.getFieldValue(SolrConstants.MIMETYPE) != null) {
+            mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+        }
+        // Main file name
+        String fileName = "";
+        if (doc.getFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED) != null) {
+            fileName = (String) doc.getFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
+        } else if (doc.getFieldValue(SolrConstants.FILENAME) != null) {
+            fileName = (String) doc.getFieldValue(SolrConstants.FILENAME);
+        }
+
+        String dataRepository = "";
+        if (doc.getFieldValue(SolrConstants.DATAREPOSITORY) != null) {
+            dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+        } else if (topElement != null) {
+            dataRepository = topElement.getDataRepository();
+        }
+
+        // URN
+        String urn = "";
+        if (doc.getFieldValue(SolrConstants.IMAGEURN) != null && !doc.getFirstValue(SolrConstants.IMAGEURN).equals("NULL")) {
+            urn = (String) doc.getFieldValue(SolrConstants.IMAGEURN);
+        }
+        StringBuilder sbPurlPart = new StringBuilder();
+        sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
+
+        PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
+
+        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
+            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
+        }
+        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
+            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+        }
+
+        // Full-text filename
+        pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+        // ALTO filename
+        pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
+
+        // Access conditions
+        if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {
+            for (Object o : doc.getFieldValues(SolrConstants.ACCESSCONDITION)) {
+                String accessCondition = (String) o;
+                if (StringUtils.isNotEmpty(accessCondition)) {
+                    pe.getAccessConditions().add(accessCondition);
+                }
+            }
+        }
+
+        // File names for different formats (required for A/V)
+        String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
+        for (String fieldName : doc.getFieldNames()) {
+            if (fieldName.startsWith(filenameRoot)) {
+                // logger.trace("Format: {}", fieldName);
+                String format = fieldName.split("_")[1].toLowerCase();
+                String value = (String) doc.getFieldValue(fieldName);
+                pe.getFileNames().put(format, value);
+            }
+        }
+
+        // METS file ID root
+        if (doc.getFieldValue(SolrConstants.FILEIDROOT) != null) {
+            pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
+        }
+
+        // File size
+        if (doc.getFieldValue("MDNUM_FILESIZE") != null) {
+            pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
+        }
+
+        // Full-text available
+        if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
+            pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
+        }
+
+        return pe;
     }
 }
