@@ -74,13 +74,14 @@ public class ALTOTools {
     /**
      *
      * @param alto
+     * @param mergeLineBreakWords
      * @param request
      * @return
      * @should extract fulltext correctly
      */
-    public static String getFullText(String alto, HttpServletRequest request) {
+    public static String getFullText(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
-            return alto2Txt(alto, request);
+            return alto2Txt(alto, mergeLineBreakWords, request);
             //            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
             //            return altoDoc.getContent();
         } catch (IOException | XMLStreamException e) {
@@ -150,13 +151,14 @@ public class ALTOTools {
     /**
      * 
      * @param alto
+     * @param mergeLineBreakWords
      * @param request
      * @return
      * @throws IOException
      * @throws XMLStreamException
      * @should use extract fulltext correctly
      */
-    protected static String alto2Txt(String alto, HttpServletRequest request) throws IOException, XMLStreamException {
+    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request) throws IOException, XMLStreamException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
@@ -194,7 +196,9 @@ public class ALTOTools {
                                         content = parser.getAttributeValue(i);
                                         break;
                                     case SUBS_CONTENT:
-                                        subsContent = parser.getAttributeValue(i);
+                                        if (mergeLineBreakWords) {
+                                            subsContent = parser.getAttributeValue(i);
+                                        }
                                         break;
                                     case TAGREFS:
                                         tagref = parser.getAttributeValue(i);
