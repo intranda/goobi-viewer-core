@@ -167,13 +167,6 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @return viewer image view url for the given page
-	 */
-	public String getViewImageUrl(PhysicalElement ele) {
-		return getViewUrl(ele, PageType.viewImage);
-	}
-
-	/**
 	 * @return viewer url for the given page in the given {@link PageType}
 	 */
 	public String getViewUrl(PhysicalElement ele, PageType pageType) {

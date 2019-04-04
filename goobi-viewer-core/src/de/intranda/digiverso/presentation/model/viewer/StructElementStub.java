@@ -251,7 +251,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (anchor) {
             return getUrl(PageType.viewToc);
         }
-        return getUrl(PageType.viewImage);
+        return getUrl(PageType.viewObject);
     }
 
     /**

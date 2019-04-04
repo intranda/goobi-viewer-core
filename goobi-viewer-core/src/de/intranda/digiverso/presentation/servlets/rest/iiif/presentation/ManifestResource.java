@@ -263,7 +263,7 @@ public class ManifestResource extends AbstractResource {
         } else if (manifest instanceof Manifest) {
             PageType pageType = PageType.getByName(preferredView);
             if(pageType == null) {
-                pageType = PageType.viewImage;
+                pageType = PageType.viewObject;
             }
             getSequenceBuilder().setPreferredView(pageType).setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0).getCanvases();

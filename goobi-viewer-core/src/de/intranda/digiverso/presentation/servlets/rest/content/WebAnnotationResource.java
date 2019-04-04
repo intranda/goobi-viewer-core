@@ -211,7 +211,7 @@ public class WebAnnotationResource {
                 .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
                 .toString();
         String targetUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
-                .append(PageType.viewImage.getName())
+                .append(PageType.viewObject.getName())
                 .append('/')
                 .append(comment.getPi())
                 .append('/')
