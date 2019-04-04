@@ -292,7 +292,7 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(PageType.viewImage);
+        return getCurrentImageUrl(PageType.viewObject);
     }
 
     public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
@@ -319,7 +319,7 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(PageType.viewImage, size);
+        return getCurrentImageUrl(PageType.viewObject, size);
     }
 
     /**
@@ -2404,7 +2404,7 @@ public class ViewManager implements Serializable {
             PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
             if (pageType == null) {
                 if (isHasPages()) {
-                    pageType = PageType.viewImage;
+                    pageType = PageType.viewObject;
                 } else {
                     pageType = PageType.viewMetadata;
                 }

@@ -23,7 +23,7 @@
     
         <!-- CAPTION -->
         <figcaption>
-            <h4>{getLabel(manifest)}</h4>
+            <h4>{getTitleOrLabel(manifest)}</h4>
             <p>
                 <span each="{md in metadataList}">
                     {getMetadataValue(manifest, md)}
@@ -83,7 +83,7 @@
         
         checkPosition() {
         	var slideshow = $( '#' + this.opts.id + ' figure' );
-        	
+
         	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
         		this.visible = true;        	
             	this.moveSlides( this.pis, true );            	
@@ -151,7 +151,12 @@
             				this.checkPosition();
         				}.bind( this ) );
         			}
-        		}.bind( this ));
+        		}.bind( this ))
+        		.then(function(data) {
+        		})
+        		.catch(function(error) {
+        			console.error("error laoding ", url, ": ", error);
+        		});
         	} 
         	else {
         		// timeout for css transition
@@ -186,6 +191,16 @@
         	}
         }
         
+        getTitleOrLabel( manifest ) {
+        	var title = this.getMetadataValue( manifest, 'Title' );
+        	
+        	if(title) {
+        		return title;
+        	} else {
+        		return getLabel( manifest );
+        	}
+        }
+       
         getLabel( manifest ) {
         	return this.getValue(manifest.label, this.opts.locale);
         }
@@ -200,7 +215,6 @@
         					label = label['@value']
         				}
         			}
-        			
         			return label && label.trim() == metadataLabel.trim();
         		});
         		

@@ -992,7 +992,7 @@ public class BrowseElement implements Serializable {
             // Regular image view
             sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
-                    .append(PageType.viewImage.getName())
+                    .append(PageType.viewObject.getName())
                     .append('/')
                     .append(type)
                     .append('/')

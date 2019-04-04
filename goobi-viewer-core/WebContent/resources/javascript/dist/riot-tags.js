@@ -164,7 +164,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
 
 
-riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
 
     	$.fn.isInViewport = function() {
         	var elementTop = $( this ).offset().top;
@@ -269,7 +269,12 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
             				this.checkPosition();
         				}.bind( this ) );
         			}
-        		}.bind( this ));
+        		}.bind( this ))
+        		.then(function(data) {
+        		})
+        		.catch(function(error) {
+        			console.error("error laoding ", url, ": ", error);
+        		});
         	}
         	else {
 
@@ -304,6 +309,16 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
         	}
         }.bind(this)
 
+        this.getTitleOrLabel = function( manifest ) {
+        	var title = this.getMetadataValue( manifest, 'Title' );
+
+        	if(title) {
+        		return title;
+        	} else {
+        		return getLabel( manifest );
+        	}
+        }.bind(this)
+
         this.getLabel = function( manifest ) {
         	return this.getValue(manifest.label, this.opts.locale);
         }.bind(this)
@@ -318,7 +333,6 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
         					label = label['@value']
         				}
         			}
-
         			return label && label.trim() == metadataLabel.trim();
         		});
 

@@ -167,13 +167,6 @@ public abstract class AbstractBuilder {
 	}
 
 	/**
-	 * @return viewer image view url for the given page
-	 */
-	public String getViewImageUrl(PhysicalElement ele) {
-		return getViewUrl(ele, PageType.viewImage);
-	}
-
-	/**
 	 * @return viewer url for the given page in the given {@link PageType}
 	 */
 	public String getViewUrl(PhysicalElement ele, PageType pageType) {
@@ -398,7 +391,8 @@ public abstract class AbstractBuilder {
 	 */
 	public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
 		String query = "PI:" + pi;
-		SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
+		List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
+		SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, displayFields);
 		if (doc != null) {
 			StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()),
 					doc);
