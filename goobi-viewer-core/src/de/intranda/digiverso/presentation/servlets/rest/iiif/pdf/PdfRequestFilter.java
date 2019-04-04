@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -31,6 +32,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -52,6 +54,11 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
+        	
+        	if (DataManager.getInstance().getConfiguration().isPdfApiDisabled()) {
+                throw new ServiceNotAllowedException("PDF API is disabled");
+            }
+        	
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 //            String requestPath = request.getUriInfo().getPath();
 
