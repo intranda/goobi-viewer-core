@@ -113,6 +113,21 @@
         <br />
         <label>
             <h:selectBooleanCheckbox 
+                id="privDownloadPagePdfDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privDownloadPagePdf}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privDownloadPagePdf" />
+            <h:selectBooleanCheckbox 
+                id="privDownloadPagePdf"
+                rendered="#{!adminBean.currentLicense.licenseType.privDownloadPagePdf}" 
+                value="#{adminBean.currentLicense.privDownloadPagePdf}"
+                label="privDownloadPagePdf" /> #{msg.license_privDownloadPagePdf}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
                 id="privDownloadOriginalContentDisabled"
                 rendered="#{adminBean.currentLicense.licenseType.privDownloadOriginalContent}" 
                 disabled="true" 

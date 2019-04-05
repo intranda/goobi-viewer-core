@@ -417,6 +417,26 @@ public class LicenseType implements IPrivilegeHolder {
     }
 
     /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
+     */
+    @Override
+    public boolean isPrivDownloadPagePdf() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
+     */
+    @Override
+    public void setPrivDownloadPagePdf(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
      */
     @Override

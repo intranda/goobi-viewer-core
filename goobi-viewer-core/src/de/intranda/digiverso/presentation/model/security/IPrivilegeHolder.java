@@ -26,6 +26,7 @@ public interface IPrivilegeHolder {
     public static final String PRIV_VIEW_VIDEO = "VIEW_VIDEO";
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
+    public static final String PRIV_DOWNLOAD_PAGE_PDF = "DOWNLOAD_PAGE_PDF";
     public static final String PRIV_DOWNLOAD_ORIGINAL_CONTENT = "DOWNLOAD_ORIGINAL_CONTENT";
 
     // Role privileges
@@ -70,10 +71,14 @@ public interface IPrivilegeHolder {
 
     public void setPrivDownloadPdf(boolean priv);
 
+    public boolean isPrivDownloadPagePdf();
+
+    public void setPrivDownloadPagePdf(boolean priv);
+
     public boolean isPrivDownloadOriginalContent();
 
     public void setPrivDownloadOriginalContent(boolean priv);
-    
+
     public boolean isPrivDeleteOcrPage();
 
     public void setPrivDeleteOcrPage(boolean priv);

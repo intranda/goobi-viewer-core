@@ -113,6 +113,12 @@
                                                             <h:outputText value="#{msg.license_privDownloadPdf}" />
                                                         </li>
                                                     </h:panelGroup>
+                                                    <h:panelGroup rendered="#{licenseType.privDownloadPagePdf}">
+                                                        <li>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
+                                                            <h:outputText value="#{msg.license_privDownloadPagePdf}" />
+                                                        </li>
+                                                    </h:panelGroup>
                                                     <h:panelGroup rendered="#{licenseType.privDownloadOriginalContent}">
                                                         <li>
                                                             <i class="fa fa-check-circle" aria-hidden="true"></i>
