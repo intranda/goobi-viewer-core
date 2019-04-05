@@ -10729,6 +10729,21 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: cover;
   cursor: pointer;
 }
+.admin-cms-media__file-image-caption {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: 100%;
+  padding: 10px;
+  font-weight: 600;
+  text-align: center;
+  word-wrap: break-word;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
 .admin-cms-media__file-metadata {
   -ms-flex-positive: 1;
       flex-grow: 1;
@@ -10860,6 +10875,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__files.grid .admin-cms-media__file-image {
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.admin-cms-media__files.grid .admin-cms-media__file-image-caption {
+  display: block;
 }
 .admin-cms-media__files.grid .admin-cms-media__file-metadata,
 .admin-cms-media__files.grid .admin-cms-media__file-metadata-view,
