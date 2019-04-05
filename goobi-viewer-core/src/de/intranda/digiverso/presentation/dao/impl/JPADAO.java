@@ -3369,7 +3369,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSCategory> getAllCategories() throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT c FROM CMSCategory c");
+        Query q = em.createQuery("SELECT c FROM CMSCategory c ORDER BY c.name");
         q.setFlushMode(FlushModeType.COMMIT);
         List<CMSCategory> list = q.getResultList();
         return list;
