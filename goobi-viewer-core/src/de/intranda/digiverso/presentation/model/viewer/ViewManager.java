@@ -1175,6 +1175,10 @@ public class ViewManager implements Serializable {
         this.accessPermissionPdf = null;
     }
 
+    /**
+     * 
+     * @return true if record/structure PDF download is allowed; false otherwise
+     */
     public boolean isAccessPermissionPdf() {
         try {
             if (topDocument == null || !topDocument.isWork() || !isHasPages()) {

@@ -15,11 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -28,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +32,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -350,10 +345,11 @@ public class AccessConditionUtils {
      * @throws DAOException
      * @should fill map completely
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Boolean> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
-        
+
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeName + "_" + identifier;
         Map<String, Boolean> ret = new HashMap<>();
         if (request != null && request.getSession() != null) {
@@ -361,15 +357,13 @@ public class AccessConditionUtils {
                 ret = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
                 if (ret != null) {
                     return ret;
-                } else  {
-                    ret = new HashMap<>();
                 }
+                ret = new HashMap<>();
             } catch (ClassCastException e) {
                 logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
             }
         }
 
-        
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(SolrConstants.PI_TOPSTRUCT)
@@ -408,8 +402,8 @@ public class AccessConditionUtils {
 
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
-                            ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes,
-                                    requiredAccessConditions, privilegeName, user, Helper.getIpAddress(request), sbQuery.toString()));
+                            ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
+                                    Helper.getIpAddress(request), sbQuery.toString()));
                         }
                     }
                     long end = System.nanoTime();
@@ -419,8 +413,8 @@ public class AccessConditionUtils {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
         }
-        
-        if(request != null && request.getSession() != null) {
+
+        if (request != null && request.getSession() != null) {
             request.getSession().setAttribute(attributeName, ret);
         }
 
@@ -441,6 +435,7 @@ public class AccessConditionUtils {
      * @throws DAOException If the database could not be queried for existing licenses
      * @throws SecurityException if no or an empty file list is given
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Boolean> checkContentFileAccessPermission(String identifier, HttpServletRequest request, List<Path> files)
             throws IndexUnreachableException, DAOException {
 
@@ -504,7 +499,10 @@ public class AccessConditionUtils {
             request.getSession().setAttribute(attributeName, accessMap);
         }
         //return only the access status for the relevant files
-        return accessMap.entrySet().stream().filter(entry -> files.contains(Paths.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        return accessMap.entrySet()
+                .stream()
+                .filter(entry -> files.contains(Paths.get(entry.getKey())))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     /**
@@ -626,7 +624,7 @@ public class AccessConditionUtils {
             throw new IllegalArgumentException("page may not be null");
         }
         logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder());
-        return checkAccessPermissionByIdentifierAndPageOrder(page, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+        return checkAccessPermissionByIdentifierAndPageOrder(page, IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, request);
     }
 
     /**
@@ -881,7 +879,7 @@ public class AccessConditionUtils {
         }
 
         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
-        Map<String, List<LicenseType>> ret = new HashMap<String, List<LicenseType>>(accessMap.size());
+        Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace(licenseType.getName());
             if (!requiredAccessConditions.contains(licenseType.getName())) {
@@ -943,14 +941,15 @@ public class AccessConditionUtils {
 
     /**
      * Testing
+     * 
      * @return
      */
     private static long getNumberOfOpenFiles() {
         OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-        if(os instanceof UnixOperatingSystemMXBean){
+        if (os instanceof UnixOperatingSystemMXBean) {
             return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
-        } else {
-            return -1;
         }
+        
+        return -1;
     }
 }

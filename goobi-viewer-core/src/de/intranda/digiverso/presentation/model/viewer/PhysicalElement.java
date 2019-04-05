@@ -1127,7 +1127,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * 
-     * @return
+     * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

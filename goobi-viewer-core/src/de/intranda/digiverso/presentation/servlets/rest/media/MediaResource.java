@@ -101,7 +101,7 @@ public class MediaResource {
 
     /**
      * @param mediaFilePath
-     * @throws AccessDeniedException    if access is not granted
+     * @throws AccessDeniedException if access is not granted
      */
     public void checkAccess(String action, String pi, String contentFilename) throws AccessDeniedException {
         boolean access = false;

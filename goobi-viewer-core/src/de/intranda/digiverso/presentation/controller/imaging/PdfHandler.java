@@ -88,9 +88,10 @@ public class PdfHandler {
         if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
             sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
         }
-        
-        Path indexedMetsPath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pages[0].getPi() + ".xml");
-        if(Files.exists(indexedMetsPath)) {
+
+        Path indexedMetsPath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pages[0].getPi() + ".xml");
+        if (Files.exists(indexedMetsPath)) {
             sb.append(paramSep.getChar()).append("metsFile=").append(indexedMetsPath.toUri());
         }
 
@@ -179,7 +180,7 @@ public class PdfHandler {
      * @param text
      * @return
      */
-    private Object encode(String text) {
+    private static Object encode(String text) {
         try {
             return URLEncoder.encode(text, "utf-8");
         } catch (UnsupportedEncodingException e) {
