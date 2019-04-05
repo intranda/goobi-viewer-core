@@ -247,7 +247,7 @@
 		<dependency>
 			<groupId>de.intranda.contentserver</groupId>
 			<artifactId>ics</artifactId>
-			<version>[1.1.6,)</version>
+			<version>[1.0.1,)</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
