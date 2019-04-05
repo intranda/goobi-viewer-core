@@ -989,6 +989,7 @@ public class Helper {
      * @param dataRepository
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @param mergeLineBreakWords
      * @param request
      * @return
      * @throws AccessDeniedException
@@ -1000,13 +1001,14 @@ public class Helper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
+            HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (altoFilePath != null) {
             // ALTO file
             String alto = loadFulltext(dataRepository, altoFilePath, request);
             if (alto != null) {
-                return ALTOTools.getFullText(alto, request);
+                return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
 
             }
         }

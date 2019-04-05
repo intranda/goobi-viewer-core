@@ -167,7 +167,7 @@ public final class SearchHelper {
                 try {
                     fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
-                            request);
+                            true, request);
                 } catch (AccessDeniedException e) {
                     fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
                 } catch (FileNotFoundException e) {
@@ -839,7 +839,7 @@ public final class SearchHelper {
             throws IndexUnreachableException, PresentationException, DAOException {
         StringBuilder query = new StringBuilder();
 
-        List<String> relevantLicenseTypes = new ArrayList<>();
+        //        List<String> relevantLicenseTypes = new ArrayList<>();
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
             if (licenseType.isCore() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {

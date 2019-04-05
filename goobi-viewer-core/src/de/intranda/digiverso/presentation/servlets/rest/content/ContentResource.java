@@ -339,19 +339,19 @@ public class ContentResource {
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc != null) {
 
-        	try {
-	            String text = getFulltext(pi, filename);
-	            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
-	            text = convert(textConverter, text, filename);
-	
-	            TEIHeaderBuilder header = createTEIHeader(solrDoc);
-	
-	            TEIBuilder builder = new TEIBuilder();
+            try {
+                String text = getFulltext(pi, filename);
+                HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+                text = convert(textConverter, text, filename);
+
+                TEIHeaderBuilder header = createTEIHeader(solrDoc);
+
+                TEIBuilder builder = new TEIBuilder();
                 Document xmlDoc = builder.build(header, text);
                 return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
             } catch (JDOMException e) {
                 throw new ContentLibException("Unable to parse xml from alto file " + pi + ", " + filename, e);
-            } catch(UncheckedPresentationException e) {
+            } catch (UncheckedPresentationException e) {
                 throw new ContentLibException(e);
             }
 
@@ -411,17 +411,17 @@ public class ContentResource {
                     HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
 
                     try {
-                    	List<String> pages = fulltexts.entrySet()
-                            .stream()
-                            .sorted(Comparator.comparing(Map.Entry::getKey))
-                            .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
-                            .collect(Collectors.toList());
-                    
+                        List<String> pages = fulltexts.entrySet()
+                                .stream()
+                                .sorted(Comparator.comparing(Map.Entry::getKey))
+                                .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
+                                .collect(Collectors.toList());
+
                         Document xmlDoc = builder.build(header, pages);
                         return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
                     } catch (JDOMException e) {
                         throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
-                    } catch(UncheckedPresentationException e) {
+                    } catch (UncheckedPresentationException e) {
                         throw new ContentLibException(e);
 
                     }
@@ -436,13 +436,13 @@ public class ContentResource {
 
         throw new ContentNotFoundException("Resource not found");
     }
-    
+
     private String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
-    	try {
-    		return converter.convert(input);
-    	} catch(Throwable e) {
-    		throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
-    	}
+        try {
+            return converter.convert(input);
+        } catch (Throwable e) {
+            throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
+        }
     }
 
     /**
@@ -543,7 +543,7 @@ public class ContentResource {
     public String getFulltext(String pi, String fileName) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         java.nio.file.Path file = getPath(pi, DataManager.getInstance().getConfiguration().getFulltextFolder() + "_crowd",
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), fileName);
-        ;
+
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
