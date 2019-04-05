@@ -59,6 +59,7 @@
         open_access="false" core="true" />
 		
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
+	<license_types_overriding license_type_id="1" overriding_license_type_id="4" />
 
 	<licenses license_id="1" license_type_id="1" user_id="2"
 		description="license 1 desc" />
