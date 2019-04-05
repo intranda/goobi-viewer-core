@@ -51,6 +51,7 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**

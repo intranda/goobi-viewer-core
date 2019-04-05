@@ -41,7 +41,10 @@ import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
@@ -70,7 +73,6 @@ public class ThumbnailHandler {
 
     private final int thumbWidth;
     private final int thumbHeight;
-    private final int thumbCompression;
     private final String anchorThumbnailMode;
     private final String staticImagesPath;
 
@@ -82,7 +84,6 @@ public class ThumbnailHandler {
         this.iiifUrlHandler = iiifUrlHandler;
         thumbWidth = configuration.getThumbnailsWidth();
         thumbHeight = configuration.getThumbnailsHeight();
-        thumbCompression = configuration.getThumbnailsCompression();
         anchorThumbnailMode = configuration.getAnchorThumbnailMode();
         this.staticImagesPath = staticImagesPath;
     }
@@ -290,8 +291,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default", "jpg",
-                    thumbCompression);
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default", "jpg");
         }
     }
 
@@ -329,7 +329,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
         }
     }
 
@@ -429,11 +429,32 @@ public class ThumbnailHandler {
             return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
-                    "jpg", thumbCompression);
+                    "jpg");
         } else {
             return null;
         }
     }
+    
+	/**
+	 * @return	the url of the entire, max-size image in the original format. 
+	 * If no Watermark needs to be included and forwarding images is allowed in contentServer, then this streams the original image file to the client
+	 */
+	public String getFullImageUrl(PhysicalElement page) {
+		String path = getImagePath(page);
+        if (path == null) {
+            return "";
+        }
+        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(path);
+        if (isStaticImageResource(path)) {
+            return path;
+        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
+            return iiifUrlHandler.getModifiedIIIFFUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+        } else {
+        	return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, Scale.MAX_SIZE, "0", "default", format.getFileExtension());
+        }
+	}
 
     /**
      * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
@@ -464,8 +485,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
             return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",
-                    thumbCompression);
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
         }
     }
 
@@ -653,6 +673,8 @@ public class ThumbnailHandler {
         }
         return mimeType;
     }
+    
+
 
     /**
      * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
@@ -694,7 +716,7 @@ public class ThumbnailHandler {
             if (imagePath.toLowerCase().endsWith(".png")) {
                 format = "png";
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format, thumbCompression);
+            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
         }).orElse("");
     }
 
@@ -725,7 +747,7 @@ public class ThumbnailHandler {
             if (imagePath.toLowerCase().endsWith(".png")) {
                 format = "png";
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format, thumbCompression);
+            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format);
         }).orElse("");
     }
 

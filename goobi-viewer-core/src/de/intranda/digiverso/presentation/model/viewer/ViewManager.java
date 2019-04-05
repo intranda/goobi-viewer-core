@@ -319,7 +319,25 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(PageType.viewObject, size);
+        return getCurrentImageUrl(PageType.viewImage, size);
+    }
+    
+    public String getCurrentImageOriginalUrl() throws IndexUnreachableException, DAOException {
+    	PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
+    	if(pageType == null) {
+    		pageType = PageType.viewObject;
+    	}
+        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage()));
+        try {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
+                sb.append("?ignoreWatermark=false");
+                sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Unable to read watermark config, ignore watermark", e);
+        }
+        return sb.toString();
     }
 
     /**
