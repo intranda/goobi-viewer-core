@@ -10634,6 +10634,11 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: contain;
   box-shadow: none;
 }
+.admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-image-caption,
+.admin-cms-media__file.fixed .admin-cms-media__file-image-caption {
+  top: 0;
+  bottom: auto;
+}
 .admin-cms-media__files.grid .admin-cms-media__file.fixed .admin-cms-media__file-metadata,
 .admin-cms-media__file.fixed .admin-cms-media__file-metadata {
   display: block;
