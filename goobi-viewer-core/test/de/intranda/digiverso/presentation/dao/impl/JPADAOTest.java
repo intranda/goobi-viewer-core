@@ -858,14 +858,23 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getLicenseTypeByIdTest() throws DAOException {
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assert.assertNotNull(licenseType);
-        Assert.assertEquals(Long.valueOf(1), licenseType.getId());
-        Assert.assertEquals("license type 1 name", licenseType.getName());
-        Assert.assertEquals("license type 1 desc", licenseType.getDescription());
-        Assert.assertEquals("YEAR:[* TO 3000]", licenseType.getConditions());
-        Assert.assertEquals(false, licenseType.isOpenAccess());
-        Assert.assertEquals(1, licenseType.getPrivileges().size());
+        {
+            LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
+            Assert.assertNotNull(licenseType);
+            Assert.assertEquals(Long.valueOf(1), licenseType.getId());
+            Assert.assertEquals("license type 1 name", licenseType.getName());
+            Assert.assertEquals("license type 1 desc", licenseType.getDescription());
+            Assert.assertEquals("YEAR:[* TO 3000]", licenseType.getConditions());
+            Assert.assertEquals(false, licenseType.isOpenAccess());
+            Assert.assertEquals(1, licenseType.getPrivileges().size());
+            Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());
+        }
+        {
+            LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(4);
+            Assert.assertNotNull(licenseType);
+            Assert.assertEquals(Long.valueOf(4), licenseType.getId());
+            Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());
+        }
     }
 
     @Test
