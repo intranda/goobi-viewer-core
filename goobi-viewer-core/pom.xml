@@ -247,7 +247,7 @@
 		<dependency>
 			<groupId>de.intranda.contentserver</groupId>
 			<artifactId>ics</artifactId>
-			<version>[1.0.1,)</version>
+			<version>[1.1.6,)</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
@@ -345,7 +345,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.26</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.jdom/jdom -->
@@ -366,28 +366,35 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
-			<version>2.22.1</version>
+			<version>2.22.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-entity-filtering -->
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-entity-filtering</artifactId>
-			<version>2.22.1</version>
+			<version>2.22.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.22.1</version>
+			<version>2.22.4</version>
 		</dependency>
+		
+        <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-multipart -->
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>2.22.4</version>
+        </dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>2.22.1</version>
+			<version>2.22.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.timgroup/jgravatar -->
@@ -438,6 +445,13 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+		
+        <!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.26</version>
+        </dependency>
 
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
@@ -458,21 +472,21 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.11.1</version>
+			<version>2.11.2</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.11.1</version>
+			<version>2.11.2</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.11.1</version>
+			<version>2.11.2</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
@@ -631,7 +645,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.26</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->

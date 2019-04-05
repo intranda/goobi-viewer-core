@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -565,6 +566,34 @@ public class Helper {
     /**
      * 
      * @param pi
+     * @param createTraceDocument
+     * @param
+     * @return
+     * @throws IOException
+     * @should create delete file correctly
+     * @should create purge file correctly
+     */
+    public static synchronized boolean deleteRecord(String pi, boolean createTraceDocument, Path hotfolderPath) throws IOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        if (hotfolderPath == null) {
+            throw new IllegalArgumentException("hotfolderPath may not be null");
+        }
+
+        String fileName = pi + (createTraceDocument ? ".delete" : ".purge");
+        Path file = Paths.get(hotfolderPath.toAbsolutePath().toString(), fileName);
+        try {
+            Files.createFile(file);
+        } catch (FileAlreadyExistsException e) {
+            logger.warn(e.getMessage());
+        }
+        return (Files.isRegularFile(file));
+    }
+
+    /**
+     * 
+     * @param pi
      * @param page
      * @param recordType
      * @return
@@ -573,7 +602,7 @@ public class Helper {
      * @throws IndexUnreachableException
      * @throws IOException
      */
-    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
+    public static synchronized boolean reIndexPage(String pi, int page)
             throws DAOException, PresentationException, IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
@@ -613,7 +642,7 @@ public class Helper {
         boolean writeTriggerFile = true;
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
-                if (!module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString())) {
+                if (!module.augmentReIndexPage(pi, page, doc, dataRepository, sbNamingScheme.toString())) {
                     writeTriggerFile = false;
                 }
             } catch (Exception e) {
@@ -628,6 +657,12 @@ public class Helper {
         }
 
         return true;
+    }
+
+    @Deprecated
+    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
+            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+        return reIndexPage(pi, page);
     }
 
     /**
@@ -954,6 +989,7 @@ public class Helper {
      * @param dataRepository
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @param mergeLineBreakWords
      * @param request
      * @return
      * @throws AccessDeniedException
@@ -965,13 +1001,14 @@ public class Helper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
+            HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (altoFilePath != null) {
             // ALTO file
             String alto = loadFulltext(dataRepository, altoFilePath, request);
             if (alto != null) {
-                return ALTOTools.getFullText(alto, request);
+                return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
 
             }
         }

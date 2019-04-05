@@ -76,8 +76,8 @@ public class AdminBean implements Serializable {
 
     private TableDataProvider<User> lazyModelUsers;
     private TableDataProvider<UserGroup> lazyModelUserGroups;
-    //    private TableDataProvider<Role> lazyModelRoles;
     private TableDataProvider<LicenseType> lazyModelLicenseTypes;
+    private TableDataProvider<LicenseType> lazyModelCoreLicenseTypes;
     private TableDataProvider<IpRange> lazyModelIpRanges;
     private TableDataProvider<Comment> lazyModelComments;
 
@@ -133,7 +133,7 @@ public class AdminBean implements Serializable {
             }
         });
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelUsers.setFilters("firstName_lastName_nickName_email", "score");
+        lazyModelUsers.setFilters("firstName_lastName_nickName_email");
 
         lazyModelUserGroups = new TableDataProvider<>(new TableDataSource<UserGroup>() {
 
@@ -168,36 +168,7 @@ public class AdminBean implements Serializable {
         lazyModelUserGroups.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelUserGroups.setFilters("name");
 
-        //        lazyModelRoles = new TableDataProvider<>(new TableDataSource<Role>() {
-        //
-        //            @Override
-        //            public List<Role> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-        //                List<Role> roleList = new ArrayList<>();
-        //                if (sortField == null) {
-        //                    sortField = "id";
-        //                }
-        //                try {
-        //                    roleList = DataManager.getInstance().getDao().getRoles(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-        //                } catch (DAOException e) {
-        //                    logger.error(e.getMessage());
-        //                }
-        //
-        //                return roleList;
-        //            }
-        //
-        //            @Override
-        //            public long getTotalNumberOfRecords() {
-        //                try {
-        //                    return DataManager.getInstance().getDao().getRoleCount(lazyModelRoles.getFiltersAsMap());
-        //                } catch (DAOException e) {
-        //                    logger.error(e.getMessage(), e);
-        //                    return 0;
-        //                }
-        //            }
-        //        });
-        //        lazyModelRoles.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        //        lazyModelRoles.setFilters("name");
-
+        // License types
         lazyModelLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
 
             @Override
@@ -231,6 +202,41 @@ public class AdminBean implements Serializable {
         lazyModelLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelLicenseTypes.setFilters("name");
 
+        // Core license types
+        lazyModelCoreLicenseTypes = new TableDataProvider<>(new TableDataSource<LicenseType>() {
+
+            @Override
+            public List<LicenseType> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                if (StringUtils.isEmpty(sortField)) {
+                    sortField = "name";
+                }
+                try {
+                    return DataManager.getInstance().getDao().getCoreLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                }
+
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    return DataManager.getInstance().getDao().getCoreLicenseTypeCount(filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+            }
+        });
+        lazyModelCoreLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        lazyModelCoreLicenseTypes.setFilters("name");
+
+        // IP ranges
         lazyModelIpRanges = new TableDataProvider<>(new TableDataSource<IpRange>() {
 
             @Override
@@ -492,7 +498,7 @@ public class AdminBean implements Serializable {
             logger.trace("currentUserRole not set");
             return;
         }
-        
+
         logger.trace("saveUserRoleAction: {}, {}, {}", currentUserRole.getUserGroup(), currentUserRole.getUser(), currentUserRole);
         if (getCurrentUserRole().getId() != null) {
             // existing
@@ -529,13 +535,56 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns all existing license types. Required for admin tabs.
+     * 
+     * @return all license types in the database
+     * @throws DAOException
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
         return DataManager.getInstance().getDao().getAllLicenseTypes();
     }
 
     /**
-     * Returns all existing license types minus this one. Required for admin tabs.
+     * 
+     * @param core
+     * @return all license types in the database where this.core=core
+     * @throws DAOException
+     */
+    private List<LicenseType> getFilteredLicenseTypes(boolean core) throws DAOException {
+        List<LicenseType> all = getAllLicenseTypes();
+        if (all.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<LicenseType> ret = new ArrayList<>(all.size());
+        for (LicenseType lt : all) {
+            if (lt.isCore() == core) {
+                ret.add(lt);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @return all license types in the database where core=true
+     * @throws DAOException
+     */
+    public List<LicenseType> getAllRoleLicenseTypes() throws DAOException {
+        return getFilteredLicenseTypes(true);
+    }
+
+    /**
+     * 
+     * @return all license types in the database where core=false
+     * @throws DAOException
+     */
+    public List<LicenseType> getAllRecordLicenseTypes() throws DAOException {
+        return getFilteredLicenseTypes(false);
+    }
+
+    /**
+     * Returns all existing non-core license types minus this one. Required for admin tabs.
      */
     public List<LicenseType> getOtherLicenseTypes() throws DAOException {
         List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
@@ -545,7 +594,7 @@ public class AdminBean implements Serializable {
 
         List<LicenseType> ret = new ArrayList<>(all.size() - 1);
         for (LicenseType licenseType : all) {
-            if (licenseType.equals(this.currentLicenseType)) {
+            if (licenseType.equals(this.currentLicenseType) || licenseType.isCore()) {
                 continue;
             }
             ret.add(licenseType);
@@ -591,8 +640,13 @@ public class AdminBean implements Serializable {
     }
 
     public void resetCurrentLicenseTypeAction() {
-        logger.debug("resetCurrentLicenseTypeAction");
+        logger.trace("resetCurrentLicenseTypeAction");
         currentLicenseType = new LicenseType();
+    }
+
+    public void resetCurrentRoleLicenseAction() {
+        currentLicenseType = new LicenseType();
+        currentLicenseType.setCore(true);
     }
 
     // IpRange
@@ -919,8 +973,19 @@ public class AdminBean implements Serializable {
         return lazyModelLicenseTypes;
     }
 
+    /**
+     * @return the lazyModelCoreLicenseTypes
+     */
+    public TableDataProvider<LicenseType> getLazyModelCoreLicenseTypes() {
+        return lazyModelCoreLicenseTypes;
+    }
+
     public List<LicenseType> getPageLicenseTypes() {
         return lazyModelLicenseTypes.getPaginatorList();
+    }
+
+    public List<LicenseType> getPageCoreLicenseTypes() {
+        return lazyModelCoreLicenseTypes.getPaginatorList();
     }
 
     /**

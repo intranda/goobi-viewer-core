@@ -37,7 +37,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang.StringUtils;
-import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -61,6 +60,7 @@ public class ALTOTools {
 
     private final static String STRING = "String";
     private final static String CONTENT = "CONTENT";
+    private final static String SUBS_CONTENT = "SUBS_CONTENT";
     private final static String ID = "ID";
     private final static String TEXTLINE = "TextLine";
     private final static String TAGREFS = "TAGREFS";
@@ -74,14 +74,16 @@ public class ALTOTools {
     /**
      *
      * @param alto
+     * @param mergeLineBreakWords
      * @param request
      * @return
-     * @should throw IllegalArgumentException if altoDoc is null
+     * @should extract fulltext correctly
      */
-    public static String getFullText(String alto, HttpServletRequest request) {
-
+    public static String getFullText(String alto, boolean mergeLineBreakWords, HttpServletRequest request) {
         try {
-            return alto2Txt(alto, request);
+            return alto2Txt(alto, mergeLineBreakWords, request);
+            //            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto);
+            //            return altoDoc.getContent();
         } catch (IOException | XMLStreamException e) {
             logger.error(e.getMessage(), e);
         }
@@ -92,7 +94,6 @@ public class ALTOTools {
     public static List<TagCount> getNERTags(String alto, NERTag.Type type) {
         List<TagCount> tags = new ArrayList<>();
         try {
-
             AltoDocument doc = AltoDocument.getDocumentFromString(alto);
             for (Tag tag : doc.getTags().getTagsAsList()) {
                 if (type == null) {
@@ -134,7 +135,7 @@ public class ALTOTools {
         Type type = Type.getType(tag.getType());
         ElementReference element = null;
 
-        List<TagCount> nerTags = new ArrayList<TagCount>();
+        List<TagCount> nerTags = new ArrayList<>();
         for (GeometricData reference : tag.getReferences()) {
 
             String elementId = reference.getId();
@@ -150,13 +151,14 @@ public class ALTOTools {
     /**
      * 
      * @param alto
+     * @param mergeLineBreakWords
      * @param request
      * @return
      * @throws IOException
      * @throws XMLStreamException
      * @should use extract fulltext correctly
      */
-    protected static String alto2Txt(String alto, HttpServletRequest request) throws IOException, XMLStreamException {
+    protected static String alto2Txt(String alto, boolean mergeLineBreakWords, HttpServletRequest request) throws IOException, XMLStreamException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
@@ -170,6 +172,7 @@ public class ALTOTools {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLStreamReader parser = factory.createXMLStreamReader(is);
 
+            String prevSubsContent = null;
             while (parser.hasNext()) {
                 switch (parser.getEventType()) {
                     case XMLStreamConstants.START_DOCUMENT:
@@ -185,11 +188,17 @@ public class ALTOTools {
                     case XMLStreamConstants.START_ELEMENT:
                         if (STRING.equals(parser.getLocalName())) {
                             String content = null;
+                            String subsContent = null;
                             String tagref = null;
                             for (int i = 0; i < parser.getAttributeCount(); i++) {
                                 switch (parser.getAttributeLocalName(i)) {
                                     case CONTENT:
                                         content = parser.getAttributeValue(i);
+                                        break;
+                                    case SUBS_CONTENT:
+                                        if (mergeLineBreakWords) {
+                                            subsContent = parser.getAttributeValue(i);
+                                        }
                                         break;
                                     case TAGREFS:
                                         tagref = parser.getAttributeValue(i);
@@ -253,7 +262,16 @@ public class ALTOTools {
                                 }
                             } else {
                                 // No NE tag
-                                strings.append(content);
+                                if (subsContent != null) {
+                                    // Add concatenated SUBS_CONTENT word, if found, but only once
+                                    if (!subsContent.equals(prevSubsContent)) {
+                                        strings.append(subsContent);
+                                        prevSubsContent = subsContent;
+                                    }
+                                    subsContent = null;
+                                } else {
+                                    strings.append(content);
+                                }
                                 strings.append(' ');
                             }
                         } else if (NETAG.equals(parser.getLocalName())) {
@@ -349,10 +367,10 @@ public class ALTOTools {
         } catch (NumberFormatException e) {
             logger.error("Could not parse ALTO: Could not parse page width or height.");
         } catch (IOException e) {
-        	logger.error("Could not parse ALTO: ", e);
-		} catch (JDOMException e) {
-        	logger.error("Could not parse ALTO: ", e);
-		}
+            logger.error("Could not parse ALTO: ", e);
+        } catch (JDOMException e) {
+            logger.error("Could not parse ALTO: ", e);
+        }
         logger.trace("{} ALTO words found for this page.", words.size());
         List<String> coordList = new ArrayList<>();
         for (String s : searchTerms) {
@@ -529,6 +547,7 @@ public class ALTOTools {
      * @return
      * @should return all words from nested ComposedBlocks
      */
+    @Deprecated
     public static List<Element> handleAltoComposedBlock(Element eleComposedBlock) {
         List<Element> words = new ArrayList<>();
 
@@ -556,54 +575,55 @@ public class ALTOTools {
      * @return
      */
     public static int getMatchALTOWord(Word eleWord, String[] words) {
-        if (words != null && words.length > 0) {
+        if (words == null || words.length == 0) {
+            return 0;
+        }
 
-            // Word exists and has content
-            String content = eleWord.getContent();
-            // Normalize (remove diacritical marks)
-            content = StringTools.removeDiacriticalMarks(content);
-            // Clean up leading non-alphanumeric characters so that matching
-            // works
-            while (content.length() > 0 && !StringUtils.isAlphanumeric(content.substring(0, 1))) {
-                content = content.substring(1);
+        // Word exists and has content
+        String content = eleWord.getContent();
+        // Normalize (remove diacritical marks)
+        content = StringTools.removeDiacriticalMarks(content);
+        // Clean up leading non-alphanumeric characters so that matching
+        // works
+        while (content.length() > 0 && !StringUtils.isAlphanumeric(content.substring(0, 1))) {
+            content = content.substring(1);
+        }
+        // replace content with complete content of hyphenated word if
+        // applicable
+        if (content.matches("\\S+")) {
+            String subsContent = eleWord.getAttributeValue("SUBS_CONTENT");
+            if (subsContent != null && !subsContent.isEmpty()) {
+                content = subsContent;
             }
-            // replace content with complete content of hyphenated word if
-            // applicable
-            if (content.matches("\\S+")) {
-                String subsContent = eleWord.getAttributeValue("SUBS_CONTENT");
-                if (subsContent != null && !subsContent.isEmpty()) {
-                    content = subsContent;
-                }
-            }
+        }
 
-            if (content.trim().contains(" ")) {
-                // not a word, but a line
-                content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-                int hitCount = words.length;
-                StringBuilder sbMatchString = new StringBuilder();
-                for (String string : words) {
-                    if (sbMatchString.length() > 0) {
-                        sbMatchString.append(' ');
-                    }
-                    sbMatchString.append(string.toLowerCase());
+        if (content.trim().contains(" ")) {
+            // not a word, but a line
+            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
+            int hitCount = words.length;
+            StringBuilder sbMatchString = new StringBuilder();
+            for (String string : words) {
+                if (sbMatchString.length() > 0) {
+                    sbMatchString.append(' ');
                 }
-                String matchString = sbMatchString.toString();
-                for (; hitCount > 0; hitCount--) {
-                    if (content.contains(matchString)) {
-                        break;
-                    } else if (!matchString.contains(" ")) {
-                        // last word didn't match, so no match
-                        return 0;
-                    } else {
-                        matchString = matchString.substring(0, matchString.lastIndexOf(' '));
-                    }
+                sbMatchString.append(string.toLowerCase());
+            }
+            String matchString = sbMatchString.toString();
+            for (; hitCount > 0; hitCount--) {
+                if (content.contains(matchString)) {
+                    break;
+                } else if (!matchString.contains(" ")) {
+                    // last word didn't match, so no match
+                    return 0;
+                } else {
+                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
                 }
-                return hitCount;
             }
-            String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase());
-            if (content.trim().toLowerCase().startsWith(word)) {
-                return 1;
-            }
+            return hitCount;
+        }
+        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase());
+        if (content.trim().toLowerCase().startsWith(word)) {
+            return 1;
         }
 
         return 0;

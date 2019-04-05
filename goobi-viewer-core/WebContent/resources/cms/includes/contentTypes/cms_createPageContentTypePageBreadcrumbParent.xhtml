@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
+    <div class="cms-module__option-group">
+        <div class="cms-module__option-label">
+            <label for="pageBreadcrumbParent">#{msg.cms_page_breadcrumb_parent}:</label>
+        </div>
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="pageBreadcrumbParentGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="pageBreadcrumbParent" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu 
+                        id="pageBreadcrumbParent" 
+                        styleClass="form-control" 
+                        value="#{cmsBean.selectedPage.parentPageId}">
+                        <f:selectItems 
+                            value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" 
+                            var="availablePage" 
+                            itemValue="#{availablePage.id}"
+                            itemLabel="#{availablePage.title}" />
+                        <f:ajax event="change" render="pageBreadcrumbParentGroup" />
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.cms_page_breadcrumb_parent_help}</span>
+        </div>
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</ui:composition>

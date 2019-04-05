@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
+import de.intranda.digiverso.presentation.dao.update.DatabaseUpdater;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
@@ -224,6 +225,7 @@ public final class DataManager {
         if (dao == null) {
             synchronized (lock) {
                 dao = new JPADAO(getConfiguration().getDbPersistenceUnit());
+                new DatabaseUpdater(dao).update();
             }
         }
 

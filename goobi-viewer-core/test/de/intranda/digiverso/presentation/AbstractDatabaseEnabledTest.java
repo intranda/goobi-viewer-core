@@ -42,6 +42,8 @@ public abstract class AbstractDatabaseEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.setProperty("log4j.configurationFile", "log4j2.xml");
+        
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
         databaseTester = new H2JdbcDatabaseTester();

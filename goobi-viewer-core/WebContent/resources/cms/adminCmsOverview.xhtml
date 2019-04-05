@@ -21,9 +21,8 @@
     </ui:define>
 
 	<ui:define name="content">
-        <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.cmsAdmin}">
             <div id="cmsOverview">
-                <h:panelGroup rendered="#{userBean.admin}">
                     <h2 class="admin__content-inner-title">#{msg.cms_overview}</h2>
 
                     <div class="admin__content-inner-content">
@@ -45,9 +44,9 @@
                                                 <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('CMSPageLanguageVersion', 'title_menuTitle')}" />
                                             </th>
                                             <th class="column_classification">
-                                                #{msg.cms_pageClassifications}
+                                                #{msg.admin__cms_categories}
                                                 <!-- FILTER -->
-                                                <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('classifications', 'classification')}" />
+<!--                                                 <viewerComponent:dataTableColumnFilter filter="#{cmsBean.lazyModelPages.getFilter('categories', 'categories')}" /> -->
                                             </th>
                                             <th class="column_date_updated">
                                                 #{msg.cms_pageMetadata_lastEdited}
@@ -95,9 +94,9 @@
                                                 </td>
                                                 <td class="column_classification">
                                                     <ul>
-                                                        <ui:repeat value="#{page.classifications}" var="classification">
+                                                        <ui:repeat value="#{page.categories}" var="category">
                                                             <li>
-                                                                <h:outputText value="#{classification} " />
+                                                                <h:outputText value="#{category.name} " />
                                                             </li>
                                                         </ui:repeat>
                                                     </ul>
@@ -168,7 +167,6 @@
                             </h:form>
                         </div>
                     </div>
-                </h:panelGroup>
             </div>
 
             <script type="text/javascript">

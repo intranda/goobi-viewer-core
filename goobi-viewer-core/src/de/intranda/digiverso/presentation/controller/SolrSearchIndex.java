@@ -118,6 +118,14 @@ public final class SolrSearchIndex {
         return server;
     }
 
+    public QueryResponse testQuery(String query) throws SolrServerException {
+        SolrQuery solrQuery = new SolrQuery(query);
+        solrQuery.setStart(0);
+        solrQuery.setRows(0);
+
+        return server.query(solrQuery);
+    }
+
     /**
      * Main Solr search method.
      *
@@ -179,6 +187,7 @@ public final class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(fq);
+                logger.trace("adding filter query: {}", fq);
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -1111,7 +1120,7 @@ public final class SolrSearchIndex {
      * @param e
      * @return
      */
-    private static boolean isQuerySyntaxError(Exception e) {
+    public static boolean isQuerySyntaxError(Exception e) {
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().startsWith("Invalid Number") || e.getMessage().startsWith("undefined field"));
     }
@@ -1165,7 +1174,7 @@ public final class SolrSearchIndex {
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
         Map<String, List<String>> map = new HashMap<>();
         if (doc != null) {
-            List<String> fieldNames = doc.getFieldNames().stream().filter(field -> field.startsWith(key)).collect(Collectors.toList());
+            List<String> fieldNames = doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.startsWith(key + "_LANG_")) {
@@ -1192,7 +1201,7 @@ public final class SolrSearchIndex {
     public static Map<String, List<String>> getMetadataValuesForLanguage(StructElement doc, String key) {
         Map<String, List<String>> map = new HashMap<>();
         if (doc != null) {
-            List<String> fieldNames = doc.getMetadataFields().keySet().stream().filter(field -> field.startsWith(key)).collect(Collectors.toList());
+            List<String> fieldNames = doc.getMetadataFields().keySet().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {

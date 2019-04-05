@@ -10,7 +10,7 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:form id="licenseForm" rendered="#{userBean.admin}" prependId="false">
+		<h:form id="licenseForm" rendered="#{userBean.admin}" prependId="true">
 			<h:panelGroup id="listUserGroupLicenses" rendered="#{adminBean.currentLicense == null}">
 				<h3>#{msg.licenses}</h3>
 				
@@ -20,14 +20,16 @@
 					</h:commandLink>				
 				</p>
 
-                <adminComponent:licensesTable licenses="#{adminBean.currentUserGroup.licenses}" />
+                <adminComponent:licensesTable id="adminLicensesTable" licenses="#{adminBean.currentUserGroup.getLicenses(false)}" />
 				
 			</h:panelGroup>
 
 			<h:panelGroup id="editLicense" rendered="#{adminBean.currentLicense != null}">
 				<fieldset>
                     <ui:include src="/resources/admin/includes/currentLicense.xhtml" />
-                    <ui:include src="/resources/admin/includes/currentLicensePrivileges.xhtml" />
+                    <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
+                        <ui:include src="/resources/admin/includes/currentLicensePrivileges.xhtml" />
+                    </ui:fragment>
 				</fieldset>
 				<br />
 				<div style="text-align: right;">
@@ -37,20 +39,9 @@
 					</h:commandLink>
 					<h:commandLink id="saveButton" styleClass="btn btn--success" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
 						disabled="#{adminBean.currentLicense == null}">
-<!-- 						<f:ajax render="@form" /> -->
 					</h:commandLink>
 				</div>
 			</h:panelGroup>
 		</h:form>
-		
-		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/jquery.tablesorter.js?v=#{navigationHelper.version}"></script>
-        <script type="text/javascript">
-	        $(document).ready(function() {	        	
-	        	$( ".sortable-table" )
-	        		.tablesorter({
-	        			widgets: [ "zebra" ] 
-	        		});
-	        });
-		</script>
 	</composite:implementation>
 </ui:composition>

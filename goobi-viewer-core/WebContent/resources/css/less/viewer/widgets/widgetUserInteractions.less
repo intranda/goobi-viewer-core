@@ -1,0 +1,55 @@
+/* ==============================================================
+   Widget User Interactions
+   style declarations for widget_userInteractions.xhtml
+   ==============================================================*/
+/* WIDGET USER INTERACTIONS */
+#widgetUserInteractions {
+	ul {
+		border-bottom: 0;
+	}
+}
+.widget-user-interactions {
+	&__delete-record,
+	&__delete-record-message {
+		padding: 10px;
+		padding-top: 5px;
+		border: 1px solid @middlegray;
+		border-top: 0;
+	}
+	&__delete-record-message {
+		span {
+			display: inline-block;
+			padding: 10px;
+			font-size: 0.85rem;
+			line-height: 1rem;
+			color: @black;
+			border: 1px solid @validWarning;
+			background-color: @btnWarningBgc;
+		}
+	}
+	&__delete-record-action {
+		padding: 5px 0 10px 0;
+		&.has-no-urn {
+			.btn {
+				text-align: left;
+			}
+		}
+		&.has-urn {
+			.btn {
+				width: 100%;
+			}			
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -134,6 +135,8 @@ public class ActiveDocumentBean implements Serializable {
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
     private String selectedRecordLanguage;
+
+    private Boolean deleteRecordKeepTrace;
 
     /** Empty constructor. */
     public ActiveDocumentBean() {
@@ -441,15 +444,16 @@ public class ActiveDocumentBean implements Serializable {
                     IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
                     HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                     URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-                    
-                    for(String language : name.getLanguages()) {
-                    	String translation = name.getValue(language).orElse("");
-                    	if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                    		translation = new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                    				.append("...")
-                    				.toString();
-                    		name.setValue(translation, language);
-                    	}
+
+                    for (String language : name.getLanguages()) {
+                        String translation = name.getValue(language).orElse("");
+                        if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                            translation =
+                                    new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
+                                            .append("...")
+                                            .toString();
+                            name.setValue(translation, language);
+                        }
                     }
                     // TODO move breadcrumb to HTML?
                     if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
@@ -1096,14 +1100,45 @@ public class ActiveDocumentBean implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws RecordNotFoundException
      */
-    public String reIndexRecordAction() throws IndexUnreachableException, DAOException {
+    public String reIndexRecordAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (viewManager != null) {
-            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), null)) {
+            if (Helper.reIndexRecord(viewManager.getPi())) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
             }
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param keepTraceDocument If true, a .delete file will be created; otherwise a .purge file
+     * @return outcome
+     * @throws IOException
+     * @throws IndexUnreachableException
+     */
+    public String deleteRecordAction(boolean keepTraceDocument) throws IOException, IndexUnreachableException {
+        try {
+            if (viewManager == null) {
+                return "";
+            }
+
+//            if (viewManager.isHasVolumes()) {
+//                Messages.error("deleteRecord_failure_volumes_present");
+//                return "";
+//            }
+
+            if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+                Messages.info("deleteRecord_success");
+            } else {
+                Messages.error("deleteRecord_failure");
+            }
+        } finally {
+            deleteRecordKeepTrace = null;
         }
 
         return "";
@@ -1380,5 +1415,19 @@ public class ActiveDocumentBean implements Serializable {
             getViewManager().resetAccessPermissionPdf();
             getViewManager().resetAllowUserComments();
         }
+    }
+
+    /**
+     * @return the deleteRecordKeepTrace
+     */
+    public Boolean getDeleteRecordKeepTrace() {
+        return deleteRecordKeepTrace;
+    }
+
+    /**
+     * @param deleteRecordKeepTrace the deleteRecordKeepTrace to set
+     */
+    public void setDeleteRecordKeepTrace(Boolean deleteRecordKeepTrace) {
+        this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
 }

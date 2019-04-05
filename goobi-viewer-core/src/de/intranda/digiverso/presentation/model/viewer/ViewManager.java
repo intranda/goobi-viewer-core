@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -293,7 +292,7 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(PageType.viewImage);
+        return getCurrentImageUrl(PageType.viewObject);
     }
 
     public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
@@ -312,15 +311,33 @@ public class ViewManager implements Serializable {
                 .getConfiguration()
                 .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
                 .stream()
-                .mapToInt(string -> "max".equalsIgnoreCase(string) ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
-                        : Integer.parseInt(string))
-                .max()
+                .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
+                .sorted( (s1,s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1))  )
+                .findFirst()
                 .orElse(800);
         return getCurrentImageUrl(view, size);
     }
 
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage, size);
+    }
+    
+    public String getCurrentImageOriginalUrl() throws IndexUnreachableException, DAOException {
+    	PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
+    	if(pageType == null) {
+    		pageType = PageType.viewObject;
+    	}
+        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage()));
+        try {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
+                sb.append("?ignoreWatermark=false");
+                sb.append(imageDelivery.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> "&watermarkText=" + text).orElse(""));
+                sb.append(imageDelivery.getFooter().getFooterIdIfExists(getTopDocument()).map(id -> "&watermarkId=" + id).orElse(""));
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Unable to read watermark config, ignore watermark", e);
+        }
+        return sb.toString();
     }
 
     /**
@@ -489,6 +506,28 @@ public class ViewManager implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @return true if this record contains URN or IMAGEURN fields; false otherwise
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isHasUrns() throws PresentationException, IndexUnreachableException {
+        return topDocument.getMetadataFields().containsKey(SolrConstants.URN) || topDocument.getFirstPageFieldValue(SolrConstants.IMAGEURN) != null;
+    }
+
+    /**
+     * 
+     * @return true if this is an anchor record and has indexed volumes; false otherwise
+     */
+    public boolean isHasVolumes() {
+        if (!topDocument.isAnchor()) {
+            return false;
+        }
+
+        return topDocument.getNumVolumes() > 0;
+    }
+
     public boolean isHasPages() throws IndexUnreachableException {
         return pageLoader != null && pageLoader.getNumPages() > 0;
     }
@@ -510,6 +549,11 @@ public class ViewManager implements Serializable {
         return filesOnly;
     }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     private boolean isChildFilesOnly() throws IndexUnreachableException {
         boolean childIsFilesOnly = false;
         if (currentDocument != null && (currentDocument.isAnchor() || currentDocument.isGroup())) {
@@ -1128,9 +1172,13 @@ public class ViewManager implements Serializable {
      * Reset the pdf access permissions. They will be evaluated again on the next call to {@link #isAccessPermissionPdf()}
      */
     public void resetAccessPermissionPdf() {
-    	this.accessPermissionPdf = null;
+        this.accessPermissionPdf = null;
     }
-    
+
+    /**
+     * 
+     * @return true if record/structure PDF download is allowed; false otherwise
+     */
     public boolean isAccessPermissionPdf() {
         try {
             if (topDocument == null || !topDocument.isWork() || !isHasPages()) {
@@ -1165,9 +1213,9 @@ public class ViewManager implements Serializable {
      * Reset the permissions for writing user comments. They will be evaluated again on the next call to {@link #isAllowUserComments()}
      */
     public void resetAllowUserComments() {
-    	this.allowUserComments = null;
+        this.allowUserComments = null;
     }
-    
+
     /**
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
@@ -1324,7 +1372,7 @@ public class ViewManager implements Serializable {
             PageType pageType = null;
             if (topDocument != null) {
                 boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
-                pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
+                pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
             }
             if (pageType == null) {
                 if (isHasPages()) {
@@ -1620,8 +1668,10 @@ public class ViewManager implements Serializable {
                 if (sourceFileDir.isDirectory()) {
                     List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
                     if (!files.isEmpty()) {
-                        return AccessConditionUtils.checkContentFileAccessPermission(pi,
-                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files).containsValue(Boolean.TRUE);
+                        return AccessConditionUtils
+                                .checkContentFileAccessPermission(pi,
+                                        (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files)
+                                .containsValue(Boolean.TRUE);
                     } else {
                         return false;
                     }
@@ -1673,13 +1723,11 @@ public class ViewManager implements Serializable {
                 if (sourcesArray != null && sourcesArray.length > 0) {
                     List<File> sourcesList = Arrays.asList(sourcesArray);
                     Collections.sort(sourcesList, filenameComparator);
-                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(
-                            getPi(),
-                            BeanUtils.getRequest(),
+                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
                             sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
                     for (File file : sourcesList) {
                         if (file.isFile()) {
-                            Boolean access= fileAccess.get(file.toPath().toString());
+                            Boolean access = fileAccess.get(file.toPath().toString());
                             if (access != null && access) {
                                 String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
                                         + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
@@ -1713,7 +1761,7 @@ public class ViewManager implements Serializable {
      *
      * @return
      * @throws IndexUnreachableException
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException {
         List<LabeledLink> ret = new ArrayList<>();
@@ -2270,11 +2318,13 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
-        if (isDoublePageMode()) {
-            PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
-            if (currentRightPage != null) {
-                return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
-            }
+        if (!isDoublePageMode()) {
+            return 0;
+        }
+        
+        PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
+        if (currentRightPage != null) {
+            return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
         }
 
         return 0;
@@ -2284,40 +2334,37 @@ public class ViewManager implements Serializable {
         return getDocumentTitle(this.topDocument);
     }
 
-    //    public List<List<String>> getCurrentUGCCoords() throws ModuleMissingException {
-    //        if(DataManager.getInstance().isModuleLoaded("viewer-module-crowdsourcing")) {            
-    //            CrowdsourcingModule module = DataManager.getInstance().getModule("viewer-module-crowdsourcing");
-    //        }
-    //    }
-
     public String getDocumentTitle(StructElement document) {
-        StringBuilder sb = new StringBuilder();
-        if (document != null) {
-            switch (document.docStructType) {
-                case "Comment":
-                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
-                    }
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
-                    }
-                    break;
-                case "FormationHistory":
-                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
-                    //TODO: Add Einsatzland z.b.: (Deutschland)
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
-                    }
-                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
-                    }
-                    break;
-                case "Source":
-                default:
-                    sb.append(document.getDisplayLabel());
-            }
+        if (document == null) {
+            return "";
         }
+
+        StringBuilder sb = new StringBuilder();
+        switch (document.docStructType) {
+            case "Comment":
+                sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                }
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                }
+                break;
+            case "FormationHistory":
+                sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                //TODO: Add Einsatzland z.b.: (Deutschland)
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                }
+                if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                }
+                break;
+            case "Source":
+            default:
+                sb.append(document.getDisplayLabel());
+        }
+
         return sb.toString();
     }
 
@@ -2345,11 +2392,12 @@ public class ViewManager implements Serializable {
      */
 
     private static String getFilenameFromPathString(String pathString) {
-        if (StringUtils.isNotBlank(pathString)) {
-            Path path = Paths.get(pathString);
-            return path.getFileName().toString();
+        if (StringUtils.isBlank(pathString)) {
+            return "";
         }
-        return "";
+
+        Path path = Paths.get(pathString);
+        return path.getFileName().toString();
     }
 
     /**
@@ -2362,35 +2410,34 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public String getCiteLinkWork() throws IndexUnreachableException, DAOException, PresentationException {
-        if (topDocument != null) {
-            String customPURL = topDocument.getMetadataValue("MD_PURL");
-            if (StringUtils.isNotEmpty(customPURL)) {
-                return customPURL;
-            } else if (StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
-                String urn = topDocument.getMetadataValue(SolrConstants.URN);
-                return getPersistentUrl(urn);
-            } else {
-                StringBuilder url = new StringBuilder();
-                boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
-                PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false, false);
-                if (pageType == null) {
-                    if (isHasPages()) {
-                        pageType = PageType.viewImage;
-                    } else {
-                        pageType = PageType.viewMetadata;
-                    }
-                }
-                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
-                if (getRepresentativePage() != null) {
-                    url.append(getRepresentativePage().getOrder()).append('/');
-                }
-                return url.toString();
-            }
-        } else {
+        if (topDocument == null) {
             return "";
         }
 
+        String customPURL = topDocument.getMetadataValue("MD_PURL");
+        if (StringUtils.isNotEmpty(customPURL)) {
+            return customPURL;
+        } else if (StringUtils.isNotBlank(topDocument.getMetadataValue(SolrConstants.URN))) {
+            String urn = topDocument.getMetadataValue(SolrConstants.URN);
+            return getPersistentUrl(urn);
+        } else {
+            StringBuilder url = new StringBuilder();
+            boolean anchorOrGroup = topDocument.isAnchor() || topDocument.isGroup();
+            PageType pageType = PageType.determinePageType(topDocument.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            if (pageType == null) {
+                if (isHasPages()) {
+                    pageType = PageType.viewObject;
+                } else {
+                    pageType = PageType.viewMetadata;
+                }
+            }
+            url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/');
+            if (getRepresentativePage() != null) {
+                url.append(getRepresentativePage().getOrder()).append('/');
+            }
+            return url.toString();
+        }
     }
 
     public boolean isDisplayCiteLinkWork() {
@@ -2401,10 +2448,10 @@ public class ViewManager implements Serializable {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return "";
-        } else {
-            String urn = currentPage.getUrn();
-            return getPersistentUrl(urn);
         }
+
+        String urn = currentPage.getUrn();
+        return getPersistentUrl(urn);
     }
 
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {

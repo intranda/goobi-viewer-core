@@ -23,8 +23,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -52,8 +52,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 //@RunWith(PowerMockRunner.class)
 //@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
-
-    private static final String[] CLASSIFICATIONS = new String[] { "A", "B", "C", "D" };
 
     /**
      * @throws java.lang.Exception
@@ -85,6 +83,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     public void testGetTileGridUrl() {
 
         String allowedTags = "a$b$cde";
+        List<CMSCategory> categories = new ArrayList<>();
+        for (String catName : allowedTags.split("\\$")) {
+			categories.add(new CMSCategory(catName));
+		}
         boolean preferImportant = true;
         int numTiles = 12;
 
@@ -101,7 +103,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.getLanguageVersions().add(de);
 
         CMSContentItem gridItem = new CMSContentItem();
-        gridItem.setAllowedTags(allowedTags);
+        gridItem.setCategories(categories);
         gridItem.setNumberOfImportantTiles(preferImportant ? numTiles : 0);
         gridItem.setNumberOfTiles(numTiles);
         gridItem.setId(1l);
@@ -143,7 +145,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.setDateCreated(created);
         page.setDateUpdated(updated);
 
-        page.setClassifications(new ArrayList<>(Arrays.asList(CLASSIFICATIONS)));
+        page.setCategories(DataManager.getInstance().getDao().getAllCategories());
 
         String altUrl = "test/page/";
         page.setPersistentUrl(altUrl);
@@ -188,7 +190,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         //tests
         Assert.assertEquals(created, page.getDateCreated());
         Assert.assertEquals(updated, page.getDateUpdated());
-        Assert.assertEquals(Arrays.asList(CLASSIFICATIONS), page.getClassifications());
+        Assert.assertEquals(DataManager.getInstance().getDao().getAllCategories(), page.getCategories());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));
         Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
 

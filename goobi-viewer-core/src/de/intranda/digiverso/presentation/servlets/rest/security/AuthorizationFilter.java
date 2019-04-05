@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.servlets.rest.search.SearchHitsNotificationResource;
+import de.intranda.digiverso.presentation.servlets.rest.utils.IndexingResource;
 import de.intranda.digiverso.presentation.servlets.rest.utils.SitemapResource;
 
 @Provider
@@ -70,15 +71,14 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (pathInfo == null) {
             return false;
         }
-        if (pathInfo.contains(SitemapResource.RESOURCE_PATH)
-                || pathInfo.contains(SearchHitsNotificationResource.RESOURCE_PATH + "/sendnotifications")) {
+        //        logger.trace("pathInfo: {}", pathInfo);
+        if (pathInfo.contains(SitemapResource.RESOURCE_PATH) || pathInfo.contains(SearchHitsNotificationResource.RESOURCE_PATH + "/sendnotifications")
+                || pathInfo.startsWith(IndexingResource.RESOURCE_PATH)) {
             if (token == null) {
                 logger.trace("No token");
                 return false;
-            } else {
-                return token.equals(DataManager.getInstance().getConfiguration().getWebApiToken());
             }
-            
+            return token.equals(DataManager.getInstance().getConfiguration().getWebApiToken());
         }
 
         return true;

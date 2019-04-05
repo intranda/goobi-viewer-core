@@ -279,8 +279,7 @@ public class ManifestBuilder extends AbstractBuilder {
                                 .getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(), Rotation.NONE.toString(),
                                         Colortype.DEFAULT.toString(),
                                         ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath()))
-                                                .toString(),
-                                        85);
+                                                .toString());
                     } catch (NullPointerException e) {
                         logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
                         urlString = null;

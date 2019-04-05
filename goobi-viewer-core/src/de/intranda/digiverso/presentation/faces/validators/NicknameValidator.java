@@ -15,9 +15,6 @@
  */
 package de.intranda.digiverso.presentation.faces.validators;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -32,11 +29,10 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
- * Syntax validator for e-mail addresses.
+ * Syntax validator for nicknames.
  */
 @FacesValidator("nicknameValidator")
 public class NicknameValidator implements Validator<String> {
-
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
@@ -58,17 +54,17 @@ public class NicknameValidator implements Validator<String> {
 
     /**
      * @param email
-     * @return  true if the given email is not already assigned to a user except a possibly currently logged in user in this session
-     * @throws DAOException 
+     * @return true if the given email is not already assigned to a user except a possibly currently logged in user in this session
+     * @throws DAOException
      */
-    private boolean validateNicknameUniqueness(String nick) throws DAOException {
+    private static boolean validateNicknameUniqueness(String nick) throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByNickname(nick);
         User currentUser = BeanUtils.getUserBean().getUser();
-        if(user != null) {
+        if (user != null) {
             return currentUser != null && user.getId().equals(currentUser.getId());
-        } else {
-            return true;
         }
+
+        return true;
     }
 
 }

@@ -30,6 +30,9 @@ var viewerJS = ( function( viewer ) {
     var _sidebarWidth;
     var _sidebarLeft;
     var _sidebarId;
+    var _lastKeyCode;
+    var _lastKeyPress;
+    var _maxDoubleClickDelay = 250//ms
     var _defaults = {
     	resizeSelector: '#fullscreenViewSidebar',
     	msg: {}
@@ -50,6 +53,8 @@ var viewerJS = ( function( viewer ) {
             }
             
             $.extend( true, _defaults, config );
+                        
+            $(window).on("key")
             
             // hide header
             _hideHeader( true, 5000 );
@@ -101,8 +106,12 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // set sidebar and panel status
-            _setSidebarStatus();
+            //restorePanelPosition is called twice to restore both width and scroll-position correctly
             _setPanelStatus();
+            _restorePanelPosition();
+            _setSidebarStatus();
+            _restorePanelPosition();
+
 
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
@@ -152,6 +161,7 @@ var viewerJS = ( function( viewer ) {
             		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
             	}
 
+            	
             	// slide in sidebar
             	$( '#fullscreenViewSidebar' ).animate( {
             		right: 0
@@ -169,6 +179,7 @@ var viewerJS = ( function( viewer ) {
             		
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', true );
+
             	} );
             	
             	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
@@ -255,7 +266,13 @@ var viewerJS = ( function( viewer ) {
                 }
             	
             	sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
-            } );            
+            } ); 
+            
+            $(document.body).off("keyup", _handleKeypress);
+            $(document.body).on("keyup", _handleKeypress);
+            
+            window.addEventListener("beforeunload", _storePanelPosition);
+
         },
     };
     
@@ -363,6 +380,9 @@ var viewerJS = ( function( viewer ) {
     	}
     	else {
     		panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+    		if(_debug) {
+    			console.log("panelStatus ", panelStatus);
+    		}
     		
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
     			var currId = $( this ).attr( 'id' );
@@ -373,6 +393,8 @@ var viewerJS = ( function( viewer ) {
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
     		} );
+
+    		
     	}
     }
 
@@ -450,6 +472,87 @@ var viewerJS = ( function( viewer ) {
 			$( '#fullscreenHeader' ).show();
     	}
     }
+    
+    function _restorePanelPosition() {
+		var panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+		if(panelStatus) {		
+			if(panelStatus.width !== undefined) {    			
+				$('#fullscreenViewSidebar').width(panelStatus.width);
+			}
+			if(panelStatus.scrollTop !== undefined) {    			
+				$('#fullscreenViewSidebar').scrollTop(panelStatus.scrollTop);
+			}
+		}
+	}
+    
+    /**
+     * Stores sidebar panel width and scroll position to session storage using the 'rmPanelStatus' key
+     */
+    function _storePanelPosition(event) {
+    	var sidebarStatus = JSON.parse(sessionStorage.getItem( 'fsSidebarStatus' ));
+    	var panelStatus = JSON.parse(sessionStorage.getItem( 'rmPanelStatus' ));
+    	
+    	if(panelStatus) {
+    		panelStatus.width = $('#fullscreenViewSidebar').width();
+    		panelStatus.scrollTop = $('#fullscreenViewSidebar').scrollTop();
+    	}
+
+        sessionStorage.setItem( "rmPanelStatus", JSON.stringify( panelStatus ) );
+        if ( _debug ) {
+            console.log( "storing panel state ", panelStatus );
+        }
+   };
+
+   
+   function _handleKeypress(event) {
+	   if (event.originalEvent) {
+			event = event.originalEvent;
+		}
+
+		if (_debug) {
+			console.log("event from ", event.target.tagName.toLowerCase());
+		}
+		
+		// don't handle if the actual target is an input field
+		if (event.target.tagName.toLowerCase().match(/input|textarea/)) {
+			return true;
+		}
+
+		var keyCode = event.keyCode;
+		var now = Date.now();
+
+		// this is a double key press if the last entered keycode is the same as the current one and the last key press is less than maxDoubleClickDelay ago
+		var doubleKeypress = (_lastKeyCode == keyCode && now - _lastKeyPress <= _maxDoubleClickDelay);
+		_lastKeyCode = keyCode;
+		_lastKeyPress = now;
+
+		if (_debug) {
+			console.log("key pressed ", keyCode);
+			if (doubleKeypress) {
+				console.log("double key press");
+			}
+		}
+		
+		switch (keyCode) {
+			case 37:
+				if (doubleKeypress && $(".image-controls__action.start a").length) {
+					$(".image-controls__action.start a").get(0).click();
+				} 
+				else if ($(".image-controls__action.back a").length) {
+					$(".image-controls__action.back a").get(0).click();
+				}
+				break;
+			case 39:
+				if (doubleKeypress && $(".image-controls__action.end a").length) {
+					$(".image-controls__action.end a").get(0).click();
+				} 
+				else if ($(".image-controls__action.forward a").length) {
+					$(".image-controls__action.forward a").get(0).click();
+				}
+				break;
+		};
+   }
+   
     
     return viewer;
     

@@ -159,7 +159,7 @@ public class ManifestResource extends AbstractResource {
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
-                List<Range> ranges = getStructureBuilder().generateStructure(docs, false);
+                List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
                 ranges.forEach(range -> {
                     ((Manifest) manifest).addStructure(range);
                 });
@@ -263,7 +263,7 @@ public class ManifestResource extends AbstractResource {
         } else if (manifest instanceof Manifest) {
             PageType pageType = PageType.getByName(preferredView);
             if(pageType == null) {
-                pageType = PageType.viewImage;
+                pageType = PageType.viewObject;
             }
             getSequenceBuilder().setPreferredView(pageType).setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0).getCanvases();
@@ -296,7 +296,7 @@ public class ManifestResource extends AbstractResource {
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
         }
-        List<Range> ranges = getStructureBuilder().generateStructure(docs, false);
+        List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
         Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId)).findFirst();
         return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
     }

@@ -71,7 +71,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
-    private PageType preferredView = PageType.viewImage;
+    private PageType preferredView = PageType.viewObject;
 
     /**
      * @param request

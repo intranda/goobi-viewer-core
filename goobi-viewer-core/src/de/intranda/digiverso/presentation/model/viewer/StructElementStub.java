@@ -251,7 +251,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (anchor) {
             return getUrl(PageType.viewToc);
         }
-        return getUrl(PageType.viewImage);
+        return getUrl(PageType.viewObject);
     }
 
     /**
@@ -279,11 +279,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         }
 
         StringBuilder sbUrl = new StringBuilder();
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType.getName()).append('/').append(getPi()).append(
-                '/').append(getImageNumber()).append('/');
-        if (StringUtils.isNotEmpty(logid)) {
-            sbUrl.append(logid).append('/');
-        }
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append('/')
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, pageType));
 
         return sbUrl.toString();
     }
@@ -312,12 +310,17 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @throws IndexUnreachableException
      */
     public int getNumPages() throws IndexUnreachableException {
-        
+
         try {
-            String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
-                    .append(':').append(DocType.PAGE.name()).toString();
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(
-                    SolrConstants.ORDER));
+            String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':')
+                    .append(getPi())
+                    .append(" AND ")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.PAGE.name())
+                    .toString();
+            SolrDocumentList result =
+                    DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(SolrConstants.ORDER));
             return (int) result.getNumFound();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -440,8 +443,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = getMetadataValues(fieldName);
         if (!values.isEmpty()) {
             return values.get(0);
-        } else if(fieldName != null && !fieldName.contains("_LANG_")){
-            return  getMetadataValue(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
+            return getMetadataValue(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return null;
@@ -457,13 +460,12 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = metadataFields.get(fieldName);
         if (values != null) {
             return values;
-        } else if(fieldName != null && !fieldName.contains("_LANG_")){
-            return  getMetadataValues(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
+            return getMetadataValues(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
         }
 
         return Collections.emptyList();
     }
-
 
     /**
      * Generates a ContextObject (for a COinS <span> element) containing metadata from this <code>StructElement</code>.
@@ -553,20 +555,25 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         return sb.toString();
     }
-    
+
     public IMetadataValue getMultiLanguageMetadataValue(String fieldName) {
-        List<String> fieldNames = this.getMetadataFields().keySet().stream().filter(key -> key.equals(fieldName) || key.startsWith(fieldName + "_LANG_")).collect(Collectors.toList());
-        Map<String, List<String>> valueMap = fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), field -> getMetadataValues(field)));
-        if(valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
+        List<String> fieldNames = this.getMetadataFields()
+                .keySet()
+                .stream()
+                .filter(key -> key.equals(fieldName) || key.startsWith(fieldName + "_LANG_"))
+                .collect(Collectors.toList());
+        Map<String, List<String>> valueMap =
+                fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), field -> getMetadataValues(field)));
+        if (valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
             //only default language: Simple MEtadata value
             return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
         } else {
             return new MultiLanguageMetadataValue(valueMap);
         }
     }
-    
+
     private String getLanguage(String fieldName) {
-        if(fieldName.contains("_LANG_")) {
+        if (fieldName.contains("_LANG_")) {
             return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
         } else {
             return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
@@ -607,5 +614,5 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         return "";
     }
-    
+
 }

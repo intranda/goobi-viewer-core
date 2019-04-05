@@ -10,6 +10,7 @@
     <!-- interface options -->
     <composite:interface>
         <composite:attribute name="tableValues" required="true" />
+        <composite:attribute name="onevent" required="false" default="''" />
     </composite:interface>
 
     <!-- component content -->
@@ -19,13 +20,11 @@
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveFirst}" disabled="#{cc.attrs.tableValues.firstPage}">
                         <i class="fa fa-angle-double-left" aria-hidden="true"></i>
-                        <f:ajax render="@form" />
                     </h:commandLink>
                 </li>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMovePrevious}" disabled="#{cc.attrs.tableValues.firstPage}">
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <f:ajax render="@form" />
                         <h:outputText value=" #{msgs.pagePrevious}" />
                     </h:commandLink>
                 </li>
@@ -47,13 +46,11 @@
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveNext}" disabled="#{cc.attrs.tableValues.lastPage}">
                         <i class="fa fa-angle-right" aria-hidden="true"></i>
-                        <f:ajax render="@form" />
                     </h:commandLink>
                 </li>
                 <li>
                     <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn--default btn--inactive' : 'btn--default'}" action="#{cc.attrs.tableValues.cmdMoveLast}" disabled="#{cc.attrs.tableValues.lastPage}">
                         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                        <f:ajax render="@form" />
                     </h:commandLink>
                 </li>
             </ul>

@@ -29,7 +29,10 @@
     <ui:define name="content">    
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templatePrivacy" class="tpl-privacy #{cmsPage.wrapperElementClass}">
-				<h2>#{cmsPage.title}</h2>
+                <!-- EDIT PAGE -->
+                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
+                </ui:fragment>
                 
                 <!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
@@ -37,6 +40,8 @@
                         #{msg.cms_pagePreviewNotPublished}
                     </div>
                 </h:panelGroup>
+
+				<h2>#{cmsPage.title}</h2>                
 				
 				<div class="tpl-privacy__text">
 					<ui:include src="#{cmsPage.getContent('text01')}" />

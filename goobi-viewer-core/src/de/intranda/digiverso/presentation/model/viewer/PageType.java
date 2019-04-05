@@ -35,7 +35,7 @@ public enum PageType {
     viewThumbs("thumbs"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
-//    viewOverview("overview"),
+    //    viewOverview("overview"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
@@ -58,6 +58,7 @@ public enum PageType {
     adminIpRange("admin/network"),
     adminAllLicenseTypes("admin/licenses"),
     adminLicenseType("admin/license"),
+    adminRoles("admin/roles"),
     adminUserComments("admin/comments"),
     adminUserActivity("admin/user/activity/"),
     //admin/cms
@@ -65,11 +66,14 @@ public enum PageType {
     adminCmsOverview("admin/cms/pages"),
     adminCmsSelectTemplate("admin/cms/pages/new"),
     adminCmsCreatePage("admin/cms/pages/create"),
+    adminCmsCategories("admin/cms/categories"),
     adminCmsStaticPages("admin/cms/pages/mapping"),
-    adminCmsOverviewMedia("admin/cms/media"),
+    adminCmsMedia("admin/cms/media"),
     adminCmsMenuItems("admin/cms/menus"),
     adminCmsCollections("admin/cms/collections"),
     adminCmsEditCollection("admin/cms/collections/edit"),
+    cmsPageOfWork("page"),
+    cmsPage("cms"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
@@ -116,7 +120,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-//            case viewOverview:
+                //            case viewOverview:
             case viewThumbs:
             case viewToc:
                 return true;
@@ -139,7 +143,7 @@ public enum PageType {
             case viewFulltext:
             case viewImage:
             case viewMetadata:
-//            case viewOverview:
+                //            case viewOverview:
             case viewThumbs:
             case viewToc:
             case viewObject:
@@ -245,8 +249,7 @@ public enum PageType {
      * @param mimeType
      * @param anchorOrGroup
      * @param hasImages
-     * @param preferOverviewPage Use the overview page type, if not a page resolver URL
-     * @param pageResolverUrl If this page type is for a page resover url, ignore certain preferences
+     * @param pageResolverUrl If this page type is for a page resolver url, ignore certain preferences
      * @return
      * @should return configured page type correctly
      * @should return metadata page type for application mime type
@@ -255,12 +258,10 @@ public enum PageType {
      * @should return medatata page type if nothing else matches
      */
     public static PageType determinePageType(String docStructType, String mimeType, boolean anchorOrGroup, boolean hasImages,
-            boolean preferOverviewPage, boolean pageResolverUrl) {
-        // Prefer the overview page, if available (and not a page URL)
-//        if (preferOverviewPage && !pageResolverUrl) {
-//            return PageType.viewOverview;
-//        }
+            boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
+        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType,
+        //                anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
@@ -272,7 +273,7 @@ public enum PageType {
             return PageType.viewToc;
         }
         if (hasImages) {
-            return PageType.viewImage;
+            return PageType.viewObject;
         }
 
         return PageType.viewMetadata;

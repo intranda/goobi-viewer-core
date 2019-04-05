@@ -15,14 +15,13 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +38,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
@@ -50,9 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.TEITools;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -60,641 +62,655 @@ import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
-import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 @Entity
 @Table(name = "cms_media_items")
-public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
-
-    /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
-
-    public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    public static final String CONTENT_TYPE_DOC = "application/msword";
-    public static final String CONTENT_TYPE_RTF = "application/rtf";
-    public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
-    public static final String CONTENT_TYPE_RTF3 = "text/rtf";
-    public static final String CONTENT_TYPE_RTF4 = "text/richtext";
-    public static final String CONTENT_TYPE_XML = "text/xml";
-    public static final String CONTENT_TYPE_HTML = "text/html";
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_media_item_id")
-    private Long id;
-
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-
-    @Column(name = "link_url", nullable = true)
-    private URI link;
-
-    @Column(name = "priority", nullable = true)
-    private Priority priority = Priority.DEFAULT;
-
-    @Column(name = "collection", nullable = true)
-    private Boolean collection = false;
-
-    @Column(name = "collection_field", nullable = true)
-    private String collectionField = "DC";
-
-    @Column(name = "collection_name", nullable = true)
-    private String collectionName = null;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_media_item_metadata", joinColumns = @JoinColumn(name = "owner_media_item_id"))
-    @PrivateOwned
-    private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "cms_media_item_tags", joinColumns = @JoinColumn(name = "owner_media_item_id"))
-    @Column(name = "tag_name")
-    private List<String> tags = new ArrayList<>();
-
-    @Column(name = "display_size", nullable = true)
-    private DisplaySize displaySize = DisplaySize.DEFAULT;
-
-    @Column(name = "display_order", nullable = true)
-    private int displayOrder = 0;
-
-    /**
-     * default constructor
-     */
-    public CMSMediaItem() {
-    }
-
-    /**
-     * copy constructor
-     * 
-     * @param currentMediaItem
-     */
-    public CMSMediaItem(CMSMediaItem orig) {
-        if (orig.id != null) {
-            this.id = new Long(orig.id);
-        }
-        this.fileName = orig.fileName;
-        this.link = orig.link;
-        this.priority = orig.priority;
-        this.collection = new Boolean(orig.collection);
-        this.collectionField = orig.collectionField;
-        this.collectionName = orig.collectionName;
-        this.displayOrder = orig.displayOrder;
-        this.displaySize = orig.displaySize;
-        this.tags = new ArrayList<>(orig.tags);
-
-        for (CMSMediaItemMetadata origMetadata : orig.metadata) {
-            CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
-            this.metadata.add(copy);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        CMSMediaItem other = (CMSMediaItem) obj;
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Perform any necessary post-upload processing (e.g. format conversions).
-     * 
-     * @throws IOException
-     * @throws JDOMException
-     */
-    public void processMediaFile(File mediaFile) {
-        if (mediaFile == null) {
-            return;
-        }
-
-        if (CONTENT_TYPE_DOCX.equals(getContentType())) {
-            try {
-                // TODO convert to TEI
-                String tei = TEITools.convertDocxToTei(mediaFile.toPath());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
-     * Determines this media item's file's content type via the extension.
-     * 
-     * @return Content type string
-     */
-    public String getContentType() {
-        if (fileName == null) {
-            return "";
-        }
-
-        String extension = FilenameUtils.getExtension(fileName);
-        switch (extension) {
-            case "doc":
-                return CONTENT_TYPE_DOC;
-            case "docx":
-                return CONTENT_TYPE_DOCX;
-            case "htm":
-            case "html":
-            case "xhtml":
-                return CONTENT_TYPE_HTML;
-            case "xml":
-                return CONTENT_TYPE_XML;
-            case "rtf":
-                return CONTENT_TYPE_RTF;
-            default:
-                return "";
-        }
-    }
-
-    /**
-     * Checks whether this media item contains a text file that can be exported for indexing.
-     * 
-     * @return true if item content types allows for text export; false otherwise
-     */
-    public boolean isHasExportableText() {
-        switch (getContentType()) {
-            case CMSMediaItem.CONTENT_TYPE_DOC:
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
-            case CMSMediaItem.CONTENT_TYPE_RTF:
-            case CMSMediaItem.CONTENT_TYPE_HTML:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the fileName
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * @param fileName the fileName to set
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    /**
-     * 
-     * @param locale
-     * @return media item metadata for the given locale; null if no locale given
-     */
-    public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
-        if (locale != null) {
-            return getMetadataForLanguage(locale.getLanguage());
-        }
-
-        return null;
-    }
-
-    /**
-     * 
-     * @param language
-     * @return media item metadata for the given locale
-     */
-    public CMSMediaItemMetadata getMetadataForLanguage(String language) {
-        for (CMSMediaItemMetadata md : metadata) {
-            if (md.getLanguage().equals(language)) {
-                return md;
-            }
-        }
-
-        CMSMediaItemMetadata md = new CMSMediaItemMetadata();
-        md.setLanguage(language);
-        this.metadata.add(md);
-        return md;
-    }
-
-    /**
-     * @return the metadata
-     */
-    public List<CMSMediaItemMetadata> getMetadata() {
-        return metadata;
-    }
-
-    /**
-     * @param metadata the metadata to set
-     */
-    public void setMetadata(List<CMSMediaItemMetadata> metadata) {
-        this.metadata = metadata;
-    }
-
-    /**
-     * Adds a metadata item to the list of image metadata. If a metadata item with the same language string exists, it is replaced
-     *
-     * @param metadata
-     */
-    public void addMetadata(CMSMediaItemMetadata metadata) {
-        String language = metadata.getLanguage();
-        if (getMetadataForLanguage(language) != null) {
-            getMetadata().remove(getMetadataForLanguage(language));
-        }
-        getMetadata().add(metadata);
-    }
-
-    /**
-     * 
-     * @return metadata list for the current language
-     */
-    public CMSMediaItemMetadata getCurrentLanguageMetadata() {
-        CMSMediaItemMetadata version = null;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
-            version = getMetadataForLocale(FacesContext.getCurrentInstance().getViewRoot().getLocale());
-        }
-        if (version == null && getMetadata().size() > 0) {
-            version = getMetadata().get(0);
-        }
-        if (version == null) {
-            return null;
-        }
-
-        return version;
-    }
-
-    public boolean hasTags() {
-        return !tags.isEmpty();
-    }
-
-    @Override
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public boolean removeTag(String tag) {
-        return this.tags.remove(tag);
-    }
-
-    public boolean addTag(String tag) {
-        if (this.tags.contains(tag)) {
-            return false;
-        }
-        return this.tags.add(tag);
-    }
-
-    @Override
-    public boolean isImportant() {
-        return Priority.IMPORTANT.equals(this.priority);
-    }
-
-    public void setImportant(boolean important) {
-        this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
-    }
-
-    /**
-     * @return the priority
-     */
-    @Override
-    public Priority getPriority() {
-        if (priority == null) {
-            priority = Priority.DEFAULT;
-        }
-        return priority;
-    }
-
-    /**
-     * @param priority the priority to set
-     */
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
-    public URI getLinkURI() {
-        return getLinkURI(BeanUtils.getRequest());
-    }
-
-    /**
-     * @return the URI to this media item
-     */
-    @Override
-    public URI getLinkURI(HttpServletRequest request) {
-        String link = getLink();
-        if (StringUtils.isNotBlank(link)) {
-            try {
-                URI uri = new URI(link);
-                if (!uri.isAbsolute()) {
-                    String viewerURL = "/";
-                    if (request != null) {
-                        viewerURL = request.getContextPath();
-                    }
-                    link = StringTools.decodeUrl(link);
-                    String urlString = (viewerURL + link).replace("//", "/");
-                    uri = new URI(urlString);
-                }
-                return uri;
-            } catch (URISyntaxException e) {
-                logger.error("Unable to create uri from " + getLink());
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * 
-     * @return the entered link url
-     */
-    public String getLink() {
-        if (this.link != null) {
-            return this.link.toString();
-        }
-        return null;
-    }
-
-    /**
-     * set the link for this media item
-     * 
-     * @param linkUrl
-     * @throws URISyntaxException
-     */
-    public void setLink(String linkUrl) throws URISyntaxException {
-        if (StringUtils.isBlank(linkUrl)) {
-            this.link = null;
-        } else {
-            this.link = new URI(linkUrl);
-        }
-    }
-
-    @Override
-    public boolean isCollection() {
-        if (collection == null) {
-            collection = false;
-        }
-        return collection;
-    }
-
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-
-    @Override
-    public String getCollectionName() {
-        return collectionName;
-    }
-
-    public void setCollectionName(String collectionName) throws URISyntaxException, UnsupportedEncodingException {
-        this.collectionName = collectionName;
-        if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
-            this.link = new URI(URLEncoder.encode(getCollectionSearchUri(), "utf-8"));
-        }
-    }
-
-    @Deprecated
-    public String getCollectionViewUri() {
-        String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
-        return new StringBuilder(baseUri).append('/')
-                .append(PageType.expandCollection)
-                .append('/')
-                .append(getCollectionField())
-                .append(':')
-                .append(getCollectionName())
-                .append('/')
-                .toString();
-    }
-
-    public String getCollectionSearchUri() throws UnsupportedEncodingException {
-        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                .append(PageType.browse.getName())
-                .append("/-/1/-/")
-                .append(getCollectionField())
-                .append(':')
-                .append(URLEncoder.encode(getCollectionName(), "utf-8"))
-                .append('/')
-                .toString();
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getDescription()
-     */
-    @Override
-    public String getDescription() {
-        return getCurrentLanguageMetadata().getDescription();
-    }
-
-    @Override
-    public String getName() {
-        return getCurrentLanguageMetadata().getName();
-    }
-
-    /**
-     * @return the size
-     */
-    @Override
-    public DisplaySize getSize() {
-        return displaySize;
-    }
-
-    /**
-     * @param size the size to set
-     */
-    public void setSize(DisplaySize size) {
-        this.displaySize = size;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getIconURI()
-     */
-    @Override
-    public URI getIconURI() {
-
-        int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
-        int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
-        return getIconURI(width, height);
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getIconURI(int, int)
-     */
-    @Override
-    public URI getIconURI(int width, int height) {
-        if (getFileName() != null) {
-            try {
-                String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
-                return new URI(uriString);
-            } catch (URISyntaxException e) {
-                logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
-            } catch (ViewerConfigurationException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        return null;
-
-    }
-
-    @Override
-    public URI getIconURI(int size) {
-        if (getFileName() != null) {
-            try {
-                String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
-                return new URI(uriString);
-            } catch (URISyntaxException e) {
-                logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
-            }
-        }
-
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ID=" + id + " (FILE=" + fileName + ")";
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getName(java.lang.String)
-     */
-    @Override
-    public String getName(String language) {
-        if (getMetadataForLanguage(language) != null) {
-            return getMetadataForLanguage(language).getName();
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getDescription(java.lang.String)
-     */
-    @Override
-    public String getDescription(String language) {
-        if (getMetadataForLanguage(language) != null) {
-            return getMetadataForLanguage(language).getDescription();
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getDisplayOrder()
-     */
-    @Override
-    public int getDisplayOrder() {
-        return this.displayOrder;
-    }
-
-    /**
-     * @param displayOrder the displayOrder to set
-     */
-    public void setDisplayOrder(int displayOrder) {
-        this.displayOrder = displayOrder;
-    }
-
-    /**
-     * @return the collectionNField
-     */
-    public String getCollectionField() {
-        if (StringUtils.isBlank(collectionField)) {
-            return SolrConstants.DC;
-        }
-        return collectionField;
-    }
-
-    /**
-     * @param collectionField the collectionField to set
-     */
-    public void setCollectionField(String collectionField) {
-        this.collectionField = collectionField;
-    }
-
-    public String getImageURI() {
-
-        Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
-        return path.toUri().toString();
-
-        //        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
-        //
-        //        // Add an extra slash if not on Windows
-        //        String os = System.getProperty("os.name").toLowerCase();
-        //        if (os.indexOf("win") == -1) {
-        //            imageUrlBuilder.append('/');
-        //        }
-        //        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
-        //        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
-        //        imageUrlBuilder.append(getFileName());
-        //        return imageUrlBuilder.toString();
-    }
-
-    @Override
-    public IMetadataValue getTranslationsForName() {
-        Map<String, String> names = getMetadata().stream()
-                .filter(md -> StringUtils.isNotBlank(md.getName()))
-                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
-        return new MultiLanguageMetadataValue(names);
-        //        return IMetadataValue.getTranslations(getName());
-    }
-
-    public IMetadataValue getTranslationsForDescription() {
-        Map<String, String> names = getMetadata().stream()
-                .filter(md -> StringUtils.isNotBlank(md.getDescription()))
-                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
-        return new MultiLanguageMetadataValue(names);
-    }
-
-    public static void main(String[] args) {
-        String uriString =
-                "https://digital.zlb.de/viewer/search/-/-/1/SORT_TITLE/FACET_DIGITALORIGIN%3Areformatted+digital%3B%3BFACET_DOCSTRCT%3APeriodical%3B%3BDC%3Aberlin.staatpolitikverwaltungrecht%3B%3B/";
-        try {
-            URI uri = new URI(uriString);
-            System.out.println(uri);
-
-            CMSMediaItem item = new CMSMediaItem();
-            item.setLink(uriString);
-            URI linkURI = item.getLinkURI(null);
-            System.out.println(linkURI);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
+public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Comparable<CMSMediaItem> {
+
+	/** Logger for this class. */
+	private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
+
+	public static final String CONTENT_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	public static final String CONTENT_TYPE_DOC = "application/msword";
+	public static final String CONTENT_TYPE_RTF = "application/rtf";
+	public static final String CONTENT_TYPE_RTF2 = "application/x-rtf";
+	public static final String CONTENT_TYPE_RTF3 = "text/rtf";
+	public static final String CONTENT_TYPE_RTF4 = "text/richtext";
+	public static final String CONTENT_TYPE_XML = "text/xml";
+	public static final String CONTENT_TYPE_HTML = "text/html";
+	public static final String CONTENT_TYPE_SVG = "image/svg+xml";
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "cms_media_item_id")
+	private Long id;
+
+	@Column(name = "file_name", nullable = false)
+	private String fileName;
+
+	@Column(name = "link_url", nullable = true)
+	private URI link;
+
+	@Column(name = "priority", nullable = true)
+	private Priority priority = Priority.DEFAULT;
+
+	@Column(name = "image_alt_text", nullable = true)
+	private String alternativeText = "";
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "cms_media_item_metadata", joinColumns = @JoinColumn(name = "owner_media_item_id"))
+	@PrivateOwned
+	private List<CMSMediaItemMetadata> metadata = new ArrayList<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "cms_media_item_cms_categories", joinColumns = @JoinColumn(name = "media_item_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+	private List<CMSCategory> categories = new ArrayList<>();
+
+	@Column(name = "display_order", nullable = true)
+	private int displayOrder = 0;
+
+	@Transient
+	private FileTime lastModifiedTime = null;
+
+	/**
+	 * default constructor
+	 */
+	public CMSMediaItem() {
+	}
+
+	/**
+	 * copy constructor
+	 * 
+	 * @param currentMediaItem
+	 */
+	public CMSMediaItem(CMSMediaItem orig) {
+		if (orig.id != null) {
+			this.id = new Long(orig.id);
+		}
+		this.fileName = orig.fileName;
+		this.link = orig.link;
+		this.priority = orig.priority;
+		this.displayOrder = orig.displayOrder;
+		this.categories = new ArrayList<>(orig.getCategories());
+
+		for (CMSMediaItemMetadata origMetadata : orig.metadata) {
+			CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
+			this.metadata.add(copy);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		CMSMediaItem other = (CMSMediaItem) obj;
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Perform any necessary post-upload processing (e.g. format conversions).
+	 * 
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
+	public void processMediaFile(Path mediaFile) {
+		if (mediaFile == null) {
+			return;
+		}
+
+		if (CONTENT_TYPE_DOCX.equals(getContentType())) {
+			try {
+				// TODO convert to TEI
+				String tei = TEITools.convertDocxToTei(mediaFile);
+			} catch (IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
+	 * Determines this media item's file's content type via the extension.
+	 * 
+	 * @return Content type string
+	 */
+	public String getContentType() {
+		if (fileName == null) {
+			return "";
+		}
+
+		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+		switch (extension) {
+		case "doc":
+			return CONTENT_TYPE_DOC;
+		case "docx":
+			return CONTENT_TYPE_DOCX;
+		case "htm":
+		case "html":
+		case "xhtml":
+			return CONTENT_TYPE_HTML;
+		case "xml":
+			return CONTENT_TYPE_XML;
+		case "rtf":
+			return CONTENT_TYPE_RTF;
+		case "jpg":
+		case "jpeg":
+		case "png":
+		case "tif":
+		case "tiff":
+		case "jp2":
+			return ImageFileFormat.getImageFileFormatFromFileExtension(extension).getMimeType();
+		case "svg":
+			return CONTENT_TYPE_SVG;
+		default:
+			return "";
+		}
+	}
+
+	/**
+	 * Checks whether this media item contains a text file that can be exported for
+	 * indexing.
+	 * 
+	 * @return true if item content types allows for text export; false otherwise
+	 */
+	public boolean isHasExportableText() {
+		switch (getContentType()) {
+		case CMSMediaItem.CONTENT_TYPE_DOC:
+		case CMSMediaItem.CONTENT_TYPE_DOCX:
+		case CMSMediaItem.CONTENT_TYPE_RTF:
+		case CMSMediaItem.CONTENT_TYPE_HTML:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the fileName
+	 */
+	public String getFileName() {
+		return fileName;
+	}
+
+	/**
+	 * @param fileName the fileName to set
+	 */
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+		this.lastModifiedTime = null;
+	}
+
+	/**
+	 * @return the alternativeText
+	 */
+	public String getAlternativeText() {
+		return alternativeText;
+	}
+
+	/**
+	 * @param alternativeText the alternativeText to set
+	 */
+	public void setAlternativeText(String alternativeText) {
+		this.alternativeText = alternativeText;
+	}
+
+	/**
+	 * 
+	 * @param locale
+	 * @return media item metadata for the given locale; null if no locale given
+	 */
+	public CMSMediaItemMetadata getMetadataForLocale(Locale locale) {
+		if (locale != null) {
+			return getMetadataForLanguage(locale.getLanguage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param language
+	 * @return media item metadata for the given locale
+	 */
+	public CMSMediaItemMetadata getMetadataForLanguage(String language) {
+		for (CMSMediaItemMetadata md : metadata) {
+			if (md.getLanguage().equals(language)) {
+				return md;
+			}
+		}
+
+		CMSMediaItemMetadata md = new CMSMediaItemMetadata();
+		md.setLanguage(language);
+		this.metadata.add(md);
+		return md;
+	}
+
+	/**
+	 * @return the metadata
+	 */
+	public List<CMSMediaItemMetadata> getMetadata() {
+		return metadata;
+	}
+
+	/**
+	 * @param metadata the metadata to set
+	 */
+	public void setMetadata(List<CMSMediaItemMetadata> metadata) {
+		this.metadata = metadata;
+	}
+
+	/**
+	 * Adds a metadata item to the list of image metadata. If a metadata item with
+	 * the same language string exists, it is replaced
+	 *
+	 * @param metadata
+	 */
+	public void addMetadata(CMSMediaItemMetadata metadata) {
+		String language = metadata.getLanguage();
+		if (getMetadataForLanguage(language) != null) {
+			getMetadata().remove(getMetadataForLanguage(language));
+		}
+		getMetadata().add(metadata);
+	}
+
+	/**
+	 * 
+	 * @return metadata list for the current language
+	 */
+	public CMSMediaItemMetadata getCurrentLanguageMetadata() {
+		CMSMediaItemMetadata version = null;
+		if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
+			version = getMetadataForLocale(FacesContext.getCurrentInstance().getViewRoot().getLocale());
+		}
+		if (version == null && getMetadata().size() > 0) {
+			version = getMetadata().get(0);
+		}
+		if (version == null) {
+			return null;
+		}
+
+		return version;
+	}
+
+	public boolean hasCateories() {
+		return !this.categories.isEmpty();
+	}
+
+	@Override
+	public List<CMSCategory> getCategories() {
+		return this.categories;
+	}
+
+	public void setCategories(List<CMSCategory> categories) {
+		this.categories = categories;
+	}
+
+	public boolean removeCategory(CMSCategory cat) {
+		return this.categories.remove(cat);
+	}
+
+	public boolean addCategory(CMSCategory cat) {
+		if (this.categories.contains(cat)) {
+			return false;
+		}
+		return this.categories.add(cat);
+	}
+
+	@Override
+	public boolean isImportant() {
+		return Priority.IMPORTANT.equals(this.priority);
+	}
+
+	public void setImportant(boolean important) {
+		this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
+	}
+
+	/**
+	 * @return the priority
+	 */
+	@Override
+	public Priority getPriority() {
+		if (priority == null) {
+			priority = Priority.DEFAULT;
+		}
+		return priority;
+	}
+
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
+
+	public URI getLinkURI() {
+		return getLinkURI(BeanUtils.getRequest());
+	}
+
+	/**
+	 * @return the URI to this media item
+	 */
+	@Override
+	public URI getLinkURI(HttpServletRequest request) {
+		String link = getLink();
+		if (StringUtils.isNotBlank(link)) {
+			try {
+				URI uri = new URI(link);
+				if (!uri.isAbsolute()) {
+					String viewerURL = "/";
+					if (request != null) {
+						viewerURL = request.getContextPath();
+					}
+					link = StringTools.decodeUrl(link);
+					String urlString = (viewerURL + link).replace("//", "/");
+					uri = new URI(urlString);
+				}
+				return uri;
+			} catch (URISyntaxException e) {
+				logger.error("Unable to create uri from " + getLink());
+				return null;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 * @return the entered link url
+	 */
+	public String getLink() {
+		if (this.link != null) {
+			return this.link.toString();
+		}
+		return null;
+	}
+
+	/**
+	 * set the link for this media item
+	 * 
+	 * @param linkUrl
+	 * @throws URISyntaxException
+	 */
+	public void setLink(String linkUrl) throws URISyntaxException {
+		if (StringUtils.isBlank(linkUrl)) {
+			this.link = null;
+		} else {
+			this.link = new URI(linkUrl);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#
+	 * getDescription()
+	 */
+	@Override
+	public String getDescription() {
+		return getCurrentLanguageMetadata().getDescription();
+	}
+
+	@Override
+	public String getName() {
+		return getCurrentLanguageMetadata().getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getIconURI(
+	 * )
+	 */
+	@Override
+	public URI getIconURI() {
+
+		int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
+		int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
+		return getIconURI(width, height);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#
+	 * getIconURI(int, int)
+	 */
+	@Override
+	public URI getIconURI(int width, int height) {
+		if (getFileName() != null) {
+			try {
+				String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
+				return new URI(uriString);
+			} catch (URISyntaxException e) {
+				logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+			} catch (ViewerConfigurationException e) {
+				logger.error(e.getMessage());
+			}
+		}
+
+		return null;
+
+	}
+
+	@Override
+	public URI getIconURI(int size) {
+		if (getFileName() != null) {
+			try {
+				String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
+				return new URI(uriString);
+			} catch (URISyntaxException e) {
+				logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+			}
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ID=" + id + " (FILE=" + fileName + ")";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#
+	 * getName(java.lang.String)
+	 */
+	@Override
+	public String getName(String language) {
+		if (getMetadataForLanguage(language) != null) {
+			return getMetadataForLanguage(language).getName();
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#
+	 * getDescription(java.lang.String)
+	 */
+	@Override
+	public String getDescription(String language) {
+		if (getMetadataForLanguage(language) != null) {
+			return getMetadataForLanguage(language).getDescription();
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#
+	 * getDisplayOrder()
+	 */
+	@Override
+	public int getDisplayOrder() {
+		return this.displayOrder;
+	}
+
+	/**
+	 * @param displayOrder the displayOrder to set
+	 */
+	public void setDisplayOrder(int displayOrder) {
+		this.displayOrder = displayOrder;
+	}
+
+	public String getImageURI() {
+
+		Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+				DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
+		return path.toUri().toString();
+
+		// StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+		//
+		// // Add an extra slash if not on Windows
+		// String os = System.getProperty("os.name").toLowerCase();
+		// if (os.indexOf("win") == -1) {
+		// imageUrlBuilder.append('/');
+		// }
+		// imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
+		// imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
+		// imageUrlBuilder.append(getFileName());
+		// return imageUrlBuilder.toString();
+	}
+
+	@Override
+	public IMetadataValue getTranslationsForName() {
+		Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName()))
+				.collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
+		return new MultiLanguageMetadataValue(names);
+		// return IMetadataValue.getTranslations(getName());
+	}
+
+	public IMetadataValue getTranslationsForDescription() {
+		Map<String, String> names = getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getDescription()))
+				.collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
+		return new MultiLanguageMetadataValue(names);
+	}
+
+	public boolean isFinished(Locale locale) {
+		return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
+	}
+
+	public List<Locale> getFinishedLocales() {
+		return this.getMetadata().stream().filter(md -> StringUtils.isNotBlank(md.getName()))
+				.map(md -> Locale.forLanguageTag(md.getLanguage())).collect(Collectors.toList());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(CMSMediaItem o) {
+		FileTime myTime = getLastModifiedTime();
+		FileTime oTime = o.getLastModifiedTime();
+		if (myTime != null && oTime != null) {
+			return oTime.compareTo(myTime);
+		} else if (myTime != null) {
+			return -1;
+		} else if (oTime != null) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * @return the lastModifiedTime. May be null only if no file exists or last
+	 *         modified time cannot be read
+	 */
+	public synchronized FileTime getLastModifiedTime() {
+		if (lastModifiedTime == null) {
+			lastModifiedTime = FileTime.fromMillis(0); // fallback
+			Path filePath = getFilePath();
+			if (Files.exists(filePath)) {
+				try {
+					lastModifiedTime = Files.getLastModifiedTime(filePath);
+				} catch (IOException e) {
+					logger.error("Error reading last modified time from " + filePath, e);
+				}
+			}
+		}
+		return lastModifiedTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Path getFilePath() {
+		Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+				DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+		Path file = folder.resolve(getFileName());
+		return file;
+	}
+
+	/**
+	 * @return the categoryMap. Never null. If it isn't defined yet, create a map
+	 *         from all categories
+	 * @throws DAOException TODO: check for licenses
+	 */
+	public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories){
+		List<Selectable<CMSCategory>> wrappedCategories = categories.stream()
+					.map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
+		return wrappedCategories;
+	}
+
+
 }

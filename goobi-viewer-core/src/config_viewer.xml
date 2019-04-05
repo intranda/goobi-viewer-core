@@ -321,13 +321,19 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference"
-			discriminatorField="" autoSwitch="true" addFilterQuery="false"
+			discriminatorField="DOCSTRCT" autoSwitch="false" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 
 				mechanism needs the root path of the theme. The path must be defined down 
 				to the /themes folder, just above the folder named like the theme. -->
 			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-reference/goobi-viewer-theme-reference/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
+		
+		<!-- name: Goobi viewer instance name -->
+		<name>Goobi viewer</name>
+		
+        <!-- name: Goobi viewer instance description -->
+        <description>Goobi viewer desc</description>
 	</viewer>
 
 	<search>
@@ -573,73 +579,55 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPILER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_RECIPIENT" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_AUTHOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_COMPOSER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="einMD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_PHOTOGRAPHER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ERSTELLER" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_ILLUSTRATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_EDITORCORPORATION" value="">
 					<param type="field" key="MD_EDITORCORPORATION" />
@@ -648,17 +636,13 @@
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="MD_TRANSLATOR" value="MASTERVALUE_WIKINORM"
 					group="true">
 					<param type="field" key="MD_DISPLAYFORM" />
 					<param type="wikipersonfield" key="MD_DISPLAYFORM" />
-					<param type="field" key="NORM_URI" />
-					<param type="field" key="NORM_URIGND" />
-					<param type="field" key="NORM_IDENTIFIER" />
+					<param type="normdatauri" key="NORM_URI" />
 				</metadata>
 				<metadata label="CURRENTNO" value="">
 					<param type="field" key="CURRENTNO" />
@@ -802,6 +786,17 @@
 				<metadata label="MD_RISMSEAL" value="">
 					<param type="field" key="MD_RISMSEAL" />
 				</metadata>
+				
+        <metadata label="MD_HAAB_PROVENIENCE" value="MASTERVALUE_GROUP" group="true">
+          <param type="translatedfield" key="MD_CODE" suffix=":_SPACE_"/>
+          <param type="field" key="MD_PREVIOUS_OWNER"/>
+          <param type="normdatauri" key="NORM_URI"/>
+          <param type="field" key="MD_CHARACTERISTIC" prefix="_SPACE_|_SPACE_"/>
+          <param type="field" key="MD_DATE" prefix="_SPACE_|_SPACE_Datum:_SPACE_"/>
+          <param type="field" key="MD_EXPLANATION" prefix="_SPACE_|_SPACE_Erläuterung:_SPACE_"/>
+          <param type="normdatauri" key="NORM_URI_RECORD"/>
+        </metadata>
+				
 			</template>
 		</mainMetadataList>
 
@@ -876,7 +871,18 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-
+			<!-- _GROUPS: Group documents -->
+            <template name="_GROUPS">
+                <metadata label="MD_TITLE" value="">
+                    <param type="field" key="MD_TITLE" />
+                </metadata>
+                <metadata label="MD_PUBLISHER" value="">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH" value="">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+            </template>
 			<!-- Map: sample definition of metadata for a special struct element -->
 			<template name="Map">
 				<metadata label="MD_TITLE" value="">
@@ -1019,7 +1025,8 @@
 			of fields to return. -->
 		<recordGroupIdentifierFields>
 			<field>GROUPID_SERIES</field>
-			<field>GROUPID_CONVOLUTE</field>
+			<field>GROUPID_SERIES_2</field>
+			<field>GROUPID_SERIES_3</field>
 		</recordGroupIdentifierFields>
 
 		<!-- ancestorIdentifierFields: Contains definitions of Solr fields that 

@@ -124,6 +124,7 @@
 @import "widgets/widgetToc.less";
 @import "widgets/widgetUsage.less";
 @import "widgets/widgetUser.less";
+@import "widgets/widgetUserInteractions.less";
 @import "widgets/widgetViews.less";
 @import "widgets/widgetNerFacetting.less";
 @import "widgets/widgetWorkCount.less";
@@ -134,6 +135,7 @@
 @import "admin/adminBackendTables.less";
 @import "admin/views/adminIpRange.less";
 @import "admin/views/adminLicenseType.less";
+@import "admin/views/adminRights.less";
 @import "admin/views/adminUser.less";
 @import "admin/views/adminUserGroup.less";
 @import "admin/views/tabUserLicenses.less";
@@ -141,14 +143,23 @@
 @import "admin/widgets/widgetAdmin.less";
 @import "admin/widgets/widgetCms.less";
 
-/* CMS MODULES */
-@import "cms/modules/options.less";
-
 /* CMS COMPONENTS */
 @import "cms/components/collectionTiled.less";
 @import "cms/components/solrQueryCollection.less";
 
+/* CMS INCLUDES */
+@import "cms/includes/mediaSelect.less";
+
+/* CMS MODULES */
+@import "cms/modules/actions.less";
+@import "cms/modules/options.less";
+@import "cms/modules/tables.less";
+
+/* CMS TAGS */
+@import "cms/tags/cmsSlideshow.less";
+
 /* CMS TEMPLATES */
+@import "cms/templates/cmsPage.less";
 @import "cms/templates/01_templateGeneric.less";
 @import "cms/templates/02_templateNewsOverview.less";
 @import "cms/templates/03_templateNewsDetail.less";
@@ -177,8 +188,9 @@
 @import "cms/templates/26_templateOverviewPageLegacy.less";
 
 /* CMS VIEWS */
+@import "cms/views/adminCmsCategories.less";
+@import "cms/views/adminCmsMedia.less";
 @import "cms/views/cmsCreatePage.less";
-@import "cms/views/cmsMediaOverview.less";
 @import "cms/views/cmsMenuItems.less";
 @import "cms/views/cmsOverview.less";
 @import "cms/views/cmsSelectTemplate.less"; 

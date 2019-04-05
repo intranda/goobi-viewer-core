@@ -18,9 +18,8 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsStaticPageAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup id="cmsStaticPageAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
             <div id="cmsStaticPages">
-                <h:panelGroup rendered="#{userBean.admin}">
                     <div class="cms-static-pages">
                         <h2 class="admin__content-inner-title">#{msg.cms_staticPages}</h2>
 
@@ -78,7 +77,6 @@
                             </h:form>
                         </div>
                     </div>
-                </h:panelGroup>
             </div>
         </h:panelGroup>
     </ui:define>

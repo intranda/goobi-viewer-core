@@ -76,7 +76,7 @@ public class IIIFUrlHandler {
      * @throws ViewerConfigurationException
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
-            String format, /*deprecated*/int compression) {
+            String format) {
 
         try {
             if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {

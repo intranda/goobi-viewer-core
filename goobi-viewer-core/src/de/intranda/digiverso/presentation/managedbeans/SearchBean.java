@@ -728,7 +728,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isEmpty(guiSearchString)) {
             return "-";
         }
-        return guiSearchString;
+        return StringTools.stripJS(guiSearchString);
     }
 
     /**
@@ -751,7 +751,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
         currentPage = 1;
-        guiSearchString = searchString;
+        guiSearchString = StringTools.stripJS(searchString);
         generateSimpleSearchString(searchString);
     }
 
@@ -773,7 +773,7 @@ public class SearchBean implements SearchInterface, Serializable {
             inSearchString = "";
         }
 
-        guiSearchString = inSearchString;
+        guiSearchString = StringTools.stripJS(inSearchString);
         searchString = "";
         searchTerms.clear();
         phraseSearch = false;

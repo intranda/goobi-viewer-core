@@ -520,7 +520,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         try {
                             fulltext = Helper.loadFulltext(browseElement.getDataRepository(),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
-                                    (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), request);
+                                    (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), true, request);
                         } catch (AccessDeniedException e) {
                             acccessDeniedType = true;
                             fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), locale);

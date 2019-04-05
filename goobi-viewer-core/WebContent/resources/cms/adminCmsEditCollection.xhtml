@@ -19,7 +19,7 @@
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.admin}">
+        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_COLLECTIONS')}">
             <div id="cmsEditCollection" class="cms-edit-collection">
                 <h:form id="cmsEditCollectionForm" prependId="false">
                     <h2 class="admin__content-inner-title">#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
@@ -106,6 +106,7 @@
                                 <strong>#{msg.cms_collections_image}</strong>
                             </div>
                             <div class="cms-edit-collection__text-image">
+                            <h:panelGroup id="mediaGroup">
                                 <!-- THUMBNAIL -->
                                 <div class="cms-edit-collection__text-image-thumbnail">
                                     <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
@@ -116,14 +117,28 @@
                                             class="img-responsive viewer-thumbnail" alt="" />
                                     </ui:fragment>
                                 </div>
-    
-                                <!-- CHANGE IMAGE -->
-                                <div class="cms-edit-collection__text-image-change">
-                                    <a data-toggle="modal" data-target="#selectImageModal">
-                                        <i class="fa fa-picture-o" aria-hidden="true"></i>
-                                        #{msg.cms_collections_changeImage}
-                                    </a>
-                                </div>
+
+                                
+				                <!-- ACTIONS -->
+				                <div class="cms-module__actions">
+				                    <h:commandLink 
+				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
+				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+				                        class="btn #{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+				                        role="button">
+				                        <f:ajax execute="@form" render="mediaSelectPanel" />
+				                    </h:commandLink>
+				                    <h:commandLink 
+				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
+				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
+				                        value="#{msg.cms_selectMediaItem_deselect}" 
+				                        class="btn btn--clean delete"
+				                        role="button">
+				                        <f:ajax render="mediaGroup" />
+				                    </h:commandLink>                    
+				                </div>
+                                
+							  </h:panelGroup>					
                             </div>
                         </div>
     
@@ -133,63 +148,26 @@
                             <h:commandButton disabled="#{!cmsCollectionsBean.currentCollectionValid}" styleClass="btn btn--success" id="saveCollection" value="#{msg.save}"
                                 action="#{cmsCollectionsBean.saveCurrentCollection()}" />
                         </div>
-    
-                        <!-- IMAGE MODAL -->
-                        <div id="selectImageModal" class="modal fade" tabindex="-1" role="dialog">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <a class="close" data-dismiss="modal">
-                                            <span aria-hidden="true">
-                                                <h:outputText value="&amp;times;" escape="false" />
-                                            </span>
-                                            <span class="sr-only">Close</span>
-                                        </a>
-                                        <h4 class="modal-title">#{msg.cms_collections_selectMediaItem}</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h:panelGroup id="modalImages">
-                                            <div class="cms-edit-collection__modal-images">
-                                                <figure class="cms-edit-collection__modal-image">
-                                                    <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(null)}">
-                                                        <span class="#{cmsCollectionsBean.isSelectedMediaItem(null) ? 'selected' : ''}">
-                                                            <img data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
-                                                                class="img-responsive viewer-thumbnail" alt="" />
-                                                            <figcaption>#{msg.cms_collections_noImage}</figcaption>
-                                                        </span>
-                                                        <f:ajax execute="@form" render="modalImages" />
-                                                    </h:commandLink>
-                                                </figure>
-    
-                                                <ui:repeat value="#{cmsMediaBean.getMediaItems('', cmsMediaBean.imageFilter)}" var="mediaItem">
-                                                    <figure class="cms-edit-collection__modal-image">
-                                                        <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(mediaItem)}">
-                                                            <span class="#{cmsCollectionsBean.isSelectedMediaItem(mediaItem) ? 'selected' : ''}">
-                                                                <img data-src="#{imageDelivery.thumbs.getSquareThumbnailUrl(mediaItem, 150)}" class="img-responsive viewer-thumbnail"
-                                                                    alt="" />
-                                                                <figcaption>#{mediaItem.name}</figcaption>
-                                                            </span>
-                                                            <f:ajax execute="@form" render="modalImages" />
-                                                        </h:commandLink>
-                                                    </figure>
-                                                </ui:repeat>
-                                            </div>
-                                        </h:panelGroup>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a class="btn" data-dismiss="modal"> #{msg.cancel} </a>
-                                        <h:commandLink action="#{cmsCollectionsBean.currentCollection.setMediaItem(cmsCollectionsBean.selectedMediaItem)}"
-                                            value="#{msg.cms_selectMediaItem_agree}" styleClass="btn btn--success">
-                                            <f:passThroughAttribute name="data-dismiss" value="modal" />
-                                            <f:ajax render="@form" />
-                                        </h:commandLink>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </h:form>
             </div>
+            
+            <h:panelGroup id="mediaSelectPanel">
+				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+	                   <div class="admin-cms-media-select-overlay">
+	                    
+	                    <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+                            
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">                            
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
+                            </div>
+	                   </div>
+				</ui:fragment>
+	        </h:panelGroup>
+            
         </ui:fragment>
     </ui:define>
 

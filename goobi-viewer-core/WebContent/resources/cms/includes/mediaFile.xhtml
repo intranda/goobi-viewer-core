@@ -1,0 +1,230 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<ui:param name="media" value="#{item.value}"/>
+
+	<!-- FILE -->
+    <div class="admin-cms-media__file" tabindex="-1">
+        <!-- CLOSE -->
+        <div class="admin-cms-media__file-close"></div>
+
+        <!-- NAVIGATE -->
+        <div class="admin-cms-media__file-prev"></div>
+        <div class="admin-cms-media__file-next"></div>
+    
+        <!-- TOP -->
+        <div class="admin-cms-media__file-top">
+            <!-- FILE SELECT -->
+            <div class="admin-cms-media__file-select">
+                <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
+                    <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{item.selected}">
+                        <f:ajax event="change" render="@none" execute="@this" />
+                    </h:selectBooleanCheckbox>
+                    <span class="custom-control__icon">
+                        <i class="fa fa-square-o" aria-hidden="true"></i>
+                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                    </span>
+                </label>
+            </div>
+
+            <!-- FILE IMAGE -->
+            <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
+                <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
+                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')">
+                    <div class="admin-cms-media__file-image-caption">
+                        #{media.fileName}
+                    </div>
+                </div>
+            </ui:fragment>
+
+            <!-- FILE METADATA -->
+            <div class="admin-cms-media__file-metadata">
+                <!-- FILE METADATA VIEW -->
+                <div class="admin-cms-media__file-metadata-view in">
+                    <h:panelGroup id="display-fields">
+                        <dl class="dl-horizontal">
+                            <!-- TITLE -->
+                            <dt>#{msg.admin__media_title}:</dt>
+                            <dd>#{media.getMetadataForLocale(item.locale).name}</dd>
+                            
+                            <!-- DESCRIPTION -->
+                            <dt>#{msg.admin__media_description}:</dt>
+                            <dd>#{media.getMetadataForLocale(item.locale).description}</dd>
+                            
+                            <!-- LINKS TO -->
+                            <ui:fragment rendered="#{media.link != '#' and media.link != null}">
+                                <dt>#{msg.admin__media_links_to}:</dt>
+                                <dd>#{media.link}</dd>
+                            </ui:fragment>     
+                                                   
+                            <!-- CATEGORIES -->
+                            <dt>#{msg.admin__categories}:</dt>
+                            <dd>
+                                <ui:repeat var="category" value="#{media.categories}">
+                                    <span class="label label-default">#{category.name}</span>
+                                </ui:repeat>
+                            </dd>
+                            
+                            <!-- FILENAME -->
+                            <dt>#{msg.filename}:</dt>
+                            <dd>#{media.fileName}</dd>
+                        </dl>
+                    </h:panelGroup>
+                </div>
+
+                <!-- FILE METADATA EDIT -->
+                <div class="admin-cms-media__file-metadata-edit">
+                    <h:panelGroup id="edit-fields">
+                        <!-- EDIT TITLE -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaTitle">#{msg.admin__media_title}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(item.locale).name}"
+                                    styleClass="form-control" />
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- EDIT DESCRIPTION -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaDescription">#{msg.admin__media_description}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(item.locale).description}"
+                                    styleClass="form-control" />
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- EDIT ALT TEXT -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control" />
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- EDIT LINKS TO -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control" />
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ADD CATEGORY -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaCategories">#{msg.admin__categories}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <div class="cms-module__option-dropdown">
+                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                    <ul>
+                                        <ui:repeat var="selectableCategory" value="#{item.categories}">
+                                            <li>
+                                                <label>
+                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}" />
+                                                    #{selectableCategory.value.name}
+                                                </label>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                                <div class="cms-module__option-selected">
+                                    <ui:repeat var="displayedCategory" value="#{media.categories}">
+                                        <span class="label label-default">#{displayedCategory.name}</span>
+                                    </ui:repeat>
+                                </div>
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="admin-cms-media__file-bottom">
+            <!-- FILE ACTIONS -->
+            <div class="admin-cms-media__file-actions">
+                <!-- ACTIONS VIEW -->
+                <div class="admin-cms-media__file-actions-view cms-module__actions in">
+                    <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
+                    <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
+                    	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
+                    </h:commandLink>
+                    <button type="button" class="btn btn--clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}"
+                        title="#{msg.cms_media_copyUrlToClipboard}">#{msg.admin__cms_media_copy_image_url}</button>
+                </div>
+
+                <!-- ACTIONS EDIT -->
+                <div class="admin-cms-media__file-actions-edit cms-module__actions">
+                    <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
+                    <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).prev().click()" value="#{msg.button__save}" styleClass="btn btn--clean">
+                        <f:ajax execute="edit-fields" render="display-fields edit-fields language-select :messages" onevent="cmsJS.modules.onReload" />
+                    </h:commandLink>
+                </div>
+            </div>
+
+            <!-- FILE LANGUAGE -->
+            <div class="admin-cms-media__file-language">
+                <strong>#{msg.admin__available_languages}:</strong>
+                <h:panelGroup id="language-select">
+                  <ul>
+                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
+                        <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(item.locale) ? 'active' : ''}">
+                        	<h:commandLink actionListener="#{item.setLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
+                        		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" onevent="cmsJS.modules.onReload"></f:ajax>
+                        	</h:commandLink>
+                        </li>  
+                    </c:forEach>
+                  </ul>
+                </h:panelGroup>                                          
+            </div>    
+        </div>
+    </div>
+</ui:composition>
+

@@ -63,6 +63,7 @@
 		<project>goobi-viewer-theme-cbl</project>
 		<project>goobi-viewer-theme-vlb</project>
 		<project>goobi-viewer-theme-ksw-kulturportal</project>
+		<project>goobi-viewer-theme-denkmalatlas</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

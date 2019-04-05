@@ -167,7 +167,7 @@ public final class SearchHelper {
                 try {
                     fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY),
                             (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT),
-                            request);
+                            true, request);
                 } catch (AccessDeniedException e) {
                     fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
                 } catch (FileNotFoundException e) {
@@ -408,31 +408,33 @@ public final class SearchHelper {
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null);
         logger.trace("query done");
 
-        if (resp.getResults().size() > 0) {
-            String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
-            try {
-                for (SolrDocument doc : resp.getResults()) {
-                    Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                    if (fieldList != null) {
-                        for (Object o : fieldList) {
-                            String dc = SolrSearchIndex.getAsString(o);
-                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
-                                continue;
-                            }
-                            String pi = (String) doc.getFieldValue(SolrConstants.PI);
-                            String url = "/ppnresolver?id=" + pi;
-                            return url;
-                            // StructElement struct = new StructElement(luceneId, doc);
-                            // BrowseElement ele = new BrowseElement(struct, false, null, locale);
-                            // return ele.getUrl();
+        if (resp.getResults().size() == 0) {
+            return null;
+        }
+
+        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(luceneField);
+        try {
+            for (SolrDocument doc : resp.getResults()) {
+                Collection<Object> fieldList = doc.getFieldValues(luceneField);
+                if (fieldList != null) {
+                    for (Object o : fieldList) {
+                        String dc = SolrSearchIndex.getAsString(o);
+                        if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist, splittingChar)) {
+                            continue;
                         }
+                        String pi = (String) doc.getFieldValue(SolrConstants.PI);
+                        String url = "/ppnresolver?id=" + pi;
+                        return url;
+                        // StructElement struct = new StructElement(luceneId, doc);
+                        // BrowseElement ele = new BrowseElement(struct, false, null, locale);
+                        // return ele.getUrl();
                     }
                 }
-            } catch (Throwable e) {
-                logger.error("Failed to retrieve work", e);
-                return null;
             }
+        } catch (Throwable e) {
+            logger.error("Failed to retrieve work", e);
         }
+
         return null;
     }
 
@@ -837,44 +839,46 @@ public final class SearchHelper {
             throws IndexUnreachableException, PresentationException, DAOException {
         StringBuilder query = new StringBuilder();
 
-        List<String> relevantLicenseTypes = new ArrayList<>();
+        //        List<String> relevantLicenseTypes = new ArrayList<>();
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
-            if (!licenseType.isStaticLicenseType() && !licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                        new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
-                    // If the user has an explicit permission to list a certain license type, ignore all other license types
-                    logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                    continue;
-                } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
-                    // If there are overriding license types for which the user has listing permission, ignore the current license type
-                    boolean skip = false;
-                    for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
-                        if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                                new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user,
-                                ipAddress, null)) {
-                            logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
-                                    overridingLicenseType.getName(), licenseType.getName());
-                            skip = true;
-                            break;
-                        }
-                    }
-                    if (skip) {
-                        continue;
+            if (licenseType.isCore() || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
+                continue;
+            }
+
+            if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                // If the user has an explicit permission to list a certain license type, ignore all other license types
+                logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
+                continue;
+            } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
+                // If there are overriding license types for which the user has listing permission, ignore the current license type
+                boolean skip = false;
+                for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
+                    if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
+                            null)) {
+                        logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
+                                overridingLicenseType.getName(), licenseType.getName());
+                        skip = true;
+                        break;
                     }
                 }
-                if (licenseType.getProcessedConditions() != null) {
-                    String processedConditions = licenseType.getProcessedConditions();
-                    // Do not append empty subquery
-                    if (StringUtils.isNotBlank(processedConditions)) {
-                        query.append(" -(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                        query.append(" AND ").append(processedConditions).append(')');
-                    } else {
-                        query.append(" -").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
-                    }
+                if (skip) {
+                    continue;
+                }
+            }
+            if (licenseType.getProcessedConditions() != null) {
+                String processedConditions = licenseType.getProcessedConditions();
+                // Do not append empty subquery
+                if (StringUtils.isNotBlank(processedConditions)) {
+                    query.append(" -(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
+                    query.append(" AND ").append(processedConditions).append(')');
                 } else {
                     query.append(" -").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
                 }
+            } else {
+                query.append(" -").append(SolrConstants.ACCESSCONDITION).append(":\"").append(licenseType.getName()).append('"');
             }
         }
 

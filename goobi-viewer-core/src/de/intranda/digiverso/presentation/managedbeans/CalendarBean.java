@@ -805,6 +805,10 @@ public class CalendarBean implements Serializable {
         monthList.add(dec);
 
         for (Count monthCount : monthFacets) {
+            if(monthCount.getName().length() < 6) {
+                logger.warn("{} facet name too short: {}", SolrConstants._CALENDAR_MONTH, monthCount.getName());
+                continue;
+            }
             int monthNumber = Integer.parseInt(monthCount.getName().substring(4));
             if (monthCount.getCount() > 0)
                 logger.trace(monthCount.getName() + ": " + monthCount.getCount());

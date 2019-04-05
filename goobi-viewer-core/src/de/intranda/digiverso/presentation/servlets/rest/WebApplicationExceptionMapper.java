@@ -57,22 +57,23 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = Status.INTERNAL_SERVER_ERROR;
         Throwable e = eParent.getCause();
-        if(e == null) {
+        if (e == null) {
             e = eParent;
         }
         if (e instanceof NotFoundException) {
             status = Status.NOT_FOUND;
         } else if (e instanceof ContentLibException) {
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
-        } else if(e instanceof RuntimeException) {
+        } else if (e instanceof RuntimeException) {
             status = Status.INTERNAL_SERVER_ERROR;
-            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL() , e.getMessage());
-        } else if(e instanceof PresentationException) {
+            logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURL(), e.getMessage(), request.getMethod());
+        } else if (e instanceof PresentationException) {
             status = Status.INTERNAL_SERVER_ERROR;
-            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL() , e.getMessage());
+            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL(), e.getMessage());
         } else {
-           //unknown error. Probably request error
-           status = Status.BAD_REQUEST;
+            //unknown error. Probably request error
+            status = Status.BAD_REQUEST;
+            logger.error(e.getMessage());
         }
 
         String mediaType = MediaType.APPLICATION_JSON;
@@ -83,11 +84,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
      * @return
      */
     public String getRequestHeaders() {
-        String headers = Collections.list(request.getHeaderNames()).stream()
-        .collect(Collectors.toMap(headerName -> headerName, headerName -> request.getHeader(headerName)))
-        .entrySet().stream()
-        .map(entry -> entry.getKey() + ": " + entry.getValue())
-        .collect(Collectors.joining("; "));
+        String headers = Collections.list(request.getHeaderNames())
+                .stream()
+                .collect(Collectors.toMap(headerName -> headerName, headerName -> request.getHeader(headerName)))
+                .entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining("; "));
         return headers;
     }
 

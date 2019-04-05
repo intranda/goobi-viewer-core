@@ -35,7 +35,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
-import de.intranda.digiverso.presentation.controller.XmlTools;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.PdfHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
@@ -314,9 +312,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
-                        SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
-                                Collections.singletonList(field));
+                        SolrDocumentList res = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
+                                        Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
                             urlBuilder.append((String) res.get(0).getFirstValue(field));
@@ -566,7 +565,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFullText(altoText, null);
+            String text = ALTOTools.getFullText(altoText, false, null);
             return text;
         }
         wordCoordsFormat = CoordsFormat.NONE;
@@ -657,7 +656,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-                return ALTOTools.getWordCoords(altoText, searchTerms, rotation, getImageFooterHeight());
+            return ALTOTools.getWordCoords(altoText, searchTerms, rotation, getImageFooterHeight());
         } else {
             wordCoordsFormat = CoordsFormat.NONE;
         }
@@ -1128,7 +1127,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * 
-     * @return
+     * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

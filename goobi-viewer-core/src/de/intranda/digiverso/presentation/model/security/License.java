@@ -15,8 +15,11 @@
  */
 package de.intranda.digiverso.presentation.model.security;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -28,6 +31,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -36,13 +41,16 @@ import javax.persistence.TemporalType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
 @Entity
 @Table(name = "licenses")
-public class License implements IPrivilegeHolder {
+public class License implements IPrivilegeHolder, Serializable {
+
+    private static final long serialVersionUID = 1363557138283960150L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
@@ -121,6 +129,24 @@ public class License implements IPrivilegeHolder {
 
     @Column(name = "description")
     private String description;
+
+    /** List of allowed subtheme discriminator values for CMS pages. */
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "license_cms_subthemes", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "subtheme_discriminator_value")
+    private List<String> subthemeDiscriminatorValues = new ArrayList<>();
+
+    /** List of allowed CMS categories. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<CMSCategory> allowedCategories = new ArrayList<>();
+
+    /** List of allowed CMS templates. */
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
+    @Column(name = "template_id")
+    private List<String> allowedCmsTemplates = new ArrayList<>();
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -238,6 +264,26 @@ public class License implements IPrivilegeHolder {
     }
 
     /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivDownloadPagePdf()
+     */
+    @Override
+    public boolean isPrivDownloadPagePdf() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivDownloadPagePdf(boolean)
+     */
+    @Override
+    public void setPrivDownloadPagePdf(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.user.IPrivilegeHolder#isPrivDownloadOriginalContent()
      */
     @Override
@@ -258,6 +304,26 @@ public class License implements IPrivilegeHolder {
 
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivDeleteOcrPage()
+     */
+    @Override
+    public boolean isPrivDeleteOcrPage() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivDeleteOcrPage(boolean)
+     */
+    @Override
+    public void setPrivDeleteOcrPage(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
+        }
+    }
+
     @Override
     public boolean isPrivSetRepresentativeImage() {
         return hasPrivilege(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
@@ -269,6 +335,166 @@ public class License implements IPrivilegeHolder {
             privileges.add(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
         } else {
             privileges.remove(IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCms()
+     */
+    @Override
+    public boolean isPrivCmsPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
+     */
+    @Override
+    public void setPrivCmsPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
+     */
+    @Override
+    public boolean isPrivCmsAllSubthemes() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
+     */
+    @Override
+    public void setPrivCmsAllSubthemes(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
+     */
+    @Override
+    public boolean isPrivCmsAllCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsAllCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
+     */
+    @Override
+    public boolean isPrivCmsAllTemplates() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
+     */
+    @Override
+    public void setPrivCmsAllTemplates(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsMenu()
+     */
+    @Override
+    public boolean isPrivCmsMenu() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
+     */
+    @Override
+    public void setPrivCmsMenu(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_MENU);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_MENU);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
+     */
+    @Override
+    public boolean isPrivCmsStaticPages() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
+     */
+    @Override
+    public void setPrivCmsStaticPages(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCollections()
+     */
+    @Override
+    public boolean isPrivCmsCollections() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
+     */
+    @Override
+    public void setPrivCmsCollections(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#isPrivCmsCategories()
+     */
+    @Override
+    public boolean isPrivCmsCategories() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
+     */
+    @Override
+    public void setPrivCmsCategories(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
         }
     }
 
@@ -411,5 +637,47 @@ public class License implements IPrivilegeHolder {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the subthemeDiscriminatorValues
+     */
+    public List<String> getSubthemeDiscriminatorValues() {
+        return subthemeDiscriminatorValues;
+    }
+
+    /**
+     * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
+     */
+    public void setSubthemeDiscriminatorValues(List<String> subthemeDiscriminatorValues) {
+        this.subthemeDiscriminatorValues = subthemeDiscriminatorValues;
+    }
+
+    /**
+     * @return the allowedCategories
+     */
+    public List<CMSCategory> getAllowedCategories() {
+        return allowedCategories;
+    }
+
+    /**
+     * @param allowedCategories the allowedCategories to set
+     */
+    public void setAllowedCategories(List<CMSCategory> allowedCategories) {
+        this.allowedCategories = allowedCategories;
+    }
+
+    /**
+     * @return the allowedCmsTemplates
+     */
+    public List<String> getAllowedCmsTemplates() {
+        return allowedCmsTemplates;
+    }
+
+    /**
+     * @param allowedCmsTemplates the allowedCmsTemplates to set
+     */
+    public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
+        this.allowedCmsTemplates = allowedCmsTemplates;
     }
 }

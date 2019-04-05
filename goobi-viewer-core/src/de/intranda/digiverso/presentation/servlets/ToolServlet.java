@@ -150,7 +150,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
                             List<OverviewPage> pages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, null, null);
                             for (OverviewPage op : pages) {
                                 List<CMSPage> existingPages =
-                                        DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi(), CMSPage.CLASSIFICATION_OVERVIEWPAGE);
+                                        DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi(), DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE));
                                 if (!existingPages.isEmpty()) {
                                     output.write(
                                             ("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));

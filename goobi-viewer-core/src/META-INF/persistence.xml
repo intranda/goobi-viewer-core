@@ -21,6 +21,7 @@
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithSearch</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSProperty</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
+        <class>de.intranda.digiverso.presentation.model.cms.CMSCategory</class>
         <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
         <class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
         <class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
@@ -44,8 +45,8 @@
             
             <!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
         
-            <property name="logging.level" value="ALL"/> 
-            <property name="eclipselink.logging.level" value="ALL" />
+            <property name="logging.level" value="WARNING"/> 
+            <property name="eclipselink.logging.level" value="FINER" />
             <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" />
             <property name="eclipselink.id-validation" value="NONE"/> 
 <!--             <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
@@ -72,6 +73,7 @@
         <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSProperty</class>
         <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
+        <class>de.intranda.digiverso.presentation.model.cms.CMSCategory</class>
 		<class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
 		<class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
 		<class>de.intranda.digiverso.presentation.model.download.PDFDownloadJob</class>

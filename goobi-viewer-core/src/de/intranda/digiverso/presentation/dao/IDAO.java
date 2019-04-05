@@ -15,14 +15,18 @@
  */
 package de.intranda.digiverso.presentation.dao;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.Query;
+
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
@@ -139,12 +143,17 @@ public interface IDAO {
     // LicenseType
 
     public List<LicenseType> getAllLicenseTypes() throws DAOException;
-
+    
     public long getLicenseTypeCount(Map<String, String> filters) throws DAOException;
+    
+    public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException;
 
     public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException;
 
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+    
+    public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
     public LicenseType getLicenseType(long id) throws DAOException;
@@ -274,17 +283,15 @@ public interface IDAO {
 
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
 
-    public long getCMSPageCount(Map<String, String> filters) throws DAOException;
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
-    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
-    public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException;
+    public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException;
 
-    public List<CMSPage> getCMSPagesForRecord(String pi, String pageClassification) throws DAOException;
+    public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
-
-    long getCMSPagesCount(Map<String, String> filters) throws DAOException;
 
     public boolean addCMSPage(CMSPage page) throws DAOException;
 
@@ -320,9 +327,6 @@ public interface IDAO {
 
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException;
 
-    public List<String> getMatchingTags(String inputString) throws DAOException;
-
-    public List<String> getAllTags() throws DAOException;
 
     public List<CMSStaticPage> getAllStaticPages() throws DAOException;
 
@@ -335,6 +339,19 @@ public interface IDAO {
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
 
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+    
+    public List<CMSCategory> getAllCategories() throws DAOException;
+    
+    public void addCategory(CMSCategory category) throws DAOException;
+    
+    public void updateCategory(CMSCategory category) throws DAOException;
+    
+    public boolean deleteCategory(CMSCategory category) throws DAOException;
+    
+    public CMSCategory getCategoryByName(String name) throws DAOException;
+
+    public CMSCategory getCategory(Long id) throws DAOException;
+
 
     // Transkribus
 
@@ -383,5 +400,20 @@ public interface IDAO {
 
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
+	boolean tableExists(String tableName) throws SQLException;
+
+	boolean columnsExists(String tableName, String columnName) throws SQLException;
+	
+	void startTransaction();
+
+	void commitTransaction();
+
+	Query createNativeQuery(String string);
+
+	Query createQuery(String string);
+
+
+
 
 }

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
@@ -195,7 +196,7 @@ public class SearchQueryItem implements Serializable {
      * @param value the value to set
      */
     public void setValue(String value) {
-        this.value = value;
+        this.value = StringTools.stripJS(value);
     }
 
     public boolean isDisplaySelectItems() {

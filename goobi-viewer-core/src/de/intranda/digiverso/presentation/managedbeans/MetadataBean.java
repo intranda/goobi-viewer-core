@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,32 +80,35 @@ public class MetadataBean {
             activeDocumentBean = new ActiveDocumentBean();
         }
         StructElement currentElement = activeDocumentBean.getCurrentElement();
-        if (currentElement != null) {
-            logger.trace("loadMetadata for: {}", currentElement.getLabel());
-            try {
-                Locale locale = BeanUtils.getLocale();
-                MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getSelectedRecordLanguage());
-                metadataElementList.add(metadataElement);
-
-                // Retrieve any struct elements above the current and generate metadata for each of them
-                StructElement se = currentElement;
-                while (se.getParent() != null) {
-                    se = se.getParent();
-                    metadataElementList.add(new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage()));
-                }
-                Collections.reverse(metadataElementList);
-
-                // Retrieve events of the top element
-                events = se.generateEventElements(locale);
-                Collections.sort(events);
-            } catch (NumberFormatException e) {
-                logger.error(e.getMessage());
-                Messages.error(e.getMessage());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                Messages.error(e.getMessage());
-            }
+        if (currentElement == null) {
+            return "viewMetadata";
         }
+        
+        logger.trace("loadMetadata for: {}", currentElement.getLabel());
+        try {
+            Locale locale = BeanUtils.getLocale();
+            MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getSelectedRecordLanguage());
+            metadataElementList.add(metadataElement);
+
+            // Retrieve any struct elements above the current and generate metadata for each of them
+            StructElement se = currentElement;
+            while (se.getParent() != null) {
+                se = se.getParent();
+                metadataElementList.add(new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage()));
+            }
+            Collections.reverse(metadataElementList);
+
+            // Retrieve events of the top element
+            events = se.generateEventElements(locale);
+            Collections.sort(events);
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
+            Messages.error(e.getMessage());
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            Messages.error(e.getMessage());
+        }
+
         return "viewMetadata";
     }
 
@@ -118,20 +120,20 @@ public class MetadataBean {
     public void setMetadataElementList(List<MetadataElement> metadataElementList) {
         this.metadataElementList = metadataElementList;
     }
-    
+
     /**
      * @return the metadataElementList
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public List<MetadataElement> getMetadataElementList(){
+    public List<MetadataElement> getMetadataElementList() {
         if (metadataElementList == null) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
                 loadMetadata();
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
         }

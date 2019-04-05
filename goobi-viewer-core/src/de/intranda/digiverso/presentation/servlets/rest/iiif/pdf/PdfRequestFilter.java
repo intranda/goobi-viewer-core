@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -31,6 +32,7 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -48,29 +50,35 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest servletRequest;
 
-    @SuppressWarnings("unchecked")
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
+
+            if (DataManager.getInstance().getConfiguration().isPdfApiDisabled()) {
+                throw new ServiceNotAllowedException("PDF API is disabled");
+            }
+
             Path requestPath = Paths.get(request.getUriInfo().getPath());
-//            String requestPath = request.getUriInfo().getPath();
+            //            String requestPath = request.getUriInfo().getPath();
 
             String type = requestPath.getName(0).toString();
             String pi = null;
             String divId = null;
             String imageName = null;
-            if("pdf".equalsIgnoreCase(type)) {
+            String privName = IPrivilegeHolder.PRIV_DOWNLOAD_PDF;
+            if ("pdf".equalsIgnoreCase(type)) {
                 //multipage mets pdf
                 pi = requestPath.getName(2).toString().replace(".xml", "").replaceAll(".XML", "");
-                if(requestPath.getNameCount() == 5) {
+                if (requestPath.getNameCount() == 5) {
                     divId = requestPath.getName(3).toString();
                 }
             } else if ("image".equalsIgnoreCase(type)) {
                 //single page pdf
                 pi = requestPath.getName(1).toString();
                 imageName = requestPath.getName(2).toString();
+                privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
             }
-            filterForAccessConditions(pi, divId, imageName);
+            filterForAccessConditions(pi, divId, imageName, privName);
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.TEXT_XML;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
@@ -82,19 +90,20 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param requestPath
-     * @param pathSegments
+     * @param pi
+     * @param divId
+     * @param contentFileName
+     * @param privName
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(String pi, String divId, String contentFileName)
-            throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
+    private void filterForAccessConditions(String pi, String divId, String contentFileName, String privName) throws ServiceNotAllowedException {
+        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId() + " " + contentFileName);
 
         boolean access = false;
         try {
-           
-           access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, servletRequest);
+
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
 
         } catch (IndexUnreachableException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
@@ -106,6 +115,5 @@ public class PdfRequestFilter implements ContainerRequestFilter {
             throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
         }
     }
-
 
 }

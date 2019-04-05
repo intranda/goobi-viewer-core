@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ public class RSSFeed {
     }
 
     public static SyndFeed createRss(String rootPath, String query, String language)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -126,204 +127,198 @@ public class RSSFeed {
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
                         getFieldsWithTranslation(locale))
                 .getResults();
-        if (docs != null) {
-            for (SolrDocument doc : docs) {
-                boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
-                boolean child = !anchor
-                        && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE))
-                                || doc.getFieldValue(SolrConstants.LOGID) != null)
-                        && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
-                boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-                boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
-                SolrDocument topDoc = null;
-                SolrDocument ownerDoc = null;
-                if (child || page) {
-                    // Find top level docstruct to extract metadata such as DATECREATED
-                    List<SolrDocument> topDocs = DataManager.getInstance()
+        if (docs == null) {
+            feed.setEntries(entries);
+            return feed;
+        }
+
+        for (SolrDocument doc : docs) {
+            boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
+            boolean child = !anchor
+                    && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
+                    && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
+            boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
+            boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
+            SolrDocument topDoc = null;
+            SolrDocument ownerDoc = null;
+            if (child || page) {
+                // Find top level docstruct to extract metadata such as DATECREATED
+                List<SolrDocument> topDocs = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(), 0,
+                                1, null, null, Arrays.asList(FIELDS))
+                        .getResults();
+                if (!topDocs.isEmpty()) {
+                    topDoc = topDocs.get(0);
+                }
+                if (page) {
+                    // Find page owner docstruct to extract its metadata
+                    List<SolrDocument> ownerDocs = DataManager.getInstance()
                             .getSearchIndex()
-                            .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(),
-                                    0, 1, null, null, Arrays.asList(FIELDS))
+                            .search(new StringBuilder(SolrConstants.IDDOC).append(':')
+                                    .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
+                                    .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
                             .getResults();
-                    if (!topDocs.isEmpty()) {
-                        topDoc = topDocs.get(0);
-                    }
-                    if (page) {
-                        // Find page owner docstruct to extract its metadata
-                        List<SolrDocument> ownerDocs = DataManager.getInstance()
-                                .getSearchIndex()
-                                .search(new StringBuilder(SolrConstants.IDDOC).append(':')
-                                        .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
-                                        .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
-                                .getResults();
-                        if (!ownerDocs.isEmpty()) {
-                            ownerDoc = ownerDocs.get(0);
-                        }
+                    if (!ownerDocs.isEmpty()) {
+                        ownerDoc = ownerDocs.get(0);
                     }
                 }
-
-                String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
-                SyndEntry entry = new SyndEntryImpl();
-                SyndContent description = new SyndContentImpl();
-                String label = "";
-                Long modified = null;
-                String author = "";
-                String authorRss = "";
-                String publisher = "";
-                String placeAndTime = "<strong>Published: </strong>";
-                String descValue = "";
-                String thumbnail = "";
-                String urn = "";
-                String bookSeries = "";
-                int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-                int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                boolean hasImages = isHasImages(doc);
-                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
-
-                for (String field : FIELDS) {
-                    Object value = doc.getFirstValue(field);
-                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
-                    value = translatedValue.orElse(value);
-                    // If the doc has no field value, try the owner doc (in case of pages)
-                    if (value == null && ownerDoc != null) {
-                        value = ownerDoc.getFirstValue(field);
-                    }
-                    // If there is still no value, try the root doc
-                    if (value == null && topDoc != null) {
-                        value = topDoc.getFirstValue(field);
-                    }
-                    if (value != null) {
-                        switch (field) {
-                            case SolrConstants.LABEL:
-                                // It is important that LABEL comes before IDDOC_PARENT in the static field list!
-                                label = (String) value;
-                                break;
-                            case SolrConstants.IDDOC_PARENT:
-                                // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance()
-                                        .getSearchIndex()
-                                        .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
-                                                Collections.singletonList(SolrConstants.LABEL));
-                                if (hits != null && hits.getNumFound() > 0) {
-                                    SolrDocument parent = hits.get(0);
-                                    Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
-                                    if (fieldParentLabel != null) {
-                                        label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
-                                        bookSeries = new StringBuilder("<strong>Book series: </strong>").append((String) fieldParentLabel)
-                                                .append("<br />")
-                                                .toString();
-                                    }
-                                }
-                                break;
-                            case SolrConstants.PERSON_ONEFIELD:
-                                authorRss = (String) value;
-                                author = new StringBuilder(author).append("<strong>Author: </strong>").append(value).append("<br />").toString();
-                                break;
-                            case SolrConstants.PUBLISHER:
-                                publisher = new StringBuilder("<strong>Publisher: </strong>").append(value).append("<br />").toString();
-                                break;
-                            case SolrConstants.DATECREATED:
-                                modified = (Long) value;
-                                break;
-                            case SolrConstants.YEARPUBLISH:
-                            case SolrConstants.PLACEPUBLISH:
-                                if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
-                                    placeAndTime = new StringBuilder(placeAndTime).append(value).toString();
-                                } else {
-                                    placeAndTime = new StringBuilder(placeAndTime).append(", ").append(value).toString();
-                                }
-                                break;
-                            case SolrConstants.URN:
-                                urn = new StringBuilder("<strong>URL: </strong><a href=\"").append(rootPath)
-                                        .append("/resolver?urn=")
-                                        .append(value)
-                                        .append("\">")
-                                        .append(value)
-                                        .append("</a><br />")
-                                        .toString();
-                                break;
-                            case SolrConstants.PI:
-                                pi = (String) value;
-                                break;
-                            case SolrConstants.TITLE:
-                                if (StringUtils.isEmpty(label)) {
-                                    label = (String) value;
-                                }
-                                break;
-                            case SolrConstants.FILENAME:
-                            case SolrConstants.THUMBNAIL:
-                                if (StringUtils.isEmpty(thumbnail)) {
-                                    thumbnail = (String) value;
-                                }
-                                break;
-                            case SolrConstants.DOCSTRCT:
-                                if (StringUtils.isEmpty(label)) {
-                                    label = (String) value;
-                                    label = ViewerResourceBundle.getTranslation(label, locale);
-                                }
-                                break;
-                            default: // nothing
-                        }
-                    }
-                }
-                if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
-                    placeAndTime = "";
-                } else {
-                    placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
-                }
-
-                String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
-
-                String imageHtmlElement = null;
-                if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
-                    imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath)
-                            .append('/')
-                            .append(pageType.getName())
-                            .append('/')
-                            .append(pi)
-                            .append('/')
-                            .append("1")
-                            .append('/')
-                            .append("\">")
-                            .append("<img style=\"margin-right:10px;\" src=\"")
-                            .append(imageUrl)
-                            .append("\" align=\"left\" border=\"0\" /></a>")
-                            .toString();
-                }
-
-                entry.setAuthor(authorRss);
-                entry.setTitle(label);
-                entry.setLink(new StringBuilder(rootPath).append('/')
-                        .append(pageType.getName())
-                        .append('/')
-                        .append(pi)
-                        .append('/')
-                        .append("1")
-                        .append('/')
-                        .toString());
-                if (modified != null) {
-                    try {
-                        entry.setPublishedDate(new Date(modified));
-                        entry.setUpdatedDate(entry.getPublishedDate());
-                    } catch (NumberFormatException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-                description.setType("text/html");
-                descValue = new StringBuilder(imageHtmlElement != null
-                        ? new StringBuilder(imageHtmlElement).append("<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>")
-                                .append(bookSeries)
-                                .append(author)
-                                .append(publisher)
-                                .append(placeAndTime)
-                                .append(urn)
-                                .append("</p></div>")
-                                .toString();
-                description.setValue(descValue);
-                entry.setDescription(description);
-                entries.add(entry);
             }
+
+            String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+            SyndEntry entry = new SyndEntryImpl();
+            SyndContent description = new SyndContentImpl();
+            String label = "";
+            Long modified = null;
+            String author = "";
+            String authorRss = "";
+            String publisher = "";
+            String placeAndTime = "<strong>Published: </strong>";
+            String descValue = "";
+            String thumbnail = "";
+            String urn = "";
+            String bookSeries = "";
+            int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+            int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+            boolean hasImages = isHasImages(doc);
+            String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+            String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
+
+            for (String field : FIELDS) {
+                Object value = doc.getFirstValue(field);
+                Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                value = translatedValue.orElse(value);
+                // If the doc has no field value, try the owner doc (in case of pages)
+                if (value == null && ownerDoc != null) {
+                    value = ownerDoc.getFirstValue(field);
+                }
+                // If there is still no value, try the root doc
+                if (value == null && topDoc != null) {
+                    value = topDoc.getFirstValue(field);
+                }
+                if (value == null) {
+                    continue;
+                }
+
+                switch (field) {
+                    case SolrConstants.LABEL:
+                        // It is important that LABEL comes before IDDOC_PARENT in the static field list!
+                        label = (String) value;
+                        break;
+                    case SolrConstants.IDDOC_PARENT:
+                        // TODO This query is executed O(size of feed) times.
+                        SolrDocumentList hits = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                        Collections.singletonList(SolrConstants.LABEL));
+                        if (hits != null && hits.getNumFound() > 0) {
+                            SolrDocument parent = hits.get(0);
+                            Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
+                            if (fieldParentLabel != null) {
+                                label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
+                                bookSeries = new StringBuilder("<strong>Book series: </strong>").append((String) fieldParentLabel)
+                                        .append("<br />")
+                                        .toString();
+                            }
+                        }
+                        break;
+                    case SolrConstants.PERSON_ONEFIELD:
+                        authorRss = (String) value;
+                        author = new StringBuilder(author).append("<strong>Author: </strong>").append(value).append("<br />").toString();
+                        break;
+                    case SolrConstants.PUBLISHER:
+                        publisher = new StringBuilder("<strong>Publisher: </strong>").append(value).append("<br />").toString();
+                        break;
+                    case SolrConstants.DATECREATED:
+                        modified = (Long) value;
+                        break;
+                    case SolrConstants.YEARPUBLISH:
+                    case SolrConstants.PLACEPUBLISH:
+                        if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
+                            placeAndTime = new StringBuilder(placeAndTime).append(value).toString();
+                        } else {
+                            placeAndTime = new StringBuilder(placeAndTime).append(", ").append(value).toString();
+                        }
+                        break;
+                    case SolrConstants.URN:
+                        urn = new StringBuilder("<strong>URL: </strong><a href=\"").append(rootPath)
+                                .append("/resolver?urn=")
+                                .append(value)
+                                .append("\">")
+                                .append(value)
+                                .append("</a><br />")
+                                .toString();
+                        break;
+                    case SolrConstants.PI:
+                        pi = (String) value;
+                        break;
+                    case SolrConstants.TITLE:
+                        if (StringUtils.isEmpty(label)) {
+                            label = (String) value;
+                        }
+                        break;
+                    case SolrConstants.FILENAME:
+                    case SolrConstants.THUMBNAIL:
+                        if (StringUtils.isEmpty(thumbnail)) {
+                            thumbnail = (String) value;
+                        }
+                        break;
+                    case SolrConstants.DOCSTRCT:
+                        if (StringUtils.isEmpty(label)) {
+                            label = (String) value;
+                            label = ViewerResourceBundle.getTranslation(label, locale);
+                        }
+                        break;
+                    default: // nothing
+                }
+            }
+            if ("<strong>Published: </strong>".length() == placeAndTime.length()) {
+                placeAndTime = "";
+            } else {
+                placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
+            }
+
+            String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, 1, null, pageType);
+
+            String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
+
+            String imageHtmlElement = null;
+            if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
+                imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath)
+                        .append('/')
+                        .append(recordUrl)
+                        .append("\">")
+                        .append("<img style=\"margin-right:10px;\" src=\"")
+                        .append(imageUrl)
+                        .append("\" align=\"left\" border=\"0\" /></a>")
+                        .toString();
+            }
+
+            entry.setAuthor(authorRss);
+            entry.setTitle(label);
+            entry.setLink(rootPath + "/" + recordUrl);
+            if (modified != null) {
+                try {
+                    entry.setPublishedDate(new Date(modified));
+                    entry.setUpdatedDate(entry.getPublishedDate());
+                } catch (NumberFormatException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+            description.setType("text/html");
+            descValue = new StringBuilder(imageHtmlElement != null
+                    ? new StringBuilder(imageHtmlElement).append("<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>")
+                            .append(bookSeries)
+                            .append(author)
+                            .append(publisher)
+                            .append(placeAndTime)
+                            .append(urn)
+                            .append("</p></div>")
+                            .toString();
+            description.setValue(descValue);
+            entry.setDescription(description);
+            entries.add(entry);
         }
         feed.setEntries(entries);
 
@@ -341,12 +336,12 @@ public class RSSFeed {
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return createRssFeed(rootPath, query, rssFeedItems, null);
     }
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -428,7 +423,7 @@ public class RSSFeed {
                 boolean hasImages = isHasImages(doc);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false, false);
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
                 entry.setDocType(Helper.getTranslation(docStructType, locale));
 
                 for (String field : FIELDS) {

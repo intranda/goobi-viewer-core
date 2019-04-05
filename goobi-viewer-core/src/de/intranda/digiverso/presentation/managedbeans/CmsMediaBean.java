@@ -16,26 +16,30 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.RollbackException;
 import javax.servlet.http.Part;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -43,536 +47,587 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
+import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
+import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
+import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSourceException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
+import de.intranda.digiverso.presentation.model.cms.CategorizableTranslatedSelectable;
+import de.intranda.digiverso.presentation.model.cms.Selectable;
+import de.intranda.digiverso.presentation.model.cms.TranslatedSelectable;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 @Named
 @SessionScoped
 public class CmsMediaBean implements Serializable {
 
-    private static final long serialVersionUID = 1156829371382069634L;
+	private static final String GENERAL_FILTER = "GENERAL";
+	private static final String FILENAME_FILTER = "FILENAME";
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsMediaBean.class);
+	private static final int ENTRIES_PER_PAGE = 40;
 
-    private CMSMediaItem currentMediaItem;
-    private File mediaFile;
-    private Part filePart;
-    private ImageFileUploadThread uploadThread;
-    private int uploadProgress;
-    private String selectedTag;
-    private Locale selectedLocale = CmsBean.getCurrentLocale();
-    //    private List<CMSMediaItem> mediaItems;
+	private static final long serialVersionUID = 1156829371382069634L;
 
-    public String uploadMedia() {
-        logger.trace("uploadMedia");
-        if (filePart == null || !isValidMediaType(filePart.getContentType(), null)) {
-            Messages.error("cms_errIllegalMediaFileFormat");
-            return "cmsMedia";
-        }
+	private static final Logger logger = LoggerFactory.getLogger(CmsMediaBean.class);
 
-        if (isUploadComplete()) {
-            logger.debug("Media file has already been uploaded");
-            return "cmsMedia";
-        }
+	@Inject
+	protected UserBean userBean;
 
-        try {
-            setMediaFile(calculateMediaFilePath(getFileName(filePart), true));
-            logger.trace("Uploading file to {}...", mediaFile.getAbsolutePath());
-            filePart.write(mediaFile.getAbsolutePath());
-            if (!validate(mediaFile, filePart.getContentType())) {
-                Messages.error("cms_errIllegalMediaContent");
-            } else {
-                setUploadProgress(100);
-                saveMedia();
-                Messages.info("cms_media_upload_success");
-            }
-        } catch (IOException | DAOException e) {
-            logger.error("Failed to upload media file:{}", e.getMessage());
-            if (mediaFile != null && mediaFile.isFile()) {
-                mediaFile.delete();
-            }
-        }
+	private String selectedTag;
+//    private List<Selectable<CMSMediaItem>> mediaItems = null;
+	private final TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
+	private CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem = null;
+	private String filter = "";
+	private String filenameFilter = "";
+	private boolean allSelected = false;
+	
 
-        return "cmsMedia";
-    }
+	public CmsMediaBean() {
+		super();
+		dataProvider = initDataProvider();
+	}
 
-    /**
-     * @param mediaFile2
-     * @param contentType
-     * @return false if the content type is html or xml and the file contains the string "<script" (case insensitive)
-     * @throws IOException
-     */
-    private static boolean validate(File file, String contentType) throws IOException {
-        if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
-            String content = FileUtils.readFileToString(file);
-            return !content.toLowerCase().contains("<script");
-        }
+	/**
+	 * 
+	 */
+	private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> initDataProvider() {
+		TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider = new TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>>(
+				new TableDataSource<CategorizableTranslatedSelectable<CMSMediaItem>>() {
 
-        return true;
-    }
+					private List<CategorizableTranslatedSelectable<CMSMediaItem>> items = null;
+					private boolean reloadNeeded = true;
+					
+					@Override
+					public List<CategorizableTranslatedSelectable<CMSMediaItem>> getEntries(int first, int pageSize, String sortField,
+							SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException {
 
-    public boolean isNewMedia() {
-        return currentMediaItem != null && currentMediaItem.getId() == null;
-    }
+						Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = getItems(filters).stream();
 
-    /**
-     * @param contentType
-     * @param fileName
-     * @return true if supported; false otherwise
-     * @should return true for tiff
-     * @should return true for jpeg
-     * @should return true for jpeg 2000
-     * @should return true for png
-     * @should return true for docx
-     */
-    private static boolean isValidMediaType(String contentType, String fileName) {
-        logger.trace("isValidMediaType: {} - {}", contentType, fileName);
-        switch (contentType) {
-            case "image/tiff":
-            case "image/jpeg":
-            case "image/jp2":
-            case "image/png":
-            case CMSMediaItem.CONTENT_TYPE_DOC: // RTF 
-            case CMSMediaItem.CONTENT_TYPE_DOCX:
-            case CMSMediaItem.CONTENT_TYPE_HTML:
-            case CMSMediaItem.CONTENT_TYPE_RTF:
-            case CMSMediaItem.CONTENT_TYPE_RTF2:
-            case CMSMediaItem.CONTENT_TYPE_RTF3:
-            case CMSMediaItem.CONTENT_TYPE_RTF4:
-            case CMSMediaItem.CONTENT_TYPE_XML:
-                return true;
-            default:
-                logger.warn("Unsupported media type: {}", contentType);
-                return false;
-        }
-    }
+						
+						if (StringUtils.isNotBlank(sortField)) {
+							Comparator<Selectable<CMSMediaItem>> comparator;
+							switch (sortField.toUpperCase()) {
+							case "TITLE":
+								comparator = (i1, i2) -> i1.getValue().getName().compareTo(i2.getValue().getName());
+								break;
+							case "DATE":
+							default:
+								comparator = (i1, i2) -> i1.getValue().getLastModifiedTime().compareTo(i2.getValue().getLastModifiedTime());
+								break;
+							}
+							if (SortOrder.DESCENDING.equals(sortOrder)) {
+								comparator = comparator.reversed();
+							}
+							stream = stream.sorted(comparator);
+						} else {
+							stream = stream.sorted((i1, i2) -> i2.getValue().getLastModifiedTime().compareTo(i1.getValue().getLastModifiedTime()));
+						}
+						List<CategorizableTranslatedSelectable<CMSMediaItem>> list = stream.skip(first).limit(pageSize).collect(Collectors.toList());
 
-    public CMSMediaItem createMediaItem() {
-        CMSMediaItem item = new CMSMediaItem();
-        for (Locale locale : CmsBean.getAllLocales()) {
-            CMSMediaItemMetadata metadata = new CMSMediaItemMetadata();
-            metadata.setLanguage(locale.getLanguage());
-            item.addMetadata(metadata);
-        }
-        return item;
-    }
+						return list;
+					}
 
-    public List<CMSPage> getMediaOwnerPages(CMSMediaItem item) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        List<CMSPage> owners = new ArrayList<>();
-        if (dao != null) {
-            owners = dao.getMediaOwners(item);
-        }
-        return owners;
-    }
+					@Override
+					public long getTotalNumberOfRecords(Map<String, String> filters) {
+						return getItems(filters).size();
+					}
 
-    public void deleteMedia(CMSMediaItem item) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        if (dao != null) {
-            if (!dao.deleteCMSMediaItem(item)) {
-                logger.error("Failed to delete media item");
-            } else if (item.getFileName() != null) {
-                try {
-                    File mediaFile = calculateMediaFilePath(item.getFileName(), false);
-                    if (!mediaFile.delete()) {
-                        throw new IOException("Cannot delete file " + mediaFile.getAbsolutePath());
-                    }
-                } catch (IOException e) {
-                    logger.error("Failed to delete media file: " + e.getMessage());
-                }
-            }
-        }
-    }
+					@Override
+					public void resetTotalNumberOfRecords() {
+						reloadNeeded = true;
+					}
+					
+					private List<CategorizableTranslatedSelectable<CMSMediaItem>> getItems(Map<String, String> filters) {
+						if (this.items == null || this.reloadNeeded) {
+							try {
+								Stream<CMSMediaItem> stream = getAllMedia().stream();
+		
+								if(filters != null && !filters.isEmpty()) {
+								String generalFilter = filters.get(GENERAL_FILTER);
+								String filenameFilter = filters.get(FILENAME_FILTER);
+								
+									if(StringUtils.isNotBlank(generalFilter)) {								
+										stream = stream.filter(
+												item -> item.getMetadata().stream().anyMatch(md -> md.getName() != null && md.getName().toLowerCase().contains(generalFilter.toLowerCase())) 
+												|| 
+												item.getCategories().stream().anyMatch(cat -> cat.getName().toLowerCase().contains(generalFilter.toLowerCase())));
+									}
+									
+									if(StringUtils.isNotBlank(filenameFilter)) {								
+										stream = stream.filter(item -> item.getFileName().matches(filenameFilter));
+									}
+								}
+									
+								List<CMSCategory> categories = userBean.getUser().getAllowedCategories(getAllMediaCategories());
+								this.items = stream.map(item -> new CategorizableTranslatedSelectable<CMSMediaItem>(item, false, item.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), item.wrapCategories(categories))).collect(Collectors.toList());
+								reloadNeeded = false;
+								
+							} catch (DAOException e) {
+								throw new TableDataSourceException("Failed to load CMSMediaItems", e);
+							}
+						}
+						return this.items;
+					}
 
-    public static List<CMSMediaItem> getAllMedia() throws DAOException {
-        return DataManager.getInstance().getDao().getAllCMSMediaItems();
-    }
+				});
+		dataProvider.setEntriesPerPage(ENTRIES_PER_PAGE);
+		dataProvider.addFilter(GENERAL_FILTER);
+		dataProvider.addFilter(FILENAME_FILTER);
+		return dataProvider;
+	}
 
-    public List<CMSMediaItem> getMediaItems(String tag, String filenameFilter) throws DAOException {
-        Stream<CMSMediaItem> items = getAllMedia().stream();
-        if (StringUtils.isNotBlank(tag)) {
-            items = items.filter(item -> item.getTags().contains(tag));
-        }
-        if (StringUtils.isNotBlank(filenameFilter)) {
-            items = items.filter(item -> item.getFileName().matches(filenameFilter));
-        }
-        List<CMSMediaItem> list = items.collect(Collectors.toList());
-        return list;
-    }
+	/**
+	 * @param mediaFile2
+	 * @param contentType
+	 * @return false if the content type is html or xml and the file contains the
+	 *         string "<script" (case insensitive)
+	 * @throws IOException
+	 */
+	private static boolean validate(File file, String contentType) throws IOException {
+		if (CMSMediaItem.CONTENT_TYPE_HTML.equals(contentType) || CMSMediaItem.CONTENT_TYPE_XML.equals(contentType)) {
+			String content = FileUtils.readFileToString(file);
+			return !content.toLowerCase().contains("<script");
+		}
 
-    public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
-        return getMediaUrl(item, null, null);
-    }
+		return true;
+	}
 
-    /**
-     * @param item
-     * @param width
-     * @param height
-     * @return
-     * @throws ViewerConfigurationException
-     */
-    public static String getMediaUrl(CMSMediaItem item, String width, String height) throws ViewerConfigurationException {
-        if (item == null || StringUtils.isEmpty(item.getFileName())) {
-            return "";
-        }
+	/**
+	 * @param contentType
+	 * @param fileName
+	 * @return true if supported; false otherwise
+	 * @should return true for tiff
+	 * @should return true for jpeg
+	 * @should return true for jpeg 2000
+	 * @should return true for png
+	 * @should return true for docx
+	 */
+	private static boolean isValidMediaType(String contentType, String fileName) {
+		logger.trace("isValidMediaType: {} - {}", contentType, fileName);
+		switch (contentType) {
+		case "image/tiff":
+		case "image/jpeg":
+		case "image/jp2":
+		case "image/png":
+		case CMSMediaItem.CONTENT_TYPE_DOC: // RTF
+		case CMSMediaItem.CONTENT_TYPE_DOCX:
+		case CMSMediaItem.CONTENT_TYPE_HTML:
+		case CMSMediaItem.CONTENT_TYPE_RTF:
+		case CMSMediaItem.CONTENT_TYPE_RTF2:
+		case CMSMediaItem.CONTENT_TYPE_RTF3:
+		case CMSMediaItem.CONTENT_TYPE_RTF4:
+		case CMSMediaItem.CONTENT_TYPE_XML:
+			return true;
+		default:
+			logger.warn("Unsupported media type: {}", contentType);
+			return false;
+		}
+	}
 
-        if (item.isHasExportableText()) {
-            StringBuilder sbUri = new StringBuilder();
-            sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
-            return sbUri.toString();
-        }
-        
-        return BeanUtils.getImageDeliveryBean()
-                .getThumbs()
-                .getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
-                        StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
-    }
+	public CMSMediaItem createMediaItem() {
+		CMSMediaItem item = new CMSMediaItem();
+		for (Locale locale : CmsBean.getAllLocales()) {
+			CMSMediaItemMetadata metadata = new CMSMediaItemMetadata();
+			metadata.setLanguage(locale.getLanguage());
+			item.addMetadata(metadata);
+		}
+		return item;
+	}
 
-    /**
-     * 
-     * @param item
-     * @return
-     * @throws ViewerConfigurationException
-     */
-    public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
-        if (item == null || StringUtils.isEmpty(item.getFileName())) {
-            return "";
-        }
+	public List<CMSPage> getMediaOwnerPages(CMSMediaItem item) throws DAOException {
+		IDAO dao = DataManager.getInstance().getDao();
+		List<CMSPage> owners = new ArrayList<>();
+		if (dao != null) {
+			owners = dao.getMediaOwners(item);
+		}
+		return owners;
+	}
 
-        StringBuilder sbUri = new StringBuilder();
-        sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
-        try {
-            String ret = Helper.getWebContentGET(sbUri.toString());
-            return ret;
-        } catch (ClientProtocolException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (HTTPException e) {
-            logger.error(e.getMessage(), e);
-        }
+	public void deleteMedia(CMSMediaItem item) throws DAOException {
+		IDAO dao = DataManager.getInstance().getDao();
+		if (dao != null) {
+			try {
+				dao.deleteCMSMediaItem(item);		
+				if (item.getFileName() != null) {
+					try {
+						Path mediaFile = item.getFilePath();
+						Files.delete(mediaFile);
+						if (Files.exists(mediaFile)) {
+							throw new IOException("Cannot delete file " + mediaFile.toAbsolutePath());
+						}
+					} catch (IOException e) {
+						logger.error("Failed to delete media file: " + e.getMessage());
+					}
+				}
+				if(this.selectedMediaItem != null && this.selectedMediaItem.getValue() == item ) {
+					this.selectedMediaItem = null;
+				}
+				reloadMediaList(false);
+			} catch(RollbackException e) {				
+				if(e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
+					Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
+				} else {
+					logger.error("Error deleting category ", e);
+					Messages.error(null, "admin__media_delete_error", item.getFileName(), e.getMessage());
+				}
+			}
 
-        return "";
-    }
+		}
+	}
 
-    public static String getMediaPreviewUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
-        if (item != null && item.getFileName() != null) {
-            return getMediaUrl(item, null, "160");
-        }
-        return "";
-    }
+	public List<CMSMediaItem> getAllMedia() throws DAOException {
+		List<CMSMediaItem> items = new ArrayList<>(DataManager.getInstance().getDao().getAllCMSMediaItems());
 
-    public boolean isImage(CMSMediaItem item) {
-        return item.getFileName().matches(getImageFilter());
-    }
+		if (userBean != null && userBean.getUser() != null && userBean.getUser().isCmsAdmin()) {
+			User user = userBean.getUser();
+			if (user.hasPrivilegeForAllCategories()) {
+				return items;
+			} else {
+				List<CMSCategory> allowedCategories = user
+						.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+				items = items.stream()
+//						.peek(item -> System.out.println(StringUtils.join(item.getCategories(), ", ")))
+						.filter(item -> ListUtils.intersection(item.getCategories(), allowedCategories).size() > 0)
+						.collect(Collectors.toList());
+				return items;
+			}
+		} else {
+			return new ArrayList<>();
+		}
 
-    public boolean isText(CMSMediaItem item) {
-        return !item.getFileName().matches(getImageFilter());
-    }
+	}
+	
+	public TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> getDataProvider() {
+		return this.dataProvider;
+	}
 
-    public CMSMediaItem getCurrentMediaItem() {
-        return currentMediaItem;
-    }
+	public List<CategorizableTranslatedSelectable<CMSMediaItem>> getMediaItems() throws DAOException {
+		return this.dataProvider.getPaginatorList();
+	}
 
-    public void setCurrentMediaItem(CMSMediaItem currentMediaItem) {
-        this.currentMediaItem = new CMSMediaItem(currentMediaItem);
-        mediaFile = null;
-        filePart = null;
-        resetUploadThread();
+	public void reloadMediaList() {
+		reloadMediaList(true);
+	}
+	
+	public void reloadMediaList(boolean resetCurrentPage) {
+		long page = this.dataProvider.getPageNumberCurrent();
+		this.dataProvider.resetAll();
+		this.dataProvider.getFilter(GENERAL_FILTER).setValue(filter);
+		this.dataProvider.getFilter(FILENAME_FILTER).setValue(filenameFilter);
+		if(!resetCurrentPage) {			
+			this.dataProvider.setTxtMoveTo((int)page);
+		}
+	}
 
-    }
+	/**
+	 * Deletes all mediaItems from {@link #mediaItems} which are are marked as
+	 * selected. Reloads the media list
+	 * 
+	 * @throws DAOException
+	 */
+	public void deleteSelectedItems() throws DAOException {
+			Stream<CategorizableTranslatedSelectable<CMSMediaItem>> stream = this.dataProvider.getPaginatorList().stream();
+			if(!isAllSelected()) {
+				stream = stream.filter(Selectable::isSelected);
+			}
+			List<CMSMediaItem> itemsToDelete = stream.map(Selectable::getValue).collect(Collectors.toList());
+			for (CMSMediaItem item : itemsToDelete) {
+				deleteMedia(item);
+			}
+			//reset selected status after gobal action
+			setAllSelected(false);
+	}
 
-    public File getMediaFile() {
-        return mediaFile;
-    }
+	/**
+	 * Saves all mediaItems from {@link #mediaItems} which are are marked as
+	 * selected. Reloads the media list
+	 * 
+	 * @throws DAOException
+	 */
+	public void saveSelectedItems() throws DAOException {
+			List<CategorizableTranslatedSelectable<CMSMediaItem>> itemsToSave = this.dataProvider.getPaginatorList().stream().filter(Selectable::isSelected)
+					.collect(Collectors.toList());
+			for (CategorizableTranslatedSelectable<CMSMediaItem> item : itemsToSave) {
+				saveMedia(item.getValue(), item.getCategories());
+			}
+	}
 
-    protected void setMediaFile(File mediaFile) {
-        this.mediaFile = mediaFile;
-    }
+	public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
+		return getMediaUrl(item, null, null);
+	}
 
-    public Part getFilePart() {
-        return filePart;
-    }
+	/**
+	 * @param item
+	 * @param width
+	 * @param height
+	 * @return
+	 * @throws ViewerConfigurationException
+	 */
+	public static String getMediaUrl(CMSMediaItem item, String width, String height)
+			throws ViewerConfigurationException {
+		if (item == null || StringUtils.isEmpty(item.getFileName())) {
+			return "";
+		}
 
-    public void setFilePart(Part filePart) {
-        this.filePart = filePart;
-        if (filePart != null && !filePart.equals(this.filePart)) {
-            resetUploadThread();
-        }
-        //	if (filePart != null) {
-        //	    try {
-        //		setMediaFile(calculateMediaFilePath(getFileName(filePart), false));
-        //	    } catch (IOException e) {
-        //		logger.error("Failed to create media file: " + e.getMessage());
-        //	    }
-        //	}
-    }
+		if (item.isHasExportableText()) {
+			StringBuilder sbUri = new StringBuilder();
+			sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/")
+					.append(item.getId());
+			return sbUri.toString();
+		}
 
-    /**
-     * @param filePart2
-     * @return
-     */
-    private static File calculateMediaFilePath(String fileName, boolean renameIfFileExists) throws IOException {
-        // try {
-        // URL imageRepositoryUrl = new
-        // URL(ContentServerDataManager.getInstance().getConfiguration().getRepositoryPathImages());
-        // File folder = new File(new File(imageRepositoryUrl.toURI()),
-        // DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        File folder = new File(
-                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        if (!folder.isDirectory() && !folder.mkdir()) {
-            throw new IOException("Unable to create directory " + folder);
-        }
-        //        fileName = fileName.replaceAll("\\s", "_");
-        File file = new File(folder, fileName);
-        int counter = 1;
-        File newFile = file;
-        while (renameIfFileExists && newFile.isFile()) {
-            newFile = new File(file.getParent(),
-                    FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file.getName()));
-            counter++;
-        }
-        file = newFile;
-        return file;
-        // } catch (URISyntaxException e) {
-        // throw new IOException("Failed to create media repository uri: " +
-        // e.getMessage());
-        // }
-    }
+		String url = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(Optional.ofNullable(item),
+				StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0,
+				StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
 
-    public void saveMedia() throws DAOException {
-        if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
-            // currentMediaItem.setFileName(mediaFile.getName());
-            //            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
-            //            setCurrentMediaItem(null);
-        } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
-            currentMediaItem.processMediaFile(mediaFile);
-            DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
-            //            setCurrentMediaItem(null);
-        }
-    }
+		return url;
+	}
 
-    public int getUploadProgress() {
-        return uploadProgress;
-    }
+	/**
+	 * 
+	 * @param item
+	 * @return
+	 * @throws ViewerConfigurationException
+	 */
+	public static String getMediaFileAsString(CMSMediaItem item) throws ViewerConfigurationException {
+		if (item == null || StringUtils.isEmpty(item.getFileName())) {
+			return "";
+		}
 
-    protected void setUploadProgress(int uploadProgress) {
-        if (uploadProgress == 100) {
-            logger.debug("File upload finished");
-            currentMediaItem.setFileName(mediaFile.getName());
-        } else {
-            logger.trace("Upload progress: {}%", uploadProgress);
-        }
-        this.uploadProgress = uploadProgress;
-    }
+		StringBuilder sbUri = new StringBuilder();
+		sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/")
+				.append(item.getId());
+		try {
+			String ret = Helper.getWebContentGET(sbUri.toString());
+			return ret;
+		} catch (ClientProtocolException e) {
+			logger.error(e.getMessage(), e);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		} catch (HTTPException e) {
+			logger.error(e.getMessage(), e);
+		}
 
-    /**
-     *
-     */
-    private void resetUploadThread() {
-        if (uploadThread != null && uploadThread.isAlive()) {
-            uploadThread.interrupt();
-        }
-        uploadThread = null;
-        uploadProgress = 0;
+		return "";
+	}
 
-    }
+	public static String getMediaPreviewUrl(CMSMediaItem item)
+			throws NumberFormatException, ViewerConfigurationException {
+		if (item != null && item.getFileName() != null) {
+			return getMediaUrl(item, null, "160");
+		}
+		return "";
+	}
 
-    public boolean isUploadComplete() {
-        return uploadProgress == 100;
-    }
+	public boolean isImage(CMSMediaItem item) {
+		return item.getFileName().matches(getImageFilter());
+	}
 
-    private class ImageFileUploadThread extends Thread {
+	public boolean isText(CMSMediaItem item) {
+		return !item.getFileName().matches(getImageFilter());
+	}
+	
+	public void saveSelectedMediaItem( ) throws DAOException {
+		if(this.selectedMediaItem != null) {
+			saveMedia(this.selectedMediaItem.getValue());
+		}
+	}
+	
+	/**
+	 * Save media item, adding or removing the given categories, depending wether they are selected or not.
+	 * if {@link User#hasPrivilegeForAllSubthemeDiscriminatorValues()} is false for the current user
+	 *  and none of the given categories is selected, then don't change the media categories since doing so would break category restrictions
+	 * 
+	 * @param media
+	 * @param categories
+	 * @throws DAOException
+	 */
+	public void saveMedia(CMSMediaItem media, List<Selectable<CMSCategory>> categories) throws DAOException {
+		if(media != null) {
+			if(categories != null) {
+				if(BeanUtils.getUserBean().getUser().hasPrivilegeForAllSubthemeDiscriminatorValues() || categories.stream().anyMatch(Selectable::isSelected)) {					
+					for (Selectable<CMSCategory> category : categories) {
+						if(category.isSelected()) {
+							media.addCategory(category.getValue());
+						} else {
+							media.removeCategory(category.getValue());
+						}
+					}
+				} else {
+					Messages.error(null, "admin__media_save_error_must_have_category", media.toString());
+				}
+				
+			}
+			saveMedia(media);
+		}
+	}
 
-        private long totalSize;
-        private long currentSize = 0;
-        private File targetFile;
-        private InputStream istr;
 
-        @Override
-        public void run() {
-            try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+	public void saveMedia(CMSMediaItem media) throws DAOException {
+		if (media != null) {
+			if (media.getId() == null) {
+				DataManager.getInstance().getDao().addCMSMediaItem(media);
+			} else {
+				media.processMediaFile(media.getFilePath());
+				DataManager.getInstance().getDao().updateCMSMediaItem(media);
+			}
+		}
+		reloadMediaList(false);
+	}
 
-                int BUFFER_SIZE = 4092;
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int a;
-                while (true) {
-                    a = istr.read(buffer);
-                    if (a < 0) {
-                        break;
-                    }
-                    fos.write(buffer, 0, a);
-                    fos.flush();
-                    currentSize += a;
-                    setUploadProgress(getProgress());
-                    try {
-                        if (interrupted()) {
-                            throw new InterruptedException();
-                        }
-                        // System.out.println("Writing... " +
-                        // getUploadProgress()*100 + "%");
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        fos.flush();
-                        setUploadProgress(0);
-                        targetFile.delete();
-                        return;
-                    }
-                }
-                setUploadProgress(100);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                try {
-                    istr.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
+	public static String getFileName(Part filePart) {
+		if (filePart != null) {
+			// String basename = filePart.getName();
+			// if (basename.startsWith(".")) {
+			// basename = basename.substring(1);
+			// }
+			// if (basename.contains("/")) {
+			// basename = basename.substring(basename.lastIndexOf("/") + 1);
+			// }
+			// if (basename.contains("\\")) {
+			// basename = basename.substring(basename.lastIndexOf("\\") + 1);
+			// }
+			//
+			// return basename;
+			String header = filePart.getHeader("content-disposition");
+			for (String headerPart : header.split(";")) {
+				if (headerPart.trim().startsWith("filename")) {
+					return headerPart.substring(headerPart.indexOf('=') + 1).trim().replace("\"", "");
+				}
+			}
+		}
+		return null;
+	}
 
-        public int getProgress() {
-            return (int) ((float) currentSize / (float) totalSize * 100f);
-        }
+	/**
+	 * @param selectedTag the selectedTag to set
+	 */
+	public void setSelectedTag(String selectedTag) {
+		this.selectedTag = selectedTag;
+	}
 
-    }
+	/**
+	 * @return the selectedTag
+	 */
+	public String getSelectedTag() {
+		return selectedTag;
+	}
 
-    public static String getFileName(Part filePart) {
-        if (filePart != null) {
-            // String basename = filePart.getName();
-            // if (basename.startsWith(".")) {
-            // basename = basename.substring(1);
-            // }
-            // if (basename.contains("/")) {
-            // basename = basename.substring(basename.lastIndexOf("/") + 1);
-            // }
-            // if (basename.contains("\\")) {
-            // basename = basename.substring(basename.lastIndexOf("\\") + 1);
-            // }
-            //
-            // return basename;
-            String header = filePart.getHeader("content-disposition");
-            for (String headerPart : header.split(";")) {
-                if (headerPart.trim().startsWith("filename")) {
-                    return headerPart.substring(headerPart.indexOf('=') + 1).trim().replace("\"", "");
-                }
-            }
-        }
-        return null;
-    }
+	/**
+	 * @return
+	 * @throws DAOException
+	 */
+	public List<CMSCategory> getAllMediaCategories() throws DAOException {
+		return DataManager.getInstance().getDao().getAllCategories();
+	}
 
-    public List<String> getAllowedCollections() throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC);
-        List<BrowseDcElement> collections = browseBean.getList(SolrConstants.DC, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
+	public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
+		Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
+		return sizes;
+	}
 
-        return collectionNames;
-    }
+	/**
+	 * 
+	 * @return a regex matching only filenames ending with one of the supported
+	 *         image format suffixes
+	 */
+	public static String getImageFilter() {
+		return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
+	}
+	
+	public static String getDocumentFilter() {
+		return "(?i).*\\.(docx?|rtf|x?h?tml|txt)";
+	}
 
-    public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
-        if (browseBean == null) {
-            browseBean = new BrowseBean();
-        }
-        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
-        List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
-        List<String> collectionNames = new ArrayList<>();
-        List<String> usedCollections = getUsedCollections();
-        for (BrowseDcElement element : collections) {
-            String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
-                collectionNames.add(collectionName);
-            }
-        }
+	/**
+	 * @return the filter
+	 */
+	public String getFilter() {
+		return filter;
+	}
 
-        return collectionNames;
-    }
+	/**
+	 * @param filter the filter to set
+	 */
+	public void setFilter(String filter) {
+		if(!this.filter.equals(filter)) {			
+			this.filter = filter == null ? "" : filter;
+			reloadMediaList(true);
+		}
+	}
+	
+	/**
+	 * @return the filter
+	 */
+	public String getFilenameFilter() {
+		return filenameFilter;
+	}
 
-    /**
-     * @return
-     * @throws DAOException
-     */
-    private static List<String> getUsedCollections() throws DAOException {
-        List<String> collectionNames = new ArrayList<>();
-        for (CMSMediaItem media : getAllMedia()) {
-            if (media.isCollection()) {
-                collectionNames.add(media.getCollectionName());
-            }
-        }
-        return collectionNames;
-    }
-
-    /**
-     * @param selectedTag the selectedTag to set
-     */
-    public void setSelectedTag(String selectedTag) {
-        this.selectedTag = selectedTag;
-    }
-
-    /**
-     * @return the selectedTag
-     */
-    public String getSelectedTag() {
-        return selectedTag;
-    }
-
-    /**
-     * @return
-     * @throws DAOException
-     */
-    public List<String> getAllMediaTags() throws DAOException {
-        return DataManager.getInstance().getDao().getAllTags();
-    }
-
-    public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {
-        Set<CMSMediaItem.DisplaySize> sizes = EnumSet.allOf(CMSMediaItem.DisplaySize.class);
-        return sizes;
-    }
-
-    /**
-     * @return the selectedLanguage
-     */
-    public Locale getSelectedLocale() {
-        return selectedLocale;
-    }
-
-    /**
-     * @param selectedLanguage the selectedLanguage to set
-     */
-    public void setSelectedLocale(Locale selectedLocale) {
-        this.selectedLocale = selectedLocale;
-    }
-
-    /**
-     * 
-     * @return a regex matching only filenames ending with one of the supported image format suffixes
-     */
-    public String getImageFilter() {
-        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2)";
-    }
+	/**
+	 * @param filter the filter to set
+	 */
+	public void setFilenameFilter(String filter) {
+		if(!this.filenameFilter.equals(filter)) {			
+			this.filenameFilter = filter == null ? "" : filter;
+			reloadMediaList(true);
+		}
+	}
+	
+	/**
+	 * @param selectedMediaItem the selectedMediaItem to set
+	 */
+	public void setSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
+		this.selectedMediaItem = selectedMediaItem;
+	}
+	
+	public void toggleSelectedMediaItem(CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem) {
+		if(this.selectedMediaItem != null && this.selectedMediaItem.equals(selectedMediaItem)) {
+			setSelectedMediaItem(null);
+		} else {			
+			setSelectedMediaItem(selectedMediaItem);
+		}
+	}
+	
+	/**
+	 * @return the selectedMediaItem
+	 */
+	public TranslatedSelectable<CMSMediaItem> getSelectedMediaItem() {
+		return selectedMediaItem;
+	}
+	
+	/**
+	 * @param allSelected the allSelected to set
+	 */
+	public void setAllSelected(boolean allSelected) {
+		this.allSelected = allSelected;
+	}
+	
+	/**
+	 * @return the allSelected
+	 */
+	public boolean isAllSelected() {
+		return allSelected;
+	}
+	
+	/**
+	 * 
+	 * @return true if there is more than one page in the data-provider. False otherwise
+	 */
+	public boolean needsPaginator() {
+		if(this.getDataProvider() != null) {
+			return this.getDataProvider().getLastPageNumber() > 0;
+		} else {
+			return false;
+		}
+	}
 
 }

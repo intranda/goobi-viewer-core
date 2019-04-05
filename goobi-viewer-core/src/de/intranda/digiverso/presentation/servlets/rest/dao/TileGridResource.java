@@ -48,10 +48,10 @@ public class TileGridResource {
     @Context
     private HttpServletRequest servletRequest;
     
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/{language}/{size}/{priorityPlaces}/{tags}/")
     @Produces({ MediaType.APPLICATION_JSON })
+    @SuppressWarnings("unchecked")
     public TileGrid getTileGrid(@PathParam("language") String language, @PathParam("size") int gridSize,
             @PathParam("priorityPlaces") int priorityPlaces, @PathParam("tags") String tagString) throws DAOException {
         List items = DataManager.getInstance().getDao().getAllCMSMediaItems();

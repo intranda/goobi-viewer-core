@@ -1,0 +1,87 @@
+/* ==============================================================
+   CMS Slideshow
+   ==============================================================*/
+/* SLIDESHOW */
+.slideshow {
+	&__image {
+		position: relative;
+		overflow: hidden;		
+		& > a {
+			display: block;
+			height: 100%;
+		}
+		img {
+			display: block;
+			height: 400px;
+			max-width: 100%;
+			margin: 0 auto;
+			transition: all .3s ease;
+			opacity: 0;
+			&.active {
+				opacity: 1;
+			}
+		}
+	}
+	figcaption {
+		position: relative;
+		padding: 10px;
+		line-height: normal;
+		font-size: 0.8125rem;
+		color: @middlegray;
+		h4, p {
+			max-width: calc(~"100% - 135px");
+		}
+		h4 {
+			margin: 0;
+			font-size: 0.9375rem;
+			color: @middlegray;
+		}
+		p {
+			margin: 0;
+		}
+	}
+	&__dots {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		max-width: 135px;
+		z-index: 20;
+		ul {
+			.mx-list-reset;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: flex-end;
+		}
+		li {
+			margin-left: 10px;
+			&:last-cild {
+				margin-right: 0;
+			}
+		}
+		button {
+			width: 12px;
+			height: 12px;
+			border: 1px solid @middlegray;
+			border-radius: 50%;
+			background-color: @middlegray;
+			cursor: pointer;
+			&.active {
+				border-color: @blue;
+				background-color: @blue;
+			}
+		}
+	}
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOPS
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}

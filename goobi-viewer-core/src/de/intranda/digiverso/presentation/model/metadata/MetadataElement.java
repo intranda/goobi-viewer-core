@@ -185,46 +185,52 @@ public class MetadataElement {
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
         this.selectedRecordLanguage = selectedRecordLanguage;
 
-        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false, false);
+        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
-                if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
-                    if (se.isWork() || se.isAnchor()) {
-                        metadataList.add(metadata);
-                    }
-                } else {
+            if (!metadata.populate(se.getMetadataFields(), sessionLocale)) {
+                continue;
+            }
+            if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
+                if (se.isWork() || se.isAnchor()) {
                     metadataList.add(metadata);
                 }
+            } else {
+                metadataList.add(metadata);
             }
         }
 
         // Populate sidebar metadata
-        List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(se.getDocStructType());
+
+        if (se.isGroup()) {
+            docStructType = "_GROUPS";
+        }
+        List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
             // Use default if no elements are defined for the current docstruct
             sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
         }
-        if (!sidebarMetadataTempList.isEmpty()) {
-            // The component is only rendered if sidebarMetadataList != null
-            sidebarMetadataList = new ArrayList<>();
-            for (Metadata metadata : sidebarMetadataTempList) {
-                if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
-                    if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
-                        // TODO remove bean retrieval
-                        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                        if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
-                                && adb.getViewManager().getCurrentPage().getUrn() != null
-                                && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
-                            Metadata newMetadata =
-                                    new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage().getUrn());
-                            sidebarMetadataList.add(newMetadata);
-                        }
-                    } else {
-                        sidebarMetadataList.add(metadata);
-                    }
+        if (sidebarMetadataTempList.isEmpty()) {
+            return;
+        }
+        // The component is only rendered if sidebarMetadataList != null
+        sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
+        for (Metadata metadata : sidebarMetadataTempList) {
+            if (!metadata.populate(se.getMetadataFields(), sessionLocale)) {
+                continue;
+            }
+            if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
+                // TODO remove bean retrieval
+                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+                if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
+                        && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                    Metadata newMetadata =
+                            new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage().getUrn());
+                    sidebarMetadataList.add(newMetadata);
                 }
+            } else {
+                sidebarMetadataList.add(metadata);
             }
         }
     }
@@ -379,7 +385,7 @@ public class MetadataElement {
      * @return the sidebarMetadataList
      */
     public List<Metadata> getSidebarMetadataList() {
-    	return Metadata.filterMetadataByLanguage(this.sidebarMetadataList, selectedRecordLanguage);
+        return Metadata.filterMetadataByLanguage(this.sidebarMetadataList, selectedRecordLanguage);
     }
 
     /**

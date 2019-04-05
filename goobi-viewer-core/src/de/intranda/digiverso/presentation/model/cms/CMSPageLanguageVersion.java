@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,6 +195,13 @@ public class CMSPageLanguageVersion {
      */
     public String getMenuTitle() {
         return menuTitle;
+    }
+    
+    /**
+     * @return the menuTitle or the title if no menu title exists
+     */
+    public String getMenuTitleOrTitle() {
+        return StringUtils.isBlank(menuTitle) ? title : menuTitle;
     }
 
     /**

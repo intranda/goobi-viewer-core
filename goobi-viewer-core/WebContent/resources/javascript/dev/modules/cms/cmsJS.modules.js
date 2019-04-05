@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module which enables a sortable List based on jQuery UI. This list is used for the
- * mainmenu items and dynamic sidebar elements.
- * 
- * @version 3.2.0
- * @module cmsJS.sortableList
+ * @version 3.4.0
+ * @module cmsJS.modules
  * @requires jQuery, jQuery UI
+ * @description Module which enables the cms module functionality.
  */
 var cmsJS = ( function( cms ) {
     'use strict';
@@ -29,27 +27,123 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     
     cms.modules = {
-        /**
-         * Method which initializes the CMS sortable list items and sets events.
-         * 
-         * @method init
-         */
+    		/**
+             * @description Method which initializes the cms modules.
+             * @method init
+             * @param {Object} config The config object.
+             */
         init: function() {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'cmsJS.modules.init' );
                 console.log( '##############################' );
             }
+            this.initEventListeners();
+            this.cleanUp();
             
+            // jsf ajax event
+            if ( typeof jsf !== 'undefined' ) {
+            	jsf.ajax.addOnEvent( function( data ) {
+            		var ajaxstatus = data.status;
+            		
+            		switch (ajaxstatus) {
+            		case 'begin':
+            			break;
+            		case 'complete':
+            			break;
+            		case 'success':
+            			if ( $( '.cms-module__option-message' ).length > 0 ) {
+            				cmsJS.modules.setValidationStatus( data.source.id );							
+            			}
+            			
+            			break;
+            		}
+            	});            	
+            }
+        },
+        /**
+		 * @description Method to set the validation status.
+		 * @method setValidationStatus
+		 * @param {String} source The id of the element which fired the ajax request,
+		 */
+        setValidationStatus: function( source ) {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: setValidationStatus' );
+        		console.log( '--> source: ', source );
+        	}
+        	
+        	var stripedSource,
+        		status;
+        	
+        	if ( source.indexOf( ':' ) > -1 ) {
+        		stripedSource = source.match(/.*:(.*)/)[1];        		
+        		status = $( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        	}
+        	else {
+        		stripedSource = source;       		
+        		status = $( '#' + stripedSource ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-status' );
+        	}
+
+        	if ( status.hasClass( 'success' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'success' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'success' );
+        	}
+        	else if ( status.hasClass( 'warning' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'warning' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'warning' );
+        	}
+        	else if ( status.hasClass( 'danger' ) ) {
+        		$( '[id*="' + stripedSource + '"]' ).parents( '.cms-module__option-control' ).find( '.cms-module__option-message-mark' ).addClass( 'danger' );
+        		$( '[id*="' + stripedSource + '"]' ).addClass( 'danger' );
+        	}
+        },
+        /**
+         * @description Method to clean up modules.
+         * @method cleanUp
+         */
+        cleanUp: function() {
+        	if ( _debug ) {
+        		console.log( 'EXECUTE: cleanUp' );
+        	}
+        	
+        	if ( $( '.cms-module__option-message ul' ).length > 0 ) {
+        		$( '.cms-module__option-message ul' ).empty();
+        	}
+        },
+        /**
+		 * @description Method to reload all event listeners.
+		 * @method onReload
+		 * @param {Object} data The ajax data object from jsf.
+		 */
+        onReload: function( data ) {
+            if ( data && data.status == 'begin' ) {
+            	cms.modules.removeEventListeners();
+            } 
+            else if ( !data || data.status == 'success' ) {
+            	cms.modules.initEventListeners();
+            }
+        },
+        /**
+		 * @description Method to remove all event listeners.
+		 * @method removeEventListeners
+		 */
+        removeEventListeners: function() {
+            $( '[data-toggle="helptext"]' ).off( 'click' );
+            $( '[data-toggle="available-items"]' ).off( 'click' );
+            $( '[data-toggle="option-dropdown"]' ).off( 'click' );
+        },
+        /**
+         * @description Method to initialize all event listeners.
+         * @method initEventListeners
+         */
+        initEventListeners: function() {
             // toggle input helptext
             $( '[data-toggle="helptext"]' ).on( 'click', function() {
             	$( this ).toggleClass( 'in' );
             	
-            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control' );
+            	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control, .cms-module__option-dropdown' );
             	$input.toggleClass( 'in' );
             	$input.find( '.cms-module__option-control-helptext' ).toggleClass( 'in' );
-            	// focus input
-            	$input.find( '.form-control' ).focus();
             } );
             
             // toggle add new item accordeon
@@ -72,6 +166,19 @@ var cmsJS = ( function( cms ) {
             			// focus first input if available
             			$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
             		} );            		
+            	}
+            } );
+            
+            // toggle option dropdown
+            $( '[data-toggle="option-dropdown"]' ).on( 'click', function() {
+            	$( this ).next().slideToggle( 'fast' );
+            } );
+            $( document ).on( 'click', function( event ) {
+            	if ( $( event.target ).closest( '.cms-module__option-dropdown' ).length ) {	
+            		return;
+            	}
+            	else {            		
+            		$( '.cms-module__option-dropdown' ).find( 'ul' ).hide();
             	}
             } );
         }

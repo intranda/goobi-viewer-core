@@ -15,9 +15,6 @@
  */
 package de.intranda.digiverso.presentation.faces.validators;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -32,14 +29,10 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
- * Syntax validator for e-mail addresses.
+ * Duplicate validator for e-mail addresses.
  */
 @FacesValidator("emailAvailableValidator")
 public class EmailAvailableValidator implements Validator<String> {
-
-    private static final String REGEX =
-            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
-    private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
@@ -64,29 +57,13 @@ public class EmailAvailableValidator implements Validator<String> {
      * @return  true if the given email is not already assigned to a user except a possibly currently logged in user in this session
      * @throws DAOException 
      */
-    private boolean validateEmailUniqueness(String email) throws DAOException {
+    private static boolean validateEmailUniqueness(String email) throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         User currentUser = BeanUtils.getUserBean().getUser();
         if(user != null) {
             return currentUser != null && user.getId().equals(currentUser.getId());
-        } else {
-            return true;
         }
-    }
-
-    /**
-     *
-     * @param email
-     * @return
-     * @should match correct email addresses
-     * @should match entire email address only
-     * @should not match invalid addresses
-     */
-    protected static boolean validateEmailAddress(String email) {
-        if (email == null) {
-            return false;
-        }
-        Matcher m = PATTERN.matcher(email.toLowerCase());
-        return m.find();
+        
+        return true;
     }
 }

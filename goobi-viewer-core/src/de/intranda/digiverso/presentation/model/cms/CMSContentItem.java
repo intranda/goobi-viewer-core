@@ -35,10 +35,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -56,6 +59,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.QueryListFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -66,7 +70,6 @@ import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
-import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
@@ -74,12 +77,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
  */
 @Entity
 @Table(name = "cms_content_items")
-public class CMSContentItem implements Comparable<CMSContentItem> {
-
-    /**
-     * Separates the individual classifications in the classification string
-     */
-    private static final String CLASSIFICATION_SEPARATOR = "::";
+public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolder {
 
     /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
@@ -188,9 +186,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
-    /** Page classification for page list content items. */
-    @Column(name = "page_classification")
-    private String pageClassification = "";
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cms_content_item_cms_categories", joinColumns = @JoinColumn(name = "content_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<CMSCategory> categories = new ArrayList<>();
 
     /** Lucence field on which to base a collecion view */
     @Column(name = "collection_field")
@@ -232,12 +231,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /**
      * For TileGrid
      */
-    @Column(name = "allowed_tags")
-    private String allowedTags = "-";
-
-    /**
-     * For TileGrid
-     */
     @Column(name = "important_count")
     private int numberOfImportantTiles = 0;
 
@@ -269,6 +262,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Transient
     private CollectionView collection = null;
 
+    /**
+     * Wrapper for the media item which keeps track of the currently selected language
+     */
+    @Transient
+    private CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
+    
+    @Transient 
+    private List<Selectable<CMSCategory>> selectableCategories = null;
     /**
      *  
      */
@@ -314,12 +315,11 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setCollectionOpenExpanded(blueprint.isCollectionOpenExpanded());
         this.setBaseCollection(blueprint.getBaseCollection());
         this.setMediaItem(blueprint.getMediaItem());
-        this.setPageClassification(blueprint.getPageClassification());
+        this.setCategories(new ArrayList<>(blueprint.getCategories()));
         this.setComponent(blueprint.component);
         this.setNumberOfTiles(blueprint.numberOfTiles);
         this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
         this.setIgnoreCollections(blueprint.getIgnoreCollections());
-        this.allowedTags = blueprint.allowedTags;
         this.glossaryName = blueprint.glossaryName;
         this.searchPrefix = blueprint.searchPrefix;
         this.tocPI = blueprint.tocPI;
@@ -548,24 +548,62 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
+        if(mediaItem != null) {        	
+        	this.mediaItemWrapper = new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());;
+        } else {
+        	this.mediaItemWrapper = null;
+        }
+        
     }
+    
+    /**
+	 * @return the mediaItemWrapper
+	 */
+	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+		return mediaItemWrapper;
+	}
+	
+	/**
+	 * @param mediaItemWrapper the mediaItemWrapper to set
+	 */
+	public void setMediaItemWrapper(CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
+		this.mediaItemWrapper = mediaItemWrapper;
+		if(mediaItemWrapper != null)  {			
+			this.mediaItem = this.mediaItemWrapper.getValue();
+		} else {
+			this.mediaItem = null;
+		}
+	}
 
     /**
      * @return the pageClassification
      */
-    public String[] getPageClassification() {
-        if (StringUtils.isNotBlank(pageClassification)) {
-            return pageClassification.split(CLASSIFICATION_SEPARATOR);
-        }
-
-        return new String[0];
+    public List<CMSCategory> getCategories() {
+        return this.categories;
+    }
+    
+    /**
+     * @param classifications the classifications to set
+     */
+    public void setCategories(List<CMSCategory> categories) {
+        this.categories = categories;
     }
 
-    public List<String> getSortedPageClassifications() throws DAOException {
-        if (StringUtils.isNotBlank(pageClassification)) {
-            SortedMap<Long, String> sortMap = new TreeMap<>();
-            for (String classification : getPageClassification()) {
-                long order = getNestedPages(classification).stream()
+    public void addCategory(CMSCategory category) {
+        if (!categories.contains(category)) {
+        	categories.add(category);
+        }
+    }
+
+    public void removeCategory(CMSCategory category) {
+    	categories.remove(category);
+    }
+
+    public List<CMSCategory> getSortedCategories() throws DAOException {
+        if (!this.categories.isEmpty()) {
+            SortedMap<Long, CMSCategory> sortMap = new TreeMap<>();
+            for (CMSCategory category : getCategories()) {
+                long order = getNestedPages(category).stream()
                         .filter(page -> page.getPageSorting() != null)
                         .mapToLong(CMSPage::getPageSorting)
                         .sorted()
@@ -574,23 +612,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 while (sortMap.containsKey(order)) {
                     order++;
                 }
-                sortMap.put(order, classification);
+                sortMap.put(order, category);
             }
             return new ArrayList<>(sortMap.values());
         }
 
         return Collections.emptyList();
-    }
-
-    /**
-     * @param pageClassification the pageClassification to set
-     */
-    public void setPageClassification(String[] pageClassification) {
-        if (pageClassification != null && pageClassification.length > 0) {
-            this.pageClassification = StringUtils.join(pageClassification, CLASSIFICATION_SEPARATOR);
-        } else {
-            this.pageClassification = "";
-        }
     }
 
     public int getListPage() {
@@ -620,12 +647,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return nestedPages;
     }
 
-    public List<CMSPage> getNestedPages(String classification) throws DAOException {
+    public List<CMSPage> getNestedPages(CMSCategory category) throws DAOException {
         if (nestedPages == null) {
             return loadNestedPages();
         }
         List<CMSPage> pages = nestedPages.stream()
-                .filter(page -> page.getClassifications() != null && page.getClassifications().contains(classification))
+                .filter(page -> page.getCategories() != null && page.getCategories().contains(category))
                 .collect(Collectors.toList());
         return pages;
     }
@@ -639,13 +666,11 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         int offset = getListOffset();
 
         List<CMSPage> allPages = new ArrayList<>();
-        if (StringUtils.isBlank(pageClassification)) {
+        if (getCategories().isEmpty()) {
             allPages = DataManager.getInstance().getDao().getAllCMSPages();
         } else {
-            for (String classification : getPageClassification()) {
-                if (StringUtils.isNotBlank(classification)) {
-                    allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByClassification(classification));
-                }
+            for (CMSCategory category : getCategories()) {
+            	allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
             }
         }
 
@@ -832,34 +857,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         });
         return collection;
-    }
-
-    /**
-     * @return the allowedTags
-     */
-    public String getAllowedTags() {
-        return allowedTags;
-    }
-
-    /**
-     * @param allowedTags the allowedTags to set
-     */
-    public void setAllowedTags(String allowedTags) {
-        this.allowedTags = allowedTags;
-    }
-
-    public String[] getAllowedTagsAsArray() {
-        if (StringUtils.isBlank(this.allowedTags)) {
-            return new String[0];
-        }
-        return this.allowedTags.split(TileGridResource.TAG_SEPARATOR_REGEX);
-    }
-
-    public void setAllowedTagsAsArray(String[] tags) {
-        if (tags == null || tags.length == 0) {
-            this.allowedTags = "-";
-        }
-        this.allowedTags = StringUtils.join(tags, TileGridResource.TAG_SEPARATOR);
     }
 
     /**
@@ -1104,6 +1101,43 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     private CMSContentItemTemplate getTemplateItem() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
+    
+    /**
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
+     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     */
+    public void writeSelectableCategories() {
+    	
+    	if(this.selectableCategories != null) {
+	    	try {
+				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+				List<CMSCategory> tempCats = new ArrayList<>();
+				for (CMSCategory cat : allCats) {
+					if(this.categories.contains(cat) && this.selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+						tempCats.add(cat);
+					} else if(this.selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+						tempCats.add(cat);
+					}
+				}
+				this.categories = tempCats;
+	    	} catch (DAOException e) {
+	    		logger.error(e.toString(), e);
+			}
+    	}
+    	this.selectableCategories = null;
+    }
+	
+	/**
+	 * @return the selectableCategories
+	 * @throws DAOException 
+	 */
+	public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+		if(selectableCategories == null) {
+			List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
+			selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+		}
+		return selectableCategories;
+	}
 
     /**
      * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
@@ -1157,4 +1191,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             }
         }
     }
+
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.model.cms.CMSMediaHolder#hasMediaItem()
+	 */
+	@Override
+	public boolean hasMediaItem() {
+		return this.mediaItem != null;
+	}
 }
