@@ -188,6 +188,10 @@
 					background-size: contain;
 					box-shadow: none;
 				}
+				&__file-image-caption {
+					top: 0;
+					bottom: auto;
+				}
 				&__file-metadata {
 					display: block;
 					padding-left: 30px;
@@ -277,6 +281,21 @@
 		background-position: center;
 		background-size: cover;
 		cursor: pointer;
+	}
+	&__file-image-caption {
+		display: none;
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	    max-height: 100%;
+		padding: 10px;
+		font-weight: 600;
+		text-align: center;
+		word-wrap: break-word;
+		overflow: hidden;
+		background-color: rgba(255,255,255,.8);
+		box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
 	}
 	&__file-metadata {
 		flex-grow: 1;
@@ -410,6 +429,9 @@
 				}
 				&__file-image {
 					box-shadow: inset 0 0 15px rgba(0,0,0,.1), inset 0 0 0 1px rgba(0,0,0,.05);
+				}
+				&__file-image-caption {
+					display: block;
 				}
 				&__file-metadata,
 				&__file-metadata-view,
