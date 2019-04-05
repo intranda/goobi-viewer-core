@@ -6875,7 +6875,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #timeMatrix .timematrix-selection #slider-range {
   height: 12px;
-  border-color: #ccc;
+  border: 1px solid #ccc;
 }
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle {
   display: block;
