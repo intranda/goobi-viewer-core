@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.download;
+package de.intranda.digiverso.presentation.servlets.rest.download;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
