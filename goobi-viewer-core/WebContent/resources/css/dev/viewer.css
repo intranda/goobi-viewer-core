@@ -7567,6 +7567,9 @@ div[id*="-Modal"] .email-form .form-group {
   color: #ccc;
   background-color: #eee;
 }
+.widget-search-drilldown__filter {
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
