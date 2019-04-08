@@ -459,6 +459,9 @@ var viewerJS = ( function() {
                         }
                         $('html').scrollTop(scrollTop);
                     }
+                    //after scrolling to the position, remove the entry
+                    scrollPositions[currentPage] = undefined;
+                    sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
                 }
             }
         })
