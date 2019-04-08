@@ -33,7 +33,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     
     viewer.listFilter = function(config) {
         if ( _debug ) {
