@@ -66,7 +66,7 @@ public abstract class AbstractBuilder {
 			SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM,
 			SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK,
 			SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
-			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES,
+			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 
 	private final URI servletURI;

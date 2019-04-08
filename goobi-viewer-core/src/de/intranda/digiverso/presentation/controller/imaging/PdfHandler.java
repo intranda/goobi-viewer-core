@@ -123,6 +123,21 @@ public class PdfHandler {
     }
 
     /**
+     * Gets the url to the pdf for the given {@link StructElement}. The pi is the one of the topStruct element of the given StructElement
+     * 
+     * @param divId DivID (LogID) of the docstruct for which the pdf should be generated. If this is null or empty, a pdf for the complete work is
+     *            generated
+     * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
+        String pi = doc.getTopStruct().getPi();
+    	return getPdfUrl(doc, pi, label);
+    }
+    
+    /**
      * Gets the url to the pdf for the given pi and divId
      * 
      * @param pi PI of the process from which to build pdf. Must be provided
@@ -133,9 +148,8 @@ public class PdfHandler {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
+    public String getPdfUrl(StructElement doc, String pi, String label) throws PresentationException, IndexUnreachableException {
 
-        String pi = doc.getTopStruct().getPi();
         String divId = doc.isWork() ? null : doc.getLogid();
 
         return getPdfUrl(pi, Optional.ofNullable(divId), this.watermarkHandler.getFooterIdIfExists(doc),
