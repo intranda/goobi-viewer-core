@@ -856,6 +856,9 @@
 					<param type="field" key="MD_CREATOR" />
 					<param type="wikipersonfield" key="MD_CREATOR" />
 				</metadata>
+				<metadata label="MD_SHELFMARK" value="">
+					<param type="field" key="MD_SHELFMARK" />
+				</metadata>
 				<metadata label="URN" value="">
 					<param type="field" key="URN" />
 				</metadata>

@@ -28,7 +28,9 @@
                                     <h3>#{msg[field.key.concat('_DD')]}</h3>
 
                                     <ul>
-									<input id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter"/>
+										<!-- FILTER FACETS -->
+										<input id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter" placeholder="#{msg.search}" />
+                                        
                                         <!-- ACTIVE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
                                             <li class="active">
