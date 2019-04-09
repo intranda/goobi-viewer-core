@@ -13,10 +13,12 @@
 <!-- riot.mount( 'slideshow' ); -->
 
 <slideshow>
+	<!-- dummy link to catch scrollling to stored position (viewerJS.checkScrollPosition()) which executes before manifest is loaded -->
+	<a if="{manifest === undefined}" data-linkid="{opts.pis}"/>
     <figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"> 
         <!-- IMAGE -->
         <div class="slideshow__image">
-            <a href="{getLink(manifest)}">
+            <a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}">
                 <img src="{getThumbnail(manifest)}" class="{'active' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}" />
             </a>
         </div>
@@ -69,7 +71,10 @@
         this.visible = false;
         this.mouseover = false;
         
+        console.log("tag created")
+        
         this.on( 'mount', function() {
+            console.log("tag mounted")
         	this.loadManifest( this.pis[0] );
         }.bind( this ));
         
@@ -144,7 +149,7 @@
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
-        				
+        				console.log("manifest loaded");
             			this.checkPosition();
             			
         				$( window ).on( 'resize scroll', function() {
@@ -259,6 +264,11 @@
             		return element['@value'];                
             	}
             }
+        }
+        
+        storeScrollPosition(event) {
+            $target = $(event.target).closest("a");
+            viewerJS.handleScrollPositionClick($target);
         }
     </script> 
 </slideshow>
