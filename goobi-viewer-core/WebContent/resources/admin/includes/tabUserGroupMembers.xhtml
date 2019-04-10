@@ -73,7 +73,7 @@
 								<h:outputLabel for="user" styleClass="col-sm-5 control-label" value="#{msg.user} *" />
 								<div class="col-sm-7">
 									<h:selectOneMenu value="#{adminBean.currentUserRole.user}" id="user" styleClass="form-control" converter="userConverter" required="true">
-										<f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.displayName}" />
+										<f:selectItems value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.members)}" var="user" itemLabel="#{user.displayName}" />
 									</h:selectOneMenu>
 								</div>
 							</div>
