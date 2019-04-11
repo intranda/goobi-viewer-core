@@ -162,4 +162,26 @@ public class MetadataValueTest {
         value.getParamValues().get(0).add("value2");
         Assert.assertEquals("value1, value2", value.getComboValueShort(0));
     }
+
+    /**
+     * @see MetadataValue#getComboValueShort(int)
+     * @verifies use master value fragment correctly
+     */
+    @Test
+    public void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
+        MetadataValue value = new MetadataValue("");
+        value.getParamMasterValueFragments().add("foo {0} bar");
+        value.getParamSuffixes().add("pre_");
+        value.getParamSuffixes().add("_suf");
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(0).add("vs");
+        Assert.assertEquals("foo vs bar", value.getComboValueShort(0));
+
+        value.getParamMasterValueFragments().add("foo {0} bar");
+        value.getParamSuffixes().add("pre_");
+        value.getParamSuffixes().add("_suf");
+        value.getParamValues().add(new ArrayList<>());
+        value.getParamValues().get(1).add("minus");
+        Assert.assertEquals("foo minus bar", value.getComboValueShort(1));
+    }
 }

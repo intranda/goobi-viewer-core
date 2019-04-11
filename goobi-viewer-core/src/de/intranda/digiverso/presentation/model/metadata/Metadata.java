@@ -386,6 +386,7 @@ public class Metadata implements Serializable {
                         mdValue.getParamValues().add(paramIndex, new ArrayList<>());
                     }
                     mdValue.getParamValues().get(paramIndex).add(Helper.intern(value));
+                    mdValue.getParamMasterValueFragments().add(paramIndex, origParam.getMasterValueFragment());
                     mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
                     mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
                     mdValue.getParamUrls().add(paramIndex, url);
@@ -393,10 +394,10 @@ public class Metadata implements Serializable {
                         mdValue.getNormDataUrls().putAll(normDataUrl);
                         // logger.trace("added norm data url: {}", normDataUrl.toString());
                     }
-                    // Replace master value with override value from the parameter
-                    if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
-                        mdValue.setMasterValue(origParam.getOverrideMasterValue());
-                    }
+                    //                    // Replace master value with override value from the parameter
+                    //                    if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
+                    //                        mdValue.setMasterValue(origParam.getOverrideMasterValue());
+                    //                    }
                 }
             }
         }

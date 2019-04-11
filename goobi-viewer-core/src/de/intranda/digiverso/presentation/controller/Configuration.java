@@ -424,13 +424,13 @@ public final class Configuration extends AbstractConfiguration {
                     String fieldType = sub2.getString("[@type]");
                     String source = sub2.getString("[@source]", null);
                     String key = sub2.getString("[@key]");
-                    String overrideMasterValue = sub2.getString("[@value]");
+                    String masterValueFragment = sub2.getString("[@value]");
                     String defaultValue = sub2.getString("[@defaultValue]");
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
                     boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
                             prefix, suffix, addUrl, dontUseTopstructValue));
                 }
             }

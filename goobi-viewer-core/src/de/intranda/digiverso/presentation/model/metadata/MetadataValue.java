@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -44,6 +45,7 @@ public class MetadataValue implements Serializable {
      * parameters.
      */
     private final List<List<String>> paramValues = new ArrayList<>();
+    private final List<String> paramMasterValueFragments = new ArrayList<>();
     private final List<String> paramPrefixes = new ArrayList<>();
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
@@ -72,37 +74,50 @@ public class MetadataValue implements Serializable {
      * @should not add empty prefix
      * @should not add empty suffix
      * @should add separator between values if no prefix used
+     * @should use master value fragment correctly
      */
     public String getComboValueShort(int index) {
+        if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
+            return "";
+        }
+
         StringBuilder sb = new StringBuilder();
+        for (String paramValue : paramValues.get(index)) {
+            if (StringUtils.isEmpty(paramValue)) {
+                continue;
+            }
 
-        if (paramValues.size() > index && paramValues.get(index) != null && !paramValues.get(index).isEmpty()) {
-            for (String paramValue : paramValues.get(index)) {
-                if (StringUtils.isEmpty(paramValue)) {
-                    continue;
-                }
+            boolean addPrefix = true;
+            boolean addSuffix = true;
+            if (index == 0) {
+                addPrefix = false;
+            }
 
-                boolean addPrefix = true;
-                if (index == 0) {
-                    addPrefix = false;
-                }
-                // Only add prefix if the total parameter value lengths is > 0 so far
-                if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
-                    sb.append(paramPrefixes.get(index));
-                } else if (sb.length() > 0) {
-                    // Use separator between values if no prefix is used
-                    sb.append(", ");
-                }
-                if (paramUrls.size() > index && StringUtils.isNotEmpty(paramUrls.get(index))) {
-                    sb.append("<a href=\"").append(paramUrls.get(index)).append("\">").append(paramValue).append("</a>");
-                    //                logger.trace("URL: {}: {}", index,paramUrls.get(index));
-                } else {
-                    //                logger.trace("Non-URL: {}: {}", index, paramValues.get(index));
-                    sb.append(paramValue);
-                }
-                if (paramSuffixes.size() > index && StringUtils.isNotEmpty(paramSuffixes.get(index))) {
-                    sb.append(paramSuffixes.get(index));
-                }
+            String masterFragment = "{0}";
+            // Configured master value fragment overrides prefix/suffix
+            if (paramMasterValueFragments.size() > index && StringUtils.isNotEmpty(paramMasterValueFragments.get(index))) {
+                addPrefix = false;
+                addSuffix = false;
+                masterFragment = ViewerResourceBundle.getTranslation(paramMasterValueFragments.get(index), null);
+                logger.trace("master fragment: {}", masterFragment);
+            }
+            // Only add prefix if the total parameter value lengths is > 0 so far
+            if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
+                sb.append(paramPrefixes.get(index));
+            } else if (sb.length() > 0) {
+                // Use separator between values if no prefix is used
+                sb.append(", ");
+            }
+            if (paramUrls.size() > index && StringUtils.isNotEmpty(paramUrls.get(index))) {
+                StringBuilder sbUrl = new StringBuilder();
+                sbUrl.append("<a href=\"").append(paramUrls.get(index)).append("\">").append(paramValue).append("</a>");
+                masterFragment = masterFragment.replace("{0}", sbUrl.toString());
+            } else {
+                masterFragment = masterFragment.replace("{0}", paramValue);
+            }
+            sb.append(masterFragment);
+            if (addSuffix && paramSuffixes.size() > index && StringUtils.isNotEmpty(paramSuffixes.get(index))) {
+                sb.append(paramSuffixes.get(index));
             }
         }
 
@@ -131,6 +146,13 @@ public class MetadataValue implements Serializable {
      */
     public List<List<String>> getParamValues() {
         return paramValues;
+    }
+
+    /**
+     * @return the paramMasterValueFragments
+     */
+    public List<String> getParamMasterValueFragments() {
+        return paramMasterValueFragments;
     }
 
     /**
