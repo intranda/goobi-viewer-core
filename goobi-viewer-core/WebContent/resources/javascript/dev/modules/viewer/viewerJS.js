@@ -447,8 +447,8 @@ var viewerJS = ( function() {
 
     viewer.checkScrollPosition = function() {
         var scrollPositionString = sessionStorage.getItem("scrollPositions");
-        console.log("scroll positions ", scrollPositionString);
-        if(scrollPositionString) {
+        
+        if ( scrollPositionString ) {
             var scrollPositions = JSON.parse(scrollPositionString);
             var scrollPosition = scrollPositions[currentPage];
             if(scrollPosition) {                    
