@@ -829,7 +829,8 @@ public class SearchFacets {
     public Map<String, List<FacetItem>> getAllAvailableFacets() {
         Map<String, List<FacetItem>> ret = new LinkedHashMap<>();
 
-        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+        List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        for (String field : allDrillDownFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
             }

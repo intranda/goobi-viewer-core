@@ -345,10 +345,10 @@ public class Search implements Serializable {
                 //                    continue;
                 //                }
                 //                // Skip language-specific facet fields if they don't match the given language
-                if (facetField.getName().contains(SolrConstants._LANG_)
-                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
-                    continue;
-                }
+//                if (facetField.getName().contains(SolrConstants._LANG_)
+//                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
+//                    continue;
+//                }
                 Map<String, Long> facetResult = new TreeMap<>();
                 for (Count count : facetField.getValues()) {
                     if (StringUtils.isEmpty(count.getName())) {
