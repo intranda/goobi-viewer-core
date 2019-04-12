@@ -1143,4 +1143,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
     }
+
+    /**
+     * 
+     * @return twitter:card type
+     */
+    public String getTwitterCardType() {
+        if (mimeType == null) {
+            return "summary_large_image";
+        }
+        switch (mimeType) {
+            case MIME_TYPE_VIDEO:
+                return "player";
+            default:
+                return "summary_large_image";
+        }
+    }
 }
