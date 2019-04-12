@@ -5451,6 +5451,12 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .user-login__cards {
+    -ms-grid-columns: 1fr;
+        grid-template-columns: 1fr;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Account Create
