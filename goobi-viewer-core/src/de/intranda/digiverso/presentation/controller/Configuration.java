@@ -1464,7 +1464,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
-    
+
     /**
      * 
      * @return
@@ -1473,8 +1473,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getName() {
         return getLocalString("viewer.name", "Goobi viewer");
     }
-    
-    
+
     /**
      * 
      * @return
@@ -3241,6 +3240,15 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isAllowRedirectCollectionToWork() {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
+    }
+
+    /**
+     * @return Configured value; null if none configured
+     * @should return correct value
+     */
+    public String getTwitterUserName() {
+        String token = getLocalString("embedding.twitter.userName");
+        return token;
     }
 
 }

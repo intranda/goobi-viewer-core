@@ -10,10 +10,25 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta property="og:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(300)}" />
+    
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(300)}" />
+        </ui:fragment>
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
+            <meta name="twitter:card" content="player" />
+            <meta name="twitter:player" content="#{navigationHelper.currentUrl}" />
+            <meta name="twitter:player:width" content="300" />
+            <meta name="twitter:player:height" content="200" />
+            <meta name="twitter:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(300)}" />
+        </ui:fragment>
+        <meta name="twitter:title" content="#{activeDocumentBean.titleBarLabel}" />
+        <meta name="twitter:site" content="#{configurationBean.twitterName}" />
+
         <meta property="og:url" content="#{navigationHelper.currentUrl}" />
+        <meta property="og:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(300)}" />
         <meta property="og:title" content="#{activeDocumentBean.titleBarLabel}" />
+        
     </ui:fragment>
     
 </ui:composition>
