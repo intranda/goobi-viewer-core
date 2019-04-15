@@ -55,7 +55,6 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -463,7 +462,7 @@ public class ActiveDocumentBean implements Serializable {
                     int weight = NavigationHelper.WEIGHT_OPEN_DOCUMENT;
                     
                     // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
-                    List<String> collections = viewManager.getTopDocument().getMetadataValues(SolrConstants.DC);
+                    List<String> collections = viewManager.getTopDocument().getCollections();
                     if (collections.size() == 1) {
                        weight = navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), NavigationHelper.WEIGHT_OPEN_DOCUMENT);
                     }

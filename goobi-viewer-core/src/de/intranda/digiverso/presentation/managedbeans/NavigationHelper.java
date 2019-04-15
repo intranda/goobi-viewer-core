@@ -1023,7 +1023,6 @@ public class NavigationHelper implements Serializable {
         }
 
         String[] hierarchy = collection.contains(".") ? collection.split("[.]") : new String[] { collection };
-        logger.trace(Arrays.asList(hierarchy).toString());
         StringBuilder sb = new StringBuilder();
         for (String level : hierarchy) {
             if (sb.length() > 0) {
