@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
@@ -24,6 +25,12 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 
 
 public class NavigationHelperTest {
+    
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        System.setProperty("log4j.configurationFile", "log4j2.xml");
+    }
+
 
     @Before
     public void setUp() throws Exception {
@@ -224,5 +231,26 @@ public class NavigationHelperTest {
     }
 
 
-
+    /**
+     * @see NavigationHelper#addCollectionHierarchyToBreadcrumb(String,int)
+     * @verifies create breadcrumbs correctly
+     */
+    @Test
+    public void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
+        NavigationHelper nh = new NavigationHelper();
+        Assert.assertEquals(0, nh.getBreadcrumbs().size());
+        nh.addCollectionHierarchyToBreadcrumb("a.b.c.d", NavigationHelper.WEIGHT_OPEN_DOCUMENT);
+        
+        Assert.assertEquals(5, nh.getBreadcrumbs().size());
+        
+        Assert.assertEquals("a", nh.getBreadcrumbs().get(1).getName());
+        Assert.assertEquals("a.b", nh.getBreadcrumbs().get(2).getName());
+        Assert.assertEquals("a.b.c", nh.getBreadcrumbs().get(3).getName());
+        Assert.assertEquals("a.b.c.d", nh.getBreadcrumbs().get(4).getName());
+        
+        Assert.assertTrue(nh.getBreadcrumbs().get(1).getUrl().contains("/a/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(2).getUrl().contains("/a.b/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/a.b.c/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/a.b.c.d/"));
+    }
 }

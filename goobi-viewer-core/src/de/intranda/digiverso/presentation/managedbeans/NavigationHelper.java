@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1007,6 +1008,33 @@ public class NavigationHelper implements Serializable {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         updateBreadcrumbs(newLink);
+    }
+
+    /**
+     * 
+     * @param collection Full collection string containing all levels
+     * @param linkWeight Initial weight
+     * @return Link weight after the last added collection hierarchy level
+     * @should create breadcrumbs correctly
+     */
+    public int addCollectionHierarchyToBreadcrumb(final String collection, int linkWeight) {
+        if (StringUtils.isEmpty(collection)) {
+            return linkWeight;
+        }
+
+        String[] hierarchy = collection.contains(".") ? collection.split("[.]") : new String[] { collection };
+        logger.trace(Arrays.asList(hierarchy).toString());
+        StringBuilder sb = new StringBuilder();
+        for (String level : hierarchy) {
+            if (sb.length() > 0) {
+                sb.append('.');
+            }
+            sb.append(level);
+            updateBreadcrumbs(new LabeledLink(sb.toString(), getBrowseUrl() + "/-/1/-/" + sb.toString() + '/', linkWeight++));
+
+        }
+
+        return linkWeight;
     }
 
     /**

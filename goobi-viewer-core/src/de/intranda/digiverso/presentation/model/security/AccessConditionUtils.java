@@ -878,7 +878,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-        logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace(licenseType.getName());
