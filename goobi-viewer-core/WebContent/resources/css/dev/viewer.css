@@ -8362,21 +8362,49 @@ div[id*="-Modal"] .email-form .form-group {
   /* SIDEBAR */
   /* CONTENT */
 }
+.admin:before,
+.admin:after {
+  content: " ";
+  display: table;
+}
+.admin:after {
+  clear: both;
+}
 .admin button.btn:active,
 .admin button.btn:focus,
 .admin button.btn:active:focus {
   color: #1a1a1a;
 }
+.admin__sidebar,
+.admin__content {
+  float: left;
+}
+.admin__sidebar-background,
 .admin__sidebar {
+  width: 250px;
+  background-color: #3365a9;
+}
+.admin__sidebar-background {
   position: fixed;
   top: 0;
-  bottom: 0;
-  left: 0;
-  width: 250px;
+  bottom: -120px;
+  z-index: 1;
+}
+.admin__sidebar {
+  position: absolute;
   padding: 15px;
   font-size: 1rem;
-  background-color: #3365a9;
-  overflow-y: auto;
+  z-index: 1010;
+}
+.admin__sidebar.fixed-top,
+.admin__sidebar.fixed-bottom {
+  position: fixed;
+}
+.admin__sidebar.fixed-top {
+  top: 0;
+}
+.admin__sidebar.fixed-bottom {
+  bottom: 0;
 }
 .admin__sidebar a,
 .admin__sidebar button {
@@ -8418,6 +8446,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #fff;
 }
 .admin__content {
+  width: calc(100% - 250px);
   margin-left: 250px;
   padding: 15px;
 }

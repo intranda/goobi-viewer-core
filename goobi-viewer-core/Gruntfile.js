@@ -78,7 +78,9 @@ module.exports = function(grunt) {
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
-					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js'
+					'<%=src.jsDevFolderModules %>cms/cmsJS.*.js',
+					'<%=src.jsDevFolderModules %>admin/adminJS.js',
+					'<%=src.jsDevFolderModules %>admin/adminJS.*.js'
 				],
 				dest : '<%=src.jsDistFolder%>viewer.min.js'
 			}
