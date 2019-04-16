@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -595,7 +594,7 @@ public class NavigationHelper implements Serializable {
                     // in discriminatorField
 
                     String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
                     if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);

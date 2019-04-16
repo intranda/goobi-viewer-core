@@ -118,20 +118,20 @@
                             <dl class="dl-horizontal">
                                 <dt></dt>
                                 <dd>
-                                    <a href="#{navigationHelper.browseUrl}/#{activeDocumentBean.viewManager.activeDocument.collection}/-/1/-/-/">#{msg[activeDocumentBean.viewManager.activeDocument.collection]}</a>
+                                    <a href="#{navigationHelper.browseUrl}/#{activeDocumentBean.viewManager.topDocument.collection}/-/1/-/-/">#{msg[activeDocumentBean.viewManager.topDocument.collection]}</a>
                                     /
-                                    <a href="#{navigationHelper.applicationUrl}sites/#{activeDocumentBean.viewManager.activeDocument.partnerId}/">#{msg[activeDocumentBean.viewManager.activeDocument.partnerId]}</a>
+                                    <a href="#{navigationHelper.applicationUrl}sites/#{activeDocumentBean.viewManager.topDocument.partnerId}/">#{msg[activeDocumentBean.viewManager.topDocument.partnerId]}</a>
                                 </dd>
                             </dl>
                         </h:panelGroup>
         
-                        <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.anchor}">
+                        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.anchor}">
                             <dl class="dl-horizontal">
                                 <dt>
                                     <h:outputText value="#{msg.numVolumes}: " />
                                 </dt>
                                 <dd>
-                                    <h:outputText value="#{activeDocumentBean.viewManager.activeDocument.numVolumes}" />
+                                    <h:outputText value="#{activeDocumentBean.viewManager.topDocument.numVolumes}" />
                                 </dd>
                             </dl>
                         </h:panelGroup>

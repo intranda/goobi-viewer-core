@@ -49,7 +49,7 @@
 					</h:panelGroup>
 
 					<!-- TOC -->
-					<h:panelGroup rendered="#{configurationBean.sidebarTocLinkVisible and navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+					<h:panelGroup rendered="#{configurationBean.sidebarTocLinkVisible and navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.topDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
 						<li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
 							<h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" escape="false" />
@@ -77,10 +77,10 @@
 							<h:outputLink
 								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText
-									rendered="#{!activeDocumentBean.viewManager.activeDocument.lidoRecord}"
+									rendered="#{!activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.bibData}" />
 								<h:outputText
-									rendered="#{activeDocumentBean.viewManager.activeDocument.lidoRecord}"
+									rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}"
 									value="#{msg.metadata}" />
 							</h:outputLink>
 						</li>
@@ -88,7 +88,7 @@
 
 					<!-- Full-text -->
 					<h:panelGroup
-						rendered="#{configurationBean.sidebarFulltextLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.activeDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly}">
+						rendered="#{configurationBean.sidebarFulltextLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.topDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly}">
 						<li
 							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
 							<h:outputLink
@@ -100,16 +100,16 @@
 
 					<!-- External full-text URL -->
 					<h:panelGroup
-						rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
+						rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
 						<li class=""><h:outputLink
-								value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
+								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
 								target="_blank">
 								<h:outputText value="#{msg.fulltextExternal}" />
 							</h:outputLink></li>
 					</h:panelGroup>
 
 					<!-- NER -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.nerAvailable}">
 						<li class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
 							<h:outputLink
 								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
@@ -119,10 +119,10 @@
 					</h:panelGroup>
 
 					<!-- EXTERNAL URL -->
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
 						<li> 
                             <a 
-                                href="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+                                href="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
                                 target="_blank"
                                 rel="noopner">
                                 #{msg.externalRepository}

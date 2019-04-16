@@ -30,7 +30,7 @@
                     <!-- WORK DOWNLOADS -->
                     <div class="widget-usage__work-downloads">                
                         <!-- METS -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.metsResolverUrl}"
                                 id="lidomets" 
@@ -52,7 +52,7 @@
                         </ui:fragment>
                         
                         <!-- LIDO -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}">
                             <a 
                                 href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
                                 id="lidomets" 

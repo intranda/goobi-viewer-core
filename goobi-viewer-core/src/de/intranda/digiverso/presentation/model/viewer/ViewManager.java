@@ -295,7 +295,7 @@ public class ViewManager implements Serializable {
         return getCurrentImageUrl(PageType.viewObject);
     }
 
-    public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+    public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
         return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
 
@@ -312,7 +312,7 @@ public class ViewManager implements Serializable {
                 .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
                 .stream()
                 .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
-                .sorted( (s1,s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1))  )
+                .sorted((s1, s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1)))
                 .findFirst()
                 .orElse(800);
         return getCurrentImageUrl(view, size);
@@ -321,12 +321,12 @@ public class ViewManager implements Serializable {
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage, size);
     }
-    
+
     public String getCurrentImageOriginalUrl() throws IndexUnreachableException, DAOException {
-    	PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
-    	if(pageType == null) {
-    		pageType = PageType.viewObject;
-    	}
+        PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
+        if (pageType == null) {
+            pageType = PageType.viewObject;
+        }
         StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage()));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
@@ -1161,7 +1161,7 @@ public class ViewManager implements Serializable {
             //            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
         PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
-        return imageDelivery.getPdf().getPdfUrl(getActiveDocument(), pages.toArray(pageArr));
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), pages.toArray(pageArr));
     }
 
     public boolean isPdfPartDownloadLinkEnabled() {
@@ -1599,15 +1599,16 @@ public class ViewManager implements Serializable {
 
         // Current page fulltext
         PhysicalElement currentImg = getCurrentPage();
-        if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-            currentFulltext = StringTools.stripJS(currentImg.getFullText());
-            if (currentFulltext.length() < currentImg.getFullText().length()) {
-                logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
-            }
-            if (escapeHtml) {
-                currentFulltext = StringTools.escapeHtmlChars(currentImg.getFullText());
-            }
+        if (currentImg == null || StringUtils.isEmpty(currentImg.getFullText())) {
+            return currentFulltext;
+        }
 
+        currentFulltext = StringTools.stripJS(currentImg.getFullText());
+        if (currentFulltext.length() < currentImg.getFullText().length()) {
+            logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
+        }
+        if (escapeHtml) {
+            currentFulltext = StringTools.escapeHtmlChars(currentImg.getFullText());
         }
 
         // logger.trace(currentFulltext);
@@ -1641,41 +1642,42 @@ public class ViewManager implements Serializable {
      * @return
      */
     public boolean isDisplayContentDownloadMenu() {
+        if (!DataManager.getInstance().getConfiguration().isOriginalContentDownload()) {
+            return false;
+        }
+
         try {
-            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload()) {
-
-                File sourceFileDir;
-                if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    StringBuilder sbFilePath = new StringBuilder();
-                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
-                    }
-                    sbFilePath.append(topDocument.getDataRepository())
-                            .append(File.separator)
-                            .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                            .append(File.separator)
-                            .append(getPi());
-                    sourceFileDir = new File(sbFilePath.toString());
-                } else {
-                    sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance().getConfiguration().getViewerHome())
-                            .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                            .append(File.separator)
-                            .append(getPi())
-                            .toString());
+            File sourceFileDir;
+            if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
+                String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                StringBuilder sbFilePath = new StringBuilder();
+                if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                    sbFilePath.append(dataRepositoriesHome).append(File.separator);
                 }
+                sbFilePath.append(topDocument.getDataRepository())
+                        .append(File.separator)
+                        .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
+                        .append(File.separator)
+                        .append(getPi());
+                sourceFileDir = new File(sbFilePath.toString());
+            } else {
+                sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance().getConfiguration().getViewerHome())
+                        .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
+                        .append(File.separator)
+                        .append(getPi())
+                        .toString());
+            }
 
-                if (sourceFileDir.isDirectory()) {
-                    List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
-                    if (!files.isEmpty()) {
-                        return AccessConditionUtils
-                                .checkContentFileAccessPermission(pi,
-                                        (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files)
-                                .containsValue(Boolean.TRUE);
-                    } else {
-                        return false;
-                    }
-                }
+            if (!sourceFileDir.isDirectory()) {
+                return false;
+            }
+
+            List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
+            if (!files.isEmpty()) {
+                return AccessConditionUtils
+                        .checkContentFileAccessPermission(pi,
+                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), files)
+                        .containsValue(Boolean.TRUE);
             }
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -1834,6 +1836,15 @@ public class ViewManager implements Serializable {
         this.topDocumentIddoc = topDocumentIddoc;
     }
 
+    public StructElement getTopDocument() {
+        try {
+            return loadTopDocument();
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
     /**
      * Returns <code>topDocument</code>. If the IDDOC of <code>topDocument</code> is different from <code>topDocumentIddoc</code>,
      * <code>topDocument</code> is reloaded.
@@ -1841,7 +1852,7 @@ public class ViewManager implements Serializable {
      * @return the currentDocument
      * @throws IndexUnreachableException
      */
-    public StructElement getActiveDocument() throws IndexUnreachableException {
+    private StructElement loadTopDocument() throws IndexUnreachableException {
         if (topDocument == null || topDocument.getLuceneId() != topDocumentIddoc) {
             topDocument = new StructElement(topDocumentIddoc, null);
         }
@@ -1880,10 +1891,6 @@ public class ViewManager implements Serializable {
             currentDocument = new StructElement(currentDocumentIddoc);
         }
         return currentDocument;
-    }
-
-    public StructElement getTopDocument() {
-        return topDocument;
     }
 
     /**
@@ -2321,7 +2328,7 @@ public class ViewManager implements Serializable {
         if (!isDoublePageMode()) {
             return 0;
         }
-        
+
         PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
         if (currentRightPage != null) {
             return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
