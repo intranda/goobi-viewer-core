@@ -75,14 +75,13 @@ var adminJS = ( function( admin ) {
     		var windowHeight = $( this ).height();
     		var sidebarHeight = $( '#adminSidebar' ).outerHeight();
     		var diff = sidebarHeight - windowHeight;
+    		var scrollPos = $( this ).scrollTop();
     		
-    		if ( $( this ).scrollTop() >= diff && windowHeight < sidebarHeight ) {
-    			$( '#adminSidebar' ).removeClass( 'fixed-top' );            		
-    			$( '#adminSidebar' ).addClass( 'fixed-bottom' );
+    		if ( scrollPos >= diff && windowHeight < sidebarHeight ) {
+    			$( '#adminSidebar' ).removeClass( 'fixed-top' ).addClass( 'fixed-bottom' );
     		}
     		else if ( windowHeight > sidebarHeight ) {
-    			$( '#adminSidebar' ).addClass( 'fixed-top' );            		
-    			$( '#adminSidebar' ).removeClass( 'fixed-bottom' );
+    			$( '#adminSidebar' ).removeClass( 'fixed-bottom' ).addClass( 'fixed-top' );;
     		}
     		else {
     			$( '#adminSidebar' ).removeClass( 'fixed-top, fixed-bottom' );
