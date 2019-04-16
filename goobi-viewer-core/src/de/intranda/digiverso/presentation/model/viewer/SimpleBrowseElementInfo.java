@@ -37,8 +37,24 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     private URI iconURI = null;
     private String collectionName;
 
+    /**
+     * 
+     * @param collectionName
+     */
     public SimpleBrowseElementInfo(String collectionName) {
         this.collectionName = collectionName;
+    }
+
+    /**
+     * 
+     * @param collectionName
+     * @param linkURI
+     * @param iconURI
+     */
+    public SimpleBrowseElementInfo(String collectionName, URI linkURI, URI iconURI) {
+        this.collectionName = collectionName;
+        this.linkURI = linkURI;
+        this.iconURI = iconURI;
     }
 
     @Override
@@ -82,17 +98,15 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     protected static URI createIconURI(String collectionName) {
-        String icon = DataManager.getInstance()
-                .getConfiguration()
-                .getDefaultBrowseIcon(collectionName);
+        String icon = DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName);
         if (StringUtils.isBlank(icon)) {
             return null;
         }
         try {
             URI iconURI = new URI(icon);
             if (!iconURI.isAbsolute()) {
-                String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() +  "/resources/themes/" + BeanUtils.getNavigationHelper()
-                        .getTheme() + "/" + icon;
+                String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/resources/themes/"
+                        + BeanUtils.getNavigationHelper().getTheme() + "/" + icon;
                 iconURI = new URI(iconPath);
             }
             return iconURI;
@@ -120,6 +134,5 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
-
 
 }

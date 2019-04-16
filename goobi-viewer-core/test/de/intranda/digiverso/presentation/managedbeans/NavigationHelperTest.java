@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 
 public class NavigationHelperTest {
 

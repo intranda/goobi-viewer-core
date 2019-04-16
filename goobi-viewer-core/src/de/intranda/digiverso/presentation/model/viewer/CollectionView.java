@@ -227,21 +227,22 @@ public class CollectionView {
         }
     }
 
-    private static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
             throws DAOException, PresentationException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
-        if (cmsCollections != null) {
-            for (CMSCollection cmsCollection : cmsCollections) {
-                String collectionName = cmsCollection.getSolrFieldValue();
-                if (StringUtils.isBlank(collectionName)) {
-                    continue;
-                }
-                HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
-                int index = collections.indexOf(searchItem);
-                if (index > -1) {
-                    HierarchicalBrowseDcElement element = collections.get(index);
-                    element.setInfo(cmsCollection);
-                }
+        if (cmsCollections == null || cmsCollections.isEmpty()) {
+            return collections;
+        }
+        for (CMSCollection cmsCollection : cmsCollections) {
+            String collectionName = cmsCollection.getSolrFieldValue();
+            if (StringUtils.isBlank(collectionName)) {
+                continue;
+            }
+            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
+            int index = collections.indexOf(searchItem);
+            if (index > -1) {
+                HierarchicalBrowseDcElement element = collections.get(index);
+                element.setInfo(cmsCollection);
             }
         }
         return collections;
@@ -751,27 +752,32 @@ public class CollectionView {
     }
 
     /**
-     * Set the  {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
+     * Set the {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
      * 
-     * @param name  The collection name
-     * @param info  The info to apply
+     * @param name The collection name
+     * @param info The info to apply
      */
     public void setCollectionInfo(String name, BrowseElementInfo info) {
-        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
-        .ifPresent(ele -> ele.setInfo(info));
+        completeCollectionList.stream()
+                .flatMap(ele -> ele.getAllDescendents(true).stream())
+                .filter(ele -> ele.getName().equals(name))
+                .findFirst()
+                .ifPresent(ele -> ele.setInfo(info));
     }
-    
 
     /**
-     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}  
+     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}
      * 
-     * @param name    The collection name
+     * @param name The collection name
      */
     public void removeCollectionInfo(String name) {
-        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
-        .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+        completeCollectionList.stream()
+                .flatMap(ele -> ele.getAllDescendents(true).stream())
+                .filter(ele -> ele.getName().equals(name))
+                .findFirst()
+                .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
     }
-    
+
     /**
      * @return the field
      */

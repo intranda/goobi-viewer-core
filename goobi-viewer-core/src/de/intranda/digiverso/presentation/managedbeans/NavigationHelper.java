@@ -18,8 +18,11 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +56,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -67,8 +71,10 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.SimpleBrowseElementInfo;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -1016,9 +1022,12 @@ public class NavigationHelper implements Serializable {
      * @param splittingChar
      * @param linkWeight Initial weight
      * @return Link weight after the last added collection hierarchy level
+     * @throws PresentationException
+     * @throws DAOException
      * @should create breadcrumbs correctly
      */
-    public int addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight) {
+    public int addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight)
+            throws PresentationException, DAOException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
@@ -1028,17 +1037,31 @@ public class NavigationHelper implements Serializable {
         if (StringUtils.isEmpty(collection)) {
             return linkWeight;
         }
-        
+
         String split = '[' + splittingChar + ']';
-        String[] hierarchy = collection.contains(".") ? collection.split(split) : new String[] { collection };
+        String[] hierarchy = collection.contains(splittingChar) ? collection.split(split) : new String[] { collection };
+        logger.trace("array: " + Arrays.asList(hierarchy).toString());
         StringBuilder sb = new StringBuilder();
+        List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.length);
         for (String level : hierarchy) {
             if (sb.length() > 0) {
-                sb.append('.');
+                sb.append(splittingChar);
             }
             sb.append(level);
-            updateBreadcrumbs(new LabeledLink(sb.toString(), getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/', linkWeight++));
+            HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, SolrConstants.DC, SolrConstants.DC);
+            try {
+                collectionElement.setInfo(
+                        new SimpleBrowseElementInfo(sb.toString(), new URI(getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/'), null));
+                collectionElements.add(collectionElement);
+            } catch (URISyntaxException e) {
+                logger.error(e.getMessage());
+            }
+            //            String url = getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/';
 
+        }
+        CollectionView.associateWithCMSCollections(collectionElements, SolrConstants.DC);
+        for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
+            updateBreadcrumbs(new LabeledLink(collectionElement.getName(), collectionElement.getInfo().getLinkURI(null).toString(), linkWeight++));
         }
 
         return linkWeight;
