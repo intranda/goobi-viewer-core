@@ -694,7 +694,7 @@ public class CollectionView {
     public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
-            logger.trace("COLLETION static url: {}", ret);
+            logger.trace("COLLECTION static url: {}", ret);
             return ret;
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
@@ -705,13 +705,13 @@ public class CollectionView {
             //                baseUri = baseUri.substring(0, cutoffIndex - 1);
             //            }
             String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
-            logger.trace("COLLETION new window url: {}", ret);
+            logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
                     + collection.getLuceneName() + "/";
-            logger.trace("COLLETION single volume url: {}", ret);
+            logger.trace("COLLECTION single volume url: {}", ret);
             return ret;
         } else {
             String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')

@@ -1048,18 +1048,12 @@ public class NavigationHelper implements Serializable {
             }
             sb.append(level);
             HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, field, field);
-            try {
-                collectionElement.setInfo(
-                        new SimpleBrowseElementInfo(sb.toString(), new URI(getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/'), null));
-                collectionElements.add(collectionElement);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage());
-            }
+            collectionElement.setInfo(new SimpleBrowseElementInfo(sb.toString(), null, null));
+            collectionElements.add(collectionElement);
 
         }
         CollectionView.associateWithCMSCollections(collectionElements, SolrConstants.DC);
         for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-            logger.trace(collectionElement.getName() + ": " + collectionElement.getInfo().getLinkURI(null));
             updateBreadcrumbs(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), linkWeight++));
         }
 
