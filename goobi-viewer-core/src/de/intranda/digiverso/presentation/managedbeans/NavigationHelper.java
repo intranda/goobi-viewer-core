@@ -1013,23 +1013,32 @@ public class NavigationHelper implements Serializable {
     /**
      * 
      * @param collection Full collection string containing all levels
+     * @param field Solr field
+     * @param splittingChar
      * @param linkWeight Initial weight
      * @return Link weight after the last added collection hierarchy level
      * @should create breadcrumbs correctly
      */
-    public int addCollectionHierarchyToBreadcrumb(final String collection, int linkWeight) {
+    public int addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (splittingChar == null) {
+            throw new IllegalArgumentException("splittingChar may not be null");
+        }
         if (StringUtils.isEmpty(collection)) {
             return linkWeight;
         }
-
-        String[] hierarchy = collection.contains(".") ? collection.split("[.]") : new String[] { collection };
+        
+        String split = '[' + splittingChar + ']';
+        String[] hierarchy = collection.contains(".") ? collection.split(split) : new String[] { collection };
         StringBuilder sb = new StringBuilder();
         for (String level : hierarchy) {
             if (sb.length() > 0) {
                 sb.append('.');
             }
             sb.append(level);
-            updateBreadcrumbs(new LabeledLink(sb.toString(), getBrowseUrl() + "/-/1/-/" + sb.toString() + '/', linkWeight++));
+            updateBreadcrumbs(new LabeledLink(sb.toString(), getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/', linkWeight++));
 
         }
 
