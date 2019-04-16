@@ -33,7 +33,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
-import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 
 public class CollectionView {
@@ -689,6 +688,10 @@ public class CollectionView {
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
+        return getCollectionUrl(collection, field);
+    }
+
+    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLETION static url: {}", ret);
@@ -706,8 +709,8 @@ public class CollectionView {
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
-            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
-                    + "/" + collection.getLuceneName() + "/";
+            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
+                    + collection.getLuceneName() + "/";
             logger.trace("COLLETION single volume url: {}", ret);
             return ret;
         } else {

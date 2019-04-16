@@ -1040,7 +1040,6 @@ public class NavigationHelper implements Serializable {
 
         String split = '[' + splittingChar + ']';
         String[] hierarchy = collection.contains(splittingChar) ? collection.split(split) : new String[] { collection };
-        logger.trace("array: " + Arrays.asList(hierarchy).toString());
         StringBuilder sb = new StringBuilder();
         List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.length);
         for (String level : hierarchy) {
@@ -1048,7 +1047,7 @@ public class NavigationHelper implements Serializable {
                 sb.append(splittingChar);
             }
             sb.append(level);
-            HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, SolrConstants.DC, SolrConstants.DC);
+            HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, field, field);
             try {
                 collectionElement.setInfo(
                         new SimpleBrowseElementInfo(sb.toString(), new URI(getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/'), null));
@@ -1056,12 +1055,12 @@ public class NavigationHelper implements Serializable {
             } catch (URISyntaxException e) {
                 logger.error(e.getMessage());
             }
-            //            String url = getBrowseUrl() + "/-/1/-/" + field + ':' + sb.toString() + '/';
 
         }
         CollectionView.associateWithCMSCollections(collectionElements, SolrConstants.DC);
         for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-            updateBreadcrumbs(new LabeledLink(collectionElement.getName(), collectionElement.getInfo().getLinkURI(null).toString(), linkWeight++));
+            logger.trace(collectionElement.getName() + ": " + collectionElement.getInfo().getLinkURI(null));
+            updateBreadcrumbs(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), linkWeight++));
         }
 
         return linkWeight;
