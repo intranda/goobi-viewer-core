@@ -303,7 +303,7 @@ var viewerJS = ( function() {
         }
         
         // init search drilldown filter
-        if ( currentPage === 'searchlist' && _defaults.activateDrilldownFilter ) {
+        if ( _defaults.activateDrilldownFilter ) {
         	this.initDrillDownFilters();
         }
 
