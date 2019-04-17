@@ -28,7 +28,8 @@ var viewerJS = ( function() {
         pageScrollAnchor: '#top',
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
-        notFoundImage: ''
+        notFoundImage: '',
+        activateDrilldownFilter: true
     };
     
     var viewer = {};
@@ -301,6 +302,11 @@ var viewerJS = ( function() {
             } );
         }
         
+        // init search drilldown filter
+        if ( currentPage === 'searchlist' && _defaults.activateDrilldownFilter ) {
+        	this.initDrillDownFilters();
+        }
+
         // disable submit button on feedback
         if ( currentPage === 'feedback' ) {
             $( '#submitFeedbackBtn' ).attr( 'disabled', true );
@@ -455,7 +461,6 @@ var viewerJS = ( function() {
                 console.log("scroll to ", scrollPosition);
                 var linkId = scrollPosition.linkId;
                 var $element = $('a[data-linkid="' + linkId + '"]');
-                console.log("element is ", $element);
                 if($element.length > 0) {                    
                     var scrollTop = scrollPosition.scrollTop;
                     if(_debug) {                
@@ -471,7 +476,6 @@ var viewerJS = ( function() {
     }
     
     viewer.handleScrollPositionClick = function(element) {
-        console.log("click on scroll position marker", element)
         var scrollPositions = {};
         var scrollPositionString = sessionStorage.getItem("scrollPositions");
         if(scrollPositionString) {
@@ -486,6 +490,20 @@ var viewerJS = ( function() {
             console.log("saving scrollPositions ", scrollPositions);
         }
         sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
+    }
+    
+    viewer.initDrillDownFilters = function() {
+        var $drilldowns = $(".widget-search-drilldown__collection");
+
+        $drilldowns.each(function () {
+        	var filterConfig = {
+            	wrapper: $(this).find(".widget-search-drilldown__filter"),
+                input: $(this).find(".widget-search-drilldown__filter-input"),
+                elements: $(this).find( 'li a' )
+            }
+
+            var filter = new viewerJS.listFilter(filterConfig);
+        });
     }
     
     // global object for tinymce config

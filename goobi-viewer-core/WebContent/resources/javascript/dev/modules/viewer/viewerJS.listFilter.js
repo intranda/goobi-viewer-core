@@ -30,74 +30,106 @@
  * @module viewerJS.fullscreen
  * @requires jQuery
  */
-var viewerJS = ( function( viewer ) {
+var viewerJS = (function (viewer) {
     'use strict';
-    
+
     var _debug = false;
-    
-    viewer.listFilter = function(config) {
-        if ( _debug ) {
-            console.log( '##############################' );
-            console.log( 'viewer.listFilter.init' );
-            console.log( '##############################' );
-            console.log( 'viewer.listFilter.init: config - ', config );
+
+    viewer.listFilter = function (config) {
+        if (_debug) {
+            console.log('##############################');
+            console.log('viewer.listFilter.init');
+            console.log('##############################');
+            console.log('viewer.listFilter.init: config - ', config);
         }
-        
+
         this.config = config;
         this.enable();
+        
+        // toggle filter input
+        $( '[data-toggle="filter-input"]' ).on( 'click', function() {
+        	var $input = $( this ).prev(); 
+        	
+        	$input.toggleClass( 'in' ).focus();
+        	
+        	if ( $input.val() !== '' ) {
+        		$input.val('').trigger( 'input' );
+        	}
+        } );
+        $( '.widget-search-drilldown__collection h3' ).on( 'click', function() {
+        	console.log( 'click' );
+        	var $input = $( this ).parent().find( 'input' ); 
+        	
+        	$input.toggleClass( 'in' ).focus();
+        	
+        	if ( $input.val() !== '' ) {
+        		$input.val('').trigger( 'input' );
+        	}
+        } );
+
+        // filter input events
+        $( '.widget-search-drilldown__filter input' ).on( {
+        	'keyup': function( event ) {
+        		switch ( event.keyCode ) {
+	        		case 27:
+	        			$( this ).removeClass( 'in' ).val('').trigger( 'input' );
+	        			break;
+        		}        		
+        	}
+        } );
     }
-    
-    viewer.listFilter.prototype.initListener = function() {
-//	    	$(this.config.input).on('input', this.filter.bind(this));
+
+    viewer.listFilter.prototype.initListener = function () {
         this.observer = Rx.Observable.fromEvent($(this.config.input), "input")
-        .debounce(100)
-        .subscribe( event => this.filter(event));
+            .debounce(100)
+            .subscribe(event => this.filter(event));
     }
-    
-    viewer.listFilter.prototype.removeListener = function() {
-//	    	$(this.config.input).off('input', this.filter);
-        if(this.observer) {
+
+    viewer.listFilter.prototype.removeListener = function () {
+        if (this.observer) {
             this.observable.unsubscribe();
         }
     }
-    
-    viewer.listFilter.prototype.filter = function(event) {
-    	let value = $(this.config.input).val().trim().toLowerCase();
-    	if(value) {    		
-    		if(_debug) {
-    			console.log("filter for input", value, " in ", $(this.config.elements));
-    		}
-    		$(this.config.elements).each( (index, element) => {
-    			let $element = $(element);
-    			let elementText = $element.text().trim().toLowerCase();
-    			if(elementText.includes(value)) {
-    				$element.show();
-    			} else {
-    				$element.hide();
-    			}
-    		});
-    	} else {
-    		$(this.config.elements).show();
-    	}
+
+    viewer.listFilter.prototype.filter = function (event) {
+        let value = $(this.config.input).val().trim().toLowerCase();
+        
+        if (value) {
+            if (_debug) {
+                console.log("filter for input", value, " in ", $(this.config.elements));
+            }
+            $(this.config.elements).each((index, element) => {
+                let $element = $(element);
+                let elementText = $element.text().trim().toLowerCase();
+                if (elementText.includes(value)) {
+                    $element.show();
+                } else {
+                    $element.hide();
+                }
+            });
+        } 
+        else {
+            $(this.config.elements).show();
+        }
     }
-    
-    viewer.listFilter.prototype.unfilter = function() {
-    	$(this.config.input).val("");
-    	$(this.config.elements).show();
+
+    viewer.listFilter.prototype.unfilter = function () {
+        $(this.config.input).val("");
+        $(this.config.elements).show();
     }
-    
-    viewer.listFilter.prototype.enable = function() {
-        $(this.config.input).show();
+
+    viewer.listFilter.prototype.enable = function () {
+        $(this.config.wrapper).show();
         this.initListener();
     }
-    
-    viewer.listFilter.prototype.disable = function() {
-    	$(this.config.input).val("");
-    	$(this.config.input).hide();
+
+    viewer.listFilter.prototype.disable = function () {
+        $(this.config.input).val("");
+        $(this.config.wrapper).hide();
         this.removeListener();
     }
-                
+
     return viewer;
-    
-} )( viewerJS || {}, jQuery );
+
+})(viewerJS || {}, jQuery);
     

@@ -25,12 +25,15 @@
                             <h:panelGroup id="collectionDrillDownPanelGroup_#{status.index}"
                                 rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
                                 <div class="widget widget-search-drilldown__collection">
-                                    <h3>#{msg[field.key.concat('_DD')]}</h3>
-
-                                    <ul>
-										<!-- FILTER FACETS -->
-										<input id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter" placeholder="#{msg.search}" />
+                                    <h3><span>#{msg[field.key.concat('_DD')]}</span></h3>
+                                    
+                                    <!-- FILTER FACETS -->
+                                    <div class="widget-search-drilldown__filter">
+                                        <input type="text" id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter-input" placeholder="#{msg.placeholder__filter_search_results}" />
+                                        <button type="button" class="btn btn--clean" data-toggle="filter-input"></button>
+                                    </div>
                                         
+                                    <ul>
                                         <!-- ACTIVE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
                                             <li class="active">
@@ -60,26 +63,26 @@
                                     </ul>
 
                                     <!-- EXPAND/COLLAPSE DRILLDOWN -->
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field.key)}">
-                                        <div class="widget-search-drilldown__collapse">
-                                            <h:commandLink
-                                                action="#{searchBean.facets.expandDrillDown(field.key)}" title="#{msg.slideDown}">
-                                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" />
-                                            </h:commandLink>
-                                        </div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownCollapseLink(field.key)}">
-                                        <div class="widget-search-drilldown__collapse">
-                                            <h:commandLink
-                                                action="#{searchBean.facets.collapseDrillDown(field.key)}" title="#{msg.slideUp}">
-                                                <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" />
-                                            </h:commandLink>
-                                        </div>
-                                    </ui:fragment> 
+<!--                                     <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field.key)}"> -->
+<!--                                         <div class="widget-search-drilldown__collapse"> -->
+<!--                                             <h:commandLink -->
+<!--                                                 action="#{searchBean.facets.expandDrillDown(field.key)}" title="#{msg.slideDown}"> -->
+<!--                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i> -->
+<!--                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" /> -->
+<!--                                                 <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" /> -->
+<!--                                             </h:commandLink> -->
+<!--                                         </div> -->
+<!--                                     </ui:fragment> -->
+<!--                                     <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownCollapseLink(field.key)}"> -->
+<!--                                         <div class="widget-search-drilldown__collapse"> -->
+<!--                                             <h:commandLink -->
+<!--                                                 action="#{searchBean.facets.collapseDrillDown(field.key)}" title="#{msg.slideUp}"> -->
+<!--                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i> -->
+<!--                                                 <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" /> -->
+<!--                                                 <f:ajax render="collectionDrillDownPanelGroup_#{status.index}" /> -->
+<!--                                             </h:commandLink> -->
+<!--                                         </div> -->
+<!--                                     </ui:fragment>  -->
                                 </div>
                             </h:panelGroup>
                         </c:forEach>
