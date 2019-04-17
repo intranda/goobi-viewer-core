@@ -19,15 +19,8 @@
  * Allows filtering a list of text entries with the content of an input element. Takes the selector of the input and one pointing to all
  * elements to filter. If the input element is not empty, hide all list elements which don't start with the input element value 
  * 
- * config looks like this:
- * 
- *  {
- *  	input : input.filter,
- *  	elements : ul li.filterelement
- *  }
- * 
  * @version 3.4.0
- * @module viewerJS.fullscreen
+ * @module viewerJS.listFilter
  * @requires jQuery
  */
 var viewerJS = (function (viewer) {
@@ -57,7 +50,6 @@ var viewerJS = (function (viewer) {
         	}
         } );
         $( '.widget-search-drilldown__collection h3' ).on( 'click', function() {
-        	console.log( 'click' );
         	var $input = $( this ).parent().find( 'input' ); 
         	
         	$input.toggleClass( 'in' ).focus();
@@ -79,18 +71,21 @@ var viewerJS = (function (viewer) {
         } );
     }
 
+    // set event for input
     viewer.listFilter.prototype.initListener = function () {
         this.observer = Rx.Observable.fromEvent($(this.config.input), "input")
             .debounce(100)
             .subscribe(event => this.filter(event));
     }
 
+    // remove events
     viewer.listFilter.prototype.removeListener = function () {
         if (this.observer) {
             this.observable.unsubscribe();
         }
     }
 
+    // filter results
     viewer.listFilter.prototype.filter = function (event) {
         let value = $(this.config.input).val().trim().toLowerCase();
         
