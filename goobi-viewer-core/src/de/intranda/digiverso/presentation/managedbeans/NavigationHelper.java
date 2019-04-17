@@ -270,20 +270,17 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSearch() {
         setCurrentPage(SEARCH_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/",
-                NavigationHelper.WEIGHT_SEARCH));
+        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, getSearchUrl() + '/', NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink("browseCollection",
-                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/", NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageBrowse(CollectionView collection) {
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
-                collection, NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", getBrowseUrl() + '/', collection, NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageTags() {
