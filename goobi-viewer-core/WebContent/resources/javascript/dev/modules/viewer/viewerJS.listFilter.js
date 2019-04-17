@@ -40,7 +40,7 @@ var viewerJS = (function (viewer) {
         this.enable();
         
         // toggle filter input
-        $( '[data-toggle="filter-input"]' ).on( 'click', function() {
+        $( '[data-toggle="filter-input"]' ).off( 'click' ).on( 'click', function() {
         	var $input = $( this ).prev(); 
         	
         	$input.toggleClass( 'in' ).focus();
@@ -49,8 +49,8 @@ var viewerJS = (function (viewer) {
         		$input.val('').trigger( 'input' );
         	}
         } );
-        $( '.widget-search-drilldown__collection h3' ).on( 'click', function() {
-        	var $input = $( this ).parent().find( 'input' ); 
+        $( '.widget-search-drilldown__collection h3' ).off( 'click' ).on( 'click', function() {
+        	var $input = $( this ).parent().find( 'input' );
         	
         	$input.toggleClass( 'in' ).focus();
         	
@@ -60,7 +60,7 @@ var viewerJS = (function (viewer) {
         } );
 
         // filter input events
-        $( '.widget-search-drilldown__filter input' ).on( {
+        $( '.widget-search-drilldown__filter input' ).off( 'keyup' ).on( {
         	'keyup': function( event ) {
         		switch ( event.keyCode ) {
 	        		case 27:
