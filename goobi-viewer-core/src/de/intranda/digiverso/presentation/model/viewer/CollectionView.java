@@ -33,7 +33,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
-import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 
 public class CollectionView {
@@ -227,21 +226,22 @@ public class CollectionView {
         }
     }
 
-    private static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
             throws DAOException, PresentationException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
-        if (cmsCollections != null) {
-            for (CMSCollection cmsCollection : cmsCollections) {
-                String collectionName = cmsCollection.getSolrFieldValue();
-                if (StringUtils.isBlank(collectionName)) {
-                    continue;
-                }
-                HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
-                int index = collections.indexOf(searchItem);
-                if (index > -1) {
-                    HierarchicalBrowseDcElement element = collections.get(index);
-                    element.setInfo(cmsCollection);
-                }
+        if (cmsCollections == null || cmsCollections.isEmpty()) {
+            return collections;
+        }
+        for (CMSCollection cmsCollection : cmsCollections) {
+            String collectionName = cmsCollection.getSolrFieldValue();
+            if (StringUtils.isBlank(collectionName)) {
+                continue;
+            }
+            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
+            int index = collections.indexOf(searchItem);
+            if (index > -1) {
+                HierarchicalBrowseDcElement element = collections.get(index);
+                element.setInfo(cmsCollection);
             }
         }
         return collections;
@@ -688,9 +688,13 @@ public class CollectionView {
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
+        return getCollectionUrl(collection, field);
+    }
+
+    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
-            logger.trace("COLLETION static url: {}", ret);
+            logger.trace("COLLECTION static url: {}", ret);
             return ret;
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
@@ -701,13 +705,13 @@ public class CollectionView {
             //                baseUri = baseUri.substring(0, cutoffIndex - 1);
             //            }
             String ret = baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
-            logger.trace("COLLETION new window url: {}", ret);
+            logger.trace("COLLECTION new window url: {}", ret);
             return ret;
         } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
-            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field
-                    + "/" + collection.getLuceneName() + "/";
-            logger.trace("COLLETION single volume url: {}", ret);
+            String ret = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + field + "/"
+                    + collection.getLuceneName() + "/";
+            logger.trace("COLLECTION single volume url: {}", ret);
             return ret;
         } else {
             String ret = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
@@ -751,27 +755,32 @@ public class CollectionView {
     }
 
     /**
-     * Set the  {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
+     * Set the {@link BrowseElementInfo} of the {@link BrowseDcElement} with the given name to the given info object
      * 
-     * @param name  The collection name
-     * @param info  The info to apply
+     * @param name The collection name
+     * @param info The info to apply
      */
     public void setCollectionInfo(String name, BrowseElementInfo info) {
-        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
-        .ifPresent(ele -> ele.setInfo(info));
+        completeCollectionList.stream()
+                .flatMap(ele -> ele.getAllDescendents(true).stream())
+                .filter(ele -> ele.getName().equals(name))
+                .findFirst()
+                .ifPresent(ele -> ele.setInfo(info));
     }
-    
 
     /**
-     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}  
+     * Remove all custom collection info from the browse element with the given name. The element will get a new {@link SimpleBrowseElementInfo}
      * 
-     * @param name    The collection name
+     * @param name The collection name
      */
     public void removeCollectionInfo(String name) {
-        completeCollectionList.stream().flatMap(ele -> ele.getAllDescendents(true).stream()).filter(ele -> ele.getName().equals(name)).findFirst()
-        .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
+        completeCollectionList.stream()
+                .flatMap(ele -> ele.getAllDescendents(true).stream())
+                .filter(ele -> ele.getName().equals(name))
+                .findFirst()
+                .ifPresent(ele -> ele.setInfo(new SimpleBrowseElementInfo(name)));
     }
-    
+
     /**
      * @return the field
      */

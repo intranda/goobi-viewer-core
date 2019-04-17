@@ -1325,4 +1325,11 @@
         		<token>test</token>
         	</authorization>
 	</webapi>
+	
+    <embedding>
+       <twitter>
+           <userName>@goobi</userName>
+       </twitter>
+    </embedding>
+
 </config>

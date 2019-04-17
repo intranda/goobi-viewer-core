@@ -16,28 +16,11 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.controller.Configuration;
-import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 
-
-public class NavigationHelperTest {
-    
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
-    }
-
-
-    @Before
-    public void setUp() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-    }
-
+public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see NavigationHelper#getActivePartnerId()
@@ -149,8 +132,8 @@ public class NavigationHelperTest {
     public void setActivePartnerId_shouldSetValueCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setActivePartnerId(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value", nh.statusMap.get(
-                NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
+        Assert.assertEquals(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE + "_value",
+                nh.statusMap.get(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
 
     /**
@@ -230,7 +213,6 @@ public class NavigationHelperTest {
         Assert.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
 
-
     /**
      * @see NavigationHelper#addCollectionHierarchyToBreadcrumb(String,int)
      * @verifies create breadcrumbs correctly
@@ -239,18 +221,18 @@ public class NavigationHelperTest {
     public void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         Assert.assertEquals(0, nh.getBreadcrumbs().size());
-        nh.addCollectionHierarchyToBreadcrumb("a.b.c.d", NavigationHelper.WEIGHT_OPEN_DOCUMENT);
-        
+        nh.addCollectionHierarchyToBreadcrumb("a.b.c.d", "FOO", ".", NavigationHelper.WEIGHT_OPEN_DOCUMENT);
+
         Assert.assertEquals(5, nh.getBreadcrumbs().size());
-        
+
         Assert.assertEquals("a", nh.getBreadcrumbs().get(1).getName());
         Assert.assertEquals("a.b", nh.getBreadcrumbs().get(2).getName());
         Assert.assertEquals("a.b.c", nh.getBreadcrumbs().get(3).getName());
         Assert.assertEquals("a.b.c.d", nh.getBreadcrumbs().get(4).getName());
-        
-        Assert.assertTrue(nh.getBreadcrumbs().get(1).getUrl().contains("/a/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(2).getUrl().contains("/a.b/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/a.b.c/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/a.b.c.d/"));
+
+        Assert.assertTrue(nh.getBreadcrumbs().get(1).getUrl().contains("/FOO:a/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(2).getUrl().contains("/FOO:a.b/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/FOO:a.b.c/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/FOO:a.b.c.d/"));
     }
 }

@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +56,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -68,8 +71,10 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.SimpleBrowseElementInfo;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -265,20 +270,17 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSearch() {
         setCurrentPage(SEARCH_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/",
-                NavigationHelper.WEIGHT_SEARCH));
+        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, getSearchUrl() + '/', NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink("browseCollection",
-                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/", NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageBrowse(CollectionView collection) {
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
-                collection, NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", getBrowseUrl() + '/', collection, NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageTags() {
@@ -595,7 +597,7 @@ public class NavigationHelper implements Serializable {
                     // in discriminatorField
 
                     String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
                     if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
@@ -1013,24 +1015,43 @@ public class NavigationHelper implements Serializable {
     /**
      * 
      * @param collection Full collection string containing all levels
+     * @param field Solr field
+     * @param splittingChar
      * @param linkWeight Initial weight
      * @return Link weight after the last added collection hierarchy level
+     * @throws PresentationException
+     * @throws DAOException
      * @should create breadcrumbs correctly
      */
-    public int addCollectionHierarchyToBreadcrumb(final String collection, int linkWeight) {
+    public int addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight)
+            throws PresentationException, DAOException {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (splittingChar == null) {
+            throw new IllegalArgumentException("splittingChar may not be null");
+        }
         if (StringUtils.isEmpty(collection)) {
             return linkWeight;
         }
 
-        String[] hierarchy = collection.contains(".") ? collection.split("[.]") : new String[] { collection };
+        String split = '[' + splittingChar + ']';
+        String[] hierarchy = collection.contains(splittingChar) ? collection.split(split) : new String[] { collection };
         StringBuilder sb = new StringBuilder();
+        List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.length);
         for (String level : hierarchy) {
             if (sb.length() > 0) {
-                sb.append('.');
+                sb.append(splittingChar);
             }
             sb.append(level);
-            updateBreadcrumbs(new LabeledLink(sb.toString(), getBrowseUrl() + "/-/1/-/" + sb.toString() + '/', linkWeight++));
+            HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, field, field);
+            collectionElement.setInfo(new SimpleBrowseElementInfo(sb.toString(), null, null));
+            collectionElements.add(collectionElement);
 
+        }
+        CollectionView.associateWithCMSCollections(collectionElements, SolrConstants.DC);
+        for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
+            updateBreadcrumbs(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), linkWeight++));
         }
 
         return linkWeight;
