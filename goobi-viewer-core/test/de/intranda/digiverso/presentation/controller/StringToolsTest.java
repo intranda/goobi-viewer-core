@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.controller;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,18 +101,32 @@ public class StringToolsTest {
      */
     @Test
     public void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
-      Path file = Paths.get("resources/test/data/text_example_bad_classes.htm");
-      Assert.assertTrue(Files.isRegularFile(file));
-      
-      String html = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
-      Assert.assertNotNull(html);
-      Assert.assertTrue(html.contains(".20Formatvorlage"));
-      Assert.assertTrue(html.contains("class=\"20Formatvorlage"));
-      
-      html = StringTools.renameIncompatibleCSSClasses(html);
-      Assert.assertFalse(html.contains(".20Formatvorlage"));
-      Assert.assertFalse(html.contains("class=\"20Formatvorlage"));
-      Assert.assertTrue(html.contains(".Formatvorlage20"));
-      Assert.assertTrue(html.contains("class=\"Formatvorlage20"));
+        Path file = Paths.get("resources/test/data/text_example_bad_classes.htm");
+        Assert.assertTrue(Files.isRegularFile(file));
+
+        String html = FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+        Assert.assertNotNull(html);
+        Assert.assertTrue(html.contains(".20Formatvorlage"));
+        Assert.assertTrue(html.contains("class=\"20Formatvorlage"));
+
+        html = StringTools.renameIncompatibleCSSClasses(html);
+        Assert.assertFalse(html.contains(".20Formatvorlage"));
+        Assert.assertFalse(html.contains("class=\"20Formatvorlage"));
+        Assert.assertTrue(html.contains(".Formatvorlage20"));
+        Assert.assertTrue(html.contains("class=\"Formatvorlage20"));
+    }
+
+    /**
+     * @see StringTools#getHierarchyForCollection(String,String)
+     * @verifies create list correctly
+     */
+    @Test
+    public void getHierarchyForCollection_shouldCreateListCorrectly() throws Exception {
+        List<String> result = StringTools.getHierarchyForCollection("a.b.c.d", ".");
+        Assert.assertEquals(4, result.size());
+        Assert.assertEquals("a", result.get(0));
+        Assert.assertEquals("a.b", result.get(1));
+        Assert.assertEquals("a.b.c", result.get(2));
+        Assert.assertEquals("a.b.c.d", result.get(3));
     }
 }

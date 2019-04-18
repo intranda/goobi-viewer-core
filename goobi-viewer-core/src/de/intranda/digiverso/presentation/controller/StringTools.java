@@ -26,7 +26,10 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -233,7 +236,7 @@ public class StringTools {
         if (StringUtils.isEmpty(extension)) {
             return false;
         }
-        
+
         switch (extension.toLowerCase()) {
             case "tif":
             case "tiff":
@@ -287,5 +290,32 @@ public class StringTools {
         }
 
         return html;
+    }
+
+    /**
+     * 
+     * @param collection
+     * @param split
+     * @return List of string containing every (sub-)collection name
+     * @should create list correctly
+     */
+    public static List<String> getHierarchyForCollection(String collection, String split) {
+        if (StringUtils.isEmpty(collection) || StringUtils.isEmpty(split)) {
+            return Collections.emptyList();
+        }
+
+        String useSplit = '[' + split + ']';
+        String[] hierarchy = collection.contains(split) ? collection.split(useSplit) : new String[] { collection };
+        List<String> ret = new ArrayList<>(hierarchy.length);
+        StringBuilder sb = new StringBuilder();
+        for (String level : hierarchy) {
+            if (sb.length() > 0) {
+                sb.append(split);
+            }
+            sb.append(level);
+            ret.add(sb.toString());
+        }
+
+        return ret;
     }
 }

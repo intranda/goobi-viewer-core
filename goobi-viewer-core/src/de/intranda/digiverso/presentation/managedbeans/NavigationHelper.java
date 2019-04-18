@@ -1038,7 +1038,7 @@ public class NavigationHelper implements Serializable {
      * @throws DAOException
      * @should create breadcrumbs correctly
      */
-    public int addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight)
+    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight)
             throws PresentationException, DAOException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
@@ -1047,29 +1047,11 @@ public class NavigationHelper implements Serializable {
             throw new IllegalArgumentException("splittingChar may not be null");
         }
         if (StringUtils.isEmpty(collection)) {
-            return linkWeight;
+            return;
         }
 
-        String split = '[' + splittingChar + ']';
-        String[] hierarchy = collection.contains(splittingChar) ? collection.split(split) : new String[] { collection };
-        StringBuilder sb = new StringBuilder();
-        List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.length);
-        for (String level : hierarchy) {
-            if (sb.length() > 0) {
-                sb.append(splittingChar);
-            }
-            sb.append(level);
-            HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(sb.toString(), 1, field, field);
-            collectionElement.setInfo(new SimpleBrowseElementInfo(sb.toString(), null, null));
-            collectionElements.add(collectionElement);
-
-        }
-        CollectionView.associateWithCMSCollections(collectionElements, field);
-        for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-            updateBreadcrumbs(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), linkWeight++));
-        }
-
-        return linkWeight;
+        List<String> hierarchy = StringTools.getHierarchyForCollection(collection, splittingChar);
+        updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, hierarchy, linkWeight));
     }
 
     /**
