@@ -53,27 +53,32 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
-        if (!uri.contains("image/")) {
-            // If this is a footer request, etc., do not attempt to determine the repository
-            return;
-        }
-        String requestPath = uri.substring(uri.indexOf("image/") + 6);
-        // logger.trace("Filtering request {}", requestPath);
-        StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
-        List<String> pathSegments = tokenizer.getTokenList();
-        String pi = pathSegments.get(0);
-        try {
-            if(StringUtils.isNotBlank(pi) && !"-".equals(pi)) {                
-                addRepositoryPathIfRequired(request, pi);
+        if ( uri.contains("image/") || uri.contains("pdf/") ) {
+
+            String requestPath;
+            if(uri.contains("image/")) {
+                requestPath = uri.substring(uri.indexOf("image/") + 6);
+            } else {
+                requestPath = uri.substring(uri.indexOf("pdf/") + 4);
             }
-        } catch (PresentationException e) {
-            String mediaType = MediaType.TEXT_XML;
-            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-                mediaType = MediaType.APPLICATION_JSON;
+
+            // logger.trace("Filtering request {}", requestPath);
+            StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
+            List<String> pathSegments = tokenizer.getTokenList();
+            String pi = pathSegments.get(0);
+            try {
+                if(StringUtils.isNotBlank(pi) && !"-".equals(pi)) {                
+                    addRepositoryPathIfRequired(request, pi);
+                }
+            } catch (PresentationException e) {
+                String mediaType = MediaType.TEXT_XML;
+                if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
+                    mediaType = MediaType.APPLICATION_JSON;
+                }
+                Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(
+                        Status.INTERNAL_SERVER_ERROR, e, false)).build();
+                request.abortWith(errorResponse);
             }
-            Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(
-                    Status.INTERNAL_SERVER_ERROR, e, false)).build();
-            request.abortWith(errorResponse);
         }
 
     }
