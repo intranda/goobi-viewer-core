@@ -229,7 +229,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             			this.loadManifest( pis[ index ] );
                     	index++;
                 	}
-                }.bind( this ), 4000 );
+                }.bind( this ), 3000 );
         	}
         	else {
         		clearInterval( this.interval );

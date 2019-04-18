@@ -113,7 +113,7 @@
             			this.loadManifest( pis[ index ] );
                     	index++;
                 	}
-                }.bind( this ), 4000 );
+                }.bind( this ), 3000 );
         	}
         	else {
         		clearInterval( this.interval );
