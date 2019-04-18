@@ -33,6 +33,9 @@
                         id="pageBreadcrumbParent" 
                         styleClass="form-control" 
                         value="#{cmsBean.selectedPage.parentPageId}">
+                         <f:selectItem 
+                            itemValue="#{null}"
+                            itemLabel="-" />
                         <f:selectItems 
                             value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" 
                             var="availablePage" 
