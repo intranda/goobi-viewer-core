@@ -1064,7 +1064,7 @@ public class NavigationHelper implements Serializable {
             collectionElements.add(collectionElement);
 
         }
-        CollectionView.associateWithCMSCollections(collectionElements, SolrConstants.DC);
+        CollectionView.associateWithCMSCollections(collectionElements, field);
         for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
             updateBreadcrumbs(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), linkWeight++));
         }

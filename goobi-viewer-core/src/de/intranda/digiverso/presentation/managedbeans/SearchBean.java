@@ -87,6 +87,7 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -1447,30 +1448,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param weight The weight of the link.
      */
     private void updateBreadcrumbsWithCurrentUrl(String name, String field, List<String> subItems, int weight) {
-        logger.trace("updateBreadcrumbsWithCurrentUrl: {}", name);
-        if (navigationHelper != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            //            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-            //            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
-            StringBuilder sbUrlPart = new StringBuilder().append('/').append(PageType.browse.getName()).append('/');
-            if (field != null && !subItems.isEmpty()) {
-                sbUrlPart.append("-/1/-/").append(field).append(":{value}/");
-            }
-            navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection",
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + sbUrlPart.toString(), subItems, weight));
+        logger.trace("updateBreadcrumbsWithCurrentUrl: {}/{} ({})", name, field, weight);
+        if (navigationHelper == null) {
+            return;
         }
-    }
-
-    @Deprecated
-    public String getCurrentQuery() {
-        return getSearchString();
-
-    }
-
-    // temporary needed to set search string for calendar
-    @Deprecated
-    public void setCurrentQuery(String query) {
-        setSearchString(query);
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        //            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+        //            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
+        //        StringBuilder sbUrlPart = new StringBuilder().append('/').append(PageType.browse.getName()).append('/');
+        //        if (field != null && !subItems.isEmpty()) {
+        //            sbUrlPart.append("-/1/-/").append(field).append(":{value}/");
+        //        }
+        navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, subItems, weight));
     }
 
     /**
