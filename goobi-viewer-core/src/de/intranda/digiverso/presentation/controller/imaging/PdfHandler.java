@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -85,14 +86,22 @@ public class PdfHandler {
         }
         sb.append(".pdf");
 
-        if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
-            sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+        String dataRepository = pages[0].getDataRepository();
+        Path mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        if (StringUtils.isNotEmpty(dataRepository)) {
+            mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
         }
-
-        Path indexedMetsPath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pages[0].getPi() + ".xml");
+        
+        Path indexedMetsPath = mediaRepository.resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pages[0].getPi() + ".xml");;
         if (Files.exists(indexedMetsPath)) {
             sb.append(paramSep.getChar()).append("metsFile=").append(indexedMetsPath.toUri());
+        
+            if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
+                sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+            }
+        } else {
+            //If there is no metsFile, prevent the contentServer from generating a title page by giving an invalid divID which it cannot find
+            sb.append(paramSep.getChar()).append("divID=").append("NOTFOUND");
         }
 
         if (this.watermarkHandler != null) {
