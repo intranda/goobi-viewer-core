@@ -279,6 +279,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public void setCurrentPageBrowse(CollectionView collection) {
+        logger.trace("setCurrentPageBrowse: {}", collection.getBaseElementName());
         setCurrentPage(BROWSE_PAGE, true, true);
         updateBreadcrumbs(new CollectionLabeledLink("browseCollection", getBrowseUrl() + '/', collection, NavigationHelper.WEIGHT_BROWSE));
     }
@@ -880,23 +881,32 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
+     * 
+     * @param cmsPage The CMS page from which to create a breadcrumb
+     * @throws DAOException
+     */
     public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
+        logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
         resetBreadcrumbs();
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
         CMSPage currentPage = cmsPage;
 
-        //If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
+        // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
         try {
             if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
                 LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
                         cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
                 tempBreadcrumbs.add(0, link);
+                // logger.trace("added cms page collection breadcrumb: {}", link.toString());
             }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.toString(), e);
         }
 
+        int weight = 1;
         while (currentPage != null) {
             if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
@@ -911,20 +921,20 @@ public class NavigationHelper implements Serializable {
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {
-                //            if (PageType.index.matches(cmsPage.getStaticPageName())) {
-                //The current page is the start page. No need to add further breadcrumbs
+                // The current page is the start page. No need to add further breadcrumbs
                 return;
             }
             LabeledLink pageLink =
                     new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
-                            currentPage.getPageUrl(), WEIGHT_BROWSE);
+                            currentPage.getPageUrl(), weight);
             tempBreadcrumbs.add(0, pageLink);
+            // logger.trace("added cms page breadcrumb: (page id {}) - {}", currentPage.getId(), pageLink.toString());
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
                     Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
                     currentPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
                 } catch (NumberFormatException | DAOException e) {
-                    logger.error("CMS breadcrumb creation: Parent page of page " + currentPage.getId() + " is not a valid page id");
+                    logger.error("CMS breadcrumb creation: Parent page of page {} is not a valid page id", currentPage.getId());
                     currentPage = null;
                 }
             } else {
@@ -934,7 +944,11 @@ public class NavigationHelper implements Serializable {
         }
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
-            tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
+            for (LabeledLink bc : tempBreadcrumbs) {
+                bc.setWeight(weight++);
+                breadcrumbs.add(bc);
+            }
+            // tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
         }
     }
 
@@ -944,6 +958,7 @@ public class NavigationHelper implements Serializable {
      * @param newLink The breadcrumb link to add.
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
+        logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
             // Always add the home page if there are no breadcrumbs
