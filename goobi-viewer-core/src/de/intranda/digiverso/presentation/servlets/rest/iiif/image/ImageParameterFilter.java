@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 /**
  * Adds additional parameters to iiif contentServer requests as requestContext properties Parameters must be named "param:" followed by the name of
@@ -53,21 +55,21 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         String uri = request.getUriInfo().getPath();
-        if ( uri.contains("image/") || uri.contains("pdf/") ) {
+        if (uri.contains("image/") || uri.contains("pdf/mets/")) {
 
             String requestPath;
-            if(uri.contains("image/")) {
+            if (uri.contains("image/")) {
                 requestPath = uri.substring(uri.indexOf("image/") + 6);
             } else {
-                requestPath = uri.substring(uri.indexOf("pdf/") + 4);
+                requestPath = uri.substring(uri.indexOf("pdf/mets/") + 9);
             }
 
             // logger.trace("Filtering request {}", requestPath);
             StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
             List<String> pathSegments = tokenizer.getTokenList();
-            String pi = pathSegments.get(0);
+            String pi = pathSegments.get(0).replaceAll("\\..+", "");
             try {
-                if(StringUtils.isNotBlank(pi) && !"-".equals(pi)) {                
+                if (StringUtils.isNotBlank(pi) && !"-".equals(pi)) {
                     addRepositoryPathIfRequired(request, pi);
                 }
             } catch (PresentationException e) {
@@ -75,8 +77,10 @@ public class ImageParameterFilter implements ContainerRequestFilter {
                 if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
                     mediaType = MediaType.APPLICATION_JSON;
                 }
-                Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR).type(mediaType).entity(new ErrorMessage(
-                        Status.INTERNAL_SERVER_ERROR, e, false)).build();
+                Response errorResponse = Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .type(mediaType)
+                        .entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false))
+                        .build();
                 request.abortWith(errorResponse);
             }
         }
@@ -100,7 +104,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
         }
         if (StringUtils.isNotEmpty(dataRepository)) {
             String repositoriesHome;
-            if(Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
+            if (Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
                 repositoriesHome = "";
             } else {
                 repositoriesHome = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).toUri().toString();
@@ -111,7 +115,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             addRepositoryParameter("param:pdfSource", dataRepository, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
             addRepositoryParameter("param:altoSource", dataRepository, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
             addRepositoryParameter("param:metsSource", dataRepository, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
-       
+
         }
 
     }
@@ -122,15 +126,12 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      * @param repositoryFolder
      * @param requestParameter
      */
-    private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder, ContainerRequestContext request) {
+    private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder,
+            ContainerRequestContext request) {
         StringBuilder sb = new StringBuilder(dataRepository).append("/").append(repositoryFolder);
         URI imageRepositoryPath;
-        try {
-            imageRepositoryPath = new URI(sb.toString());
-            request.setProperty(requestParameter, imageRepositoryPath.toString());
-        } catch (URISyntaxException e) {
-            logger.error("Failed to build uri to data reppository from " + sb.toString(), e);
-        }
+        imageRepositoryPath = Paths.get(sb.toString()).toUri();
+        request.setProperty(requestParameter, imageRepositoryPath.toString());
     }
 
 }
