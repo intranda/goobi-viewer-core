@@ -1158,6 +1158,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getPdfFolder() {
+        return getLocalString("pdfFolder", "pdf");
+    }
 
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");

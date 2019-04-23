@@ -105,17 +105,32 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             } else {
                 repositoriesHome = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).toUri().toString();
             }
-            StringBuilder sb = new StringBuilder(repositoriesHome).append(dataRepository)
-                    .append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder());
-            URI imageRepositoryPath;
-            try {
-                imageRepositoryPath = new URI(sb.toString());
-                request.setProperty("param:imageSource", imageRepositoryPath.toString());
-            } catch (URISyntaxException e) {
-                logger.error("Failed to build uri to data reppository from " + sb.toString(), e);
-            }
+            dataRepository = repositoriesHome + dataRepository;
+
+            addRepositoryParameter("param:imageSource", dataRepository, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
+            addRepositoryParameter("param:pdfSource", dataRepository, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
+            addRepositoryParameter("param:altoSource", dataRepository, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
+            addRepositoryParameter("param:metsSource", dataRepository, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
+       
         }
 
+    }
+
+    /**
+     * @param request
+     * @param dataRepository
+     * @param repositoryFolder
+     * @param requestParameter
+     */
+    private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder, ContainerRequestContext request) {
+        StringBuilder sb = new StringBuilder(dataRepository).append("/").append(repositoryFolder);
+        URI imageRepositoryPath;
+        try {
+            imageRepositoryPath = new URI(sb.toString());
+            request.setProperty(requestParameter, imageRepositoryPath.toString());
+        } catch (URISyntaxException e) {
+            logger.error("Failed to build uri to data reppository from " + sb.toString(), e);
+        }
     }
 
 }
