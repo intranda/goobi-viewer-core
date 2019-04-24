@@ -58,7 +58,7 @@
 	  - alwaysUseRenderedImage: convert all images always to rendered image before sending it to iText
 	  - alwaysCompressToJPEG: compress all images always to jpeg image before sending it to iText
 	  - metsFileGroup: the filegroup to use for pdf generation
-	  - metsFileUrlRemove: String that is removed from the URLs in the configured metsFileGroup. Needed together with data repositories because the links from the metsFileGroup are not valid anymore.
+	  - metsFileUrlRemove: All strings matching this regex are removed from the URLs in the configured metsFileGroup. Needed together with data repositories because the links from the metsFileGroup are not valid anymore.
 	  - writeAsPdfA: write PDF file as Pdf/A
 	  - pagesize: default page size for pdf generation; possible values are 'A4', 'original' and 'A4Box'
 
@@ -66,13 +66,14 @@
 	  <defaultPdfConfig alwaysUseRenderedImage="true"
 	  		    alwaysCompressToJPEG="true"
 			    metsFileGroup="DEFAULT"
+			    metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
 			    writeAsPdfA="true"
 			    pagesize="A4"/>
 	-->
 	<defaultPdfConfig alwaysUseRenderedImage="true"
 			  alwaysCompressToJPEG="true"
 			  metsFileGroup="PRESENTATION"
-			  metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+			  metsFileUrlRemove=""
 			  writeAsPdfA="true"
 			  pagesize="original" />
 
