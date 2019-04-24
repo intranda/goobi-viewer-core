@@ -54,6 +54,7 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * A class representing persistent configurations for a collection. A collections is identified by a SOLR-field name and a label. The most common
@@ -375,13 +376,25 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getLabel();
     }
 
+    @Override
+    public URI getLinkURI() {
+        return getLinkURI(BeanUtils.getRequest());
+    }
+    
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getLinkURI(javax.servlet.http.HttpServletRequest)
      */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
         if (StringUtils.isNotBlank(getCollectionUrl())) {
-            return URI.create(getCollectionUrl());
+            URI applicationUri;
+            if(request !=  null) {
+                applicationUri = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/");
+            } else {
+                applicationUri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/");
+            }
+            URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", ""));
+            return uri;
         } else {
             return null;
         }

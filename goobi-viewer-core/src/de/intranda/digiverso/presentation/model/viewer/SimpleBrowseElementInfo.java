@@ -70,6 +70,11 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     public URI getLinkURI(HttpServletRequest request) {
         return linkURI;
     }
+    
+    @Override
+    public URI getLinkURI() {
+        return linkURI;
+    }
 
     public void setLinkURI(URI linkURI) {
         this.linkURI = linkURI;
