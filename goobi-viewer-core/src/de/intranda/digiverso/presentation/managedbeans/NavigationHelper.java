@@ -961,6 +961,10 @@ public class NavigationHelper implements Serializable {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
+            if(breadcrumbs.contains(newLink)) {
+                logger.trace("Breadcrumb '{}' is already in the list.", newLink);
+                return;
+            }
             // Always add the home page if there are no breadcrumbs
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();

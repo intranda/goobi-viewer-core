@@ -31,18 +31,65 @@ public class LabeledLink implements Serializable {
     protected String url;
     protected int weight;
 
+    /**
+     * 
+     * @param name
+     * @param url
+     * @param weight
+     */
     public LabeledLink(String name, String url, int weight) {
         this.name = new SimpleMetadataValue(name);
         this.url = url;
         this.weight = weight;
     }
-    
+
+    /**
+     * 
+     * @param name
+     * @param url
+     * @param weight
+     */
     public LabeledLink(IMetadataValue name, String url, int weight) {
         this.name = name;
         this.url = url;
         this.weight = weight;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((url == null) ? 0 : url.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LabeledLink other = (LabeledLink) obj;
+        if (getName().isEmpty()) {
+            if (!other.getName().isEmpty())
+                return false;
+        } else if (!getName().equals(other.getName()))
+            return false;
+        if (url == null) {
+            if (other.url != null)
+                return false;
+        } else if (!url.equals(other.url))
+            return false;
+        return true;
+    }
 
     /**
      * @return the name
@@ -57,9 +104,9 @@ public class LabeledLink implements Serializable {
     public void setName(String name) {
         this.name = new SimpleMetadataValue(name);
     }
-    
+
     public void setName(IMetadataValue name) {
-    	this.name = name;
+        this.name = name;
     }
 
     /**
@@ -89,11 +136,10 @@ public class LabeledLink implements Serializable {
     public void setWeight(int weight) {
         this.weight = weight;
     }
-    
+
     public boolean isLink() {
         return StringUtils.isNotBlank(getUrl());
     }
-
 
     @Override
     public String toString() {
