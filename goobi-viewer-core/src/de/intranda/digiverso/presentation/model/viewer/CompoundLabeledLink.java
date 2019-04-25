@@ -27,14 +27,11 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
  *
  */
 public class CompoundLabeledLink extends LabeledLink {
+    
+    private static final long serialVersionUID = 2336154265426936610L;
 
     protected final String field;
     protected final List<String> hierarchy;
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 2336154265426936610L;
 
     /**
      * @param name
@@ -75,8 +72,9 @@ public class CompoundLabeledLink extends LabeledLink {
                 collectionElements.add(collectionElement);
             }
             CollectionView.associateWithCMSCollections(collectionElements, field);
+            int subLinkWeight = weight;
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-                links.add(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), weight++));
+                links.add(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), subLinkWeight++));
             }
         } catch (PresentationException e) {
         } catch (DAOException e) {

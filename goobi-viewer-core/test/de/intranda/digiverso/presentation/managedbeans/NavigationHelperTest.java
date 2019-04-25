@@ -221,18 +221,19 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     public void addCollectionHierarchyToBreadcrumb_shouldCreateBreadcrumbsCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         Assert.assertEquals(0, nh.getBreadcrumbs().size());
-        nh.addCollectionHierarchyToBreadcrumb("a.b.c.d", "FOO", ".", NavigationHelper.WEIGHT_OPEN_DOCUMENT);
+        nh.addCollectionHierarchyToBreadcrumb("a.b.c.d", "FOO", ".");
 
-        Assert.assertEquals(5, nh.getBreadcrumbs().size());
+        Assert.assertEquals(6, nh.getBreadcrumbs().size());
 
-        Assert.assertEquals("a", nh.getBreadcrumbs().get(1).getName());
-        Assert.assertEquals("a.b", nh.getBreadcrumbs().get(2).getName());
-        Assert.assertEquals("a.b.c", nh.getBreadcrumbs().get(3).getName());
-        Assert.assertEquals("a.b.c.d", nh.getBreadcrumbs().get(4).getName());
+        Assert.assertEquals("browseCollection", nh.getBreadcrumbs().get(1).getName());
+        Assert.assertEquals("a", nh.getBreadcrumbs().get(2).getName());
+        Assert.assertEquals("a.b", nh.getBreadcrumbs().get(3).getName());
+        Assert.assertEquals("a.b.c", nh.getBreadcrumbs().get(4).getName());
+        Assert.assertEquals("a.b.c.d", nh.getBreadcrumbs().get(5).getName());
 
-        Assert.assertTrue(nh.getBreadcrumbs().get(1).getUrl().contains("/FOO:a/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(2).getUrl().contains("/FOO:a.b/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/FOO:a.b.c/"));
-        Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/FOO:a.b.c.d/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(2).getUrl().contains("/FOO:a/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(3).getUrl().contains("/FOO:a.b/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(4).getUrl().contains("/FOO:a.b.c/"));
+        Assert.assertTrue(nh.getBreadcrumbs().get(5).getUrl().contains("/FOO:a.b.c.d/"));
     }
 }

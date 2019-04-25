@@ -298,6 +298,7 @@ public class StringTools {
      * @param split
      * @return List of string containing every (sub-)collection name
      * @should create list correctly
+     * @should return single value correctly
      */
     public static List<String> getHierarchyForCollection(String collection, String split) {
         if (StringUtils.isEmpty(collection) || StringUtils.isEmpty(split)) {

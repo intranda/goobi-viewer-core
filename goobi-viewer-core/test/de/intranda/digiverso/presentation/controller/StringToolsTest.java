@@ -129,4 +129,15 @@ public class StringToolsTest {
         Assert.assertEquals("a.b.c", result.get(2));
         Assert.assertEquals("a.b.c.d", result.get(3));
     }
+
+    /**
+     * @see StringTools#getHierarchyForCollection(String,String)
+     * @verifies return single value correctly
+     */
+    @Test
+    public void getHierarchyForCollection_shouldReturnSingleValueCorrectly() throws Exception {
+        List<String> result = StringTools.getHierarchyForCollection("a", ".");
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("a", result.get(0));
+    }
 }

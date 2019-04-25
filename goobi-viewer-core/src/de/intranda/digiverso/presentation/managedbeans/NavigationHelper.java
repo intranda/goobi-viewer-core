@@ -18,11 +18,8 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,7 +53,6 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -71,10 +67,8 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionLabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
-import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.model.viewer.SimpleBrowseElementInfo;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -850,7 +844,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @return the breadcrumbs
+     * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
+     * not the main link.
+     * 
+     * @return the List of flattened breadcrumb links
      */
     public List<LabeledLink> getBreadcrumbs() {
         List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
@@ -862,6 +859,7 @@ public class NavigationHelper implements Serializable {
                 flattenedLinks.add(labeledLink);
             }
         }
+        logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
         return flattenedLinks;
     }
 
@@ -961,7 +959,7 @@ public class NavigationHelper implements Serializable {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
-            if(breadcrumbs.contains(newLink)) {
+            if (breadcrumbs.contains(newLink)) {
                 logger.trace("Breadcrumb '{}' is already in the list.", newLink);
                 return;
             }
@@ -1036,14 +1034,14 @@ public class NavigationHelper implements Serializable {
      * @param collection Full collection string containing all levels
      * @param field Solr field
      * @param splittingChar
-     * @param linkWeight Initial weight
      * @return Link weight after the last added collection hierarchy level
      * @throws PresentationException
      * @throws DAOException
      * @should create breadcrumbs correctly
      */
-    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar, int linkWeight)
+    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
             throws PresentationException, DAOException {
+        logger.trace("addCollectionHierarchyToBreadcrumb: {}", collection);
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
@@ -1054,8 +1052,9 @@ public class NavigationHelper implements Serializable {
             return;
         }
 
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
         List<String> hierarchy = StringTools.getHierarchyForCollection(collection, splittingChar);
-        updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, hierarchy, linkWeight));
+        updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, hierarchy, WEIGHT_ACTIVE_COLLECTION));
     }
 
     /**

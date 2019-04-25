@@ -463,11 +463,8 @@ public class ActiveDocumentBean implements Serializable {
                     // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
                     List<String> collections = viewManager.getTopDocument().getCollections();
                     if (collections.size() == 1) {
-                        navigationHelper.updateBreadcrumbs(
-                                new LabeledLink("browseCollection", navigationHelper.getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
                         navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), SolrConstants.DC,
-                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC),
-                                NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
+                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
                     }
 
                     navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
