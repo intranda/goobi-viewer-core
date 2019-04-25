@@ -908,7 +908,7 @@ public class NavigationHelper implements Serializable {
         while (currentPage != null) {
             if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
-                return;
+                break;
             }
             linkedPages.add(currentPage);
             if (DataManager.getInstance()
@@ -919,8 +919,9 @@ public class NavigationHelper implements Serializable {
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {
-                // The current page is the start page. No need to add further breadcrumbs
-                return;
+                logger.trace("CMS index page found");
+                // The current page is the start page, which is already the breadcrumb root
+                break;
             }
             LabeledLink pageLink =
                     new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
