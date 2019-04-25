@@ -536,7 +536,7 @@
 		<property name="server.url" value="http://ds.ub.uni-bielefeld.de/viewer2/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fds.ub.uni-bielefeld.de%2Fviewer2%2Foai" />
-		<property name="theme" value="bielefeld30" />
+		<property name="theme" value="ubb" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
