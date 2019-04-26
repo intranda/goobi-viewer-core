@@ -185,6 +185,10 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         }
 
         String pi = topElement.getPi();
+        if (StringUtils.isEmpty(pi)) {
+            logger.debug("PI not found, no pages.");
+            return ret;
+        }
         logger.trace("Loading pages for '{}'...", pi);
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
