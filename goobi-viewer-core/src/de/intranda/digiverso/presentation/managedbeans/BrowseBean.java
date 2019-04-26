@@ -28,18 +28,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -56,7 +51,6 @@ import de.intranda.digiverso.presentation.model.viewer.BrowseTerm.BrowseTermRawC
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
-import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -276,7 +270,7 @@ public class BrowseBean implements Serializable {
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
             logger.trace("searchTerms");
-            updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
+            navigationHelper.updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
             if (searchBean != null) {
                 searchBean.setSearchString("");
                 searchBean.resetSearchParameters(true);
@@ -590,20 +584,6 @@ public class BrowseBean implements Serializable {
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC), BeanUtils.getLocale());
         url = url.replace("http://localhost:8082/viewer/", "");
         return "pretty:" + url;
-    }
-
-    /**
-     * Adds a new breadcrumb for the current Pretty URL.
-     *
-     * @param name Breadcrumb name.
-     * @param weight The weight of the link.
-     */
-    private void updateBreadcrumbsWithCurrentUrl(String name, int weight) {
-        if (navigationHelper != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
-        }
     }
 
     public CollectionView getDcCollection() {
