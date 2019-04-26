@@ -24,7 +24,7 @@
 
                         <!-- TODO rendered=#{docstruct in allowed doctypes} -->
                         <!-- TODO record already added to Transkribus -->
-                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
+                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
                             <li>
                                 <a href="#" data-toggle="modal" data-target="#transkribusModal"> #{msg.transkribus_add} </a>
 

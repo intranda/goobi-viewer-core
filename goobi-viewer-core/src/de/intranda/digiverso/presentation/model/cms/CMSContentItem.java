@@ -79,6 +79,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 @Table(name = "cms_content_items")
 public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolder {
 
+    private static final String DEFAULT_METADATA_FIELD_SELECTION = "URN,PI,MD_TITLE,DOCSTRCT_TOP";
+    
     /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
      * item
@@ -217,7 +219,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     /** Comma separated list of metadata field names to display in overview pages **/
     @Column(name = "metadataFields", columnDefinition = "LONGTEXT")
-    private String metadataFields = null;
+    private String metadataFields = DEFAULT_METADATA_FIELD_SELECTION;
 
     @Column(name = "toc_pi")
     private String tocPI = "";
@@ -1042,6 +1044,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                 .getMainMetadataForTemplate(null)
                 .stream()
                 .map(md -> md.getLabel())
+                .map(md -> md.replaceAll("_LANG_.*", ""))
+                .distinct()
                 .collect(Collectors.toList());
 
     }

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -42,6 +43,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
@@ -90,7 +92,6 @@ public class StructureBuilder extends AbstractBuilder {
         Map<String, String> idMap = new HashMap<>();
         if (elements != null && !elements.isEmpty()) {
 
-        	StructElement work = null;
             for (StructElement structElement : elements) {
                 URI rangeURI = getRangeURI(pi, structElement.getLogid());
                 Range range = new Range(rangeURI);
@@ -100,7 +101,6 @@ public class StructureBuilder extends AbstractBuilder {
                     IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
                     range.setLabel(label);
                     range.setViewingHint(ViewingHint.top);
-                    work = structElement;
                 } else {
                     IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
                     range.setLabel(label);
@@ -108,8 +108,8 @@ public class StructureBuilder extends AbstractBuilder {
                     if(StringUtils.isNotBlank(parentId)) {                        
                         range.addWithin(new Range(getRangeURI(pi, parentId)));
                     }
-                    populatePages(structElement, range);
-                    populate(structElement, range);
+                    populatePages(structElement, pi, range);
+                    populate(structElement, pi, range);
                 }                
                 populateChildren(elements, structElement.getLuceneId(), pi, range);
                 ranges.add(range);
@@ -145,13 +145,13 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws DAOException
      * @throws PresentationException
      */
-    public void populate(StructElement ele, final Range range)
+    public void populate(StructElement ele, String pi, final Range range)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
 
         addMetadata(range, ele);
 
         try {
-            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele);
+            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, pi);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
                 range.setThumbnail(thumb);
@@ -162,7 +162,8 @@ public class StructureBuilder extends AbstractBuilder {
 
         /*VIEWER*/
         try {
-            LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
+        	String url = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, ele.getImageNumber(), ele.getLogid(), PageType.viewObject);
+            LinkingContent viewerPage = new LinkingContent(new URI(url));
             viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
             range.addRendering(viewerPage);
         } catch (URISyntaxException e) {
@@ -171,7 +172,7 @@ public class StructureBuilder extends AbstractBuilder {
 
         /*PDF*/
         try {
-            String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, range.getLabel().getValue().orElse(null));
+            String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, pi, range.getLabel().getValue().orElse(null));
             LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
             pdfDownload.setFormat(Format.APPLICATION_PDF);
             pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
@@ -190,7 +191,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws IndexUnreachableException
      */
-    public void populatePages(StructElement doc, Range range) throws URISyntaxException, IndexUnreachableException {
+    public void populatePages(StructElement doc, String pi, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
         int numPages = 1;
         try {            
@@ -200,7 +201,7 @@ public class StructureBuilder extends AbstractBuilder {
         }
         if (startPageNo > 0) {
             for (int i = startPageNo; i < startPageNo + numPages; i++) {
-                URI pageURI = getCanvasURI(doc.getPi(), i);
+                URI pageURI = getCanvasURI(pi, i);
                 Canvas canvas = new Canvas(pageURI);
                 range.addCanvas(canvas);
             }

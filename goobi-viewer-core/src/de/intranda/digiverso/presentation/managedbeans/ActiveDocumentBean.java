@@ -440,31 +440,39 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("open");
             try {
                 update();
-                if (navigationHelper != null && viewManager != null) {
-                    IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
-                    HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                    URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+                if (navigationHelper == null || viewManager == null) {
+                    return "";
+                }
 
-                    for (String language : name.getLanguages()) {
-                        String translation = name.getValue(language).orElse("");
-                        if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
-                            translation =
-                                    new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
-                                            .append("...")
-                                            .toString();
-                            name.setValue(translation, language);
-                        }
+                IMetadataValue name = viewManager.getTopDocument().getMultiLanguageDisplayLabel();
+                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+
+                for (String language : name.getLanguages()) {
+                    String translation = name.getValue(language).orElse("");
+                    if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                        translation =
+                                new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
+                                        .append("...")
+                                        .toString();
+                        name.setValue(translation, language);
                     }
-                    // TODO move breadcrumb to HTML?
-                    if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
-                        navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
-                                NavigationHelper.WEIGHT_OPEN_DOCUMENT));
+                }
+                if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
+
+                    // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
+                    List<String> collections = viewManager.getTopDocument().getCollections();
+                    if (collections.size() == 1) {
+                        navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), SolrConstants.DC,
+                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
                     }
+
+                    navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
+                            navigationHelper.getBreadcrumbs().size()));
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
                 Messages.error(e.getMessage());
-                return "";
             }
 
             return "";
@@ -1127,10 +1135,10 @@ public class ActiveDocumentBean implements Serializable {
                 return "";
             }
 
-//            if (viewManager.isHasVolumes()) {
-//                Messages.error("deleteRecord_failure_volumes_present");
-//                return "";
-//            }
+            //            if (viewManager.isHasVolumes()) {
+            //                Messages.error("deleteRecord_failure_volumes_present");
+            //                return "";
+            //            }
 
             if (Helper.deleteRecord(viewManager.getPi(), keepTraceDocument, Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
                 Messages.info("deleteRecord_success");

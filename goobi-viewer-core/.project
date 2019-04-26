@@ -64,6 +64,8 @@
 		<project>goobi-viewer-theme-vlb</project>
 		<project>goobi-viewer-theme-ksw-kulturportal</project>
 		<project>goobi-viewer-theme-denkmalatlas</project>
+		<project>goobi-viewer-theme-vfc</project>
+		<project>goobi-viewer-theme-ubb</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -108,10 +110,10 @@
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
 		<nature>org.openmrs.generatetestcases.bddNature</nature>
-		<nature>org.zeroturnaround.eclipse.jrebelNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
+		<nature>org.zeroturnaround.eclipse.jrebelNature</nature>
 	</natures>
 	<filteredResources>
 		<filter>

@@ -174,7 +174,7 @@
 			<formatter type="xml" usefile="true" />
 			<batchtest todir="${dir.tests.report}">
 				<!--fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*" /-->
-				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/ContentResourceTest*, de/intranda/digiverso/**/ManifestResourceTest*, de/intranda/digiverso/**/SitelinkBeanTest*, de/intranda/digiverso/**/SearchFacetsTest*, de/intranda/digiverso/**/BookshelfTest*, de/intranda/digiverso/**/JsonToolsTest*, de/intranda/digiverso/**/DiscoveryResourceTest*" />
+				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/ContentResourceTest*, de/intranda/digiverso/**/ManifestResourceTest*, de/intranda/digiverso/**/SitelinkBeanTest*, de/intranda/digiverso/**/SearchFacetsTest*, de/intranda/digiverso/**/BookshelfTest*, de/intranda/digiverso/**/JsonToolsTest*, de/intranda/digiverso/**/DiscoveryResourceTest*, de/intranda/digiverso/**/MetadataValueTest*" />
 			</batchtest>
 		</junit>
 		<mkdir dir="${dir.tests.htmlreport}"/>
@@ -518,9 +518,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digitale-bibliothek.belvedere.at/viewer/" />
+		<property name="server.url" value="https://digitale-bibliothek.belvedere.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitale-bibliothek.belvedere.at%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigitale-bibliothek.belvedere.at%2Fviewer%2Foai" />
 		<property name="theme" value="belvedere2" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
@@ -536,7 +536,7 @@
 		<property name="server.url" value="http://ds.ub.uni-bielefeld.de/viewer2/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fds.ub.uni-bielefeld.de%2Fviewer2%2Foai" />
-		<property name="theme" value="bielefeld30" />
+		<property name="theme" value="ubb" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
@@ -1431,6 +1431,21 @@
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdenkmalatlas.niedersachsen.de%2Fviewer%2Foai" />
 		<property name="theme" value="denkmalatlas" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="vfc">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://viewer.digibib.genealogy.net/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.digibib.genealogy.net%2Fviewer%2Foai" />
+		<property name="theme" value="vfc" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />

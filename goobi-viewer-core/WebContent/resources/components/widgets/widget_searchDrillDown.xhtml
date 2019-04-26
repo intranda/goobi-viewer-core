@@ -25,8 +25,14 @@
                             <h:panelGroup id="collectionDrillDownPanelGroup_#{status.index}"
                                 rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
                                 <div class="widget widget-search-drilldown__collection">
-                                    <h3>#{msg[field.key.concat('_DD')]}</h3>
-
+                                    <h3><span>#{msg[field.key.concat('_DD')]}</span></h3>
+                                    
+                                    <!-- FILTER FACETS -->
+                                    <div class="widget-search-drilldown__filter">
+                                        <input type="text" id="collectionDrillDownFilter_#{status.index}" class="widget-search-drilldown__filter-input" placeholder="#{msg.placeholder__filter_search_results}" />
+                                        <button type="button" class="btn btn--clean" data-toggle="filter-input"></button>
+                                    </div>
+                                        
                                     <ul>
                                         <!-- ACTIVE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">

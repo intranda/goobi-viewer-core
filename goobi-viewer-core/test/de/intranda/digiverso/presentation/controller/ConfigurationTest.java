@@ -883,7 +883,6 @@ public class ConfigurationTest {
     public void getTheme_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("mainTheme_value", DataManager.getInstance().getConfiguration().getTheme());
     }
-    
 
     /**
      * @see Configuration#getName()
@@ -893,7 +892,6 @@ public class ConfigurationTest {
     public void getName_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("Goobi viewer TEST", DataManager.getInstance().getConfiguration().getName());
     }
-    
 
     /**
      * @see Configuration#getDescription()
@@ -2366,5 +2364,14 @@ public class ConfigurationTest {
         Assert.assertEquals("label_provenienz", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("Provenienz/MD_EVENT_DETAILS"));
         Assert.assertEquals("", DataManager.getInstance().getConfiguration().getIIIFMetadataLabel("/YEAR"));
 
+    }
+
+    /**
+     * @see Configuration#getTwitterUserName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTwitterUserName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("@goobi", DataManager.getInstance().getConfiguration().getTwitterUserName());
     }
 }

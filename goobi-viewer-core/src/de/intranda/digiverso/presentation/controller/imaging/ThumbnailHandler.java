@@ -344,6 +344,18 @@ public class ThumbnailHandler {
         return getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
     }
+    
+    /**
+     * Returns a link to a small image representating the given document with the given pi. The size depends on viewer configuration
+     * 
+     * @param page
+     * @return
+     * @throws ViewerConfigurationException
+     */
+    public String getThumbnailUrl(StructElement doc, String pi) {
+        return getThumbnailUrl(doc, pi, thumbWidth, thumbHeight);
+
+    }
 
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
@@ -420,6 +432,11 @@ public class ThumbnailHandler {
      * @return
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
+    	return getThumbnailUrl(doc, doc.getPi(), width, height);
+    }
+    	
+    	
+        public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
         if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
@@ -428,7 +445,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
             return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
                     "jpg");
         } else {
             return null;

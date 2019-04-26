@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -85,14 +86,22 @@ public class PdfHandler {
         }
         sb.append(".pdf");
 
-        if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
-            sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+        String dataRepository = pages[0].getDataRepository();
+        Path mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        if (StringUtils.isNotEmpty(dataRepository)) {
+            mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
         }
-
-        Path indexedMetsPath = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pages[0].getPi() + ".xml");
+        
+        Path indexedMetsPath = mediaRepository.resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pages[0].getPi() + ".xml");;
         if (Files.exists(indexedMetsPath)) {
             sb.append(paramSep.getChar()).append("metsFile=").append(indexedMetsPath.toUri());
+        
+            if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
+                sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+            }
+        } else {
+            //If there is no metsFile, prevent the contentServer from generating a title page by giving an invalid divID which it cannot find
+            sb.append(paramSep.getChar()).append("divID=").append("NOTFOUND");
         }
 
         if (this.watermarkHandler != null) {
@@ -123,6 +132,21 @@ public class PdfHandler {
     }
 
     /**
+     * Gets the url to the pdf for the given {@link StructElement}. The pi is the one of the topStruct element of the given StructElement
+     * 
+     * @param divId DivID (LogID) of the docstruct for which the pdf should be generated. If this is null or empty, a pdf for the complete work is
+     *            generated
+     * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
+        String pi = doc.getTopStruct().getPi();
+    	return getPdfUrl(doc, pi, label);
+    }
+    
+    /**
      * Gets the url to the pdf for the given pi and divId
      * 
      * @param pi PI of the process from which to build pdf. Must be provided
@@ -133,9 +157,8 @@ public class PdfHandler {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
+    public String getPdfUrl(StructElement doc, String pi, String label) throws PresentationException, IndexUnreachableException {
 
-        String pi = doc.getTopStruct().getPi();
         String divId = doc.isWork() ? null : doc.getLogid();
 
         return getPdfUrl(pi, Optional.ofNullable(divId), this.watermarkHandler.getFooterIdIfExists(doc),

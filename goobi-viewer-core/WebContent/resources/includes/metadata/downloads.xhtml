@@ -20,13 +20,13 @@
         <nav id="viewMetadataDownloads" class="dl-links">
             <ul>
                 <li class="dl-links__mets">
-                    <h:outputLink id="metsLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}"
+                    <h:outputLink id="metsLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}"
                         value="#{activeDocumentBean.viewManager.metsResolverUrl}" title="#{msg.metadata_dl_mets}" target="_blank"> 
                         #{msg.downloadMetsButtonLabel}
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                         <f:passThroughAttribute name="data-placement" value="top" />
                     </h:outputLink>
-                    <h:outputLink id="lidoLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'LIDO'}"
+                    <h:outputLink id="lidoLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}"
                         value="#{activeDocumentBean.viewManager.lidoResolverUrl}" title="#{msg.metadata_dl_lido}" target="_blank"> 
                         #{msg.downloadLidoButtonLabel}
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />

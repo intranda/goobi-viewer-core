@@ -19,41 +19,67 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+
 /**
  * @author Florian Alpers
  *
  */
 public class CompoundLabeledLink extends LabeledLink {
-
-    protected final List<String> subItems;
-
-    /**
-     * 
-     */
+    
     private static final long serialVersionUID = 2336154265426936610L;
+
+    protected final String field;
+    protected final List<String> hierarchy;
 
     /**
      * @param name
      * @param url
      * @param weight
      */
-    public CompoundLabeledLink(String name, String url, int weight) {
+    public CompoundLabeledLink(String name, String url, String field, int weight) {
         super(name, url, weight);
-        this.subItems = Collections.emptyList();
+        this.field = field;
+        this.hierarchy = Collections.emptyList();
     }
 
-    public CompoundLabeledLink(String name, String url, List<String> subItems, int weight) {
+    /**
+     * 
+     * @param name
+     * @param url
+     * @param field
+     * @param hierarchy
+     * @param weight
+     */
+    public CompoundLabeledLink(String name, String url, String field, List<String> hierarchy, int weight) {
         super(name, url, weight);
-        this.subItems = subItems;
+        this.field = field;
+        this.hierarchy = hierarchy;
     }
 
+    /**
+     * 
+     * @return List of labeled links, one for each hierarchy level
+     */
     public List<LabeledLink> getSubLinks() {
-        List<LabeledLink> links = new ArrayList<>();
-        for (String string : subItems) {
-            // TODO write correct url
-            LabeledLink link = new LabeledLink(string, url.replace("{value}", string), 0);
-            links.add(link);
+        List<LabeledLink> links = new ArrayList<>(hierarchy.size());
+        List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.size());
+        try {
+            for (String col : hierarchy) {
+                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, field);
+                collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
+                collectionElements.add(collectionElement);
+            }
+            CollectionView.associateWithCMSCollections(collectionElements, field);
+            int subLinkWeight = weight;
+            for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
+                links.add(new LabeledLink(collectionElement.getName(), CollectionView.getCollectionUrl(collectionElement, field), subLinkWeight++));
+            }
+        } catch (PresentationException e) {
+        } catch (DAOException e) {
         }
+
         return links;
     }
 

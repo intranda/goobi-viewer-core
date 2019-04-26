@@ -28,6 +28,7 @@ public interface BrowseElementInfo {
     public String getDescription();
     public String getName();
     public URI getLinkURI(HttpServletRequest request);
+    public URI getLinkURI();
     public URI getIconURI();
     public URI getIconURI(int width, int height);
     public URI getIconURI(int size);

@@ -15,13 +15,17 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 public class AdminBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -42,5 +46,22 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
             }
             prevDate = comment.getDateUpdated();
         }
+    }
+
+    /**
+     * @see AdminBean#getAllUsersExcept(List)
+     * @verifies return all users except given
+     */
+    @Test
+    public void getAllUsersExcept_shouldReturnAllUsersExceptGiven() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+
+        AdminBean bean = new AdminBean();
+        bean.init();
+        
+        Assert.assertEquals(3, bean.getAllUsers().size());
+        List<User> result = bean.getAllUsersExcept(Collections.singleton(user));
+        Assert.assertEquals(2, result.size());
     }
 }

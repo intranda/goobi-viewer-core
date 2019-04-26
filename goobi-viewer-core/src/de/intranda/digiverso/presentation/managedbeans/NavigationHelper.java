@@ -61,6 +61,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
@@ -264,20 +265,18 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSearch() {
         setCurrentPage(SEARCH_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/",
-                NavigationHelper.WEIGHT_SEARCH));
+        updateBreadcrumbs(new LabeledLink(SEARCH_PAGE, getSearchUrl() + '/', NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new LabeledLink("browseCollection",
-                BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/", NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageBrowse(CollectionView collection) {
+        logger.trace("setCurrentPageBrowse: {}", collection.getBaseElementName());
         setCurrentPage(BROWSE_PAGE, true, true);
-        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
-                collection, NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new CollectionLabeledLink("browseCollection", getBrowseUrl() + '/', collection, NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageTags() {
@@ -594,7 +593,7 @@ public class NavigationHelper implements Serializable {
                     // in discriminatorField
 
                     String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopDocument().getMetadataValue(discriminatorField);
                     if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
@@ -846,7 +845,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * @return the breadcrumbs
+     * Returns the list of current breadcrumb elements. Note that only the sub-links are used for elements of class <code>CompoundLabeledLink</code>,
+     * not the main link.
+     * 
+     * @return the List of flattened breadcrumb links
      */
     public List<LabeledLink> getBreadcrumbs() {
         List<LabeledLink> baseLinks = Collections.synchronizedList(this.breadcrumbs);
@@ -858,6 +860,7 @@ public class NavigationHelper implements Serializable {
                 flattenedLinks.add(labeledLink);
             }
         }
+        logger.trace("getBreadcrumbs: {}", flattenedLinks.toString());
         return flattenedLinks;
     }
 
@@ -877,27 +880,36 @@ public class NavigationHelper implements Serializable {
         }
     }
 
+    /**
+     * Updates breadcrumbs from the given CMS page (and any breadcrumb predecessor pages).
+     * 
+     * @param cmsPage The CMS page from which to create a breadcrumb
+     * @throws DAOException
+     */
     public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
+        logger.trace("updateBreadcrumbs (CMSPage): {}", cmsPage.getTitle());
         resetBreadcrumbs();
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
         CMSPage currentPage = cmsPage;
 
-        //If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
+        // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
         try {
             if (cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
                 LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
                         cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
                 tempBreadcrumbs.add(0, link);
+                // logger.trace("added cms page collection breadcrumb: {}", link.toString());
             }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.toString(), e);
         }
 
+        int weight = 1;
         while (currentPage != null) {
             if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
-                return;
+                break;
             }
             linkedPages.add(currentPage);
             if (DataManager.getInstance()
@@ -908,20 +920,21 @@ public class NavigationHelper implements Serializable {
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {
-                //            if (PageType.index.matches(cmsPage.getStaticPageName())) {
-                //The current page is the start page. No need to add further breadcrumbs
-                return;
+                logger.trace("CMS index page found");
+                // The current page is the start page, which is already the breadcrumb root
+                break;
             }
             LabeledLink pageLink =
                     new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
-                            currentPage.getPageUrl(), WEIGHT_BROWSE);
+                            currentPage.getPageUrl(), weight);
             tempBreadcrumbs.add(0, pageLink);
+            // logger.trace("added cms page breadcrumb: (page id {}) - {}", currentPage.getId(), pageLink.toString());
             if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
                     Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
                     currentPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
                 } catch (NumberFormatException | DAOException e) {
-                    logger.error("CMS breadcrumb creation: Parent page of page " + currentPage.getId() + " is not a valid page id");
+                    logger.error("CMS breadcrumb creation: Parent page of page {} is not a valid page id", currentPage.getId());
                     currentPage = null;
                 }
             } else {
@@ -931,7 +944,11 @@ public class NavigationHelper implements Serializable {
         }
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
-            tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
+            for (LabeledLink bc : tempBreadcrumbs) {
+                bc.setWeight(weight++);
+                breadcrumbs.add(bc);
+            }
+            // tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
         }
     }
 
@@ -941,8 +958,13 @@ public class NavigationHelper implements Serializable {
      * @param newLink The breadcrumb link to add.
      */
     public void updateBreadcrumbs(LabeledLink newLink) {
+        logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
+            if (breadcrumbs.contains(newLink)) {
+                logger.trace("Breadcrumb '{}' is already in the list.", newLink);
+                return;
+            }
             // Always add the home page if there are no breadcrumbs
             if (breadcrumbs.isEmpty()) {
                 resetBreadcrumbs();
@@ -969,6 +991,54 @@ public class NavigationHelper implements Serializable {
             // logger.trace("breadcrumbs: " + breadcrumbs.size() + " " +
             // breadcrumbs.toString());
         }
+    }
+
+    /**
+     * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
+     */
+    public void updateBreadcrumbsForSearchHits(String facetString) {
+        //        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
+        //            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
+        //                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
+        //        } else {
+        facetString = StringTools.decodeUrl(facetString);
+        List<String> facets =
+                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
+        if (facets.size() > 0) {
+            String facet = facets.get(0);
+            facets = SearchFacets.splitHierarchicalFacet(facet);
+            updateBreadcrumbsWithCurrentCollection(DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().get(0), facets,
+                    NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        } else {
+            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        }
+        //        }
+    }
+
+    /**
+     * Adds a new collection breadcrumb hierarchy for the current Pretty URL.
+     *
+     * @param field Facet field for building the URL
+     * @param subItems Facet values
+     * @param weight The weight of the link
+     */
+    private void updateBreadcrumbsWithCurrentCollection(String field, List<String> subItems, int weight) {
+        logger.trace("updateBreadcrumbsWithCurrentCollection: {} ({})", field, weight);
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, subItems, weight));
+    }
+
+    /**
+     * Adds a new breadcrumb for the current Pretty URL.
+     *
+     * @param name Breadcrumb name.
+     * @param weight The weight of the link.
+     */
+    void updateBreadcrumbsWithCurrentUrl(String name, int weight) {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+        updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
     }
 
     /**
@@ -1007,6 +1077,34 @@ public class NavigationHelper implements Serializable {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         updateBreadcrumbs(newLink);
+    }
+
+    /**
+     * 
+     * @param collection Full collection string containing all levels
+     * @param field Solr field
+     * @param splittingChar
+     * @return Link weight after the last added collection hierarchy level
+     * @throws PresentationException
+     * @throws DAOException
+     * @should create breadcrumbs correctly
+     */
+    public void addCollectionHierarchyToBreadcrumb(final String collection, final String field, final String splittingChar)
+            throws PresentationException, DAOException {
+        logger.trace("addCollectionHierarchyToBreadcrumb: {}", collection);
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (splittingChar == null) {
+            throw new IllegalArgumentException("splittingChar may not be null");
+        }
+        if (StringUtils.isEmpty(collection)) {
+            return;
+        }
+
+        updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
+        List<String> hierarchy = StringTools.getHierarchyForCollection(collection, splittingChar);
+        updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, hierarchy, WEIGHT_ACTIVE_COLLECTION));
     }
 
     /**

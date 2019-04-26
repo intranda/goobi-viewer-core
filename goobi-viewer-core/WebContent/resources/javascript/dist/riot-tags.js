@@ -164,7 +164,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
 
 
-riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h4>{getTitleOrLabel(manifest)}</h4><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
 
     	$.fn.isInViewport = function() {
         	var elementTop = $( this ).offset().top;
@@ -187,7 +187,10 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
         this.visible = false;
         this.mouseover = false;
 
+        console.log("tag created")
+
         this.on( 'mount', function() {
+            console.log("tag mounted")
         	this.loadManifest( this.pis[0] );
         }.bind( this ));
 
@@ -226,7 +229,7 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
             			this.loadManifest( pis[ index ] );
                     	index++;
                 	}
-                }.bind( this ), 4000 );
+                }.bind( this ), 3000 );
         	}
         	else {
         		clearInterval( this.interval );
@@ -262,7 +265,7 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
         				this.manifest = manifest;
         				this.manifests.set( url, manifest );
         				this.update();
-
+        				console.log("manifest loaded");
             			this.checkPosition();
 
         				$( window ).on( 'resize scroll', function() {
@@ -377,6 +380,11 @@ riot.tag2('slideshow', '<figure class="slideshow" if="{manifest !== undefined}" 
             		return element['@value'];
             	}
             }
+        }.bind(this)
+
+        this.storeScrollPosition = function(event) {
+            $target = $(event.target).closest("a");
+            viewerJS.handleScrollPositionClick($target);
         }.bind(this)
 });
 

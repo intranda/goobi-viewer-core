@@ -277,7 +277,7 @@
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values.
 		     Custom URL names must be mapped in the faces config, too. -->
 		<pageTypes>
-			<!-- <viewImage>objekt</viewImage> -->
+			<viewObject>image</viewObject>
 			<!-- <search>suche</search> -->
 			<!-- <viewToc></viewToc> -->
 			<!-- <viewThumbs></viewThumbs> -->
@@ -856,6 +856,9 @@
 					<param type="field" key="MD_CREATOR" />
 					<param type="wikipersonfield" key="MD_CREATOR" />
 				</metadata>
+				<metadata label="MD_SHELFMARK" value="">
+					<param type="field" key="MD_SHELFMARK" />
+				</metadata>
 				<metadata label="URN" value="">
 					<param type="field" key="URN" />
 				</metadata>
@@ -1322,4 +1325,11 @@
         		<token>test</token>
         	</authorization>
 	</webapi>
+	
+    <embedding>
+       <twitter>
+           <userName>@goobi</userName>
+       </twitter>
+    </embedding>
+
 </config>

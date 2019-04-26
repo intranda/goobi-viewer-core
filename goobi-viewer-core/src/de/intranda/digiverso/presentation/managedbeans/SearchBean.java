@@ -46,7 +46,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,9 +54,6 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ocpsoft.pretty.PrettyContext;
-import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
@@ -87,8 +83,6 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
-import de.intranda.digiverso.presentation.model.viewer.CompoundLabeledLink;
-import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -196,7 +190,9 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
-        updateBreadcrumbsForSearchHits();
+        if (navigationHelper != null) {
+            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        }
         resetSearchResults();
         executeSearch();
 
@@ -272,7 +268,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-        updateBreadcrumbsForSearchHits();
+        if (navigationHelper != null) {
+            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        }
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
@@ -1398,79 +1396,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public boolean isSortingEnabled() {
         return DataManager.getInstance().getConfiguration().isSortingEnabled();
-    }
-
-    /**
-     * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
-     */
-    public void updateBreadcrumbsForSearchHits() {
-        //        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
-        //            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
-        //                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
-        //        } else {
-        String facetString = facets.getCurrentFacetString();
-        facetString = StringTools.decodeUrl(facetString);
-        List<String> facets =
-                SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields());
-        if (facets.size() > 0) {
-            String facet = facets.get(0);
-            facets = SearchFacets.splitHierarchicalFacet(facet);
-            updateBreadcrumbsWithCurrentUrl("searchHitNavigation",
-                    DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields().get(0), facets,
-                    NavigationHelper.WEIGHT_SEARCH_RESULTS);
-        } else {
-            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
-        }
-        //        }
-    }
-
-    /**
-     * Adds a new breadcrumb for the current Pretty URL.
-     *
-     * @param name Breadcrumb name.
-     * @param weight The weight of the link.
-     */
-    private void updateBreadcrumbsWithCurrentUrl(String name, int weight) {
-        if (navigationHelper != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
-        }
-    }
-
-    /**
-     * Adds a new breadcrumb for the current Pretty URL.
-     *
-     * @param name Breadcrumb name.
-     * @param field Facet field for building the URL
-     * @param subItems Facet values
-     * @param weight The weight of the link.
-     */
-    private void updateBreadcrumbsWithCurrentUrl(String name, String field, List<String> subItems, int weight) {
-        logger.trace("updateBreadcrumbsWithCurrentUrl: {}", name);
-        if (navigationHelper != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            //            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-            //            navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
-            StringBuilder sbUrlPart = new StringBuilder().append('/').append(PageType.browse.getName()).append('/');
-            if (field != null && !subItems.isEmpty()) {
-                sbUrlPart.append("-/1/-/").append(field).append(":{value}/");
-            }
-            navigationHelper.updateBreadcrumbs(new CompoundLabeledLink("browseCollection",
-                    BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + sbUrlPart.toString(), subItems, weight));
-        }
-    }
-
-    @Deprecated
-    public String getCurrentQuery() {
-        return getSearchString();
-
-    }
-
-    // temporary needed to set search string for calendar
-    @Deprecated
-    public void setCurrentQuery(String query) {
-        setSearchString(query);
     }
 
     /**

@@ -74,10 +74,13 @@
                                                 <ul>
                                                     <ui:repeat value="#{hit.browseElement.structElements}" varStatus="stat" var="struct">
                                                         <li>
-                                                            <h:outputLink value="#{struct.url}" rendered="#{hit.browseElement.hasImages or hit.browseElement.anchor}">
+                                                            <h:outputLink value="#{struct.url}" rendered="#{hit.browseElement.hasImages or hit.browseElement.anchor}" 
+                                                            styleClass="remember-scroll-position">
+                                                            <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                                                 <h:outputText value="#{msg[struct.docStructType]}" />
                                                             </h:outputLink>
-                                                            <h:outputLink value="#{struct.metadataUrl}" rendered="#{!hit.browseElement.hasImages and !hit.browseElement.anchor}">
+                                                            <h:outputLink value="#{struct.metadataUrl}" rendered="#{!hit.browseElement.hasImages and !hit.browseElement.anchor}" styleClass="remember-scroll-position">
+                                                                <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                                                 <h:outputText value="#{msg[struct.docStructType]}" />
                                                             </h:outputLink>
                                                         </li>
@@ -130,20 +133,23 @@
                                     <!-- THUMBNAIL -->
                                     <figure class="search-list__hit-thumbnail">
                                         <!-- SINGLEVOLUME -->
-                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
+                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" styleClass="remember-scroll-position"
                                             rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+                                            <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                             <img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" class="viewer-thumbnail" />
                                         </h:outputLink>
 
                                         <!-- SINGLEVOLUME WITHOUT IMAGE -->
-                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
+                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" styleClass="remember-scroll-position"
                                             rendered="#{hit.browseElement.thumbnailUrl == null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+                                            <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                             <img src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png" alt="#{hit.browseElement.label}"
                                                 class="viewer-thumbnail" />
                                         </h:outputLink>
 
                                         <!-- MULTIVOLUME -->
-                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
+                                        <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}" styleClass="remember-scroll-position">
+                                            <f:passThroughAttribute name="data-linkid" value="#{hit.browseElement.pi}" ></f:passThroughAttribute>
                                             <img src="#{hit.browseElement.thumbnailUrl}"
                                                 class="viewer-thumbnail #{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" alt="Thumbnail" />
                                             <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">

@@ -424,13 +424,13 @@ public final class Configuration extends AbstractConfiguration {
                     String fieldType = sub2.getString("[@type]");
                     String source = sub2.getString("[@source]", null);
                     String key = sub2.getString("[@key]");
-                    String overrideMasterValue = sub2.getString("[@value]");
+                    String masterValueFragment = sub2.getString("[@value]");
                     String defaultValue = sub2.getString("[@defaultValue]");
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
                     boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
+                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
                             prefix, suffix, addUrl, dontUseTopstructValue));
                 }
             }
@@ -1158,6 +1158,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getPdfFolder() {
+        return getLocalString("pdfFolder", "pdf");
+    }
 
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
@@ -1464,7 +1473,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
-    
+
     /**
      * 
      * @return
@@ -1473,8 +1482,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getName() {
         return getLocalString("viewer.name", "Goobi viewer");
     }
-    
-    
+
     /**
      * 
      * @return
@@ -3241,6 +3249,15 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isAllowRedirectCollectionToWork() {
         boolean redirect = getLocalBoolean("collections.redirectToWork", true);
         return redirect;
+    }
+
+    /**
+     * @return Configured value; null if none configured
+     * @should return correct value
+     */
+    public String getTwitterUserName() {
+        String token = getLocalString("embedding.twitter.userName");
+        return token;
     }
 
 }

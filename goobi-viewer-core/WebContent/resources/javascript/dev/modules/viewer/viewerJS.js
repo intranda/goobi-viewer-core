@@ -28,7 +28,8 @@ var viewerJS = ( function() {
         pageScrollAnchor: '#top',
         widgetNerSidebarRight: false,
         accessDeniedImage: '',
-        notFoundImage: ''
+        notFoundImage: '',
+        activateDrilldownFilter: true
     };
     
     var viewer = {};
@@ -201,6 +202,7 @@ var viewerJS = ( function() {
         
         viewer.loadThumbnails();
         viewer.initFragmentNavigation();     
+        viewer.initStoreScrollPosition();
          
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
@@ -300,6 +302,11 @@ var viewerJS = ( function() {
             } );
         }
         
+        // init search drilldown filter
+        if ( _defaults.activateDrilldownFilter ) {
+        	this.initDrillDownFilters();
+        }
+
         // disable submit button on feedback
         if ( currentPage === 'feedback' ) {
             $( '#submitFeedbackBtn' ).attr( 'disabled', true );
@@ -433,14 +440,71 @@ var viewerJS = ( function() {
                        $hashedCollapsible.collapse("show");
                     } 
                 }
-                
-                
-                
-
             })
         }
     }
+    
+    viewer.initStoreScrollPosition = function() {
+        $(document).ready(function() {
+            viewer.checkScrollPosition()
+        })
+        $("a.remember-scroll-position").on("click", function() {viewer.handleScrollPositionClick(this)});
+    }
 
+    viewer.checkScrollPosition = function() {
+        var scrollPositionString = sessionStorage.getItem("scrollPositions");
+        
+        if ( scrollPositionString ) {
+            var scrollPositions = JSON.parse(scrollPositionString);
+            var scrollPosition = scrollPositions[currentPage];
+            if(scrollPosition) {                    
+                console.log("scroll to ", scrollPosition);
+                var linkId = scrollPosition.linkId;
+                var $element = $('a[data-linkid="' + linkId + '"]');
+                if($element.length > 0) {                    
+                    var scrollTop = scrollPosition.scrollTop;
+                    if(_debug) {                
+                        console.log("scroll to position ", scrollTop);
+                    }
+                    $('html').scrollTop(scrollTop);
+                    //after scrolling to the position, remove the entry
+                    scrollPositions[currentPage] = undefined;
+                    sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
+                }
+            }
+        }
+    }
+    
+    viewer.handleScrollPositionClick = function(element) {
+        var scrollPositions = {};
+        var scrollPositionString = sessionStorage.getItem("scrollPositions");
+        if(scrollPositionString) {
+            scrollPositions = JSON.parse(scrollPositionString);
+        }
+
+        scrollPositions[currentPage] = {
+                scrollTop: $('html').scrollTop(),
+                linkId: $(element).data('linkid')
+        }
+        if(_debug) {                
+            console.log("saving scrollPositions ", scrollPositions);
+        }
+        sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
+    }
+    
+    viewer.initDrillDownFilters = function() {
+        var $drilldowns = $(".widget-search-drilldown__collection");
+
+        $drilldowns.each(function () {
+        	var filterConfig = {
+            	wrapper: $(this).find(".widget-search-drilldown__filter"),
+                input: $(this).find(".widget-search-drilldown__filter-input"),
+                elements: $(this).find( 'li a' )
+            }
+
+            var filter = new viewerJS.listFilter(filterConfig);
+        });
+    }
     
     // global object for tinymce config
     viewer.tinyConfig = {};

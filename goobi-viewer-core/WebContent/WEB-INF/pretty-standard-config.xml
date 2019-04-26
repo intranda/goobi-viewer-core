@@ -283,6 +283,13 @@
 		<action onPostback="false">#{searchBean.resetHitsPerPage}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+	
+	<!-- VIDEO (not a view type but a direct link to the video component for embedding)-->
+    <url-mapping id="video2">
+        <pattern value="/video/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/resources/includes/object/video.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 
 	<!-- IMAGE -->
     <url-mapping id="image1">

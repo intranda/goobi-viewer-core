@@ -4,7 +4,12 @@
    ==============================================================*/
 /* BLOCK */
 .widget-search-drilldown {
-	/* ELEMENT */
+	h3 {
+		span {
+			display: inline-block;
+			max-width: calc(~"100% - 36px");			
+		}
+	}
 	.widget {
 		ul {}
 		li {
@@ -32,6 +37,60 @@
 			padding: 3px 5px;
 		}
 	}
+	/* FILTER */
+	&__filter {
+		position: absolute;
+		top: 3px;
+		right: 5px;
+		left: 5px;
+		background-color: @blue;
+		z-index: 10;
+		input, button {
+			position: absolute;
+		}
+		input {
+			right: 32px;
+			width: 0;
+			height: 32px;
+			font-size: 0.8rem;
+			color: @white;
+			border: 0;
+			border-bottom: 1px solid @white;
+			background-color: @blue;
+			opacity: 0;
+			&::-webkit-input-placeholder { 
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&:-moz-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&::-moz-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&:-ms-input-placeholder {
+			    color: @white;
+			    opacity: 0.5;
+			}
+			&.in {
+				width: calc(~"100% - 36px");
+				opacity: 1;				
+			}
+		}
+		[data-toggle="filter-input"] {
+			right: 0;
+			width: 32px;
+			height: 32px;
+			background-image: url("@{images}/icons/icon-search.svg");
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: 16px;
+		}
+	}
+	&__filter-input {}
+	/* COLLECTION/GROUPS */
 	&__collection,
 	&__groups {
 		ul {
@@ -39,7 +98,9 @@
 			overflow-y: auto;
 		}
 	}
-	&__collection {}
+	&__collection {
+		position: relative;
+	}
 	&__groups {}
 	/* COLLAPSE DRILLDOWN */
     &__collapse {
@@ -49,6 +110,9 @@
             color: @middlegray;
             background-color: @lightgray;
         }
+    }
+    &__filter {
+    	display: none;
     }
 }
 

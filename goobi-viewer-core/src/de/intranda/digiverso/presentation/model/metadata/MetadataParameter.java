@@ -76,7 +76,7 @@ public class MetadataParameter implements Serializable {
     private MetadataParameterType type;
     private final String source;
     private final String key;
-    private final String overrideMasterValue;
+    private final String masterValueFragment;
     private final String defaultValue;
     private final String prefix;
     private final String suffix;
@@ -132,19 +132,19 @@ public class MetadataParameter implements Serializable {
      * @param type
      * @param source
      * @param key
-     * @param overrideMasterValue
+     * @param masterValueFragment
      * @param defaultValue
      * @param prefix
      * @param suffix
      * @param addUrl
      * @param dontUseTopstructValue
      */
-    public MetadataParameter(MetadataParameterType type, String source, String key, String overrideMasterValue, String defaultValue, String prefix,
+    public MetadataParameter(MetadataParameterType type, String source, String key, String masterValueFragment, String defaultValue, String prefix,
             String suffix, boolean addUrl, boolean dontUseTopstructValue) {
         this.type = type;
         this.source = source;
         this.key = key;
-        this.overrideMasterValue = overrideMasterValue;
+        this.masterValueFragment = masterValueFragment;
         this.defaultValue = defaultValue;
         this.prefix = prefix;
         this.suffix = suffix;
@@ -181,10 +181,10 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the overrideMasterValue
+     * @return the masterValueFragment
      */
-    public String getOverrideMasterValue() {
-        return overrideMasterValue;
+    public String getMasterValueFragment() {
+        return masterValueFragment;
     }
 
     /**

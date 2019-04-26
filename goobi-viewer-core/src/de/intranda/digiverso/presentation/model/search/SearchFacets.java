@@ -115,7 +115,7 @@ public class SearchFacets {
         if (currentFacets.isEmpty()) {
             return null;
         }
-        
+
         StringBuilder sbQuery = new StringBuilder();
         int count = 0;
         for (FacetItem facetItem : currentFacets) {
@@ -300,18 +300,18 @@ public class SearchFacets {
     public List<FacetItem> getLimitedFacetListForField(String field) {
         logger.trace("getLimitedFacetListForField: {}", field);
         List<FacetItem> facetItems = availableFacets.get(field);
-        if (facetItems != null) {
-            // Remove currently used facets
-            facetItems.removeAll(currentFacets);
-            int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-            if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
-                return facetItems.subList(0, initial);
-            }
-            logger.trace("facet items {}: {}", field, facetItems.size());
-            return facetItems;
+        if (facetItems == null) {
+            return null;
+        }
+        // Remove currently used facets
+        facetItems.removeAll(currentFacets);
+        int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+        if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
+            return facetItems.subList(0, initial);
         }
 
-        return null;
+        logger.trace("facet items {}: {}", field, facetItems.size());
+        return facetItems;
     }
 
     /**
@@ -829,7 +829,8 @@ public class SearchFacets {
     public Map<String, List<FacetItem>> getAllAvailableFacets() {
         Map<String, List<FacetItem>> ret = new LinkedHashMap<>();
 
-        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+        List<String> allDrillDownFields = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        for (String field : allDrillDownFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
             }

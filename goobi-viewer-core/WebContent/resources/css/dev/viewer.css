@@ -5451,6 +5451,12 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .user-login__cards {
+    -ms-grid-columns: 1fr;
+        grid-template-columns: 1fr;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Account Create
@@ -7531,8 +7537,13 @@ div[id*="-Modal"] .email-form .form-group {
    ==============================================================*/
 /* BLOCK */
 .widget-search-drilldown {
-  /* ELEMENT */
+  /* FILTER */
+  /* COLLECTION/GROUPS */
   /* COLLAPSE DRILLDOWN */
+}
+.widget-search-drilldown h3 span {
+  display: inline-block;
+  max-width: calc(100% - 36px);
 }
 .widget-search-drilldown .widget li.active {
   margin-bottom: 3px;
@@ -7556,16 +7567,74 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
   padding: 3px 5px;
 }
+.widget-search-drilldown__filter {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  left: 5px;
+  background-color: #3365a9;
+  z-index: 10;
+}
+.widget-search-drilldown__filter input,
+.widget-search-drilldown__filter button {
+  position: absolute;
+}
+.widget-search-drilldown__filter input {
+  right: 32px;
+  width: 0;
+  height: 32px;
+  font-size: 0.8rem;
+  color: #fff;
+  border: 0;
+  border-bottom: 1px solid #fff;
+  background-color: #3365a9;
+  opacity: 0;
+}
+.widget-search-drilldown__filter input::-webkit-input-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.widget-search-drilldown__filter input:-moz-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.widget-search-drilldown__filter input::-moz-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.widget-search-drilldown__filter input:-ms-input-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.widget-search-drilldown__filter input.in {
+  width: calc(100% - 36px);
+  opacity: 1;
+}
+.widget-search-drilldown__filter [data-toggle="filter-input"] {
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background-image: url("../../images/icons/icon-search.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px;
+}
 .widget-search-drilldown__collection ul,
 .widget-search-drilldown__groups ul {
   max-height: 400px;
   overflow-y: auto;
+}
+.widget-search-drilldown__collection {
+  position: relative;
 }
 .widget-search-drilldown__collapse a {
   display: block;
   text-align: center;
   color: #ccc;
   background-color: #eee;
+}
+.widget-search-drilldown__filter {
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -8353,21 +8422,49 @@ div[id*="-Modal"] .email-form .form-group {
   /* SIDEBAR */
   /* CONTENT */
 }
+.admin:before,
+.admin:after {
+  content: " ";
+  display: table;
+}
+.admin:after {
+  clear: both;
+}
 .admin button.btn:active,
 .admin button.btn:focus,
 .admin button.btn:active:focus {
   color: #1a1a1a;
 }
+.admin__sidebar,
+.admin__content {
+  float: left;
+}
+.admin__sidebar-background,
 .admin__sidebar {
+  width: 250px;
+  background-color: #3365a9;
+}
+.admin__sidebar-background {
   position: fixed;
   top: 0;
-  bottom: 0;
-  left: 0;
-  width: 250px;
+  bottom: -120px;
+  z-index: 1;
+}
+.admin__sidebar {
+  position: absolute;
   padding: 15px;
   font-size: 1rem;
-  background-color: #3365a9;
-  overflow-y: auto;
+  z-index: 1010;
+}
+.admin__sidebar.fixed-top,
+.admin__sidebar.fixed-bottom {
+  position: fixed;
+}
+.admin__sidebar.fixed-top {
+  top: 0;
+}
+.admin__sidebar.fixed-bottom {
+  bottom: 0;
 }
 .admin__sidebar a,
 .admin__sidebar button {
@@ -8409,6 +8506,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #fff;
 }
 .admin__content {
+  width: calc(100% - 250px);
   margin-left: 250px;
   padding: 15px;
 }

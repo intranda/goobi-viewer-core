@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -311,6 +312,22 @@ public class AdminBean implements Serializable {
      */
     public List<User> getAllUsers() throws DAOException {
         return DataManager.getInstance().getDao().getAllUsers(true);
+    }
+
+    /**
+     * 
+     * @param usersToExclude
+     * @return
+     * @throws DAOException
+     * @should return all users except given
+     */
+    public List<User> getAllUsersExcept(Set<User> usersToExclude) throws DAOException {
+        List<User> ret = getAllUsers();
+        if (usersToExclude != null && !usersToExclude.isEmpty()) {
+            ret.removeAll(usersToExclude);
+        }
+
+        return ret;
     }
 
     /**
