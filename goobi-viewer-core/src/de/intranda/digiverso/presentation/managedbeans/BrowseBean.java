@@ -270,7 +270,9 @@ public class BrowseBean implements Serializable {
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
             logger.trace("searchTerms");
-            navigationHelper.updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
+            if (navigationHelper != null) {
+                navigationHelper.updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
+            }
             if (searchBean != null) {
                 searchBean.setSearchString("");
                 searchBean.resetSearchParameters(true);

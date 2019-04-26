@@ -190,7 +190,9 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
-        navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (navigationHelper != null) {
+            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        }
         resetSearchResults();
         executeSearch();
 
@@ -266,7 +268,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-        navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        if (navigationHelper != null) {
+            navigationHelper.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
+        }
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
