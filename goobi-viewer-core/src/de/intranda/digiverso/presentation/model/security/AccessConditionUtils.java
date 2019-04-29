@@ -832,7 +832,7 @@ public class AccessConditionUtils {
                             // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                             for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
                                 // logger.debug("ip range: " + ipRange.getSubnetMask());
-                                if (ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                                if (ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
                                     logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
                                     accessMap.put(key, Boolean.TRUE);
                                 }
@@ -859,40 +859,18 @@ public class AccessConditionUtils {
      * database then it likely contains some access restrictions which need to be checked
      * 
      * @param requiredAccessConditions
-     * @param allLicenseTypes
+     * @param allLicenseTypes   all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
      * @return true if we can savely assume that we have entirely open access
+     * @throws DAOException 
      */
-    public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) {
+    public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) throws DAOException {
 
         if (requiredAccessConditions.size() == 1) {
             boolean containsOpenAccess =
                     requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
             boolean openAccessIsConfiguredLicenceType =
+                    allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null :
                     allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
-            return containsOpenAccess && !openAccessIsConfiguredLicenceType;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Check whether the requiredAccessConditions consist only of the {@link SolrConstants#OPEN_ACCESS_VALUE OPENACCESS} condition and OPENACCESS is
-     * not a licenceType in the database. In this and only this case can we savely assume that everything is permitted. If OPENACCESS is in the
-     * database then it likely contains some access restrictions which need to be checked
-     * 
-     * @param requiredAccessConditions
-     * @param allLicenseTypes
-     * @return true if we can savely assume that we have entirely open access
-     * @throws DAOException
-     */
-    public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions) throws DAOException {
-
-        if (requiredAccessConditions.isEmpty()) {
-            return true;
-        } else if (requiredAccessConditions.size() == 1) {
-            boolean containsOpenAccess =
-                    requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
-            boolean openAccessIsConfiguredLicenceType = DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null;
             return containsOpenAccess && !openAccessIsConfiguredLicenceType;
         } else {
             return false;
