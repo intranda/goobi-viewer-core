@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
 import de.intranda.digiverso.presentation.model.security.License;
 
@@ -180,11 +181,7 @@ public class IpRange implements ILicensee {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi) throws PresentationException,
             IndexUnreachableException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
 
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
-            return true;
-        }
 
         Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
         for (String accessCondition : conditionList) {
