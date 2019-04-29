@@ -43,10 +43,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
 import de.intranda.digiverso.presentation.model.security.License;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
 
 @Entity
 @Table(name = "ip_ranges")
@@ -168,21 +171,22 @@ public class IpRange implements ILicensee {
     /**
      * 
      * @param conditionList
+     * @param licenseTypes  a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName
      * @param pi
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException 
      * @should return true if condition is open access
      * @should return true if ip range has license
      * @should return false if ip range has no license
      * @should return true if condition list empty
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi) throws PresentationException,
-            IndexUnreachableException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes,  String privilegeName, String pi) throws PresentationException,
+            IndexUnreachableException, DAOException {
 
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)) {
+        if(AccessConditionUtils.isFreeOpenAccess(conditionList, licenseTypes)) {
             return true;
         }
 

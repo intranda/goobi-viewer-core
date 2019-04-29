@@ -777,10 +777,7 @@ public class AccessConditionUtils {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
             return accessMap;
         }
-        if (requiredAccessConditions.size() == 1
-                && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
-                        || requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE.toLowerCase()))
-                && !allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()))) {
+        if (isFreeOpenAccess(requiredAccessConditions, allLicenseTypes)) {
             accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
             return accessMap;
         }
@@ -818,39 +815,66 @@ public class AccessConditionUtils {
                 if (licenseTypeAllowsPriv) {
                     logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
                     accessMap.put(key, Boolean.TRUE);
-                }
+                } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+                    logger.trace("Privilege '{}' is OpenAccess", privilegeName);
+                    accessMap.put(key, Boolean.TRUE);
+                } else {
 
-                // Check IP range
-                if (StringUtils.isNotEmpty(remoteAddress)) {
-                    if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
-                        if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                            logger.debug("Access granted to localhost");
-                            accessMap.put(key, Boolean.TRUE);
-
-                        }
-                    } else {
-                        // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                        for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                            // logger.debug("ip range: " + ipRange.getSubnetMask());
-                            if (ipRange.matchIp(remoteAddress)
-                                    && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                                logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                    // Check IP range
+                    if (StringUtils.isNotEmpty(remoteAddress)) {
+                        if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
+                            if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                                logger.debug("Access granted to localhost");
                                 accessMap.put(key, Boolean.TRUE);
+
+                            }
+                        } else {
+                            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                            for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                                // logger.debug("ip range: " + ipRange.getSubnetMask());
+                                if (ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
+                                    logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                                    accessMap.put(key, Boolean.TRUE);
+                                }
                             }
                         }
                     }
-                }
 
-                // If not within an allowed IP range, check the current user's satisfied access conditions
+                    // If not within an allowed IP range, check the current user's satisfied access conditions
 
-                if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    accessMap.put(key, Boolean.TRUE);
+                    if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                        accessMap.put(key, Boolean.TRUE);
+                    }
                 }
             }
         }
 
         // logger.trace("not allowed");
         return accessMap;
+    }
+
+    /**
+     * Check whether the requiredAccessConditions consist only of the {@link SolrConstants#OPEN_ACCESS_VALUE OPENACCESS} condition and OPENACCESS is
+     * not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If OPENACCESS is in the
+     * database then it likely contains some access restrictions which need to be checked
+     * 
+     * @param requiredAccessConditions
+     * @param allLicenseTypes   all license types relevant for access. If null, the DAO is checked if it contains the OPENACCESS condition
+     * @return true if we can savely assume that we have entirely open access
+     * @throws DAOException 
+     */
+    public static boolean isFreeOpenAccess(Set<String> requiredAccessConditions, Collection<LicenseType> allLicenseTypes) throws DAOException {
+
+        if (requiredAccessConditions.size() == 1) {
+            boolean containsOpenAccess =
+                    requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
+            boolean openAccessIsConfiguredLicenceType =
+                    allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null :
+                    allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
+            return containsOpenAccess && !openAccessIsConfiguredLicenceType;
+        } else {
+            return false;
+        }
     }
 
     static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
@@ -949,7 +973,7 @@ public class AccessConditionUtils {
         if (os instanceof UnixOperatingSystemMXBean) {
             return ((UnixOperatingSystemMXBean) os).getOpenFileDescriptorCount();
         }
-        
+
         return -1;
     }
 }

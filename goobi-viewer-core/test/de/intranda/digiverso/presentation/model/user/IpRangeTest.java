@@ -38,7 +38,7 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
         IpRange ipRange = new IpRange();
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)), null,
                 IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
@@ -51,7 +51,7 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assert.assertNotNull(ipRange);
         List<String> licences = Arrays.asList(new String[]{"license type 3 name", "license type 1 name"});
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences),
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), null,
                 IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
@@ -63,7 +63,7 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnFalseIfIpRangeHasNoLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assert.assertNotNull(ipRange);
-        Assert.assertFalse(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 2 name")),
+        Assert.assertFalse(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 2 name")), null,
                 IPrivilegeHolder.PRIV_LIST, "PPN123"));
     }
 
@@ -74,7 +74,7 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
     @Test
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         IpRange ipRange = new IpRange();
-        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0),
+        Assert.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), null,
                 "restricted", "PPN123"));
     }
 }
