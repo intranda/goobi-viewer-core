@@ -94,13 +94,6 @@
 			<version>4.2</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>[1.18,)</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
 		<dependency>
 			<groupId>commons-configuration</groupId>
@@ -771,6 +764,14 @@
             <!-- Using a version >1.18 will result in a POI version incompatibility -->
             <version>1.18</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>8.5.40</version>
+            <scope>test</scope>
+        </dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
 		<dependency>
@@ -793,7 +794,6 @@
             <artifactId>xercesImpl</artifactId>
             <version>2.12.0</version>
         </dependency>
-
 
 		<!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
 		<dependency>
