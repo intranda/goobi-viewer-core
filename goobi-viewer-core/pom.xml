@@ -6,6 +6,11 @@
 	<version>3.4</version>
 	<packaging>war</packaging>
 	<name>Goobi viewer core</name>
+	
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
 
 	<repositories>
 		<repository>
@@ -770,7 +775,7 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>
             <version>8.5.40</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
