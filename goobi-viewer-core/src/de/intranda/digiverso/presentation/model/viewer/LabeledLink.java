@@ -83,11 +83,11 @@ public class LabeledLink implements Serializable {
                 return false;
         } else if (!getName().equals(other.getName()))
             return false;
-        if (url == null) {
-            if (other.url != null)
-                return false;
-        } else if (!url.equals(other.url))
-            return false;
+//        if (url == null) {
+//            if (other.url != null)
+//                return false;
+//        } else if (!url.equals(other.url))
+//            return false;
         return true;
     }
 
