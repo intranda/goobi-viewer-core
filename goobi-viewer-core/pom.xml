@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>3.4</modelVersion>
 	<groupId>goobi-viewer-core</groupId>
 	<artifactId>goobi-viewer-core</artifactId>
 	<version>3.4</version>
 	<packaging>war</packaging>
 	<name>Goobi viewer core</name>
-	
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<repositories>
 		<repository>
@@ -20,6 +19,12 @@
 	</repositories>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>goobi-viewer-theme</groupId>
+			<artifactId>goobi-viewer-theme-reference</artifactId>
+			<version>[3.4,)</version>
+		</dependency>
 
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
@@ -104,6 +109,12 @@
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.10</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/commons-digester/commons-digester -->
@@ -141,6 +152,14 @@
 			<version>2.6</version>
 		</dependency>
 
+		<!-- EXCLUDE: https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+		<dependency>
+			<artifactId>commons-logging</artifactId>
+			<groupId>commons-logging</groupId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -169,26 +188,26 @@
 			<version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j -->
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j</artifactId>
-            <version>6.1.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-compress</artifactId>
-                </exclusion>
-            </exclusions> 
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa -->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.7.3</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.docx4j/docx4j -->
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j</artifactId>
+			<version>6.1.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+			<version>2.7.3</version>
+		</dependency>
 
 
 		<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache-core -->
@@ -297,12 +316,12 @@
 		<!-- <version>2.6.4</version> -->
 		<!-- </dependency> -->
 
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-base</artifactId>
-            <version>2.9.8</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-base</artifactId>
+			<version>2.9.8</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
 		<dependency>
@@ -345,20 +364,20 @@
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.6.2</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/javax.persistence -->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.1.1</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/javax.persistence -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>javax.persistence</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1.1</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
 		<dependency>
@@ -373,15 +392,15 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>1.7.26</version>
 		</dependency>
-		
+
 		<!-- tools.jar depencency so that the Solr dependencies don't cause errors -->
-        <dependency>
-            <groupId>jdk.tools</groupId>
-            <artifactId>jdk.tools</artifactId>
-            <version>1.8.0</version>
-            <scope>system</scope>
-            <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-        </dependency>
+		<dependency>
+			<groupId>jdk.tools</groupId>
+			<artifactId>jdk.tools</artifactId>
+			<version>1.8.0</version>
+			<scope>system</scope>
+			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
 		<dependency>
@@ -403,20 +422,20 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.10.1</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20180813</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.metaparadigm/json-rpc -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.metaparadigm</groupId> -->
-<!-- 			<artifactId>json-rpc</artifactId> -->
-<!-- 			<version>1.0</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.metaparadigm</groupId> -->
+		<!-- <artifactId>json-rpc</artifactId> -->
+		<!-- <version>1.0</version> -->
+		<!-- </dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
@@ -438,13 +457,13 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.26</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.slf4j/jul-to-slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>1.7.26</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
@@ -481,105 +500,117 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>2.11.2</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-common</artifactId>
-            <version>4.10.4</version>
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-kuromoji -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-kuromoji</artifactId>
-            <version>4.10.4</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-phonetic -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-phonetic</artifactId>
-            <version>4.10.4</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-kuromoji -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-kuromoji</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-codecs -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-codecs</artifactId>
-            <version>4.10.4</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-grouping -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-grouping</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-highlighter -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-highlighter</artifactId>
-            <version>4.10.4</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-phonetic -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-phonetic</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-join -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-join</artifactId>
-            <version>4.10.4</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-codecs -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-codecs</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
-       <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-misc -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-misc</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queries -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-queries</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-spatial -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-spatial</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-suggest -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-suggest</artifactId>
-            <version>4.10.4</version>
-        </dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-test-framework -->
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-test-framework</artifactId>
-            <version>4.10.4</version>
-            <scope>test</scope>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-grouping -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-grouping</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-highlighter -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-join -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-join</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-misc -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-misc</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queries -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-spatial -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-spatial</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-suggest -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-suggest</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-test-framework -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-test-framework</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>2.3.0</version>
+
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor -->
@@ -672,13 +703,13 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.17</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <version>3.17</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>3.17</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.ocpsoft/prettyfaces-jsf2 -->
 		<dependency>
@@ -719,13 +750,14 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.26</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.apache.solr/solr-core -->
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-core</artifactId>
-            <version>4.10.4</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-core -->
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-core</artifactId>
+			<version>4.10.4</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->
 		<dependency>
@@ -748,35 +780,35 @@
 			<artifactId>stax-api</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-		
-        <dependency>
-            <groupId>de.intranda.digiverso.ocr</groupId>
-            <artifactId>tei-conversion</artifactId>
-            <version>[0.1,)</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>1.18</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-parsers</artifactId>
-            <!-- Using a version >1.18 will result in a POI version incompatibility -->
-            <version>1.18</version>
-        </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-servlet-api</artifactId>
-            <version>8.5.40</version>
-            <scope>compile</scope>
-        </dependency>
+
+		<dependency>
+			<groupId>de.intranda.digiverso.ocr</groupId>
+			<artifactId>tei-conversion</artifactId>
+			<version>[0.1,)</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.18</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<!-- Using a version >1.18 will result in a POI version incompatibility -->
+			<version>1.18</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-servlet-api</artifactId>
+			<version>8.5.40</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
 		<dependency>
@@ -791,14 +823,15 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>3.0.5.Final</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
-        <!-- This needs to be added explicitly because otherwise Solr will use an older version that's incompatible -->
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.0</version>
-        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
+		<!-- This needs to be added explicitly because otherwise Solr will use 
+			an older version that's incompatible -->
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.12.0</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
 		<dependency>
@@ -834,18 +867,21 @@
 				<version>3.0.0</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					<warName>viewer</warName>
+					<wtpversion>2.0</wtpversion>
+					<wtpContextName>viewer</wtpContextName>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Abstract*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+					<excludes>
+						<exclude>**/Abstract*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
