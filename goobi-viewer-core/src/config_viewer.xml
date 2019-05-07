@@ -357,7 +357,7 @@
 		<sorting>
 			<!-- enabled: if false, the option to sort search hits is hidden (since 
 				2.0) -->
-			<enabled>true</enabled>
+CMS			<enabled>true</enabled>
 			<!-- defaultSortField: Field used for initial sorting. Multiple semicolon-separated 
 				fields can be used for hierarchical sorting (e.g. <defaultSortField>SORT_FIELD1;SORT_FIELD2;SORT_FIELD3</defaultSortField>). 
 				Default is empty. -->

@@ -506,82 +506,82 @@ public class Metadata implements Serializable {
                 // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
                 return false;
             }
-            if (metadataMap.get(SolrConstants.IDDOC) != null && !metadataMap.get(SolrConstants.IDDOC).isEmpty()) {
-                String iddoc = metadataMap.get(SolrConstants.IDDOC).get(0);
-                try {
-                    StringBuilder sbQuery = new StringBuilder();
-                    sbQuery.append(SolrConstants.LABEL)
-                            .append(':')
-                            .append(label)
-                            .append(" AND ")
-                            .append(SolrConstants.IDDOC_OWNER)
-                            .append(':')
-                            .append(iddoc)
-                            .append(" AND ")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(':')
-                            .append(DocType.METADATA.name());
-                    logger.trace("GROUP QUERY: {}", sbQuery.toString());
-                    SolrDocumentList groupedMdList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
-                    int count = 0;
-                    for (SolrDocument doc : groupedMdList) {
-                        Map<String, List<String>> groupFieldMap = new HashMap<>();
-                        // Collect values for all fields in this metadata doc
-                        for (String fieldName : doc.getFieldNames()) {
-                            List<String> values = groupFieldMap.get(fieldName);
-                            if (values == null) {
-                                values = new ArrayList<>();
-                                groupFieldMap.put(fieldName, values);
-                            }
-                            // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
-                            if (doc.getFieldValue(fieldName) instanceof String) {
-                                String value = (String) doc.getFieldValue(fieldName);
-                                values.add(value);
-                            } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                                values.addAll((List<String>) doc.getFieldValue(fieldName));
-                            }
+            if (metadataMap.get(SolrConstants.IDDOC) == null || metadataMap.get(SolrConstants.IDDOC).isEmpty()) {
+                return false;
+            }
+            String iddoc = metadataMap.get(SolrConstants.IDDOC).get(0);
+            try {
+                StringBuilder sbQuery = new StringBuilder();
+                sbQuery.append(SolrConstants.LABEL)
+                        .append(':')
+                        .append(label)
+                        .append(" AND ")
+                        .append(SolrConstants.IDDOC_OWNER)
+                        .append(':')
+                        .append(iddoc)
+                        .append(" AND ")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(':')
+                        .append(DocType.METADATA.name());
+                logger.trace("GROUP QUERY: {}", sbQuery.toString());
+                SolrDocumentList groupedMdList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+                int count = 0;
+                for (SolrDocument doc : groupedMdList) {
+                    Map<String, List<String>> groupFieldMap = new HashMap<>();
+                    // Collect values for all fields in this metadata doc
+                    for (String fieldName : doc.getFieldNames()) {
+                        List<String> values = groupFieldMap.get(fieldName);
+                        if (values == null) {
+                            values = new ArrayList<>();
+                            groupFieldMap.put(fieldName, values);
                         }
-                        String groupType = null;
-                        if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
-                            groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
+                        // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
+                        if (doc.getFieldValue(fieldName) instanceof String) {
+                            String value = (String) doc.getFieldValue(fieldName);
+                            values.add(value);
+                        } else if (doc.getFieldValue(fieldName) instanceof Collection) {
+                            values.addAll((List<String>) doc.getFieldValue(fieldName));
                         }
-                        // Populate params for which metadata values have been found
-                        for (int i = 0; i < params.size(); ++i) {
-                            MetadataParameter param = params.get(i);
-                            // logger.trace("param: {}", param.getKey());
-                            if (groupFieldMap.get(param.getKey()) != null) {
-                                found = true;
-                                StringBuilder sbValue = new StringBuilder();
-                                // TODO
-                                List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
-                                for (String mdValue : groupFieldMap.get(param.getKey())) {
-                                    if (sbValue.length() == 0) {
-                                        sbValue.append(mdValue);
-                                    }
-                                    values.add(mdValue);
-                                }
-                                String paramValue = sbValue.toString();
-                                if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
-                                    //                                    Map<String, String> normDataUrl = new HashMap<>();
-                                    //                                    normDataUrl.put(param.getKey(), paramValue);
-                                    // logger.trace("found normdata uri: {}", normDataUrl.toString());
-                                    //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
-                                }
-                                setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
-                            } else if (param.getDefaultValue() != null) {
-                                logger.debug("No value found for {}, using default value", param.getKey());
-                                setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType,
-                                        locale);
-                                found = true;
-                            } else {
-                                setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
-                            }
-                        }
-                        count++;
                     }
-                } catch (PresentationException e) {
-                    logger.debug("PresentationException thrown here: {}", e.getMessage());
+                    String groupType = null;
+                    if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
+                        groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
+                    }
+                    // Populate params for which metadata values have been found
+                    for (int i = 0; i < params.size(); ++i) {
+                        MetadataParameter param = params.get(i);
+                        // logger.trace("param: {}", param.getKey());
+                        if (groupFieldMap.get(param.getKey()) != null) {
+                            found = true;
+                            StringBuilder sbValue = new StringBuilder();
+                            // TODO
+                            List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
+                            for (String mdValue : groupFieldMap.get(param.getKey())) {
+                                if (sbValue.length() == 0) {
+                                    sbValue.append(mdValue);
+                                }
+                                values.add(mdValue);
+                            }
+                            String paramValue = sbValue.toString();
+                            if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
+                                //                                    Map<String, String> normDataUrl = new HashMap<>();
+                                //                                    normDataUrl.put(param.getKey(), paramValue);
+                                // logger.trace("found normdata uri: {}", normDataUrl.toString());
+                                //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
+                            }
+                            setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
+                        } else if (param.getDefaultValue() != null) {
+                            logger.debug("No value found for {}, using default value", param.getKey());
+                            setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
+                            found = true;
+                        } else {
+                            setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
+                        }
+                    }
+                    count++;
                 }
+            } catch (PresentationException e) {
+                logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
         } else {
             // Regular, atomic metadata

@@ -961,6 +961,7 @@ public class NavigationHelper implements Serializable {
         logger.trace("updateBreadcrumbs (LabeledLink): {}", newLink.toString());
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {
+            // To avoid duplicate breadcrumbs while flipping pages, the LabeledLink.equals() method will prevent multiple breadcrumbs with the same name
             if (breadcrumbs.contains(newLink)) {
                 logger.trace("Breadcrumb '{}' is already in the list.", newLink);
                 return;

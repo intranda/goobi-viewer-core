@@ -466,7 +466,6 @@ public class ActiveDocumentBean implements Serializable {
                         navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), SolrConstants.DC,
                                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
                     }
-
                     navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
                             navigationHelper.getBreadcrumbs().size()));
                 }
