@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.OcrClient;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DownloadException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -195,11 +194,11 @@ public class EPUBDownloadJob extends DownloadJob {
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         File metsFile = new File(mediaRepository + "/indexed_mets", pi + ".xml");
-        HttpPost post = OcrClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), CmsBean.getCurrentLocale()
+        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), CmsBean.getCurrentLocale()
                 .getLanguage(), "", priority, "", title, mediaRepository.getAbsolutePath(), "VIEWEREPUB", downloadIdentifier,
                 "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
         try {
-            JSONObject response = OcrClient.getJsonResponse(client, post);
+            JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
             if (response.get("STATUS").equals("ERROR")) {
                 if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
