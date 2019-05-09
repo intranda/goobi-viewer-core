@@ -254,35 +254,21 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+        sbQuery.append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
                 .append(':')
                 .append(pi)
-                .append(" AND ")
+                .append(" +")
                 .append(SolrConstants.DOCTYPE)
                 .append(':')
                 .append(DocType.PAGE);
         if (pageNumber >= 0) {
-            sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
+            sbQuery.append(" +").append(SolrConstants.ORDER).append(':').append(pageNumber);
         }
         if (fileName != null) {
-            sbQuery.append(" AND ").append(SolrConstants.FILENAME).append(':').append(fileName);
+            sbQuery.append(" +").append(SolrConstants.FILENAME).append(":\"").append(fileName).append("\"");
         }
         SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, fields);
-        if (result == null || result.isEmpty()) {
-            sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
-            if (pageNumber >= 0) {
-                sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
-            }
-            if (fileName != null) {
-                sbQuery.append(" AND ").append(SolrConstants.FILENAME).append(':').append(fileName);
-            } else {
-                sbQuery.append(" AND ").append(SolrConstants.FILENAME).append(":*");
-            }
-        }
-        result = DataManager.getInstance()
-                .getSearchIndex()
-                .search(sbQuery.toString(), 1, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
         if (result.isEmpty()) {
             return null;
         }
