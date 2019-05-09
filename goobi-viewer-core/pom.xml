@@ -814,6 +814,13 @@
 			<version>1.18</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>8.5.40</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api -->
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
@@ -881,37 +888,37 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M1</version>
 				<configuration>
+					<skipTests>true</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 						<!-- TODO Comment back in -->
 						<exclude>**/IIIFUrlHandlerTest.java</exclude>
 						<exclude>**/ImageHandlerTest.java</exclude>
 						<exclude>**/authentication/*.java</exclude>
-
 					</excludes>
 				</configuration>
 			</plugin>
 			<!-- Maven Assembly Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.1</version>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<finalName>goobi-viewer-core-${version}</finalName>
-					<descriptors>
-						<descriptor>assembly.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-assembly-plugin</artifactId> -->
+<!-- 				<version>3.1.1</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>make-assembly</id> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>single</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 				<configuration> -->
+<!-- 					<finalName>goobi-viewer-core-${version}</finalName> -->
+<!-- 					<descriptors> -->
+<!-- 						<descriptor>assembly.xml</descriptor> -->
+<!-- 					</descriptors> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</build>
 </project>
