@@ -66,6 +66,7 @@
 		<project>goobi-viewer-theme-denkmalatlas</project>
 		<project>goobi-viewer-theme-vfc</project>
 		<project>goobi-viewer-theme-ubb</project>
+		<project>goobi-viewer-theme-beli</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -164,6 +164,9 @@
         <dependent-module archiveName="goobi-viewer-theme-ubb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubb/goobi-viewer-theme-ubb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-beli.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-beli/goobi-viewer-theme-beli">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
