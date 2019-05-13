@@ -30,8 +30,7 @@ var viewerJS = ( function( viewer ) {
     
     viewer.helper = {
         /**
-         * Method to truncate a string to a given length.
-         * 
+         * saveSidebarTocPosition Method to truncate a string to a given length.
          * @method truncateString
          * @param {String} str The string to truncate.
          * @param {Number} size The number of characters after the string should be
@@ -60,76 +59,7 @@ var viewerJS = ( function( viewer ) {
             }
         },
         /**
-         * Method which calculates the current position of the active element in sidebar
-         * toc and the image container position and saves it to lacal storage.
-         * 
-         * @method saveSidebarTocPosition
-         * @example
-         * 
-         * <pre>
-         * viewerJS.helper.saveSidebarTocPosition();
-         * </pre>
-         */
-        saveSidebarTocPosition: function() {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.saveSidebarTocPosition() ----------' );
-            }
-            
-            var scrollSidebarTocPosition = null;
-            var savedIdDoc = localStorage.getItem( 'currIdDoc' );
-            var sidebarTocWrapper = '.widget-toc-elem-wrapp';
-            var currElement = null;
-            var currUrl = '';
-            var parentLogId = '';
-            
-            if ( viewer.localStoragePossible ) {
-                if ( savedIdDoc !== 'false' ) {
-                    currElement = $( 'li[data-iddoc="' + savedIdDoc + '"]' );
-                    
-                    if ( currElement.length > 0 ) {
-                        $( sidebarTocWrapper ).scrollTop( currElement.offset().top - $( sidebarTocWrapper ).offset().top + $( sidebarTocWrapper ).scrollTop() );
-                        localStorage.setItem( 'currIdDoc', 'false' );
-                    }
-                    else {
-                        localStorage.setItem( 'currIdDoc', 'false' );
-                    }
-                    
-                    $( '.widget-toc-elem-link a' ).on( 'click', function() {
-                        parentLogId = $( this ).parents( 'li' ).attr( 'data-iddoc' );
-                        localStorage.setItem( 'currIdDoc', parentLogId );
-                    } );
-                }
-                else {
-                    localStorage.setItem( 'currIdDoc', 'false' );
-                    
-                    // expand click
-                    $( '.widget-toc-elem-expand a' ).on( 'click', function() {
-                        scrollSidebarTocPosition = $( sidebarTocWrapper ).scrollTop();
-                        
-                        localStorage.setItem( 'sidebarTocScrollPosition', scrollSidebarTocPosition );
-                    } );
-                    
-                    // link click
-                    $( '.widget-toc-elem-link a' ).on( 'click', function( event ) {
-                        event.preventDefault();
-                        
-                        currUrl = $( this ).attr( 'href' );
-                        scrollSidebarTocPosition = $( sidebarTocWrapper ).scrollTop();
-                        localStorage.setItem( 'sidebarTocScrollPosition', scrollSidebarTocPosition );
-                        location.href = currUrl;
-                    } );
-                    
-                    // scroll to saved position
-                    $( sidebarTocWrapper ).scrollTop( localStorage.getItem( 'sidebarTocScrollPosition' ) );
-                }
-            }
-            else {
-                return false;
-            }
-        },
-        /**
-         * Returns an JSON object from a API call.
-         * 
+         * @description Returns an JSON object from a API call. 
          * @method getRemoteData
          * @param {String} url The API call URL.
          * @returns {Object} A promise object, which tells about the success of receiving
@@ -156,8 +86,7 @@ var viewerJS = ( function( viewer ) {
             return promise;
         },
         /**
-         * Returns a BS Modal with dynamic content.
-         * 
+         * @description Returns a BS Modal with dynamic content.
          * @method renderModal
          * @param {Object} config An config object which includes the content of the
          * modal.
@@ -210,8 +139,7 @@ var viewerJS = ( function( viewer ) {
             return modal;
         },
         /**
-         * Returns a BS Alert with dynamic content.
-         * 
+         * @description Method to return a BS Alert with dynamic content.
          * @method renderAlert
          * @param {String} type The type of the alert.
          * @param {String} content The content of the alert.
@@ -238,8 +166,7 @@ var viewerJS = ( function( viewer ) {
             return bsAlert;
         },
         /**
-         * Method to get the version number of the used MS Internet Explorer.
-         * 
+         * @description Method to get the version number of the used MS Internet Explorer.
          * @method detectIEVersion
          * @returns {Number} The browser version.
          */
@@ -270,11 +197,9 @@ var viewerJS = ( function( viewer ) {
             
             // other browser
             return false;
-        },
-        
+        },        
         /**
-         * Method to check if it´s possible to write to local Storage
-         * 
+         * @description Method to check if it´s possible to write to local Storage.
          * @method checkLocalStorage
          * @returns {Boolean} true or false
          */
@@ -292,11 +217,9 @@ var viewerJS = ( function( viewer ) {
                     return false;
                 }
             }
-        },
-        
+        },        
         /**
-         * Method to render a warning popover.
-         * 
+         * @description Method to render a warning popover.
          * @method renderWarningPopover
          * @param {String} msg The message to show in the popover.
          * @returns {Object} An jQuery Object to append to DOM.
@@ -322,36 +245,8 @@ var viewerJS = ( function( viewer ) {
             
             return popover;
         },
-        
         /**
-         * Method to equal height of sidebar and content.
-         * 
-         * @method equalHeight
-         * @param {String} sidebar The selector of the sidebar.
-         * @param {String} content The selector of the content.
-         */
-        equalHeight: function( sidebar, content ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.equalHeight() ----------' );
-                console.log( 'viewer.helper.equalHeight: sidebar = ', sidebar );
-                console.log( 'viewer.helper.equalHeight: content = ', content );
-            }
-            
-            var $sidebar = $( sidebar );
-            var $content = $( content );
-            var sidebarHeight = $sidebar.outerHeight();
-            var contentHeight = $content.outerHeight();
-            
-            if ( sidebarHeight > contentHeight ) {
-                $content.css( {
-                    'min-height': ( sidebarHeight ) + 'px'
-                } );
-            }
-        },
-        
-        /**
-         * Method to validate the reCAPTCHA response.
-         * 
+         * @description Method to validate the reCAPTCHA response.
          * @method validateReCaptcha
          * @param {String} wrapper The reCAPTCHA widget wrapper.
          * @param {String} key The reCAPTCHA site key.
@@ -363,8 +258,6 @@ var viewerJS = ( function( viewer ) {
                 callback: function() {
                     var response = grecaptcha.getResponse( widget );
                     
-                    console.log( response );
-                    
                     if ( response == 0 ) {
                         return false;
                     }
@@ -373,11 +266,9 @@ var viewerJS = ( function( viewer ) {
                     }
                 }
             } );
-        },
-        
+        },        
         /**
-         * Method to get the current used browser.
-         * 
+         * @description Method to get the current used browser.
          * @method getCurrentBrowser
          * @returns {String} The name of the current Browser.
          */
@@ -417,6 +308,23 @@ var viewerJS = ( function( viewer ) {
             else if ( isChrome ) {
                 return 'Chrome';
             }
+        },
+        /**
+         * @description Method to initialize Bootstrap features.
+         * @method initBsFeatures
+         */
+        initBsFeatures: function() {
+        	if ( _debug ) {
+                console.log( 'EXECUTE: viewerJS.helper.initBsFeatures' );
+            }
+        	
+        	// enable BS tooltips
+            $( '[data-toggle="tooltip"]' ).tooltip( {
+                trigger : 'hover'
+            } );
+            if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
+            	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
+            }        	
         },
     };
     
