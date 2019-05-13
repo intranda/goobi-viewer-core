@@ -207,6 +207,7 @@ public class CMSContentResource {
             output = StringEscapeUtils.unescapeHtml(output);
             output = output.replace("&", "&amp;");
             output = output.replace("###LT###", "&lt;").replace("###GT###", "&gt;");
+            output = output.replaceAll("<!--[\\w\\W]*?-->", "");
         }
 
         return output;

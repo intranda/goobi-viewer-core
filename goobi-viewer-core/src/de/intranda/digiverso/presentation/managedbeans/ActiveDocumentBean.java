@@ -467,7 +467,7 @@ public class ActiveDocumentBean implements Serializable {
                                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
                     }
                     navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
-                            navigationHelper.getBreadcrumbs().size()));
+                            NavigationHelper.WEIGHT_OPEN_DOCUMENT));
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);

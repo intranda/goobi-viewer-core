@@ -1105,6 +1105,7 @@ public class NavigationHelper implements Serializable {
 
         updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', NavigationHelper.WEIGHT_BROWSE));
         List<String> hierarchy = StringTools.getHierarchyForCollection(collection, splittingChar);
+        // Individual hierarchy elements will all be added with the active collection weight
         updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, hierarchy, WEIGHT_ACTIVE_COLLECTION));
     }
 
