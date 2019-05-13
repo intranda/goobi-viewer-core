@@ -1,13 +1,25 @@
 /**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects. Visit these websites for more information. -
- * http://www.intranda.com - http://digiverso.com This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. This program is distributed in the hope that it will be
- * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. Base-Module which initialize the global
- * viewer object.
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  * 
- * @version 3.2.0
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @description Basic module to setup viewerJS.
+ * @version 3.4.0
  * @module viewerJS
+ * @requires jQuery
  */
 var viewerJS = ( function() {
     'use strict';
@@ -19,8 +31,6 @@ var viewerJS = ( function() {
         theme: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
-        equalHeightRSSInterval: 1000,
-        equalHeightInterval: 500,
         messageBoxSelector: '.messages .alert',
         messageBoxInterval: 1000,
         messageBoxTimeout: 8000,
@@ -36,10 +46,8 @@ var viewerJS = ( function() {
     
     viewer.init = function( config ) {
         if ( _debug ) {
-            console.log( '##############################' );
-            console.log( 'viewer.init' );
-            console.log( '##############################' );
-            console.log( 'viewer.init: config - ', config );
+        	console.log( 'Initializing: viewerJS.init' );
+			console.log( '--> config = ', config );
         }
         
         $.extend( true, _defaults, config );
@@ -47,21 +55,33 @@ var viewerJS = ( function() {
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
         
-        //write theme name to viewer object so submodules can use it
+        // write theme name to viewer object so submodules can use it
         viewer.theme = _defaults.theme;
 
-        
+        // throw some console infos about the page
         console.info( 'Current Browser = ', _defaults.browser );
         console.info( 'Current Theme = ', _defaults.theme );
         console.info( 'Current Page = ', _defaults.currentPage );
         
-        // enable BS tooltips
-        $( '[data-toggle="tooltip"]' ).tooltip( {
-            trigger : 'hover'
-        } );
-        if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-        	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
-        }
+        // init Bootstrap features
+        viewerJS.helper.initBsFeatures();
+        
+        // init mobile Toggles for old responisive themes
+        viewerJS.mobileToggles.init();
+        
+        // init save scroll positions
+        viewerJS.scrollPositions.init();
+        
+        // init scroll page animated
+        this.pageScroll.init( _defaults.pageScrollSelector, _defaults.pageScrollAnchor );
+        
+        // init some image methods
+        viewer.loadThumbnails();
+        viewer.initFragmentNavigation();     
+        viewer.initStoreScrollPosition();
+         
+        // AJAX Loader Eventlistener
+        viewerJS.jsfAjax.init( _defaults );
         
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
@@ -75,72 +95,12 @@ var viewerJS = ( function() {
                     $( '.warning-popover' ).remove();
                 } );
             } );
-        }
-        
-        // off canvas
-        $( '[data-toggle="offcanvas"]' ).on( 'click', function() {
-            var icon = $( this ).children( '.fa' );
-            
-            $( '.row-offcanvas' ).toggleClass( 'active' );
-            $( this ).toggleClass( 'in' );
-            
-            if ( icon.hasClass( 'fa-ellipsis-v' ) ) {
-                icon.removeClass( 'fa-ellipsis-v' ).addClass( 'fa-ellipsis-h' );
-            }
-            else {
-                icon.removeClass( 'fa-ellipsis-h' ).addClass( 'fa-ellipsis-v' );
-            }
-        } );
-        
-        // toggle mobile navigation
-        $( '[data-toggle="mobilenav"]' ).on( 'click', function() {
-            $( '.btn-toggle.search' ).removeClass( 'in' );
-            $( '.header-actions__search' ).hide();
-            $( '.btn-toggle.language' ).removeClass( 'in' );
-            $( '#changeLocal' ).hide();
-            $( '#mobileNav' ).slideToggle( 'fast' );
-        } );
-        $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {
-            $( '.image-controls' ).slideToggle( 'fast' );
-        } );
-        
-        // toggle language
-        $( '[data-toggle="language"]' ).on( 'click', function() {
-            $( '.btn-toggle.search' ).removeClass( 'in' );
-            $( '.header-actions__search' ).hide();
-            $( this ).toggleClass( 'in' );
-            $( '#changeLocal' ).fadeToggle( 'fast' );
-        } );
-        
-        // toggle search
-        $( '[data-toggle="search"]' ).on( 'click', function() {
-            $( '.btn-toggle.language' ).removeClass( 'in' );
-            $( '#changeLocal' ).hide();
-            $( this ).toggleClass( 'in' );
-            $( '.header-actions__search' ).fadeToggle( 'fast' );
-        } );
+        }        
         
         // toggle collapseable widgets
         $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
     		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
     	} );
-        
-        // set content height to sidebar height
-        if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-            if ( $( '.rss_wrapp' ).length > 0 ) {
-                setTimeout( function() {
-                    viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                }, _defaults.equalHeightRSSInterval );
-            }
-            else {
-                setTimeout( function() {
-                    viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                }, _defaults.equalHeightInterval );
-            }
-            $( window ).on( "orientationchange", function() {
-                viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-            } );
-        }
         
         // fade out message box if it exists
         ( function() {
@@ -178,129 +138,10 @@ var viewerJS = ( function() {
             $( href ).collapse("show"); 
         });
         
-        // scroll page animated
-        this.pageScroll.init( _defaults.pageScrollSelector, _defaults.pageScrollAnchor );
-        
-        // check for sidebar toc and set viewport position
-        if ( viewer.localStoragePossible ) {
-            if ( $( '#image_container' ).length > 0 ) {
-                if ( localStorage.getItem( 'currIdDoc' ) === null ) {
-                    localStorage.setItem( 'currIdDoc', 'false' );
-                }
-                
-                this.helper.saveSidebarTocPosition();
-            }
-            else {
-                localStorage.setItem( 'sidebarTocScrollPosition', 0 );
-            }
-        }
-        
         // reset searchfield on focus
         $( 'input[id*="searchField"]' ).on( 'focus', function() {
         	$( this ).val( '' );
         } );
-        
-        viewer.loadThumbnails();
-        viewer.initFragmentNavigation();     
-        viewer.initStoreScrollPosition();
-         
-        // AJAX Loader Eventlistener
-        if ( typeof jsf !== 'undefined' ) {
-            jsf.ajax.addOnEvent( function( data ) {
-                var ajaxstatus = data.status;
-                var ajaxloader = document.getElementById( "AJAXLoader" );
-                var ajaxloaderSidebarToc = document.getElementById( "AJAXLoaderSidebarToc" );
-                
-                if ( ajaxloaderSidebarToc && ajaxloader ) {
-                    switch ( ajaxstatus ) {
-                        case "begin":
-                            ajaxloaderSidebarToc.style.display = 'block';
-                            ajaxloader.style.display = 'none';
-                            break;
-                        
-                        case "complete":
-                            ajaxloaderSidebarToc.style.display = 'none';
-                            ajaxloader.style.display = 'none';
-                            break;
-                        
-                        case "success":
-                            // enable BS tooltips
-                        	$( '[data-toggle="tooltip"]' ).tooltip( {
-                                trigger : 'hover'
-                            } );
-                            
-                            if ( viewer.localStoragePossible ) {
-                                viewer.helper.saveSidebarTocPosition();
-                                
-                                $( '.widget-toc-elem-wrapp' ).scrollTop( localStorage.sidebarTocScrollPosition );
-                            }
-                            // set content height to sidebar height
-                            if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-                                viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                
-                                $( window ).off().on( "orientationchange", function() {
-                                    viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                } );
-                            }
-                            viewer.loadThumbnails();
-                            break;
-                    }
-                }
-                else if ( ajaxloader ) {
-                    switch ( ajaxstatus ) {
-                        case "begin":
-                            ajaxloader.style.display = 'block';
-                            break;
-                        
-                        case "complete":
-                            ajaxloader.style.display = 'none';
-                            break;
-                        
-                        case "success":
-                            // enable BS tooltips
-                        	$( '[data-toggle="tooltip"]' ).tooltip( {
-                                trigger : 'hover'
-                            } );
-                            
-                            // set content height to sidebar height
-                            if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-                                viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                
-                                $( window ).off().on( "orientationchange", function() {
-                                    viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                } );
-                            }
-                            viewer.loadThumbnails();
-                            break;
-                    }
-                }
-                else {
-                    switch ( ajaxstatus ) {
-                        case "success":
-                            // enable BS tooltips
-                        	$( '[data-toggle="tooltip"]' ).tooltip( {
-                                trigger : 'hover'
-                            } );
-                        	
-                        	// toggle collapseable widgets
-                            $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
-                        		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
-                        	} );
-                            
-                            // set content height to sidebar height
-                            if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
-                                viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                
-                                $( window ).off().on( "orientationchange", function() {
-                                    viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
-                                } );
-                            }
-                            viewer.loadThumbnails();
-                            break;
-                    }
-                }
-            } );
-        }
         
         // init search drilldown filter
         if ( _defaults.activateDrilldownFilter ) {
@@ -336,7 +177,6 @@ var viewerJS = ( function() {
         // make sure only integer values may be entered in input fields of class
         // 'input-float'
         $( '.input-float' ).on( "keypress", function( event ) {
-            console.log( event );
             switch ( event.which ) {
                 case 8: // delete
                 case 9: // tab
@@ -379,36 +219,10 @@ var viewerJS = ( function() {
             };
         }
         
-        if ( currentPage === 'overview' ) {
-            // activate menubar
-            viewerJS.tinyConfig.menubar = true;
-            viewerJS.tinyMce.overview();
-        }
-        
-        // AJAX Loader Eventlistener for tinyMCE
-        if ( typeof jsf !== 'undefined' ) {
-            jsf.ajax.addOnEvent( function( data ) {
-                var ajaxstatus = data.status;
-                
-                switch ( ajaxstatus ) {
-                    case "success":
-                        if ( currentPage === 'overview' ) {
-                            viewerJS.tinyMce.overview();
-                        }
-                        
-                        if ( $( '.tinyMCE' ).length > 0 ) {
-                        	viewerJS.tinyMce.init( viewerJS.tinyConfig );
-                        }
-                        break;
-                }
-            } );
-        }
-        
         // init tinymce if it exists
         if ( $( '.tinyMCE' ).length > 0 ) {
             viewerJS.tinyMce.init( this.tinyConfig );
-        }
-        
+        }        
         
         // handle browser bugs
         switch ( _defaults.browser ) {
