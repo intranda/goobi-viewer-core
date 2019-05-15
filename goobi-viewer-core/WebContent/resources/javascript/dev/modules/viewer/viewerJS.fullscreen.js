@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
     var _sidebarId;
     var _lastKeyCode;
     var _lastKeyPress;
-    var _maxDoubleClickDelay = 250//ms
+    var _maxDoubleClickDelay = 250 //ms
     var _defaults = {
     	resizeSelector: '#fullscreenViewSidebar',
     	msg: {}
@@ -53,8 +53,6 @@ var viewerJS = ( function( viewer ) {
             }
             
             $.extend( true, _defaults, config );
-                        
-            $(window).on("key")
             
             // hide header
             _hideHeader( true, 5000 );
@@ -85,7 +83,7 @@ var viewerJS = ( function( viewer ) {
                     _sidebarId = $( '#fullscreenViewSidebar' ).attr( 'id' );
                     
                     // check if sidebar is resizing
-                    if ( e.target['id'] != _sidebarId ) {
+                    if ( e.target[ 'id' ] != _sidebarId ) {
                         $( 'body' ).hide();
                         window.location.href = window.location.href;                    
                     }
@@ -94,8 +92,8 @@ var viewerJS = ( function( viewer ) {
             else {
                 // set position on resize/orientationchange
                 $( window ).on( 'orientationchange', function(e) {
-                        $( 'body' ).hide();
-                        window.location.href = window.location.href;                    
+                    $( 'body' ).hide();                    
+                    window.location.href = window.location.href;                    
                 } );   
             }
             
@@ -105,19 +103,20 @@ var viewerJS = ( function( viewer ) {
             	placement: 'bottom'
             } );
             
-            // set sidebar and panel status
-            //restorePanelPosition is called twice to restore both width and scroll-position correctly
+            // set sidebar panel, status and width
+            _getSidebarWidth();
             _setPanelStatus();
-            _restorePanelPosition();
             _setSidebarStatus();
-            _restorePanelPosition();
-
+            _getSidebarScrollPosition();
 
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
             	// set global variables
             	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
             	_sidebarLeft = $( '#fullscreenViewSidebar' ).css( 'left' );
+            	
+            	// save sidebar width
+            	_setSidebarWidth( _sidebarWidth );
             	
             	// set sidebar left position
             	$( '#fullscreenViewSidebar' ).css( 'left', 'inherit' );
@@ -160,7 +159,6 @@ var viewerJS = ( function( viewer ) {
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
             		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
             	}
-
             	
             	// slide in sidebar
             	$( '#fullscreenViewSidebar' ).animate( {
@@ -191,7 +189,11 @@ var viewerJS = ( function( viewer ) {
             
             // scroll resize handle and hide panel controls
             $( '#fullscreenViewSidebar' ).on( 'scroll', function() {
+            	var currScrollPosition = $( this ).scrollTop();
+            	
             	$( '.ui-resizable-handle' ).css( 'top', $( this ).scrollTop() );
+            	
+            	_setSidebarScrollPosition( currScrollPosition );
             	
             	if ( $( this ).scrollTop() > 0 ) {
             		$( '#fullscreenSidebarPanelControls' ).addClass( 'hidden' );
@@ -204,7 +206,7 @@ var viewerJS = ( function( viewer ) {
             // toggle sidebar panels
             $( '.fullscreen__view-sidebar-accordeon-panel-title' ).on( 'click', function() {
                 var parentPanelId = $( this ).parent().attr( 'id' );
-                var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+                var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'fsPanelStatus' ) );
                 
                 // scroll sidebar to top
                 $( '#fullscreenViewSidebar' ).scrollTop( 0 );
@@ -214,7 +216,7 @@ var viewerJS = ( function( viewer ) {
                     $( this ).next().slideToggle( 'fast' );
                     
                     panelSessionStatus[ parentPanelId ] = false;
-                    sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
+                    sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
                 }
                 else {                	
                     $( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
@@ -232,13 +234,13 @@ var viewerJS = ( function( viewer ) {
                     }
 
                     panelSessionStatus[ parentPanelId ] = true;
-                    sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
+                    sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
                 }
             } );
 
             // hide all panels
             $( '[data-close="all-tabs"]' ).on( 'click', function() {
-            	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+            	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'fsPanelStatus' ) );
             	
             	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
             		$( this ).removeClass( 'in' );
@@ -249,12 +251,12 @@ var viewerJS = ( function( viewer ) {
                 	panelSessionStatus[ status ] = false;
                 }
             	
-            	sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
+            	sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
             } );
 
             // show all panels
             $( '[data-open="all-tabs"]' ).on( 'click', function() {
-            	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
+            	var panelSessionStatus = JSON.parse( sessionStorage.getItem( 'fsPanelStatus' ) );
 
             	$( '.fullscreen__view-sidebar-accordeon-panel-title' ).each( function() {
             		$( this ).addClass( 'in' );
@@ -265,14 +267,11 @@ var viewerJS = ( function( viewer ) {
                 	panelSessionStatus[ status ] = true;
                 }
             	
-            	sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelSessionStatus ) );
+            	sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelSessionStatus ) );
             } ); 
             
-            $(document.body).off("keyup", _handleKeypress);
-            $(document.body).on("keyup", _handleKeypress);
-            
-            window.addEventListener("beforeunload", _storePanelPosition);
-
+            $(document.body).off( 'keyup' , _handleKeypress);
+            $(document.body).on( 'keyup' , _handleKeypress);
         },
     };
     
@@ -285,15 +284,12 @@ var viewerJS = ( function( viewer ) {
     		console.log( 'EXECUTE: _setSidebarStatus' );
     	}
     	
-    	// set global variables
-    	_sidebarWidth = $( '#fullscreenViewSidebar' ).outerWidth();
-    	
-    	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) == '' ) {
+    	if ( sessionStorage.getItem( 'fsSidebarStatus' ) == undefined || sessionStorage.getItem( 'fsSidebarStatus' ) === null ) {
     		if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
     			sessionStorage.setItem( 'fsSidebarStatus', false );
     			
     			// hide sidebar
-    			_hideSidebar( _sidebarWidth );
+    			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
     		}
     		else {
     			sessionStorage.setItem( 'fsSidebarStatus', true );    			
@@ -302,7 +298,7 @@ var viewerJS = ( function( viewer ) {
     	else {
     		if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false'  ) {
     			// hide sidebar
-    			_hideSidebar( _sidebarWidth );
+    			_hideSidebar( $( '#fullscreenViewSidebar' ).outerWidth() );
     			
     			// reset resizable
     			if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
@@ -313,6 +309,49 @@ var viewerJS = ( function( viewer ) {
     	
     	// show sidebar
     	$( '.fullscreen__view-sidebar-inner' ).show();
+    }
+    
+    /**
+     * @description Method to set the sidebar scroll position.
+     * @method _setSidebarScrollPosition
+     * */
+    function _setSidebarScrollPosition( scroll ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _setSidebarScrollPosition' );
+    		console.log( '--> scroll: ', scroll );
+    	}
+    	
+    	sessionStorage.setItem( 'fsSidebarScrollPosition', scroll );
+    }
+    
+    /**
+     * @description Method to get the sidebar scroll position.
+     * @method _getSidebarScrollPosition
+     * */
+    function _getSidebarScrollPosition() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _getSidebarScrollPosition' );
+    	}
+    	
+    	var pos = sessionStorage.getItem( 'fsSidebarScrollPosition' );
+    	
+    	// check if session storage value exists
+    	if ( pos == undefined || pos === null ) {
+    		sessionStorage.setItem( 'fsSidebarScrollPosition', 0 );
+    		pos = sessionStorage.getItem( 'fsSidebarScrollPosition' );    		
+    	}
+
+    	// set sidebar scroll position
+    	$( '.ui-resizable-handle' ).css( 'top', pos );
+    	
+    	if ( pos > 0 ) {
+    		$( '#fullscreenSidebarPanelControls' ).addClass( 'hidden' );
+    	}
+    	else {
+    		$( '#fullscreenSidebarPanelControls' ).removeClass( 'hidden' );
+    	}
+    	
+    	$( '#fullscreenViewSidebar' ).scrollTop( pos );
     }
     
     /**
@@ -349,8 +388,9 @@ var viewerJS = ( function( viewer ) {
     	}
     	
     	var panelStatus;
+    	var fsPanelStatus = sessionStorage.getItem( 'fsPanelStatus' );
     	
-    	if ( sessionStorage.getItem( 'rmPanelStatus' ) == undefined || sessionStorage.getItem( 'rmPanelStatus' ) == '' ) {
+    	if ( fsPanelStatus == undefined || fsPanelStatus === null ) {
     		panelStatus = {};
     		
     		// build panel status object
@@ -376,12 +416,13 @@ var viewerJS = ( function( viewer ) {
     		} );
     		
     		// write object to session storage
-    		sessionStorage.setItem( 'rmPanelStatus', JSON.stringify( panelStatus ) );    		
+    		sessionStorage.setItem( 'fsPanelStatus', JSON.stringify( panelStatus ) );    		
     	}
     	else {
-    		panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
-    		if(_debug) {
-    			console.log("panelStatus ", panelStatus);
+    		panelStatus = JSON.parse( fsPanelStatus );
+    		
+    		if( _debug ) {
+    			console.log( '--> panelStatus: ', panelStatus );
     		}
     		
     		$( '.fullscreen__view-sidebar-accordeon-panel' ).each( function() {
@@ -392,9 +433,7 @@ var viewerJS = ( function( viewer ) {
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-title' ).addClass( 'in' );
     				$( this ).find( '.fullscreen__view-sidebar-accordeon-panel-body' ).show();
     			}    			        	
-    		} );
-
-    		
+    		} );    		
     	}
     }
 
@@ -414,6 +453,8 @@ var viewerJS = ( function( viewer ) {
     		minWidth: 500,
     		maxWidth: 900,
     		resize: function( event, ui ) {
+    			_setSidebarWidth( $( '#fullscreenViewSidebar' ).outerWidth() );
+    			
     			if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
     				setTimeout( function() {
     					$( '.fullscreen__view-image-thumbs-wrapper' ).outerWidth( $( '#fullscreenView' ).outerWidth() - $( '#fullscreenViewSidebar' ).outerWidth() );    					
@@ -421,6 +462,43 @@ var viewerJS = ( function( viewer ) {
     			}
     		}
     	});
+    }
+    
+    /**
+     * @description Method to save the sidebar width to session storage.
+     * @method _setSidebarWidth
+     * @param {Number} width The current width of the sidebar.
+     * */
+    function _setSidebarWidth( width ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _setSidebarWidth' );
+    		console.log( '--> width: ', width );
+    	}
+    	
+    	sessionStorage.setItem( 'fsSidebarWidth', width );
+    }
+
+    /**
+     * @description Method to get the sidebar scroll position.
+     * @method _getSidebarWidth
+     * */
+    function _getSidebarWidth() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _getSidebarWidth' );
+    	}
+    	
+    	var sbWidth = sessionStorage.getItem( 'fsSidebarWidth' );
+    	
+    	// check if session storage value exists
+    	if ( sbWidth == undefined || sbWidth === null ) {
+    		sessionStorage.setItem( 'fsSidebarWidth', $( '#fullscreenViewSidebar' ).outerWidth() );
+    		sbWidth = sessionStorage.getItem( 'fsSidebarWidth' );    		
+    	}
+
+    	// set sidebar width
+    	if ( window.matchMedia( '(min-width: 769px)' ).matches ) {
+    		$( '#fullscreenViewSidebar' ).css( 'width', sbWidth + 'px' );
+    	}
     }
     
     /**
@@ -472,87 +550,61 @@ var viewerJS = ( function( viewer ) {
 			$( '#fullscreenHeader' ).show();
     	}
     }
-    
-    function _restorePanelPosition() {
-		var panelStatus = JSON.parse( sessionStorage.getItem( 'rmPanelStatus' ) );
-		if(panelStatus) {		
-			if(panelStatus.width !== undefined) {    			
-				$('#fullscreenViewSidebar').width(panelStatus.width);
-			}
-			if(panelStatus.scrollTop !== undefined) {    			
-				$('#fullscreenViewSidebar').scrollTop(panelStatus.scrollTop);
-			}
-		}
-	}
-    
+   
     /**
-     * Stores sidebar panel width and scroll position to session storage using the 'rmPanelStatus' key
-     */
-    function _storePanelPosition(event) {
-    	var sidebarStatus = JSON.parse(sessionStorage.getItem( 'fsSidebarStatus' ));
-    	var panelStatus = JSON.parse(sessionStorage.getItem( 'rmPanelStatus' ));
-    	
-    	if(panelStatus) {
-    		panelStatus.width = $('#fullscreenViewSidebar').width();
-    		panelStatus.scrollTop = $('#fullscreenViewSidebar').scrollTop();
+     * @description Method to set key events to navigate through images.
+     * @method _handleKeypress
+     * @param {Object} event An event object to trigger key events. 
+     * */
+    function _handleKeypress( event ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _handleKeypress' );
+    		console.log( '--> event: ', event );
     	}
-
-        sessionStorage.setItem( "rmPanelStatus", JSON.stringify( panelStatus ) );
-        if ( _debug ) {
-            console.log( "storing panel state ", panelStatus );
+    	
+        if (event.originalEvent) {
+            event = event.originalEvent;
         }
-   };
 
-   
-   function _handleKeypress(event) {
-	   if (event.originalEvent) {
-			event = event.originalEvent;
-		}
+        // don't handle if the actual target is an input field
+        if (event.target.tagName.toLowerCase().match(/input|textarea/)) {
+            return true;
+        }
 
-		if (_debug) {
-			console.log("event from ", event.target.tagName.toLowerCase());
-		}
-		
-		// don't handle if the actual target is an input field
-		if (event.target.tagName.toLowerCase().match(/input|textarea/)) {
-			return true;
-		}
+        var keyCode = event.keyCode;
+        var now = Date.now();
 
-		var keyCode = event.keyCode;
-		var now = Date.now();
+        // this is a double key press if the last entered keycode is the same as the current one and the last key press is less than maxDoubleClickDelay ago
+        var doubleKeypress = (_lastKeyCode == keyCode && now - _lastKeyPress <= _maxDoubleClickDelay);
+        _lastKeyCode = keyCode;
+        _lastKeyPress = now;
 
-		// this is a double key press if the last entered keycode is the same as the current one and the last key press is less than maxDoubleClickDelay ago
-		var doubleKeypress = (_lastKeyCode == keyCode && now - _lastKeyPress <= _maxDoubleClickDelay);
-		_lastKeyCode = keyCode;
-		_lastKeyPress = now;
+        if (_debug) {
+            console.log('key pressed ', keyCode);
+            if (doubleKeypress) {
+                console.log('double key press');
+            }
+        }
 
-		if (_debug) {
-			console.log("key pressed ", keyCode);
-			if (doubleKeypress) {
-				console.log("double key press");
-			}
-		}
-		
-		switch (keyCode) {
-			case 37:
-				if (doubleKeypress && $(".image-controls__action.start a").length) {
-					$(".image-controls__action.start a").get(0).click();
-				} 
-				else if ($(".image-controls__action.back a").length) {
-					$(".image-controls__action.back a").get(0).click();
-				}
-				break;
-			case 39:
-				if (doubleKeypress && $(".image-controls__action.end a").length) {
-					$(".image-controls__action.end a").get(0).click();
-				} 
-				else if ($(".image-controls__action.forward a").length) {
-					$(".image-controls__action.forward a").get(0).click();
-				}
-				break;
-		};
-   }
-   
+        switch (keyCode) {
+            case 37:
+                if (doubleKeypress && $('.image-controls__action.start a').length) {
+                    $('.image-controls__action.start a').get(0).click();
+                }
+                else if ($('.image-controls__action.back a').length) {
+                    $('.image-controls__action.back a').get(0).click();
+                }
+                break;
+            case 39:
+                if (doubleKeypress && $('.image-controls__action.end a').length) {
+                    $('.image-controls__action.end a').get(0).click();
+                }
+                else if ($('.image-controls__action.forward a').length) {
+                    $('.image-controls__action.forward a').get(0).click();
+                }
+                break;
+        };
+    }   
     
     return viewer;
     
