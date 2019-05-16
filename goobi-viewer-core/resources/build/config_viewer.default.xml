@@ -193,19 +193,19 @@
 		<!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
 		    the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
 		    to true to use tiled images if possible (only possible when type=openlayers) -->
-		 <zoomImageView tileImage="true" footerHeight="50">
-			<scale>600</scale>
-			<scale>900</scale>
-			<scale>1800</scale>
-			<tileSize>
-				<scaleFactors>4</scaleFactors>
-				<size>1024</size>
-			</tileSize>
+		 
+		 		<!-- PNGs: Deliver the entire image directly. Very fast, but the full image size must be delivered. If that is too large, remove this setting -->
+		<zoomImageView tileImage="false" footerHeight="50">
+			<useFor>
+				<mimeType>image/png</mimeType>
+			</useFor>
+			<scale>max</scale>
 		</zoomImageView>
 
-		<zoomImageView tileImage="true" footerHeight="50">
-			<!-- TODO DOCUMENTATION -->
-			<useFor>
+		<!-- Default settings for fullscreen mode -->
+	   <zoomImageView type="openSeadragon" tileImage="true"
+            footerHeight="50">
+            <useFor>
 				<view>fullscreen</view>
 			</useFor>
 			<scale>900</scale>
@@ -214,6 +214,18 @@
 			<tileSize>
 				<scaleFactors>4</scaleFactors>
 				<size>1024</size>
+			</tileSize>
+       </zoomImageView>
+       
+		<!-- Default settings for image view -->
+		<zoomImageView type="openSeadragon" tileImage="true"
+			footerHeight="50">
+			<scale>600</scale>
+			<scale>900</scale>
+			<scale>1800</scale>
+			<tileSize>
+				<scaleFactors>1,32</scaleFactors>
+				<size>512</size>
 			</tileSize>
 		</zoomImageView>
 

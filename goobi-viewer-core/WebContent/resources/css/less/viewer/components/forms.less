@@ -164,7 +164,15 @@
     color: @placeholder;
 }
 
-/* BREAKPOINT FOR LARGE DESKTOPS */
+/* iOS Webkit Hack to prevent input zoom in */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	select, 
+	textarea, 
+	input {
+		font-size: 16px !important;
+	}
+}
+
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */

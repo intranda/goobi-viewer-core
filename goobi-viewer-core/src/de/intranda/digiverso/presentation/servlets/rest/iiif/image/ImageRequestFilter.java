@@ -100,7 +100,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName, isThumb);
-                filterForImageSize(requestPath, size);
+//                filterForImageSize(requestPath, size);
                 setRequestParameter(request, isThumb);
             }
         } catch (ServiceNotAllowedException e) {
@@ -146,6 +146,11 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
             request.setProperty("param:compression", compression.toString());
         }
+        Integer maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
+        request.setProperty("param:maxWidth", maxWidth.toString());
+        
+        Integer maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
+        request.setProperty("param:maxHeight", maxHeight.toString());
 
     }
 

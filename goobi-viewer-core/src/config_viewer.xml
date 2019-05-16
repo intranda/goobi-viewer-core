@@ -216,11 +216,28 @@
 			define the size of the image display, in pixel set the attribute "tileImage" 
 			to true to use tiled images if possible (only possible when type=openlayers) -->
 
-	   <zoomImageView type="openSeadragon" tileImage="true"
-            footerHeight="0">
-            <useFor><view>fullscreen</view></useFor>
-       </zoomImageView>
+		<!-- PNGs: Deliver the entire image directly. Very fast, but the full image size must be delivered. If that is too large, remove this setting -->
+		<zoomImageView tileImage="false" footerHeight="50">
+			<useFor>
+				<mimeType>image/png</mimeType>
+			</useFor>
+			<scale>max</scale>
+		</zoomImageView>
 
+		<!-- Default settings for fullscreen mode -->
+	   <zoomImageView type="openSeadragon" tileImage="true"
+            footerHeight="50">
+            <useFor><view>fullscreen</view></useFor>
+			<scale>600</scale>
+			<scale>900</scale>
+			<scale>1800</scale>
+			<tileSize>
+				<scaleFactors>1,32</scaleFactors>
+				<size>512</size>
+			</tileSize>
+       </zoomImageView>
+       
+		<!-- Default settings for image view -->
 		<zoomImageView type="openSeadragon" tileImage="true"
 			footerHeight="50">
 			<scale>600</scale>
