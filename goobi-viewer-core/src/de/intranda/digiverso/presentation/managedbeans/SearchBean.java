@@ -1637,7 +1637,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public String getRssUrl() {
-        if (searchString != null) {
+        if (searchString == null) {
             return null;
         }
 
