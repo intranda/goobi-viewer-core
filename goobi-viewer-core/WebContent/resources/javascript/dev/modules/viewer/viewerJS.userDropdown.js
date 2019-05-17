@@ -42,22 +42,6 @@ var viewerJS = ( function( viewer ) {
                 _bookshelfDropdown = true;
             }
             
-            // login dropdown
-            $( '[data-toggle="login-dropdown"]' ).on( 'click', function( event ) {
-                event.stopPropagation();
-                
-                // hide bookshelfdropdow if exist
-                if ( _bookshelfDropdown ) {
-                    $( '.bookshelf-navigation__dropdown' ).hide();
-                    $( '.bookshelf-popup' ).remove();
-                }
-                // hide collection panel if exist
-                if ( $( '.navigation__collection-panel' ).length > 0 ) {
-                    $( '.navigation__collection-panel' ).hide();
-                }
-                
-                $( '.login-navigation__login-dropdown' ).slideToggle( 'fast' );
-            } );
             // user dropdown
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
@@ -75,18 +59,10 @@ var viewerJS = ( function( viewer ) {
                 $( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );
             } );
             
-            // retrieve account
-            $( '[data-toggle="retrieve-account"]' ).on( 'click', function() {
-                $( '.login-navigation__retrieve-account' ).addClass( 'in' );
-            } );
-            $( '[data-dismiss="retrieve-account"]' ).on( 'click', function() {
-                $( '.login-navigation__retrieve-account' ).removeClass( 'in' );
-            } );
-            
             // remove dropdown by clicking on body
             $( 'body' ).on( 'click', function( event ) {
                 var target = $( event.target );
-                var dropdown = $( '.login-navigation__user-dropdown, .login-navigation__login-dropdown' );
+                var dropdown = $( '.login-navigation__user-dropdown' );
                 var dropdownChild = dropdown.find( '*' );
                 
                 if ( !target.is( dropdown ) && !target.is( dropdownChild ) ) {

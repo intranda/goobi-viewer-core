@@ -15,80 +15,11 @@
                 <!-- USER NOT LOGGED IN -->
                 <ui:fragment rendered="#{!userBean.loggedIn}">
                     <li data-login="false">
-                        <!-- TOGGLE LOGIN DROPDOWN -->
-                        <button type="button" class="btn btn--clean" data-toggle="login-dropdown">
+                        <!-- TOGGLE LOGIN -->
+                        <button type="button" class="btn btn--clean" data-toggle="login" aria-label="#{msg.userNotLoggedIn}">
                             <span>#{msg.userNotLoggedIn}</span>
                             <i class="fa fa-user-circle-o" aria-hidden="true"></i>
                         </button>
-                        
-                        <!-- LOGIN DROPDOWN -->
-                        <div class="login-navigation__login-dropdown">
-                            <!-- LOGIN -->
-                            <h:form id="loginDropdownForm" prependId="false">
-                                <div class="form-group">
-                                    <label for="userEMail" class="control-label">#{msg.email}:</label>
-                                    <h:inputText id="userEMail" styleClass="form-control" value="#{userBean.email}" required="true" requiredMessage="#{msg.loginEnterUserName}">
-                                        <f:validator validatorId="emailValidator" />
-                                    </h:inputText>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userPassword" class="control-label">#{msg.password}:</label>
-                                    <h:inputSecret id="userPassword" styleClass="form-control" type="password" value="#{userBean.password}" required="true"
-                                        requiredMessage="#{msg.loginEnterPassword}" />
-                                </div>
-                                <div class="login-navigation__login-dropdown-action text-right">
-                                    <h:commandButton styleClass="btn btn--full" value="#{msg.login}" action="#{userBean.login}">
-                                        <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
-                                        <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
-                                    </h:commandButton>
-                                </div>
-                            </h:form>
-                            
-                            <!-- LOGIN OPTIONS -->
-                            <nav class="login-navigation__login-dropdown-options">
-                                <ul>
-                                    <li>
-                                        <a href="#{request.contextPath}/userAccountRetrieve/">#{msg.user_forgotPassword}</a>
-                                    </li>
-                                    <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
-                                        <li>
-                                            <a href="#{request.contextPath}/userAccountCreate/">#{msg.user_createNewAccount}</a>
-                                        </li>
-                                    </h:panelGroup>
-                                </ul>
-                            </nav>
-                            
-                            <!-- OPEN ID -->
-                            <ui:fragment rendered="#{userBean.showOpenId}">
-                                <nav class="login-navigation__open-id">
-                                    <h3>#{msg.user_openIdLogin}</h3>                                    
-                                    <h:form id="loginNavigationOpenIdForm" prependId="false">
-                                        <ul class="list list--horizontal">
-                                            <ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
-                                                <ui:fragment rendered="#{provider.name == 'Google'}">
-                                                    <li>
-                                                        <h:commandLink action="#{userBean.login}">
-                                                            <i class="fa fa-google" aria-hidden="true"></i>
-                                                            <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
-                                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
-                                                        </h:commandLink>
-                                                    </li>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{provider.name == 'Facebook'}">
-                                                    <li>
-                                                        <h:commandLink action="#{userBean.login}">
-                                                            <i class="fa fa-facebook-official" aria-hidden="true"></i>
-                                                            <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#" />
-                                                            <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
-                                                        </h:commandLink>
-                                                    </li>
-                                                </ui:fragment>
-                                            </ui:repeat>
-                                        </ul>
-                                    </h:form>
-                                </nav>
-                            </ui:fragment>
-                        </div>
                     </li>
                 </ui:fragment>
                 

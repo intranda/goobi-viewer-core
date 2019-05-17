@@ -2067,87 +2067,6 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation [data-login="false"] button[data-toggle="login-dropdown"] .fa {
   margin-left: 5px;
 }
-.login-navigation [data-login="false"] .login-navigation {
-  /* LOGIN DROPDOWN */
-  /* DROPDOWN ACTIONS */
-  /* DROPDOWN OPTIONS */
-  /* OPEN ID */
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 275px;
-  min-height: 290px;
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  overflow: hidden;
-  z-index: 999;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown li {
-  border-bottom: 1px solid #ccc;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown li:hover {
-  background-color: #eee;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown a,
-.login-navigation [data-login="false"] .login-navigation__login-dropdown button {
-  padding: 7px 14px;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown .control-label {
-  font-weight: normal;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown .form-control {
-  height: 32px;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-action {
-  margin-top: 30px;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-action .btn {
-  width: 100%;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-options ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  margin-right: -10px;
-  margin-left: -10px;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-options li:hover {
-  background-color: transparent;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-options a,
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-options button {
-  width: 100%;
-  padding: 7px 14px;
-  font-size: 0.9rem;
-  color: #3365a9;
-}
-.login-navigation [data-login="false"] .login-navigation__login-dropdown-options a {
-  display: block;
-  text-align: center;
-}
-.login-navigation [data-login="false"] .login-navigation__open-id h3 {
-  margin: 0;
-  padding: 7px 0;
-  font-size: 0.9rem;
-  text-align: center;
-}
-.login-navigation [data-login="false"] .login-navigation__open-id li {
-  border: none;
-}
-.login-navigation [data-login="false"] .login-navigation__open-id li a {
-  padding: 5px 10px 5px 5px;
-  font-size: 21px;
-}
-.login-navigation [data-login="false"] .login-navigation__open-id li:hover,
-.login-navigation [data-login="false"] .login-navigation__open-id li:active,
-.login-navigation [data-login="false"] .login-navigation__open-id li:focus {
-  background-color: transparent;
-}
 .login-navigation [data-login="true"] button[data-toggle="user-dropdown"] {
   display: -ms-flexbox;
   display: flex;
@@ -5465,6 +5384,210 @@ div[id*="-Modal"] .email-form .form-group {
         grid-template-columns: 1fr;
   }
 }
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Login
+   style declarations for userLogin.xhtml
+   ==============================================================*/
+/* USER LOGIN */
+.user-login {
+  display: none;
+  /* WRAPPER */
+  /* HEADER / BODY */
+  /* HEADER */
+  /* BODY */
+  /* FOOTER */
+}
+.user-login.active {
+  position: fixed;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #f2f3f4;
+  z-index: 9999;
+}
+.user-login > .fa {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.75rem;
+  cursor: pointer;
+}
+.user-login__wrapper {
+  width: 90%;
+  max-width: 400px;
+  padding: 10px;
+  background-color: #f2f3f4;
+}
+.user-login__header,
+.user-login__body {
+  padding: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.user-login__header .btn--link:active,
+.user-login__body .btn--link:active,
+.user-login__footer .btn--link:active,
+.user-login__header .btn--link:focus,
+.user-login__body .btn--link:focus,
+.user-login__footer .btn--link:focus,
+.user-login__header .btn--link:active:focus,
+.user-login__body .btn--link:active:focus,
+.user-login__footer .btn--link:active:focus {
+  color: #1a1a1a;
+}
+.user-login__header .btn--full:active,
+.user-login__body .btn--full:active,
+.user-login__footer .btn--full:active,
+.user-login__header .btn--full:focus,
+.user-login__body .btn--full:focus,
+.user-login__footer .btn--full:focus,
+.user-login__header .btn--full:active:focus,
+.user-login__body .btn--full:active:focus,
+.user-login__footer .btn--full:active:focus {
+  color: #fff;
+}
+.user-login__header {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+}
+.user-login__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.user-login__header-logo {
+  -ms-flex-item-align: normal;
+      -ms-grid-row-align: normal;
+      align-self: normal;
+  -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+  max-width: 25%;
+  background-image: url("../../images/goobi_logo-blue.png");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+}
+.user-login__body {
+  border-top: 0;
+}
+.user-login__body h4 {
+  font-size: 1rem;
+}
+.user-login__body-login-type-wrapper {
+  min-height: 215px;
+}
+.user-login__body-login-type {
+  position: relative;
+  background-color: #fff;
+}
+.user-login__body-login-type.local {
+  display: block;
+}
+.user-login__body-login-type.external,
+.user-login__body-login-type.retrieve,
+.user-login__body-login-type.create {
+  display: none;
+}
+.user-login__body-login-type .form-group,
+.user-login__body-login-type p {
+  margin-bottom: 1rem;
+}
+.user-login__body-action {
+  padding: 5px 0 1rem 0;
+}
+.user-login__body-action .btn--full {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.user-login__body-action .btn--link {
+  font-size: 0.8rem;
+}
+.user-login__body-login-open-id h4 {
+  position: relative;
+  margin-right: -15px;
+  margin-bottom: 1rem;
+  margin-left: -15px;
+  font-size: 0.8rem;
+  text-align: center;
+  text-transform: uppercase;
+  color: #6f6f6f;
+}
+.user-login__body-login-open-id h4 span {
+  position: relative;
+  padding: 0 3px;
+  background-color: #fff;
+  z-index: 10;
+}
+.user-login__body-login-open-id h4:before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  margin-top: -1px;
+  background-color: #ccc;
+  z-index: 9;
+}
+.user-login__body-login-open-id ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.user-login__body-login-open-id ul li {
+  margin-bottom: 0.5rem;
+}
+.user-login__body-login-open-id ul li:last-child {
+  margin-bottom: 0;
+}
+.user-login__body-login-open-id ul li.Google a:before,
+.user-login__body-login-open-id ul li.Facebook a:before {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.user-login__body-login-open-id ul li.Google a:before {
+  content: url("../../images/icons/icon_google-logo.png");
+}
+.user-login__body-login-open-id ul li.Facebook a:before {
+  content: url("../../images/icons/icon_facebook-logo.png");
+}
+.user-login__body-login-open-id ul a {
+  display: block;
+  padding: 6px 12px;
+  font-weight: 700;
+  text-align: center;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+}
+.user-login__body-login-open-id ul a:hover,
+.user-login__body-login-open-id ul a:active,
+.user-login__body-login-open-id ul afocus {
+  text-decoration: none;
+  color: #1a1a1a;
+}
+.user-login__footer {
+  padding: 5px 0;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #6f6f6f;
+}
+.user-login__footer .btn {
+  font-size: inherit;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Account Create
