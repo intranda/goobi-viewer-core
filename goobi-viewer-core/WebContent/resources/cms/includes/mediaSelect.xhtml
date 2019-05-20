@@ -128,12 +128,10 @@
 
 		viewerJS.clipboard.init( '[data-copy]' );
 		cmsJS.media.init( adminMediaConfig );
-		cmsJS.modules.onReload();
 		riot.mount( 'adminMediaUpload', adminMediaConfig );
 
 		function reload( data ) {
 			cmsJS.media.onReload( data );
-			cmsJS.modules.onReload( data );
 
 			if ( !data || data.status == 'begin' ) {
 				riot.mount( 'adminMediaUpload', adminMediaConfig );
