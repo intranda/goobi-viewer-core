@@ -93,6 +93,20 @@
                                             </div>
                                         </div>
                                     </li>
+                                    
+                                    <!-- ADMINISTRATION -->
+                                    <ui:fragment rendered="#{userBean.admin or userBean.user.isHasPrivilege('CMS_PAGES')}">
+                                        <li>
+                                            <div class="login-navigation__user-dropdown-item">
+                                                <div class="login-navigation__user-dropdown-item-icon">
+                                                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="login-navigation__user-dropdown-item-string">
+                                                    <h:commandLink action="pretty:admin">#{msg.admin}</h:commandLink>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ui:fragment>
                                 </ul>
                                 
                                 <!-- LOGOUT -->

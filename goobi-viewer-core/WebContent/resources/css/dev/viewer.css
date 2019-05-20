@@ -5415,16 +5415,18 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-login > .fa {
   position: absolute;
-  top: 10px;
+  top: 5px;
   right: 10px;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 .user-login__wrapper {
-  width: 90%;
+  width: 98%;
   max-width: 400px;
+  max-height: 90%;
   padding: 10px;
   background-color: #f2f3f4;
+  overflow-y: auto;
 }
 .user-login__header,
 .user-login__body {

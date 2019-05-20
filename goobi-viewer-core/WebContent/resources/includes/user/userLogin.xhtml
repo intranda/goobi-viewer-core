@@ -26,7 +26,7 @@
             <!-- USER LOGIN BODY -->
             <div class="user-login__body">
                 <!-- USER LOGIN BODY LOGIN SELECT -->
-                <div class="user-login__body-login-select">
+                <div id="userLoginSelectLoginWrapper" class="user-login__body-login-select">
                     <div class="form-group">
                         <label for="userLoginSelectLogin" class="control-label">#{msg.login__select_login_title}</label>
                         
@@ -82,8 +82,8 @@
                                     <!--  LOGIN -->
                                     <h:commandButton 
                                         styleClass="btn btn--full" 
-                                        value="#{msg.login}"> 
-<!--                                         action="#{userBean.login}"> -->
+                                        value="#{msg.login}" 
+                                        action="#{userBean.login}">
                                         <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
                                     </h:commandButton>
@@ -133,8 +133,8 @@
                                     <!-- LOGIN -->
                                     <h:commandButton 
                                         styleClass="btn btn--full" 
-                                        value="#{msg.login}">
-                                        <!--                                         action="#{userBean.login}"> -->
+                                        value="#{msg.login}"
+                                        action="#{userBean.login}">
                                         <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
                                     </h:commandButton>
@@ -179,27 +179,71 @@
                     
                     <!-- USER LOGIN TYPE CREATE ACCOUNT -->
                     <div id="loginTypeCreateAccount" class="user-login__body-login-type create">
-                        [CREATE ACCOUNT]
-                        
-                        <h:form>
+                        <h:form id="loginTypeCreateAccountForm">
+                            <div class="form-group">
+                                <label for="userCreateAccountNick" class="control-label">#{msg.nameNick}:</label>
+                                <h:inputText 
+                                    id="userCreateAccountNick" 
+                                    styleClass="form-control" 
+                                    value="#{userBean.nickName}" 
+                                    required="true"
+                                    requiredMessage="#{msg.loginEnterNickName}">
+                                    <f:validator validatorId="nicknameValidator" />
+                                </h:inputText>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="userCreateAccountEMail" class="control-label">#{msg.email}:</label>
+                                <h:inputText 
+                                    id="userCreateAccountEMail" 
+                                    styleClass="form-control" 
+                                    value="#{userBean.email}" 
+                                    required="true"
+                                    requiredMessage="#{msg.loginEnterEmail}">
+                                    <f:validator validatorId="emailValidator" />
+                                    <f:validator validatorId="emailAvailableValidator" />
+                                </h:inputText>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="userCreateAccountPW1" class="control-label">#{msg.newUserPasswordOne}:</label>
+                                <h:inputSecret 
+                                    id="userCreateAccountPW1" 
+                                    styleClass="form-control" 
+                                    type="password" 
+                                    value="#{userBean.passwordOne}" 
+                                    required="true"
+                                    requiredMessage="#{msg.newUserPasswordOneRequired}">
+                                    <f:validator validatorId="passwordValidator" />
+                                </h:inputSecret>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="userCreateAccountPW2" class="control-label">#{msg.newUserPasswordTwo}:</label>
+                                <h:inputSecret 
+                                    id="userCreateAccountPW2" 
+                                    styleClass="form-control" 
+                                    type="password" 
+                                    value="#{userBean.passwordTwo}" 
+                                    required="true"
+                                    requiredMessage="#{msg.newUserPasswordTwoRequired}" />
+                            </div>
+
+                            <p>#{msg.login__new_account_agreement}</p>
+
                             <!-- USER LOGIN BODY ACTION -->
                             <div class="user-login__body-action">
                                 <h:commandButton 
                                     styleClass="btn btn--full" 
-                                    value="#{msg.submit}"> 
-<!--                                     action="#{userBean.sendPasswordResetLinkAction}"> -->
+                                    value="#{msg.submit}"
+                                    action="#{userBean.sendPasswordResetLinkAction}">
                                     <f:passThroughAttribute name="aria-label" value="#{msg.submit}" />
                                 </h:commandButton>
-                                
+
                                 <br />
-                                
-                                <button
-                                    type="button" 
-                                    class="btn btn--link" 
-                                    aria-label="#{msg.login__back_to_login}" 
-                                    data-close="create-account">
-                                    #{msg.login__back_to_login}
-                                </button>
+
+                                <button type="button" class="btn btn--link" aria-label="#{msg.login__back_to_login}" data-close="create-account">
+                                    #{msg.login__back_to_login}</button>
                             </div>
                         </h:form>
                     </div>

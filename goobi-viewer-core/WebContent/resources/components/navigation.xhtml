@@ -287,32 +287,14 @@
                             </h:panelGroup>
                         </ui:repeat>
                     </h:panelGroup>
-
-                    <!-- USER -->
-                    <h:panelGroup rendered="#{configurationBean.displayUserNavigation and !userBean.loggedIn}">
-                        <li class="navigation__user-login #{navigationHelper.currentPage == 'user' ? 'active' : ''}">
-                            <h:outputLink value="#{navigationHelper.applicationUrl}user/">
-                                <h:outputText value="#{msg.userNotLoggedIn}" />
-                            </h:outputLink>
-                        </li>
-                    </h:panelGroup>
-
-                    <!-- ADMIN -->
-                    <h:panelGroup rendered="#{userBean.admin or userBean.user.isHasPrivilege('CMS_PAGES')}">
-                        <li>
-                            <h:commandLink action="pretty:admin">
-								<h:outputText value="#{msg.admin}" />
-							</h:commandLink>
-                        </li>
-                    </h:panelGroup>
                 </ul>
             </h:form>
         </nav>
 
         <script type="text/javascript">
-									var navigationConfig = {};
+			var navigationConfig = {};
 
-									viewerJS.navigation.init(navigationConfig);
-								</script>
+			viewerJS.navigation.init(navigationConfig);
+		</script>
     </composite:implementation>
 </ui:composition>
