@@ -178,6 +178,9 @@ public class CMSPage implements Comparable<CMSPage> {
 
     @Transient
     private int listPage = 1;
+    
+    @Transient 
+    private List<Selectable<CMSCategory>> selectableCategories = null;
 
     /**
      * @deprecated static pages are now stored in a separate table. This only remains for backwards compability
@@ -1498,5 +1501,17 @@ public class CMSPage implements Comparable<CMSPage> {
 	    		logger.error(e.toString(), e);
 			}
     	}
+    }
+    
+    /**
+     * @return the selectableCategories
+     * @throws DAOException 
+     */
+    public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+        if(selectableCategories == null) {
+            List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
+            selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+        }
+        return selectableCategories;
     }
 }
