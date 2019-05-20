@@ -81,53 +81,60 @@
                 </div>
             </h:panelGroup>
 
-            <!-- metadata item categories -->
-            <div class="page-metadata-item page-metadata-item-classification">
+            <!-- METADATA ITEM CATEGORIES -->
+            <div class="page-metadata-item page-metadata-item__categories">
                 <h:panelGroup id="classifications_group">
                     <h3>#{msg.admin__cms_categories}</h3>
 
-                    <ul>
+                    <!-- METADATA ITEM SELECTED CATEGORIES -->
+                    <ul class="page-metadata-item__categories-selected-categories">
                         <c:forEach var="category" items="#{cmsBean.selectedCategories}">
                             <li>
-                                <span>
-                                    <h:outputText value="#{category.name}" />
-                                </span>
-                                <h:commandLink rendered="#{cmsBean.mayRemoveCategoryFromPage()}" action="#{cmsBean.removeCategoryFromPage(category)}" title="#{msg.more}">
+                                <span>#{category.name}</span>
+                                <h:commandLink 
+                                    rendered="#{cmsBean.mayRemoveCategoryFromPage()}" 
+                                    action="#{cmsBean.removeCategoryFromPage(category)}"
+                                    title="#{msg.cms__metadata_item_remove_category}"
+                                    role="button">
                                     <i class="fa fa-minus-circle" aria-hidden="true"></i>
                                     <f:ajax render="classifications_group" />
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms__metadata_item_remove_category}" />
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                 </h:commandLink>
                             </li>
                         </c:forEach>
                     </ul>
-
-                    <div class="row">
-                        <ui:fragment rendered="#{cmsBean.hasSelectedCategoryId()}">
-                            <div class="col-xs-9">
-<!--                                 <div class="form-control__select"> -->
-<!--                                     <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedCategoryId}"> -->
-<!--                                         <f:selectItems value="#{cmsBean.selectableCategories}" var="category" itemValue="#{category.id}" itemLabel="#{category.name}" /> -->
-<!--                                         <f:ajax render="classifications_group"></f:ajax> -->
-<!--                                     </h:selectOneMenu> -->
-<!--                                 </div> -->
-                                <!-- MULTI SELECT MENU -->
-                                <div class="cms-module__option-dropdown"> 
-                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                    <ul>
-                                        <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
-                                            <li>
-                                                <label>
-                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
-                                                    #{selectable.value.name}
-                                                </label>
-                                            </li>
-                                        </ui:repeat>
-                                    </ul>
-                                </div>
+                    
+                    <!-- METADATA ITEM SELECTABLE CATEGORIES -->
+                    <div class="page-metadata-item__categories-selectable-categories">
+                        <!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->
+                        <div class="page-metadata-item__categories-selectable-categories-select">
+                            <div class="cms-module__option-dropdown">
+                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                <ul>
+                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+                                        <li>
+                                            <label>
+                                                <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
+                                                #{selectable.value.name}
+                                            </label>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
                             </div>
-                            <div class="col-xs-3">
-                                <h:commandLink action="#{cmsBean.addSelectedCategoryToPage()}" title="#{msg.more}">
+                        </div>
+
+                        <!-- METADATA ITEM SELECTABLE CATEGORIES ACTION -->
+                        <ui:fragment rendered="#{cmsBean.hasSelectedCategoryId()}">
+                            <div class="page-metadata-item__categories-selectable-categories-action">
+                                <h:commandLink 
+                                    action="#{cmsBean.addSelectedCategoryToPage()}"
+                                    title="#{msg.cms__metadata_item_add_category}" 
+                                    role="button">
                                     <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                     <f:ajax render="classifications_group" />
+                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms__metadata_item_add_category}" />
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                 </h:commandLink>
                             </div>
                         </ui:fragment>
