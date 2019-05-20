@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.weld.security.GetProtectionDomainAction;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,7 @@ public class UserBean implements Serializable {
     /** Empty constructor. */
     public UserBean() {
         // the emptiness inside
+        this.authenticationProvider = getLocalAuthenticationProvider();
     }
 
     /**
@@ -796,6 +798,18 @@ public class UserBean implements Serializable {
         return authenticationProvider;
     }
 
+    public void setAuthenticationProviderName(String name) {
+        this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+    
+    public String getAuthenticationProviderName() {
+        if(this.authenticationProvider != null) {
+            return this.authenticationProvider.getName();
+        } else {
+            return "";
+        }
+    }
+    
     public String loginTest() {
         user = new User();
         return null;

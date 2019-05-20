@@ -26,36 +26,42 @@
             <!-- USER LOGIN BODY -->
             <div class="user-login__body">
                 <!-- USER LOGIN BODY LOGIN SELECT -->
-                <div id="userLoginSelectLoginWrapper" class="user-login__body-login-select">
-                    <div class="form-group">
-                        <label for="userLoginSelectLogin" class="control-label">#{msg.login__select_login_title}</label>
-                        
-                        <div class="custom-control custom-control--select">
-                            <!-- TODO: Nach Auswahl der Option muss das Formular für externe Logins wissen was ausgewählt wurde. -->
-<!--                             <h:selectOneMenu id="userLoginSelectLogin" value="#{userBean.authenticationProvider}"> -->
-<!--                                 <f:selectItems value="" var="" itemValue="" itemLabel="" /> -->
-<!--                             </h:selectOneMenu> -->
-
-                            <select name="userLoginSelectLogin" id="userLoginSelectLogin">
-                                <option value="Goobi viewer" selected="selected">#{msg.login__local_account}</option>
-                                
-                                <!-- EXTERNAL LOGIN TYPES -->
-                                <ui:fragment rendered="#{userBean.hasProvidersOfType('userpassword')}">
-                                    <ui:repeat var="provider" value="#{userBean.getProvidersOfType('userpassword')}">
-                                        <option value="#{provider.name}">#{provider.name}</option>                            
-                                    </ui:repeat>
-                                </ui:fragment>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <h:form id="selectLoginForm" prependId="false">
+	                <div id="userLoginSelectLoginWrapper" class="user-login__body-login-select">
+	                    <div class="form-group">
+	                        <label for="userLoginSelectLogin" class="control-label">#{msg.login__select_login_title}</label>
+	                        
+	                        <div class="custom-control custom-control--select">
+	                            <!-- TODO: Nach Auswahl der Option muss das Formular für externe Logins wissen was ausgewählt wurde. -->
+	                            <h:selectOneMenu id="userLoginSelectLogin" value="#{userBean.authenticationProviderName}">
+	                                <f:selectItem itemValue="#{userBean.localAuthenticationProvider.name}" itemLabel="#{msg.login__local_account}" />
+	                           		<f:selectItems value="#{userBean.getProvidersOfType('userpassword')}" var="provider" itemValue="#{provider.name}" itemLabel="#{provider.name}"></f:selectItems>
+	                            	<f:ajax event="change" execute="@form" render="userLoginForm"/>
+	                            </h:selectOneMenu>
+	
+	<!--                             <select name="userLoginSelectLogin" id="userLoginSelectLogin"> -->
+	<!--                                 <option value="Goobi viewer" selected="selected">#{msg.login__local_account}</option> -->
+	                                
+	<!--                                 EXTERNAL LOGIN TYPES -->
+	<!--                                 <ui:fragment rendered="#{userBean.hasProvidersOfType('userpassword')}"> -->
+	<!--                                     <ui:repeat var="provider" value="#{userBean.getProvidersOfType('userpassword')}"> -->
+	<!--                                         <option value="#{provider.name}">#{provider.name}</option>                             -->
+	<!--                                     </ui:repeat> -->
+	<!--                                 </ui:fragment> -->
+	<!--                             </select> -->
+	                        </div>
+	                    </div>
+	                </div>
+                </h:form>
                 
                 <!-- USER LOGIN BODY LOGIN TYPE -->
                 <div class="user-login__body-login-type-wrapper">
-                    <!-- USER LOGIN LOCALE ACCOUNT -->
-                    <ui:fragment rendered="#{userBean.hasProvidersOfType('local')}">
-                        <div id="loginTypeLocale" class="user-login__body-login-type local">
-                            <h:form id="userLoginLocalForm" prependId="false">
+                    <!-- USER LOGIN DETAILS -->
+                    <h:form id="userLoginForm" prependId="false">
+                                   PROVIDERTYPE: #{userBean.authenticationProvider.type}
+	                    <ui:fragment rendered="#{userBean.authenticationProvider != null}">
+	                        <div id="loginType" class="user-login__body-login-type">
+                                <ui:fragment rendered="#{userBean.authenticationProvider.type == 'local'}">
                                 <div class="form-group">
                                     <label for="userEMail" class="control-label">#{msg.email}:</label>
                                     <h:inputText id="userEMail" styleClass="form-control" value="#{userBean.email}" required="true" requiredMessage="#{msg.loginEnterUserName}">
@@ -63,6 +69,21 @@
                                         <f:passThroughAttribute name="placeholder" value="name@company.com" />
                                     </h:inputText>
                                 </div>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
+                                <div class="form-group">
+                                    <label for="externalUserName" class="control-label">#{msg.username}:</label>
+                                    <h:inputText 
+                                        id="externalUserName" 
+                                        styleClass="form-control" 
+                                        value="#{userBean.email}" 
+                                        required="true" 
+                                        requiredMessage="#{msg.loginEnterUserName}">
+	                                        <f:validator validatorId="passwordValidator" />
+	                                        <f:passThroughAttribute name="placeholder" value="username" />
+                                        </h:inputText>
+                                </div>
+                                </ui:fragment>
     
                                 <div class="form-group">
                                     <label for="userPassword" class="control-label">#{msg.password}:</label>
@@ -84,64 +105,25 @@
                                         styleClass="btn btn--full" 
                                         value="#{msg.login}" 
                                         action="#{userBean.login}">
-                                        <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{userBean.localAuthenticationProvider}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
                                     </h:commandButton>
 
                                     <br />
 
-                                    <!-- RETRIEVE ACCOUNT -->
-                                    <button 
-                                        type="button" 
-                                        class="btn btn--link" 
-                                        aria-label="#{msg.user_forgotPassword}" 
-                                        data-open="retrieve-account">
-                                        #{msg.login__forgot_password}
-                                    </button>
+                                    <ui:fragment rendered="#{userBean.authenticationProvider.allowsPasswordChange()}">                                    
+	                                    <!-- RETRIEVE ACCOUNT -->
+	                                    <button 
+	                                        type="button" 
+	                                        class="btn btn--link" 
+	                                        aria-label="#{msg.user_forgotPassword}" 
+	                                        data-open="retrieve-account">
+	                                        #{msg.login__forgot_password}
+	                                    </button>
+                                    </ui:fragment>
                                 </div>
-                            </h:form>
-                        </div>
-                    </ui:fragment>
-                    
-                    <!-- USER LOGIN EXTERNAL ACCOUNT -->
-                    <ui:fragment rendered="#{userBean.hasProvidersOfType('userpassword')}">
-                        <div id="loginTypeExternal" class="user-login__body-login-type external">
-                            <h:form id="userLoginExternalForm" prependId="false">
-                                <div class="form-group">
-                                    <label for="externalUserName" class="control-label">#{msg.username}:</label>
-                                    <h:inputText 
-                                        id="externalUserName" 
-                                        styleClass="form-control" 
-                                        value="#{userBean.email}" 
-                                        required="true" 
-                                        requiredMessage="#{msg.loginEnterUserName}" />
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="externalUserPassword" class="control-label">#{msg.password}:</label>
-                                    <h:inputSecret 
-                                        id="externalUserPassword" 
-                                        styleClass="form-control" 
-                                        type="password" 
-                                        value="#{userBean.password}" 
-                                        required="true"
-                                        requiredMessage="#{msg.login__enter_password}" />
-                                </div>
-                                
-                                <!-- USER LOGIN BODY ACTION -->
-                                <div class="user-login__body-action">                                    
-                                    <!-- LOGIN -->
-                                    <h:commandButton 
-                                        styleClass="btn btn--full" 
-                                        value="#{msg.login}"
-                                        action="#{userBean.login}">
-                                        <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
-                                        <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
-                                    </h:commandButton>
-                                </div>
-                            </h:form>
-                        </div>
-                    </ui:fragment>
+	                        </div>
+	                    </ui:fragment>
+                     </h:form>
                 
                     <!-- USER LOGIN TYPE RETRIEVE ACCOUNT -->
                     <div id="loginTypeRetrieveAccount" class="user-login__body-login-type retrieve">

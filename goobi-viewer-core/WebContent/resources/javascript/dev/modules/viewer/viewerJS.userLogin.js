@@ -37,7 +37,7 @@ var viewerJS = ( function( viewer ) {
             	}
             	
             	// set login selection
-            	_setLoginSelectionChange();
+//            	_setLoginSelectionChange();
             	
             	// toggle login
             	$( 'body' ).on( 'click', '[data-toggle="login"]', function() {
