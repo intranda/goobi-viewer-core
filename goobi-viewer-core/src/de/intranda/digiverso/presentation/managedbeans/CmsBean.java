@@ -123,7 +123,6 @@ public class CmsBean implements Serializable {
     private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private Long selectedCategoryId;
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private int nestedPagesCount = 0;
@@ -131,7 +130,6 @@ public class CmsBean implements Serializable {
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
-    private List<Selectable<CMSCategory>> pageCategories;
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
 
@@ -709,7 +707,7 @@ public class CmsBean implements Serializable {
 	 * actually taken from Licenses due to limited rights of the user
 	 */
 	private void writeCategoriesToPage() {
-		selectedPage.writeSelectableCategories(this.pageCategories);		
+		selectedPage.writeSelectableCategories();		
 		selectedPage.getGlobalContentItems().forEach(item -> item.writeSelectableCategories());
 	}
 
@@ -938,14 +936,6 @@ public class CmsBean implements Serializable {
             this.selectedPage.createMissingLangaugeVersions(getAllLocales());
             logger.debug("Selected page " + currentPage);
 
-            try {
-                this.pageCategories = getCategoriesToSelect();
-                resetSelectedCategoryId();
-            } catch (DAOException e) {
-                logger.error("Unable to get available categories", e);
-
-            }
-
         } else {
             this.selectedPage = null;
         }
@@ -1031,6 +1021,7 @@ public class CmsBean implements Serializable {
      * and select those which are included in the {@link #getSelectedPage()}
      * 
      * @return the list of selectable categories which may be applied to the selected page
+     * @deprecated  moved categories logic to {@link CMSPage}
      */
     public List<Selectable<CMSCategory>> getCategoriesToSelect() throws DAOException {
         User user = null;
@@ -1053,74 +1044,14 @@ public class CmsBean implements Serializable {
         return selectables;
     }
 
-    /**
-     * @return the identifier of the selected category, used in the dropdown menu to add categories to the selected page
-     */
-    public Long getSelectedCategoryId() {
-        return selectedCategoryId;
-    }
-
-    /**
-     * Sets the identifier of the selected category, used in the dropdown menu to add categories to the selected page
-     */
-    public void setSelectedCategoryId(Long categoryId) {
-        this.selectedCategoryId = categoryId;
-    }
-
-    /**
-     * @return a {@link Selectable} containing the {@link CMSCategory} with the identifier given by #{@link #getSelectedCategoryId()}
-     */
-    public Selectable<CMSCategory> getSelectedCategory() {
-        if (this.selectedCategoryId != null) {
-        	Selectable<CMSCategory> category = pageCategories.stream().filter(selectable -> selectable.getValue().getId().equals(this.selectedCategoryId)).findFirst().orElse(null);
-            return category;
-        }
-        return null;
-    }
-
-    /**
-     * @return all categories which may be added to the selected page
-     */
-    public List<CMSCategory> getSelectableCategories() {
-        return pageCategories.stream().filter(selectable -> !selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
-    }
-    
-    /**
-     * @return all categories wich are already added to the selected page
-     */
-    public List<CMSCategory> getSelectedCategories() {
-        return pageCategories.stream().filter(selectable -> selectable.isSelected()).map(Selectable::getValue).collect(Collectors.toList());
-    }
-
-    /**
-     * Add the category given by {@link #getSelectedCategory()} to the selected page
-     */
-    public void addSelectedCategoryToPage() throws DAOException {
-    	Selectable<CMSCategory> cat = getSelectedCategory();
-        if (this.selectedPage != null && cat != null) {
-        	cat.setSelected(true);
-            resetSelectedCategoryId();
-        }
-    }
-
-    /**
-     * Remove the given category from the selected page
-     */
-    public void removeCategoryFromPage(CMSCategory cat) {
-    	Selectable<CMSCategory> selectable = pageCategories.stream().filter(sel -> sel.getValue().equals(cat)).findFirst().orElse(null);
-        if (this.selectedPage != null && selectable != null) {
-            selectable.setSelected(false);
-            resetSelectedCategoryId();
-        }
-    }
     
     /**
      * @return false only if the user has limited privileges for categories and only one category is set for the selected page
+     * @throws DAOException 
      */
-    public boolean mayRemoveCategoryFromPage() {
+    public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
         if (this.selectedPage != null) {
-        	return userBean.getUser().hasPrivilegeForAllCategories() || 
-        			getSelectedCategories().size() > 1;
+        	return userBean.getUser().hasPrivilegeForAllCategories() || this.selectedPage.getSelectableCategories().stream().anyMatch(c -> c.isSelected());
         } else {
         	return true;
         }
@@ -1134,20 +1065,6 @@ public class CmsBean implements Serializable {
         return DataManager.getInstance().getDao().getAllCategories();
     }
 
-    /**
-     * Set the id given by #{@link #getSelectedCategoryId()} given to that of the first category given by {@link #getSelectableCategories()}
-     * or, if none exist, null
-     */
-    public void resetSelectedCategoryId() {
-        this.selectedCategoryId = getSelectableCategories().stream().findFirst().map(CMSCategory::getId).orElse(null);
-    }
-
-    /**
-     * @return false exactly if no categoryId is selected, i.e. no categories may be added to the page
-     */
-    public boolean hasSelectedCategoryId() {
-        return this.selectedCategoryId != null;
-    }
 
     
     public CMSMediaItem getSelectedMediaItem() {

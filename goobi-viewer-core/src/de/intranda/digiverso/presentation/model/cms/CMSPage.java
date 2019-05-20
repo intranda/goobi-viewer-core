@@ -1483,7 +1483,7 @@ public class CMSPage implements Comparable<CMSPage> {
      * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
      * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
-    public void writeSelectableCategories(List<Selectable<CMSCategory>> selectableCategories) {
+    public void writeSelectableCategories() {
     	
     	if(selectableCategories != null) {
 	    	try {
