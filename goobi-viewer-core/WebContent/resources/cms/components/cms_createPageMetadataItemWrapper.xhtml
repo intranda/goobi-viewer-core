@@ -102,20 +102,34 @@
 
                     <div class="row">
                         <ui:fragment rendered="#{cmsBean.hasSelectedCategoryId()}">
-                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                            <div class="form-control__select">
-                                <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedCategoryId}">
-                                    <f:selectItems value="#{cmsBean.selectableCategories}" var="category" itemValue="#{category.id}" itemLabel="#{category.name}" />
-                                    <f:ajax render="classifications_group"></f:ajax>
-                                </h:selectOneMenu>
+                            <div class="col-xs-9">
+<!--                                 <div class="form-control__select"> -->
+<!--                                     <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedCategoryId}"> -->
+<!--                                         <f:selectItems value="#{cmsBean.selectableCategories}" var="category" itemValue="#{category.id}" itemLabel="#{category.name}" /> -->
+<!--                                         <f:ajax render="classifications_group"></f:ajax> -->
+<!--                                     </h:selectOneMenu> -->
+<!--                                 </div> -->
+                                <!-- MULTI SELECT MENU -->
+                                <div class="cms-module__option-dropdown"> 
+                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                    <ul>
+                                        <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+                                            <li>
+                                                <label>
+                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
+                                                    #{selectable.value.name}
+                                                </label>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                            <h:commandLink action="#{cmsBean.addSelectedCategoryToPage()}" title="#{msg.more}">
-                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                <f:ajax render="classifications_group" />
-                            </h:commandLink>
-                        </div>
+                            <div class="col-xs-3">
+                                <h:commandLink action="#{cmsBean.addSelectedCategoryToPage()}" title="#{msg.more}">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    <f:ajax render="classifications_group" />
+                                </h:commandLink>
+                            </div>
                         </ui:fragment>
                     </div>
                 </h:panelGroup>
