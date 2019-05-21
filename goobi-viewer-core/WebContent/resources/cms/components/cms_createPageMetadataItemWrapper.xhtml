@@ -85,26 +85,27 @@
             <div class="page-metadata-item page-metadata-item__categories">
                 <h:panelGroup id="classifications_group">
                     <h3>#{msg.admin__cms_categories}</h3>
-
+					<h:panelGroup id="selected_categories">
                     <!-- METADATA ITEM SELECTED CATEGORIES -->
                     <ul class="page-metadata-item__categories-selected-categories">
                         <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
                             <ui:fragment rendered="#{category.selected}">
 	                            <li>
 	                                <span>#{category.value.name}</span>
-	                                <h:commandLink rendered="#{cmsBean.mayRemoveCategoryFromPage(category.value)}" 
-	                                	action="#{category.setSelected(false)}" 
-	                                	title="#{msg.cms__metadata_item_remove_category}"
-	                                	role="button">
-	                                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
-	                                    <f:ajax render="metadata_component:classifications_group" />
-	                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms__metadata_item_remove_category}" />
-                                    	<f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                                </h:commandLink>
+<!-- 	                                <h:commandLink rendered="#{cmsBean.mayRemoveCategoryFromPage(category.value)}"  -->
+<!-- 	                                	action="#{category.setSelected(false)}"  -->
+<!-- 	                                	title="#{msg.cms__metadata_item_remove_category}" -->
+<!-- 	                                	role="button"> -->
+<!-- 	                                    <i class="fa fa-minus-circle" aria-hidden="true"></i> -->
+<!-- 	                                    <f:ajax render="metadata_component:classifications_group" /> -->
+<!-- 	                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms__metadata_item_remove_category}" /> -->
+<!--                                     	<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+<!-- 	                                </h:commandLink> -->
 	                            </li>
                             </ui:fragment>
                         </ui:repeat>
                     </ul>
+                    </h:panelGroup>
                     
                     <!-- METADATA ITEM SELECTABLE CATEGORIES -->
                     <div class="page-metadata-item__categories-selectable-categories">
@@ -114,16 +115,14 @@
                                 <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
                                 <ul>
                                     <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
-                            			<ui:fragment rendered="#{!selectable.selected}">
 										<li>
                                             <label>
                                                 <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                	<f:ajax render="metadata_component:classifications_group" />
+                                                	<f:ajax render="metadata_component:selected_categories" />
                                                 </h:selectBooleanCheckbox>
                                                 #{selectable.value.name}
                                             </label>
                                         </li>
-                                        </ui:fragment>
                                     </ui:repeat>
                                 </ul>
                             </div>
