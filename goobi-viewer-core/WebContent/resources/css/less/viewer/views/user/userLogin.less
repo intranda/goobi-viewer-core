@@ -28,7 +28,7 @@
 	&__wrapper {
 		width: 98%;
 		max-width: 400px;
-		max-height: 90%;
+		max-height: 95%;
 		padding: 10px;
 		background-color: @neutralgray;
 		overflow-y: auto;
@@ -211,4 +211,10 @@
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.user-login {
+		&__wrapper {
+			max-height: 90%;
+		}		
+	}
+}

@@ -5423,7 +5423,7 @@ div[id*="-Modal"] .email-form .form-group {
 .user-login__wrapper {
   width: 98%;
   max-width: 400px;
-  max-height: 90%;
+  max-height: 95%;
   padding: 10px;
   background-color: #f2f3f4;
   overflow-y: auto;
@@ -5591,6 +5591,11 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .user-login__wrapper {
+    max-height: 90%;
+  }
+}
 /* ==============================================================
    User Account Create
    style declarations for userAccountCreate.xhtml
