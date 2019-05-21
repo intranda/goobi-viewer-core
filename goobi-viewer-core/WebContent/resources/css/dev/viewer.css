@@ -11344,9 +11344,6 @@ div[id*="-Modal"] .email-form .form-group {
       flex-grow: 1;
   margin-right: 1rem;
 }
-.page-metadata-item__categories-selectable-categories-select input {
-  display: none;
-}
 .page-metadata-item__categories-selectable-categories-action {
   margin-left: auto;
 }
