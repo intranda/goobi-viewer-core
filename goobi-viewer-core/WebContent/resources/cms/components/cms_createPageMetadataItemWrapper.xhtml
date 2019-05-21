@@ -85,28 +85,18 @@
             <div class="page-metadata-item page-metadata-item__categories">
                 <h:panelGroup id="classifications_group">
                     <h3>#{msg.admin__cms_categories}</h3>
-					<h:panelGroup id="selected_categories">
-                    <!-- METADATA ITEM SELECTED CATEGORIES -->
-                    <ul class="page-metadata-item__categories-selected-categories">
-                        <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
-                            <ui:fragment rendered="#{category.selected}">
-	                            <li>
-	                                <span>#{category.value.name}</span>
-<!-- 	                                <h:commandLink rendered="#{cmsBean.mayRemoveCategoryFromPage(category.value)}"  -->
-<!-- 	                                	action="#{category.setSelected(false)}"  -->
-<!-- 	                                	title="#{msg.cms__metadata_item_remove_category}" -->
-<!-- 	                                	role="button"> -->
-<!-- 	                                    <i class="fa fa-minus-circle" aria-hidden="true"></i> -->
-<!-- 	                                    <f:ajax render="metadata_component:classifications_group" /> -->
-<!-- 	                                    <f:passThroughAttribute name="aria-label" value="#{msg.cms__metadata_item_remove_category}" /> -->
-<!--                                     	<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-<!-- 	                                </h:commandLink> -->
-	                            </li>
-                            </ui:fragment>
-                        </ui:repeat>
-                    </ul>
-                    </h:panelGroup>
                     
+                    <!-- METADATA ITEM SELECTED CATEGORIES -->
+                    <h:panelGroup id="selected_categories">
+                        <div class="page-metadata-item__categories-selected-categories">
+                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+                                <ui:fragment rendered="#{category.selected}">
+                                    <span class="label label-default">#{category.value.name}</span>
+                                </ui:fragment>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+
                     <!-- METADATA ITEM SELECTABLE CATEGORIES -->
                     <div class="page-metadata-item__categories-selectable-categories">
                         <!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->

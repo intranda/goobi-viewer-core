@@ -11315,23 +11315,11 @@ div[id*="-Modal"] .email-form .form-group {
 .page-metadata-item h3 {
   margin: 0 0 1em 0;
 }
-.page-metadata-item__categories-selected-categories {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.page-metadata-item__categories h3 {
   margin-bottom: 1rem;
 }
-.page-metadata-item__categories-selected-categories li {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -ms-flex-align: center;
-      align-items: center;
-  padding: 5px 0;
-}
-.page-metadata-item__categories-selected-categories a {
-  margin-left: auto;
+.page-metadata-item__categories-selected-categories {
+  margin-bottom: 1rem;
 }
 .page-metadata-item__categories-selectable-categories {
   display: -ms-flexbox;
