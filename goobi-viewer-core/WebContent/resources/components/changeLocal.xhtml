@@ -30,7 +30,6 @@
                                     <h:outputText value="#{msg['changeLocal_' += lang]}"
                                         rendered="#{cc.attrs.showLabels == true}" />
                                     <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-                                    <f:ajax render="@all" />
                                 </h:commandLink>
                             </li>
                         </ui:repeat>
@@ -50,7 +49,6 @@
 	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
 									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="de" />
-                                    <f:ajax render="@all"/>
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
@@ -62,7 +60,6 @@
 	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
                                 	</h:panelGroup>
 									<f:setPropertyActionListener target="#{navigationHelper.localeString}" value="en" />
-                                    <f:ajax render="@all"/>
 								</h:commandLink>
 							</li>
 						</h:panelGroup>
@@ -81,7 +78,6 @@
 								</h:panelGroup>
                                 <h:outputText value="#{msg[cc.attrs.singleLanguage]}" rendered="#{cc.attrs.showLabels == true}" />
                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{cc.attrs.singleLanguage}" />
-                                <f:ajax render="@all"/>
                             </h:commandLink>
                         </li>
                     </ul>
