@@ -304,4 +304,43 @@ public enum PageType {
         return ViewerPathBuilder.startsWith(pagePath, this.name()) || ViewerPathBuilder.startsWith(pagePath, this.name)
                 || ViewerPathBuilder.startsWith(pagePath, getName());
     }
+
+    /**
+     * @return
+     */
+    public boolean isRestricted() {
+        switch (this) {
+            case admin:
+            case adminAllLicenseTypes:
+            case adminAllUserGroups:
+            case adminAllUsers:
+            case adminCms:
+            case adminCmsCategories:
+            case adminCmsCollections:
+            case adminCmsCreatePage:
+            case adminCmsEditCollection:
+            case adminCmsMedia:
+            case adminCmsMenuItems:
+            case adminCmsOverview:
+            case adminCmsSelectTemplate:
+            case adminCmsStaticPages:
+            case adminIpRange:
+            case adminIpRanges:
+            case adminLicenseType:
+            case adminRoles:
+            case adminUser:
+            case adminUserActivity:
+            case adminUserComments:
+            case adminUserGroup:
+            case bookshelf:
+            case editContent:
+            case editHistory:
+            case editOcr:
+            case mybookshelves:
+            case user:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

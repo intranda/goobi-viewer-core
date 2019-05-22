@@ -24,6 +24,7 @@ import java.util.concurrent.FutureTask;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
@@ -32,6 +33,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -53,6 +55,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String oAuthAccessToken = null;
     private JSONObject jsonResponse = null;
     private volatile LoginResult loginResult = null;
+    
+
     /**
      * Lock to be opened once login is completed
      */

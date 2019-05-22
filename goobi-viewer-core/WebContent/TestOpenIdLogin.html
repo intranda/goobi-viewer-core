@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<style>
+
+#form {
+	width: 200px;
+	height: 105px;
+	margin-top: calc(50vh - 52px);
+	margin-left: calc(50vw - 100px);
+}
+
+#form input {
+	width: 184px;
+	font-size: 18px;
+}
+
+#form button {
+	width: 100%;
+	font-size: 24px;
+}
+
+</style>
+
+<div id="form">
+	
+	<input id="email" placeholder="email"></input>
+	<input type="password" id="password" placeholder="password"></input>
+	<button onclick="login()">Login</button>
+	
+</div>
+
+
+<script>
+
+	let queries = getQueries();
+	let redirectUri = getQuery(queries, "redirect_uri", true);
+	let state = getQuery(queries, "state", false);
+	
+console.log("queries", queries);
+
+
+function login() {
+    let code = getEmail();
+    let token = getPassword();
+    let uri = redirectUri + "?code=" + code + "&token=" + token + "&state=" + state;
+    console.log("login with ", uri);
+    if(redirectUri) {        
+    	window.location.href = uri;
+    }
+}
+
+function getQueries() {
+    let url = window.location.href;
+    let regex = /(?:\?|&)(.*?)=(.*?)(?=&|$)/g;
+    let match = regex.exec(url);
+    let queries = [];
+    while(match) {
+        queries.push(match);
+        match = regex.exec(url);
+    }
+    return queries;
+}
+
+function getEmail() {
+    return document.getElementById("email").value;
+}
+
+function getPassword() {
+    return document.getElementById("password").value;
+}
+
+
+function getQuery(queries, name, decode) {
+    let query = queries.filter(q => q.length == 3).find(q => q[1] == name);
+    if(query) {
+        query = query[2];
+        if(decode) {
+            query = unescape(query);
+        }
+    }
+    return query;
+}
+
+
+</script>
+
+</body>
+</html>

@@ -168,6 +168,7 @@
 	<servlet-mapping>
 		<servlet-name>OAuthServlet</servlet-name>
 		<url-pattern>/oauth</url-pattern>
+		<url-pattern>/oauth/</url-pattern>
 	</servlet-mapping>
     <servlet>
         <display-name>DFGViewerImage</display-name>

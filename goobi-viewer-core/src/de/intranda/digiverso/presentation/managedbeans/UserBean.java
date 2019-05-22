@@ -66,7 +66,9 @@ import de.intranda.digiverso.presentation.model.security.authentication.LoginRes
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 @Named
@@ -246,8 +248,15 @@ public class UserBean implements Serializable {
                         this.redirectUrl = "";
                         response.sendRedirect(redirectUrl);
                     } else if (response != null) {
-                        logger.trace("Redirecting to user page");
-                        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                        Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
+                        if (currentPath.isPresent()) {
+                            logger.trace("Redirecting to current url " + currentPath.get().getCombinedPrettyfiedUrl());
+                            response.sendRedirect(
+                                    ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.get().getCombinedPrettyfiedUrl());
+                        } else {
+                            logger.trace("Redirecting to start page");
+                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                        }
                     }
                     SearchHelper.updateFilterQuerySuffix(request);
 
@@ -291,15 +300,17 @@ public class UserBean implements Serializable {
      */
     public String logout() throws AuthenticationProviderException {
         logger.trace("logout");
+
+        HttpServletRequest request = BeanUtils.getRequest();
+        HttpServletResponse response = BeanUtils.getResponse();
+        String redirectUrl = redirect(request, response);
+        
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
         if (getAuthenticationProvider() != null) {
             getAuthenticationProvider().logout();
         }
-        setAuthenticationProvider(null);
-
-        HttpServletRequest request = BeanUtils.getRequest();
         try {
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request);
@@ -312,26 +323,44 @@ public class UserBean implements Serializable {
             logger.error(e.getMessage(), e);
         }
         request.getSession(false).invalidate();
+        return redirectUrl;
+    }
 
-        if (StringUtils.isNotEmpty(redirectUrl)) {
-            if ("#".equals(redirectUrl)) {
-                logger.trace("Stay on current page");
-                return "";
+    /**
+     * @param request
+     * @param response
+     * @throws AuthenticationProviderException
+     */
+    private String redirect(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProviderException {
+        Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
+            if (StringUtils.isNotEmpty(redirectUrl)) {
+                if ("#".equals(redirectUrl)) {
+                    logger.trace("Stay on current page");
+                }
+                logger.trace("Redirecting to {}", redirectUrl);
+                String redirectUrl = this.redirectUrl;
+                this.redirectUrl = "";
+                //            Messages.info("logoutSuccessful");
+
+                // Do not redirect to user backend pages because LoginFilter won't work here for some reason
+                String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+                if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
+                    return redirectUrl;
+                }
+            } else if (oCurrentPath.isPresent()) {
+                ViewerPath currentPath = oCurrentPath.get();
+                PageType pageType = currentPath.getPageType();
+                if (pageType != null && pageType.isRestricted()) {
+                    logger.trace("Redirecting to start page");
+                    String redirect = "pretty:index";
+                    return redirect;
+                } else {
+                    logger.trace("Redirecting to current url " + currentPath.getCombinedPrettyfiedUrl());
+                    String redirect = currentPath.getCombinedPrettyfiedUrl();
+                    return redirect;
+                }
             }
-            logger.trace("Redirecting to {}", redirectUrl);
-            String redirectUrl = this.redirectUrl;
-            this.redirectUrl = "";
-            //            Messages.info("logoutSuccessful");
-
-            // Do not redirect to user backend pages because LoginFilter won't work here for some reason
-            String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
-                return redirectUrl;
-            }
-        }
-
-        //        Messages.info("logoutSuccessful");
-        return "pretty:user";
+            return "";
     }
 
     /**
@@ -801,15 +830,15 @@ public class UserBean implements Serializable {
     public void setAuthenticationProviderName(String name) {
         this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
-    
+
     public String getAuthenticationProviderName() {
-        if(this.authenticationProvider != null) {
+        if (this.authenticationProvider != null) {
             return this.authenticationProvider.getName();
         } else {
             return "";
         }
     }
-    
+
     public String loginTest() {
         user = new User();
         return null;
