@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -176,6 +177,9 @@ public class CMSPage implements Comparable<CMSPage> {
 
     @Transient
     private int listPage = 1;
+    
+    @Transient 
+    private List<Selectable<CMSCategory>> selectableCategories = null;
 
     /**
      * @deprecated static pages are now stored in a separate table. This only remains for backwards compability
@@ -1478,7 +1482,7 @@ public class CMSPage implements Comparable<CMSPage> {
      * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
      * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
-    public void writeSelectableCategories(List<Selectable<CMSCategory>> selectableCategories) {
+    public void writeSelectableCategories() {
     	
     	if(selectableCategories != null) {
 	    	try {
@@ -1497,4 +1501,17 @@ public class CMSPage implements Comparable<CMSPage> {
 			}
     	}
     }
+    
+    /**
+     * @return the selectableCategories
+     * @throws DAOException 
+     */
+    public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+        if(selectableCategories == null) {
+            List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
+            selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+        }
+        return selectableCategories;
+    }
+
 }

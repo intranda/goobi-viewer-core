@@ -27,11 +27,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.meterware.pseudoserver.HttpRequest;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 
@@ -90,6 +89,13 @@ public class HttpResponseFilter implements Filter {
             }
         }
         chain.doFilter(request, response);
+//        chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
+//            public void setHeader(String name, String value) {
+//                if (!"etag".equalsIgnoreCase(name)) {
+//                    super.setHeader(name, value);
+//                }
+//            }
+//        });
     }
 
     @Override
