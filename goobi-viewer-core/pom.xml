@@ -381,7 +381,7 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.1.1</version>
+			<version>2.0.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
@@ -491,12 +491,6 @@
 			<version>2.27</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0.1</version>
-		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.timgroup/jgravatar -->
 		<dependency>
@@ -953,8 +947,17 @@
 				<directory>src</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
+					<exclude>config_viewer.xml</exclude>
+					<exclude>contentServerConfig.xml</exclude>
 				</excludes>
 			</resource>
+            <resource>
+                <directory>resources/build</directory>
+                <includes>
+                    <include>config_viewer.xml</include>
+                    <include>contentServerConfig.xml</include>
+                </includes>
+            </resource>
 		</resources>
 		<plugins>
 			<!-- Maven Compiler Plugin -->
@@ -991,6 +994,13 @@
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 		</plugins>
 	</build>
