@@ -81,43 +81,43 @@
                 </div>
             </h:panelGroup>
 
-            <!-- metadata item categories -->
-            <div class="page-metadata-item page-metadata-item-classification">
+            <!-- METADATA ITEM CATEGORIES -->
+            <div class="page-metadata-item page-metadata-item__categories">
                 <h:panelGroup id="classifications_group">
                     <h3>#{msg.admin__cms_categories}</h3>
+                    
+                    <!-- METADATA ITEM SELECTED CATEGORIES -->
+                    <h:panelGroup id="selected_categories">
+                        <div class="page-metadata-item__categories-selected-categories">
+                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+                                <ui:fragment rendered="#{category.selected}">
+                                    <span class="label label-default">#{category.value.name}</span>
+                                </ui:fragment>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
 
-                    <ul>
-                        <c:forEach var="category" items="#{cmsBean.selectedCategories}">
-                            <li>
-                                <span>
-                                    <h:outputText value="#{category.name}" />
-                                </span>
-                                <h:commandLink rendered="#{cmsBean.mayRemoveCategoryFromPage()}" action="#{cmsBean.removeCategoryFromPage(category)}" title="#{msg.more}">
-                                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
-                                    <f:ajax render="classifications_group" />
-                                </h:commandLink>
-                            </li>
-                        </c:forEach>
-                    </ul>
-
-                    <div class="row">
-                        <ui:fragment rendered="#{cmsBean.hasSelectedCategoryId()}">
-                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                            <div class="form-control__select">
-                                <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedCategoryId}">
-                                    <f:selectItems value="#{cmsBean.selectableCategories}" var="category" itemValue="#{category.id}" itemLabel="#{category.name}" />
-                                    <f:ajax render="classifications_group"></f:ajax>
-                                </h:selectOneMenu>
+                    <!-- METADATA ITEM SELECTABLE CATEGORIES -->
+                    <div class="page-metadata-item__categories-selectable-categories">
+                        <!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->
+                        <div class="page-metadata-item__categories-selectable-categories-select">
+                            <div class="cms-module__option-dropdown">
+                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                <ul>
+                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+										<li>
+                                            <label>
+                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+                                                	<f:ajax render="metadata_component:selected_categories" />
+                                                </h:selectBooleanCheckbox>
+                                                #{selectable.value.name}
+                                            </label>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
                             </div>
                         </div>
-                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                            <h:commandLink action="#{cmsBean.addSelectedCategoryToPage()}" title="#{msg.more}">
-                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                <f:ajax render="classifications_group" />
-                            </h:commandLink>
-                        </div>
-                        </ui:fragment>
-                    </div>
+                   	</div>
                 </h:panelGroup>
             </div>
 

@@ -27,17 +27,18 @@ var cmsJS = ( function( cms ) {
     var _debug = false;
     
     cms.modules = {
-    		/**
-             * @description Method which initializes the cms modules.
-             * @method init
-             * @param {Object} config The config object.
-             */
+    	/**
+         * @description Method which initializes the cms modules.
+         * @method init
+         * @param {Object} config The config object.
+         */
         init: function() {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'cmsJS.modules.init' );
                 console.log( '##############################' );
             }
+            
             this.initEventListeners();
             this.cleanUp();
             
@@ -115,30 +116,30 @@ var cmsJS = ( function( cms ) {
 		 * @method onReload
 		 * @param {Object} data The ajax data object from jsf.
 		 */
-        onReload: function( data ) {
-            if ( data && data.status == 'begin' ) {
-            	cms.modules.removeEventListeners();
-            } 
-            else if ( !data || data.status == 'success' ) {
-            	cms.modules.initEventListeners();
-            }
-        },
+//        onReload: function( data ) {
+//            if ( data && data.status == 'begin' ) {
+//            	cms.modules.removeEventListeners();
+//            } 
+//            else if ( !data || data.status == 'success' ) {
+//            	cms.modules.initEventListeners();
+//            }
+//        },
         /**
 		 * @description Method to remove all event listeners.
 		 * @method removeEventListeners
 		 */
-        removeEventListeners: function() {
-            $( '[data-toggle="helptext"]' ).off( 'click' );
-            $( '[data-toggle="available-items"]' ).off( 'click' );
-            $( '[data-toggle="option-dropdown"]' ).off( 'click' );
-        },
+//        removeEventListeners: function() {
+//            $( '[data-toggle="helptext"]' ).off( 'click' );
+//            $( '[data-toggle="available-items"]' ).off( 'click' );
+//            $( '[data-toggle="option-dropdown"]' ).off( 'click' );
+//        },
         /**
          * @description Method to initialize all event listeners.
          * @method initEventListeners
          */
         initEventListeners: function() {
             // toggle input helptext
-            $( '[data-toggle="helptext"]' ).on( 'click', function() {
+            $( 'body' ).on( 'click', '[data-toggle="helptext"]', function() {
             	$( this ).toggleClass( 'in' );
             	
             	var $input = $( this ).closest( '.cms-module__option-group' ).find( '.cms-module__option-control, .cms-module__option-dropdown' );
@@ -147,7 +148,7 @@ var cmsJS = ( function( cms ) {
             } );
             
             // toggle add new item accordeon
-            $( '[data-toggle="available-items"]' ).on( 'click', function() {
+            $( 'body' ).on( 'click', '[data-toggle="available-items"]', function() {
             	if ( $( this ).hasClass( 'in' ) ) {
             		$( this ).toggleClass( 'in' );
                 	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast', function() {
@@ -170,7 +171,7 @@ var cmsJS = ( function( cms ) {
             } );
             
             // toggle option dropdown
-            $( '[data-toggle="option-dropdown"]' ).on( 'click', function() {
+            $( 'body' ).on( 'click', '[data-toggle="option-dropdown"]', function() {
             	$( this ).next().slideToggle( 'fast' );
             } );
             $( document ).on( 'click', function( event ) {
