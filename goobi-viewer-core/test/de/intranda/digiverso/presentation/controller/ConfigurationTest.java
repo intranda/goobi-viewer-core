@@ -2124,6 +2124,25 @@ public class ConfigurationTest {
         Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NOSUCHFIELD"));
     }
 
+    /**
+     * @see Configuration#isAddCollectionHierarchyToBreadcrumbs(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("DC"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_KNOWLEDGEFIELD"));
+    }
+
+    /**
+     * @see Configuration#isAddCollectionHierarchyToBreadcrumbs(String)
+     * @verifies return false if no collection config was found
+     */
+    @Test
+    public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnFalseIfNoCollectionConfigWasFound() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_NOSUCHFIELD"));
+    }
+
     @Test
     public void testGetDownloadUrl() {
         Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());

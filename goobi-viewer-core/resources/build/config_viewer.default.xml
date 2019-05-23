@@ -534,10 +534,13 @@
 			     0 is the first (lowest) level; a value of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>-1</displayDepthForSearch>
 
-                        <!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
-			     No text means that no image is rendered for the collection -->
-                        <defaultBrowseIcon></defaultBrowseIcon>
-
+            <!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
+			    No text means that no image is rendered for the collection -->
+            <defaultBrowseIcon></defaultBrowseIcon>
+            
+            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
+                breadcrumbs (if not multivalued). Default is false. -->
+            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
 		</collection>
 
 		<!-- true if opening a collection containing only a single work should redirect to that work -->
