@@ -21,9 +21,9 @@
  * @module viewerJS
  * @requires jQuery
  */
-var viewerJS = ( function() {
+var viewerJS = (function () {
     'use strict';
-    
+
     var _debug = false;
     var _defaults = {
         currentPage: '',
@@ -41,146 +41,146 @@ var viewerJS = ( function() {
         notFoundImage: '',
         activateDrilldownFilter: true
     };
-    
+
     var viewer = {};
-    
-    viewer.init = function( config ) {
-        if ( _debug ) {
-        	console.log( 'Initializing: viewerJS.init' );
-			console.log( '--> config = ', config );
+
+    viewer.init = function (config) {
+        if (_debug) {
+            console.log('Initializing: viewerJS.init');
+            console.log('--> config = ', config);
         }
-        
-        $.extend( true, _defaults, config );
-        
+
+        $.extend(true, _defaults, config);
+
         // detect current browser
         _defaults.browser = viewerJS.helper.getCurrentBrowser();
-        
+
         // write theme name to viewer object so submodules can use it
         viewer.theme = _defaults.theme;
 
         // throw some console infos about the page
-        console.info( 'Current Browser = ', _defaults.browser );
-        console.info( 'Current Theme = ', _defaults.theme );
-        console.info( 'Current Page = ', _defaults.currentPage );
-        
+        console.info('Current Browser = ', _defaults.browser);
+        console.info('Current Theme = ', _defaults.theme);
+        console.info('Current Page = ', _defaults.currentPage);
+
         // init Bootstrap features
         viewerJS.helper.initBsFeatures();
-        
+
         // init mobile Toggles for old responisive themes
         viewerJS.mobileToggles.init();
-        
+
         // init save scroll positions
         viewerJS.scrollPositions.init();
 
         // init user login
         viewerJS.userLogin.init();
-        
+
         // init scroll page animated
-        this.pageScroll.init( _defaults.pageScrollSelector, _defaults.pageScrollAnchor );
-        
+        this.pageScroll.init(_defaults.pageScrollSelector, _defaults.pageScrollAnchor);
+
         // init some image methods
         viewer.loadThumbnails();
-        viewer.initFragmentNavigation();     
+        viewer.initFragmentNavigation();
         viewer.initStoreScrollPosition();
-         
+
         // AJAX Loader Eventlistener
-        viewerJS.jsfAjax.init( _defaults );
-        
+        viewerJS.jsfAjax.init(_defaults);
+
         // render warning if local storage is not useable
-        if ( !viewer.localStoragePossible ) {
+        if (!viewer.localStoragePossible) {
             var warningPopover = this.helper
-                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt die Möglichkeit Informationen zur Seite lokal zu speichern nicht. Aus diesem Grund sind nicht alle Funktionen des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
-            
-            $( 'body' ).append( warningPopover );
-            
-            $( '[data-toggle="warning-popover"]' ).on( 'click', function() {
-                $( '.warning-popover' ).fadeOut( 'fast', function() {
-                    $( '.warning-popover' ).remove();
-                } );
-            } );
-        }        
-        
+                .renderWarningPopover('Ihr Browser befindet sich im privaten Modus und unterstützt die Möglichkeit Informationen zur Seite lokal zu speichern nicht. Aus diesem Grund sind nicht alle Funktionen des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.');
+
+            $('body').append(warningPopover);
+
+            $('body').on('click', '[data-toggle="warning-popover"]', function () {
+                $('.warning-popover').fadeOut('fast', function () {
+                    $('.warning-popover').remove();
+                });
+            });
+        }
+
         // toggle collapseable widgets
-        $( '.widget__title.collapseable' ).off().on( 'click', function() {        	
-    		$( this ).toggleClass( 'in' ).next().slideToggle( 'fast' );
-    	} );
-        
+        $('body').on('click', '.widget__title.collapseable', function () {
+            $(this).toggleClass('in').next().slideToggle('fast');
+        });
+
         // fade out message box if it exists
-        ( function() {
+        (function () {
             var fadeoutScheduled = false;
-            
-            setInterval( function() {
-                if ( $( _defaults.messageBoxSelector ).length > 0 ) {
-                    if ( !fadeoutScheduled ) {
+
+            setInterval(function () {
+                if ($(_defaults.messageBoxSelector).length > 0) {
+                    if (!fadeoutScheduled) {
                         fadeoutScheduled = true;
-                        var messageTimer = setTimeout( function() {
-                            $( _defaults.messageBoxSelector ).each( function() {
-                                $( this ).fadeOut( 'slow', function() {
-                                	$( this ).remove();
-                                } )
-                            } );
-                            
+                        var messageTimer = setTimeout(function () {
+                            $(_defaults.messageBoxSelector).each(function () {
+                                $(this).fadeOut('slow', function () {
+                                    $(this).remove();
+                                })
+                            });
+
                             fadeoutScheduled = false;
-                        }, _defaults.messageBoxTimeout );
+                        }, _defaults.messageBoxTimeout);
                     }
                 }
-            }, _defaults.messageBoxInterval );
-        } )();
-        
+            }, _defaults.messageBoxInterval);
+        })();
+
         // add class on toggle sidebar widget (CMS individual sidebar widgets)
-        $( '.collapse' ).on( 'show.bs.collapse', function() {
-            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-down' ).addClass( 'fa-arrow-up' );
-        } );
-        
-        $( '.collapse' ).on( 'hide.bs.collapse', function() {
-            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-up' ).addClass( 'fa-arrow-down' );
-        } );
-        
-        $( ' [data-collapse-show] ' ).on("click", function() {
-            var href = $( this ).data("collapse-show");
-            $( href ).collapse("show"); 
+        $('.collapse').on('show.bs.collapse', function () {
+            $(this).prev().find('.fa').removeClass('fa-arrow-down').addClass('fa-arrow-up');
         });
-        
+
+        $('.collapse').on('hide.bs.collapse', function () {
+            $(this).prev().find('.fa').removeClass('fa-arrow-up').addClass('fa-arrow-down');
+        });
+
+        $('body').on('click', '[data-collapse-show]', function () {
+            var href = $(this).data('collapse-show');
+            $(href).collapse('show');
+        });
+
         // reset searchfield on focus
-        $( 'input[id*="searchField"]' ).on( 'focus', function() {
-        	$( this ).val( '' );
-        } );
-        
+        $('body').on('focus', 'input[id*="searchField"]', function () {
+            $(this).val('');
+        });
+
         // init search drilldown filter
-        if ( _defaults.activateDrilldownFilter ) {
-        	this.initDrillDownFilters();
+        if (_defaults.activateDrilldownFilter) {
+            this.initDrillDownFilters();
         }
 
         // disable submit button on feedback
-        if ( currentPage === 'feedback' ) {
-            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        if (currentPage === 'feedback') {
+            $('#submitFeedbackBtn').attr('disabled', true);
         }
-        
+
         // set sidebar position for NER-Widget
-        if ( $( '#widgetNerFacetting' ).length > 0 ) {
+        if ($('#widgetNerFacetting').length > 0) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
-            this.nerFacetting.init( nerFacettingConfig );
+            this.nerFacetting.init(nerFacettingConfig);
         }
-        
+
         // fire search query in autocomplete on enter
-        $( '#pfAutocomplete_input, [id*=":pfAutocomplete_input"]' ).on( 'keyup', function( event ) {
-        	if ( event.keyCode == 13 ) {
-        		$( '#submitSearch, [id*=":submitSearch"]' ).click();
-        	}
+        $('body').on('keyup', '#pfAutocomplete_input, [id*=":pfAutocomplete_input"]', function (event) {
+            if (event.keyCode == 13) {
+                $('#submitSearch, [id*=":submitSearch"]').click();
+            }
         });
-        
+
         // make sure only integer values may be entered in input fields of class
         // 'input-integer'
-        $( '.input-integer' ).on( "keypress", function( event ) {
-            if ( event.which < 48 || event.which > 57 ) {
+        $('body').on('keypress', '.input-integer', function (event) {
+            if (event.which < 48 || event.which > 57) {
                 return false;
             }
-        } );
-        
+        });
+
         // make sure only integer values may be entered in input fields of class
         // 'input-float'
-        $( '.input-float' ).on( "keypress", function( event ) {
-            switch ( event.which ) {
+        $('body').on('keypress', '.input-float', function (event) {
+            switch (event.which) {
                 case 8: // delete
                 case 9: // tab
                 case 13: // enter
@@ -192,13 +192,13 @@ var viewerJS = ( function() {
                 case 118:
                     return event.ctrlKey; // copy
                 default:
-                    switch ( event.keyCode ) {
+                    switch (event.keyCode) {
                         case 8: // delete
                         case 9: // tab
                         case 13: // enter
                             return true;
                         default:
-                            if ( event.which < 48 || event.which > 57 ) {
+                            if (event.which < 48 || event.which > 57) {
                                 return false;
                             }
                             else {
@@ -206,36 +206,36 @@ var viewerJS = ( function() {
                             }
                     }
             }
-        } );
-        
+        });
+
         // set tinymce language
         this.tinyConfig.language = currentLang;
-        
-        if ( currentPage === 'adminCmsCreatePage' ) {
-            this.tinyConfig.setup = function( ed ) {
+
+        if (currentPage === 'adminCmsCreatePage') {
+            this.tinyConfig.setup = function (ed) {
                 // listen to changes on tinymce input fields
-                ed.on( 'change input paste', function( e ) {
+                ed.on('change input paste', function (e) {
                     tinymce.triggerSave();
-                    createPageConfig.prevBtn.attr( 'disabled', true );
+                    createPageConfig.prevBtn.attr('disabled', true);
                     createPageConfig.prevDescription.show();
-                } );
+                });
             };
         }
-        
+
         // init tinymce if it exists
-        if ( $( '.tinyMCE' ).length > 0 ) {
-            viewerJS.tinyMce.init( this.tinyConfig );
-        }        
-        
+        if ($('.tinyMCE').length > 0) {
+            viewerJS.tinyMce.init(this.tinyConfig);
+        }
+
         // handle browser bugs
-        switch ( _defaults.browser ) {
+        switch (_defaults.browser) {
             case 'Chrome':
                 break;
             case 'Firefox':
                 break;
             case 'IE':
                 /* SET IE CLASS TO HTML */
-                $( 'html' ).addClass( 'is-IE' );
+                $('html').addClass('is-IE');
                 break;
             case 'Edge':
                 break;
@@ -243,89 +243,90 @@ var viewerJS = ( function() {
                 break;
         }
     };
-    
-    viewer.initFragmentNavigation = function() {
-        if(window.location.hash) {
-            $(document).ready(function() {                
+
+    viewer.initFragmentNavigation = function () {
+        if (window.location.hash) {
+            $(document).ready(function () {
                 var hash = window.location.hash.substring(1);
                 var $hashedElement = $("#" + hash);
-                if($hashedElement.length > 0) {           
+                if ($hashedElement.length > 0) {
                     $hashedElement.get(0).scrollIntoView();
-                   
+
                     var $hashedCollapsible = $hashedElement.find(".collapse");
-                    if($hashedCollapsible.length > 0) {
-                       $hashedCollapsible.collapse("show");
-                    } 
+                    if ($hashedCollapsible.length > 0) {
+                        $hashedCollapsible.collapse("show");
+                    }
                 }
             })
         }
     }
-    
-    viewer.initStoreScrollPosition = function() {
-        $(document).ready(function() {
+
+    viewer.initStoreScrollPosition = function () {
+        $(document).ready(function () {
             viewer.checkScrollPosition()
         })
-        $("a.remember-scroll-position").on("click", function() {viewer.handleScrollPositionClick(this)});
+        $('body').on('click', 'a.remember-scroll-position', function () {
+            viewer.handleScrollPositionClick(this);
+        });
     }
 
-    viewer.checkScrollPosition = function() {
-        var scrollPositionString = sessionStorage.getItem("scrollPositions");
-        
-        if ( scrollPositionString ) {
+    viewer.checkScrollPosition = function () {
+        var scrollPositionString = sessionStorage.getItem('scrollPositions');
+
+        if (scrollPositionString) {
             var scrollPositions = JSON.parse(scrollPositionString);
             var scrollPosition = scrollPositions[currentPage];
-            if(scrollPosition) {                    
-                console.log("scroll to ", scrollPosition);
+            if (scrollPosition) {
                 var linkId = scrollPosition.linkId;
                 var $element = $('a[data-linkid="' + linkId + '"]');
-                if($element.length > 0) {                    
+                if ($element.length > 0) {
                     var scrollTop = scrollPosition.scrollTop;
-                    if(_debug) {                
-                        console.log("scroll to position ", scrollTop);
+                    if (_debug) {
+                        console.log('scroll to position ', scrollTop);
                     }
                     $('html').scrollTop(scrollTop);
                     //after scrolling to the position, remove the entry
                     scrollPositions[currentPage] = undefined;
-                    sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
+                    sessionStorage.setItem('scrollPositions', JSON.stringify(scrollPositions));
                 }
             }
         }
     }
-    
-    viewer.handleScrollPositionClick = function(element) {
+
+    viewer.handleScrollPositionClick = function (element) {
         var scrollPositions = {};
-        var scrollPositionString = sessionStorage.getItem("scrollPositions");
-        if(scrollPositionString) {
+        var scrollPositionString = sessionStorage.getItem('scrollPositions');
+        if (scrollPositionString) {
             scrollPositions = JSON.parse(scrollPositionString);
         }
 
         scrollPositions[currentPage] = {
-                scrollTop: $('html').scrollTop(),
-                linkId: $(element).data('linkid')
+            scrollTop: $('html').scrollTop(),
+            linkId: $(element).data('linkid')
         }
-        if(_debug) {                
-            console.log("saving scrollPositions ", scrollPositions);
+        if (_debug) {
+            console.log('saving scrollPositions ', scrollPositions);
         }
-        sessionStorage.setItem("scrollPositions", JSON.stringify(scrollPositions));
+        sessionStorage.setItem('scrollPositions', JSON.stringify(scrollPositions));
     }
-    
-    viewer.initDrillDownFilters = function() {
-        var $drilldowns = $(".widget-search-drilldown__collection");
+
+    viewer.initDrillDownFilters = function () {
+        var $drilldowns = $('.widget-search-drilldown__collection');
 
         $drilldowns.each(function () {
-        	var filterConfig = {
-            	wrapper: $(this).find(".widget-search-drilldown__filter"),
-                input: $(this).find(".widget-search-drilldown__filter-input"),
-                elements: $(this).find( 'li a' )
+            var filterConfig = {
+                wrapper: $(this).find('.widget-search-drilldown__filter'),
+                input: $(this).find('.widget-search-drilldown__filter-input'),
+                elements: $(this).find('li a')
             }
 
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
-    
+
     // global object for tinymce config
     viewer.tinyConfig = {};
-    
+
     return viewer;
-    
-} )( jQuery );
+
+})(jQuery);

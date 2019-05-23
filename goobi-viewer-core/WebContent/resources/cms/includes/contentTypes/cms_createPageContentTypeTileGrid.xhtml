@@ -19,9 +19,7 @@
             <h:panelGroup id="tileGridCategoriesGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="tileGridCategories" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
+                    <h:messages for="tileGridCategories" infoClass="cms-module__option-message-status success" warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
@@ -29,23 +27,23 @@
                         <i class="fa fa-exclamation" aria-hidden="true"></i>
                     </div>
                 </div>
-                
+
                 <!-- MULTI SELECT MENU -->
-                   <div class="cms-module__option-dropdown">
-                       <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                       <ul>
-                			<ui:repeat var="selectable" value="#{contentItem.selectableCategories}">
-                               <li>
-                                   <label>
-                                       <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
-                                       #{selectable.value.name}
-                                   </label>
-                               </li>
-                           </ui:repeat>
-                       </ul>
-                   </div>
+                <div class="cms-module__option-dropdown">
+                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                    <ul>
+                        <ui:repeat var="selectable" value="#{contentItem.selectableCategories}">
+                            <li>
+                                <label>
+                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}" />
+                                    #{selectable.value.name}
+                                </label>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_tile_grid_categories}</span>
         </div>
