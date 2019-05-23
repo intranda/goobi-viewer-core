@@ -72,12 +72,9 @@ var viewerJS = (function () {
         // init save scroll positions
         viewerJS.scrollPositions.init();
 
-<<<<<<< HEAD
         // init user login
         viewerJS.userLogin.init();
-        
-=======
->>>>>>> refs/heads/master
+
         // init scroll page animated
         this.pageScroll.init(_defaults.pageScrollSelector, _defaults.pageScrollAnchor);
 
