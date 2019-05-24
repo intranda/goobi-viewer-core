@@ -6,10 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-      xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/reference/components">
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
       
       <h:head profile="http://dublincore.org/documents/dcq-html/">
 
@@ -24,24 +21,6 @@
 	        <meta name="robots" content="noindex" />
 	    </ui:fragment>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		
-	    <!-- TWITTER CARD / OPENGRAPH -->
-	    <ui:include src="/resources/includes/embed/twittercard.xhtml" />
-	    <ui:include src="/resources/includes/embed/opengraph.xhtml" />
-	
-	    <title><h:outputText value="#{activeDocumentBean.titleBarLabel} - " rendered="#{activeDocumentBean.titleBarLabel != null}" />#{configurationBean.name}</title>
-	    
-	    <!-- FAVICON -->
-	    <link rel="shortcut icon" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/favicon.ico" />
-	    
-	    <!-- OPENSEARCH -->
-	    <link rel="search" type="application/opensearchdescription+xml" title="#{configurationBean.name}" href="#{request.contextPath}/rest/opensearch/getxml/" />
-	    
-	    <!-- OEMBED -->
-	    <ui:include src="/resources/includes/embed/oembed.xhtml" />
-	    
-	    <!-- RELATIVE URL TAGS -->
-	    <h:outputText escape="false" value="#{activeDocumentBean.relativeUrlTags}" />
 	    
 	    <!-- BASIC CSS -->
 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.min.css" />
@@ -61,19 +40,7 @@
 	    <!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
 	    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
 	    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
-	    
-	    <!-- JAVASCRIPT -->
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/bs/bootstrap.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/tinymce/tinymce.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/datatables.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.12.1/jquery-ui.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqueryUi/1.11.0/jquery.ui.touch-punch.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/reactiveX/rx.lite.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/q-promises/q.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/clipboard/clipboard.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/riot/riot.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewer.min.js"></script>
-	    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/riot-tags.js"></script>
+
 	</h:head>
       
     <h:body id="login-body">
