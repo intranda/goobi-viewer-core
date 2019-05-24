@@ -77,7 +77,8 @@ var viewerJS = (function () {
 
         // init scroll page animated
         this.pageScroll.init(_defaults.pageScrollSelector, _defaults.pageScrollAnchor);
-
+        this.pageScroll.scrollToFragment();
+        
         // init some image methods
         viewer.loadThumbnails();
         viewer.initFragmentNavigation();

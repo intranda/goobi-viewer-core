@@ -13,7 +13,6 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageUser()}" />
             <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(userBean.loggedIn ? msg.userLoggedIn : msg.userNotLoggedIn,1)}" />
-            <f:viewParam name="from" value="#{userBean.redirectUrl}" />
         </f:metadata>
     </ui:define>
 

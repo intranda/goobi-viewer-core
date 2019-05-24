@@ -95,7 +95,6 @@
 	<!-- USER ACCOUNT -->
 	<url-mapping id="login">
 		<pattern value="/login/" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<view-id value="/login.xhtml" />
 	</url-mapping>
 	<url-mapping id="user">
