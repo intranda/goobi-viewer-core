@@ -194,7 +194,7 @@
 		    the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
 		    to true to use tiled images if possible (only possible when type=openlayers) -->
 		 
-		 		<!-- PNGs: Deliver the entire image directly. Very fast, but the full image size must be delivered. If that is too large, remove this setting -->
+		<!-- PNGs: Deliver the entire image directly. Very fast, but the full image size must be delivered. If that is too large, remove this setting -->
 		<zoomImageView tileImage="false" footerHeight="50">
 			<useFor>
 				<mimeType>image/png</mimeType>
@@ -203,9 +203,8 @@
 		</zoomImageView>
 
 		<!-- Default settings for fullscreen mode -->
-	   <zoomImageView type="openSeadragon" tileImage="true"
-            footerHeight="50">
-            <useFor>
+		<zoomImageView type="openSeadragon" tileImage="true" footerHeight="50">
+			<useFor>
 				<view>fullscreen</view>
 			</useFor>
 			<scale>900</scale>
@@ -215,11 +214,10 @@
 				<scaleFactors>4</scaleFactors>
 				<size>1024</size>
 			</tileSize>
-       </zoomImageView>
+		</zoomImageView>
        
 		<!-- Default settings for image view -->
-		<zoomImageView type="openSeadragon" tileImage="true"
-			footerHeight="50">
+		<zoomImageView type="openSeadragon" tileImage="true" footerHeight="50">
 			<scale>600</scale>
 			<scale>900</scale>
 			<scale>1800</scale>
@@ -534,10 +532,13 @@
 			     0 is the first (lowest) level; a value of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>-1</displayDepthForSearch>
 
-                        <!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
+			<!-- Default-Image for tiled collection in CMS, relative to the image folder within the theme path.
 			     No text means that no image is rendered for the collection -->
-                        <defaultBrowseIcon></defaultBrowseIcon>
-
+			<defaultBrowseIcon></defaultBrowseIcon>
+			    
+			<!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
+			     breadcrumbs (if not multivalued). Default is false. -->
+			<addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
 		</collection>
 
 		<!-- true if opening a collection containing only a single work should redirect to that work -->
@@ -1337,11 +1338,12 @@
         		<token>test</token>
         	</authorization>
 	</webapi>
-	
-    <embedding>
-       <twitter>
-           <userName>@goobi</userName>
-       </twitter>
-    </embedding>
+
+	<!-- When generating twitter cards the userName is added in the twitter:site tag -->
+	<embedding>
+		<twitter>
+			<userName>@goobi</userName>
+		</twitter>
+	</embedding>
 
 </config>

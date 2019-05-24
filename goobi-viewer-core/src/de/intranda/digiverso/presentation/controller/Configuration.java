@@ -835,6 +835,21 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @param field
+     * @return
+     * @should return correct value
+     * @should return false if no collection config was found
+     */
+    public boolean isAddCollectionHierarchyToBreadcrumbs(String field) {
+        HierarchicalConfiguration collection = getCollectionConfiguration(field);
+        if (collection == null) {
+            return false;
+        }
+        return collection.getBoolean("addHierarchyToBreadcrumbs", false);
+    }
+
+    /**
+     * 
      * @return
      * @should return correct value
      */
@@ -1158,7 +1173,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
-    
+
     /**
      * 
      * @return

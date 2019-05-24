@@ -520,10 +520,16 @@
 				in the displayed in advanced search 0 is the first (lowest) level; a value 
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
+			
+            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
+                breadcrumbs (if not multivalued). Default is false. -->
+            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
 		</collection>
+		
         <collection field="MD_KNOWLEDGEFIELD">
                     <splittingCharacter>/</splittingCharacter>
         </collection>
+        
         <collection field="MD_HIERARCHICALFIELD"/>
             
         <!-- true if opening a collection containing only a single work should redirect to that work -->
