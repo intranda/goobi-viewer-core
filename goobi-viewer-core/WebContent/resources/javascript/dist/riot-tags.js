@@ -97,6 +97,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
                     if (errorMsg) {
                     	this.fileUploadError(errorMsg);
+                    } else if(this.opts.onUploadSuccess) {
+                        this.opts.onUploadSuccess();
                     }
 
                		if (this.opts.onUploadComplete) {
@@ -106,6 +108,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
+            console.log("file uploaded")
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
 
             setTimeout( function() {

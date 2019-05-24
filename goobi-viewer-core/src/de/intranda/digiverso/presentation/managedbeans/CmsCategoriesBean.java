@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 
@@ -115,6 +116,7 @@ public class CmsCategoriesBean implements Serializable {
 				category.setDescription(getCategoryDescription());
 				DataManager.getInstance().getDao().addCategory(category);
 			}
+			BeanUtils.getCmsMediaBean().resetData();
 			endEditing();
 		}
 	}

@@ -45,6 +45,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.org.apache.xml.internal.security.signature.reference.ReferenceNodeSetData;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.dao.IDAO;
@@ -84,7 +86,7 @@ public class CmsMediaBean implements Serializable {
 
 	private String selectedTag;
 //    private List<Selectable<CMSMediaItem>> mediaItems = null;
-	private final TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
+	private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
 	private CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem = null;
 	private String filter = "";
 	private String filenameFilter = "";
@@ -93,7 +95,14 @@ public class CmsMediaBean implements Serializable {
 
 	public CmsMediaBean() {
 		super();
-		dataProvider = initDataProvider();
+		resetData();
+	}
+	
+	/**
+	 * Reload all media items, along with the available categories 
+	 */
+	public void resetData() {
+	    dataProvider = initDataProvider();
 	}
 
 	/**

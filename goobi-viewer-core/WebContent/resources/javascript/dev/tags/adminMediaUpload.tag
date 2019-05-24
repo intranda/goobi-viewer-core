@@ -121,6 +121,8 @@
                     
                     if (errorMsg) {         
                     	this.fileUploadError(errorMsg);
+                    } else if(this.opts.onUploadSuccess) {
+                        this.opts.onUploadSuccess();
                     }
                     
                		if (this.opts.onUploadComplete) {
@@ -130,6 +132,7 @@
         }
     
         fileUploaded(fileInfo) {
+            console.log("file uploaded")
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
         	
             setTimeout( function() {
