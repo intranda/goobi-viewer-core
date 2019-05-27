@@ -5311,6 +5311,75 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* USER VIEWS */
 /* ==============================================================
+   User
+   style declarations for user.xhtml
+   ==============================================================*/
+/* USERDATA */
+/* BLOCK */
+.userdata {
+  /* ELEMENT */
+}
+.userdata__gravatar img {
+  display: block;
+}
+.userdata__data {
+  overflow-x: auto;
+}
+.userdata__action {
+  text-align: right;
+}
+.userdata__action .btn {
+  margin: 0;
+}
+#editUserdataModal .checkbox input[type=checkbox],
+#editUserdataModal .checkbox-inline input[type=checkbox] {
+  margin-left: -15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .userdata__gravatar img {
+    margin: 0 auto 15px auto;
+  }
+  .userdata__action {
+    text-align: center;
+  }
+}
+/* ==============================================================
+   User Activity
+   style declarations for userBackendActivity.xhtml
+   ==============================================================*/
+/* USER SCORE */
+/* BLOCK */
+.user-score {
+  margin-bottom: 15px;
+  /* ELEMENT */
+}
+.user-score__table tr td:first-child {
+  width: 25%;
+}
+.user-score__table tr td:last-child {
+  width: 75%;
+}
+/* USER ACTIVITY */
+/* BLOCK */
+.user-activity {
+  margin-bottom: 15px;
+  /* ELEMENT */
+}
+.user-activity__table .fa {
+  cursor: pointer;
+}
+.user-activity__table .popover {
+  font-weight: normal;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    User Backend Tables
    style declarations for user backend tables
    ==============================================================*/
@@ -5319,71 +5388,256 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   User
-   style declarations for user.xhtml
+   User Bookshelf Edit
+   style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
-/* USER LOGIN */
+/* USER BOOKSHELF EDIT */
 /* BLOCK */
-.user-login {
-  /* LOCAL */
-  /* EXTERNAL */
-  /* OPEN ID */
-  /* ELMENTS */
+.user-bookshelf-edit {
+  /* ELEMENT */
 }
-.user-login__external .user-login__options li {
-  height: 50px;
-  text-align: right;
-  margin-top: 10px;
-}
-.user-login__external .user-login__options li .provider-logo {
-  float: left;
-}
-.user-login__external .user-login__options li .btn {
-  margin-top: 8px;
-}
-.user-login__external .user-login__options img {
-  max-height: 50px;
-}
-.user-login__action .btn {
-  margin: 0;
-}
-/* USER LOGIN CARD */
-.user-login__cards {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1fr 1fr;
-      grid-template-columns: 1fr 1fr;
-  grid-gap: 15px;
-}
-.user-login__card {
-  height: 100%;
+.user-bookshelf-edit__form {
+  padding: 30px 15px;
   border: 1px solid #ccc;
 }
-.user-login__card h3 {
-  margin: 0;
-  padding: 10px 15px;
-  border-bottom: 1px solid #ccc;
-  background-color: #eee;
+.user-bookshelf-edit__form form {
+  width: 80%;
+  margin: 0 auto;
 }
-.user-login__card-body {
-  padding: 15px;
+.user-bookshelf-edit .control-label {
+  font-weight: normal;
 }
-/* MODALS */
-#createAccountModal p {
-  margin: 0;
+.user-bookshelf-edit .form-control {
+  height: 48px;
 }
-#createAccountModal .modal-footer {
-  margin: 0;
+.user-bookshelf-edit textarea {
+  min-height: 125px;
+  resize: vertical;
+}
+.user-bookshelf-edit__action {
+  text-align: right;
+}
+.user-bookshelf-edit__action .btn {
+  margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .user-login__cards {
-    -ms-grid-columns: 1fr;
-        grid-template-columns: 1fr;
-  }
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User other Bookshelves
+   style declarations for userBackendOtherBookshelves.xhtml
+   ==============================================================*/
+#otherBookshelves #other_bookshelf_data_table thead tr th:nth-child(4) {
+  text-align: center;
 }
+#otherBookshelves #other_bookshelf_data_table tbody tr td:nth-child(4) {
+  text-align: center;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Bookshelf Send List
+   style declarations for userBookshelfSendList.xhtml
+   ==============================================================*/
+/* USER BOOKSHELF SEND LIST */
+/* BLOCK */
+.user-bookshelf-send-list {
+  /* ELEMENT */
+}
+.user-bookshelf-send-list__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-bookshelf-send-list__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-bookshelf-send-list .control-label {
+  font-weight: normal;
+}
+.user-bookshelf-send-list .form-control {
+  height: 32px;
+}
+.user-bookshelf-send-list__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User view Bookshelf
+   style declarations for userBackendViewBookshelf.xhtml
+   ==============================================================*/
+/* USER VIEW BOOKSHELF */
+/* BLOCK */
+.view-bookshelf {
+  /* ELEMENT */
+}
+.view-bookshelf p {
+  font-size: 13px;
+  font-style: italic;
+}
+.view-bookshelf__action a {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 26px;
+}
+.view-bookshelf__item {
+  height: 300px;
+  margin-bottom: 30px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in;
+}
+.view-bookshelf__item:hover {
+  background-color: #eee;
+}
+.view-bookshelf__item-image,
+.view-bookshelf__item-info,
+.view-bookshelf__item-action {
+  float: left;
+  width: 50%;
+}
+.view-bookshelf__item-image {
+  height: 300px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.view-bookshelf__item-image a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.view-bookshelf__item-info {
+  height: 250px;
+  padding: 15px 15px 0 15px;
+  overflow-y: auto;
+}
+.view-bookshelf__item-info h4 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.view-bookshelf__item-info textarea {
+  width: 100%;
+  height: 150px;
+  resize: none;
+  border: none;
+  background-color: transparent;
+}
+.view-bookshelf__item-action {
+  height: 50px;
+  padding: 15px;
+  text-align: right;
+}
+.view-bookshelf__item-action a {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.view-bookshelf__item-action [data-bookshelf-type="delete"] {
+  background-size: 70%;
+}
+#viewBookshelf #viewBookshelfControlsForm {
+  text-align: right;
+}
+#viewBookshelf #viewBookshelfControlsForm .btn {
+  margin: 1.3125rem 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Bookshelves
+   style declarations for userBackendBookshelves.xhtml
+   ==============================================================*/
+/* USER BOOKSHELVES */
+/* BLOCK */
+.user-bookshelves {
+  /* ELEMENT */
+  /* ADD */
+  /* PANEL */
+}
+.user-bookshelves__add-bookshelf {
+  height: 32px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.user-bookshelves__add-bookshelf:before,
+.user-bookshelves__add-bookshelf:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__add-bookshelf:after {
+  clear: both;
+}
+.user-bookshelves__add-bookshelf input {
+  width: 100%;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+}
+.user-bookshelves__add-bookshelf button {
+  width: 100%;
+  height: 32px;
+  background-image: url("../../images/icons/icon-bs-add.svg");
+  background-size: 60%;
+}
+.user-bookshelves__panel {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.user-bookshelves__panel:before,
+.user-bookshelves__panel:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel:after {
+  clear: both;
+}
+.user-bookshelves__panel-header:before,
+.user-bookshelves__panel-header:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-header:after {
+  clear: both;
+}
+.user-bookshelves__panel-header h4 {
+  margin: 0;
+}
+.user-bookshelves__panel-header small {
+  color: #ccc;
+}
+.user-bookshelves__panel-body {
+  padding-top: 15px;
+}
+.user-bookshelves__panel-body:before,
+.user-bookshelves__panel-body:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-body:after {
+  clear: both;
+}
+.user-bookshelves__panel-body p {
+  margin: 0;
+  font-size: 13px;
+  font-style: italic;
+}
+.user-bookshelves__panel-action a {
+  display: inline-block;
+  padding: 0 5px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOPS */
+/* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Login
@@ -5596,387 +5850,6 @@ div[id*="-Modal"] .email-form .form-group {
     max-height: 90%;
   }
 }
-/* ==============================================================
-   User Account Create
-   style declarations for userAccountCreate.xhtml
-   ==============================================================*/
-/* USER ACCOUNT CREATE */
-/* BLOCK */
-.user-account-create {
-  /* ELEMENT */
-}
-.user-account-create__form {
-  padding: 30px 15px;
-  border: 1px solid #ccc;
-}
-.user-account-create__form form {
-  width: 80%;
-  margin: 0 auto;
-}
-.user-account-create .control-label {
-  font-weight: normal;
-}
-.user-account-create .form-control {
-  height: 32px;
-}
-.user-account-create__action {
-  text-align: right;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Account Retrieve
-   style declarations for userAccountRetrieve.xhtml
-   ==============================================================*/
-/* USER ACCOUNT RETRIEVE */
-/* BLOCK */
-.user-account-retrieve {
-  /* ELEMENT */
-}
-.user-account-retrieve__form {
-  padding: 30px 15px;
-  border: 1px solid #ccc;
-}
-.user-account-retrieve__form form {
-  width: 80%;
-  margin: 0 auto;
-}
-.user-account-retrieve .control-label {
-  font-weight: normal;
-}
-.user-account-retrieve .form-control {
-  height: 32px;
-}
-.user-account-retrieve__action {
-  text-align: right;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Data
-   style declarations for user.xhtml
-   ==============================================================*/
-/* USERDATA */
-/* BLOCK */
-.userdata {
-  /* ELEMENT */
-}
-.userdata__gravatar img {
-  display: block;
-}
-.userdata__data {
-  overflow-x: auto;
-}
-.userdata__action {
-  text-align: right;
-}
-.userdata__action .btn {
-  margin: 0;
-}
-#editUserdataModal .checkbox input[type=checkbox],
-#editUserdataModal .checkbox-inline input[type=checkbox] {
-  margin-left: -15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .userdata__gravatar img {
-    margin: 0 auto 15px auto;
-  }
-  .userdata__action {
-    text-align: center;
-  }
-}
-/* ==============================================================
-   User Activity
-   style declarations for userBackendActivity.xhtml
-   ==============================================================*/
-/* USER SCORE */
-/* BLOCK */
-.user-score {
-  margin-bottom: 15px;
-  /* ELEMENT */
-}
-.user-score__table tr td:first-child {
-  width: 25%;
-}
-.user-score__table tr td:last-child {
-  width: 75%;
-}
-/* USER ACTIVITY */
-/* BLOCK */
-.user-activity {
-  margin-bottom: 15px;
-  /* ELEMENT */
-}
-.user-activity__table .fa {
-  cursor: pointer;
-}
-.user-activity__table .popover {
-  font-weight: normal;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Bookshelves
-   style declarations for userBackendBookshelves.xhtml
-   ==============================================================*/
-/* USER BOOKSHELVES */
-/* BLOCK */
-.user-bookshelves {
-  /* ELEMENT */
-  /* ADD */
-  /* PANEL */
-}
-.user-bookshelves__add-bookshelf {
-  height: 32px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #ccc;
-}
-.user-bookshelves__add-bookshelf:before,
-.user-bookshelves__add-bookshelf:after {
-  content: " ";
-  display: table;
-}
-.user-bookshelves__add-bookshelf:after {
-  clear: both;
-}
-.user-bookshelves__add-bookshelf input {
-  width: 100%;
-  height: 32px;
-  border: none;
-  background-color: transparent;
-}
-.user-bookshelves__add-bookshelf button {
-  width: 100%;
-  height: 32px;
-  background-image: url("../../images/icons/icon-bs-add.svg");
-  background-size: 60%;
-}
-.user-bookshelves__panel {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-.user-bookshelves__panel:before,
-.user-bookshelves__panel:after {
-  content: " ";
-  display: table;
-}
-.user-bookshelves__panel:after {
-  clear: both;
-}
-.user-bookshelves__panel-header:before,
-.user-bookshelves__panel-header:after {
-  content: " ";
-  display: table;
-}
-.user-bookshelves__panel-header:after {
-  clear: both;
-}
-.user-bookshelves__panel-header h4 {
-  margin: 0;
-}
-.user-bookshelves__panel-header small {
-  color: #ccc;
-}
-.user-bookshelves__panel-body {
-  padding-top: 15px;
-}
-.user-bookshelves__panel-body:before,
-.user-bookshelves__panel-body:after {
-  content: " ";
-  display: table;
-}
-.user-bookshelves__panel-body:after {
-  clear: both;
-}
-.user-bookshelves__panel-body p {
-  margin: 0;
-  font-size: 13px;
-  font-style: italic;
-}
-.user-bookshelves__panel-action a {
-  display: inline-block;
-  padding: 0 5px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Bookshelf Edit
-   style declarations for userBackendEditBookshelf.xhtml
-   ==============================================================*/
-/* USER BOOKSHELF EDIT */
-/* BLOCK */
-.user-bookshelf-edit {
-  /* ELEMENT */
-}
-.user-bookshelf-edit__form {
-  padding: 30px 15px;
-  border: 1px solid #ccc;
-}
-.user-bookshelf-edit__form form {
-  width: 80%;
-  margin: 0 auto;
-}
-.user-bookshelf-edit .control-label {
-  font-weight: normal;
-}
-.user-bookshelf-edit .form-control {
-  height: 48px;
-}
-.user-bookshelf-edit textarea {
-  min-height: 125px;
-  resize: vertical;
-}
-.user-bookshelf-edit__action {
-  text-align: right;
-}
-.user-bookshelf-edit__action .btn {
-  margin-left: 10px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User other Bookshelves
-   style declarations for userBackendOtherBookshelves.xhtml
-   ==============================================================*/
-#otherBookshelves #other_bookshelf_data_table thead tr th:nth-child(4) {
-  text-align: center;
-}
-#otherBookshelves #other_bookshelf_data_table tbody tr td:nth-child(4) {
-  text-align: center;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Bookshelf Send List
-   style declarations for userBookshelfSendList.xhtml
-   ==============================================================*/
-/* USER BOOKSHELF SEND LIST */
-/* BLOCK */
-.user-bookshelf-send-list {
-  /* ELEMENT */
-}
-.user-bookshelf-send-list__form {
-  padding: 30px 15px;
-  border: 1px solid #ccc;
-}
-.user-bookshelf-send-list__form form {
-  width: 80%;
-  margin: 0 auto;
-}
-.user-bookshelf-send-list .control-label {
-  font-weight: normal;
-}
-.user-bookshelf-send-list .form-control {
-  height: 32px;
-}
-.user-bookshelf-send-list__action {
-  text-align: right;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User view Bookshelf
-   style declarations for userBackendViewBookshelf.xhtml
-   ==============================================================*/
-/* USER VIEW BOOKSHELF */
-/* BLOCK */
-.view-bookshelf {
-  /* ELEMENT */
-}
-.view-bookshelf p {
-  font-size: 13px;
-  font-style: italic;
-}
-.view-bookshelf__action a {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 26px;
-}
-.view-bookshelf__item {
-  height: 300px;
-  margin-bottom: 30px;
-  border: 1px solid #ccc;
-  transition: all 0.3s ease-in;
-}
-.view-bookshelf__item:hover {
-  background-color: #eee;
-}
-.view-bookshelf__item-image,
-.view-bookshelf__item-info,
-.view-bookshelf__item-action {
-  float: left;
-  width: 50%;
-}
-.view-bookshelf__item-image {
-  height: 300px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-}
-.view-bookshelf__item-image a {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.view-bookshelf__item-info {
-  height: 250px;
-  padding: 15px 15px 0 15px;
-  overflow-y: auto;
-}
-.view-bookshelf__item-info h4 {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.view-bookshelf__item-info textarea {
-  width: 100%;
-  height: 150px;
-  resize: none;
-  border: none;
-  background-color: transparent;
-}
-.view-bookshelf__item-action {
-  height: 50px;
-  padding: 15px;
-  text-align: right;
-}
-.view-bookshelf__item-action a {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-}
-.view-bookshelf__item-action [data-bookshelf-type="delete"] {
-  background-size: 70%;
-}
-#viewBookshelf #viewBookshelfControlsForm {
-  text-align: right;
-}
-#viewBookshelf #viewBookshelfControlsForm .btn {
-  margin: 1.3125rem 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    My Searches
    style declarations for userBackendSearches.xhtml
