@@ -2,68 +2,33 @@
    User
    style declarations for user.xhtml
    ==============================================================*/
-/* USER LOGIN */
+/* USERDATA */
 /* BLOCK */
-.user-login {
-	/* LOCAL */
-	&__local {}
-	/* EXTERNAL */
-	&__external {
-		.user-login {
-			&__options {
-				li {
-					height: 50px;
-					text-align: right;
-					margin-top: 10px;
-					.provider-logo {
-						float: left;
-					}
-					.btn {
-						margin-top: 8px;
-					}
-				}
-				img {
-					max-height: 50px;
-				}
-			}
+.userdata {
+	/* ELEMENT */
+	h3 {}
+	&__gravatar {
+		img {
+			display: block;
 		}
 	}
-	/* OPEN ID */
-	&__openid {}
-	/* ELMENTS */
+	&__data {
+        overflow-x: auto;
+	}
 	&__action {
+		text-align: right;
 		.btn {
 			margin: 0;
 		}
 	}
-	&__options {}
 }
 
-/* USER LOGIN CARD */
-.user-login {
-	&__cards {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-gap: 15px;
-	}
-	&__card {
-		height: 100%;
-		border: 1px solid @middlegray;
-		h3 {
-			margin: 0;
-			padding: 10px 15px;
-			border-bottom: 1px solid @middlegray;
-			background-color: @lightgray;
-		}
-	}
-	&__card-body {
-		padding: 15px;
+#editUserdataModal {
+	.checkbox input[type=checkbox], 
+	.checkbox-inline input[type=checkbox] {
+		margin-left: -15px;
 	}
 }
-
-/* MODALS */
-#createAccountModal p { margin: 0; }
-#createAccountModal .modal-footer { margin: 0; }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
@@ -72,13 +37,10 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.user-login {
-		&__cards {
-			grid-template-columns: 1fr;
-		}
-	}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.userdata__gravatar img { margin: 0 auto 15px auto; }
+	.userdata__action { text-align: center; }
+}
