@@ -89,6 +89,7 @@ public class UserBean implements Serializable {
     private String activationKey;
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
+    private IAuthenticationProvider loggedInProvider;
     private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
@@ -198,6 +199,10 @@ public class UserBean implements Serializable {
      *
      */
     public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+        return login(getAuthenticationProvider());
+    }
+
+    public String login(IAuthenticationProvider provider) throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
@@ -208,14 +213,14 @@ public class UserBean implements Serializable {
                     .orElse("");
         }
         logger.trace("login");
-        if (getAuthenticationProvider() != null) {
-            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result));
+        if (provider != null) {
+            provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
     }
 
-    private void completeLogin(LoginResult result) {
+    private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
@@ -261,10 +266,10 @@ public class UserBean implements Serializable {
                     SearchHelper.updateFilterQuerySuffix(request);
 
                     // Add this user to configured groups
-                    if (getAuthenticationProvider().getAddUserToGroups() != null && !getAuthenticationProvider().getAddUserToGroups().isEmpty()) {
+                    if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
                         Role role = DataManager.getInstance().getDao().getRole("member");
                         if (role != null) {
-                            for (String groupName : getAuthenticationProvider().getAddUserToGroups()) {
+                            for (String groupName : provider.getAddUserToGroups()) {
                                 UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(groupName);
                                 if (userGroup != null && !userGroup.getMembers().contains(user)) {
                                     userGroup.addMember(user, role);
@@ -273,10 +278,11 @@ public class UserBean implements Serializable {
                             }
                         }
                     }
+                    this.loggedInProvider = provider;
                     return;
                 } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
                     //user may login, but setting up viewer account failed
-                    getAuthenticationProvider().logout();
+                    provider.logout();
                     throw new AuthenticationProviderException(e);
                 }
             } else {
@@ -308,8 +314,9 @@ public class UserBean implements Serializable {
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
-        if (getAuthenticationProvider() != null) {
-            getAuthenticationProvider().logout();
+        if (loggedInProvider != null) {
+            loggedInProvider.logout();
+            loggedInProvider = null;
         }
         try {
             wipeSession(request);
@@ -961,16 +968,16 @@ public class UserBean implements Serializable {
     }
 
     public boolean isAllowPasswordChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
+        return loggedInProvider != null && loggedInProvider.allowsPasswordChange();
     }
 
     public boolean isAllowNickNameChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsNicknameChange();
+        return loggedInProvider != null && loggedInProvider.allowsNicknameChange();
 
     }
 
     public boolean isAllowEmailChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsEmailChange();
+        return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 
     }
 }

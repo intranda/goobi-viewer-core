@@ -239,9 +239,8 @@
                         <ul>
                             <ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
                                 <li class="user-login__body-login-open-id-provider #{provider.name}">
-                                    <h:commandLink action="#{userBean.login}">
+                                    <h:commandLink action="#{userBean.login(provider)}">
                                         #{provider.name}
-                                        <f:setPropertyActionListener target="#{userBean.authenticationProvider}" value="#{provider}" />
                                         <f:passThroughAttribute name="aria-label" value="#{msg.login__login_with} #{provider.name}" />
                                     </h:commandLink>
                                 </li>
