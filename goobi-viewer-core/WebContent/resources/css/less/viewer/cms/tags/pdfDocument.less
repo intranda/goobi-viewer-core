@@ -1,9 +1,14 @@
 .pdf-container {
 	pdfpage {
+		.page {
 			border-top: 1px solid black;
+			position: relative;
+		}
 	}
-	.page {
-		position: relative;
+	pdfpage:first-of-type {
+		.page {
+			border-top: 0px;
+		}
 	}
 	canvas {
 	}

@@ -42,8 +42,6 @@
 					$(this.textLayer).css({
 						height : this.viewport.height+'px',
 			            width : this.viewport.width+'px',
-			            top : canvasOffset.top,
-			            left : canvasOffset.left
 			        });
 	
 				    // Create new instance of TextLayerBuilder class
@@ -60,8 +58,6 @@
 				      
 					$(this.annotationLayer).css({
 						width : this.viewport.width+'px',
-			          	top : canvasOffset.top,
-			            left : canvasOffset.left
 					});
 				      
 					pdfjsLib.AnnotationLayer.render({

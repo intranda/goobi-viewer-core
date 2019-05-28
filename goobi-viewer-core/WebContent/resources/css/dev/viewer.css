@@ -9627,11 +9627,12 @@ div[id*="-Modal"] .email-form .form-group {
   border-color: #3365a9;
   background-color: #3365a9;
 }
-.pdf-container pdfpage {
+.pdf-container pdfpage .page {
   border-top: 1px solid black;
-}
-.pdf-container .page {
   position: relative;
+}
+.pdf-container pdfpage:first-of-type .page {
+  border-top: 0px;
 }
 .pdf-container .text-layer {
   position: absolute;
