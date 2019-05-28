@@ -23,9 +23,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -68,7 +71,7 @@ public class ContextListener implements ServletContextListener {
                 }
             }
             LicenseType.addCoreLicenseTypesToDB();
-        } catch (DAOException e) {
+        } catch (DAOException | PersistenceException e) {
             logger.error(e.getMessage());
         }
         //        createResources();
