@@ -25,49 +25,127 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
+    var _userComments = {};
         
     viewer.userLogin = {
-    		/**
-    		 * @description Method to initialize the user login module.
-    		 * @method init
-    		 * */
-            init : function() {
-            	if ( _debug ) {
-            		console.log( 'INIT: viewerJS.userLogin' );
-            	}
+    	/**
+    	 * @description Method to initialize the user login module.
+    	 * @method init
+    	 * */
+         init : function() {
+           	if ( _debug ) {
+           		console.log( 'INIT: viewerJS.userLogin' );
+           	}
             	
-            	// toggle login
-            	$( 'body' ).on( 'click', '[data-toggle="login"]', function() {
-            		$( '#userLogin' ).addClass( 'active' );
-            	} );
+          	// set comments object to session storage
+           	if ( sessionStorage.getItem( 'userComments' ) == undefined || sessionStorage.getItem( 'userComments' ) === null ) {
+           		sessionStorage.setItem( 'userComments', JSON.stringify( _userComments ) );           		
+           	}
             	
-            	// hide login by clicking on body
-            	$( 'body' ).on( 'click', '#userLogin > .fa-times', function( event ) {
-            		$( '#userLogin' ).removeClass( 'active' );
-            	} );
+           	// toggle login
+           	$( 'body' ).on( 'click', '[data-toggle="login"]', function() {
+           		if ( $( this ).attr( 'data-target' ) ) {
+           			_setUserCommentsStatus( $( this ).attr( 'data-target' ) );
+           			
+           			$( '#userLogin' ).addClass( 'active' );
+           			$( 'html' ).addClass( 'no-overflow' );
+           		}
+           		else {
+           			_unsetUserCommentsStatus();
+           			
+           			$( '#userLogin' ).addClass( 'active' );
+           			$( 'html' ).addClass( 'no-overflow' );            			
+           		}
+           	} );
             	
-            	// toggle retrieve account
-            	$( 'body' ).on( 'click', '[data-open="retrieve-account"]', function() {
-            		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount' ).hide();
-        			$( '#loginTypeRetrieveAccount' ).show();
-        			$( '[id*="userEMailToRetrieve"]' ).focus();
-            	} );
-            	$( 'body' ).on( 'click', '[data-close="retrieve-account"]', function() {
-            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-            		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
-            	} );            	
+           	// hide login by clicking on body
+           	$( 'body' ).on( 'click', '#userLogin > .fa-times', function( event ) {
+           		_unsetUserCommentsStatus();
+           		$( '#userLogin' ).removeClass( 'active' );
+           		$( 'html' ).removeClass( 'no-overflow' );
+           	} );
+           	
+           	// jump to user comments target if set
+           	_jumpToComments();
             	
-            	// toggle create account
-            	$( 'body' ).on( 'click', '[data-open="create-account"]', function() {
-            		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount' ).hide();
-            		$( '#loginTypeCreateAccount' ).show();
-            		$( '[id*="userCreateAccountNick"]' ).focus();
-            	} );
-            	$( 'body' ).on( 'click', '[data-close="create-account"]', function() {
-            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-            		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
-            	} );            	
-            }
+           	// toggle retrieve account
+           	$( 'body' ).on( 'click', '[data-open="retrieve-account"]', function() {
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount' ).hide();
+        		$( '#loginTypeRetrieveAccount' ).show();
+        		$( '[id*="userEMailToRetrieve"]' ).focus();
+           	} );
+           	$( 'body' ).on( 'click', '[data-close="retrieve-account"]', function() {
+           		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
+           	} );            	
+            	
+           	// toggle create account
+           	$( 'body' ).on( 'click', '[data-open="create-account"]', function() {
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount' ).hide();
+           		$( '#loginTypeCreateAccount' ).show();
+           		$( '[id*="userCreateAccountNick"]' ).focus();
+           	} );
+           	$( 'body' ).on( 'click', '[data-close="create-account"]', function() {
+           		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
+           	} );
+        }
+    }
+    
+    /**
+     * @description Method to set the user comments status.
+     * @method _setUserCommentsStatus
+     * @param {String} target The scroll target to the user comments.
+     * */
+    function _setUserCommentsStatus( target ) {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _setUserCommentsStatus' );
+    		console.log( '--> target: ', target );
+    	}
+    	
+    	var comments = JSON.parse( sessionStorage.getItem( 'userComments' ) );
+    	
+    	comments.set = true;
+		comments.target = target;
+		
+		sessionStorage.setItem( 'userComments', JSON.stringify( comments ) );
+    }
+    
+    /**
+     * @description Method to unset the user comments status.
+     * @method _unsetUserCommentsStatus
+     * */
+    function _unsetUserCommentsStatus() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _unsetUserCommentsStatus' );
+    	}
+    	
+    	var comments = JSON.parse( sessionStorage.getItem( 'userComments' ) );
+    	
+    	comments.set = false;
+    	comments.target = '';
+    	
+    	sessionStorage.setItem( 'userComments', JSON.stringify( comments ) );
+    }
+    
+    /**
+     * @description Method to jump to the user comments target.
+     * @method _jumpToComments
+     * */
+    function _jumpToComments() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _jumpToComments' );
+    	}
+    	
+    	var comments = JSON.parse( sessionStorage.getItem( 'userComments' ) );
+    	
+    	if ( comments.set && $( '#userCommentAdd' ).length > 0 ) {
+    		location.hash = comments.target;
+    		$( '#userCommentAdd' ).focus();
+    	}
+    	else {
+    		_unsetUserCommentsStatus();
+    	}
     }
         
     return viewer;

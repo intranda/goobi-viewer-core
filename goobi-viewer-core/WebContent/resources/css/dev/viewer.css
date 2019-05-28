@@ -5841,6 +5841,20 @@ div[id*="-Modal"] .email-form .form-group {
 .user-login__footer .btn {
   font-size: inherit;
 }
+/* MODIFICATION */
+#login-body .user-login {
+  width: 100vw;
+  height: 100vh;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+}
+#login-body .user-login > .fa {
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
@@ -7233,23 +7247,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Login
-   style declarations for login.xhtml
-   ==============================================================*/
-#login-body .user-login {
-  width: 100vw;
-  height: 100vh;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: center;
-      justify-content: center;
-}
-#login-body .user-login i.fa.fa-times {
-  display: none;
-}
 /* WIDGETS */
 /* ==============================================================
    Widgets
