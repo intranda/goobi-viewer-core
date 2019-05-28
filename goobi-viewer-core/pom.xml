@@ -15,7 +15,7 @@
 	<repositories>
 		<repository>
 			<id>intranda</id>
-			<url>https://nexus.intranda.com/repository/intranda</url>
+			<url>https://nexus.intranda.com/repository/maven-intranda</url>
 		</repository>
 <!-- 		<repository> -->
 <!-- 			<id>in-project</id> -->
