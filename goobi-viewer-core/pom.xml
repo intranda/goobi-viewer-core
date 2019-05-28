@@ -14,7 +14,7 @@
 
 	<repositories>
 		<repository>
-			<id>intranda</id>
+			<id>maven-intranda</id>
 			<url>https://nexus.intranda.com/repository/maven-intranda</url>
 		</repository>
 <!-- 		<repository> -->
@@ -23,6 +23,17 @@
 <!-- 			<url>file://${project.basedir}/WebContent/WEB-INF/lib</url> -->
 <!-- 		</repository> -->
 	</repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>intranda</id>
+      <url>https://nexus.intranda.com/repository/intranda</url>
+    </repository>
+    <snapshotRepository>
+      <id>intranda-snapshot</id>
+      <url>https://nexus.intranda.com/repository/maven-intranda-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 	<dependencies>
 
