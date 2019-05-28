@@ -1,181 +1,351 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/template.html">
-	
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
+
 	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
-	
-    <!-- METADATA -->
-    <ui:define name="metadata">
-	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsPage.menuTitle, false, false, true)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />            
-            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-        </f:metadata>
-    </ui:define>
-    
-    <!-- BREADCRUMBS -->
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 
-    <!-- CONTENT -->
-    <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
-            <div id="templateOverviewPage" class="tpl-overviewpage">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
+	<!-- METADATA -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPage(cmsPage.menuTitle, false, false, true)}" />
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />
+			<f:event type="preRenderView"
+				listener="#{searchBean.resetSearchFilter}" />
+		</f:metadata>
+	</ui:define>
 
-                <!-- PAGE UNPUBLISHED -->
-                <ui:fragment rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-                </ui:fragment>
+	<!-- BREADCRUMBS -->
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
 
-                <h2>#{cmsPage.title}</h2>
+	<!-- CONTENT -->
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="templateOverviewPage" class="tpl-overviewpage">
+				<!-- EDIT PAGE -->
+				<ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
+					<ui:include src="/resources/cms/includes/editPage.xhtml" />
+				</ui:fragment>
 
-                <ui:fragment rendered="#{cmsPage.hasContent('subtitle')}">
-                    <p class="tpl-overviewpage__subtitle">#{cmsPage.getContent('subtitle')}</p>
-                </ui:fragment>                
+				<!-- PAGE UNPUBLISHED -->
+				<ui:fragment rendered="#{!cmsPage.published}">
+					<div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
+				</ui:fragment>
 
-                <!-- OVERVIEW METADATA -->
-                <div class="tpl-overviewpage__overview">
-                    <!-- THUMBNAIL -->
-                    <div class="tpl-overviewpage__overview-thumbnail">
-                        <ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
-                            <img src="#{imageDelivery.representativeThumbnail}" class="img-responsive" />
-                        </ui:fragment>
-                        <ui:fragment rendered="#{!activeDocumentBean.recordLoaded}">
-                            <img src="#{imageDelivery.staticImagesURI}access_denied.png" class="img-responsive" />
-                        </ui:fragment>
-                    </div>
+				<h2>#{cmsPage.title}</h2>
 
-                    <!-- METADATA -->
-                    <div class="tpl-overviewpage__overview-metadata">
-                        <h:form id="overviewMetadataForm" prependId="false">
-                            <ui:fragment rendered="true">
-                                <ui:repeat value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}" var="metadata"
-                                    varStatus="status">
-                                    <ui:fragment rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
-                                        <dl class="dl-horizontal 'edit-metadata'">
-                                            <dt>
-                                                <span class="tpl-overviewpage__overview-metadata-label" data-toggle="tooltip" data-placement="top" title="#{msg[metadata.label]}">
-                                                    <h:outputText value="#{msg[metadata.label]}: " escape="false" />
-                                                </span>
-                                            </dt>
-                                            <ui:fragment rendered="#{metadata.group}">
-                                                <dd>
-                                                    <ui:repeat value="#{metadata.values}" var="val">
-                                                        <span class="tpl-overviewpage__overview-metadata-value">
-                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                                <f:param value="#{val.getParamLabelWithColon(0)}" />
-                                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(1)}" />
-                                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(2)}" />
-                                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(3)}" />
-                                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(4)}" />
-                                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(5)}" />
-                                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(6)}" />
-                                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(7)}" />
-                                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(8)}" />
-                                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                                <f:param value="#{val.getParamLabelWithColon(9)}" />
-                                                                <f:param value="#{val.getComboValueShort(9)}" />
-                                                            </h:outputFormat>
-                                                        </span>
+				<ui:fragment rendered="#{cmsPage.hasContent('subtitle')}">
+					<p class="tpl-overviewpage__subtitle">#{cmsPage.getContent('subtitle')}</p>
+				</ui:fragment>
 
-                                                        <div class="clearfix"></div>
-                                                    </ui:repeat>
-                                                </dd>
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{!metadata.group}">
-                                                <dd>
-                                                    <ui:repeat value="#{metadata.values}" var="val">
-                                                        <span class="tpl-overviewpage__overview-metadata-value">
-                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                                <f:param value="#{val.getComboValueShort(9)}" />
-                                                            </h:outputFormat>
-                                                        </span>
+				<!-- OVERVIEW METADATA -->
+				<div class="tpl-overviewpage__overview">
+					<!-- THUMBNAIL -->
+					<div class="tpl-overviewpage__overview-thumbnail">
+						<ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
+							<img src="#{imageDelivery.representativeThumbnail}"
+								class="img-responsive" />
+						</ui:fragment>
+						<ui:fragment rendered="#{!activeDocumentBean.recordLoaded}">
+							<img src="#{imageDelivery.staticImagesURI}access_denied.png"
+								class="img-responsive" />
+						</ui:fragment>
+					</div>
 
-                                                        <div class="clearfix"></div>
-                                                    </ui:repeat>
-                                                </dd>
-                                            </ui:fragment>
-                                        </dl>
-                                    </ui:fragment>
-                                </ui:repeat>
-                            </ui:fragment>
+					<!-- METADATA -->
+					<div class="tpl-overviewpage__overview-metadata">
+						<h:form id="overviewMetadataForm" prependId="false">
+							<ui:fragment rendered="true">
+								<ui:repeat
+									value="#{metadataBean.topMetadataElement.getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}"
+									var="metadata" varStatus="status">
+									<ui:fragment
+										rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
+										<dl class="dl-horizontal 'edit-metadata'">
+											<dt>
+												<span class="tpl-overviewpage__overview-metadata-label"
+													data-toggle="tooltip" data-placement="top"
+													title="#{msg[metadata.label]}"> <h:outputText
+														value="#{msg[metadata.label]}: " escape="false" />
+												</span>
+											</dt>
+											<ui:fragment rendered="#{metadata.group}">
+												<dd>
+													<ui:repeat value="#{metadata.values}" var="val">
+														<span class="tpl-overviewpage__overview-metadata-value">
+															<h:outputFormat value="#{msg[val.masterValue]}"
+																escape="false">
+																<f:param value="#{val.getParamLabelWithColon(0)}" />
+																<f:param value="#{val.getComboValueShort(0)}" />
+																<f:param value="#{val.getParamLabelWithColon(1)}" />
+																<f:param value="#{val.getComboValueShort(1)}" />
+																<f:param value="#{val.getParamLabelWithColon(2)}" />
+																<f:param value="#{val.getComboValueShort(2)}" />
+																<f:param value="#{val.getParamLabelWithColon(3)}" />
+																<f:param value="#{val.getComboValueShort(3)}" />
+																<f:param value="#{val.getParamLabelWithColon(4)}" />
+																<f:param value="#{val.getComboValueShort(4)}" />
+																<f:param value="#{val.getParamLabelWithColon(5)}" />
+																<f:param value="#{val.getComboValueShort(5)}" />
+																<f:param value="#{val.getParamLabelWithColon(6)}" />
+																<f:param value="#{val.getComboValueShort(6)}" />
+																<f:param value="#{val.getParamLabelWithColon(7)}" />
+																<f:param value="#{val.getComboValueShort(7)}" />
+																<f:param value="#{val.getParamLabelWithColon(8)}" />
+																<f:param value="#{val.getComboValueShort(8)}" />
+																<f:param value="#{val.getParamLabelWithColon(9)}" />
+																<f:param value="#{val.getComboValueShort(9)}" />
+															</h:outputFormat>
+														</span>
 
-                            <!-- PURL -->
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    <span class="tpl-overviewpage__overview-metadata-label" data-toggle="tooltip" data-placement="top" title="#{msg.purl}"
-                                        data-original-title="#{msg.purl}">#{msg.purl}:</span>
-                                </dt>
-                                <dd>
-                                    <span class="tpl-overviewpage__overview-metadata-value">
+														<div class="clearfix"></div>
+													</ui:repeat>
+												</dd>
+											</ui:fragment>
+											<ui:fragment rendered="#{!metadata.group}">
+												<dd>
+													<ui:repeat value="#{metadata.values}" var="val">
+														<span class="tpl-overviewpage__overview-metadata-value">
+															<h:outputFormat value="#{msg[val.masterValue]}"
+																escape="false">
+																<f:param value="#{val.getComboValueShort(0)}" />
+																<f:param value="#{val.getComboValueShort(1)}" />
+																<f:param value="#{val.getComboValueShort(2)}" />
+																<f:param value="#{val.getComboValueShort(3)}" />
+																<f:param value="#{val.getComboValueShort(4)}" />
+																<f:param value="#{val.getComboValueShort(5)}" />
+																<f:param value="#{val.getComboValueShort(6)}" />
+																<f:param value="#{val.getComboValueShort(7)}" />
+																<f:param value="#{val.getComboValueShort(8)}" />
+																<f:param value="#{val.getComboValueShort(9)}" />
+															</h:outputFormat>
+														</span>
 
-                                        <c:set var="purl" value="#{fn:replace(activeDocumentBean.viewManager.getPersistentUrl(null), '/image/', '/overview/')}" />
-                                        <a href="#{purl}">
-                                            <h:outputText value="#{purl}" />
-                                        </a>
-                                    </span>
-                                </dd>
-                            </dl>
-                        </h:form>
-                    </div>
-                </div>
+														<div class="clearfix"></div>
+													</ui:repeat>
+												</dd>
+											</ui:fragment>
+										</dl>
+									</ui:fragment>
+								</ui:repeat>
+							</ui:fragment>
 
-                <!-- LITERATURE -->
-                <div class="tpl-overviewpage__literature">
-                    <img id="literatureLoader" src="#{request.contextPath}/resources/images/infinity_loader.gif" />
-                    <h:outputText id="literature" escape="false" />
-                </div>
-            </div>
-            
-            <script type="text/javascript">
-            var url = "#{cmsPage.getContent('literature')}";
-            if(url) {            	
-                $.ajax({
-                	url: url,
-                	type: "GET",
-                	datatype: "HTML"                                
-                }).then(function(data) {
-                	$('#literature').html(data);
-                	$('#literatureLoader').hide();
-                });
-            } else {
-            	$('#literatureLoader').hide();
-            }
+							<!-- PURL -->
+							<dl class="dl-horizontal">
+								<dt>
+									<span class="tpl-overviewpage__overview-metadata-label"
+										data-toggle="tooltip" data-placement="top" title="#{msg.purl}"
+										data-original-title="#{msg.purl}">#{msg.purl}:</span>
+								</dt>
+								<dd>
+									<span class="tpl-overviewpage__overview-metadata-value">
+
+										<c:set var="purl"
+											value="#{fn:replace(activeDocumentBean.viewManager.getPersistentUrl(null), '/image/', '/overview/')}" />
+										<a href="#{purl}"> <h:outputText value="#{purl}" />
+									</a>
+									</span>
+								</dd>
+							</dl>
+						</h:form>
+					</div>
+				</div>
+
+				<!-- LITERATURE -->
+				<div class="tpl-overviewpage__literature">
+					<img id="literatureLoader"
+						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
+					<h:outputText id="literature" escape="false" />
+					
+					<pdfDocument data="#{cmsPage.getContent('literature')}"/>
+					
+					<!--                     <iframe id="pdfView" class="pdf_view" onload="resizeIframe(this)"></iframe> -->
+<!-- 					<div id="pdfView" class="pdf_view"></div> -->
+				</div>
+			</div>
+
+			<script type="text/javascript">
+			//<![CDATA[   
+			var url = "#{cmsPage.getContent('literature')}";
+                console.log( "url ", url );
+                if ( url ) {
+                    if ( url.toLowerCase().endsWith( ".pdf" ) ) {
+                        
+                        riot.mount( 'pdfDocument' );
+                        
+//                         renderPDF(url);
+//                         	resizePDF(url);
+
+                        
+                    }
+                    else {
+                        $.ajax( {
+                            url: url,
+                            type: "GET",
+                            datatype: "HTML"
+                        } ).then( function( data ) {
+                            $( '#literature' ).html( data );
+                            $( '#literatureLoader' ).hide();
+                        } );
+                    }
+                }
+                else {
+                    $( '#literatureLoader' ).hide();
+                }
+                
+                function resizePDF(url) {
+                    var loadingTask = pdfjsLib.getDocument( url );
+               		loadingTask.promise.then( function( pdf ) {
+               		    console.log("pdf ", pdf, pdf.numPages);
+               		    var pages = [];
+               		    for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+               		        var page = pdf.getPage(pageNo);
+               		        pages.push(Q(page));
+               		    }
+                   		 Q.allSettled(pages).then(function(results) {
+                         	var errorMsg = "";
+                         	
+               		 		var totalHeight = 0;
+                            results.forEach(function (result) {
+                                 if (result.state === "fulfilled") {
+                                 	var page = result.value;
+               		    			console.log("page ", page);
+	                   		     	var viewport = page.getViewport( 1 );
+	                   		     	var viewportHeight = viewport.height;
+	                   		     	console.log("page height ", viewportHeight);
+	                   		     	totalHeight += viewportHeight;
+                                 }
+               		    	});
+                            totalHeight += 32;
+                            console.log("total height ", totalHeight);
+                            console.log("load url ", url);
+                            $("#pdfView").height(totalHeight);
+                            $("#pdfView").show();
+        					$("#pdfView").attr("src", url);    
+                            $("#pdfView").on("load", function() {
+                            	$('#literatureLoader').hide();
+                            });
+                            
+               			});
+               		});
+                }
+                
+                function resizeIframe( iframe ) {
+                    console.log( "resize object ", $( iframe ) );
+                    $( iframe ).iframeAutoHeight()
+                    //                 let pages = $("#pdfView").children();
+                    //                 console.log("pdf pages ", iframe.getSVGDocument());
+                    console.log( "resize iframe ", iframe, " to ", iframe.contentWindow.document.body );
+                    iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+                }
+                
+                function renderPDF(url) {
+                    var loadingTask = pdfjsLib.getDocument( url );
+                    loadingTask.promise.then( function( pdf ) {
+                        pdf.getPage( 1 ).then( function( page ) {
+                            var scale = 1.4;
+                            var viewport = page.getViewport( scale );
+                            
+                            // Apply page dimensions to the <canvas> element.
+                            var container = document.getElementById( "pdfView" );
+                            
+                            var canvas = document.createElement("canvas");
+                            canvas.setAttribute("class" , "pdf-canvas");
+                            container.appendChild(canvas);
+                            var canvasOffset = $(canvas).offset();
+                            
+                            var context = canvas.getContext( "2d" );
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            console.log("canvas ", canvas);
+                            
+                            // Render the page into the <canvas> element.
+                            var renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            page.render( renderContext )
+                              .then(function() {
+							    // Get text-fragments
+							    return page.getTextContent();
+							  })
+							  .then(function(textContent) {
+							      console.log("text content ", textContent);
+							    
+							    // Create div which will hold text-fragments
+							    var textLayerDiv = document.createElement("div");
+							    textLayerDiv.setAttribute("class", "text-layer");
+							    container.appendChild(textLayerDiv);
+							    $('.text-layer').css({
+						            height : viewport.height+'px',
+						            width : viewport.width+'px',
+						            top : canvasOffset.top,
+						            left : canvasOffset.left
+						        });
+
+							
+							    // Create new instance of TextLayerBuilder class
+							    pdfjsLib.renderTextLayer({
+							        textContent: textContent,
+							        container: $(".text-layer").get(0),
+							        viewport: viewport,
+							        textDivs: []
+							    });
+							    
+							    return page.getAnnotations();
+							  })
+							  .then(function(annotationData) {
+								    
+								    
+								    // Create div which will hold text-fragments
+								    var annotationLayerDiv = document.createElement("div");
+								    annotationLayerDiv.setAttribute("class", "annotation-layer");
+								    container.appendChild(annotationLayerDiv);
+								    $('.annotation-layer').css({
+							            height : viewport.height+'px',
+							            width : viewport.width+'px',
+							            top : canvasOffset.top,
+							            left : canvasOffset.left
+							        });
+							      
+								    
+								    pdfjsLib.AnnotationLayer.render({
+								        viewport: viewport.clone({ dontFlip: true }),
+								        div: $(".annotation-layer").get(0),
+								        annotations: annotationData,
+								        page: page,
+								        linkService : new SimpleLinkService()
+								    });
+							  })
+                            
+                            .then( function() {
+                                console.log( "Page rendered!" );
+                                $(container).show();
+                                $( '#literatureLoader' ).hide();
+                            } );
+                        } );
+                    } );
+                }
+                
+
+                
+              //]]>
             </script>
-        </f:view>
-    </ui:define>
+		</f:view>
+	</ui:define>
 
-    <!-- SIDEBAR -->
+	<!-- SIDEBAR -->
 	<ui:define name="sidebar">
 		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+	</ui:define>
 </ui:composition>
