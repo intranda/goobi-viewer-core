@@ -80,6 +80,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 	public static final String CONTENT_TYPE_XML = "text/xml";
 	public static final String CONTENT_TYPE_HTML = "text/html";
 	public static final String CONTENT_TYPE_SVG = "image/svg+xml";
+    public static final String CONTENT_TYPE_PDF = "application/pdf";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -234,6 +235,8 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 			return ImageFileFormat.getImageFileFormatFromFileExtension(extension).getMimeType();
 		case "svg":
 			return CONTENT_TYPE_SVG;
+		case "pdf":
+		    return CONTENT_TYPE_PDF;
 		default:
 			return "";
 		}

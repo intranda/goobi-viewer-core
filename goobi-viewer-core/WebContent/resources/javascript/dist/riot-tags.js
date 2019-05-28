@@ -486,3 +486,115 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		this.update();
     	}.bind( this ) );
 });
+riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
+
+		this.pages = [];
+
+		var loadingTask = pdfjsLib.getDocument( this.opts.data );
+	    loadingTask.promise.then( function( pdf ) {
+	        var pageLoadingTasks = [];
+	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+   		        var page = pdf.getPage(pageNo);
+   		        pageLoadingTasks.push(Q(page));
+   		    }
+   		    return Q.allSettled(pageLoadingTasks);
+	    }.bind(this))
+	    .then(function(results) {
+			results.forEach(function (result) {
+			    if (result.state === "fulfilled") {
+                	var page = result.value;
+                	this.pages.push(page);
+                } else {
+                    logger.error("Error loading page: ", result.reason);
+                }
+			}.bind(this));
+			this.update();
+        }.bind(this))
+	    .then( function() {
+			$(".pdf-container").show();
+            $( '#literatureLoader' ).hide();
+		} );
+
+});
+riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="pdf-canvas" id="pdf-canvas_{opts.pageno}"></canvas><div class="text-layer" id="pdf-text_{opts.pageno}"></div><div class="annotation-layer" id="pdf-annotations_{opts.pageno}"></div></div>', '', '', function(opts) {
+	this.on('mount', function () {
+			console.log("load page ", this.opts.pageno, this.opts.page);
+			this.scale = this.opts.scale ? this.opts.scale : 1.4;
+			this.viewport = this.opts.page.getViewport( this.scale );
+
+            this.container = document.getElementById( "page_" + this.opts.pageno );
+            this.canvas = document.getElementById( "pdf-canvas_" + this.opts.pageno );
+            this.textLayer = document.getElementById( "pdf-text_" + this.opts.pageno );
+            this.annotationLayer = document.getElementById( "pdf-annotations_" + this.opts.pageno );
+
+            if(this.container) {
+                this.loadPage();
+            }
+	});
+
+            this.loadPage = function() {
+	            var canvasOffset = $(this.canvas).offset();
+	            var context = this.canvas.getContext( "2d" );
+	            this.canvas.height = this.viewport.height;
+	            this.canvas.width = this.viewport.width;
+
+	            console.log("render ", this.opts.page, context, this.viewport);
+
+	            this.opts.page.render( {
+					canvasContext: context,
+	                viewport: this.viewport
+	            })
+	            .then(function() {
+				    return this.opts.page.getTextContent();
+	            }.bind(this))
+				.then(function(textContent) {
+
+					$(this.textLayer).css({
+						height : this.viewport.height+'px',
+			            width : this.viewport.width+'px',
+			            top : canvasOffset.top,
+			            left : canvasOffset.left
+			        });
+
+					pdfjsLib.renderTextLayer({
+				        textContent: textContent,
+				        container: this.textLayer,
+				        viewport: this.viewport,
+				        textDivs: []
+				    });
+
+				    return this.opts.page.getAnnotations();
+	            }.bind(this))
+				.then(function(annotationData) {
+
+					$(this.annotationLayer).css({
+						width : this.viewport.width+'px',
+			          	top : canvasOffset.top,
+			            left : canvasOffset.left
+					});
+
+					pdfjsLib.AnnotationLayer.render({
+						viewport: this.viewport.clone({ dontFlip: true }),
+				        div: this.annotationLayer,
+				        annotations: annotationData,
+				        page: this.opts.page,
+				        linkService : {
+							getDestinationHash: function(dest) {
+								return '#';
+							},
+							getAnchorUrl: function(hash) {
+				                return '#';
+				            },
+				            isPageVisible: function() {
+				                return true;
+				            },
+				            externalLinkTarget: pdfjsLib.LinkTarget.BLANK,
+				        }
+					});
+
+	            }.bind(this))
+            }.bind(this)
+
+});
+	
+	

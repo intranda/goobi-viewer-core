@@ -27,7 +27,9 @@
     "karma-chrome-launcher": "*",
     "karma-firefox-launcher": "*",
     "karma-mocha-reporter": "*",
-    "karma-htmlfile-reporter": "*"
+    "karma-htmlfile-reporter": "*",
+    "webpack": "4.0.0",
+    "pdfjs-dist": "*"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",

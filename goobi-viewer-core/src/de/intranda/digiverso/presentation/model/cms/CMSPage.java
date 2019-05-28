@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -893,6 +894,9 @@ public class CMSPage implements Comparable<CMSPage> {
                             logger.error(e.getMessage(), e);
                         }
                         break;
+                    case CMSMediaItem.CONTENT_TYPE_PDF:
+                        URI uri = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "cms/media/get/" + item.getMediaItem().getId() + ".pdf");
+                        return uri.toString();
                     default:
                         // Images
                         contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
