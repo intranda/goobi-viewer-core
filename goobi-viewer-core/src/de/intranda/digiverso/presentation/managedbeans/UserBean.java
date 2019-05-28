@@ -828,7 +828,7 @@ public class UserBean implements Serializable {
     }
 
     public void setAuthenticationProviderName(String name) {
-        this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(getLocalAuthenticationProvider());
     }
 
     public String getAuthenticationProviderName() {
