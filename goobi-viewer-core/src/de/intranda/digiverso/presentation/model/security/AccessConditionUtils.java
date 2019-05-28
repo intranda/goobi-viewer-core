@@ -822,17 +822,14 @@ public class AccessConditionUtils {
 
                     // Check IP range
                     if (StringUtils.isNotEmpty(remoteAddress)) {
-                        if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
-                            if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                        if ( (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                                 logger.debug("Access granted to localhost");
                                 accessMap.put(key, Boolean.TRUE);
-
-                            }
                         } else {
                             // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                             for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
                                 // logger.debug("ip range: " + ipRange.getSubnetMask());
-                                if (ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
+                                if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
                                     logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
                                     accessMap.put(key, Boolean.TRUE);
                                 }
