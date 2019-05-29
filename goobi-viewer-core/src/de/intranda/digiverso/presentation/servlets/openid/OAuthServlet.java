@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.servlets.openid;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -49,6 +51,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.security.authentication.AuthenticationProviderException;
@@ -67,6 +70,9 @@ public class OAuthServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(OAuthServlet.class);
 
     public static final String URL = "oauth";
+    
+    private BCrypt bcrypt = new BCrypt();
+
 
     /**
      * This future gets fulfilled once the {@link UserBean} has finished setting up the sessin and redirecting the request.
@@ -216,6 +222,16 @@ public class OAuthServlet extends HttpServlet {
                 }
             }
                 break;
+            case "openid-test": 
+                String email = oar.getCode();
+                String password = oar.getParam("token");
+                Optional<User> user = loginUser(email, password);
+                if(user.isPresent()) {
+                    JSONObject jsonProfile = new JSONObject(Collections.singletonMap("email", email));
+                    this.redirected = provider.completeLogin(jsonProfile, request, response);
+                    return true;
+                }
+                break;
             default:
                 // Other providers
                 oAuthTokenRequest = OAuthClientRequest.tokenLocation(provider.getUrl() + "/access_token")
@@ -231,5 +247,24 @@ public class OAuthServlet extends HttpServlet {
         }
         return false;// Optional.empty();
     }
+    
+    
+    private Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
+        if (StringUtils.isNotEmpty(email)) {
+            try {
+                User user = DataManager.getInstance().getDao().getUserByEmail(email);
+                boolean refused = true;
+                if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
+                        && bcrypt.checkpw(password, user.getPasswordHash())) {
+                    refused = false;
+                }
+                return refused ? Optional.empty() : Optional.ofNullable(user);
+            } catch (DAOException e) {
+                throw new AuthenticationProviderException(e);
+            }
+        }
+        return Optional.empty();
+    }
+
 
 }

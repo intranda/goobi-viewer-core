@@ -92,7 +92,7 @@ public class LoginFilter implements Filter {
             if (user == null) {
                 logger.debug("No user found, redirecting to login...");
                 ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
             } else if (httpRequest.getRequestURI().contains("/admin")) {
                 try {
                     if (user.isSuperuser() || user.isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
@@ -108,7 +108,7 @@ public class LoginFilter implements Filter {
                     logger.error(e.getMessage(), e);
                 }
                 ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
             } else {
                 chain.doFilter(request, response); // continue
             }

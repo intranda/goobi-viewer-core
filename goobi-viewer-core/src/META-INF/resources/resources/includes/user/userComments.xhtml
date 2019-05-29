@@ -12,6 +12,9 @@
 
     <!-- USER COMMENTS -->
     <ui:fragment rendered="#{activeDocumentBean.viewManager.allowUserComments}">
+        <!-- JUMP TO THIS ANCHOR AFTER LOGIN -->
+        <a name="userComments"></a>
+    
         <div id="userComments" class="user-comments">
             <!-- USER NOT LOGGED IN -->
             <ui:fragment rendered="#{!userBean.loggedIn}">
@@ -19,10 +22,18 @@
                     <h3>#{msg.commentAdd}</h3>
                     
                     <h:outputText value="#{msg.commentDescription} " escape="false" />
+                    
                     <br />
-                    <a href="#{navigationHelper.applicationUrl}user/?from=#{navigationHelper.currentUrl}" class="btn btn--icon" role="button">
+                    
+                    <!-- TOGGLE LOGIN -->
+                    <button 
+                        type="button" 
+                        class="btn btn--link" 
+                        data-toggle="login" 
+                        data-target="userComments" 
+                        aria-label="#{msg.login}">
                         #{msg.login}
-                    </a>
+                    </button>
                 </div>
             </ui:fragment>
             

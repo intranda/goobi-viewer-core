@@ -84,7 +84,7 @@ public class CmsMediaBean implements Serializable {
 
 	private String selectedTag;
 //    private List<Selectable<CMSMediaItem>> mediaItems = null;
-	private final TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
+	private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider;
 	private CategorizableTranslatedSelectable<CMSMediaItem> selectedMediaItem = null;
 	private String filter = "";
 	private String filenameFilter = "";
@@ -93,7 +93,14 @@ public class CmsMediaBean implements Serializable {
 
 	public CmsMediaBean() {
 		super();
-		dataProvider = initDataProvider();
+		resetData();
+	}
+	
+	/**
+	 * Reload all media items, along with the available categories 
+	 */
+	public void resetData() {
+	    dataProvider = initDataProvider();
 	}
 
 	/**

@@ -72,9 +72,13 @@ var viewerJS = (function () {
         // init save scroll positions
         viewerJS.scrollPositions.init();
 
+        // init user login
+        viewerJS.userLogin.init();
+
         // init scroll page animated
         this.pageScroll.init(_defaults.pageScrollSelector, _defaults.pageScrollAnchor);
-
+        this.pageScroll.scrollToFragment();
+        
         // init some image methods
         viewer.loadThumbnails();
         viewer.initFragmentNavigation();

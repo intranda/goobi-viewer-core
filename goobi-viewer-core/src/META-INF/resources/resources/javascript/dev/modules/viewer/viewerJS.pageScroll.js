@@ -53,7 +53,23 @@ var viewerJS = ( function( viewer ) {
             _elem.on( 'click', function() {
                 _scrollPage( _text );
             } );
+        },
+    
+        scrollToFragment: function(fragment) {
+            if(!fragment) {
+                let url = window.location.href;
+                if(url.includes('#')) {
+                    let matches = url.match(/#([\w-]+)/);
+                    if(matches) {
+                        fragment = matches[0];
+                    }
+                }
+            }
+            if(fragment) {
+                $(fragment).focus();
+            }
         }
+    
     };
     
     /**

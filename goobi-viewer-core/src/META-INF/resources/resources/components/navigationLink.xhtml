@@ -14,7 +14,7 @@
 	<!-- IMPLEMENTATION -->
     <composite:implementation>
 		<ui:fragment rendered="#{cc.attrs.navItem.openInNewWindow}">
-            <a class="#{cc.attrs.linkClass}" href="#{cc.attrs.navItem.navigationUrl}" target="_blank" ref="nofollow">#{msg[cc.attrs.navItem.itemLabel]}</a>
+            <a class="#{cc.attrs.linkClass}" href="#{cc.attrs.navItem.navigationUrl}" target="_blank" rel="noopener">#{msg[cc.attrs.navItem.itemLabel]}</a>
         </ui:fragment>
         <ui:fragment rendered="#{!cc.attrs.navItem.openInNewWindow}">
         	<a class="#{cc.attrs.linkClass}" href="#{cc.attrs.navItem.navigationUrl}">#{msg[cc.attrs.navItem.itemLabel]}</a>

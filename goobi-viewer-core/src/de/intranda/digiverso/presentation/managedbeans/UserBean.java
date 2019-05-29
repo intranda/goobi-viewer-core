@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.weld.security.GetProtectionDomainAction;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,9 @@ import de.intranda.digiverso.presentation.model.security.authentication.LoginRes
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 @Named
@@ -86,6 +89,7 @@ public class UserBean implements Serializable {
     private String activationKey;
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
+    private IAuthenticationProvider loggedInProvider;
     private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
@@ -101,6 +105,7 @@ public class UserBean implements Serializable {
     /** Empty constructor. */
     public UserBean() {
         // the emptiness inside
+        this.authenticationProvider = getLocalAuthenticationProvider();
     }
 
     /**
@@ -194,6 +199,10 @@ public class UserBean implements Serializable {
      *
      */
     public String login() throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+        return login(getAuthenticationProvider());
+    }
+
+    public String login(IAuthenticationProvider provider) throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if (getUser() != null) {
             throw new IllegalStateException("errAlreadyLoggedIn");
         }
@@ -204,14 +213,14 @@ public class UserBean implements Serializable {
                     .orElse("");
         }
         logger.trace("login");
-        if (getAuthenticationProvider() != null) {
-            getAuthenticationProvider().login(email, password).thenAccept(result -> completeLogin(result));
+        if (provider != null) {
+            provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
     }
 
-    private void completeLogin(LoginResult result) {
+    private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
@@ -244,16 +253,23 @@ public class UserBean implements Serializable {
                         this.redirectUrl = "";
                         response.sendRedirect(redirectUrl);
                     } else if (response != null) {
-                        logger.trace("Redirecting to user page");
-                        response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/user/");
+                        Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
+                        if (currentPath.isPresent()) {
+                            logger.trace("Redirecting to current url " + currentPath.get().getCombinedPrettyfiedUrl());
+                            response.sendRedirect(
+                                    ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.get().getCombinedPrettyfiedUrl());
+                        } else {
+                            logger.trace("Redirecting to start page");
+                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                        }
                     }
                     SearchHelper.updateFilterQuerySuffix(request);
 
                     // Add this user to configured groups
-                    if (getAuthenticationProvider().getAddUserToGroups() != null && !getAuthenticationProvider().getAddUserToGroups().isEmpty()) {
+                    if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
                         Role role = DataManager.getInstance().getDao().getRole("member");
                         if (role != null) {
-                            for (String groupName : getAuthenticationProvider().getAddUserToGroups()) {
+                            for (String groupName : provider.getAddUserToGroups()) {
                                 UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(groupName);
                                 if (userGroup != null && !userGroup.getMembers().contains(user)) {
                                     userGroup.addMember(user, role);
@@ -262,10 +278,11 @@ public class UserBean implements Serializable {
                             }
                         }
                     }
+                    this.loggedInProvider = provider;
                     return;
                 } catch (DAOException | IOException | IndexUnreachableException | PresentationException e) {
                     //user may login, but setting up viewer account failed
-                    getAuthenticationProvider().logout();
+                    provider.logout();
                     throw new AuthenticationProviderException(e);
                 }
             } else {
@@ -289,15 +306,18 @@ public class UserBean implements Serializable {
      */
     public String logout() throws AuthenticationProviderException {
         logger.trace("logout");
+
+        HttpServletRequest request = BeanUtils.getRequest();
+        HttpServletResponse response = BeanUtils.getResponse();
+        String redirectUrl = redirect(request, response);
+        
         user.setTranskribusSession(null);
         setUser(null);
         password = null;
-        if (getAuthenticationProvider() != null) {
-            getAuthenticationProvider().logout();
+        if (loggedInProvider != null) {
+            loggedInProvider.logout();
+            loggedInProvider = null;
         }
-        setAuthenticationProvider(null);
-
-        HttpServletRequest request = BeanUtils.getRequest();
         try {
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request);
@@ -310,26 +330,44 @@ public class UserBean implements Serializable {
             logger.error(e.getMessage(), e);
         }
         request.getSession(false).invalidate();
+        return redirectUrl;
+    }
 
-        if (StringUtils.isNotEmpty(redirectUrl)) {
-            if ("#".equals(redirectUrl)) {
-                logger.trace("Stay on current page");
-                return "";
+    /**
+     * @param request
+     * @param response
+     * @throws AuthenticationProviderException
+     */
+    private String redirect(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProviderException {
+        Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
+            if (StringUtils.isNotEmpty(redirectUrl)) {
+                if ("#".equals(redirectUrl)) {
+                    logger.trace("Stay on current page");
+                }
+                logger.trace("Redirecting to {}", redirectUrl);
+                String redirectUrl = this.redirectUrl;
+                this.redirectUrl = "";
+                //            Messages.info("logoutSuccessful");
+
+                // Do not redirect to user backend pages because LoginFilter won't work here for some reason
+                String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+                if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
+                    return redirectUrl;
+                }
+            } else if (oCurrentPath.isPresent()) {
+                ViewerPath currentPath = oCurrentPath.get();
+                PageType pageType = currentPath.getPageType();
+                if (pageType != null && pageType.isRestricted()) {
+                    logger.trace("Redirecting to start page");
+                    String redirect = "pretty:index";
+                    return redirect;
+                } else {
+                    logger.trace("Redirecting to current url " + currentPath.getCombinedPrettyfiedUrl());
+                    String redirect = currentPath.getCombinedPrettyfiedUrl();
+                    return redirect;
+                }
             }
-            logger.trace("Redirecting to {}", redirectUrl);
-            String redirectUrl = this.redirectUrl;
-            this.redirectUrl = "";
-            //            Messages.info("logoutSuccessful");
-
-            // Do not redirect to user backend pages because LoginFilter won't work here for some reason
-            String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
-                return redirectUrl;
-            }
-        }
-
-        //        Messages.info("logoutSuccessful");
-        return "pretty:user";
+            return "";
     }
 
     /**
@@ -796,6 +834,18 @@ public class UserBean implements Serializable {
         return authenticationProvider;
     }
 
+    public void setAuthenticationProviderName(String name) {
+        this.authenticationProvider = getAuthenticationProviders().stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst().orElse(getLocalAuthenticationProvider());
+    }
+
+    public String getAuthenticationProviderName() {
+        if (this.authenticationProvider != null) {
+            return this.authenticationProvider.getName();
+        } else {
+            return "";
+        }
+    }
+
     public String loginTest() {
         user = new User();
         return null;
@@ -918,16 +968,16 @@ public class UserBean implements Serializable {
     }
 
     public boolean isAllowPasswordChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsPasswordChange();
+        return loggedInProvider != null && loggedInProvider.allowsPasswordChange();
     }
 
     public boolean isAllowNickNameChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsNicknameChange();
+        return loggedInProvider != null && loggedInProvider.allowsNicknameChange();
 
     }
 
     public boolean isAllowEmailChange() {
-        return getAuthenticationProvider() != null && getAuthenticationProvider().allowsEmailChange();
+        return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 
     }
 }

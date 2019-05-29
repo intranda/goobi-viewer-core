@@ -38,15 +38,17 @@
 
 	<!-- SIDEBAR -->
     <ui:define name="sidebar">             
-        <widgetComponent:widget_browsing />        
+        <widgetComponent:widget_browsing />
+                
         <widgetComponent:widget_bookshelfList />
+        
         <widgetComponent:widget_mySearches />
+        
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
-        </c:forEach>        
-        <widgetComponent:widget_user />
+        </c:forEach>
     </ui:define>
 
     <!-- RSS FEED -->

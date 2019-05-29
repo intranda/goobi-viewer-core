@@ -15,9 +15,11 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.cms;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -38,12 +40,16 @@ import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.xmlbeans.impl.common.IOUtil;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -72,6 +78,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.MetadataSerializer;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 
 /**
  * @author Florian Alpers
@@ -108,6 +115,42 @@ public class CMSMediaResource {
 
         List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
         return new MediaList(items);
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return File contents as HTML
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     */
+    @GET
+    @javax.ws.rs.Path("/get/{id}.pdf")
+    @Produces("application/pdf")
+    public static StreamingOutput getPDFMediaItemContent(@PathParam("id") Long id, @Context HttpServletResponse response) throws ContentNotFoundException, DAOException {
+        
+        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
+        if(item != null && item.getContentType().equals(CMSMediaItem.CONTENT_TYPE_PDF)) {
+            Path path = item.getFilePath();
+            if(Files.exists(path)) {
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("X-Frame-Options", "sameorigin");
+                return new StreamingOutput() {
+                    
+                    @Override
+                    public void write(OutputStream out) throws IOException, WebApplicationException {
+                        try(InputStream in = Files.newInputStream(path)) {
+                            IOUtils.copy(in, out);
+                        }
+                    }
+                };
+            } else {
+                throw new ContentNotFoundException("File " + path + " not found in file system");
+            }
+        } else {
+            throw new ContentNotFoundException("No pdf item with id " + id + " found");
+        }
+        
     }
 
     /**

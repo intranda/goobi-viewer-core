@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    
+	<composite:interface>
+    	<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetUser' or cc.attrs.widget == null) and userBean.loggedIn}">
+            <div id="widgetUser" class="widget widget-user #{cc.attrs.widget.cssClass}">
+                <h:form id="widgetUserStandardForm" prependId="false">
+                    <h3>#{msg.menuUser_user}</h3>
+
+                    <ul>
+                        <li class="#{navigationHelper.currentPage == 'user' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.applicationUrl}user/">
+                                #{msg.userCP}
+                            </h:outputLink>
+                        </li>
+                        <li>
+                            <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
+                                <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
+                            </h:commandLink>
+                        </li>
+                    </ul>
+                </h:form>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>
