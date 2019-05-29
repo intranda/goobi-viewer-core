@@ -7249,6 +7249,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 20px;
   /* ELEMENT */
 }
+.widget h3 {
+  word-break: break-word;
+}
 .widget ul {
   list-style: none;
   margin: 0;
