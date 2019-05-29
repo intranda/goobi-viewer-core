@@ -751,11 +751,6 @@ button {
 a.btn--icon {
   line-height: normal;
 }
-button.btn:active,
-button.btn:focus,
-button.btn:active:focus {
-  color: #fff;
-}
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -9538,9 +9533,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .pdf-container .text-layer .highlight.selected {
   background-color: #006400;
-}
-.pdf-container .text-layer ::-moz-selection {
-  background: #0000ff;
 }
 .pdf-container .text-layer ::selection {
   background: #0000ff;
