@@ -968,6 +968,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M3</version>
 				<configuration>
+				    <skipTests>false</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 						<!-- TODO Comment back in -->
