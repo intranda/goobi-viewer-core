@@ -110,7 +110,7 @@ public final class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
