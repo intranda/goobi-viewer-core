@@ -1,0 +1,234 @@
+/* ==============================================================
+   User Login
+   style declarations for userLogin.xhtml
+   ==============================================================*/
+/* USER LOGIN */
+.user-login {
+	display: none;
+	&.active {
+		position: fixed;
+		display: flex;		
+		align-items: center;
+		justify-content: center;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: @neutralgray;
+		z-index: 9999;
+	}
+	& > .fa {
+		position: absolute;
+		top: 5px;
+		right: 10px;
+		font-size: 1.5rem;
+		cursor: pointer;
+	}
+	/* WRAPPER */
+	&__wrapper {
+		width: 98%;
+		max-width: 400px;
+		max-height: 95%;
+		padding: 10px;
+		background-color: @neutralgray;
+		overflow-y: auto;
+	}
+	/* HEADER / BODY */
+	&__header,
+	&__body {
+		padding: 15px;
+		border: 1px solid @middlegray;
+		background-color: @white;
+	}
+	&__header,
+	&__body,
+	&__footer {
+		.btn--link {
+			&:active, 
+			&:focus, 
+			&:active:focus {
+				color: @black;
+			}
+		}
+		.btn--full {
+			&:active, 
+			&:focus, 
+			&:active:focus {
+				color: @white;
+			}
+		}
+	}
+	/* HEADER */
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		h3 {
+			margin: 0;
+			font-size: 1.1rem;
+		}
+	}
+	&__header-logo {
+		align-self: normal;
+		flex: 0 0 25%;
+		max-width: 25%;
+		background-image: url("@{images}/goobi_logo-blue.png");
+		background-repeat: no-repeat;
+		background-position: right center;
+		background-size: contain;
+	}
+	/* BODY */
+	&__body {
+		border-top: 0;
+		h4 {
+			font-size: 1rem;
+		}
+	}
+	&__body-login-select {}
+	&__body-login-type-wrapper {
+		min-height: 215px;		
+	}
+	&__body-login-type {
+		position: relative;
+		background-color: @white;
+		&.local {
+			display: block;
+		}
+		&.external,
+		&.retrieve,
+		&.create {
+			display: none;
+		}
+		.form-group,
+		p {
+			margin-bottom: 1rem;
+		}
+	}
+	&__body-action {
+		padding: 5px 0 1rem 0;
+		.btn--full {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+		.btn--link {
+			font-size: 0.8rem;
+		}
+	}
+	&__body-login-open-id {
+		h4 {
+			position: relative;
+			margin-right: -15px;
+			margin-bottom: 1rem;
+			margin-left: -15px;
+			font-size: 0.8rem;
+			text-align: center;
+			text-transform: uppercase;
+			color: @gray;
+			span {
+				position: relative;
+				padding: 0 3px;
+				background-color: @white;
+				z-index: 10;
+			}
+			&:before {
+				content: "";
+				position: absolute;
+				display: block;
+				top: 50%;
+				width: 100%;
+				height: 1px;
+				margin-top: -1px;
+				background-color: @middlegray;
+				z-index: 9;
+			}
+		}
+		ul {
+			.mx-list-reset;
+			li {
+				margin-bottom: 0.5rem;
+				&:last-child {
+					margin-bottom: 0;
+				}
+				&.Google,
+				&.Facebook {
+					a {
+						&:before {
+							margin-right: 5px;
+							vertical-align: middle;
+						}
+					}
+				}
+				&.Google {
+					a {
+						&:before {
+							content: url("@{images}/icons/icon_google-logo.png");
+						}
+					}
+				}
+				&.Facebook {
+					a {
+						&:before {
+							content: url("@{images}/icons/icon_facebook-logo.png");
+						}
+					}
+				}
+			}
+			a {
+				display: block;
+				padding: 6px 12px;
+				font-weight: 700;
+				text-align: center;
+				color: @black;
+				border: 1px solid @middlegray;
+				&:hover,
+				&:active,
+				&focus {
+					text-decoration: none;
+					color: @black;
+				}
+			}
+		}
+	}
+	/* FOOTER */
+	&__footer {
+		padding: 5px 0;
+		font-size: 0.8rem;
+		text-align: center;
+		color: @gray;
+		.btn {
+			font-size: inherit;
+		}
+	}
+}
+
+/* MODIFICATION */
+#login-body { 
+	.user-login {
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		align-items: center;
+	    justify-content: center;	  
+	    & > .fa {
+	    	display: none;
+	    }	
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.user-login {
+		&__wrapper {
+			max-height: 90%;
+		}		
+	}
+}
