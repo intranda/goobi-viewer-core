@@ -1,42 +1,46 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
 	<version>3.4</version>
 	<packaging>jar</packaging>
-	<name>Goobi viewer core</name>
+
+
+	<name>Goobi viewer - Core</name>
+	<url>https://github.com/intranda/goobi-viewer-core</url>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 	</properties>
 
+
 	<repositories>
 		<repository>
 			<id>maven-intranda</id>
 			<url>https://nexus.intranda.com/repository/maven-intranda</url>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>in-project</id> -->
-<!-- 			<name>In Project Repo</name> -->
-<!-- 			<url>file://${project.basedir}/WebContent/WEB-INF/lib</url> -->
-<!-- 		</repository> -->
 	</repositories>
 
-  <distributionManagement>
-    <repository>
-      <id>intranda</id>
-      <url>https://nexus.intranda.com/repository/intranda</url>
-    </repository>
-    <snapshotRepository>
-      <id>intranda-snapshot</id>
-      <url>https://nexus.intranda.com/repository/maven-intranda-snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+
+	<distributionManagement>
+		<repository>
+			<id>intranda</id>
+			<url>https://nexus.intranda.com/repository/intranda</url>
+		</repository>
+		<snapshotRepository>
+			<id>intranda-snapshot</id>
+			<url>https://nexus.intranda.com/repository/maven-intranda-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 
 	<dependencies>
-
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
 			<artifactId>alto</artifactId>
@@ -234,13 +238,6 @@
 			<version>2.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.geronimo.specs/geronimo-stax-api_1.0_spec -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.geronimo.specs</groupId> -->
-		<!-- <artifactId>geronimo-stax-api_1.0_spec</artifactId> -->
-		<!-- <version>1.0.1</version> -->
-		<!-- </dependency> -->
-
 		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -324,13 +321,6 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
-		<!-- <artifactId>jackson-databind</artifactId> -->
-		<!-- <version>2.6.4</version> -->
-		<!-- </dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base -->
 		<dependency>
@@ -431,77 +421,76 @@
 			<artifactId>jersey-client</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-servlet -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-servlet-core -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-entity-filtering -->
-        <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-entity-filtering</artifactId>
-            <version>2.26</version>
-        </dependency>
-        
+
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-entity-filtering -->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-entity-filtering</artifactId>
+			<version>2.26</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.bundles.repackaged/jersey-guava -->
 		<dependency>
 			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
 			<artifactId>jersey-guava</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-jaxb -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-jaxb</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.26</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-multipart -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>2.22.4</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>2.22.1</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.inject/jersey-hk2 -->
 		<dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>
 			<artifactId>jersey-hk2</artifactId>
 			<version>2.27</version>
 		</dependency>
-		
 
 		<!-- https://mvnrepository.com/artifact/com.timgroup/jgravatar -->
 		<dependency>
@@ -523,20 +512,13 @@
 			<artifactId>json</artifactId>
 			<version>20180813</version>
 		</dependency>
-		
-        <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
-        <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>1.1.4</version>
-        </dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.metaparadigm/json-rpc -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.metaparadigm</groupId> -->
-		<!-- <artifactId>json-rpc</artifactId> -->
-		<!-- <version>1.0</version> -->
-		<!-- </dependency> -->
+		<!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+			<version>1.1.4</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
@@ -933,7 +915,7 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
-		<!-- This needs to be added explicitly because otherwise Solr will use 
+		<!-- This needs to be added explicitly because otherwise Solr will use
 			an older version that's incompatible -->
 		<dependency>
 			<groupId>xerces</groupId>
@@ -947,8 +929,8 @@
 			<artifactId>xstream</artifactId>
 			<version>1.4.11.1</version>
 		</dependency>
-
 	</dependencies>
+
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -962,13 +944,13 @@
 					<exclude>contentServerConfig.xml</exclude>
 				</excludes>
 			</resource>
-            <resource>
-                <directory>resources/build</directory>
-                <includes>
-                    <include>config_viewer.xml</include>
-                    <include>contentServerConfig.xml</include>
-                </includes>
-            </resource>
+			<resource>
+				<directory>resources/build</directory>
+				<includes>
+					<include>config_viewer.xml</include>
+					<include>contentServerConfig.xml</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<!-- Maven Compiler Plugin -->
@@ -996,22 +978,22 @@
 				</configuration>
 			</plugin>
 			<!-- Maven JAR Plugin -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
