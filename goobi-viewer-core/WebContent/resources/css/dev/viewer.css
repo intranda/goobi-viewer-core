@@ -2065,6 +2065,7 @@ div[id*="-Modal"] .email-form .form-group {
       align-items: center;
   -ms-flex-pack: center;
       justify-content: center;
+  max-width: 150px;
 }
 .login-navigation [data-login="true"] .login-navigation {
   /* TOGGLE USER DROPDOWN */
@@ -2096,7 +2097,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 275px;
   padding: 10px;
   padding-top: 0;
-  font-size: 1rem;
+  font-size: 1.6rem;
   border: 1px solid #ccc;
   background-color: #fff;
   overflow: hidden;
@@ -2118,7 +2119,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: flex;
   -ms-flex-align: center;
       align-items: center;
-  font-size: 0.8rem;
+  font-size: 1.6rem;
 }
 .login-navigation [data-login="true"] .login-navigation__user-dropdown-item-icon {
   min-width: 10%;
