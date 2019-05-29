@@ -19,8 +19,19 @@ pipeline {
     }
     stage('build') {
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml clean deploy'
+              sh 'mvn -f goobi-viewer-core/pom.xml clean install'
               recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
+      }
+    }
+    stage('deployment to maven repository') {
+      when {
+        anyOf {
+        branch 'master'
+        branch 'v*.*.*'
+        }
+      }
+      steps {
+        sh 'mvn -f goobi-viewer-core/pom.xml deploy'
       }
     }
   }
