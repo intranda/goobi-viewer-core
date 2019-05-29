@@ -7292,6 +7292,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget__body {
   padding: 10px;
+  word-break: break-word;
 }
 .widget__body.collapseable {
   display: none;
