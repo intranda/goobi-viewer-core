@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -27,21 +28,18 @@ import org.json.JSONObject;
  *
  */
 public class GeoLocation {
-    
+
     private static final String JSON_PROPERTYNAME_LONGITUDE = "longitude";
     private static final String JSON_PROPERTYNAME_LATITUDE = "latitude";
     private static final String JSON_PROPERTYNAME_INFO = "infos";
     private static final String JSON_PROPERTYNAME_LINK = "link";
 
-
-
     private Double latitude = null;
     private Double longitude = null;
-    
+
     private String info = null;
     private String link = null;
 
-   
     public GeoLocation() {
         // TODO Auto-generated constructor stub
     }
@@ -52,23 +50,23 @@ public class GeoLocation {
         this.longitude = longitude;
     }
 
-    public GeoLocation(JSONObject json) {
-        if(json.has(JSON_PROPERTYNAME_LATITUDE)) {            
-            try {                
+    public GeoLocation(JSONObject json) throws JSONException {
+        if (json.has(JSON_PROPERTYNAME_LATITUDE)) {
+            try {
                 setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-            } catch(Throwable e) {
+            } catch (Throwable e) {
             }
         }
-        if(json.has(JSON_PROPERTYNAME_LONGITUDE)) {    
-            try {                
+        if (json.has(JSON_PROPERTYNAME_LONGITUDE)) {
+            try {
                 setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
-            } catch(Throwable e) {
+            } catch (Throwable e) {
             }
         }
-        if(json.has(JSON_PROPERTYNAME_INFO)) {            
+        if (json.has(JSON_PROPERTYNAME_INFO)) {
             setInfo(json.getString(JSON_PROPERTYNAME_INFO));
         }
-        if(json.has(JSON_PROPERTYNAME_LINK)) {            
+        if (json.has(JSON_PROPERTYNAME_LINK)) {
             setLink(json.getString(JSON_PROPERTYNAME_LINK));
         }
     }
@@ -89,42 +87,45 @@ public class GeoLocation {
     public Double getLatitude() {
         return latitude;
     }
+
     /**
      * @param langitude the langitude to set
      */
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
+
     /**
      * @return the longitude
      */
     public Double getLongitude() {
         return longitude;
     }
+
     /**
      * @param longitude the longitude to set
      */
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
-    
+
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
         map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude() == null ? "" : getLatitude());
         map.put(JSON_PROPERTYNAME_LONGITUDE, getLongitude() == null ? "" : getLongitude());
-        if(StringUtils.isNotBlank(getInfo())) {            
+        if (StringUtils.isNotBlank(getInfo())) {
             map.put(JSON_PROPERTYNAME_INFO, formatJson(getInfo()));
         }
-        if(StringUtils.isNotBlank(getLink())) {            
+        if (StringUtils.isNotBlank(getLink())) {
             map.put(JSON_PROPERTYNAME_LINK, getLink());
         }
-        
+
         JSONObject obj = new JSONObject(map);
         return obj;
     }
-    
+
     /**
-     *  
+     * 
      * @return true if either latitude or longitude is not set or set to NULL
      */
     public boolean isEmpty() {
@@ -158,7 +159,5 @@ public class GeoLocation {
     public void setLink(String link) {
         this.link = link;
     }
-    
-    
-    
+
 }

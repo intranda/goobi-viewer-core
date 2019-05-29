@@ -1,33 +1,42 @@
+# Travis continuous integration
+
 language: java
+
+dist: trusty
 
 jdk:
   - openjdk8
 
-sudo: required
-
-env:
-  - MOD_HEADLESS=1
-
-addons:
-  firefox: latest
-
-before_install:
-  - sudo apt-get -y install npm
-  - npm --prefix goobi-viewer-core/ install
-  - export DISPLAY=:99.0
-  - export CHROME_BIN=chromium-browser
-  - sh -e /etc/init.d/xvfb start
-
 script:
   - cd goobi-viewer-core
-  - ant war-internal junit-simple javadoc
-  - npm run docs
-  - npm run jasmine-tests
+  - mvn clean compile -B -V
 
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN
-  keep-history: true
-  on:
-    branch: master
+
+#sudo: required
+#
+#env:
+#  - MOD_HEADLESS=1
+#
+#addons:
+#  firefox: latest
+#
+#before_install:
+#  - sudo apt-get -y install npm
+#  - npm --prefix goobi-viewer-core/ install
+#  - export DISPLAY=:99.0
+#  - export CHROME_BIN=chromium-browser
+#  - sh -e /etc/init.d/xvfb start
+#
+#script:
+#  - cd goobi-viewer-core
+#  - ant war-internal junit-simple javadoc
+#  - npm run docs
+#  - npm run jasmine-tests
+#
+#deploy:
+#  provider: pages
+#  skip-cleanup: true
+#  github-token: $GITHUB_TOKEN
+#  keep-history: true
+#  on:
+#    branch: master

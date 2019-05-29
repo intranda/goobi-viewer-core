@@ -78,8 +78,8 @@ public final class Configuration extends AbstractConfiguration {
             config.setReloadingStrategy(new FileChangedReloadingStrategy());
             //            config.setDelimiterParsingDisabled(true);
             config.load(configFilePath);
-            if (!config.getFile().exists()) {
-                logger.error("Default configuration file not found: {}", config.getFile().getAbsolutePath());
+            if (config.getFile() == null || !config.getFile().exists()) {
+                logger.error("Default configuration file not found: {}", configFilePath);
                 throw new ConfigurationException();
             }
             logger.info("Default configuration file '{}' loaded.", config.getFile().getAbsolutePath());
@@ -110,7 +110,7 @@ public final class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);

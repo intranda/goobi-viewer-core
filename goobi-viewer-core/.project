@@ -3,71 +3,6 @@
 	<name>goobi-viewer-core</name>
 	<comment></comment>
 	<projects>
-		<project>goobi-viewer-theme-akwien</project>
-		<project>goobi-viewer-theme-belvedere2</project>
-		<project>goobi-viewer-theme-bsh</project>
-		<project>goobi-viewer-theme-buw</project>
-		<project>goobi-viewer-theme-dipf3</project>
-		<project>goobi-viewer-theme-haab2</project>
-		<project>goobi-viewer-theme-hlbw2</project>
-		<project>goobi-viewer-theme-iai</project>
-		<project>goobi-viewer-theme-ikfn</project>
-		<project>goobi-viewer-theme-ikfn2</project>
-		<project>goobi-viewer-theme-khz</project>
-		<project>goobi-viewer-theme-kuni</project>
-		<project>goobi-viewer-theme-mvp3</project>
-		<project>goobi-viewer-theme-oolbib</project>
-		<project>goobi-viewer-theme-reference</project>
-		<project>goobi-viewer-theme-sblue</project>
-		<project>goobi-viewer-theme-sim</project>
-		<project>goobi-viewer-theme-sulb</project>
-		<project>goobi-viewer-theme-boilerplate</project>
-		<project>goobi-viewer-theme-tib2</project>
-		<project>goobi-viewer-theme-twl</project>
-		<project>goobi-viewer-theme-ubkassel</project>
-		<project>goobi-viewer-theme-ubkiel</project>
-		<project>goobi-viewer-theme-ubs</project>
-		<project>goobi-viewer-theme-ubwien</project>
-		<project>goobi-viewer-theme-unisammlungen</project>
-		<project>goobi-viewer-theme-zlb2</project>
-		<project>goobi-viewer-theme-wuw</project>
-		<project>goobi-viewer-theme-hlbf</project>
-		<project>goobi-viewer-theme-geiwv</project>
-		<project>goobi-viewer-theme-zbw</project>
-		<project>goobi-viewer-theme-mvp</project>
-		<project>goobi-viewer-theme-orka</project>
-		<project>goobi-viewer-theme-grimm</project>
-		<project>goobi-viewer-theme-haab</project>
-		<project>goobi-viewer-theme-hub</project>
-		<project>goobi-viewer-theme-bsz</project>
-		<project>goobi-viewer-theme-gaugsammlungen</project>
-		<project>goobi-viewer-theme-mak</project>
-		<project>goobi-viewer-theme-mnha</project>
-		<project>goobi-viewer-theme-oeadw</project>
-		<project>goobi-viewer-theme-sudanmemories</project>
-		<project>goobi-viewer-theme-lie</project>
-		<project>goobi-viewer-theme-wienerlibrary-testifyingtothetruth</project>
-		<project>goobi-viewer-theme-zlb</project>
-		<project>goobi-viewer-theme-kuepo</project>
-		<project>goobi-viewer-theme-sudanmemory</project>
-		<project>goobi-viewer-theme-gacaca</project>
-		<project>goobi-viewer-theme-dlam</project>
-		<project>goobi-viewer-theme-playground</project>
-		<project>goobi-viewer-theme-hu-archiv</project>
-		<project>goobi-viewer-theme-dipf</project>
-		<project>goobi-viewer-theme-lamuhalle</project>
-		<project>goobi-viewer-theme-ubweimar</project>
-		<project>goobi-viewer-theme-hub-evifa</project>
-		<project>goobi-viewer-theme-albertina</project>
-		<project>goobi-viewer-theme-haendel</project>
-		<project>goobi-viewer-theme-cbl</project>
-		<project>goobi-viewer-theme-vlb</project>
-		<project>goobi-viewer-theme-ksw-kulturportal</project>
-		<project>goobi-viewer-theme-denkmalatlas</project>
-		<project>goobi-viewer-theme-vfc</project>
-		<project>goobi-viewer-theme-ubb</project>
-		<project>goobi-viewer-theme-beli</project>
-		<project>goobi-viewer-theme-ubbz</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -86,12 +21,28 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
+			<name>net.sourceforge.pmd.eclipse.plugin.pmdBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.openmrs.generatetestcases.bddBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.zeroturnaround.eclipse.rebelXmlBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>

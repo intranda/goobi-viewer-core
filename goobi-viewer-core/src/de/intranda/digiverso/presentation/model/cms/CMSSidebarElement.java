@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
-import java.text.ParseException;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +35,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,9 +133,9 @@ public class CMSSidebarElement {
         CMSSidebarElement copy;
         if (!original.getClass().equals(CMSSidebarElement.class)) {
             if (CMSSidebarElementWithQuery.class.equals(original.getClass())) {
-                copy = new CMSSidebarElementWithQuery((CMSSidebarElementWithQuery)original, ownerPage);
+                copy = new CMSSidebarElementWithQuery((CMSSidebarElementWithQuery) original, ownerPage);
             } else if (CMSSidebarElementWithSearch.class.equals(original.getClass())) {
-                copy = new CMSSidebarElementWithSearch((CMSSidebarElementWithSearch)original, ownerPage);
+                copy = new CMSSidebarElementWithSearch((CMSSidebarElementWithSearch) original, ownerPage);
             } else {
                 throw new IllegalArgumentException(
                         "Cannot create copy of " + original.getClass() + ": copy constructor for that class not implemented");
@@ -145,9 +145,9 @@ public class CMSSidebarElement {
         }
         return copy;
     }
-        
+
     public CMSSidebarElement(CMSSidebarElement original, CMSPage owner) {
-        if(original.id != null) {            
+        if (original.id != null) {
             this.id = new Long(original.id);
         }
         this.ownerPage = owner;
@@ -162,7 +162,7 @@ public class CMSSidebarElement {
         this.widgetType = original.widgetType;
         this.widgetTitle = original.widgetTitle;
         deSerialize();
- 
+
     }
 
     public int compareTo(Object o) {
@@ -527,7 +527,7 @@ public class CMSSidebarElement {
             //                }
             //            }
             return info;
-        } catch (ParseException e) {
+        } catch (JSONException e) {
             logger.error("Failed to create geolocation list from string \n" + string, e);
         }
         return new GeoLocationInfo();

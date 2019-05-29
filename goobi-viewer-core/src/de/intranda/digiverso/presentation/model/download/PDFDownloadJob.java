@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.ocr.OcrClient;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DownloadException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -146,10 +145,10 @@ public class PDFDownloadJob extends DownloadJob {
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         logger.debug("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/" + DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pi + ".xml");
-        HttpPost post = OcrClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
+        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
                 title, mediaRepository.getAbsolutePath(), "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);
         try {
-            JSONObject response = OcrClient.getJsonResponse(client, post);
+            JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
             if (response.get("STATUS").equals("ERROR")) {
                 if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {

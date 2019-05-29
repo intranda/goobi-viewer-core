@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +53,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.joda.time.MutableDateTime;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -651,7 +651,7 @@ public abstract class DownloadJob implements Serializable {
                 String errorMessage = object.getString("errorMessage");
                 setMessage(errorMessage);
             }
-        } catch (ParseException e) {
+        } catch (JSONException e) {
             setStatus(JobStatus.ERROR);
             setMessage("Unable to parse TaskManager response");
         }

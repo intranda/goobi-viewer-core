@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,14 +61,18 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        //        ImageDeliveryBean idb = new ImageDeliveryBean();
-        //        PowerMockito.mockStatic(BeanUtils.class);
-        //        BDDMockito.given(BeanUtils.getImageDeliveryBean()).willReturn(idb);
-        //        BDDMockito.given(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).willReturn("http://localhost:8080/viewer");
-        FacesContext facesContext = TestUtils.mockFacesContext();
-        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-        Mockito.when(servletContext.getRealPath("/")).thenReturn("WebContent");
+//        FacesContext facesContext = TestUtils.mockFacesContext();
+//        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+//        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
+
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        
+        File webContent = new File("WebContent/").getAbsoluteFile();
+        String webContentPath = webContent.toURI().toString();
+        //        if (webContentPath.startsWith("file:/")) {
+        //            webContentPath = webContentPath.replace("file:/", "");
+        //        }
+        CMSTemplateManager.getInstance(webContentPath, null);
     }
 
     /**

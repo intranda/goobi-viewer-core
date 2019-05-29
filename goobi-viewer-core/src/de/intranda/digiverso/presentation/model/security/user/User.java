@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.timgroup.jgravatar.Gravatar;
+import com.timgroup.jgravatar.GravatarDefaultImage;
+import com.timgroup.jgravatar.GravatarRating;
 
 import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -70,9 +73,6 @@ import de.intranda.digiverso.presentation.model.security.License;
 import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.Role;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
-import jgravatar.Gravatar;
-import jgravatar.GravatarDefaultImage;
-import jgravatar.GravatarRating;
 
 @Entity
 @Table(name = "users")

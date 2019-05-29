@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.servlets;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -24,7 +23,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -44,8 +42,6 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.viewer.cache.JobManager;
-import de.intranda.viewer.cache.JobManager.Status;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 
 /**
@@ -56,7 +52,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = -2888790425901398519L;
 
-    private static JobManager cacheFiller = new JobManager();
+    //    private static JobManager cacheFiller = new JobManager();
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ToolServlet.class);
@@ -108,13 +104,13 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     response.getWriter().write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
                     break;
                 case "fillCache":
-                    String answer = performCacheFillerAction(request.getParameterMap());
-                    String returnString = answer.trim().replaceAll("\\n", "<br>").replaceAll("\\t", "&#160;&#160;&#160;&#160;");
-
-                    response.setContentType("text/html"); {
-                    ServletOutputStream output = response.getOutputStream();
-                    output.write(returnString.getBytes(Charset.forName("utf-8")));
-                }
+                    //                    String answer = performCacheFillerAction(request.getParameterMap());
+                    //                    String returnString = answer.trim().replaceAll("\\n", "<br>").replaceAll("\\t", "&#160;&#160;&#160;&#160;");
+                    //
+                    //                    response.setContentType("text/html"); {
+                    //                    ServletOutputStream output = response.getOutputStream();
+                    //                    output.write(returnString.getBytes(Charset.forName("utf-8")));
+                    //                }
                     break;
                 case "checkSolrSchemaName":
                     String[] result = SolrSearchIndex.checkSolrSchemaName();
@@ -149,8 +145,10 @@ public class ToolServlet extends HttpServlet implements Serializable {
                         while (first < total) {
                             List<OverviewPage> pages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, null, null);
                             for (OverviewPage op : pages) {
-                                List<CMSPage> existingPages =
-                                        DataManager.getInstance().getDao().getCMSPagesForRecord(op.getPi(), DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE));
+                                List<CMSPage> existingPages = DataManager.getInstance()
+                                        .getDao()
+                                        .getCMSPagesForRecord(op.getPi(),
+                                                DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE));
                                 if (!existingPages.isEmpty()) {
                                     output.write(
                                             ("!!! CMS overview page already exists for " + op.getPi() + "<br />").getBytes(Charset.forName("utf-8")));
@@ -185,109 +183,109 @@ public class ToolServlet extends HttpServlet implements Serializable {
         }
     }
 
-    /**
-     * @param parameterMap
-     */
-    private static String performCacheFillerAction(Map<String, String[]> parameterMap) {
-        if (parameterMap.containsKey("stop")) {
-            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
-                return "Cachefiller is not running.";
-            } else if (stopCacheFiller()) {
-                return "Cachefiller stopped successfully";
-            } else {
-                return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
-            }
-        } else if (parameterMap.containsKey("status")) {
-            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus())
-                    .append("\n\n")
-                    .append(cacheFiller.getDetailedGeneratorStatus());
-            return sbAnswer.toString();
-        } else if (parameterMap.containsKey("resetTrace")) {
-            File traceFile = cacheFiller.getConfiguredTraceFile();
-            if (traceFile != null && traceFile.isFile()) {
-                if (traceFile.delete()) {
-                    return "Tracefile " + traceFile.getAbsolutePath() + " deleted successfully";
-                }
-                return "Failed to delete tracefile " + traceFile.getAbsolutePath();
-            }
-            return "No tracefile found to delete";
-        } else if (parameterMap.containsKey("start")) {
-            if (cacheFiller.getCacheFillerStatus() != JobManager.Status.DORMANT) {
-                String error = "CacheFiller is already running. To start another run, first end current run by using parameter 'stop'";
-                logger.error(error);
-                return error;
-            }
-            return startCacheFiller(parameterMap);
-        } else {
-            StringBuilder info = new StringBuilder(600);
-            info.append("intrandaCacheFiller: use the following parameters to control the cacheFiller:\n");
-            info.append(
-                    "\nstart\t\t\t\tStarts the cacheFiller. Accepts additional parameters, if deviation from default parameters specified in \"config_cacheFiller\" is desired. Sets status to INITIALIZING and then to RUNNING after initialization");
-            info.append(
-                    "\nstop\t\t\t\tStops all cacheFiller threads. Sets status to TERMINATING and then to DORMANT once all threads have concluded");
-            info.append("\nstatus\t\t\t\tRequests the current cacheFiller status and status of all running threads. Initial status is DORMANT");
-            info.append("\nresetTrace\t\tDeletes any saved progress");
-            return info.toString();
-        }
+    //    /**
+    //     * @param parameterMap
+    //     */
+    //    private static String performCacheFillerAction(Map<String, String[]> parameterMap) {
+    //        if (parameterMap.containsKey("stop")) {
+    //            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
+    //                return "Cachefiller is not running.";
+    //            } else if (stopCacheFiller()) {
+    //                return "Cachefiller stopped successfully";
+    //            } else {
+    //                return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
+    //            }
+    //        } else if (parameterMap.containsKey("status")) {
+    //            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus())
+    //                    .append("\n\n")
+    //                    .append(cacheFiller.getDetailedGeneratorStatus());
+    //            return sbAnswer.toString();
+    //        } else if (parameterMap.containsKey("resetTrace")) {
+    //            File traceFile = cacheFiller.getConfiguredTraceFile();
+    //            if (traceFile != null && traceFile.isFile()) {
+    //                if (traceFile.delete()) {
+    //                    return "Tracefile " + traceFile.getAbsolutePath() + " deleted successfully";
+    //                }
+    //                return "Failed to delete tracefile " + traceFile.getAbsolutePath();
+    //            }
+    //            return "No tracefile found to delete";
+    //        } else if (parameterMap.containsKey("start")) {
+    //            if (cacheFiller.getCacheFillerStatus() != JobManager.Status.DORMANT) {
+    //                String error = "CacheFiller is already running. To start another run, first end current run by using parameter 'stop'";
+    //                logger.error(error);
+    //                return error;
+    //            }
+    //            return startCacheFiller(parameterMap);
+    //        } else {
+    //            StringBuilder info = new StringBuilder(600);
+    //            info.append("intrandaCacheFiller: use the following parameters to control the cacheFiller:\n");
+    //            info.append(
+    //                    "\nstart\t\t\t\tStarts the cacheFiller. Accepts additional parameters, if deviation from default parameters specified in \"config_cacheFiller\" is desired. Sets status to INITIALIZING and then to RUNNING after initialization");
+    //            info.append(
+    //                    "\nstop\t\t\t\tStops all cacheFiller threads. Sets status to TERMINATING and then to DORMANT once all threads have concluded");
+    //            info.append("\nstatus\t\t\t\tRequests the current cacheFiller status and status of all running threads. Initial status is DORMANT");
+    //            info.append("\nresetTrace\t\tDeletes any saved progress");
+    //            return info.toString();
+    //        }
+    //
+    //    }
 
-    }
+    //    /**
+    //     * @param parameterMap
+    //     */
+    //    private static String startCacheFiller(Map<String, String[]> parameterMap) {
+    //        parseParameters(parameterMap);
+    //        cacheFiller.fillCache();
+    //        String answer = "Cachefiller started with generators:\n\n";
+    //        answer += cacheFiller.getDetailedGeneratorStatus();
+    //        return answer;
+    //
+    //    }
 
-    /**
-     * @param parameterMap
-     */
-    private static String startCacheFiller(Map<String, String[]> parameterMap) {
-        parseParameters(parameterMap);
-        cacheFiller.fillCache();
-        String answer = "Cachefiller started with generators:\n\n";
-        answer += cacheFiller.getDetailedGeneratorStatus();
-        return answer;
-
-    }
-
-    private static void parseParameters(Map<String, String[]> parameterMap) {
-        for (String parameter : parameterMap.keySet()) {
-
-            String[] values = parameterMap.get(parameter);
-
-            switch (parameter) {
-                case "csec":
-                    cacheFiller.setCsec(getBooleanValue(values));
-                    break;
-                case "reverse":
-                    cacheFiller.setReverse(getBooleanValue(values));
-                    break;
-                case "overwrite":
-                    cacheFiller.setOverwriteCache(getBooleanValue(values));
-                    break;
-                case "thumbnails":
-                    cacheFiller.setGenerateThumbnails(getBooleanValue(values));
-                    break;
-                case "largeImages":
-                    cacheFiller.setGenerateLargeImages(getBooleanValue(values));
-                    break;
-                case "fullscreen":
-                    cacheFiller.setGenerateFullscreenImages(getBooleanValue(values));
-                    break;
-                case "previews":
-                    cacheFiller.setGeneratePreviews(getBooleanValue(values));
-                    break;
-                case "pdfs":
-                    cacheFiller.setGeneratePdfs(getBooleanValue(values));
-                    break;
-                case "startDate":
-                    try {
-                        cacheFiller.setStartDate(parseDate(values[0]));
-                    } catch (ParseException e) {
-                        logger.error("Unable to parse date " + values[0]);
-                        cacheFiller.setStartDate(null);
-                    }
-                    break;
-                case "traceProgress":
-                    cacheFiller.setTrace(getBooleanValue(values));
-                    break;
-            }
-        }
-    }
+    //    private static void parseParameters(Map<String, String[]> parameterMap) {
+    //        for (String parameter : parameterMap.keySet()) {
+    //
+    //            String[] values = parameterMap.get(parameter);
+    //
+    //            switch (parameter) {
+    //                case "csec":
+    //                    cacheFiller.setCsec(getBooleanValue(values));
+    //                    break;
+    //                case "reverse":
+    //                    cacheFiller.setReverse(getBooleanValue(values));
+    //                    break;
+    //                case "overwrite":
+    //                    cacheFiller.setOverwriteCache(getBooleanValue(values));
+    //                    break;
+    //                case "thumbnails":
+    //                    cacheFiller.setGenerateThumbnails(getBooleanValue(values));
+    //                    break;
+    //                case "largeImages":
+    //                    cacheFiller.setGenerateLargeImages(getBooleanValue(values));
+    //                    break;
+    //                case "fullscreen":
+    //                    cacheFiller.setGenerateFullscreenImages(getBooleanValue(values));
+    //                    break;
+    //                case "previews":
+    //                    cacheFiller.setGeneratePreviews(getBooleanValue(values));
+    //                    break;
+    //                case "pdfs":
+    //                    cacheFiller.setGeneratePdfs(getBooleanValue(values));
+    //                    break;
+    //                case "startDate":
+    //                    try {
+    //                        cacheFiller.setStartDate(parseDate(values[0]));
+    //                    } catch (ParseException e) {
+    //                        logger.error("Unable to parse date " + values[0]);
+    //                        cacheFiller.setStartDate(null);
+    //                    }
+    //                    break;
+    //                case "traceProgress":
+    //                    cacheFiller.setTrace(getBooleanValue(values));
+    //                    break;
+    //            }
+    //        }
+    //    }
 
     private static Date parseDate(String dateString) throws ParseException {
         if (dateString == null) {
@@ -326,27 +324,27 @@ public class ToolServlet extends HttpServlet implements Serializable {
         return Boolean.valueOf(values[0]);
     }
 
-    /**
-     * @return
-     */
-    private static boolean stopCacheFiller() {
-        long maxWaitInSeconds = 10;
-        cacheFiller.interrupt();
-        long start = System.currentTimeMillis();
-        boolean stopped = false;
-        while (System.currentTimeMillis() - start < maxWaitInSeconds * 1000) {
-            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
-                stopped = true;
-                break;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-
-            }
-        }
-        return stopped;
-    }
+    //    /**
+    //     * @return
+    //     */
+    //    private static boolean stopCacheFiller() {
+    //        long maxWaitInSeconds = 10;
+    //        cacheFiller.interrupt();
+    //        long start = System.currentTimeMillis();
+    //        boolean stopped = false;
+    //        while (System.currentTimeMillis() - start < maxWaitInSeconds * 1000) {
+    //            if (cacheFiller.getCacheFillerStatus() == Status.DORMANT) {
+    //                stopped = true;
+    //                break;
+    //            }
+    //            try {
+    //                Thread.sleep(100);
+    //            } catch (InterruptedException e) {
+    //
+    //            }
+    //        }
+    //        return stopped;
+    //    }
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
