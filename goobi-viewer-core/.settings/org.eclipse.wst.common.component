@@ -4,7 +4,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/tools"/>
         <wb-resource deploy-path="/" source-path="/src"/>
-        <wb-resource deploy-path="/" source-path="/test"/>
+        <wb-resource deploy-path="/" source-path="/resources/build"/>
 <!--         <dependent-module archiveName="viewer-module-skeleton.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-skeleton/goobi-viewer-module-skeleton"> -->
 <!--             <dependency-type>uses</dependency-type> -->
 <!--         </dependent-module>  -->
