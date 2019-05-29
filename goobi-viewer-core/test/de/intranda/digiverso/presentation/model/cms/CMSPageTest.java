@@ -65,8 +65,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         //        BDDMockito.given(BeanUtils.getImageDeliveryBean()).willReturn(idb);
         //        BDDMockito.given(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).willReturn("http://localhost:8080/viewer");
         FacesContext facesContext = TestUtils.mockFacesContext();
-        ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-        Mockito.when(servletContext.getRealPath("/")).thenReturn("src/META-INF/resources/");
+        //ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+        //Mockito.when(facesContext.getExternalContext().getContext().getRealPath("/")).thenReturn("src/META-INF/resources/");
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
 
