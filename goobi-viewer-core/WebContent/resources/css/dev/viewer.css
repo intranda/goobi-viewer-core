@@ -1539,7 +1539,6 @@ html.is-IE .support-overlay {
   display: flex;
   -ms-flex-align: center;
       align-items: center;
-  padding: 6px 0;
 }
 [data-bookshelf-type="add"] {
   background-image: url("../../images/icons/icon-bs-herz-blau_thin.svg");
@@ -2056,9 +2055,6 @@ div[id*="-Modal"] .email-form .form-group {
   /* NOT LOGGED IN */
   /* LOGGED IN */
 }
-.login-navigation [data-login="false"] button[data-toggle="login-dropdown"] {
-  padding: 6px 0;
-}
 .login-navigation [data-login="false"] button[data-toggle="login-dropdown"] .fa {
   margin-left: 5px;
 }
@@ -2069,7 +2065,6 @@ div[id*="-Modal"] .email-form .form-group {
       align-items: center;
   -ms-flex-pack: center;
       justify-content: center;
-  padding: 6px 0;
 }
 .login-navigation [data-login="true"] .login-navigation {
   /* TOGGLE USER DROPDOWN */
