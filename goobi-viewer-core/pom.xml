@@ -18,20 +18,27 @@
 		<jdk.version>1.8</jdk.version>
 
 		<!-- intranda libraries-->
+		<alto.version>1.3</alto.version>
 		<contentserver.version>[1.3.1,)</contentserver.version>
-		<normdataimporter.version>[1.2.5,)</normdataimporter.version>
 		<mets.version>1.10</mets.version>
 		<mods.version>3.5</mods.version>
-		<alto.version>1.3</alto.version>
+		<normdataimporter.version>[1.2.5,)</normdataimporter.version>
 		<tei-conversion.version>[0.1,)</tei-conversion.version>
 
 		<!-- other libraries -->
-		<tomcat.version>8.5.40</tomcat.version>
-		<solr.version>4.10.4</solr.version>
+		<avalon.version>4.2.0</avalon.version>
+		<commons-beanutils.version>1.9.3</commons-beanutils.version>
+		<commons-cli.version>1.4</commons-cli.version>
+		<commons-codec.version>1.9</commons-codec.version>
+		<commons-collections.version>3.2.2</commons-collections.version>
+		<junit.version>4.12</junit.version>
 		<lucene.version>4.10.4</lucene.version>
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>3.17</poi.version>
-		<junit.version>4.12</junit.version>
+		<saxon.version>9.0</saxon.version>
+		<solr.version>4.10.4</solr.version>
+		<tika.version>1.18</tika.version>
+		<tomcat.version>8.5.40</tomcat.version>
 	</properties>
 
 
@@ -62,6 +69,42 @@
 			<version>${alto.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>de.intranda.other</groupId>
+			<artifactId>mets</artifactId>
+			<version>${mets.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.intranda.other</groupId>
+			<artifactId>mods</artifactId>
+			<version>${mods.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.intranda.digiverso.ocr</groupId>
+			<artifactId>tei-conversion</artifactId>
+			<version>${tei-conversion.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.intranda.contentserver</groupId>
+			<artifactId>ics</artifactId>
+			<version>${contentserver.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>saxon</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>de.intranda.goobi</groupId>
+			<artifactId>normdataimporter</artifactId>
+			<version>${normdataimporter.version}</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-debug-all -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
@@ -73,14 +116,14 @@
 		<dependency>
 			<groupId>avalon-framework</groupId>
 			<artifactId>avalon-framework-api</artifactId>
-			<version>4.2.0</version>
+			<version>${avalon.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/avalon-framework/avalon-framework-impl -->
 		<dependency>
 			<groupId>avalon-framework</groupId>
 			<artifactId>avalon-framework-impl</artifactId>
-			<version>4.2.0</version>
+			<version>${avalon.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-all -->
@@ -103,28 +146,28 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.3</version>
+			<version>${commons-beanutils.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
 		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
-			<version>1.4</version>
+			<version>${commons-cli.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-codec -->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.9</version>
+			<version>${commons-codec.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/commons-configuration/commons-collections -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
+			<version>${commons-collections.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/commons-configuration/commons-collections4 -->
@@ -288,18 +331,6 @@
 			<artifactId>httpunit</artifactId>
 			<version>1.7.3</version>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>de.intranda.contentserver</groupId>
-			<artifactId>ics</artifactId>
-			<version>${contentserver.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sf.saxon</groupId>
-					<artifactId>saxon</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
@@ -724,12 +755,6 @@
 			<version>2.8.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>de.intranda.other</groupId>
-			<artifactId>mets</artifactId>
-			<version>${mets.version}</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -754,23 +779,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>de.intranda.other</groupId>
-			<artifactId>mods</artifactId>
-			<version>${mods.version}</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
 		<dependency>
 			<groupId>net.sourceforge.nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
 			<version>1.9.22</version>
-		</dependency>
-
-		<dependency>
-			<groupId>de.intranda.goobi</groupId>
-			<artifactId>normdataimporter</artifactId>
-			<version>${normdataimporter.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.oltu.oauth2/org.apache.oltu.oauth2.client -->
@@ -839,13 +852,13 @@
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon-dom</artifactId>
-			<version>9.0</version>
+			<version>${saxon.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>saxon</artifactId>
-			<version>9.0</version>
+			<version>${saxon.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
@@ -885,17 +898,11 @@
 			<version>1.0.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>de.intranda.digiverso.ocr</groupId>
-			<artifactId>tei-conversion</artifactId>
-			<version>${tei-conversion.version}</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.18</version>
+			<version>${tika.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
@@ -903,7 +910,7 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<!-- Using a version >1.18 will result in a POI version incompatibility -->
-			<version>1.18</version>
+			<version>${tika.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina -->
