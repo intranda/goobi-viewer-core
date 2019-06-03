@@ -106,7 +106,7 @@ public class ImageDeliveryBean implements Serializable {
             } else if (BeanUtils.hasJsfContext()) {
                 this.servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             } else {
-                logger.info("Failed to initialize ImageDeliveryBean: No servlet request and no JSF context found");
+                logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
             init(config, servletPath);
@@ -379,7 +379,7 @@ public class ImageDeliveryBean implements Serializable {
     public MediaHandler getMedia() {
         return media;
     }
-
+    
     public Object3DHandler getObjects3D() {
         return objects3d;
     }
@@ -511,5 +511,6 @@ public class ImageDeliveryBean implements Serializable {
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
     }
+
 
 }
