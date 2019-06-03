@@ -31,7 +31,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 /**
  * JUnit test classes that extend this class can use the embedded Solr server setup with a fixed viewer index.
  */
-public abstract class AbstractSolrEnabledTest {
+public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     private static final String CORE_NAME = "test-viewer";
 
@@ -40,8 +40,8 @@ public abstract class AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
-        
+        AbstractTest.setUpClass();
+
         String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0) {
             solrPath = "C:/digiverso/viewer/apache-solr-test/";

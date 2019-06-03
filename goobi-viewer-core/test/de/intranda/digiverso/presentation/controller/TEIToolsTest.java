@@ -23,7 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TEIToolsTest {
+import de.intranda.digiverso.presentation.AbstractTest;
+
+public class TEIToolsTest extends AbstractTest {
 
     //    /**
     //     * @see TEITools#convertTeiToHtml(String)

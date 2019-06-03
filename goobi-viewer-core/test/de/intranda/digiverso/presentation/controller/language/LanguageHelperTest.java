@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.controller.language;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

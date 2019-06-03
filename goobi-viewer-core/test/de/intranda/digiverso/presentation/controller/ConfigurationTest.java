@@ -25,11 +25,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.AbstractTest;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
@@ -40,16 +40,10 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
 
-public class ConfigurationTest {
+public class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-    }
 
     @Before
     public void setUp() throws Exception {

@@ -18,7 +18,9 @@ package de.intranda.digiverso.presentation.messages;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ViewerResourceBundleTest {
+import de.intranda.digiverso.presentation.AbstractTest;
+
+public class ViewerResourceBundleTest extends AbstractTest {
 
     /**
      * @see ViewerResourceBundle#replaceParameters(String,String[])

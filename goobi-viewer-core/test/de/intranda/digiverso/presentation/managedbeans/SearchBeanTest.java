@@ -24,8 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
-import de.intranda.digiverso.presentation.controller.Configuration;
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchFacets;
@@ -41,9 +39,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
 
     /**

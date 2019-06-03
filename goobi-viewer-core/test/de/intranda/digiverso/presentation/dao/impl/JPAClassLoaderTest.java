@@ -15,7 +15,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JPAClassLoaderTest {
+import de.intranda.digiverso.presentation.AbstractTest;
+
+public class JPAClassLoaderTest extends AbstractTest {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(JPAClassLoaderTest.class);

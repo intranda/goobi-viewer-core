@@ -24,7 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.dao.impl.H2JdbcDatabaseTester;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
@@ -32,7 +31,7 @@ import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 /**
  * JUnit test classes that extend this class can use the embedded H2 DBMS server setup with a fixed database.
  */
-public abstract class AbstractDatabaseEnabledTest {
+public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
     private static IDatabaseTester databaseTester;
 
@@ -42,9 +41,8 @@ public abstract class AbstractDatabaseEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
-        
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        AbstractTest.setUpClass();
+
         DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
         databaseTester = new H2JdbcDatabaseTester();
         try (FileInputStream fis = new FileInputStream("resources/test/test_db_dataset.xml")) {

@@ -18,19 +18,11 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.controller.Configuration;
-import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.AbstractTest;
 
-public class BrowseBeanTest {
-
-    @Before
-    public void setUp() throws Exception {
-        // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-    }
+public class BrowseBeanTest extends AbstractTest {
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)

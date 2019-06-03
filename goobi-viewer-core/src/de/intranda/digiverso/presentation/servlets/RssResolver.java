@@ -96,17 +96,7 @@ public class RssResolver extends HttpServlet {
                 } else {
                     // Main RSS feed
                     StringBuilder sbQuery = new StringBuilder();
-                    if (request.getParameter("query") != null) {
-                        sbQuery.append(request.getParameter("query"));
-                    } else {
-                        sbQuery.append(SolrConstants.ISWORK).append(":true");
-                    }
-                    if (StringUtils.isNotBlank(request.getParameter("partnerId"))) {
-                        sbQuery.append(" AND ")
-                                .append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
-                                .append(':')
-                                .append(request.getParameter("partnerId").trim());
-                    }
+                    sbQuery.append(SolrConstants.ISWORK).append(":true");
                     query = sbQuery.toString();
                 }
             }
@@ -124,8 +114,8 @@ public class RssResolver extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
                 return;
             }
-        } catch(ClientAbortException e) {
-        	//let them
+        } catch (ClientAbortException e) {
+            //let them
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

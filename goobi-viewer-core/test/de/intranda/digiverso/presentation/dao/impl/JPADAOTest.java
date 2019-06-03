@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
-import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -73,7 +72,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         String webContentPath = webContent.toURI().toString();
         //        if (webContentPath.startsWith("file:/")) {
         //            webContentPath = webContentPath.replace("file:/", "");

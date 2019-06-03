@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
-import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -45,7 +44,6 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         String webContentPath = webContent.toURI().toString();
         //        if (webContentPath.startsWith("file:/")) {
         //            webContentPath = webContentPath.replace("file:/", "");

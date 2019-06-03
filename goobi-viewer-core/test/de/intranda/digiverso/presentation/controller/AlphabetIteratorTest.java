@@ -15,14 +15,10 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 /**
  * @author Florian Alpers
@@ -47,13 +43,13 @@ public class AlphabetIteratorTest {
     @Test
     public void test() {
         AlphabetIterator abc = new AlphabetIterator();
-        
+
         String lastValue = "";
         int index = 0;
-        while(abc.hasNext()) {
+        while (abc.hasNext()) {
             index++;
             lastValue = abc.next();
-            switch(index) {
+            switch (index) {
                 case 1:
                     Assert.assertEquals("a", lastValue);
                     break;
@@ -62,8 +58,8 @@ public class AlphabetIteratorTest {
                     break;
                 case 26:
                     Assert.assertEquals("z", lastValue);
-                    break;            
-           }
+                    break;
+            }
         }
         Assert.assertEquals("z", lastValue);
         Assert.assertEquals(26, index);
