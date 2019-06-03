@@ -16,6 +16,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
+		<skipTests>true</skipTests>
 
 		<!-- intranda libraries-->
 		<alto.version>1.3</alto.version>
@@ -59,19 +60,6 @@
 		<tika.version>1.18</tika.version>
 		<tomcat.version>8.5.40</tomcat.version>
 	</properties>
-
-
-	<profiles>
-		<profile>
-			<id>development</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<maven.test.skip>true</maven.test.skip>
-			</properties>
-		</profile>
-	</profiles>
 
 
 	<repositories>
@@ -828,7 +816,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M3</version>
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>${skipTests}</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 						<!-- TODO Comment back in -->

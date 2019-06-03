@@ -19,7 +19,7 @@ pipeline {
     }
     stage('build') {
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -Dmaven.test.skip=false clean install'
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false clean install'
               recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
