@@ -159,7 +159,7 @@ public class BeanUtils {
             InitialContext initialContext = new InitialContext();
             return (BeanManager) initialContext.lookup("java:comp/BeanManager");
         } catch (NamingException e) {
-            logger.info("Couldn't get BeanManager through JNDI: {}", e.getMessage());
+            logger.warn("Couldn't get BeanManager through JNDI: {}", e.getMessage());
             return null;
         }
     }
