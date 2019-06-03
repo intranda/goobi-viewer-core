@@ -61,6 +61,19 @@
 	</properties>
 
 
+	<profiles>
+		<profile>
+			<id>development</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+		</profile>
+	</profiles>
+
+
 	<repositories>
 		<repository>
 			<id>maven-intranda</id>
