@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.CollectionBuilder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -62,12 +63,13 @@ public class CollectionResource extends AbstractResource {
      * @throws IndexUnreachableException
      * @throws MalformedURLException
      * @throws URISyntaxException
+     * @throws ViewerConfigurationException
      */
     @GET
     @Path("/{collectionField}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Collection getCollections(@PathParam("collectionField") String collectionField)
-            throws PresentationException, IndexUnreachableException, URISyntaxException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
@@ -85,13 +87,14 @@ public class CollectionResource extends AbstractResource {
      * 
      * @throws URISyntaxException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      * 
      */
     @GET
     @Path("/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
-            throws IndexUnreachableException, URISyntaxException, PresentationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));

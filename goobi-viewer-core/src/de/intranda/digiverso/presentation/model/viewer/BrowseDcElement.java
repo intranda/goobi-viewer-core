@@ -16,7 +16,9 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +27,8 @@ import org.apache.commons.lang.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 
 /**
  * Collection tree element.
@@ -240,36 +241,55 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * Returns the RSS feed URL for this collection.
+     * Returns the RSS feed URL for this collection using the JSF context.
      *
-     * @return
+     * @return RSS feed URL for this collection
+     * @throws ViewerConfigurationException
      */
-    public String getRssUrl() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                .append('/')
-                .append(NavigationHelper.URL_RSS)
-                .append("?q=(DC:")
-                .append(name)
-                .append(" OR DC:")
-                .append(name)
-                .append(".*) AND (ISWORK:true OR ISANCHOR:true)");
-
-        return sb.toString();
+    public String getRssUrl() throws ViewerConfigurationException {
+        return buildRssUrl();
     }
 
-    public String getRssUrl(HttpServletRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ServletUtils.getServletPathWithHostAsUrlFromRequest(request))
-                .append('/')
-                .append(NavigationHelper.URL_RSS)
-                .append("?q=(DC:")
-                .append(name)
-                .append(" OR DC:")
-                .append(name)
-                .append(".*) AND (ISWORK:true OR ISANCHOR:true)");
+    /**
+     * 
+     * @param request HttpServletRequest
+     * @return RSS feed URL for this collection
+     * @throws ViewerConfigurationException
+     */
+    public String getRssUrl(HttpServletRequest request) throws ViewerConfigurationException {
+        return buildRssUrl();
+    }
 
-        return sb.toString();
+    /**
+     * 
+     * @param servletPath
+     * @return RSS feed URL for this collection
+     * @throws ViewerConfigurationException
+     */
+    private String buildRssUrl() throws ViewerConfigurationException {
+        String query = new StringBuilder().append(field)
+                .append(':')
+                .append(name)
+                .append(" OR ")
+                .append(field)
+                .append(':')
+                .append(name)
+                .append(".* AND (ISWORK:true OR ISANCHOR:true)")
+                .toString();
+
+        try {
+            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                    .append("rss/search/")
+                    .append(URLEncoder.encode(query, SearchBean.URL_ENCODING))
+                    .append("/-/-/")
+                    .toString();
+        } catch (UnsupportedEncodingException e) {
+            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                    .append("rss/search/")
+                    .append(query)
+                    .append("/-/-/")
+                    .toString();
+        }
     }
 
     @Override

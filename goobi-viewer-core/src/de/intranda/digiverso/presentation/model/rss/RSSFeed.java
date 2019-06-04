@@ -79,7 +79,7 @@ public class RSSFeed {
      */
     public static SyndFeed createRss(String rootPath, String query)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return createRss(rootPath, query, null);
+        return createRss(rootPath, query, null, null);
     }
 
     public static List<String> getFieldsWithTranslation(Locale locale) {
@@ -91,7 +91,18 @@ public class RSSFeed {
         return allFields;
     }
 
-    public static SyndFeed createRss(String rootPath, String query, String language)
+    /**
+     * 
+     * @param rootPath
+     * @param query
+     * @param filterQueries
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     */
+    public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -104,6 +115,9 @@ public class RSSFeed {
         }
 
         logger.trace("RSS query: {}", query);
+        if (filterQueries != null) {
+            logger.trace("RSS filter queries: {}", filterQueries.toString());
+        }
 
         SyndFeed feed = new SyndFeedImpl();
         feed.setEncoding("utf-8");
@@ -124,9 +138,10 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        getFieldsWithTranslation(locale))
+                        getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
-        if (docs == null) {
+        if (docs == null || docs.isEmpty()) {
+            logger.trace("No hits");
             feed.setEntries(entries);
             return feed;
         }
@@ -336,10 +351,22 @@ public class RSSFeed {
 
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        return createRssFeed(rootPath, query, rssFeedItems, null);
+        return createRssFeed(rootPath, query, null, rssFeedItems, null);
     }
 
-    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language)
+    /**
+     * 
+     * @param rootPath
+     * @param query
+     * @param filterQueries
+     * @param rssFeedItems
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     */
+    public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
@@ -364,195 +391,197 @@ public class RSSFeed {
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
-                        getFieldsWithTranslation(locale))
+                        getFieldsWithTranslation(locale), filterQueries, null)
                 .getResults();
-        if (docs != null) {
-            for (SolrDocument doc : docs) {
-                boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
-                boolean child = !anchor
-                        && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE))
-                                || doc.getFieldValue(SolrConstants.LOGID) != null)
-                        && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
-                boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-                boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
-                SolrDocument topDoc = null;
-                SolrDocument ownerDoc = null;
-                if (child || page) {
-                    // Find top level docstruct to extract metadata such as DATECREATED
-                    List<SolrDocument> topDocs = DataManager.getInstance()
+        if (docs == null || docs.isEmpty()) {
+            logger.trace("No hits");
+            return feed;
+        }
+
+        for (SolrDocument doc : docs) {
+            boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
+            boolean child = !anchor
+                    && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
+                    && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
+            boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
+            boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
+            SolrDocument topDoc = null;
+            SolrDocument ownerDoc = null;
+            if (child || page) {
+                // Find top level docstruct to extract metadata such as DATECREATED
+                List<SolrDocument> topDocs = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(), 0,
+                                1, null, null, Arrays.asList(FIELDS))
+                        .getResults();
+                if (!topDocs.isEmpty()) {
+                    topDoc = topDocs.get(0);
+                }
+                if (page) {
+                    // Find page owner docstruct to extract its metadata
+                    List<SolrDocument> ownerDocs = DataManager.getInstance()
                             .getSearchIndex()
-                            .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(),
-                                    0, 1, null, null, Arrays.asList(FIELDS))
+                            .search(new StringBuilder(SolrConstants.IDDOC).append(':')
+                                    .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
+                                    .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
                             .getResults();
-                    if (!topDocs.isEmpty()) {
-                        topDoc = topDocs.get(0);
-                    }
-                    if (page) {
-                        // Find page owner docstruct to extract its metadata
-                        List<SolrDocument> ownerDocs = DataManager.getInstance()
-                                .getSearchIndex()
-                                .search(new StringBuilder(SolrConstants.IDDOC).append(':')
-                                        .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
-                                        .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
-                                .getResults();
-                        if (!ownerDocs.isEmpty()) {
-                            ownerDoc = ownerDocs.get(0);
-                        }
+                    if (!ownerDocs.isEmpty()) {
+                        ownerDoc = ownerDocs.get(0);
                     }
                 }
-
-                String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
-                RssItem entry = new RssItem();
-                Description description = new Description();
-                String label = "";
-                Long modified = null;
-                String author = "";
-                String authorRss = "";
-                String publisher = "";
-                String placeAndTime = "";
-                String descValue = "";
-                String thumbnail = "";
-                String urn = "";
-                String urnLink = "";
-                String bookSeries = "";
-                String shelfmark = "";
-
-                int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-                int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                boolean hasImages = isHasImages(doc);
-                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
-                entry.setDocType(Helper.getTranslation(docStructType, locale));
-
-                for (String field : FIELDS) {
-                    Object value = doc.getFirstValue(field);
-                    Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
-                    value = translatedValue.orElse(value);
-                    // If the doc has no field value, try the owner doc (in case of pages)
-                    if (value == null && ownerDoc != null) {
-                        value = ownerDoc.getFirstValue(field);
-                    }
-                    // If there is still no value, try the root doc
-                    if (value == null && topDoc != null) {
-                        value = topDoc.getFirstValue(field);
-                    }
-                    if (value != null) {
-                        switch (field) {
-                            case SolrConstants.LABEL:
-                                // It is important that LABEL comes before IDDOC_PARENT in the static field list!
-                                label = (String) value;
-                                break;
-                            case SolrConstants.IDDOC_PARENT:
-                                // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance()
-                                        .getSearchIndex()
-                                        .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
-                                                Collections.singletonList(SolrConstants.LABEL));
-                                if (hits != null && hits.getNumFound() > 0) {
-                                    SolrDocument parent = hits.get(0);
-                                    Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
-                                    if (fieldParentLabel != null) {
-                                        label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
-                                        bookSeries = fieldParentLabel.toString();
-                                    }
-                                }
-                                break;
-                            case SolrConstants.PERSON_ONEFIELD:
-                                authorRss = (String) value;
-                                author = value.toString();
-                                break;
-                            case SolrConstants.PUBLISHER:
-                                publisher = value.toString();
-                                break;
-                            case SolrConstants.DATECREATED:
-                                modified = (Long) value;
-                                break;
-                            case SolrConstants.YEARPUBLISH:
-                            case SolrConstants.PLACEPUBLISH:
-                                if (StringUtils.isBlank(placeAndTime)) {
-                                    placeAndTime = value.toString();
-                                } else {
-                                    placeAndTime = placeAndTime + ", " + value;
-                                }
-                                break;
-                            case SolrConstants.URN:
-                                urn = value.toString();
-                                urnLink = new StringBuilder().append(rootPath).append("/resolver?urn=").append(value).toString();
-                                break;
-                            case SolrConstants.PI:
-                                pi = (String) value;
-                                break;
-                            case SolrConstants.TITLE:
-                                if (StringUtils.isEmpty(label)) {
-                                    label = (String) value;
-                                }
-                                break;
-                            case SolrConstants.FILENAME:
-                            case SolrConstants.THUMBNAIL:
-                                if (StringUtils.isEmpty(thumbnail)) {
-                                    thumbnail = (String) value;
-                                }
-                                break;
-                            case SolrConstants.DOCSTRCT:
-                                if (StringUtils.isEmpty(label)) {
-                                    label = (String) value;
-                                    label = ViewerResourceBundle.getTranslation(label, locale);
-                                }
-                                break;
-                            case "MD_SHELFMARK":
-                                shelfmark = value.toString();
-                                break;
-                            default: // nothing
-                        }
-                    }
-                }
-
-                String link = createLink(rootPath, pi, pageType);
-
-                description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
-
-                if (modified != null) {
-                    SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_STRING);
-                    String imported = format.format(new Date(modified));
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("DATECREATED", locale), imported));
-                }
-
-                if (StringUtils.isNotBlank(placeAndTime)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
-                }
-                if (StringUtils.isNotBlank(bookSeries)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_bookSeries", locale), bookSeries));
-                }
-                if (StringUtils.isNotBlank(author)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_AUTHOR", locale), author));
-                }
-                if (StringUtils.isNotBlank(publisher)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_PUBLISHER", locale), publisher));
-                }
-                if (StringUtils.isNotBlank(urn)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_url", locale), urn, urnLink));
-                }
-                if (StringUtils.isNotBlank(shelfmark)) {
-                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_SHELFMARK", locale), shelfmark));
-                }
-                entry.setDescription(description);
-
-                if (StringUtils.isNotBlank(authorRss)) {
-                    entry.setCreator(authorRss);
-                }
-                entry.setTitle(label);
-                entry.setLink(link);
-                if (modified != null) {
-                    try {
-                        entry.setPubDate(new Date(modified));
-                    } catch (NumberFormatException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-
-                feed.addItem(entry);
             }
+
+            String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+            RssItem entry = new RssItem();
+            Description description = new Description();
+            String label = "";
+            Long modified = null;
+            String author = "";
+            String authorRss = "";
+            String publisher = "";
+            String placeAndTime = "";
+            String descValue = "";
+            String thumbnail = "";
+            String urn = "";
+            String urnLink = "";
+            String bookSeries = "";
+            String shelfmark = "";
+
+            int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+            int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+            boolean hasImages = isHasImages(doc);
+            String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+            String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
+            entry.setDocType(Helper.getTranslation(docStructType, locale));
+
+            for (String field : FIELDS) {
+                Object value = doc.getFirstValue(field);
+                Optional<Object> translatedValue = Optional.ofNullable(doc.getFirstValue(field + "_LANG_" + locale.getLanguage().toUpperCase()));
+                value = translatedValue.orElse(value);
+                // If the doc has no field value, try the owner doc (in case of pages)
+                if (value == null && ownerDoc != null) {
+                    value = ownerDoc.getFirstValue(field);
+                }
+                // If there is still no value, try the root doc
+                if (value == null && topDoc != null) {
+                    value = topDoc.getFirstValue(field);
+                }
+                if (value != null) {
+                    switch (field) {
+                        case SolrConstants.LABEL:
+                            // It is important that LABEL comes before IDDOC_PARENT in the static field list!
+                            label = (String) value;
+                            break;
+                        case SolrConstants.IDDOC_PARENT:
+                            // TODO This query is executed O(size of feed) times.
+                            SolrDocumentList hits = DataManager.getInstance()
+                                    .getSearchIndex()
+                                    .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                            Collections.singletonList(SolrConstants.LABEL));
+                            if (hits != null && hits.getNumFound() > 0) {
+                                SolrDocument parent = hits.get(0);
+                                Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
+                                if (fieldParentLabel != null) {
+                                    label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
+                                    bookSeries = fieldParentLabel.toString();
+                                }
+                            }
+                            break;
+                        case SolrConstants.PERSON_ONEFIELD:
+                            authorRss = (String) value;
+                            author = value.toString();
+                            break;
+                        case SolrConstants.PUBLISHER:
+                            publisher = value.toString();
+                            break;
+                        case SolrConstants.DATECREATED:
+                            modified = (Long) value;
+                            break;
+                        case SolrConstants.YEARPUBLISH:
+                        case SolrConstants.PLACEPUBLISH:
+                            if (StringUtils.isBlank(placeAndTime)) {
+                                placeAndTime = value.toString();
+                            } else {
+                                placeAndTime = placeAndTime + ", " + value;
+                            }
+                            break;
+                        case SolrConstants.URN:
+                            urn = value.toString();
+                            urnLink = new StringBuilder().append(rootPath).append("/resolver?urn=").append(value).toString();
+                            break;
+                        case SolrConstants.PI:
+                            pi = (String) value;
+                            break;
+                        case SolrConstants.TITLE:
+                            if (StringUtils.isEmpty(label)) {
+                                label = (String) value;
+                            }
+                            break;
+                        case SolrConstants.FILENAME:
+                        case SolrConstants.THUMBNAIL:
+                            if (StringUtils.isEmpty(thumbnail)) {
+                                thumbnail = (String) value;
+                            }
+                            break;
+                        case SolrConstants.DOCSTRCT:
+                            if (StringUtils.isEmpty(label)) {
+                                label = (String) value;
+                                label = ViewerResourceBundle.getTranslation(label, locale);
+                            }
+                            break;
+                        case "MD_SHELFMARK":
+                            shelfmark = value.toString();
+                            break;
+                        default: // nothing
+                    }
+                }
+            }
+
+            String link = createLink(rootPath, pi, pageType);
+
+            description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
+
+            if (modified != null) {
+                SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_STRING);
+                String imported = format.format(new Date(modified));
+                description.addMetadata(new RssMetadata(Helper.getTranslation("DATECREATED", locale), imported));
+            }
+
+            if (StringUtils.isNotBlank(placeAndTime)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
+            }
+            if (StringUtils.isNotBlank(bookSeries)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_bookSeries", locale), bookSeries));
+            }
+            if (StringUtils.isNotBlank(author)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_AUTHOR", locale), author));
+            }
+            if (StringUtils.isNotBlank(publisher)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_PUBLISHER", locale), publisher));
+            }
+            if (StringUtils.isNotBlank(urn)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("rss_url", locale), urn, urnLink));
+            }
+            if (StringUtils.isNotBlank(shelfmark)) {
+                description.addMetadata(new RssMetadata(Helper.getTranslation("MD_SHELFMARK", locale), shelfmark));
+            }
+            entry.setDescription(description);
+
+            if (StringUtils.isNotBlank(authorRss)) {
+                entry.setCreator(authorRss);
+            }
+            entry.setTitle(label);
+            entry.setLink(link);
+            if (modified != null) {
+                try {
+                    entry.setPubDate(new Date(modified));
+                } catch (NumberFormatException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+
+            feed.addItem(entry);
         }
 
         // // TODO read information from config file

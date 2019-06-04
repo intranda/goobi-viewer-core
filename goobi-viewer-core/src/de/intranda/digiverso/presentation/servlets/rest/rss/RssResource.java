@@ -15,6 +15,10 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.rss;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -30,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedOutput;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -37,11 +43,13 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.rss.Channel;
 import de.intranda.digiverso.presentation.model.rss.Description;
 import de.intranda.digiverso.presentation.model.rss.RSSFeed;
 import de.intranda.digiverso.presentation.model.rss.RssItem;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -86,7 +94,7 @@ public class RssResource {
         String partnerId = null;
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                createQuery(query, bookshelfId, partnerId), numHits, language);
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
 
         servletResponse.setContentType("application/json");
 
@@ -120,7 +128,7 @@ public class RssResource {
         }
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                createQuery(query, bookshelfId, partnerId), numHits, language);
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
 
         servletResponse.setContentType("application/json");
 
@@ -159,7 +167,7 @@ public class RssResource {
         }
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                createQuery(query, bookshelfId, partnerId), numHits, language);
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
 
         servletResponse.setContentType("application/json");
 
@@ -196,7 +204,7 @@ public class RssResource {
         String partnerId = null;
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                createQuery(query, bookshelfId, partnerId), numHits, language);
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
 
         servletResponse.setContentType("application/json");
 
@@ -237,11 +245,55 @@ public class RssResource {
         }
 
         Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
-                createQuery(query, bookshelfId, partnerId), numHits, language);
+                createQuery(query, bookshelfId, partnerId, servletRequest, true), null, numHits, language);
 
         servletResponse.setContentType("application/json");
 
         return rss;
+    }
+
+    /**
+     * 
+     * @param query
+     * @param facets
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws FeedException
+     */
+    @GET
+    @Path("/search/{query}/{facets}/{advancedSearchGroupOperator}/{language}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getSearchRssFeed(@PathParam("query") String query, @PathParam("facets") String facets,
+            @PathParam("advancedSearchGroupOperator") String advancedSearchGroupOperator, @PathParam("language") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, FeedException {
+        if (query.equals("-")) {
+            query = createQuery(null, null, null, servletRequest, false);
+        } else {
+            try {
+                query = URLDecoder.decode(query, SearchBean.URL_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage());
+            }
+            query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
+        }
+
+        // Optional facetting
+        List<String> filterQueries = null;
+        if (!"-".equals(facets)) {
+            SearchFacets searchFacets = new SearchFacets();
+            searchFacets.setCurrentFacetString(facets);
+            if ("-".equals(advancedSearchGroupOperator)) {
+                advancedSearchGroupOperator = "0";
+            }
+            filterQueries = searchFacets.generateFacetFilterQueries(Integer.valueOf(advancedSearchGroupOperator), true);
+        }
+        SyndFeedOutput output = new SyndFeedOutput();
+        return output
+                .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries, language));
     }
 
     /**
@@ -277,18 +329,21 @@ public class RssResource {
 
     /**
      * @param query
+     * @param bookshelfId
+     * @param partnerId
+     * @param servletRequest
+     * @param addSuffixes
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @should augment given query correctly
+     * @should create basic query correctly
+     * @should add suffixes if requested
      */
-    private String createQuery(String query, Long bookshelfId, String partnerId)
+    static String createQuery(String query, Long bookshelfId, String partnerId, HttpServletRequest servletRequest, boolean addSuffixes)
             throws IndexUnreachableException, PresentationException, DAOException {
-
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("(").append(query).append(")");
-
-        // Build query
+        // Build query, if none given
         if (StringUtils.isEmpty(query)) {
             if (bookshelfId != null) {
                 // Bookshelf RSS feed
@@ -299,12 +354,15 @@ public class RssResource {
                 if (!bookshelf.isPublic()) {
                     throw new PresentationException("Requested bookshelf not public: " + bookshelfId);
                 }
-                sbQuery = new StringBuilder(bookshelf.generateSolrQueryForItems());
+                query = bookshelf.generateSolrQueryForItems();
             } else {
                 // Main RSS feed
-                sbQuery.append(SolrConstants.ISWORK).append(":true");
+                query = SolrConstants.ISWORK + ":true";
             }
         }
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("(").append(query).append(")");
 
         if (StringUtils.isNotBlank(partnerId)) {
             sbQuery.append(" AND ")
@@ -313,8 +371,10 @@ public class RssResource {
                     .append(partnerId.trim());
         }
 
-        sbQuery.append(
-                SearchHelper.getAllSuffixes(servletRequest, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+        if (addSuffixes) {
+            sbQuery.append(
+                    SearchHelper.getAllSuffixes(servletRequest, true, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+        }
 
         return sbQuery.toString();
     }

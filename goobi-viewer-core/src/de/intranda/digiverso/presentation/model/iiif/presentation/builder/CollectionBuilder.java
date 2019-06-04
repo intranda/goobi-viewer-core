@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
@@ -97,9 +98,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws MalformedURLException
      * @throws URISyntaxException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
     public Collection generateCollection(String collectionField, final String topElement, final String splittingChar)
-            throws IndexUnreachableException, URISyntaxException, PresentationException {
+            throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
 
         CollectionView collectionView = getCollectionView(collectionField, getFacetField(collectionField), splittingChar);
 
@@ -219,9 +221,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param baseElement
      * @return
      * @throws URISyntaxException
+     * @throws ViewerConfigurationException 
      * @throws ContentLibException
      */
-    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException {
+    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException, ViewerConfigurationException {
         Collection collection = null;
         try {
             collection = new Collection(uri);

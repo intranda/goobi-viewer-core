@@ -68,7 +68,7 @@
 		                        <f:facet name="header">
 		                            <h:outputText value="#{msg.action}" />
 		                        </f:facet>
-		                        <h:outputLink value="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}?bookshelfId=#{bookshelf.id}"
+		                        <h:outputLink value="#{navigationHelper.applicationUrl}#{configurationBean.restApiUrl}/bookshelf/#{bookshelf.id}/"
 		                            styleClass="icon-rss16x16" title="#{msg.rssSubscribe}" target="_blank" />
 		                    </h:column>
 		                </h:dataTable>

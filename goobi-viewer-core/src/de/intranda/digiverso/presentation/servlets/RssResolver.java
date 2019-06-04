@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 /**
  * Servlet implementation class RssResolver
  */
+@Deprecated
 public class RssResolver extends HttpServlet {
     private static final long serialVersionUID = -8188360280492927624L;
 
@@ -108,7 +109,7 @@ public class RssResolver extends HttpServlet {
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
                                 query + SearchHelper.getAllSuffixes(request, true, true,
                                         DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
-                                language),
+                                null, language),
                         new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");

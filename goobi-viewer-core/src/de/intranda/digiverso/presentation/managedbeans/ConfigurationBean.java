@@ -84,7 +84,7 @@ public class ConfigurationBean implements Serializable {
     public String getContentServletUrl() {
         return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
     }
-    
+
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
     }
@@ -703,6 +703,15 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
     }
 
+    /**
+     * 
+     * @return REST API URL
+     * @throws ViewerConfigurationException
+     */
+    public String getRestApiUrl() throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl();
+    }
+
     public String getIiifApiUrl() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
@@ -751,7 +760,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSubthemeDiscriminatorFieldSet() {
         return StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
-    
+
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }

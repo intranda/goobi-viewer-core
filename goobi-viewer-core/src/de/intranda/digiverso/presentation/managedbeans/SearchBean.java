@@ -1636,24 +1636,37 @@ public class SearchBean implements SearchInterface, Serializable {
         return "";
     }
 
-    public String getRssUrl() {
+    /**
+     * 
+     * @return URL to the RSS feed for the current search
+     * @throws ViewerConfigurationException
+     */
+    public String getRssUrl() throws ViewerConfigurationException {
         if (searchString == null) {
             return null;
         }
 
         String currentQuery = SearchHelper.prepareQuery(searchString);
         try {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                    .append(NavigationHelper.URL_RSS)
-                    .append("?q=")
+            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                    .append("rss/search/")
                     .append(URLEncoder.encode(currentQuery, URL_ENCODING))
+                    .append('/')
+                    .append(URLEncoder.encode(facets.getCurrentFacetString(), URL_ENCODING))
+                    .append('/')
+                    .append(advancedSearchGroupOperator)
+                    .append("/-/")
                     .toString();
         } catch (UnsupportedEncodingException e) {
             logger.warn("Could not encode query '{}' for URL", currentQuery);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
-                    .append(NavigationHelper.URL_RSS)
-                    .append("?q=")
+            return new StringBuilder().append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                    .append("rss/search/")
                     .append(currentQuery)
+                    .append('/')
+                    .append(facets.getCurrentFacetString())
+                    .append('/')
+                    .append(advancedSearchGroupOperator)
+                    .append("/-/")
                     .toString();
         }
     }

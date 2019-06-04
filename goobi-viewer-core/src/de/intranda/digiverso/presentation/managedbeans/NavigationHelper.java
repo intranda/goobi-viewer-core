@@ -84,7 +84,7 @@ public class NavigationHelper implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(NavigationHelper.class);
 
-    public static final String URL_RSS = "rss";
+    private static final String URL_RSS = "rss";
 
     public static final int WEIGHT_TAG_MAIN_MENU = 1;
     public static final int WEIGHT_ACTIVE_COLLECTION = 2;
