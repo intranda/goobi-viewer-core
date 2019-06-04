@@ -7,9 +7,16 @@ dist: trusty
 jdk:
   - openjdk8
 
+addons:
+  sonarcloud:
+    organization: "intranda"
+    token:
+      secure: $SONAR_TOKEN
+
 script:
   - cd goobi-viewer-core
   - mvn clean compile -B -V
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
 
 
 #sudo: required
