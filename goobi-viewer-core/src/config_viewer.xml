@@ -249,11 +249,11 @@
 			</tileSize>
 		</zoomImageView>
 		
-		<!-- limitImageHeight: If true, the image width is divided by the
-         image hight and if the result is below the configured ratio the
-         default image view will limit the OpenSeadragon canvas to a
-         hight of 1200px. Default is true and ratio of 0,3 -->
-    	<limitImageHeight ratio="0.3">true</limitImageHeight> 
+		 <!-- limitImageHeight: If true, the image width is divided by the
+         image hight and if the result is below the lowerRatioThreshold or above the upperRatioThreshold,
+         the default image view will set the OpenSeadragon canvas to a
+         hight of 1200px. Default is true with a lowerRatioThreshold of 0,3 and an upperRatioThreshold of 3.0 -->
+    	<limitImageHeight lowerRatioThreshold="0.3" upperRatioThreshold="3.0">true</limitImageHeight> 
 
 		<rememberImageZoom>false</rememberImageZoom>
 		<rememberImageRotation>false</rememberImageRotation>
