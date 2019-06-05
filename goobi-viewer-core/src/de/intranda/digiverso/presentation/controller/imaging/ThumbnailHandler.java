@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +25,7 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -37,7 +37,6 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
-import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -286,9 +285,9 @@ public class ThumbnailHandler {
         }
         if (isStaticImageResource(path)) {
             return path;
-        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
+        } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, getScale(width, height), null, null, null);
-        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default", "jpg");
@@ -324,10 +323,10 @@ public class ThumbnailHandler {
         }
         if (isStaticImageResource(path)) {
             return path;
-        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
-            return iiifUrlHandler.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
+            return IIIFUrlResolver.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
+            return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
         }
@@ -440,10 +439,10 @@ public class ThumbnailHandler {
         String thumbnailUrl = getImagePath(doc);
         if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
-        } else if (IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
-            return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
-        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
+            return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
+            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
                     "jpg");
@@ -464,9 +463,9 @@ public class ThumbnailHandler {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(path);
         if (isStaticImageResource(path)) {
             return path;
-        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
+        } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
-        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
         	return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, Scale.MAX_SIZE, "0", "default", format.getFileExtension());
@@ -497,10 +496,10 @@ public class ThumbnailHandler {
         String thumbnailUrl = getImagePath(doc);
         if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
-        } else if (IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
-            return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
+            return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
+            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
         }

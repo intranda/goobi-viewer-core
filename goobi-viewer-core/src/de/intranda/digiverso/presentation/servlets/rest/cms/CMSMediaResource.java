@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.serializer.MetadataSerializer;
@@ -61,7 +62,6 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.StringTools;
-import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
@@ -361,8 +361,8 @@ public class CMSMediaResource {
             this.label = source.getTranslationsForName();
             this.description = source.getTranslationsForDescription();
             this.image = new ImageContent(source.getIconURI());
-            if(IIIFUrlHandler.isIIIFImageUrl(source.getIconURI().toString())) {   
-                URI imageInfoURI = URI.create(IIIFUrlHandler.getIIIFImageBaseUrl(source.getIconURI().toString()));
+            if(IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {   
+                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
                 this.image.setService(new ImageInformation(imageInfoURI.toString()));
             }
             this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");

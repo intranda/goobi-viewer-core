@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.LinkedAnnotation;
+import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
@@ -42,7 +43,6 @@ import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -232,8 +232,8 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (size.getWidth() * size.getHeight() > 0) {
                     resource.setWidth(size.width);
                     resource.setHeight(size.height);
-                    if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {   
-                        URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbnailUrl));
+                    if(IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {   
+                        URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
                         resource.setService(new ImageInformation(imageInfoURI.toString()));
                     }
                 } else {

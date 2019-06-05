@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Range;
@@ -37,7 +38,6 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -158,8 +158,8 @@ public class StructureBuilder extends AbstractBuilder {
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 range.setThumbnail(thumb);
-                if(IIIFUrlHandler.isIIIFImageUrl(thumbUrl)) {   
-                    URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbUrl));
+                if(IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {   
+                    URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl));
                     thumb.setService(new ImageInformation(imageInfoURI.toString()));
                 }
             }
