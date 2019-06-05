@@ -15,13 +15,9 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -30,18 +26,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
-import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 
@@ -158,8 +152,12 @@ public class ImageHandler {
             url = url.replace("info.json", "full/max/0/default.jpg");
         }
         PageSource imageSource = new PageSource(0, url, Collections.emptyMap());
-        ImageInformation info = new ImageInformation(imageSource.getImageUri(), new URI(""));
-        return info;
+        try(ImageManager manager = new ImageManager(imageSource.getImageUri())) {
+            ImageInformation info = manager.getImageInformation(new URI(""));
+            return info;
+        } catch (FileNotFoundException e) {
+            throw new ContentLibException("Cannot resolve url " + url + " to existing resource");
+        }
     }
 
     /**

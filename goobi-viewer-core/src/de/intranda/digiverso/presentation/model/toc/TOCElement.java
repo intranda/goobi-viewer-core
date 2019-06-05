@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
  * Single TOC entry.

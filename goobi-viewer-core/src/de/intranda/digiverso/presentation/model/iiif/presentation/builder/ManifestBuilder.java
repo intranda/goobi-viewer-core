@@ -20,36 +20,34 @@ import java.net.URISyntaxException;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
-import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
@@ -128,8 +126,12 @@ public class ManifestBuilder extends AbstractBuilder {
         try {
             String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
+                ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 manifest.setThumbnail(thumb);
+                if(IIIFUrlHandler.isIIIFImageUrl(thumbUrl)) {
+                    String imageInfoURI = IIIFUrlHandler.getIIIFImageBaseUrl(thumbUrl);
+                    thumb.setService(new ImageInformation(imageInfoURI));
+                }
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
@@ -142,7 +144,7 @@ public class ManifestBuilder extends AbstractBuilder {
             }
             logoUrl.ifPresent(url -> {
                 try {
-                    ImageContent logo = new ImageContent(new URI(url), false);
+                    ImageContent logo = new ImageContent(new URI(url));
                     manifest.setLogo(logo);
                 } catch (URISyntaxException e) {
                     logger.warn("Unable to retrieve logo url", e);

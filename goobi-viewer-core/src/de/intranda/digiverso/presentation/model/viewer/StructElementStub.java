@@ -35,9 +35,9 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 /**
  * StructElement essentials with a reduced memory footprint.

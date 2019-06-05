@@ -26,33 +26,38 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fop.afp.ioca.ImageInputDescriptor;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.Collection;
+import de.intranda.api.iiif.presentation.CollectionExtent;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
-import de.intranda.digiverso.presentation.model.iiif.presentation.CollectionExtent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.SimpleBrowseElementInfo;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 
 /**
  * @author Florian Alpers
@@ -236,13 +241,17 @@ public class CollectionBuilder extends AbstractBuilder {
                 if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
                     collection.setLabel(info.getTranslationsForName());
                 } else {
-                    collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
+                    collection.setLabel(ViewerResourceBundle.getTranslations(baseElement.getName()));
                 }
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if (thumbURI != null) {
-                    ImageContent thumb = new ImageContent(thumbURI, true);
+                    ImageContent thumb = new ImageContent(thumbURI);
                     collection.setThumbnail(thumb);
+                    if(IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {   
+                        URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
+                        thumb.setService(new ImageInformation(imageInfoURI.toString()));
+                    }
                 }
 
                 long volumes = baseElement.getNumberOfVolumes();

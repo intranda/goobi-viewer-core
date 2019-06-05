@@ -35,23 +35,23 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
-import de.intranda.digiverso.presentation.model.viewer.EventElement;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.Metadata;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 /**
  * @author Florian Alpers
@@ -198,7 +198,7 @@ public abstract class AbstractBuilder {
 		} else if (StringUtils.isNotBlank(title)) {
 			return Optional.of(new SimpleMetadataValue(title));
 		} else if (StringUtils.isNotBlank(docStruct)) {
-			return Optional.of(IMetadataValue.getTranslations(docStruct));
+			return Optional.of(ViewerResourceBundle.getTranslations(docStruct));
 		} else {
 			return Optional.empty();
 		}
@@ -218,8 +218,8 @@ public abstract class AbstractBuilder {
 					&& !field.matches(".*_LANG_\\w{2,3}")) {
 				String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
 				String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel : (field.contains("/") ? field.substring(field.indexOf("/")+1) : field);
-				IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
-						.map(value -> new Metadata(IMetadataValue.getTranslations(label), value)).ifPresent(md -> {
+				SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
+						.map(value -> new Metadata(ViewerResourceBundle.getTranslations(label), value)).ifPresent(md -> {
 							md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
 							md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
 							manifest.addMetadata(md);
@@ -428,13 +428,13 @@ public abstract class AbstractBuilder {
 	 */
 	protected IMetadataValue getAttribution() {
 		String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
-		return IMetadataValue.getTranslations(message);
+		return ViewerResourceBundle.getTranslations(message);
 	}
 
 	protected Optional<IMetadataValue> getDescription(StructElement ele) {
 		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
 		for (String field : fields) {
-			Optional<IMetadataValue> optional = IMetadataValue.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
+			Optional<IMetadataValue> optional = SolrSearchIndex.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2)
 					.map(md -> {
 						md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
 						return md;

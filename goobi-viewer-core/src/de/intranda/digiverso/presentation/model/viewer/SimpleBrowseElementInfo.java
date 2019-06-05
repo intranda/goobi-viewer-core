@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
@@ -137,7 +138,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
      */
     @Override
     public IMetadataValue getTranslationsForName() {
-        return IMetadataValue.getTranslations(getName());
+        return ViewerResourceBundle.getTranslations(getName());
     }
 
 }

@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
 public class HierarchicalBrowseDcElement extends BrowseDcElement {
 

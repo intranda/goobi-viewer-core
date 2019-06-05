@@ -18,12 +18,12 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.AbstractBuilder;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 
 /**
  * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers

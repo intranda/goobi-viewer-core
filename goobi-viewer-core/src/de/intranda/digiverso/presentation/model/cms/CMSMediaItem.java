@@ -59,9 +59,9 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 @Entity

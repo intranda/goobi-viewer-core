@@ -23,13 +23,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.api.iiif.discovery.Activity;
+import de.intranda.api.iiif.discovery.OrderedCollection;
+import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.iiif.OrderedCollection;
-import de.intranda.digiverso.presentation.model.iiif.OrderedCollectionPage;
-import de.intranda.digiverso.presentation.model.iiif.discovery.Activity;
 
 /**
  * @author Florian Alpers

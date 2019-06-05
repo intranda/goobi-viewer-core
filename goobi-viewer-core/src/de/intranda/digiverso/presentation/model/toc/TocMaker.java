@@ -49,17 +49,18 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 public class TocMaker {
 
@@ -719,14 +720,14 @@ public class TocMaker {
                     if (StringUtils.isEmpty(value.toString())) {
                         // Docstruct fallback should always be translated
                         String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
-                        value = IMetadataValue.getTranslations(docstruct);
+                        value = ViewerResourceBundle.getTranslations(docstruct);
                         //                        value.setValue(Helper.getTranslation(docstruct, null));
                     }
                 }
                 // Translate parameter value, if so configured and not already translated
                 if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
-                    value = IMetadataValue.getTranslations(value.getValue().orElse(""));
+                    value = ViewerResourceBundle.getTranslations(value.getValue().orElse(""));
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);

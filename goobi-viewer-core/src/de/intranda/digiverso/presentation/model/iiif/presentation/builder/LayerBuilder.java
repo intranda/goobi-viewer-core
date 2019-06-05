@@ -32,17 +32,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.LinkedAnnotation;
+import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Layer;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.enums.DcType;
+import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 
 /**
@@ -84,14 +85,14 @@ public class LayerBuilder extends AbstractBuilder {
             throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
 //        List<Path> files = ContentResource.getTEIFiles(pi, ContentResource.getDataRepository(pi));
         List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
-        List<Annotation> annotations = new ArrayList<>();
+        List<IAnnotation> annotations = new ArrayList<>();
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
             language.ifPresent(lang -> {      
 //                    URI link = ContentResource.getTEIURI(pi, lang);
                     URI link = linkGetter.apply(pi, lang);
                     URI annotationURI = getAnnotationListURI(pi, type);
-                    Annotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
+                    IAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
                     annotations.add(anno);
             });
         }
@@ -102,7 +103,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
     
     
-    public Annotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, Motivation motivation) {
+    public LinkedAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, Motivation motivation) {
         LinkingContent link = new LinkingContent(linkURI);
         if(format != null) {            
             link.setFormat(format);
@@ -111,9 +112,9 @@ public class LayerBuilder extends AbstractBuilder {
             link.setType(dcType);
         }
         if(annoType != null) {            
-            link.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            link.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
         }
-        Annotation annotation = new Annotation(annotationId);
+        LinkedAnnotation annotation = new LinkedAnnotation(annotationId);
         if(motivation != null) {
             annotation.setMotivation(motivation);
         } else {
@@ -123,10 +124,10 @@ public class LayerBuilder extends AbstractBuilder {
         return annotation;
     }
     
-    public AnnotationList createAnnotationList(List<Annotation> annotations, URI id, AnnotationType type) {
+    public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
         AnnotationList annoList = new AnnotationList(id);
-        annoList.setLabel(IMetadataValue.getTranslations(type.name()));
-        for (Annotation annotation : annotations) {            
+        annoList.setLabel(ViewerResourceBundle.getTranslations(type.name()));
+        for (IAnnotation annotation : annotations) {            
             annoList.addResource(annotation);
         }
         return annoList;
@@ -147,7 +148,7 @@ public class LayerBuilder extends AbstractBuilder {
         Layer layer = new Layer(getLayerURI(pi, logId));
         for (AnnotationType annoType : annoLists.keySet()) {
             AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
             annoLists.get(annoType).stream()
             .filter(al -> al.getResources() != null)
             .flatMap(al -> al.getResources().stream())
@@ -172,7 +173,7 @@ public class LayerBuilder extends AbstractBuilder {
         Map<AnnotationType, AnnotationList> map = new HashMap<>();
         for (AnnotationType annoType : annoLists.keySet()) {
             AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
             annoLists.get(annoType).stream()
             .filter(al -> al.getResources() != null)
             .flatMap(al -> al.getResources().stream())

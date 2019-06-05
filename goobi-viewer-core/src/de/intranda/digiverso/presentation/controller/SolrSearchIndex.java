@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,12 +58,13 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.crowdsourcing.DisplayUserGeneratedContent;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 public final class SolrSearchIndex {
 
@@ -1290,4 +1292,32 @@ public final class SolrSearchIndex {
 
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
+
+
+    public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc) {
+        Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
+        if (translations.size() > 1) {
+            return Optional.of(new MultiLanguageMetadataValue(translations));
+        } else if (translations.size() == 1) {
+            return Optional.of(ViewerResourceBundle.getTranslations(translations.values().iterator().next().stream().findFirst().orElse("")));
+        } else {
+            return Optional.empty();
+        }
+    }
+    
+
+    public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
+
+        Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
+        if (translations.size() > 1) {
+            return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
+        } else if (!translations.isEmpty()) {
+            return Optional.ofNullable(
+                    ViewerResourceBundle.getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+
 }

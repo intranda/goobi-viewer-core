@@ -28,23 +28,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.Canvas;
+import de.intranda.api.iiif.presentation.Range;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 /**
  * @author Florian Alpers
@@ -98,7 +101,7 @@ public class StructureBuilder extends AbstractBuilder {
                 range.setUseMembers(useMembers);
                 idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
                 if (structElement.isWork()) {
-                    IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
+                    IMetadataValue label = ViewerResourceBundle.getTranslations(BASE_RANGE_LABEL);
                     range.setLabel(label);
                     range.setViewingHint(ViewingHint.top);
                 } else {
@@ -153,8 +156,12 @@ public class StructureBuilder extends AbstractBuilder {
         try {
             String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, pi);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
+                ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 range.setThumbnail(thumb);
+                if(IIIFUrlHandler.isIIIFImageUrl(thumbUrl)) {   
+                    URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbUrl));
+                    thumb.setService(new ImageInformation(imageInfoURI.toString()));
+                }
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);

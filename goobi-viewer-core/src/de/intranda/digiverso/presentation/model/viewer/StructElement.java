@@ -39,7 +39,8 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -606,7 +607,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (label.isEmpty()) {
             label = getMultiLanguageMetadataValue(SolrConstants.LABEL);
             if (label.isEmpty()) {
-                label = IMetadataValue.getTranslations(getDocStructType());
+                label = ViewerResourceBundle.getTranslations(getDocStructType());
             }
         }
 

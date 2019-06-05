@@ -20,8 +20,8 @@ import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 public class LabeledLink implements Serializable {
 

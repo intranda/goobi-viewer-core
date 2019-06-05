@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.PdfInformation;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
 
 @Provider

@@ -15,28 +15,12 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
-import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
-import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * @author Florian Alpers

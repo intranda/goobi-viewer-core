@@ -27,11 +27,11 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.CollectionBuilder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 

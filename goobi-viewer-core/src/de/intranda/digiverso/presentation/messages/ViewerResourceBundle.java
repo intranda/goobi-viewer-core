@@ -30,6 +30,7 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +51,9 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.StringTools;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 public class ViewerResourceBundle extends ResourceBundle {
 
@@ -508,4 +512,28 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
         return allLocales;
     }
+    
+    /**
+     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     * 
+     * @param key the message key
+     * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     */
+    public static IMetadataValue getTranslations(String key) {
+        Map<String, String> translations = new HashMap<>();
+        if (ViewerResourceBundle.getAllLocales() != null) {
+            for (Locale locale : getAllLocales()) {
+                String translation = ViewerResourceBundle.getTranslation(key, locale, false);
+                if (key != null && !key.equals(translation) && StringUtils.isNotBlank(translation)) {
+                    translations.put(locale.getLanguage(), translation);
+                }
+            }
+        }
+        if (translations.isEmpty()) {
+            return new SimpleMetadataValue(key);
+        }
+
+        return new MultiLanguageMetadataValue(translations);
+    }
+
 }

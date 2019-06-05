@@ -38,6 +38,9 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.image.ImageProfile;
+import de.intranda.api.iiif.image.ImageTile;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
@@ -52,9 +55,6 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageProfile;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageTile;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
 @Provider

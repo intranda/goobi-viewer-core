@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.cms;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +29,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,7 +46,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.xmlbeans.impl.common.IOUtil;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -57,28 +53,28 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.serializer.MetadataSerializer;
 import de.intranda.digiverso.presentation.controller.ConversionTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.StringTools;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
-import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCategory;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.MetadataSerializer;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 
 /**
  * @author Florian Alpers
@@ -364,7 +360,11 @@ public class CMSMediaResource {
         public MediaItem(CMSMediaItem source) {
             this.label = source.getTranslationsForName();
             this.description = source.getTranslationsForDescription();
-            this.image = new ImageContent(source.getIconURI(), true);
+            this.image = new ImageContent(source.getIconURI());
+            if(IIIFUrlHandler.isIIIFImageUrl(source.getIconURI().toString())) {   
+                URI imageInfoURI = URI.create(IIIFUrlHandler.getIIIFImageBaseUrl(source.getIconURI().toString()));
+                this.image.setService(new ImageInformation(imageInfoURI.toString()));
+            }
             this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
             this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         }

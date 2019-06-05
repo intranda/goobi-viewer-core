@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 
 public interface BrowseElementInfo {
 

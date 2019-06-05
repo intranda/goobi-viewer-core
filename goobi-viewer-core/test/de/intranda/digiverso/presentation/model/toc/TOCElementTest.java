@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 
 public class TOCElementTest {
 

@@ -24,12 +24,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 

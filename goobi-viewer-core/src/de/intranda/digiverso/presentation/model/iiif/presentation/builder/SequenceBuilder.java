@@ -29,27 +29,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.LinkedAnnotation;
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Canvas;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.Sequence;
+import de.intranda.api.iiif.presentation.content.ImageContent;
+import de.intranda.api.iiif.presentation.content.LinkingContent;
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.presentation.enums.DcType;
+import de.intranda.api.iiif.presentation.enums.Format;
+import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -58,8 +59,8 @@ import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.intranda.digiverso.presentation.servlets.rest.content.CommentAnnotation;
 import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
  * @author Florian Alpers
@@ -157,7 +158,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = canvases.get(order);
             if (canvas != null) {
                 AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
-                annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.COMMENT.name()));
+                annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
                     for (Comment comment : comments) {
@@ -208,7 +209,7 @@ public class SequenceBuilder extends AbstractBuilder {
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
-        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page)), false));
+        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page))));
 
         Sequence parent = new Sequence(getSequenceURI(doc.getPi(), null));
         canvas.addWithin(parent);
@@ -227,21 +228,20 @@ public class SequenceBuilder extends AbstractBuilder {
             if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
 
                 String thumbnailUrl = page.getThumbnailUrl();
-                ImageContent resource;
+                ImageContent resource = new ImageContent(new URI(thumbnailUrl));
                 if (size.getWidth() * size.getHeight() > 0) {
-                    resource = new ImageContent(new URI(thumbnailUrl), true);
                     resource.setWidth(size.width);
                     resource.setHeight(size.height);
+                    if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {   
+                        URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbnailUrl));
+                        resource.setService(new ImageInformation(imageInfoURI.toString()));
+                    }
                 } else {
-                    ImageInformation imageInfo;
-                    resource = new ImageContent(new URI(thumbnailUrl), false);
                     try {
-                        imageInfo = imageDelivery.getImages().getImageInformation(page);
+                        ImageInformation imageInfo = imageDelivery.getImages().getImageInformation(page);
                         resource.setService(imageInfo);
                     } catch (NoClassDefFoundError | ContentLibException e) {
                         logger.error("Error reading image information from {}: {}", thumbnailUrl, e.toString());
-                        //                        logger.error(e.getMessage(), e);
-                        resource = new ImageContent(new URI(thumbnailUrl), true);
                         resource.setWidth(size.width);
                         resource.setHeight(size.height);
 
@@ -249,10 +249,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 }
                 resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
 
-                Annotation imageAnnotation = new Annotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
+                LinkedAnnotation imageAnnotation = new LinkedAnnotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
                 imageAnnotation.setMotivation(Motivation.PAINTING);
                 imageAnnotation.setOn(new Canvas(canvas.getId()));
-
                 imageAnnotation.setResource(resource);
                 canvas.addImage(imageAnnotation);
             }
@@ -268,8 +267,8 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT));
-            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.FULLTEXT.name()));
-            Annotation fulltextAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, 1));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
+            LinkedAnnotation fulltextAnnotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, 1));
             fulltextAnnotation.setMotivation(Motivation.PAINTING);
             fulltextAnnotation.setOn(canvas);
             annoList.addResource(fulltextAnnotation);
@@ -278,15 +277,15 @@ public class SequenceBuilder extends AbstractBuilder {
                 LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
                 fulltextLink.setFormat(Format.TEXT_PLAIN);
                 fulltextLink.setType(DcType.TEXT);
-                fulltextLink.setLabel(IMetadataValue.getTranslations("FULLTEXT"));
+                fulltextLink.setLabel(ViewerResourceBundle.getTranslations("FULLTEXT"));
                 fulltextAnnotation.setResource(fulltextLink);
             }
         }
 
         if (StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.ALTO));
-            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.ALTO.name()));
-            Annotation altoAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.ALTO, 1));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.ALTO.name()));
+            LinkedAnnotation altoAnnotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.ALTO, 1));
             altoAnnotation.setMotivation(Motivation.PAINTING);
             altoAnnotation.setOn(canvas);
             annoList.addResource(altoAnnotation);
@@ -295,15 +294,15 @@ public class SequenceBuilder extends AbstractBuilder {
                 LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
                 altoLink.setFormat(Format.TEXT_XML);
                 altoLink.setType(DcType.TEXT);
-                altoLink.setLabel(IMetadataValue.getTranslations("ALTO"));
+                altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));
                 altoAnnotation.setResource(altoLink);
             }
         }
 
         if (PhysicalElement.MIME_TYPE_AUDIO.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
-            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.AUDIO.name()));
-            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
+            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setOn(canvas);
             annoList.addResource(annotation);
@@ -314,16 +313,16 @@ public class SequenceBuilder extends AbstractBuilder {
                 LinkingContent audioLink = new LinkingContent(new URI(url));
                 audioLink.setFormat(format);
                 audioLink.setType(DcType.SOUND);
-                audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
+                audioLink.setLabel(ViewerResourceBundle.getTranslations("AUDIO"));
                 annotation.setResource(audioLink);
             }
 
         }
 
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
-        videoList.setLabel(IMetadataValue.getTranslations(AnnotationType.VIDEO.name()));
+        videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
         if (PhysicalElement.MIME_TYPE_VIDEO.equals(page.getMimeType())) {
-            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setOn(canvas);
             videoList.addResource(annotation);
@@ -333,14 +332,14 @@ public class SequenceBuilder extends AbstractBuilder {
                 LinkingContent link = new LinkingContent(new URI(url));
                 link.setFormat(format);
                 link.setType(DcType.MOVING_IMAGE);
-                link.setLabel(IMetadataValue.getTranslations("VIDEO"));
+                link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
                 annotation.setResource(link);
             }
 
         }
         if (PhysicalElement.MIME_TYPE_SANDBOXED_HTML.equals(page.getMimeType())) {
             try {
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+                LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
                 videoList.addResource(annotation);
@@ -353,7 +352,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     LinkingContent link = new LinkingContent(new URI(url));
                     link.setFormat(Format.TEXT_HTML);
                     link.setType(DcType.MOVING_IMAGE);
-                    link.setLabel(IMetadataValue.getTranslations("VIDEO"));
+                    link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
                     annotation.setResource(link);
                 }
             } catch (ViewerConfigurationException e) {
@@ -366,9 +365,9 @@ public class SequenceBuilder extends AbstractBuilder {
 
         if (PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType()) || PhysicalElement.MIME_TYPE_IMAGE.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.PDF));
-            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.PDF.name()));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.PDF.name()));
 
-            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.PDF, 1));
+            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.PDF, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setOn(canvas);
             annoList.addResource(annotation);
@@ -378,7 +377,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 LinkingContent link = new LinkingContent(new URI(url));
                 link.setFormat(Format.APPLICATION_PDF);
                 link.setType(DcType.SOFTWARE);
-                link.setLabel(IMetadataValue.getTranslations("PDF"));
+                link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
                 annotation.setResource(link);
             }
         }

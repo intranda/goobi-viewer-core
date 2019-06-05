@@ -45,16 +45,16 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 /**
  * A class representing persistent configurations for a collection. A collections is identified by a SOLR-field name and a label. The most common
@@ -487,7 +487,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(l -> StringUtils.isNotBlank(l.getValue()))
                 .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
         if (labels.isEmpty()) {
-            return IMetadataValue.getTranslations(getSolrField());
+            return ViewerResourceBundle.getTranslations(getSolrField());
         } else {
             IMetadataValue value = new MultiLanguageMetadataValue(labels);
             return value;

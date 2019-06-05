@@ -27,18 +27,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Canvas;
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.Layer;
+import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.Range;
+import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
-import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 

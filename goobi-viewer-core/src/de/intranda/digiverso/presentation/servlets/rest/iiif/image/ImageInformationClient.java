@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.IiifProfile;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.Service;
+import de.intranda.api.iiif.image.IiifProfile;
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.services.Service;
 
 public class ImageInformationClient {
 

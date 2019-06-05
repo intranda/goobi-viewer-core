@@ -60,8 +60,6 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
 import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -79,6 +77,8 @@ import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.intranda.digiverso.presentation.modules.IModule;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
