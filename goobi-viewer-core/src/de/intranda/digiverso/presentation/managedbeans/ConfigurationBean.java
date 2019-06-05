@@ -764,4 +764,16 @@ public class ConfigurationBean implements Serializable {
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
+    
+    /**
+     * Get the largest image side ratio (widht/height) for which the image canvas should be scaled in height to fill the complete canvas width
+     * @return  the ratio, or 0 if {@link Configuration#isLimitImageHeight} returns false
+     */
+    public float getAdaptImageHeightRatioLimit() {
+        if(DataManager.getInstance().getConfiguration().isLimitImageHeight()) {
+            return DataManager.getInstance().getConfiguration().getLimitImageHeightRatio();
+        } else {
+            return 0f;
+        }
+    }
 }

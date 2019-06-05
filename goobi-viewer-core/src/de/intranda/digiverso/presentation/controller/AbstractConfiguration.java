@@ -60,6 +60,18 @@ public abstract class AbstractConfiguration {
     protected float getLocalFloat(String inPath) {
         return configLocal.getFloat(inPath, config.getFloat(inPath));
     }
+    
+    protected float getLocalFloat(String inPath, float inDefault) {
+        try {
+            return configLocal.getFloat(inPath, config.getFloat(inPath, inDefault));
+        } catch (ConversionException e) {
+            logger.error("{}. Using default value {} instead.", e.getMessage(), inDefault);
+            return inDefault;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return inDefault;
+        }
+    }
 
     /**
      * 

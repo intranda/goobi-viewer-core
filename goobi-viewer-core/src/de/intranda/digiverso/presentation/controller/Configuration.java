@@ -3275,4 +3275,11 @@ public final class Configuration extends AbstractConfiguration {
         return token;
     }
 
+    public float getLimitImageHeightRatio() {
+        return getLocalFloat("viewer.limitImageHeight[@ratio]", 0.3f);
+    }
+    
+    public boolean isLimitImageHeight() {
+        return getLocalBoolean("viewer.limitImageHeight", true);
+    }
 }

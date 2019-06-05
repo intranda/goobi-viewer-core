@@ -31,11 +31,15 @@
         var accessDeniedImagePath = "#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/access_denied.png";
         var accessDeniedImageWrapper = $( "<div />" ).addClass( "view-object__access-denied" ).html( '<img src="' + accessDeniedImagePath + '" />' );
         var page = "#{navigationHelper.currentPage}";
+        var imageWidth = #{activeDocumentBean.viewManager.currentPage.imageWidth};
+        var imageHeight = #{activeDocumentBean.viewManager.currentPage.imageHeight};
+        var imageSizeRatio = imageWidth/imageHeight;
+        console.log("image size ", imageWidth, imageHeight, imageSizeRatio);
         var configViewer = {
         	global: {
         		divId: "imageMap",
         		footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-        		adaptContainerHeight: true,
+        		adaptContainerHeight: imageSizeRatio > #{configurationBean.adaptImageHeightRatioLimit},
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
