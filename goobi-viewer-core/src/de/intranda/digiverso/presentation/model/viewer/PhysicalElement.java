@@ -1142,4 +1142,21 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
     }
+    
+    /**
+     * 
+     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the upper threshold
+             Otherwise return true
+     */
+    public boolean isAdaptImageViewHeight() {
+        float ratio = getImageWidth()/(float)getImageHeight();
+        float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
+        float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
+
+        if(DataManager.getInstance().getConfiguration().isLimitImageHeight()) {            
+            return ratio > lowerThreshold && ratio < upperThreshold;
+        } else {
+            return true;
+        }
+    }
 }
