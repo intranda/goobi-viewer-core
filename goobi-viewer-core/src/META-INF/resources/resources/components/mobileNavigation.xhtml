@@ -96,20 +96,6 @@
                     </h:panelGroup>
                     <!-- SIMPLE USER NAVIGATION -->
                     <h:panelGroup rendered="#{cc.attrs.displayDropdown == false}">
-                        <h:panelGroup rendered="#{configurationBean.displayUserNavigation}">
-                            <li>
-                                <h:outputLink
-                                    value="#{navigationHelper.applicationUrl}user/"
-                                    class="mobile-navigation__user-login #{navigationHelper.currentPage == 'user'?'mainnav-active':''}">
-                                    <h:outputText
-                                        rendered="#{!userBean.loggedIn}"
-                                        value="#{msg.userNotLoggedIn}" />
-                                    <h:outputText
-                                        rendered="#{userBean.loggedIn}"
-                                        value="#{msg.userLoggedIn}" />
-                                </h:outputLink>
-                            </li>
-                        </h:panelGroup>
                         <h:panelGroup rendered="#{userBean.admin}">
                             <li>
                                 <h:outputLink
