@@ -17,6 +17,10 @@ package de.intranda.digiverso.presentation.servlets.rest.download;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,14 +36,19 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.DownloadBean;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
+import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.rest.security.AuthenticationBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
-@DownloadBinding
+@ViewerRestServiceBinding
 @Path("/download")
 public class DownloadResource {
 
@@ -49,8 +58,113 @@ public class DownloadResource {
     private HttpServletRequest servletRequest;
 
     @GET
+    @Path("/get/{type}/{pi}/{logId}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public DownloadJob getDownloadInfo(@PathParam("type") String type, @PathParam("pi") String pi, @PathParam("logId") String logId)
+            throws DAOException, ContentNotFoundException {
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(type, pi, logId);
+        if (downloadJob != null) {
+            return downloadJob;
+        } else {
+            throw new ContentNotFoundException("No download job found for type " + type + ", PI " + pi + " and LogId " + logId);
+        }
+    }
+    
+    @GET
+    @Path("/get/{identifier}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public DownloadJob getDownloadInfo(@PathParam("identifier") String identifier)
+            throws DAOException, ContentNotFoundException {
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
+        if (downloadJob != null) {
+            return downloadJob;
+        } else {
+            throw new ContentNotFoundException("No download job found for identifier " + identifier);
+        }
+    }
+    
+    @GET
+    @Path("/get/{type}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public List<DownloadJob> getDownloadJobs(@PathParam("type") String type) throws DAOException, ContentLibException {
+        List<DownloadJob> downloadJobs = DataManager.getInstance()
+                .getDao()
+                .getAllDownloadJobs()
+                .stream()
+                .filter(job -> type.equalsIgnoreCase("all") || job.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+        return downloadJobs;
+    }
+
+    @GET
+    @Path("/delete/{type}/{pi}/{logId}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public String deleteDownloadJob(@PathParam("type") String type, @PathParam("pi") String pi, @PathParam("logId") String logId)
+            throws DAOException, ContentLibException {
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(type, pi, logId);
+        if (downloadJob != null) {
+            if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
+                return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
+            } else {
+                return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: true}";
+            }
+        } else {
+            throw new ContentNotFoundException("No download job found for type " + type + ", PI " + pi + " and LogId " + logId);
+        }
+    }
+    
+    @GET
+    @Path("/delete/{identifier}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public String deleteDownloadJob(@PathParam("identifier") String identifier)
+            throws DAOException, ContentLibException {
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
+        if (downloadJob != null) {
+            if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
+                return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
+            } else {
+                return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: true}";
+            }
+        } else {
+            throw new ContentNotFoundException("No download job found for identifier " + identifier);
+        }
+    }
+
+    @GET
+    @Path("/delete/{type}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @AuthenticationBinding
+    public List<String> deleteDownloadJobs(@PathParam("type") String type) throws DAOException, ContentLibException {
+        List<DownloadJob> downloadJobs = DataManager.getInstance()
+                .getDao()
+                .getAllDownloadJobs()
+                .stream()
+                .filter(job -> type.equalsIgnoreCase("all") || job.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+        if (!downloadJobs.isEmpty()) {
+            List<String> results = new ArrayList();
+            for (DownloadJob job : downloadJobs) {
+                if(DataManager.getInstance().getDao().deleteDownloadJob(job)) {
+                    results.add("{job: \"" + job.getIdentifier() + "\", deleted: true}");
+                } else {
+                    results.add("{job: \"" + job.getIdentifier() + "\", deleted: false}");
+                }
+            }
+            return results;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @GET
     @Path("/{type}/{pi}/{logId}/{email}")
     @Produces({ MediaType.TEXT_PLAIN })
+    @DownloadBinding
     public Response redirectToDownloadPage(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("logId") String logId, @PathParam("email") String email, @PathParam("type") String type) {
         if (email == null || email.equals("-")) {

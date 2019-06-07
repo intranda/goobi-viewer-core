@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -42,6 +43,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.Role;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
@@ -119,6 +121,9 @@ public class ContextListener implements ServletContextListener {
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
+        
+        //set contentServerConfig
+        ContentServerConfiguration.getInstance("contentServerConfig.xml");
     }
 
     @Override
