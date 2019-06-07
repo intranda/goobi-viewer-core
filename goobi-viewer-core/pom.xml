@@ -24,7 +24,7 @@
 		<mets.version>1.10</mets.version>
 		<mods.version>3.5</mods.version>
 		<normdataimporter.version>1.2.5</normdataimporter.version>
-		<iiif-api-model.version>1.0.0-SNAPSHOT</iiif-api-model.version>
+		<iiif-api-model.version>1.0.0</iiif-api-model.version>
 		<tei-conversion.version>0.1</tei-conversion.version>
 
 		<!-- other libraries -->
@@ -357,8 +357,8 @@
 			<version>2.3.3</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
 			<version>1.6.2</version>
 		</dependency>
 		<dependency>
