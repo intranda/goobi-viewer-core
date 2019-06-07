@@ -46,6 +46,7 @@ import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.rest.security.AuthenticationBinding;
 
 @Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
@@ -63,6 +64,7 @@ public class SearchHitsNotificationResource {
     @GET
     @Path("/sendnotifications/")
     @Produces({ MediaType.TEXT_HTML })
+    @AuthenticationBinding
     public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("sendNewHitsNotifications");
         Map<String, String> filters = new HashMap<>();
