@@ -386,7 +386,7 @@ public class ContentResource {
         java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
 
         if (filePath != null && Files.isRegularFile(filePath)) {
-
+            // TEI-based records
             try {
                 Document doc = XmlTools.readXmlFile(filePath);
                 return new XMLOutputter().outputString(doc);
@@ -398,38 +398,33 @@ public class ContentResource {
                 logger.error(e.getMessage(), e);
             }
         } else {
-
+            // All full-text pages as TEI
             SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-            if (solrDoc != null) {
-
-                Map<java.nio.file.Path, String> fulltexts = getFulltext(pi);
-
-                if (!fulltexts.isEmpty()) {
-
-                    TEIBuilder builder = new TEIBuilder();
-                    TEIHeaderBuilder header = createTEIHeader(solrDoc);
-                    HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
-
-                    try {
-                        List<String> pages = fulltexts.entrySet()
-                                .stream()
-                                .sorted(Comparator.comparing(Map.Entry::getKey))
-                                .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
-                                .collect(Collectors.toList());
-
-                        Document xmlDoc = builder.build(header, pages);
-                        return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
-                    } catch (JDOMException e) {
-                        throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
-                    } catch (UncheckedPresentationException e) {
-                        throw new ContentLibException(e);
-
-                    }
-
-                }
-
-            } else {
+            if (solrDoc == null) {
                 throw new ContentNotFoundException("No document found with pi " + pi);
+            }
+
+            Map<java.nio.file.Path, String> fulltexts = getFulltext(pi);
+            if (fulltexts.isEmpty()) {
+                throw new ContentNotFoundException("Resource not found");
+            }
+
+            TEIBuilder builder = new TEIBuilder();
+            TEIHeaderBuilder header = createTEIHeader(solrDoc);
+            HtmlToTEIConvert textConverter = new HtmlToTEIConvert();
+            try {
+                List<String> pages = fulltexts.entrySet()
+                        .stream()
+                        .sorted(Comparator.comparing(Map.Entry::getKey))
+                        .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
+                        .collect(Collectors.toList());
+
+                Document xmlDoc = builder.build(header, pages);
+                return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
+            } catch (JDOMException e) {
+                throw new ContentLibException("Unable to parse xml from alto file in " + pi, e);
+            } catch (UncheckedPresentationException e) {
+                throw new ContentLibException(e);
             }
 
         }
@@ -437,7 +432,7 @@ public class ContentResource {
         throw new ContentNotFoundException("Resource not found");
     }
 
-    private String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
+    private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
         try {
             return converter.convert(input);
         } catch (Throwable e) {
