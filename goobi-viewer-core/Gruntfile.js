@@ -23,12 +23,12 @@ module.exports = function(grunt) {
 		},
 		pkg : grunt.file.readJSON('package.json'),
 		src : {
-			jsDevFolder : 'WebContent/resources/javascript/dev/',
-			jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
-			jsDistFolder : 'WebContent/resources/javascript/dist/',
-			cssDevFolder : 'WebContent/resources/css/dev/',
-			cssDistFolder : 'WebContent/resources/css/dist/',
-			lessDevFolder : 'WebContent/resources/css/less/viewer/'
+			jsDevFolder : 'src/META-INF/resources/resources/javascript/dev',
+			jsDevFolderModules : 'src/META-INF/resources/resources/javascript/dev/modules/',
+			jsDistFolder : 'src/META-INF/resources/resources/javascript/dist/',
+			cssDevFolder : 'src/META-INF/resources/resources/css/dev/',
+			cssDistFolder : 'src/META-INF/resources/resources/css/dist/',
+			lessDevFolder : 'src/META-INF/resources/resources/css/less/viewer/'
 		},
 		less : {
 			development : {
