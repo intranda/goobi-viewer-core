@@ -28,7 +28,10 @@
 		<tei-conversion.version>0.1</tei-conversion.version>
 
 		<!-- other libraries -->
+		<asm-debug-all.version>5.0.4</asm-debug-all.version>
 		<avalon.version>4.2.0</avalon.version>
+		<batik-all.version>1.10</batik-all.version>
+		<cdi.version>2.0</cdi.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<commons-cli.version>1.4</commons-cli.version>
 		<commons-codec.version>1.9</commons-codec.version>
@@ -46,20 +49,62 @@
 		<commons-net.version>3.6</commons-net.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<dbunit.version>2.6.0</dbunit.version>
+		<docx4j.version>6.1.2</docx4j.version>
 		<fop.version>2.0</fop.version>
+		<h2.version>1.4.197</h2.version>
+		<httpclient.version>4.5.1</httpclient.version>
+		<httpcore.version>4.4.3</httpcore.version>
+		<httpmime.version>4.5.1</httpmime.version>
+		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>63.1</icu.version>
+		<itext.version>2.1.7</itext.version>
 		<jackson.version>2.9.8</jackson.version>
+		<jackson-annotations.version>2.9.2</jackson-annotations.version>
+		<jaxb-api.version>2.3.1</jaxb-api.version>
+		<jpa.version>2.7.3</jpa.version>
+		<javassist.version>3.18.1-GA</javassist.version>
+		<javax.faces.version>2.3.3</javax.faces.version>
+		<javax.json-api.version>1.1.4</javax.json-api.version>
+		<javax.mail.version>1.6.2</javax.mail.version>
+		<javax.persistence.version>2.2.1</javax.persistence.version>
+		<jdom2.version>2.0.6</jdom2.version>
 		<jersey.version>2.22.1</jersey.version>
+		<jersey-entity-filtering.version>2.26</jersey-entity-filtering.version>
+		<jersey-media-json-jackson.version>2.26</jersey-media-json-jackson.version>
+		<jersey-media-multipart.version>2.22.4</jersey-media-multipart.version>
+		<jersey-hk2.version>2.27</jersey-hk2.version>
+		<jgravatar.version>1.1</jgravatar.version>
+		<joda-time.version>2.10.1</joda-time.version>
 		<junit.version>4.12</junit.version>
+		<json.version>20180813</json.version>
+		<json-simple.version>1.1.1</json-simple.version>
+		<jsoup.version>1.11.3</jsoup.version>
+		<jstl.version>1.2</jstl.version>
 		<log4j.version>2.11.2</log4j.version>
 		<lucene.version>4.10.4</lucene.version>
+		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
+		<metadata-extractor.version>2.8.1</metadata-extractor.version>
+		<mockito-all.version>1.10.19</mockito-all.version>
+		<mockserver.version>5.3.0</mockserver.version>
+		<nekohtml.version>1.9.22</nekohtml.version>
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>3.17</poi.version>
+		<prettyfaces.version>3.3.4-20120314</prettyfaces.version>
+		<primefaces.version>6.2</primefaces.version>
+		<rome.version>1.0</rome.version>
+		<rs-api.version>2.0.1</rs-api.version>
 		<saxon.version>9.0</saxon.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<solr.version>4.10.4</solr.version>
+		<stax-api.version>1.0.1</stax-api.version>
 		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
 		<tika.version>1.18</tika.version>
 		<tomcat.version>8.5.40</tomcat.version>
+		<validation-api.version>1.1.0.Final</validation-api.version>
+		<weld-servlet-shaded.version>3.0.5.Final</weld-servlet-shaded.version>
+		<!-- This needs to be added explicitly because otherwise Solr will use an older version that's incompatible -->
+		<xerces.version>2.12.0</xerces.version>
+		<xstream.version>1.4.11.1</xstream.version>
 	</properties>
 
 
@@ -131,7 +176,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-debug-all</artifactId>
-			<version>5.0.4</version>
+			<version>${asm-debug-all.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>avalon-framework</groupId>
@@ -146,13 +191,13 @@
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-all</artifactId>
-			<version>1.10</version>
+			<version>${batik-all.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
-			<version>2.0</version>
+			<version>${cdi.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -251,7 +296,7 @@
 		<dependency>
 			<groupId>org.docx4j</groupId>
 			<artifactId>docx4j</artifactId>
-			<version>6.1.2</version>
+			<version>${docx4j.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -266,7 +311,7 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>2.7.3</version>
+			<version>${jpa.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
@@ -276,28 +321,28 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.197</version>
+			<version>${h2.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.1</version>
+			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.3</version>
+			<version>${httpcore.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.5.1</version>
+			<version>${httpmime.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.httpunit</groupId>
 			<artifactId>httpunit</artifactId>
-			<version>1.7.3</version>
+			<version>${httpunit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -318,12 +363,12 @@
 		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
-			<version>2.1.7</version>
+			<version>${itext.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.9.2</version>
+			<version>${jackson-annotations.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -348,41 +393,35 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.18.1-GA</version>
+			<version>${javassist.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.faces</artifactId>
-			<version>2.3.3</version>
+			<version>${javax.faces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
-			<version>1.6.2</version>
+			<version>${javax.mail.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
-			<version>2.2.1</version>
+			<version>${javax.persistence.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0.1</version>
+			<version>${rs-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<version>${jaxb-api.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.26</version>
-		</dependency>
-
 		<!-- tools.jar depencency so that the Solr dependencies don't cause errors -->
-		<!-- 
+		<!--
 		<dependency>
 			<groupId>jdk.tools</groupId>
 			<artifactId>jdk.tools</artifactId>
@@ -400,7 +439,7 @@
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
-			<version>2.0.6</version>
+			<version>${jdom2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -425,7 +464,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
 			<artifactId>jersey-entity-filtering</artifactId>
-			<version>2.26</version>
+			<version>${jersey-entity-filtering.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
@@ -440,12 +479,12 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.26</version>
+			<version>${jersey-media-json-jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
-			<version>2.22.4</version>
+			<version>${jersey-media-multipart.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -455,47 +494,42 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>
 			<artifactId>jersey-hk2</artifactId>
-			<version>2.27</version>
+			<version>${jersey-hk2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.timgroup</groupId>
 			<artifactId>jgravatar</artifactId>
-			<version>1.1</version>
+			<version>${jgravatar.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.10.1</version>
+			<version>${joda-time.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20180813</version>
+			<version>${json.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
-			<version>1.1.4</version>
+			<version>${javax.json-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
+			<version>${json-simple.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.11.3</version>
+			<version>${jsoup.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.7.26</version>
+			<version>${jstl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -599,24 +633,23 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>2.3.0</version>
-
+			<version>${mariadb-java-client.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.drewnoakes</groupId>
 			<artifactId>metadata-extractor</artifactId>
-			<version>2.8.1</version>
+			<version>${metadata-extractor.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
+			<version>${mockito-all.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mock-server</groupId>
 			<artifactId>mockserver-client-java</artifactId>
-			<version>5.3.0</version>
+			<version>${mockserver.version}</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -627,32 +660,32 @@
 					<groupId>org.bouncycastle</groupId>
 					<artifactId>bcmail-jdk15on</artifactId>
 				</exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mock-server</groupId>
 			<artifactId>mockserver-netty</artifactId>
-			<version>5.3.0</version>
+			<version>${mockserver.version}</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bouncycastle</groupId>
 					<artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
-			<version>1.9.22</version>
+			<version>${nekohtml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.oltu.oauth2</groupId>
@@ -687,17 +720,17 @@
 		<dependency>
 			<groupId>com.ocpsoft</groupId>
 			<artifactId>prettyfaces-jsf2</artifactId>
-			<version>3.3.4-20120314</version>
+			<version>${prettyfaces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
-			<version>6.2</version>
+			<version>${primefaces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>rome</artifactId>
-			<version>1.0</version>
+			<version>${rome.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
@@ -712,7 +745,17 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.26</version>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
@@ -734,7 +777,7 @@
 		<dependency>
 			<groupId>stax</groupId>
 			<artifactId>stax-api</artifactId>
-			<version>1.0.1</version>
+			<version>${stax-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
@@ -770,24 +813,22 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
+			<version>${validation-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet-shaded</artifactId>
-			<version>3.0.5.Final</version>
+			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
-		<!-- This needs to be added explicitly because otherwise Solr will use 
-			an older version that's incompatible -->
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.12.0</version>
+			<version>${xerces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.11.1</version>
+			<version>${xstream.version}</version>
 		</dependency>
 	</dependencies>
 
