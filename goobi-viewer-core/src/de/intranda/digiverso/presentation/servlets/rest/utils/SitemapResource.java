@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.sitemap.Sitemap;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.rest.security.AuthenticationBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
@@ -45,6 +46,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
  */
 @Path(SitemapResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
+@AuthenticationBinding
 public class SitemapResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);

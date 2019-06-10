@@ -150,8 +150,7 @@
 								<dd>
 									<span class="tpl-overviewpage__overview-metadata-value">
 
-										<c:set var="purl"
-											value="#{fn:replace(activeDocumentBean.viewManager.getPersistentUrl(null), '/image/', '/overview/')}" />
+										<c:set var="purl" value="#{cmsBean.getUrl(cmsPage)}"/>
 										<a href="#{purl}"> <h:outputText value="#{purl}" />
 									</a>
 									</span>

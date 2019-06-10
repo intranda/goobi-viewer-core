@@ -39,12 +39,14 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.rest.security.AuthenticationBinding;
 
 /**
  * Resource for index operations.
  */
 @Path(IndexingResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
+@AuthenticationBinding
 public class IndexingResource {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexingResource.class);

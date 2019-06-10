@@ -71,10 +71,14 @@ public class UrlRedirectFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+   
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
+            if(isPrefetchingRequest(httpRequest)) {
+                return;
+            }
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
-            
+
                 if (currentPath.isPresent()) {
                     ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
                     if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
@@ -93,6 +97,27 @@ public class UrlRedirectFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+
+    /**
+     * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch".
+     * This changes the session state and thus shall not pass
+     * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
+     * (https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ)
+     * However this header is not standardized and may change in the future
+     */
+    private boolean isPrefetchingRequest(HttpServletRequest httpRequest) {
+
+        String xmoz = httpRequest.getHeader("X-Moz");
+        if(xmoz == null) {
+            xmoz = httpRequest.getHeader("X-moz");
+        }
+        if(xmoz != null && xmoz.equalsIgnoreCase("prefetch")) {
+            logger.trace("Refuse prefetch request");
+            return true;
+        }
+        return false;
     }
 
 
