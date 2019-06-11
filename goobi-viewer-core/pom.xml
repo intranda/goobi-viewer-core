@@ -857,15 +857,16 @@
 					<exclude>**/*.java</exclude>
 					<exclude>config_viewer.xml</exclude>
 					<exclude>contentServerConfig.xml</exclude>
+					<exclude>rebel.xml</exclude>
 				</excludes>
 			</resource>
-			<resource>
-				<directory>resources/build</directory>
-				<includes>
-					<include>config_viewer.xml</include>
-					<include>contentServerConfig.xml</include>
-				</includes>
-			</resource>
+<!-- 			<resource> -->
+<!-- 				<directory>resources/build</directory> -->
+<!-- 				<includes> -->
+<!-- 					<include>config_viewer.xml</include> -->
+<!-- 					<include>contentServerConfig.xml</include> -->
+<!-- 				</includes> -->
+<!-- 			</resource> -->
 		</resources>
 		<plugins>
 			<!-- Maven Compiler Plugin -->
@@ -907,6 +908,7 @@
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
 						</manifestEntries>
 					</archive>
+					<packagingExcludes>**/rebel.xml</packagingExcludes>
 				</configuration>
 				<executions>
 					<execution>
