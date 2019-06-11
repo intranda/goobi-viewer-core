@@ -12,7 +12,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
-                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
                 this.isDragover = true;
                 this.update();
@@ -45,8 +45,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 
                     this.displayFiles.push({ name: f.name, size: Math.floor(size) + ' ' + sizeUnit, completed: 0 });
                 }
+    			this.uploadFiles();
 
-                this.uploadFiles();
             });
         }.bind(this));
 
@@ -76,47 +76,50 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             var uploads = [];
 
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
+            $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
                 uploads.push(Q(this.uploadFile(i)));
             }
 
             Q.allSettled(uploads).then(function(results) {
-                	var errorMsg = "";
+             	var errorMsg = "";
+                 results.forEach(function (result) {
+                     if (result.state === "fulfilled") {
+                     	var value = result.value;
+                     	this.fileUploaded(value);
+                     }
+                     else {
+                         var responseText = result.reason.responseText;
+                         errorMsg += (responseText + "</br>");
+                     }
+                 }.bind(this));
 
-                    results.forEach(function (result) {
-                        if (result.state === "fulfilled") {
-                        	var value = result.value;
-                        	this.fileUploaded(value);
-                        }
-                        else {
-                            var responseText = result.reason.responseText;
-                            errorMsg += (responseText + "</br>");
-                        }
-                    }.bind(this));
+                 if (errorMsg) {
+                 	this.fileUploadError(errorMsg);
+                 } else if(this.opts.onUploadSuccess) {
+                     this.opts.onUploadSuccess();
+                 }
 
-                    if (errorMsg) {
-                    	this.fileUploadError(errorMsg);
-                    } else if(this.opts.onUploadSuccess) {
-                        this.opts.onUploadSuccess();
-                    }
+            		if (this.opts.onUploadComplete) {
+            			this.opts.onUploadComplete();
+            		}
+            }.bind(this))
 
-               		if (this.opts.onUploadComplete) {
-               			this.opts.onUploadComplete();
-               		}
-                }.bind(this))
         }.bind(this)
 
         this.fileUploaded = function(fileInfo) {
             console.log("file uploaded")
+            $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').addClass('in-progress');
 
             setTimeout( function() {
-                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success').removeClass('in-progress');
+                $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success').removeClass('in-progress');
         	}, 5000 );
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
+            $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
                 $('.admin-cms-media__upload-message.error span').html(responseText);

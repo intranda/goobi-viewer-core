@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 		},
 		pkg : grunt.file.readJSON('package.json'),
 		src : {
-			jsDevFolder : 'src/META-INF/resources/resources/javascript/dev',
+			jsDevFolder : 'src/META-INF/resources/resources/javascript/dev/',
 			jsDevFolderModules : 'src/META-INF/resources/resources/javascript/dev/modules/',
 			jsDistFolder : 'src/META-INF/resources/resources/javascript/dist/',
 			cssDevFolder : 'src/META-INF/resources/resources/css/dev/',

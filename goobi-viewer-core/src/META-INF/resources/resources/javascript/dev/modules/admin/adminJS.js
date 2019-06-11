@@ -24,7 +24,7 @@
 var adminJS = ( function() {
     'use strict';
     
-    var _debug = false;
+    var _debug = false; 
     var admin = {};
     
     /**
