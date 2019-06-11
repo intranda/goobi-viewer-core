@@ -72,7 +72,7 @@
 
     <filter>
         <filter-name>HttpResponseFilter</filter-name>
-        <filter-class>de.intranda.digiverso.presentation.filters.HttpResponseFilter</filter-class>
+        <filter-class>io.goobi.viewer.filters.HttpResponseFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>HttpResponseFilter</filter-name>
@@ -83,7 +83,7 @@
 
     <filter>
         <filter-name>LoginFilter</filter-name>
-        <filter-class>de.intranda.digiverso.presentation.filters.LoginFilter</filter-class>
+        <filter-class>io.goobi.viewer.filters.LoginFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
@@ -94,7 +94,7 @@
     
     <filter>
         <filter-name>SessionCounterFilter</filter-name>
-        <filter-class>de.intranda.digiverso.presentation.filters.SessionCounterFilter</filter-class>
+        <filter-class>io.goobi.viewer.filters.SessionCounterFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>SessionCounterFilter</filter-name>
@@ -123,7 +123,7 @@
     <servlet>
         <display-name>RssResolver</display-name>
         <servlet-name>RssResolver</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.RssResolver</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.RssResolver</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>RssResolver</servlet-name>
@@ -133,7 +133,7 @@
     <servlet>
         <display-name>IdentifierResolver</display-name>
         <servlet-name>IdentifierResolver</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.IdentifierResolver</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.IdentifierResolver</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>IdentifierResolver</servlet-name>
@@ -143,7 +143,7 @@
         <description></description>
         <display-name>MetsResolver</display-name>
         <servlet-name>MetsResolver</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.MetsResolver</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.MetsResolver</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>MetsResolver</servlet-name>
@@ -155,7 +155,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>OAuthServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.openid.OAuthServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.openid.OAuthServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>OAuthServlet</servlet-name>
@@ -165,7 +165,7 @@
     <servlet>
         <display-name>DFGViewerImage</display-name>
         <servlet-name>DFGViewerImage</servlet-name>
-        <servlet-class> de.intranda.digiverso.presentation.servlets.DFGViewerImage</servlet-class>
+        <servlet-class> io.goobi.viewer.servlets.DFGViewerImage</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DFGViewerImage</servlet-name>
@@ -174,7 +174,7 @@
     <servlet>
         <display-name>PpnResolver</display-name>
         <servlet-name>PpnResolver</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.PpnResolver</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.PpnResolver</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>PpnResolver</servlet-name>
@@ -185,7 +185,7 @@
     <servlet>
         <display-name>FileServlet</display-name>
         <servlet-name>FileServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.FileServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.FileServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>FileServlet</servlet-name>
@@ -194,7 +194,7 @@
     <servlet>
         <display-name>WebApiServlet</display-name>
         <servlet-name>WebApiServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.WebApiServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.WebApiServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>WebApiServlet</servlet-name>
@@ -203,7 +203,7 @@
     <servlet>
         <display-name>ToolServlet</display-name>
         <servlet-name>ToolServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.ToolServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.ToolServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ToolServlet</servlet-name>
@@ -216,7 +216,7 @@
     <servlet>
         <display-name>HarvestServlet</display-name>
         <servlet-name>HarvestServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.HarvestServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.HarvestServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HarvestServlet</servlet-name>
@@ -226,7 +226,7 @@
         <description></description>
         <display-name>OEmbedServlet</display-name>
         <servlet-name>OEmbedServlet</servlet-name>
-        <servlet-class>de.intranda.digiverso.presentation.servlets.OEmbedServlet</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.OEmbedServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>OEmbedServlet</servlet-name>
