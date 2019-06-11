@@ -1386,6 +1386,9 @@ CMS			<enabled>true</enabled>
         <authorization>
             <token>test</token>
         </authorization>
+        <!-- If @use is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls
+         referencing the @CORSBinding annotation -->        
+        <cors use="false">*</cors>
 	</webapi>
 	
     <embedding>

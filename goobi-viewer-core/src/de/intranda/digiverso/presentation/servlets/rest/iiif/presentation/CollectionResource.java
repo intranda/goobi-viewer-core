@@ -34,6 +34,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.CollectionBuilder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * IIIF REST resource providing a collection object as defined in the IIIF presentation api
@@ -68,13 +69,12 @@ public class CollectionResource extends AbstractResource {
     @GET
     @Path("/{collectionField}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public Collection getCollections(@PathParam("collectionField") String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         return collection;
 
@@ -93,13 +93,12 @@ public class CollectionResource extends AbstractResource {
     @GET
     @Path("/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException {
 
         Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         return collection;
 

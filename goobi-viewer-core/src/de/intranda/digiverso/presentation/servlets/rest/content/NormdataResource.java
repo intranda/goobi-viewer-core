@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for delivering norm data.
@@ -98,10 +99,10 @@ public class NormdataResource {
     @GET
     @Path("/get/{url}/{template}/{lang}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public String getNormData(@PathParam("url") String url, @PathParam("template") String template, @PathParam("lang") String lang)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 

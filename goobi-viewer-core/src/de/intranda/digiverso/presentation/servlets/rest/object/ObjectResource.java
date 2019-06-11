@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.viewer.object.ObjectInfo;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * @author Florian Alpers
@@ -64,10 +65,10 @@ public class ObjectResource {
     @GET
     @Path("/{pi}/{filename}/info.json")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("filename") String filename) throws PresentationException {
 
-        response.addHeader("Access-Control-Allow-Origin", "*");
 
         String objectURI = request.getRequestURL().toString().replace("/info.json", "");
         String baseURI = objectURI.replace(filename, "");
@@ -126,8 +127,6 @@ public class ObjectResource {
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("filename") final String filename) throws IOException {
 
-        //        response.addHeader("Access-Control-Allow-Origin", "*");
-
         java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(filename);
@@ -162,7 +161,6 @@ public class ObjectResource {
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException {
-        //        response.addHeader("Access-Control-Allow-Origin", "*");
 
         java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
@@ -188,8 +186,6 @@ public class ObjectResource {
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
             throws IOException {
-
-        //        response.addHeader("Access-Control-Allow-Origin", "*");
 
         java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getMediaFolder(), pi);

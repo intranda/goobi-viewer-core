@@ -80,12 +80,14 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for delivering content documents such as ALTO and plain full-text.
  */
 @Path("/content")
 @ViewerRestServiceBinding
+@CORSBinding
 public class ContentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ContentResource.class);
@@ -520,7 +522,6 @@ public class ContentResource {
      */
     public void setResponseHeader(String filename) {
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             if (StringUtils.isNotBlank(filename)) {
                 servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             }

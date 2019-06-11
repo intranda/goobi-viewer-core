@@ -48,6 +48,7 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for delivering content documents such as ALTO and plain full-text.
@@ -95,10 +96,10 @@ public class WebAnnotationResource {
     @GET
     @Path(CommentAnnotation.PATH + "/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public CommentAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
@@ -127,10 +128,10 @@ public class WebAnnotationResource {
     @GET
     @Path(CommentAnnotation.PATH + "/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public CommentAnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
             throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
@@ -160,10 +161,10 @@ public class WebAnnotationResource {
     @GET
     @Path(CommentAnnotation.PATH + "/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public CommentAnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 

@@ -40,6 +40,7 @@ import de.intranda.digiverso.presentation.model.sitemap.Sitemap;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.digiverso.presentation.servlets.rest.security.AuthenticationBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for sitemap generation.
@@ -83,10 +84,9 @@ public class SitemapResource {
     @Path("/update")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public String updateSitemap(SitemapRequestParameters params) {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        }
+
 
         JSONObject ret = new JSONObject();
 

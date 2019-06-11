@@ -3286,4 +3286,18 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isLimitImageHeight() {
         return getLocalBoolean("viewer.limitImageHeight", true);
     }
+
+    /**
+     * @return
+     */
+    public boolean isAddCORSHeader() {
+        return getLocalBoolean("webapi.cors[@use]", false);
+    }
+
+    /**
+     * @return
+     */
+    public String getCORSHeaderValue() {
+        return getLocalString("webapi.cors", "*");
+    }
 }
