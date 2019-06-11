@@ -29,7 +29,7 @@
 		<mods.version>3.5</mods.version>
 		<normdataimporter.version>1.2.5</normdataimporter.version>
 		<iiif-api-model.version>1.0.0</iiif-api-model.version>
-		<tei-conversion.version>0.1</tei-conversion.version>
+		<tei-conversion.version>0.1.4</tei-conversion.version>
 
 		<!-- other libraries -->
 		<asm-debug-all.version>5.0.4</asm-debug-all.version>
@@ -312,6 +312,10 @@
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-compress</artifactId>
 				</exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
