@@ -42,7 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.lf5.util.StreamUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,7 +222,7 @@ public class ObjectResource {
         public void write(OutputStream output) throws IOException, WebApplicationException {
             try {
                 try (InputStream inputStream = new java.io.FileInputStream(this.filePath.toString())) {
-                    StreamUtils.copy(inputStream, output);
+                    IOUtils.copy(inputStream, output);
                     return;
                 }
                 //            } catch (LostConnectionException e) {
