@@ -12,11 +12,18 @@
 	<name>Goobi viewer - Core</name>
 	<url>https://github.com/intranda/goobi-viewer-core</url>
 
-
+	<scm>
+		<connection>scm:git:git@gitea.intranda.com:goobi-viewer/goobi-viewer-core.git</connection>
+	</scm>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
+		
+		<!-- Manifest information -->
+		<maven.build.timestamp.format>yyyy-MM-dd_HH-mm</maven.build.timestamp.format>
+   		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries-->
 		<alto.version>1.3</alto.version>
@@ -886,6 +893,12 @@
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifestEntries>
+							<ApplicationName>Goobi-viewer-core</ApplicationName>
+							<version>${project.version}</version>
+							<Implementation-Version>${buildNumber}</Implementation-Version>
+							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
+						</manifestEntries>
 					</archive>
 				</configuration>
 				<executions>
@@ -895,6 +908,44 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<!-- get git version number -->
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<commitIdGenerationMode>flat</commitIdGenerationMode>
+					<gitDescribe>
+						<skip>true</skip>
+					</gitDescribe>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<shortRevisionLength>7</shortRevisionLength>
+					<doCheck>false</doCheck>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
