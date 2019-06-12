@@ -202,9 +202,10 @@ public class ManifestBuilder extends AbstractBuilder {
             DataManager.getInstance().getDao().getCMSPagesForRecord(ele.getPi(), null).stream().filter(page -> page.isPublished()).forEach(page -> {
                 try {
                     LinkingContent cmsPage = new LinkingContent(new URI(getServletURI() + page.getUrl()));
-                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
-                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
-                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
+//                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
+//                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
+//                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
+                    cmsPage.setLabel(new SimpleMetadataValue(page.getTitle()));
                     cmsPage.setFormat(Format.TEXT_HTML);
                     manifest.addRelated(cmsPage);
                 } catch (URISyntaxException e) {
