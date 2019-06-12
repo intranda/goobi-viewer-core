@@ -75,6 +75,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * @author Florian Alpers
@@ -123,14 +124,13 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path("/get/{id}.pdf")
     @Produces("application/pdf")
+    @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("id") Long id, @Context HttpServletResponse response) throws ContentNotFoundException, DAOException {
         
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
         if(item != null && item.getContentType().equals(CMSMediaItem.CONTENT_TYPE_PDF)) {
             Path path = item.getFilePath();
             if(Files.exists(path)) {
-                response.setHeader("Access-Control-Allow-Origin", "*");
-                response.setHeader("X-Frame-Options", "sameorigin");
                 return new StreamingOutput() {
                     
                     @Override

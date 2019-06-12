@@ -17,9 +17,11 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,7 +156,9 @@ public class ManifestBuilder extends AbstractBuilder {
             String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
             if (StringUtils.isNotBlank(navDateField) && StringUtils.isNotBlank(ele.getMetadataValue(navDateField))) {
                 try {
-                    manifest.setNavDate(Date.from(Instant.parse(ele.getMetadataValue(navDateField))));
+                    String eleValue = ele.getMetadataValue(navDateField);
+                    LocalDate date = LocalDate.parse(eleValue);
+                    manifest.setNavDate(Date.from(Instant.from(date.atStartOfDay(ZoneId.of("Z")))));
                 } catch (NullPointerException | DateTimeParseException e) {
                     logger.warn("Unable to parse {} as Date", ele.getMetadataValue(navDateField));
                 }

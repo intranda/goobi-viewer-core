@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for outputting the current session info.
@@ -65,13 +66,12 @@ public class SessionResource {
     @GET
     @Path("/info")
     @Produces({ MediaType.TEXT_PLAIN })
+    @CORSBinding
     public String getSessionInfo() {
         if (servletRequest == null) {
             return "Servlet request not found";
         }
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        }
+
 
         StringBuilder sb = new StringBuilder();
         Map<String, String> sessionMap = DataManager.getInstance().getSessionMap().get(servletRequest.getSession().getId());

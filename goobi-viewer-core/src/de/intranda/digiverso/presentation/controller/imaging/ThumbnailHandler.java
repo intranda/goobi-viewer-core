@@ -290,7 +290,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default",
+                    "jpg");
         }
     }
 
@@ -343,7 +344,7 @@ public class ThumbnailHandler {
         return getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
     }
-    
+
     /**
      * Returns a link to a small image representating the given document with the given pi. The size depends on viewer configuration
      * 
@@ -427,15 +428,14 @@ public class ThumbnailHandler {
      * Returns a link to an image representating the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      * 
-     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @return
      */
-    public String getThumbnailUrl(StructElement doc, int width, int height) {
-    	return getThumbnailUrl(doc, doc.getPi(), width, height);
+    public String getThumbnailUrl(StructElement se, int width, int height) {
+        return getThumbnailUrl(se, se.getPi(), width, height);
     }
-    	
-    	
-        public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
+
+    public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
         if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
@@ -444,19 +444,18 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
-                    "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg");
         } else {
             return null;
         }
     }
-    
-	/**
-	 * @return	the url of the entire, max-size image in the original format. 
-	 * If no Watermark needs to be included and forwarding images is allowed in contentServer, then this streams the original image file to the client
-	 */
-	public String getFullImageUrl(PhysicalElement page) {
-		String path = getImagePath(page);
+
+    /**
+     * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
+     *         contentServer, then this streams the original image file to the client
+     */
+    public String getFullImageUrl(PhysicalElement page) {
+        String path = getImagePath(page);
         if (path == null) {
             return "";
         }
@@ -468,9 +467,10 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
-        	return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, Scale.MAX_SIZE, "0", "default", format.getFileExtension());
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, Scale.MAX_SIZE, "0", "default",
+                    format.getFileExtension());
         }
-	}
+    }
 
     /**
      * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
@@ -480,20 +480,20 @@ public class ThumbnailHandler {
      * @param size
      * @return
      */
-    public String getSquareThumbnailUrl(StructElement doc) {
-        return getSquareThumbnailUrl(doc, thumbWidth);
+    public String getSquareThumbnailUrl(StructElement se) {
+        return getSquareThumbnailUrl(se, thumbWidth);
     }
 
     /**
      * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
-     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @param size
      * @return
      */
-    public String getSquareThumbnailUrl(StructElement doc, int size) {
-        String thumbnailUrl = getImagePath(doc);
+    public String getSquareThumbnailUrl(StructElement se, int size) {
+        String thumbnailUrl = getImagePath(se);
         if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
@@ -501,24 +501,24 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
         }
     }
 
     /**
-     * @param doc
+     * @param se
      * @param field
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private static String getFieldValue(StructElement doc, String field) {
-        String imagePath = doc.getMetadataValue(field);
+    private static String getFieldValue(StructElement se, String field) {
+        String imagePath = se.getMetadataValue(field);
         try {
-            if (StringUtils.isBlank(imagePath) && !doc.isWork()) {
-                if (doc.isAnchor()) {
-                    imagePath = doc.getFirstVolumeFieldValue(field);
+            if (StringUtils.isBlank(imagePath) && !se.isWork()) {
+                if (se.isAnchor()) {
+                    imagePath = se.getFirstVolumeFieldValue(field);
                 } else {
-                    imagePath = doc.getTopStruct().getMetadataValue(field);
+                    imagePath = se.getTopStruct().getMetadataValue(field);
                 }
             }
         } catch (IndexUnreachableException | PresentationException e) {
@@ -549,10 +549,16 @@ public class ThumbnailHandler {
                 break;
             case PhysicalElement.MIME_TYPE_VIDEO:
             case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
-                thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                thumbnailUrl = page.getFilepath();
+                if (StringUtils.isEmpty(thumbnailUrl)) {
+                    thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                }
                 break;
             case PhysicalElement.MIME_TYPE_AUDIO:
-                thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                thumbnailUrl = page.getFilepath();
+                if (StringUtils.isEmpty(thumbnailUrl)) {
+                    thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                }
                 break;
             case PhysicalElement.MIME_TYPE_APPLICATION:
             case "application/pdf":
@@ -629,10 +635,16 @@ public class ThumbnailHandler {
                             break;
                         case PhysicalElement.MIME_TYPE_VIDEO:
                         case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
-                            thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                                thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                            }
                             break;
                         case PhysicalElement.MIME_TYPE_AUDIO:
-                            thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                            if (StringUtils.isEmpty(thumbnailUrl)) {
+                                thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                            }
                             break;
                         case PhysicalElement.MIME_TYPE_APPLICATION:
                         case "application/pdf":
@@ -648,17 +660,17 @@ public class ThumbnailHandler {
         return thumbnailUrl;
     }
 
-    private Optional<DocType> getDocType(StructElement structElement) {
+    private static Optional<DocType> getDocType(StructElement structElement) {
         DocType docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
         return Optional.ofNullable(docType);
     }
 
-    private Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
+    private static Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
         MetadataGroupType type = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
         return Optional.ofNullable(type);
     }
 
-    private Optional<String> getFilename(StructElement structElement) {
+    private static Optional<String> getFilename(StructElement structElement) {
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
@@ -673,7 +685,7 @@ public class ThumbnailHandler {
         return Optional.ofNullable(filename).filter(name -> StringUtils.isNotBlank(name));
     }
 
-    private Optional<String> getMimeType(StructElement structElement) {
+    private static Optional<String> getMimeType(StructElement structElement) {
         Optional<String> mimeType = Optional.empty();
         if (structElement.isAnchor()) {
             try {
@@ -689,8 +701,6 @@ public class ThumbnailHandler {
         }
         return mimeType;
     }
-    
-
 
     /**
      * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height

@@ -57,6 +57,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * Resource for JSON datasets containing records that match the given query, range, etc. Replaces <code>WebApiServlet</code>.
@@ -104,11 +105,11 @@ public class RecordsResource {
     @GET
     @Path("/timematrix/q/{query}/{count}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
     public String getTimeMatrix(@PathParam("query") String query, @PathParam("count") int count) throws MalformedURLException,
             ContentNotFoundException, ServiceNotAllowedException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         logger.trace("getTimeMatrix({}, {})", query, count);
         if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 

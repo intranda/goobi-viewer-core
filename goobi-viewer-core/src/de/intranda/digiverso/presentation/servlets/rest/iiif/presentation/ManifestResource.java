@@ -68,6 +68,7 @@ import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 
 /**
  * @author Florian Alpers
@@ -76,6 +77,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 @Path("/iiif/manifests")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
+@CORSBinding
 public class ManifestResource extends AbstractResource {
 
     private static Logger logger = LoggerFactory.getLogger(ManifestResource.class);
@@ -143,7 +145,6 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifest(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
         if (docs.isEmpty()) {
@@ -189,7 +190,6 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifestSimple(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
        StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc == null) {
@@ -221,7 +221,6 @@ public class ManifestResource extends AbstractResource {
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
 
@@ -255,7 +254,6 @@ public class ManifestResource extends AbstractResource {
             ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
         IPresentationModelElement manifest = getManifestBuilder().setBuildMode(BuildMode.THUMBS).generateManifest(doc);
 

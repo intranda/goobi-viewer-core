@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +59,13 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.DateSerializer;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -70,8 +78,13 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 @Table(name = "download_jobs")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
+@JsonInclude(Include.NON_NULL)
 public abstract class DownloadJob implements Serializable {
 
+    protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
+
+    
     private static final Logger logger = LoggerFactory.getLogger(DownloadJob.class);
 
     private static final long serialVersionUID = -491389510147134159L;
@@ -81,7 +94,8 @@ public abstract class DownloadJob implements Serializable {
         READY,
         ERROR,
         UNDEFINED,
-        INITIALIZED;
+        INITIALIZED,
+        DELETED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -96,6 +110,8 @@ public abstract class DownloadJob implements Serializable {
                         return JobStatus.UNDEFINED;
                     case "INITIALIZED":
                         return JobStatus.INITIALIZED;
+                    case "DELETED":
+                    return JobStatus.DELETED;
                 }
             }
 
@@ -331,18 +347,21 @@ public abstract class DownloadJob implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public abstract String getMimeType();
 
     /**
      *
      * @return
      */
+    @JsonIgnore
     public abstract String getFileExtension();
 
     /**
      *
      * @return
      */
+    @JsonIgnore
     public abstract String getDisplayName();
 
     /**
@@ -361,6 +380,7 @@ public abstract class DownloadJob implements Serializable {
      *
      * @return
      */
+    @JsonIgnore
     public Path getFile() {
         Path path = getDownloadFileStatic(identifier, type, getFileExtension()).toPath();//Paths.get(sb.toString());
         logger.trace(path.toString());
@@ -525,6 +545,7 @@ public abstract class DownloadJob implements Serializable {
     /**
      * @return the lastRequested
      */
+    @JsonFormat(pattern = DATETIME_FORMAT)
     public Date getLastRequested() {
         return lastRequested;
     }
@@ -539,8 +560,18 @@ public abstract class DownloadJob implements Serializable {
     /**
      * @return the ttl
      */
+    @JsonIgnore
     public long getTtl() {
         return ttl;
+    }
+    
+    public String getTimeToLive() {
+        Duration d = Duration.ofMillis(ttl);
+        return String.format("%dd %d:%02d:%02d", 
+                d.toDays(),
+                d.toHours()%24,
+                d.toMinutes()%60, 
+                d.getSeconds()%60);
     }
 
     /**
@@ -584,6 +615,7 @@ public abstract class DownloadJob implements Serializable {
     /**
      * @return the observers
      */
+    @JsonIgnore
     public List<String> getObservers() {
         return observers;
     }
