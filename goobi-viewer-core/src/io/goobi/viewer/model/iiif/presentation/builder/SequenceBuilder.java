@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.LinkedAnnotation;
+import de.intranda.api.annotation.TextualAnnotation;
+import de.intranda.api.annotation.TextualAnnotationBody;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AnnotationList;
@@ -162,7 +164,13 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
                     for (Comment comment : comments) {
-                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
+                        TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
+                        anno.setMotivation(Motivation.COMMENTING);
+                        anno.setOn(canvas);
+                        TextualAnnotationBody body = new TextualAnnotationBody();
+                        body.setValue(comment.getText());
+                        anno.setBody(body);
+//                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
                         annoList.addResource(anno);
                     }
                 }
