@@ -17,15 +17,8 @@ package de.intranda.digiverso.presentation.servlets.rest.media;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.net.URLDecoder;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -43,7 +36,6 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
-import net.balusc.webapp.ContentDeliveryServlet;
 
 /**
  * A rest resource for delivering video and audio files
@@ -53,41 +45,41 @@ import net.balusc.webapp.ContentDeliveryServlet;
  */
 @Path("/media")
 public class MediaResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(MediaResource.class);
 
-    @Context 
+    @Context
     private HttpServletRequest request;
-    @Context 
+    @Context
     private HttpServletResponse response;
-    
+
     @GET
     @Path("/{type}/{format}/{identifier}/{filename}")
-    public String serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, IOException, AccessDeniedException {
-       
+    public String serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier,
+            @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, IOException, AccessDeniedException {
+
         String mimeType = type + "/" + format;
-        String mediaFilePath = identifier + "/" +  filename;
+        String mediaFilePath = identifier + "/" + filename;
         String dataRepository = getDataRepository(identifier);
 
         checkAccess(type, identifier, filename);
-        
 
         File file;
         if (StringUtils.isNotEmpty(dataRepository)) {
-            java.nio.file.Path dataRepositoryPath = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).resolve(dataRepository.replace("file://", ""));
+            java.nio.file.Path dataRepositoryPath =
+                    Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).resolve(dataRepository.replace("file://", ""));
             file = dataRepositoryPath.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(mediaFilePath).toFile();
             //            file = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + mediaFilePath);
         } else {
             // Backwards compatibility with old indexes
-            file = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance()
-                    .getConfiguration().getMediaFolder() + '/' + mediaFilePath + '/');
+            file = new File(DataManager.getInstance().getConfiguration().getViewerHome()
+                    + DataManager.getInstance().getConfiguration().getMediaFolder() + '/' + mediaFilePath + '/');
         }
         if (file.isFile()) {
             logger.debug("Video file: {} ({} bytes)", file.getAbsolutePath(), file.length());
-            
+
             try {
                 new MediaDeliveryService().processRequest(request, response, file.getAbsolutePath(), mimeType);
-//                new ContentDeliveryServlet().processRequest(request, response, true, file.getAbsolutePath(), mimeType);
             } catch (IOException e) {
                 throw new PresentationException("Error accessing media resource", e);
             }
@@ -97,7 +89,6 @@ public class MediaResource {
         }
         return "";
     }
-
 
     /**
      * @param mediaFilePath
@@ -112,17 +103,17 @@ public class MediaResource {
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
         }
-        if(!access) {
+        if (!access) {
             throw new AccessDeniedException("Access denied for " + pi + "/" + contentFilename);
         }
     }
 
     /**
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     private String getDataRepository(String pi) throws PresentationException, IndexUnreachableException {
-            return DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        return DataManager.getInstance().getSearchIndex().findDataRepository(pi);
     }
 }
