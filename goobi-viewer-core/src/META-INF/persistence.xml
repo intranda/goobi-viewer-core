@@ -5,38 +5,38 @@
     <persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
         <jta-data-source>java:comp/env/viewer</jta-data-source>
         
-        <!-- <class>de.intranda.digiverso.presentation.model.annotation.AnnotationElement</class> -->
-        <class>de.intranda.digiverso.presentation.model.annotation.Comment</class>
-        <class>de.intranda.digiverso.presentation.model.bookshelf.Bookshelf</class>
-        <class>de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSContentItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSMediaItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSNavigationItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSPage</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSStaticPage</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElement</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithQuery</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithSearch</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSProperty</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSCategory</class>
-        <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
-        <class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
-        <class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
-        <class>de.intranda.digiverso.presentation.model.download.PDFDownloadJob</class>
-        <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
-        <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
-        <class>de.intranda.digiverso.presentation.model.search.Search</class>
-        <class>de.intranda.digiverso.presentation.model.security.License</class>
-        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
-        <class>de.intranda.digiverso.presentation.model.security.Role</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
-        <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
+        <!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
+        <class>io.goobi.viewer.model.annotation.Comment</class>
+        <class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
+        <class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
+        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
+        <class>io.goobi.viewer.model.cms.Translation</class>
+        <class>io.goobi.viewer.model.download.DownloadJob</class>
+        <class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
+        <class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
+        <class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
+        <class>io.goobi.viewer.model.search.Search</class>
+        <class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseType</class>
+        <class>io.goobi.viewer.model.security.Role</class>
+        <class>io.goobi.viewer.model.security.user.IpRange</class>
+        <class>io.goobi.viewer.model.security.user.User</class>
+        <class>io.goobi.viewer.model.security.user.UserGroup</class>
+        <class>io.goobi.viewer.model.security.user.UserRole</class>
+        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
         
         <properties>
         <!-- EclipseLink should create the database schema automatically -->
@@ -56,38 +56,38 @@
         </properties>
     </persistence-unit>
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
-		<!-- <class>de.intranda.digiverso.presentation.model.annotation.AnnotationElement</class> -->
-		<class>de.intranda.digiverso.presentation.model.annotation.Comment</class>
-		<class>de.intranda.digiverso.presentation.model.bookshelf.Bookshelf</class>
-		<class>de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem</class>
-		<class>de.intranda.digiverso.presentation.model.cms.CMSContentItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSMediaItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSNavigationItem</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSPage</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSStaticPage</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElement</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithQuery</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithSearch</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSProperty</class>
-        <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
-        <class>de.intranda.digiverso.presentation.model.cms.CMSCategory</class>
-		<class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
-		<class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
-		<class>de.intranda.digiverso.presentation.model.download.PDFDownloadJob</class>
-		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
-		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
-		<class>de.intranda.digiverso.presentation.model.search.Search</class>
-        <class>de.intranda.digiverso.presentation.model.security.License</class>
-        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
-        <class>de.intranda.digiverso.presentation.model.security.Role</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
-        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
-        <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
+		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
+		<class>io.goobi.viewer.model.annotation.Comment</class>
+		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
+		<class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
+		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.Translation</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
+		<class>io.goobi.viewer.model.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPage</class>
+		<class>io.goobi.viewer.model.overviewpage.OverviewPageUpdate</class>
+		<class>io.goobi.viewer.model.search.Search</class>
+        <class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseType</class>
+        <class>io.goobi.viewer.model.security.Role</class>
+        <class>io.goobi.viewer.model.security.user.IpRange</class>
+        <class>io.goobi.viewer.model.security.user.User</class>
+        <class>io.goobi.viewer.model.security.user.UserGroup</class>
+        <class>io.goobi.viewer.model.security.user.UserRole</class>
+        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
