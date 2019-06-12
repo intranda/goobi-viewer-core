@@ -24,6 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,6 +50,7 @@ import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationExceptio
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -195,6 +197,20 @@ public class ManifestBuilder extends AbstractBuilder {
             } catch (URISyntaxException e) {
                 logger.error("Unable to retrieve viewer url for {}", ele);
             }
+            
+            /*CMS pages*/
+            DataManager.getInstance().getDao().getCMSPagesForRecord(ele.getPi(), null).stream().filter(page -> page.isPublished()).forEach(page -> {
+                try {
+                    LinkingContent cmsPage = new LinkingContent(new URI(page.getUrl()));
+                    cmsPage.setLabel(new MultiLanguageMetadataValue(page.getLanguageVersions().stream()
+                            .filter(lang -> StringUtils.isNotBlank(lang.getTitle()))
+                            .collect(Collectors.toMap(lang -> lang.getLanguage(), lang -> lang.getTitle()))));
+                    cmsPage.setFormat(Format.TEXT_HTML);
+                    manifest.addRelated(cmsPage);
+                } catch (URISyntaxException e) {
+                    logger.error("Unable to retrieve viewer url for {}", ele);
+                }                
+            });
 
             if (manifest instanceof Manifest) {
                 /*PDF*/
