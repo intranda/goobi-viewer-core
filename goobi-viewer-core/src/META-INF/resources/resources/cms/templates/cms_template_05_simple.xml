@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="template_simple" version="2015-01-14">
-    <name>Text mit Bild in der Mitte</name>
-    <description>Das Template beinhaltet drei Abschnitte, oben einen Textbereich, in der Mitte ein Bild und darunter einen weiteren Textbereich.</description>
+    <name>cms__template_05__title</name>
+    <description>cms__template_05__description</description>
     <icon>cms_template_05_simple.png</icon>
     <html>cms_template_05_simple.xhtml</html>
     <content>
-        <item id="text01" order="1" label="Inhalt über Bild" type="HTML" />
+        <item id="text01" order="1" label="cms__template_05__text_above_image__label" type="HTML" />
         <item id="image01" order="2" type="MEDIA" />
-        <item id="text02" order="3" label="Inhalt unter Bild" type="HTML" />
+        <item id="text02" order="3" label="cms__template_05__text_below_image__label" type="HTML" />
     </content>
 </cms_page_template>

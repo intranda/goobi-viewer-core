@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="templateSearchListCustom" version="2015-01-14">
-    <name>Suchtrefferliste</name>
-    <description>Dieses Template dient dazu eine Suchanfrage in Listenform darzustellen.</description>
+    <name>cms__template_10__title</name>
+    <description>cms__template_10__description</description>
     <icon>cms_template_10_searchListCustom.png</icon>
     <html>cms_template_10_searchListCustom.xhtml</html>
     <content>
-        <item id="queryList01" label="Werke" type="SOLRQUERY" />
+        <item id="queryList01" label="cms__template_10__works__label" type="SOLRQUERY" />
     </content>
 </cms_page_template>

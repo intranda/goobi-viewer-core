@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-xs-6 col-sm-9 col-md-12 col-lg-12">
                         <p>
-                            <h:outputText value="#{cmsBean.selectedPage.template.name}" />
+                            <h:outputText value="#{msg[cmsBean.selectedPage.template.name]}" />
                         </p>
                     </div>
                 </div>
@@ -33,8 +33,8 @@
                     // init template description popover
                     $(".page-metadata-item-type .fa-question-circle").popover({
                         html : true,
-                        title : "#{cmsBean.selectedPage.template.name}",
-                        content : "#{cmsBean.selectedPage.template.description}",
+                        title : "#{msg[cmsBean.selectedPage.template.name]}",
+                        content : "#{msg[cmsBean.selectedPage.template.description]}",
                         placement : "bottom",
                         trigger : "click",
                         container : "body"

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="template_overview" version="2015-02-03">
-    <name>Übersichtsseite mit einleitendem Text und Bild</name>
-    <description>Mit diesem Template wird eine Übersichtsseite erstellt. Im oberen Teil gibt es einen allgemeiner Text mit optionalem dazugehörigem Bild. Darunter folgen Bild und Anreisstext der einzelnen Beiträge. Um welche es sich dabei handelt und wie viele insgesamt angezeigt werden wird über die Konfiguration der zu verwendenden Klassifikation bestimmt.</description>
+    <name>cms__template_02__title</name>
+    <description>cms__template_02__description</description>
     <icon>cms_template_02_overview.png</icon>
     <html>cms_template_02_overview.xhtml</html>
     <content>
-        <item id="A1" label="Beschreibender Text" type="HTML"/>
-        <item id="image01" label="Bild zum beschreibenden Text" type="MEDIA" />
-        <item id="list01" label="Aktuelle-Elemente" type="PAGELIST" mandatory="true" />
+        <item id="A1" label="cms__template_02__descriptive_text__label" type="HTML"/>
+        <item id="image01" label="cms__template_02__descriptive_text_image__label" type="MEDIA" />
+        <item id="list01" label="cms__template_02__current_elements__label" type="PAGELIST" mandatory="true" />
     </content>
 </cms_page_template>

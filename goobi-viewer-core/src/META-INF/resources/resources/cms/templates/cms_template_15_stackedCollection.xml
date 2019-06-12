@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="templateStckedCollection" version="2017-10-05">
-    <name>Accordeon Sammlungsansicht</name>
-    <description>Dieses Template zeigt eine Sammlungübersicht im Accordeonstil, inklusive Repräsentanten der Sammlung.</description>
+    <name>cms__template_15__title</name>
+    <description>cms__template_15__description</description>
     <icon>cms_template_15_stackedCollection.png</icon>
     <html>cms_template_15_stackedCollection.xhtml</html>
     <options>    
         <appliesToExpandedUrl>false</appliesToExpandedUrl>
     </options>
     <content>
- 	    <item id="text" label="Text" type="HTML" order="1"/>
- 	    <item id="collection" label="Collection" type="COLLECTION" order="2"/>
+ 	    <item id="text" label="cms__template_15__text__label" type="HTML" order="1"/>
+ 	    <item id="collection" label="cms__template_15__collection__label" type="COLLECTION" order="2"/>
     </content>
 </cms_page_template>

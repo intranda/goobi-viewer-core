@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="template_masonry" version="2017-01-10">
-    <name>Masonry</name>
-    <description>Dieses Template zeigt CMS-Medien in Form eines gekachelten Rasters an.</description>
+    <name>cms__template_11__title</name>
+    <description>cms__template_11__description</description>
     <icon>cms_template_11_masonry.png</icon>
     <html>cms_template_11_masonry.xhtml</html>
     <content>
- 	    <item id="text" label="Text" type="HTML" order="1"/>
-        <item id="grid" label="Masonry" type="TILEGRID" order="2"/>
+ 	    <item id="text" label="cms__template_11__text__label" type="HTML" order="1"/>
+        <item id="grid" label="cms__template_11__masonry__label" type="TILEGRID" order="2"/>
     </content>
 </cms_page_template>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="template_singlepage" version="2015-01-14">
-    <name>Einzelseite</name>
-    <description>Mit diesem Template wird eine Einzelseite erstellt. Sie besteht nur aus einem Titel, Menütitel und Text.</description>
+    <name>cms__template_09__title</name>
+    <description>cms__template_09__description</description>
     <icon>cms_template_09_singlePage.png</icon>
     <html>cms_template_09_singlePage.xhtml</html>
     <content>
-        <item id="text01" type="HTML" label="Text" />
+        <item id="text01" type="HTML" label="cms__template_09__text__label" />
     </content>
 </cms_page_template>

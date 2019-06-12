@@ -28,7 +28,7 @@
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
                     <h2 class="admin__content-inner-title clearfix">
-                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{cmsBean.selectedPage.template.name}
+                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
                     
 	                    <!-- EXIT -->
                         <a 
@@ -126,7 +126,7 @@
                                                                 <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageContenttypeText">#{contentItem.itemLabel}#{contentItem.mandatory ? '*'
+                                                                            <label for="cmsCreatePageContenttypeText">#{msg[contentItem.itemLabel]}#{contentItem.mandatory ? '*'
                                                                                 : ''}:</label>
                                                                         </div>
                                                                         <div class="cms-module__option-control">
@@ -146,7 +146,7 @@
                                                                 <ui:fragment rendered="#{contentItem.type == 'HTML'}">
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageContenttypeHtml">#{contentItem.itemLabel}#{contentItem.mandatory?'*':''}:</label>
+                                                                            <label for="cmsCreatePageContenttypeHtml">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
                                                                         </div>
                                                                         <div class="cms-module__option-control">
                                                                             <h:inputTextarea id="cmsCreatePageContenttypeHtml" styleClass="form-control tinyMCE"

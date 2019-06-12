@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cms_page_template id="templateSingleCollection" version="2017-07-18">
-    <name>Einzelansicht einer Sammlung</name>
-    <description>Dieses Template zeigt eine Sammlung und deren Werke als Suchtreffer, sowie ein Bild und einen Beschreibungstext zur Sammlung. Diese Seite kann ebenfalls mit der News-Übersicht kombiniert werden.</description>
+    <name>cms__template_12__title</name>
+    <description>cms__template_12__description</description>
     <icon>cms_template_12_singleCollection.png</icon>
     <html>cms_template_12_singleCollection.xhtml</html>
     <options>    
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>
     <content>
- 	    <item id="image01" order="1" label="Sammlungsbild" type="MEDIA" mandatory="false" />
- 	    <item id="preview01" order="2" label="Textabschnitt (Vorschau)" type="HTML" mandatory="false" />
- 	    <item id="A2" order="3" label="Textabschnitt" type="HTML" mandatory="false" />
- 	    <item id="queryList" order="4" label="Werke" type="SOLRQUERY" mandatory="false" />
+ 	    <item id="image01" order="1" label="cms__template_12__collection_image__label" type="MEDIA" mandatory="false" />
+ 	    <item id="preview01" order="2" label="cms__template_12__preview__label" type="HTML" mandatory="false" />
+ 	    <item id="A2" order="3" label="cms__template_12__text_section__label" type="HTML" mandatory="false" />
+ 	    <item id="queryList" order="4" label="cms__template_12__works__label" type="SOLRQUERY" mandatory="false" />
     </content>
 </cms_page_template>
