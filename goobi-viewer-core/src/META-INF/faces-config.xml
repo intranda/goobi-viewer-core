@@ -10,17 +10,17 @@ if (getFacesConfigXmlVersion(facesContext).equals("2.3") || getWebXmlVersion(fac
 	<application>
 
 		<resource-bundle>
-			<base-name>de.intranda.digiverso.presentation.messages.ViewerResourceBundle</base-name>
+			<base-name>io.goobi.viewer.messages.ViewerResourceBundle</base-name>
 			<var>msg</var>
 		</resource-bundle>
 
-		<!-- <resource-bundle> <base-name>de.intranda.digiverso.presentation.messages.StructtypesRessourceBundle</base-name> 
+		<!-- <resource-bundle> <base-name>io.goobi.viewer.messages.StructtypesRessourceBundle</base-name> 
 			<var>msgstruct</var> </resource-bundle> -->
 
 	</application>
 
 	<factory>
-		<exception-handler-factory>de.intranda.digiverso.presentation.exceptions.MyExceptionHandlerFactory</exception-handler-factory>
+		<exception-handler-factory>io.goobi.viewer.exceptions.MyExceptionHandlerFactory</exception-handler-factory>
 	</factory>
 
 	<lifecycle>
