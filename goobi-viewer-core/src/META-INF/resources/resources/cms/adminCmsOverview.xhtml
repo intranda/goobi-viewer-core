@@ -83,9 +83,15 @@
                                                 </td>
                                                 <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                     <td class="column_language">
-                                                        <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif"
-                                                            class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}"
-                                                            title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" alt="Flag Icon" />
+                                                    	<!-- LANGUAGE COMPLETE -->
+                                                    	<ui:fragment rendered="#{page.isLanguageComplete(locale)}">
+                                                    		<i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                                    	</ui:fragment>
+                                                    
+                                                    	<!-- LANGUAGE INCOMPLETE -->
+                                                    	<ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
+                                                    		<i class="fa fa-square-o" aria-hidden="true"></i>
+                                                    	</ui:fragment>
                                                     </td>
                                                 </c:forEach>
                                                 <td class="column_title">

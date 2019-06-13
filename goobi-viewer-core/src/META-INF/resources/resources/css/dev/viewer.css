@@ -11691,6 +11691,9 @@ div[id*="-Modal"] .email-form .form-group {
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td:nth-child(8) {
   text-align: right;
 }
+#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td.column_language {
+  text-align: center;
+}
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td ul {
   list-style: none;
   margin: 0;
