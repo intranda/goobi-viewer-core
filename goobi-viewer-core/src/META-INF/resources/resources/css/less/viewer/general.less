@@ -3,7 +3,7 @@
    ==============================================================*/
 html {
 	width: 100vw;
-    font-size: 100%;
+    font-size: 62.5%;
     overflow-x: hidden;
     &.no-overflow {
     	overflow: hidden;
@@ -12,48 +12,40 @@ html {
 
 body {
     font-family: @fontFamily;
-    font-size: @fontSize;
+    font-size: @fontNormal;
 }
 
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
-    margin: @baseMargin;
-}
+.h1, .h2, .h3, .h4, .h5, .h6 {}
 
 h1, .h1 { 
-    font-size: 2.1875rem; 
-    line-height: 2.625rem;     
+    font-size: 2.8rem;     
 }
 
 h2, .h2 { 
-    font-size: 1.75rem; 
-    line-height: 2.1875rem; 
+    font-size: 2.1rem;
 }
 
 h3, .h3 { 
-    font-size: 1.3125rem; 
-    line-height: 1.75rem; 
+    font-size: 1.8rem;
 }
 
 h4, .h4 { 
-    font-size: 1.125rem; 
-    line-height: 1.5625rem; 
+    font-size: 1.8rem;
 }
 
 h5, h6,
 .h5, .h6 { 
-    font-size: 1rem;
+    font-size: @fontNormal;
 }
 
-p {
-    margin: @baseMargin;
-}
+p {}
 
 pre {
-    padding: 0.5rem;
+    padding: 1rem;
     font-family: monospace;
-    border-radius: 0.25rem;
-    border: 0.0625rem solid @gray;
+    border-radius: 0.4rem;
+    border: 1px solid @gray;
     background-color: @lightgray;
 }
 
@@ -63,16 +55,11 @@ nav ul {
     margin: 0;
 }
 
-ul {
-    list-style: square;
-}
+ul {}
 
 ol {}
 
-ul, ol {
-    margin: @baseMargin;
-    padding-left: 1.75rem;
-}
+ul, ol {}
 
 a {
     &:hover {}

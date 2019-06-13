@@ -21,7 +21,7 @@
 		position: absolute;
 		top: 5px;
 		right: 10px;
-		font-size: 1.5rem;
+		font-size: 2.4rem;
 		cursor: pointer;
 	}
 	/* WRAPPER */
@@ -63,7 +63,7 @@
 		justify-content: space-between;
 		h3 {
 			margin: 0;
-			font-size: 1.1rem;
+			font-size: @fontLarge;
 		}
 	}
 	&__header-logo {
@@ -79,7 +79,7 @@
 	&__body {
 		border-top: 0;
 		h4 {
-			font-size: 1rem;
+			font-size: @fontNormal;
 		}
 	}
 	&__body-login-select {}
@@ -99,26 +99,31 @@
 		}
 		.form-group,
 		p {
-			margin-bottom: 1rem;
+			margin-bottom: 1.6rem;
+		}
+		.form-group:nth-child(2) {
+			margin: 0;
 		}
 	}
 	&__body-action {
-		padding: 5px 0 1rem 0;
+		padding-top: .5rem;
+		padding-bottom: 1.6rem;
+		.btn--link {
+			font-size: @fontSmall;
+		}
 		.btn--full {
 			width: 100%;
-			margin-bottom: 10px;
-		}
-		.btn--link {
-			font-size: 0.8rem;
+			margin-top: 2rem;
+			margin-bottom: 1rem;
 		}
 	}
 	&__body-login-open-id {
 		h4 {
 			position: relative;
 			margin-right: -15px;
-			margin-bottom: 1rem;
+			margin-bottom: 1.6rem;
 			margin-left: -15px;
-			font-size: 0.8rem;
+			font-size: @fontMedium;
 			text-align: center;
 			text-transform: uppercase;
 			color: @gray;
@@ -143,7 +148,7 @@
 		ul {
 			.mx-list-reset;
 			li {
-				margin-bottom: 0.5rem;
+				margin-bottom: 0.8rem;
 				&:last-child {
 					margin-bottom: 0;
 				}
@@ -190,7 +195,7 @@
 	/* FOOTER */
 	&__footer {
 		padding: 5px 0;
-		font-size: 0.8rem;
+		font-size: @fontSmall;
 		text-align: center;
 		color: @gray;
 		.btn {

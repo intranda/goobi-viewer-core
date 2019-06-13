@@ -100,6 +100,12 @@ var viewerJS = (function () {
                 });
             });
         }
+        
+        // toggle work title body
+        $( 'body' ).on( 'click', '.title__header h3', function () {
+        	$( this ).find( '.fa' ).toggleClass( 'in' );
+        	$( '.title__body' ).slideToggle( 'fast' );        	
+        } );
 
         // toggle collapseable widgets
         $('body').on('click', '.widget__title.collapseable', function () {

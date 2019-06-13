@@ -100,16 +100,6 @@
                                 
                                 <!-- USER LOGIN BODY ACTION -->
                                 <div class="user-login__body-action">
-                                    <!--  LOGIN -->
-                                    <h:commandButton 
-                                        styleClass="btn btn--full" 
-                                        value="#{msg.login}" 
-                                        action="#{userBean.login}">
-                                        <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
-                                    </h:commandButton>
-
-                                    <br />
-
                                     <ui:fragment rendered="#{userBean.authenticationProvider.allowsPasswordChange()}">                                    
 	                                    <!-- RETRIEVE ACCOUNT -->
 	                                    <button 
@@ -120,6 +110,16 @@
 	                                        #{msg.login__forgot_password}
 	                                    </button>
                                     </ui:fragment>
+
+                                    <br />
+
+                                    <!--  LOGIN -->
+                                    <h:commandButton 
+                                        styleClass="btn btn--full" 
+                                        value="#{msg.login}" 
+                                        action="#{userBean.login}">
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.login}" />
+                                    </h:commandButton>
                                 </div>
 	                        </div>
 	                    </ui:fragment>

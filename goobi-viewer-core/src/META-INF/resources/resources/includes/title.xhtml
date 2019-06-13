@@ -24,69 +24,67 @@
 
 	<composite:interface />
 
-    <composite:implementation>        
-        <f:view contentType="text/html" encoding="utf-8">
-            <div id="titleWrapper">
-                <div class="title-header">
-                    <h3 title="#{activeDocumentBean.titleBarLabel}">
-                        <a data-toggle="collapse" href="#titleCollapse" aria-expanded="false" aria-controls="collapseExample">
-                            <span>
-                            	<div class="title-header__page-type">
-                            		<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />
-                            	</div>
-                            	#{activeDocumentBean.titleBarLabel}                            	
-                            </span>
-                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                        </a>
-                    </h3>
-                </div>
-                <div class="title-body collapse" id="titleCollapse">
-                    <h:form id="titleForm" prependId="false">
-                        <!-- DOWNLOAD COMPLETE WORK AS PDF, EPUB OR TOC -->
-                        <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
-                            <div id="downloadWrapper" class="text-right">
-                                <nav>
-                                    <ul class="list list--horizontal">
-                                        
-                                         <!-- TOC DOWNLOAD -->
-                                        <h:panelGroup rendered="#{configurationBean.docHierarchyPdfEnabled}">
-                                            <li>
-                                                <h:commandLink action="#{activeDocumentBean.downloadTOCAction()}" title="#{msg.tocDownload}">
-    												<i class="fa fa-list" aria-hidden="true"></i>
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-    											</h:commandLink>
-                                            </li>
-                                        </h:panelGroup>
-                                        
-                                    </ul>
-                                </nav>
-                            </div>
-                        </h:panelGroup>
-                            
-                        <dl class="dl-horizontal">        
-                            <ui:repeat value="#{activeDocumentBean.titleBarMetadata}" var="metadata">
-                                <dt>
-                                    <h:outputText value="#{msg[metadata.label]}: " escape="false" />
-                                </dt>
-                                <dd>
-                                    <ui:repeat value="#{metadata.values}" var="val">
-                                        <span class="title-value">
-                                            <h:outputFormat rendered="#{!metadata.group}" value="#{msg[val.masterValue]}" escape="false">
-                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                <f:param value="#{val.getComboValueShort(9)}" />
-                                            </h:outputFormat>
-                                            <h:outputFormat
-												rendered="#{metadata.group}"
-												value="#{msg[val.masterValue]}" escape="false">
+    <composite:implementation>
+    	<!-- TITLE -->
+    	<div id="title" class="title">
+    		<!-- TITLE HEADER -->
+			<div class="title__header">
+				<h3>
+					<!-- PAGE TYPE -->
+					<span class="title__header-page-type">
+						<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+					</span>
+					
+					<!-- LABEL -->
+					<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+				
+					<!-- ICON -->
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				</h3>
+			</div>
+
+			<!-- TITLE BODY -->
+			<div class="title__body">
+				<h:form id="titleBodyForm" prependId="false">
+					<!-- DOWNLOAD -->
+					<ui:fragment rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
+						<div class="title__body-download">
+							<!-- TOC DOWNLOAD -->
+							<ui:fragment rendered="#{configurationBean.docHierarchyPdfEnabled}">
+								<h:commandLink
+									action="#{activeDocumentBean.downloadTOCAction()}"
+									title="#{msg.tocDownload}">
+									<i class="fa fa-list" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="top" />
+								</h:commandLink>
+							</ui:fragment>
+						</div>
+					</ui:fragment>
+					
+					<!-- METADATA -->
+					<div class="title__body-metadata">
+						<dl>
+							<ui:repeat value="#{activeDocumentBean.titleBarMetadata}" var="metadata">
+								<dt>
+									<h:outputText value="#{msg[metadata.label]}: " escape="false" />
+								</dt>
+								<dd>
+									<ui:repeat value="#{metadata.values}" var="val">
+										<span class="title-value"> 
+											<h:outputFormat rendered="#{!metadata.group}" value="#{msg[val.masterValue]}" escape="false">
+												<f:param value="#{val.getComboValueShort(0)}" />
+												<f:param value="#{val.getComboValueShort(1)}" />
+												<f:param value="#{val.getComboValueShort(2)}" />
+												<f:param value="#{val.getComboValueShort(3)}" />
+												<f:param value="#{val.getComboValueShort(4)}" />
+												<f:param value="#{val.getComboValueShort(5)}" />
+												<f:param value="#{val.getComboValueShort(6)}" />
+												<f:param value="#{val.getComboValueShort(7)}" />
+												<f:param value="#{val.getComboValueShort(8)}" />
+												<f:param value="#{val.getComboValueShort(9)}" />
+											</h:outputFormat> 
+											<h:outputFormat rendered="#{metadata.group}" value="#{msg[val.masterValue]}" escape="false">
 												<f:param value="#{val.getParamLabelWithColon(0)}" />
 												<f:param value="#{val.getComboValueShort(0)}" />
 												<f:param value="#{val.getParamLabelWithColon(1)}" />
@@ -109,102 +107,87 @@
 												<f:param value="#{val.getComboValueShort(9)}" />
 											</h:outputFormat>
 										</span>
-                                    </ui:repeat>
-                                </dd>
-                            </ui:repeat>
-                        </dl>
-        
-                        <h:panelGroup rendered="#{displayCollectionAndPartnerID}">
-                            <dl class="dl-horizontal">
-                                <dt></dt>
-                                <dd>
-                                    <a href="#{navigationHelper.browseUrl}/#{activeDocumentBean.viewManager.topDocument.collection}/-/1/-/-/">#{msg[activeDocumentBean.viewManager.topDocument.collection]}</a>
-                                    /
-                                    <a href="#{navigationHelper.applicationUrl}sites/#{activeDocumentBean.viewManager.topDocument.partnerId}/">#{msg[activeDocumentBean.viewManager.topDocument.partnerId]}</a>
-                                </dd>
-                            </dl>
-                        </h:panelGroup>
-        
-                        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.anchor}">
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    <h:outputText value="#{msg.numVolumes}: " />
-                                </dt>
-                                <dd>
-                                    <h:outputText value="#{activeDocumentBean.viewManager.topDocument.numVolumes}" />
-                                </dd>
-                            </dl>
-                        </h:panelGroup>
-        
-                        <!-- PURL -->
-                        <h:panelGroup rendered="#{purl and configurationBean.displayTitlePURL}">
-                            <dl class="dl-horizontal">
-                                <dt>#{msg.purl}:</dt>
-                                <dd>
-                                    <a href="#{activeDocumentBean.viewManager.persistentUrl}" title="#{activeDocumentBean.viewManager.persistentUrl}">
-                                        #{activeDocumentBean.viewManager.persistentUrl}
-                                    </a>
-                                </dd>
-                            </dl>
-                        </h:panelGroup>
-        
-                        <!-- title breadcrumbs -->
-                        <h:panelGroup rendered="#{configurationBean.displayTitleBreadcrumbs}">
-                            <dl class="dl-horizontal">
-                                <dt>#{msg.structPath}:</dt>
-                                <dd>
-                                    <nav id="titleBreadcrumbs">
-                                        <ul>
-                                            <ui:repeat value="#{activeDocumentBean.viewManager.currentDocumentHierarchy}" var="docStruct" varStatus="status">
-                                                <h:panelGroup rendered="#{!status.last}">
-                                                    <li class="title-breadcrumb-label">
-                                                        <a href="#{docStruct.url}" title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</a>
-                                                    </li>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{!status.last and status.last != ''}">
-                                                    <li class="title-breadcrumb-name">
-                                                        <a href="#{breadcrumb.url}" title="#{msg[breadcrumb.name]}">#{msg[breadcrumb.name]}</a>
-                                                    </li>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{!status.last}">
-                                                    <li class="title-breadcrumb-spacer"></li>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{status.last}">
-                                                    <li>
-                                                        <span title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</span>
-                                                    </li>
-                                                </h:panelGroup>
-                                            </ui:repeat>
-                                        </ul>
-                                    </nav>
-                                </dd>
-                            </dl>
-                            
-                            <!-- truncate title breadcrumbs -->
-                            <script type="text/javascript">
-                                var maxStringLength = #{configurationBean.titleBreadcrumbsMaxTitleLength};
-                                $(".bread_label").each(function() {
-                                    $(this).html( viewerJS.helper.truncateString($(this).html(), maxStringLength) );
-                                });
-                            </script>
-                        </h:panelGroup>
+									</ui:repeat>
+								</dd>
+							</ui:repeat>
+						</dl>
 
-					</h:form>
-                </div>
-            </div>
+						<!-- COLLECTION AND PARTNER ID -->
+						<ui:fragment rendered="#{displayCollectionAndPartnerID}">
+							<dl>
+								<dt></dt>
+								<dd>
+									<a
+										href="#{navigationHelper.browseUrl}/#{activeDocumentBean.viewManager.topDocument.collection}/-/1/-/-/">#{msg[activeDocumentBean.viewManager.topDocument.collection]}</a>
+									/ <a
+										href="#{navigationHelper.applicationUrl}sites/#{activeDocumentBean.viewManager.topDocument.partnerId}/">#{msg[activeDocumentBean.viewManager.topDocument.partnerId]}</a>
+								</dd>
+							</dl>
+						</ui:fragment>
 
+						<!-- NUMBER OF VOLUMES -->
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.anchor}">
+							<dl>
+								<dt>
+									<h:outputText value="#{msg.numVolumes}: " />
+								</dt>
+								<dd>
+									<h:outputText value="#{activeDocumentBean.viewManager.topDocument.numVolumes}" />
+								</dd>
+							</dl>
+						</ui:fragment>
 
-			<div class="clearfix"></div>
-            
-            <script type="text/javascript">                
-                $( "#titleCollapse" ).on( "show.bs.collapse", function () {
-                    $( ".title-header .fa" ).removeClass( "fa-chevron-down" ).addClass( "fa-chevron-up" );
-                });
-                
-                $( "#titleCollapse" ).on( "hidden.bs.collapse", function () {
-                    $( ".title-header .fa" ).removeClass( "fa-chevron-up" ).addClass( "fa-chevron-down" );
-                });
-            </script>
-        </f:view>
+						<!-- PURL -->
+						<ui:fragment rendered="#{purl and configurationBean.displayTitlePURL}">
+							<dl>
+								<dt>#{msg.purl}:</dt>
+								<dd>
+									<a href="#{activeDocumentBean.viewManager.persistentUrl}" title="#{activeDocumentBean.viewManager.persistentUrl}">
+										#{activeDocumentBean.viewManager.persistentUrl}
+									</a>
+								</dd>
+							</dl>
+						</ui:fragment>
+
+						<!-- TITLE BREADCRUMBS -->
+						<ui:fragment rendered="#{configurationBean.displayTitleBreadcrumbs}">
+							<dl>
+								<dt>#{msg.structPath}:</dt>
+								<dd>
+									<div class="title__body-metadata-breadcrumbs">
+										<ui:repeat
+											value="#{activeDocumentBean.viewManager.currentDocumentHierarchy}"
+											var="docStruct" 
+											varStatus="status">
+											<ui:fragment rendered="#{!status.last}">
+												<a href="#{docStruct.url}" title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</a>
+											</ui:fragment>
+											<ui:fragment rendered="#{!status.last and status.last != ''}">
+												<a href="#{breadcrumb.url}" title="#{msg[breadcrumb.name]}">#{msg[breadcrumb.name]}</a>
+											</ui:fragment>
+											<ui:fragment rendered="#{!status.last}">
+												<i class="fa fa-angle-right" aria-hidden="true"></i>
+											</ui:fragment>
+											<ui:fragment rendered="#{status.last}">
+												<span title="#{msg[docStruct.label]}">#{msg[docStruct.label]}</span>
+											</ui:fragment>
+										</ui:repeat>
+									</div>
+								</dd>
+							</dl>
+	
+							<!-- TRUNCATE TITLE BREADCRUMBS -->
+							<script type="text/javascript">
+	                        	var maxStringLength = #{configurationBean.titleBreadcrumbsMaxTitleLength};
+	                        	
+	                        	$( '.bread_label' ).each( function() {
+	                        		$( this ).html( viewerJS.helper.truncateString( $( this ).html(), maxStringLength ) );
+	                        	});
+	                        </script>
+						</ui:fragment>
+					</div>
+				</h:form>
+			</div>
+		</div>
     </composite:implementation>
 </ui:composition>
