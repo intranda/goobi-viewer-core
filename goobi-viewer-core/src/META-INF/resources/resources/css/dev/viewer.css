@@ -5670,10 +5670,10 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-flex-pack: center;
       justify-content: center;
   top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: #f2f3f4;
+  overflow-y: auto;
   z-index: 9999;
 }
 .user-login > .fa {
@@ -5686,10 +5686,8 @@ div[id*="-Modal"] .email-form .form-group {
 .user-login__wrapper {
   width: 98%;
   max-width: 400px;
-  max-height: 95%;
   padding: 10px;
   background-color: #f2f3f4;
-  overflow-y: auto;
 }
 .user-login__header,
 .user-login__body {
@@ -5869,8 +5867,10 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
-  .user-login__wrapper {
-    max-height: 90%;
+  .user-login.active {
+    -ms-flex-align: start;
+        align-items: flex-start;
+    padding-top: 25px;
   }
 }
 /* ==============================================================

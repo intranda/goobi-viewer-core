@@ -53,8 +53,8 @@ var viewerJS = ( function( viewer ) {
            		else {
            			_unsetUserCommentsStatus();
            			
-           			$( '#userLogin' ).addClass( 'active' );
-           			$( 'html' ).addClass( 'no-overflow' );            			
+           			$( '#userLogin' ).addClass( 'active' );     
+           			$( 'html' ).addClass( 'no-overflow' );
            		}
            	} );
             	
@@ -70,24 +70,24 @@ var viewerJS = ( function( viewer ) {
             	
            	// toggle retrieve account
            	$( 'body' ).on( 'click', '[data-open="retrieve-account"]', function() {
-           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount, #userLoginOpenId' ).hide();
         		$( '#loginTypeRetrieveAccount' ).show();
         		$( '[id*="userEMailToRetrieve"]' ).focus();
            	} );
            	$( 'body' ).on( 'click', '[data-close="retrieve-account"]', function() {
            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-           		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId' ).show();
            	} );            	
             	
            	// toggle create account
            	$( 'body' ).on( 'click', '[data-open="create-account"]', function() {
-           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount' ).hide();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginFooter' ).hide();
            		$( '#loginTypeCreateAccount' ).show();
            		$( '[id*="userCreateAccountNick"]' ).focus();
            	} );
            	$( 'body' ).on( 'click', '[data-close="create-account"]', function() {
            		$( '#loginTypeExternal, #loginTypeRetrieveAccount, #loginTypeCreateAccount' ).hide();
-           		$( '#userLoginSelectLoginWrapper, #loginType' ).show();
+           		$( '#userLoginSelectLoginWrapper, #loginType, #userLoginOpenId, #userLoginFooter' ).show();
            	} );
         }
     }

@@ -232,7 +232,7 @@
                 </div>
     
                 <!-- USER LOGIN BODY LOGIN OPEN ID -->
-                <div class="user-login__body-login-open-id">                    
+                <div id="userLoginOpenId" class="user-login__body-login-open-id">                    
                     <h4><span>#{msg.login__login_with_other_provider}</span></h4>
                     
                     <h:form id="userLoginOpenIdForm">
@@ -252,7 +252,7 @@
             
             <!-- USER LOGIN FOOTER -->
             <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
-                <div class="user-login__footer">
+                <div id="userLoginFooter" class="user-login__footer">
                     #{msg.login__new_to_goobi_viewer}
                     <button 
                         type="button" 

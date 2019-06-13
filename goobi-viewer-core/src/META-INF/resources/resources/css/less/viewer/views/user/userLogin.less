@@ -11,10 +11,10 @@
 		align-items: center;
 		justify-content: center;
 		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
+		width: 100vw;
+		height: 100vh;
 		background-color: @neutralgray;
+		overflow-y: auto;
 		z-index: 9999;
 	}
 	& > .fa {
@@ -28,10 +28,8 @@
 	&__wrapper {
 		width: 98%;
 		max-width: 400px;
-		max-height: 95%;
 		padding: 10px;
 		background-color: @neutralgray;
-		overflow-y: auto;
 	}
 	/* HEADER / BODY */
 	&__header,
@@ -227,8 +225,9 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.user-login {
-		&__wrapper {
-			max-height: 90%;
-		}		
+		&.active {
+			align-items: flex-start;
+			padding-top: 25px;
+		}
 	}
 }
