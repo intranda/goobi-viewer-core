@@ -94,6 +94,7 @@ public class NavigationHelper implements Serializable {
     public static final int WEIGHT_SEARCH_RESULTS = 2;
     public static final int WEIGHT_SEARCH_TERMS = 1;
     public static final int WEIGHT_TAG_CLOUD = 1;
+    public static final int WEIGHT_SITELINKS = 1;
     public static final int WEIGHT_USER_ACCOUNT = 1;
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
@@ -310,8 +311,11 @@ public class NavigationHelper implements Serializable {
         setCurrentPageAdmin("adminAllUsers");
     }
 
-    public void setCurrentPageSites() {
-        setCurrentPage("sites", true, true);
+    public void setCurrentPageSitelinks() {
+        setCurrentPage("sitelinks", true, true);
+        updateBreadcrumbs(
+                new LabeledLink("sitelinks", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sitelinks/", NavigationHelper.WEIGHT_SITELINKS));
+
     }
 
     public void setCurrentPageTimeMatrix() {
