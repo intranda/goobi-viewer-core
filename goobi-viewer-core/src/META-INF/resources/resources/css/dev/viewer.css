@@ -11,6 +11,7 @@
    Variables
    ==============================================================*/
 /* FONTS */
+/* IMAGES */
 /* COLORS BASIC */
 /* MESSAGE COLORS */
 /* LABELS */
@@ -66,7 +67,7 @@
    ==============================================================*/
 html {
   width: 100vw;
-  font-size: 100%;
+  font-size: 62.5%;
   overflow-x: hidden;
 }
 html.no-overflow {
@@ -74,70 +75,41 @@ html.no-overflow {
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 0.875rem;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
-  margin: 0 0 1.3125rem 0;
+  font-size: 1.6rem;
 }
 h1,
 .h1 {
-  font-size: 2.1875rem;
-  line-height: 2.625rem;
+  font-size: 2.8rem;
 }
 h2,
 .h2 {
-  font-size: 1.75rem;
-  line-height: 2.1875rem;
+  font-size: 2.1rem;
 }
 h3,
 .h3 {
-  font-size: 1.3125rem;
-  line-height: 1.75rem;
+  font-size: 1.8rem;
 }
 h4,
 .h4 {
-  font-size: 1.125rem;
-  line-height: 1.5625rem;
+  font-size: 1.8rem;
 }
 h5,
 h6,
 .h5,
 .h6 {
-  font-size: 1rem;
-}
-p {
-  margin: 0 0 1.3125rem 0;
+  font-size: 1.6rem;
 }
 pre {
-  padding: 0.5rem;
+  padding: 1rem;
   font-family: monospace;
-  border-radius: 0.25rem;
-  border: 0.0625rem solid #6f6f6f;
+  border-radius: 0.4rem;
+  border: 1px solid #6f6f6f;
   background-color: #eee;
 }
 nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-ul {
-  list-style: square;
-}
-ul,
-ol {
-  margin: 0 0 1.3125rem 0;
-  padding-left: 1.75rem;
 }
 table,
 .table {
@@ -762,7 +734,7 @@ a.btn--icon {
 .form-control__select {
   height: 34px;
   padding: 6px;
-  font-size: 14px;
+  font-size: 1.4rem;
   line-height: 1.42857143;
   color: #1a1a1a;
   background-color: #fff;
@@ -829,7 +801,7 @@ a.btn--icon {
   width: 100%;
   height: 34px;
   padding: 0 6px;
-  font-size: 14px;
+  font-size: 1.4rem;
   line-height: 1.42857143;
   color: #1a1a1a;
   background-color: #fff;
@@ -930,7 +902,7 @@ a.btn--icon {
   input[type="time"],
   input[type="url"],
   input[type="week"] {
-    font-size: 16px !important;
+    font-size: 1.6rem !important;
   }
 }
 /* BREAKPOINT FOR DESKTOPS */
@@ -1165,7 +1137,7 @@ a.btn--icon {
   top: 0;
   right: 0;
   padding: 0 10px;
-  font-size: 18px;
+  font-size: 1.8rem;
 }
 .warning-popover p {
   margin: 0;
@@ -1324,7 +1296,7 @@ html.is-IE .support-overlay {
 }
 .bookshelf-navigation__counter {
   padding: 0 3px;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #fff;
   border-radius: 2px;
   background-color: #3365a9;
@@ -1359,7 +1331,7 @@ html.is-IE .support-overlay {
 .bookshelf-navigation__dropdown-list h4 {
   margin: 0;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1.4rem;
 }
 .bookshelf-navigation__dropdown-list a {
   display: block;
@@ -1373,7 +1345,7 @@ html.is-IE .support-overlay {
   float: right;
   margin-top: 5px;
   padding: 0 3px;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #fff;
   border-radius: 2px;
   background-color: #3365a9;
@@ -1398,7 +1370,7 @@ html.is-IE .support-overlay {
 .bookshelf-navigation__dropdown-list-reset,
 .bookshelf-navigation__dropdown-list-send,
 .bookshelf-navigation__dropdown-list-mirador {
-  font-size: 13px;
+  font-size: 1.2rem;
   border-bottom: 1px solid #ccc;
 }
 .bookshelf-navigation__dropdown-list-reset a,
@@ -1505,7 +1477,7 @@ html.is-IE .support-overlay {
   display: inline-block;
   float: right;
   padding: 0 3px;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #fff;
   border-radius: 2px;
   background-color: #3365a9;
@@ -1590,7 +1562,7 @@ html.is-IE .support-overlay {
 /* BREADCRUMBS */
 /* BLOCK */
 .breadcrumbs-wrapper {
-  font-size: 0.75rem;
+  font-size: 1.2rem;
 }
 .breadcrumbs {
   /* ELEMENTS */
@@ -1799,7 +1771,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: 3px;
   padding: 1px 3px;
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   border-radius: 5px;
   background-color: #3365a9;
 }
@@ -1940,7 +1912,7 @@ div[id*="-Modal"] .email-form .form-group {
 .image-controls__action [class*="image-"] {
   position: relative;
   top: 3px;
-  font-size: 24px;
+  font-size: 2.1rem;
 }
 .image-controls__action.inactive {
   opacity: 0.4;
@@ -1951,7 +1923,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: none;
 }
 .image-controls__action.select-text span {
-  font-size: 14px;
+  font-size: 1.4rem;
   border: none;
   cursor: text;
 }
@@ -1977,7 +1949,7 @@ div[id*="-Modal"] .email-form .form-group {
 .image-controls__action.double-page-view [class*="image-"],
 .image-controls__action.single-page-view [class*="image-"],
 .image-controls__action.switch-pages [class*="image-"] {
-  font-size: 20px;
+  font-size: 2.1rem;
 }
 .image-controls__action.switch-pages a {
   padding: 4px;
@@ -2021,7 +1993,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 3px;
   vertical-align: middle;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 /* FIREFOX CORRECTION */
 @-moz-document url-prefix() {
@@ -2246,8 +2218,8 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #mobileToggleWrapper .btn-toggle {
   position: relative;
-  width: 2rem;
-  height: 2rem;
+  width: 3.2rem;
+  height: 3.2rem;
   margin: 0 5px;
   padding: 0;
   border: 1px solid #eee;
@@ -2737,7 +2709,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   right: 5px;
   bottom: 5px;
-  font-size: 21px;
+  font-size: 2.1rem;
   cursor: pointer;
   z-index: 102;
 }
@@ -2762,7 +2734,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-footer p {
   margin: 7px 0;
-  font-size: 10px;
+  font-size: 1.6rem;
 }
 #responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-footer p a {
   display: block;
@@ -2807,7 +2779,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .rcg-lightbox-overlay .rcg-lightbox-body .rcg-lightbox-close .fa {
   top: 0;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 .rcg-lightbox-overlay .rcg-lightbox-body .rcg-lightbox-image {
   float: left;
@@ -3182,99 +3154,98 @@ div[id*="-Modal"] .email-form .form-group {
    Title
    style declarations for title.xhtml
    ==============================================================*/
-#titleWrapper .title-header h3 {
-  text-overflow: ellipsis;
-  overflow: hidden;
+/* TITLE */
+.title {
+  margin-bottom: 2rem;
+  /* HEADER */
+  /* BODY */
 }
-#titleWrapper .title-header h3 a {
-  text-decoration: none;
-}
-#titleWrapper .title-header h3 a:hover {
-  text-decoration: none;
-}
-#titleWrapper .title-header h3 a span {
-  float: left;
-  width: 90%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#titleWrapper .title-header h3 a .fa {
-  float: right;
-  width: 10%;
-  text-align: right;
-}
-#titleWrapper .title-header__page-type {
-  display: none;
-  margin-right: 5px;
-}
-#titleWrapper .title-header__page-type:after {
-  content: "\2014";
-  margin-left: 5px;
-}
-#titleWrapper .title-body form .dl-horizontal {
+.title__header h3 {
+  display: -ms-flexbox;
+  display: flex;
   margin: 0;
+  cursor: pointer;
 }
-#titleWrapper .title-body form .dl-horizontal dt {
-  width: 25%;
-  text-align: left;
+.title__header .fa {
+  margin-top: 3px;
+  margin-left: auto;
 }
-#titleWrapper .title-body form .dl-horizontal dd {
-  margin-left: 25%;
+.title__header .fa.in {
+  margin-top: 0;
+  margin-bottom: 3px;
+  transform: rotate(180deg);
 }
-#titleWrapper .title-body form .dl-horizontal dd .title-value {
-  display: block;
-  text-overflow: ellipsis;
-  overflow: hidden;
+.title__header-page-type {
+  margin-right: 1rem;
 }
-#titleWrapper .title-body form .dl-horizontal dd nav ul li {
-  display: inline-block;
-  min-height: 1.3125rem;
-  line-height: 1.3125rem;
-  margin-right: 0.1875rem;
+.title__body {
+  display: none;
+  font-size: 1.4rem;
 }
-#titleWrapper .title-body form .dl-horizontal dd nav ul li a {
-  display: block;
+.title__body-download {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
 }
-#titleWrapper .title-body form .dl-horizontal dd nav ul li.title-breadcrumb-spacer:before {
-  content: "\203A";
+.title__body-metadata {
+  margin-top: 2rem;
 }
-#downloadWrapper {
-  font-size: 1rem;
+.title__body-metadata dl {
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: .25rem;
 }
-#downloadWrapper nav .list--horizontal li {
-  display: inline-block;
+.title__body-metadata dl dt,
+.title__body-metadata dl dd {
+  word-break: break-word;
 }
-#downloadWrapper nav ul li {
-  float: none;
-  margin-left: 5px;
+.title__body-metadata dl dt {
+  -ms-flex: 0 0 20%;
+      flex: 0 0 20%;
+  max-width: 20%;
+  padding-right: 1rem;
 }
-#downloadWrapper nav ul li.download-title {
-  font-size: 0.8rem;
+.title__body-metadata dl dd {
+  -ms-flex: 0 0 80%;
+      flex: 0 0 80%;
+  max-width: 80%;
 }
-#downloadWrapper nav ul li a,
-#downloadWrapper nav ul li button {
-  padding: 0;
-  color: #3365a9;
+.title__body-metadata-breadcrumbs {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-align: center;
+      align-items: center;
 }
-#downloadWrapper nav ul li a:hover,
-#downloadWrapper nav ul li button:hover {
-  color: #1a1a1a;
+.title__body-metadata-breadcrumbs a,
+.title__body-metadata-breadcrumbs i {
+  margin-right: 1rem;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #titleWrapper .title-body form .dl-horizontal dt {
-    width: 100%;
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .title__body-metadata dl {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
   }
-  #titleWrapper .title-body form .dl-horizontal dd {
-    margin-left: 0;
+  .title__body-metadata dl dt {
+    -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 0;
   }
-  #titleWrapper .title-body form .dl-horizontal dd .title-value {
-    display: inline-block;
+  .title__body-metadata dl dd {
+    -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+    max-width: 100%;
   }
 }
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Comments
    style declarations for userComments.xhtml
@@ -3332,7 +3303,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-comments__comment-metadata-date {
   font-family: monospace;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 .user-comments__comment-content {
   position: relative;
@@ -3367,7 +3338,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-comments__comment-content-options-last-change {
   font-family: monospace;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 .user-comments__comment-content-options-cancel,
 .user-comments__comment-content-options-edit,
@@ -3569,7 +3540,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .viewer-control.viewer-control-pdf,
 .viewer-control.page-browse {
-  font-size: 0.8rem;
+  font-size: 1.4rem;
   text-align: center;
   color: #606060;
   border: 1px solid #606060;
@@ -3864,7 +3835,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell .chart-nearly-completed-label-right {
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress {
   height: auto;
@@ -3890,7 +3861,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #999;
 }
 .jqplot-axis {
-  font-size: 13px;
+  font-size: 1.2rem;
   font-family: "TheSansLight", sans-serif;
 }
 .jqplot-axis.jqplot-xaxis {
@@ -3900,15 +3871,15 @@ div[id*="-Modal"] .email-form .form-group {
   margin-right: 12px;
 }
 #chartpseudotooltip {
-  font-size: 13px;
+  font-size: 1.2rem;
   font-family: "TheSansLight", sans-serif;
 }
 .jqplot-highlighter-tooltip {
-  font-size: 13px;
+  font-size: 1.2rem;
   font-family: "TheSansLight", sans-serif;
 }
 #chart-most-edited .jqplot-point-label {
-  font-size: 13px;
+  font-size: 1.2rem;
   font-family: "TheSansLight", sans-serif;
   margin-bottom: -15px;
   margin-left: 5px;
@@ -3930,7 +3901,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
   margin: 10px 0;
   padding: 15px;
-  font-size: 18px;
+  font-size: 1.8rem;
   text-align: center;
   color: #fff;
   background-color: #3365a9;
@@ -3974,7 +3945,7 @@ div[id*="-Modal"] .email-form .form-group {
 .styles__logo figcaption {
   padding-top: 10px;
   font-style: italic;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 .styles__color {
   margin-bottom: 10px;
@@ -3986,7 +3957,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .styles__color-body {
   padding: 5px;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 .styles__color-body ul {
   margin: 0;
@@ -4381,7 +4352,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* MODIFICATION */
 }
 .search-standard__help {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
 }
 .search-standard__help button {
   padding: 0;
@@ -4428,7 +4399,7 @@ div[id*="-Modal"] .email-form .form-group {
 /* AUTOCOMPLETE PANEL */
 .ui-autocomplete-panel {
   max-width: 100%;
-  font-size: 12px;
+  font-size: 1.2rem;
   border: 1px solid #eee;
   border-radius: 0;
   box-shadow: none;
@@ -4655,20 +4626,20 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__title h3 {
   margin: 0;
   line-height: normal;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 .search-list__options {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
       align-items: center;
-  font-size: 0.8rem;
+  font-size: 1.4rem;
 }
 .search-list__options a,
 .search-list__options button {
   display: inline-block;
   padding: 3px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: #1a1a1a;
 }
 .search-list__options a:hover,
@@ -4771,7 +4742,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 .search-list__links a {
-  font-size: 0.8rem;
+  font-size: 1.4rem;
 }
 .search-list__sorting {
   float: right;
@@ -4783,7 +4754,7 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
 }
 .search-list__adv-search-info-back {
-  font-size: 0.8rem;
+  font-size: 1.4rem;
   color: #1a1a1a;
 }
 .search-list__hits {
@@ -4820,7 +4791,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   top: 0;
   right: 5px;
-  font-size: 18px;
+  font-size: 1.8rem;
   color: #fff;
   background-image: none;
 }
@@ -4950,7 +4921,7 @@ div[id*="-Modal"] .email-form .form-group {
   line-height: normal;
   margin: 0;
   padding: 0;
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: #1a1a1a;
 }
 .search-list__metadata-info {
@@ -5487,7 +5458,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 .view-bookshelf p {
-  font-size: 13px;
+  font-size: 1.2rem;
   font-style: italic;
 }
 .view-bookshelf__action a {
@@ -5637,7 +5608,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-bookshelves__panel-body p {
   margin: 0;
-  font-size: 13px;
+  font-size: 1.2rem;
   font-style: italic;
 }
 .user-bookshelves__panel-action a {
@@ -5680,7 +5651,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   top: 5px;
   right: 10px;
-  font-size: 1.5rem;
+  font-size: 2.4rem;
   cursor: pointer;
 }
 .user-login__wrapper {
@@ -5727,7 +5698,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-login__header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
 }
 .user-login__header-logo {
   -ms-flex-item-align: normal;
@@ -5745,7 +5716,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 0;
 }
 .user-login__body h4 {
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 .user-login__body-login-type-wrapper {
   min-height: 215px;
@@ -5764,24 +5735,29 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-login__body-login-type .form-group,
 .user-login__body-login-type p {
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
+}
+.user-login__body-login-type .form-group:nth-child(2) {
+  margin: 0;
 }
 .user-login__body-action {
-  padding: 5px 0 1rem 0;
+  padding-top: .5rem;
+  padding-bottom: 1.6rem;
+}
+.user-login__body-action .btn--link {
+  font-size: 1.2rem;
 }
 .user-login__body-action .btn--full {
   width: 100%;
-  margin-bottom: 10px;
-}
-.user-login__body-action .btn--link {
-  font-size: 0.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 .user-login__body-login-open-id h4 {
   position: relative;
   margin-right: -15px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
   margin-left: -15px;
-  font-size: 0.8rem;
+  font-size: 1.4rem;
   text-align: center;
   text-transform: uppercase;
   color: #6f6f6f;
@@ -5809,7 +5785,7 @@ div[id*="-Modal"] .email-form .form-group {
   list-style: none;
 }
 .user-login__body-login-open-id ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 .user-login__body-login-open-id ul li:last-child {
   margin-bottom: 0;
@@ -5841,7 +5817,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-login__footer {
   padding: 5px 0;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
   text-align: center;
   color: #6f6f6f;
 }
@@ -6079,7 +6055,7 @@ div[id*="-Modal"] .email-form .form-group {
   float: left;
   width: 100%;
   margin-bottom: 5px;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 #nerFacetting #overview .set-tag-range-view,
 #nerFacetting #section .set-tag-range-view {
@@ -6095,7 +6071,7 @@ div[id*="-Modal"] .email-form .form-group {
 #nerFacetting #section .filter-tags li {
   display: inline-block;
   float: left;
-  font-size: 1rem;
+  font-size: 1.6rem;
   margin-right: 6px;
 }
 #nerFacetting #overview .filter-tags li:last-child,
@@ -6136,7 +6112,7 @@ div[id*="-Modal"] .email-form .form-group {
   min-width: 25px;
   max-width: 100%;
   padding: 2px 4px;
-  font-size: 0.8rem;
+  font-size: 1.4rem;
   color: #1a1a1a;
   border: 1px solid #6f6f6f;
   border-radius: 4px;
@@ -6190,7 +6166,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #nerFacetting #overview .overview-content .overview-scale li .page-number {
   width: 12%;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: bold;
 }
 #nerFacetting #overview .overview-content .overview-scale li .page-number a {
@@ -6204,7 +6180,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #nerFacetting #overview .overview-content .overview-scale li .tag-container {
   width: 88%;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 #nerFacetting #overview .overview-content .overview-scale li .tag-container .page-tag {
   margin-right: 3px;
@@ -6234,7 +6210,7 @@ div[id*="-Modal"] .email-form .form-group {
 #nerFacetting #sliderScale .scale-page {
   position: absolute;
   left: -8px;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #ccc;
 }
 #nerFacetting #sliderScale .scale-page.start {
@@ -6249,7 +6225,7 @@ div[id*="-Modal"] .email-form .form-group {
   left: -52px;
   width: 100px;
   margin-top: -10px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   text-align: center;
   color: #ccc;
   transform: rotate(-90deg);
@@ -6322,7 +6298,7 @@ div[id*="-Modal"] .email-form .form-group {
   top: -3px;
   left: 2.6em;
   padding: 2px 4px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: #fff;
   border-radius: 4px;
   background-color: #1a1a1a;
@@ -6403,7 +6379,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
   vertical-align: middle;
   line-height: normal;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 .view-object__image-map img {
   max-width: none;
@@ -6774,7 +6750,7 @@ div[id*="-Modal"] .email-form .form-group {
 .fullscreen__view-sidebar-work-title h2 {
   margin: 0;
   line-height: 2rem;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
 }
 .fullscreen__view-sidebar-accordeon {
   border-bottom: 1px solid #c6c6c6;
@@ -6797,7 +6773,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: relative;
   margin: 0;
   padding: 10px 15px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   border-top: 1px solid #c6c6c6;
   background-color: #fff;
   cursor: pointer;
@@ -6946,7 +6922,7 @@ div[id*="-Modal"] .email-form .form-group {
   line-height: 28px;
   margin-left: -30px;
   padding: 0 5px;
-  font-size: 14px;
+  font-size: 1.4rem;
   text-align: center;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -7018,7 +6994,7 @@ div[id*="-Modal"] .email-form .form-group {
 .timematrix-popover {
   position: absolute;
   width: 18.75rem;
-  font-size: 1rem;
+  font-size: 1.6rem;
   border: 1px solid #ccc;
   border-radius: 0;
   background-color: #eee;
@@ -7371,7 +7347,7 @@ div[id*="-Modal"] .email-form .form-group {
       grid-template-columns: 1fr 1fr;
   margin-bottom: 1.3125rem;
   padding: 0 10px;
-  font-size: 1.125rem;
+  font-size: 1.8rem;
   color: #1a1a1a;
   /* ELEMENT */
 }
@@ -7412,7 +7388,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .widget-chronology-slider__item.chronology-slider-start,
 .widget-chronology-slider__item.chronology-slider-end {
-  font-size: 0.875rem;
+  font-size: 1.4rem;
 }
 .widget-chronology-slider__item.chronology-slider-end {
   text-align: right;
@@ -7554,7 +7530,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 16px;
   height: 16px;
   line-height: 16px;
-  font-size: 14px;
+  font-size: 1.4rem;
   text-align: center;
   color: #fff;
   background-color: #f08421;
@@ -7621,7 +7597,7 @@ div[id*="-Modal"] .email-form .form-group {
   right: 32px;
   width: 0;
   height: 32px;
-  font-size: 0.8rem;
+  font-size: 1.4rem;
   color: #fff;
   border: 0;
   border-bottom: 1px solid #fff;
@@ -7972,7 +7948,7 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-user-interactions__delete-record-message span {
   display: inline-block;
   padding: 10px;
-  font-size: 0.85rem;
+  font-size: 1.4rem;
   line-height: 1rem;
   color: #1a1a1a;
   border: 1px solid #ff7e51;
@@ -8044,7 +8020,7 @@ div[id*="-Modal"] .email-form .form-group {
   float: left;
   width: 100%;
   margin-bottom: 5px;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 #overview .filter-tags,
 #section .filter-tags {
@@ -8090,7 +8066,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: none;
   left: 100%;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #1a1a1a;
   border: 1px solid #6f6f6f;
   border-radius: 4px;
@@ -8160,7 +8136,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #overview .overview-content .overview-scale li .page-number {
   width: 25%;
-  font-size: 12px;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 #overview .overview-content .overview-scale li .page-number a {
@@ -8174,7 +8150,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #overview .overview-content .overview-scale li .tag-container {
   width: 75%;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 #overview .overview-content .overview-scale li .tag-container .page-tag {
   margin-right: 3px;
@@ -8203,7 +8179,7 @@ div[id*="-Modal"] .email-form .form-group {
 #sliderScale .scale-page {
   position: absolute;
   left: -8px;
-  font-size: 10px;
+  font-size: 1.6rem;
   color: #ccc;
 }
 #sliderScale .scale-page.start {
@@ -8218,7 +8194,7 @@ div[id*="-Modal"] .email-form .form-group {
   left: -52px;
   width: 100px;
   margin-top: -10px;
-  font-size: 12px;
+  font-size: 1.2rem;
   text-align: center;
   color: #ccc;
   transform: rotate(-90deg);
@@ -8291,7 +8267,7 @@ div[id*="-Modal"] .email-form .form-group {
   top: -3px;
   left: 2.6em;
   padding: 2px 4px;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #fff;
   border-radius: 4px;
   background-color: #1a1a1a;
@@ -8482,7 +8458,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin__sidebar {
   position: absolute;
   padding: 15px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   z-index: 1010;
 }
 .admin__sidebar.fixed-top,
@@ -8512,7 +8488,7 @@ div[id*="-Modal"] .email-form .form-group {
   line-height: normal;
   margin: 0;
   margin-bottom: 30px;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   color: #fff;
 }
 .admin__sidebar-inner h1 a {
@@ -8580,7 +8556,7 @@ div[id*="-Modal"] .email-form .form-group {
   list-style: none;
 }
 .admin-table__action {
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   text-align: center;
   vertical-align: top;
 }
@@ -8646,14 +8622,14 @@ div[id*="-Modal"] .email-form .form-group {
   line-height: normal;
 }
 .column-filter-wrapper .form-group .input-group input {
-  font-size: 12px;
+  font-size: 1.2rem;
   font-weight: normal;
   height: 28px;
   line-height: normal;
   padding: 4px 7px;
 }
 .column-filter-wrapper .form-group .input-group .input-group-addon {
-  font-size: 10px;
+  font-size: 1.6rem;
   padding: 4px 7px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -8868,7 +8844,7 @@ div[id*="-Modal"] .email-form .form-group {
 .collection-tiled__header a {
   display: block;
   max-height: 27px;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   text-overflow: ellipsis;
   overflow: hidden;
 }
@@ -9101,7 +9077,7 @@ div[id*="-Modal"] .email-form .form-group {
   box-shadow: 0 0 0 1px #fff, 0 0 0 2px #3365a9;
 }
 .admin-cms-media__item-select-frame-checkmark .fa {
-  font-size: 18px;
+  font-size: 1.8rem;
   color: #fff;
 }
 .admin-cms-media__item-select {
@@ -9249,7 +9225,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 16px;
   height: 16px;
   line-height: 16px;
-  font-size: 0.7rem;
+  font-size: 1.2rem;
   text-align: center;
   border-radius: 50%;
   color: #fff;
@@ -9284,7 +9260,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: relative;
   width: 100%;
   height: 34px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: #1a1a1a;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -9345,7 +9321,7 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext {
   display: none;
   padding-top: 5px;
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   font-style: italic;
   color: #666;
 }
@@ -9627,7 +9603,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-generic__image figcaption {
   padding: 5px 0;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #ccc;
 }
 .tpl-generic .solr-query-collection {
@@ -9666,7 +9642,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-news-overview__image figcaption {
   padding: 5px 0;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #ccc;
 }
 .tpl-news-overview__list-item {
@@ -9709,7 +9685,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-news-detail__image figcaption {
   padding: 5px 0;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #ccc;
 }
 .tpl-news-detail .solr-query-collection {
@@ -9753,7 +9729,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-simple__image figcaption {
   padding: 5px 0;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   color: #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -9949,7 +9925,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tpl-masonry .grid-item-caption a {
   display: block;
   padding: 0 10px;
-  font-size: 24px;
+  font-size: 2.1rem;
   text-align: right;
   color: #fff;
 }
@@ -10077,7 +10053,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .grid-tile__title h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1.6rem;
   line-height: 21px;
 }
 .grid-tile__image {
@@ -10197,7 +10173,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 16px;
   height: 16px;
   line-height: 16px;
-  font-size: 14px;
+  font-size: 1.4rem;
   text-align: center;
   color: #fff;
   background-color: #f08421;
@@ -10222,7 +10198,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 16px;
   height: 16px;
   line-height: 16px;
-  font-size: 14px;
+  font-size: 1.4rem;
   text-align: center;
   color: #fff;
   background-color: #f08421;
@@ -10333,7 +10309,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top-color: #ccc;
 }
 .tpl-glossary__glossary-title {
-  font-size: 1.25rem;
+  font-size: 2.1rem;
   font-weight: 700;
 }
 .tpl-glossary__glossary-description {
@@ -10379,7 +10355,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .tpl-faq__list .panel-heading__fragment-link {
   padding-left: 10px;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   opacity: 0.1;
 }
 .tpl-faq__list .panel-heading__fragment-link:hover {
@@ -10387,7 +10363,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .tpl-faq__list .panel-title {
   text-transform: uppercase;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
 }
 .tpl-faq__list .panel-title a:hover,
 .tpl-faq__list .panel-title a:active,
@@ -11056,7 +11032,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .admin-cms-media__file-language li.active a,
 .admin-cms-media__file-language li.finished a {
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 700;
 }
 .admin-cms-media__file-language li.active a {
@@ -11171,7 +11147,7 @@ div[id*="-Modal"] .email-form .form-group {
   border-top: 1px solid #eee;
 }
 .cms-create-page__wrapper .edit-content-page.edit-content-page-collection .group-label {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   margin-bottom: 0px;
 }
 .cms-create-page__wrapper .edit-content-page.edit-content-page-media {
@@ -11543,7 +11519,7 @@ div[id*="-Modal"] .email-form .form-group {
   word-break: break-word;
 }
 .cms-menu__visible-item-label small {
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   font-style: italic;
 }
 .cms-menu__visible-item-edit {
@@ -11715,7 +11691,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
 }
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td .column_title__menu_title {
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable_paginate {
   text-align: right;
@@ -11760,7 +11736,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 5px 0 15px 0;
 }
 .cms-select-template__theme-template-marker {
-  font-size: 12px;
+  font-size: 1.2rem;
   text-align: center;
   color: #3365a9;
 }
@@ -11854,7 +11830,7 @@ img.cms-static-pages__page-language--complete {
 }
 .cms-collections__selection-control .ui-autocomplete {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   border: 1px solid #ccc;
   background-color: #fff;
 }

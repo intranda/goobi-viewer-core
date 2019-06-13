@@ -15,18 +15,18 @@
         h3 {
             margin: 0;
             line-height: normal;
-            font-size: 1rem;
+            font-size: @fontNormal;
         }
     }
     /* OPTIONS */
     &__options {
         display: flex;
     	align-items: center;
-        font-size: 0.8rem;
+        font-size: @fontMedium;
         a, button {
             display: inline-block;
             padding: 3px;
-            font-size: 1rem;
+            font-size: @fontNormal;
             color: @black;
             &:hover,
             &:focus,
@@ -139,7 +139,7 @@
             display: inline-block;
         }
         a {
-            font-size: 0.8rem;
+            font-size: @fontMedium;
             &:hover,
             &:focus,
             &:active {}
@@ -157,7 +157,7 @@
         background-color: @lightgray;
     }
     &__adv-search-info-back {
-        font-size: 0.8rem;
+        font-size: @fontMedium;
         color: @black;
     }
     /* HITS */
@@ -200,7 +200,7 @@
 		    position: absolute;
 		    top: 0;
 		    right: 5px;
-		    font-size: 18px;
+		    font-size: @fontLarge;
 		    color: @white;
 		    background-image: none;
 		    .fa-bookmark-o,
@@ -332,7 +332,7 @@
             line-height: normal;
             margin: 0;
             padding: 0;
-            font-size: 1rem;
+            font-size: @fontNormal;
             color: @black;
         }
     }
