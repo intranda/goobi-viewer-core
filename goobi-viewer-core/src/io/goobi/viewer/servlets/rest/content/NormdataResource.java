@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.servlets.rest.content;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -122,54 +125,47 @@ public class NormdataResource {
         }
         // logger.debug("norm data locale: {}", locale.toString());
 
-        Map<String, List<NormData>> normDataMap = NormDataImporter.importNormData(BeanUtils.unescapeCriticalUrlChracters(url));
-        if (normDataMap != null) {
-            // Prefer GND group
-            List<NormData> normDataList = normDataMap.get("GND");
-            // Get first available group, of GND not found
-            if (normDataList == null) {
-                for (String key : normDataMap.keySet()) {
-                    normDataList = normDataMap.get(key);
-                    break;
-                }
-            }
-            if (normDataList == null) {
-                logger.trace("Normdata map is empty");
-                throw new ContentNotFoundException("Resource not found");
-            }
+        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(BeanUtils.unescapeCriticalUrlChracters(url));
+        if (marcRecord == null) {
+            throw new ContentNotFoundException("Resource not found");
+        }
 
-            JSONArray jsonArray = new JSONArray();
+        // Prefer GND group
+        List<NormData> normDataList = marcRecord.getNormDataList();
+        if (normDataList == null) {
+            logger.trace("Normdata map is empty");
+            throw new ContentNotFoundException("Resource not found");
+        }
 
-            // Explorative mode to return all available fields
-            if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
-                for (NormData normData : normDataList) {
-                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
-                }
-                return jsonArray.toJSONString();
-            }
+        JSONArray jsonArray = new JSONArray();
 
-            List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
-            // Missing template config - add all fields
-            if (normdataFields.isEmpty()) {
-                for (NormData normData : normDataList) {
-                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
-                }
-                return jsonArray.toJSONString();
-            }
-            // Use template config
-            for (String field : normdataFields) {
-                for (NormData normData : normDataList) {
-                    if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
-                        continue;
-                    }
-                    jsonArray.add(addNormDataValuesToJSON(normData, locale));
-                }
+        // Explorative mode to return all available fields
+        if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
+            for (NormData normData : normDataList) {
+                jsonArray.add(addNormDataValuesToJSON(normData, locale));
             }
             return jsonArray.toJSONString();
         }
 
-        throw new ContentNotFoundException("Resource not found");
+        List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
+        // Missing template config - add all fields
+        if (normdataFields.isEmpty()) {
+            for (NormData normData : normDataList) {
+                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+            }
+            return jsonArray.toJSONString();
+        }
+        // Use template config
+        for (String field : normdataFields) {
+            for (NormData normData : normDataList) {
+                if (NormDataImporter.FIELD_URI_GND.equals(normData.getKey()) || !field.equals(normData.getKey())) {
+                    continue;
+                }
+                jsonArray.add(addNormDataValuesToJSON(normData, locale));
+            }
+        }
 
+        return jsonArray.toJSONString();
     }
 
     @SuppressWarnings("unchecked")
