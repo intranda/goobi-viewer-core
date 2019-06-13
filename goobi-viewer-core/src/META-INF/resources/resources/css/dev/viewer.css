@@ -1205,7 +1205,7 @@ a.btn--icon {
 }
 /* tinyMCE */
 div.mce-fullscreen {
-  z-index: 999;
+  z-index: 1020;
 }
 /* IE 11 NOT SUPPORTED */
 .support-overlay {
