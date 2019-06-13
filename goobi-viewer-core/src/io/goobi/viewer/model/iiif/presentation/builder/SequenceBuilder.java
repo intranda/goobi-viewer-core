@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.iiif.presentation.builder;
 
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -36,7 +37,9 @@ import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
+import de.intranda.api.iiif.presentation.ICanvas;
 import de.intranda.api.iiif.presentation.Manifest;
+import de.intranda.api.iiif.presentation.PartOfCanvas;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
@@ -166,11 +169,11 @@ public class SequenceBuilder extends AbstractBuilder {
                     for (Comment comment : comments) {
                         TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
-                        anno.setOn(canvas);
+                        anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                         TextualAnnotationBody body = new TextualAnnotationBody();
                         body.setValue(comment.getText());
                         anno.setBody(body);
-//                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
+                        //                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
                         annoList.addResource(anno);
                     }
                 }
@@ -179,6 +182,21 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
         return list;
+    }
+
+    /**
+     * @param canvas
+     * @param i
+     * @param j
+     * @param width
+     * @param height
+     * @return
+     */
+    private ICanvas createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
+        PartOfCanvas part = new PartOfCanvas();
+        part.setCanvas(canvas);
+        part.setArea(new Rectangle(x, y, width, height));
+        return part;
     }
 
     /**
@@ -240,7 +258,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (size.getWidth() * size.getHeight() > 0) {
                     resource.setWidth(size.width);
                     resource.setHeight(size.height);
-                    if(IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {   
+                    if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
                         resource.setService(new ImageInformation(imageInfoURI.toString()));
                     }
@@ -453,14 +471,14 @@ public class SequenceBuilder extends AbstractBuilder {
         this.buildMode = buildMode;
         return this;
     }
-    
+
     /**
      * @return the preferredView
      */
     public PageType getPreferredView() {
         return preferredView;
     }
-    
+
     /**
      * @param preferredView the preferredView to set
      */

@@ -28,7 +28,7 @@
 		<mets.version>1.10</mets.version>
 		<mods.version>3.5</mods.version>
 		<normdataimporter.version>1.2.5</normdataimporter.version>
-		<iiif-api-model.version>1.0.0</iiif-api-model.version>
+		<iiif-api-model.version>1.1.0</iiif-api-model.version>
 		<tei-conversion.version>0.1.4</tei-conversion.version>
 
 		<!-- other libraries -->
