@@ -324,7 +324,14 @@ var viewerJS = ( function( viewer ) {
             } );
             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
             	$( '[data-toggle="tooltip"]' ).tooltip( 'destroy' );
-            }        	
+            }
+            
+            // enable BS popovers
+            $( '[data-toggle="popover"]' ).popover( {
+            	placement: 'auto bottom',
+	            trigger: 'hover',
+	            html: true
+            } );
         },
     };
     
