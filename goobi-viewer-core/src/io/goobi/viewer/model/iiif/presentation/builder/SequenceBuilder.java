@@ -169,6 +169,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     for (Comment comment : comments) {
                         TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
+//                        anno.setOn(canvas);
                         anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                         TextualAnnotationBody body = new TextualAnnotationBody();
                         body.setValue(comment.getText());

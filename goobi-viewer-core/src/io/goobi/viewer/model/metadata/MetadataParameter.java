@@ -34,7 +34,8 @@ public class MetadataParameter implements Serializable {
         UNESCAPEDFIELD("unescapedfield"),
         URLESCAPEDFIELD("urlescapedfield"),
         HIERARCHICALFIELD("hierarchicalfield"),
-        NORMDATAURI("normdatauri");
+        NORMDATAURI("normdatauri"),
+        NORMDATASEARCH("normdatasearch");
 
         private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
 

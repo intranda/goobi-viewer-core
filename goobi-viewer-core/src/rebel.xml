@@ -8,7 +8,7 @@
 
 	<web>
 		<link target="/">
-			<dir name="${git.home}/goobi-viewer-core/goobi-viewer-core/WebContent">
+			<dir name="${git.home}/goobi-viewer-core/goobi-viewer-core/src/META-INF/resources">
 			</dir>
 		</link>
 	</web>

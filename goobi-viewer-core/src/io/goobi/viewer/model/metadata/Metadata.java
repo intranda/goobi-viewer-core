@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
-import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -274,130 +274,147 @@ public class Metadata implements Serializable {
             return;
         }
 
-        if (!inValues.isEmpty()) {
-            for (String value : inValues) {
-                value = value.trim();
-                MetadataParameter param = params.get(paramIndex);
-                if (param.getType() != null) {
-                    switch (param.getType()) {
-                        case WIKIFIELD:
-                        case WIKIPERSONFIELD:
-                            if (value.contains(",")) {
-                                // Find and remove additional information in a person's name
-                                Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
-                                Matcher m = p.matcher(value);
-                                while (m.find()) {
-                                    String cut = value.substring(m.start(), m.end());
-                                    value = value.replace(cut, "");
-                                    m = p.matcher(value);
-                                }
-                                // Revert the name around the comma (persons only)
-                                if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
-                                    String[] valueSplit = value.split("[,]");
-                                    if (valueSplit.length > 1) {
-                                        value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
-                                    }
-                                }
-                            }
-                            value = value.trim();
-                            value = value.replace("<", "");
-                            value = value.replace(">", "");
-                            value = value.replace(" ", "_");
-                            // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
-                            break;
-                        case TRANSLATEDFIELD:
-                            // Values that are message keys
-                            value = Helper.getTranslation(value, locale);
-                            value = StringEscapeUtils.escapeHtml(value);
-                            // convert line breaks back to HTML
-                            value = value.replace("&lt;br /&gt;", "<br />");
-                            break;
-                        case UNESCAPEDFIELD:
-                            // convert line breaks back to HTML
-                            value = value.replace("&lt;br /&gt;", "<br />");
-                            break;
-                        case URLESCAPEDFIELD:
-                            // escape reserved URL characters
-                            value = BeanUtils.escapeCriticalUrlChracters(value);
-                            break;
-                        case HIERARCHICALFIELD:
-                        // create a link for reach hierarchy level
-                        {
-                            NavigationHelper nh = BeanUtils.getNavigationHelper();
-                            value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+        if (inValues.isEmpty()) {
+            return;
+        }
+
+        for (String value : inValues) {
+            MetadataParameter param = params.get(paramIndex);
+            if (param.getType() == null) {
+                continue;
+            }
+            value = value.trim();
+            switch (param.getType()) {
+                case WIKIFIELD:
+                case WIKIPERSONFIELD:
+                    if (value.contains(",")) {
+                        // Find and remove additional information in a person's name
+                        Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
+                        Matcher m = p.matcher(value);
+                        while (m.find()) {
+                            String cut = value.substring(m.start(), m.end());
+                            value = value.replace(cut, "");
+                            m = p.matcher(value);
                         }
-                            break;
-                        case NORMDATAURI:
-                            if (StringUtils.isNotEmpty(value)) {
-                                NavigationHelper nh = BeanUtils.getNavigationHelper();
-                                String normDataType = MetadataGroupType.OTHER.name();
-                                // Use the last part of NORM_URI_* field name as the normdata type
-                                if (param.getKey() != null) {
-                                    if (param.getKey().startsWith("NORM_URI_")) {
-                                        // Determine norm data set type from the URI field name
-                                        normDataType = param.getKey().replace("NORM_URI_", "");
-                                    } else if (param.getKey().equals("NORM_URI")) {
-                                        // Determine norm data set type from GND field 075$b
-                                        Map<String, List<NormData>> ret = NormDataImporter.importNormData(value);
-                                        if (ret.get("GND") != null) {
-                                            for (NormData normData : ret.get("GND")) {
-                                                if ("NORM_TYPE".equals(normData.getKey())) {
-                                                    String val = normData.getValues().get(0).getText();
-                                                    logger.trace("val: " + val);
-                                                    switch (val) {
-                                                        case "kiz":
-                                                            normDataType = MetadataGroupType.CORPORATION.name();
-                                                            break;
-                                                        case "piz":
-                                                            normDataType = MetadataGroupType.PERSON.name();
-                                                            break;
-                                                    }
-                                                    logger.trace("norm data type determined fro 075$b: {}", normDataType);
+                        // Revert the name around the comma (persons only)
+                        if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
+                            String[] valueSplit = value.split("[,]");
+                            if (valueSplit.length > 1) {
+                                value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
+                            }
+                        }
+                    }
+                    value = value.trim();
+                    value = value.replace("<", "");
+                    value = value.replace(">", "");
+                    value = value.replace(" ", "_");
+                    // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
+                    break;
+                case TRANSLATEDFIELD:
+                    // Values that are message keys
+                    value = Helper.getTranslation(value, locale);
+                    value = StringEscapeUtils.escapeHtml(value);
+                    // convert line breaks back to HTML
+                    value = value.replace("&lt;br /&gt;", "<br />");
+                    break;
+                case UNESCAPEDFIELD:
+                    // convert line breaks back to HTML
+                    value = value.replace("&lt;br /&gt;", "<br />");
+                    break;
+                case URLESCAPEDFIELD:
+                    // escape reserved URL characters
+                    value = BeanUtils.escapeCriticalUrlChracters(value);
+                    break;
+                case HIERARCHICALFIELD:
+                // create a link for reach hierarchy level
+                {
+                    NavigationHelper nh = BeanUtils.getNavigationHelper();
+                    value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
+                }
+                    break;
+                case NORMDATAURI:
+                    if (StringUtils.isNotEmpty(value)) {
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        String normDataType = MetadataGroupType.OTHER.name();
+                        // Use the last part of NORM_URI_* field name as the normdata type
+                        if (param.getKey() != null) {
+                            if (param.getKey().startsWith("NORM_URI_")) {
+                                // Determine norm data set type from the URI field name
+                                normDataType = param.getKey().replace("NORM_URI_", "");
+                            } else if (param.getKey().equals("NORM_URI")) {
+                                // Determine norm data set type from GND field 075$b
+                                MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(value);
+                                if (marcRecord != null && !marcRecord.getNormDataList().isEmpty())
+                                    for (NormData normData : marcRecord.getNormDataList()) {
+                                        if ("NORM_TYPE".equals(normData.getKey())) {
+                                            String val = normData.getValues().get(0).getText();
+                                            logger.trace("val: " + val);
+                                            switch (val) {
+                                                case "kiz":
+                                                    normDataType = MetadataGroupType.CORPORATION.name();
                                                     break;
-                                                }
+                                                case "piz":
+                                                    normDataType = MetadataGroupType.PERSON.name();
+                                                    break;
                                             }
+                                            logger.trace("norm data type determined from 075$b: {}", normDataType);
+                                            break;
                                         }
                                     }
-                                }
-                                String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
-                                        .replace("{0}", nh.getApplicationUrl())
-                                        .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                        .replace("{2}", normDataType)
-                                        .replace("{3}", nh.getLocaleString())
-                                        .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
-                                        .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
-                                value = html;
                             }
-                            break;
-                        default:
-                            // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-                            value = StringEscapeUtils.escapeHtml(value);
-                            // convert line breaks back to HTML
-                            value = value.replace("&lt;br /&gt;", "<br />");
+                        }
+                        // Popup button
+                        String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
+                                .replace("{0}", nh.getApplicationUrl())
+                                .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                .replace("{2}", normDataType)
+                                .replace("{3}", nh.getLocaleString())
+                                .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
+                                .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
+                        value = html;
                     }
-                    value = value.replace("'", "&#39;");
-                    value = SearchHelper.replaceHighlightingPlaceholders(value);
-                }
+                    break;
+                case NORMDATASEARCH:
+                    if (StringUtils.isNotEmpty(value)) {
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        // Search button
+                        String html = ViewerResourceBundle.getTranslation("NORMDATA_SEARCH_BUTTON", locale)
+                                .replace("{0}",
+                                        // pretty:search6 URL
+                                        new StringBuilder().append(nh.getSearchUrl())
+                                                .append("/-/")
+                                                .append(param.getKey())
+                                                .append(':')
+                                                .append(value)
+                                                .append("/1/-/-/-/")
+                                                .toString())
+                                .replace("{1}", ViewerResourceBundle.getTranslation("search", locale));
+                        value = html;
+                    }
+                    break;
+                default:
+                    // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
+                    value = StringEscapeUtils.escapeHtml(value);
+                    // convert line breaks back to HTML
+                    value = value.replace("&lt;br /&gt;", "<br />");
+            }
+            value = value.replace("'", "&#39;");
+            value = SearchHelper.replaceHighlightingPlaceholders(value);
 
-                if (paramIndex >= 0) {
-                    MetadataParameter origParam = params.get(origParamIndex);
-                    mdValue.getParamLabels().add(paramIndex, label);
-                    if (mdValue.getParamValues().size() <= paramIndex) {
-                        mdValue.getParamValues().add(paramIndex, new ArrayList<>());
-                    }
-                    mdValue.getParamValues().get(paramIndex).add(Helper.intern(value));
-                    mdValue.getParamMasterValueFragments().add(paramIndex, origParam.getMasterValueFragment());
-                    mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
-                    mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
-                    mdValue.getParamUrls().add(paramIndex, url);
-                    if (normDataUrl != null) {
-                        mdValue.getNormDataUrls().putAll(normDataUrl);
-                        // logger.trace("added norm data url: {}", normDataUrl.toString());
-                    }
-                    //                    // Replace master value with override value from the parameter
-                    //                    if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
-                    //                        mdValue.setMasterValue(origParam.getOverrideMasterValue());
-                    //                    }
+            if (paramIndex >= 0) {
+                MetadataParameter origParam = params.get(origParamIndex);
+                mdValue.getParamLabels().add(paramIndex, label);
+                if (mdValue.getParamValues().size() <= paramIndex) {
+                    mdValue.getParamValues().add(paramIndex, new ArrayList<>());
+                }
+                mdValue.getParamValues().get(paramIndex).add(Helper.intern(value));
+                mdValue.getParamMasterValueFragments().add(paramIndex, origParam.getMasterValueFragment());
+                mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
+                mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
+                mdValue.getParamUrls().add(paramIndex, url);
+                if (normDataUrl != null) {
+                    mdValue.getNormDataUrls().putAll(normDataUrl);
+                    // logger.trace("added norm data url: {}", normDataUrl.toString());
                 }
             }
         }
