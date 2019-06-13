@@ -48,13 +48,11 @@ var viewerJS = ( function( viewer ) {
            			_setUserCommentsStatus( $( this ).attr( 'data-target' ) );
            			
            			$( '#userLogin' ).addClass( 'active' );
-//           			$( 'html' ).addClass( 'no-overflow' );
            		}
            		else {
            			_unsetUserCommentsStatus();
            			
-           			$( '#userLogin' ).addClass( 'active' );
-//           			$( 'html' ).addClass( 'no-overflow' );            			
+           			$( '#userLogin' ).addClass( 'active' );            			
            		}
            	} );
             	
@@ -62,7 +60,6 @@ var viewerJS = ( function( viewer ) {
            	$( 'body' ).on( 'click', '#userLogin > .fa-times', function( event ) {
            		_unsetUserCommentsStatus();
            		$( '#userLogin' ).removeClass( 'active' );
-//           		$( 'html' ).removeClass( 'no-overflow' );
            	} );
            	
            	// jump to user comments target if set
