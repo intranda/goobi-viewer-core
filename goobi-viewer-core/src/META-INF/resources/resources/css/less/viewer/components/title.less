@@ -2,100 +2,67 @@
    Title
    style declarations for title.xhtml
    ==============================================================*/
-#titleWrapper {
-    .title-header {
-        h3 {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            a {
-                text-decoration: none;
-                &:hover {
-                    text-decoration: none;
-                }
-                span {
-                    float: left;
-                    width: 90%;
-                    overflow: hidden;
-    				text-overflow: ellipsis;
-                }
-                .fa {
-                    float: right;
-                    width: 10%;
-                    text-align: right;
-                }
-            }
-        }
-        &__page-type {
-        	display: none;
-        	margin-right: 5px;
-        	&:after {
-        		content:"\2014";
-        		margin-left: 5px;
-        	}
-        }
-    }
-    .title-body {
-        form {
-            .dl-horizontal {
-                margin: 0;
-				dt {
-                    width: 25%;
-                    text-align: left;
-                }
-                dd {
-                    margin-left: 25%;
-                    .title-value {
-                        display: block;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                    }
-                    nav {
-                        ul {
-                            li {
-                                display: inline-block;
-                                min-height: 1.3125rem;
-                                line-height: 1.3125rem;
-                                margin-right: 0.1875rem;
-                                a {
-                                    display: block;
-                                }
-                                &.title-breadcrumb-spacer:before { 
-                                    content:"\203A";
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-#downloadWrapper {
-    font-size: 1rem;
-    nav {
-    	.list--horizontal {
-    		li {
-    			display: inline-block;
-    		}
-    	}
-        ul {
-            li {
-            	float: none;
-            	margin-left: 5px;
-                &.download-title {
-                    font-size: 0.8rem;
-                }
-                a, button {
-                	padding: 0;
-                	color: @blue;
-                	&:hover {
-                		color: @black;
-                	}
-                }
-            }
-        }
-    }
+/* TITLE */
+.title {
+	margin-bottom: 2rem;
+	/* HEADER */
+	&__header {
+		h3 {
+			display: flex;
+			margin: 0;
+			cursor: pointer;			
+		}
+		.fa {
+			margin-top: 3px;
+			margin-left: auto;
+			&.in {
+				margin-top: 0;
+				margin-bottom: 3px;
+				transform: rotate(180deg);
+			}
+		}
+	}
+	&__header-page-type {
+		margin-right: 1rem;
+	}
+	&__header-label {}
+	/* BODY */
+	&__body {
+		display: none;
+		font-size: @fontMedium;
+	}
+	&__body-download {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+	}
+	&__body-metadata {
+		margin-top: 2rem;
+		dl {
+			display: flex;
+			margin-bottom: .25rem;
+			dt, dd {
+				word-break: break-word;				
+			}
+			dt {
+				flex: 0 0 20%;
+				max-width: 20%;
+    			padding-right: 1rem;
+			}
+			dd {
+				flex: 0 0 80%;
+				max-width: 80%;
+			}
+		}
+	}
+	&__body-metadata-breadcrumbs {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		a, i {
+			margin-right: 1rem;
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -105,11 +72,24 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-    #titleWrapper .title-body form .dl-horizontal dt { width: 100%; }
-    #titleWrapper .title-body form .dl-horizontal dd { margin-left: 0; }
-    #titleWrapper .title-body form .dl-horizontal dd .title-value { display: inline-block; }
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.title {
+		&__body-metadata {
+			dl {
+				flex-wrap: wrap;
+				dt {
+					flex: 0 0 100%;
+					max-width: 100%;
+	    			padding-right: 0;
+				}
+				dd {
+					flex: 0 0 100%;
+					max-width: 100%;
+				}
+			}
+		}
+	}
+}
