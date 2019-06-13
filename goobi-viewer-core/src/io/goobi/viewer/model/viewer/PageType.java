@@ -47,7 +47,7 @@ public enum PageType {
     browse("browse", PageTypeHandling.cms),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
-    sites("sites"),
+    sitelinks("sitelinks"),
     //admin
     admin("admin"),
     adminAllUsers("admin/users"),
