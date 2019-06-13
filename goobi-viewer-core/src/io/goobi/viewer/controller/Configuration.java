@@ -1348,6 +1348,7 @@ public final class Configuration extends AbstractConfiguration {
                                 break;
                             case "littera":
                                 provider = new LitteraProvider(name, endpoint, image, timeoutMillis);
+                                break;
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
                         }
