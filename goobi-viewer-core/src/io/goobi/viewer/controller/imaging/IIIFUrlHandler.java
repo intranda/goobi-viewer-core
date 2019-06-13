@@ -15,8 +15,10 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +44,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class IIIFUrlHandler {
 
+    /**
+     * 
+     */
+    private static final String UTF_8 = "UTF-8";
     private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
 
     /**
@@ -106,7 +112,7 @@ public class IIIFUrlHandler {
                 }
                 
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
-                sb.append("image/").append(docStructIdentifier).append("/").append(fileUrl).append("/");
+                sb.append("image/").append(URLEncoder.encode(docStructIdentifier, UTF_8)).append("/").append(URLEncoder.encode(fileUrl, UTF_8)).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
@@ -119,6 +125,9 @@ public class IIIFUrlHandler {
             return "";
         } catch (URISyntaxException e) {
             logger.error("Not a valid url: " + fileUrl,e.getMessage());
+            return "";
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
             return "";
         }
     }
