@@ -116,6 +116,26 @@
 													                },
 													                html: true
 													            } );
+													            
+													            if ( typeof jsf !== 'undefined' ) {
+													                jsf.ajax.addOnEvent( function ( data ) {
+													                    switch ( data.status ) {
+													                        case 'success':
+													                        	$( '.search-calendar__month-day-link' ).popover( 'destroy' );
+													                        	$( '.search-calendar__month-day-link' ).popover({
+																	                placement: "auto bottom",
+																	                content: "#{day.hits} #{msg.currentHitsForDay}",
+																	                trigger: "hover",
+																	                viewport: {
+																	                    selector: "#searchCalendar"
+																	                },
+																	                html: true
+																	            } );
+													                        	
+													                            break;
+													                    }
+													                });
+													            }
 												            </script>
                                                         </ui:repeat>
                                                     </div>
