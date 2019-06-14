@@ -33,8 +33,8 @@
             display: block;
             .ui-autocomplete-input {
                 width: 100%;
-                height: 1.75rem;
-                font-size: .9rem;
+                height: 3.4rem;
+                font-size: @fontNormal;
                 border: 1px solid @middlegray;
                 background-image: none;
                 background-color: @white;
@@ -51,6 +51,7 @@
     &__filter-label {}
     &__filter-radio {}
     &__filter-link {
+    	font-size: @fontMedium;
         text-align: right;
         a {}
     }
@@ -67,7 +68,7 @@
 /* AUTOCOMPLETE PANEL */
 .ui-autocomplete-panel {
 	max-width: 100%;
-    font-size: @fontSmall;
+    font-size: @fontMedium;
     border: 1px solid @lightgray;
     border-radius: 0;
     box-shadow: none;

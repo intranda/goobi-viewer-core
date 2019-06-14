@@ -2432,11 +2432,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .navigation {
-    display: none;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    NER Popovers
@@ -3176,6 +3171,7 @@ div[id*="-Modal"] .email-form .form-group {
   transform: rotate(180deg);
 }
 .title__header-page-type {
+  display: none;
   margin-right: 1rem;
 }
 .title__body {
@@ -4370,8 +4366,8 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-standard__input-autocomplete .ui-autocomplete .ui-autocomplete-input {
   width: 100%;
-  height: 1.75rem;
-  font-size: .9rem;
+  height: 3.4rem;
+  font-size: 1.6rem;
   border: 1px solid #ccc;
   background-image: none;
   background-color: #fff;
@@ -4387,6 +4383,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-bottom: 15px;
 }
 .search-standard__filter-link {
+  font-size: 1.4rem;
   text-align: right;
 }
 .search-standard__action {
@@ -4399,7 +4396,7 @@ div[id*="-Modal"] .email-form .form-group {
 /* AUTOCOMPLETE PANEL */
 .ui-autocomplete-panel {
   max-width: 100%;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   border: 1px solid #eee;
   border-radius: 0;
   box-shadow: none;
@@ -6993,7 +6990,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .timematrix-popover {
   position: absolute;
-  width: 18.75rem;
+  width: 25rem;
   font-size: 1.6rem;
   border: 1px solid #ccc;
   border-radius: 0;
@@ -7003,7 +7000,7 @@ div[id*="-Modal"] .email-form .form-group {
 .timematrix-popover .timematrix-popover-close {
   position: absolute;
   top: 0;
-  right: 0.3125rem;
+  right: 0.5rem;
   font-weight: bold;
   cursor: pointer;
   z-index: 9999;
@@ -7015,34 +7012,46 @@ div[id*="-Modal"] .email-form .form-group {
   padding: 10px;
 }
 .timematrix-popover .timematrix-popover-header {
-  height: 4.375rem;
-  padding: 0.9375rem 0.625rem 0.625rem 0.625rem;
+  height: 4rem;
+  padding: .3rem .5rem;
   border-bottom: 1px solid #ccc;
 }
 .timematrix-popover .timematrix-popover-header h4 {
+  line-height: normal;
   margin: 0;
+  font-size: 1.4rem;
 }
 .timematrix-popover .timematrix-popover-body {
-  height: 16.875rem;
-  line-height: 15.3rem;
-  text-align: center;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  height: 20rem;
+  padding: .5rem;
   background-color: #fff;
 }
 .timematrix-popover .timematrix-popover-body .timematrix-popover-imageloader {
   position: absolute;
-  width: 17.5rem;
-  height: 15.625rem;
+  width: 100%;
+  height: 20rem;
   background-image: url("../../images/image_preloader.gif");
   background-repeat: no-repeat;
   background-position: center center;
   background-color: #fff;
+  z-index: 1;
+}
+.timematrix-popover .timematrix-popover-body a {
+  display: block;
+  max-height: 100%;
 }
 .timematrix-popover .timematrix-popover-body a img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 19rem;
 }
 .timematrix-popover .timematrix-popover-footer {
-  height: 40px;
+  height: 4rem;
   text-align: right;
   border-top: 1px solid #ccc;
 }
