@@ -3192,6 +3192,8 @@ div[id*="-Modal"] .email-form .form-group {
 .title__body-metadata dl {
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
   margin-bottom: .25rem;
 }
 .title__body-metadata dl dt,
