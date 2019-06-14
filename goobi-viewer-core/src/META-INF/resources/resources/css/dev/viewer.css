@@ -3158,6 +3158,8 @@ div[id*="-Modal"] .email-form .form-group {
 .title__header h3 {
   display: -ms-flexbox;
   display: flex;
+  -ms-flex-align: start;
+      align-items: flex-start;
   margin: 0;
   cursor: pointer;
 }
@@ -3166,8 +3168,6 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: auto;
 }
 .title__header .fa.in {
-  margin-top: 0;
-  margin-bottom: 3px;
   transform: rotate(180deg);
 }
 .title__header-page-type {
