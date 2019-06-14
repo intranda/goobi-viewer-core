@@ -77,7 +77,7 @@ public final class CMSTemplateManager {
     private Optional<Path> themeFolderPath = Optional.empty();
 
     public static CMSTemplateManager getInstance() {
-        //                instance = null;
+//                        instance = null;
         CMSTemplateManager ctm = instance;
         if (ctm == null) {
             synchronized (lock) {
@@ -206,9 +206,9 @@ public final class CMSTemplateManager {
             throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
-            String basePath = servletContext.getRealPath("/");
+            String basePath = servletContext.getRealPath(templateFolderUrl);
             logger.trace("basePath: {}", basePath);
-            Path path = Paths.get(basePath, templateFolderUrl);
+            Path path = Paths.get(basePath);
             if (Files.exists(path)) {
                 fileUrl = Optional.of(path.toFile().toURI().toURL());
             } else {

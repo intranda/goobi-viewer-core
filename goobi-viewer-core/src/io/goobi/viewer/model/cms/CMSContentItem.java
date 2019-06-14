@@ -934,6 +934,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
     }
+    
+    /**
+     * Message key to display when clicking the inline help button. Taken from contentItem of template
+     */
+    public String getInlineHelp() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getInlineHelp();
+    }
+    
+    /**
+     * @return true if the item has a non-empty inline help text. Taken from contentItem of template
+     */
+    public boolean isHasInlineHelp() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).isHasInlineHelp();
+    }
 
     /**
      * @return the component
