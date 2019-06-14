@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * A contentItem to be used in a CMSPage template. Stores a value for 
  * content item mode
@@ -25,8 +27,8 @@ package io.goobi.viewer.model.cms;
 public class CMSContentItemTemplate extends CMSContentItem {
 	
 	private String mediaFilter = "";
-
     private ContentItemMode mode = ContentItemMode.simple;
+    private String inlineHelp = null;
     
     /**
      * @param type
@@ -48,6 +50,29 @@ public class CMSContentItemTemplate extends CMSContentItem {
     @Override
     public ContentItemMode getMode() {
         return mode;
+    }
+    
+    /**
+     * @return true if the item has a non-empty inline help text
+     */
+    @Override
+    public boolean isHasInlineHelp() {
+        return StringUtils.isNotBlank(inlineHelp);
+    }
+    
+    /**
+     * Message key to display when clicking the inline help button
+     */
+    @Override
+    public String getInlineHelp() {
+        return this.inlineHelp;
+    }
+    
+    /**
+     * @param inlineHelp the inlineHelp to set
+     */
+    public void setInlineHelp(String inlineHelp) {
+        this.inlineHelp = inlineHelp;
     }
 
     @Override

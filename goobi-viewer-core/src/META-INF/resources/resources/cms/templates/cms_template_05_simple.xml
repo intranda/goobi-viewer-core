@@ -5,8 +5,8 @@
     <icon>cms_template_05_simple.png</icon>
     <html>cms_template_05_simple.xhtml</html>
     <content>
-        <item id="text01" order="1" label="cms__template_05__text_above_image__label" type="HTML" />
-        <item id="image01" order="2" type="MEDIA" />
+        <item id="text01" order="1" label="cms__template_05__text_above_image__label" inlinehelp="cms__template_05__text_above_image__help" type="HTML" />
+        <item id="image01" order="2" type="MEDIA" inlinehelp="cms__template_05__image__help"/>
         <item id="text02" order="3" label="cms__template_05__text_below_image__label" type="HTML" />
     </content>
 </cms_page_template>
