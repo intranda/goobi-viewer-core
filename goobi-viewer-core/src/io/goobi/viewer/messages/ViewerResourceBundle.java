@@ -66,6 +66,8 @@ public class ViewerResourceBundle extends ResourceBundle {
     protected static volatile Locale defaultLocale;
     private static List<Locale> allLocales = null;
 
+    public static Thread backgroundThread;
+
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
     }
@@ -79,7 +81,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
-        Thread backgroundThread = new Thread(new Runnable() {
+        backgroundThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -184,7 +186,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         return locale;
     }
-    
+
     /**
      * Loads resource bundles for all supported locales and reloads them if the locales has since changed.
      * 
@@ -193,7 +195,10 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static void checkAndLoadResourceBundles() {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(ViewerResourceBundle::checkAndLoadResourceBundles);
+            FacesContext.getCurrentInstance()
+                    .getApplication()
+                    .getSupportedLocales()
+                    .forEachRemaining(ViewerResourceBundle::checkAndLoadResourceBundles);
         }
     }
 
@@ -477,42 +482,43 @@ public class ViewerResourceBundle extends ResourceBundle {
             locales.addAll(localBundles.keySet());
             allLocales = new ArrayList<>(locales);
             synchronized (allLocales) {
-            	//deprecated?
-            	Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
-            	try (Stream<Path> messageFiles =
-            			Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-            		allLocales.addAll(messageFiles.map(
-            				path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
-            				.filter(lang -> lang != null)
-            				.sorted((l1, l2) -> {
-            					if (l1.equals(l2)) {
-            						return 0;
-            					}
-            					switch (l1) {
-            					case "en":
-            						return -1;
-            					case "de":
-            						return l2.equals("en") ? 1 : -1;
-            					default:
-            						switch (l2) {
-            						case "en":
-            						case "de":
-            							return 1;
-            						}
-            					}
-            					return l1.compareTo(l2);
-            				})
-            				.map(language -> Locale.forLanguageTag(language))
-            				.collect(Collectors.toList()));
-            		allLocales = allLocales.stream().distinct().collect(Collectors.toList());
-            	} catch (IOException e) {
-            		logger.error("Error reading config directory " + configPath);
-            	}
-			}
+                //deprecated?
+                Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+                try (Stream<Path> messageFiles =
+                        Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
+                    allLocales.addAll(messageFiles
+                            .map(path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1)
+                                    .orElse(null))
+                            .filter(lang -> lang != null)
+                            .sorted((l1, l2) -> {
+                                if (l1.equals(l2)) {
+                                    return 0;
+                                }
+                                switch (l1) {
+                                    case "en":
+                                        return -1;
+                                    case "de":
+                                        return l2.equals("en") ? 1 : -1;
+                                    default:
+                                        switch (l2) {
+                                            case "en":
+                                            case "de":
+                                                return 1;
+                                        }
+                                }
+                                return l1.compareTo(l2);
+                            })
+                            .map(language -> Locale.forLanguageTag(language))
+                            .collect(Collectors.toList()));
+                    allLocales = allLocales.stream().distinct().collect(Collectors.toList());
+                } catch (IOException e) {
+                    logger.error("Error reading config directory " + configPath);
+                }
+            }
         }
         return allLocales;
     }
-    
+
     /**
      * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
      * 
@@ -535,5 +541,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         return new MultiLanguageMetadataValue(translations);
     }
+    
+    
 
 }

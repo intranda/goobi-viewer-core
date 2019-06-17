@@ -160,8 +160,22 @@ public class JsonTools {
      * @throws ViewerConfigurationException
      * @should add all metadata
      */
-    @SuppressWarnings("unchecked")
     public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl) throws ViewerConfigurationException {
+        return getRecordJsonObject(doc, rootUrl, null);
+    }
+
+    /**
+     * Creates a single <code>JSONObject</code> with metadata for the given record <code>SolrDocument</code>.
+     *
+     * @param doc
+     * @param rootUrl
+     * @param language
+     * @return
+     * @throws ViewerConfigurationException
+     * @should add all metadata
+     */
+    @SuppressWarnings("unchecked")
+    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language) throws ViewerConfigurationException {
         JSONObject jsonObj = new JSONObject();
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -178,7 +192,14 @@ public class JsonTools {
         }
 
         jsonObj.put("id", pi);
-        jsonObj.put("title", doc.getFieldValue(SolrConstants.TITLE));
+        Object title = doc.getFieldValue(SolrConstants.TITLE);
+        if (title == null && StringUtils.isNotEmpty(language)) {
+            title = doc.getFieldValue(SolrConstants.TITLE + SolrConstants._LANG_ + language.toUpperCase());
+        }
+        if (title == null) {
+            title = doc.getFieldValue(SolrConstants.LABEL);
+        }
+        jsonObj.put("title", title);
         jsonObj.put("dateCreated", doc.getFirstValue(SolrConstants.DATECREATED));
         jsonObj.put("collection", doc.getFieldValue(SolrConstants.DC));
         if (StringUtils.isNotEmpty(fileName)) {
