@@ -19,15 +19,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchHelper;
 
 /**
  * @author Florian Alpers
  *
  */
 public class CompoundLabeledLink extends LabeledLink {
-    
+
     private static final long serialVersionUID = 2336154265426936610L;
 
     protected final String field;
@@ -67,7 +69,8 @@ public class CompoundLabeledLink extends LabeledLink {
         List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.size());
         try {
             for (String col : hierarchy) {
-                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, field);
+                String sortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, col);
+                HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, sortField);
                 collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
                 collectionElements.add(collectionElement);
             }

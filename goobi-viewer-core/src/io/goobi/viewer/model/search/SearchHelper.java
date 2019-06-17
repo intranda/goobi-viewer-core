@@ -680,48 +680,50 @@ public final class SearchHelper {
      * @should filter by facet correctly
      */
     public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
-        List<String> ret = new ArrayList<>();
+        if (suggest.contains(" ")) {
+            return Collections.emptyList();
+        }
 
-        if (!suggest.contains(" ")) {
-            try {
-                suggest = suggest.toLowerCase();
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
-                if (currentFacets != null && !currentFacets.isEmpty()) {
-                    for (FacetItem facetItem : currentFacets) {
-                        if (sbQuery.length() > 0) {
-                            sbQuery.append(" AND ");
-                        }
-                        sbQuery.append(facetItem.getQueryEscapedLink());
-                        logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
+        List<String> ret = new ArrayList<>();
+        try {
+            suggest = suggest.toLowerCase();
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
+            if (currentFacets != null && !currentFacets.isEmpty()) {
+                for (FacetItem facetItem : currentFacets) {
+                    if (sbQuery.length() > 0) {
+                        sbQuery.append(" AND ");
                     }
+                    sbQuery.append(facetItem.getQueryEscapedLink());
+                    logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
-                sbQuery.append(getAllSuffixes(true));
-                logger.debug("Autocomplete query: {}", sbQuery.toString());
-                SolrDocumentList hits = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
-                for (SolrDocument doc : hits) {
-                    String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
-                    if (StringUtils.isNotEmpty(defaultValue)) {
-                        String[] bla = defaultValue.split(" ");
-                        for (String s : bla) {
-                            String st = s.trim();
-                            st = st.toLowerCase();
-                            if (!" ".equals(st) && st.startsWith(suggest)) {
-                                while (!StringUtils.isAlphanumeric(st.substring(st.length() - 1))) {
-                                    st = st.substring(0, st.length() - 1);
-                                }
-                                if (!ret.contains(st)) {
-                                    ret.add(st);
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
+            sbQuery.append(getAllSuffixes(true));
+            logger.debug("Autocomplete query: {}", sbQuery.toString());
+            SolrDocumentList hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(sbQuery.toString(), 100, null, Collections.singletonList(SolrConstants.DEFAULT));
+            for (SolrDocument doc : hits) {
+                String defaultValue = (String) doc.getFieldValue(SolrConstants.DEFAULT);
+                if (StringUtils.isEmpty(defaultValue)) {
+                    continue;
+                }
+                String[] bla = defaultValue.split(" ");
+                for (String s : bla) {
+                    String st = s.trim();
+                    st = st.toLowerCase();
+                    if (!" ".equals(st) && st.startsWith(suggest)) {
+                        while (!StringUtils.isAlphanumeric(st.substring(st.length() - 1))) {
+                            st = st.substring(0, st.length() - 1);
+                        }
+                        if (!ret.contains(st)) {
+                            ret.add(st);
+                        }
+                    }
+                }
+            }
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
         return ret;
@@ -1609,17 +1611,18 @@ public final class SearchHelper {
      * @should facetify correctly
      */
     public static List<String> facetifyList(List<String> sourceList) {
-        if (sourceList != null) {
-            List<String> ret = new ArrayList<>(sourceList.size());
-            for (String s : sourceList) {
-                String fieldName = facetifyField(s);
-                if (fieldName != null) {
-                    ret.add(fieldName);
-                }
-            }
-            return ret;
+        if (sourceList == null) {
+            return null;
         }
-        return null;
+
+        List<String> ret = new ArrayList<>(sourceList.size());
+        for (String s : sourceList) {
+            String fieldName = facetifyField(s);
+            if (fieldName != null) {
+                ret.add(fieldName);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -1629,22 +1632,46 @@ public final class SearchHelper {
      * @should facetify correctly
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null) {
-            switch (fieldName) {
-                case SolrConstants.DC:
-                case SolrConstants.DOCSTRCT:
-                case SolrConstants.DOCSTRCT_SUB:
-                case SolrConstants.DOCSTRCT_TOP:
-                    return "FACET_" + fieldName;
-                default:
-                    if (fieldName.startsWith("MD_")) {
-                        fieldName = fieldName.replace("MD_", "FACET_");
-                    }
-                    fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
-                    return fieldName;
-            }
+        return adaptField(fieldName, "FACET_");
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     * @should sortify correctly
+     */
+    public static String sortifyField(String fieldName) {
+        return adaptField(fieldName, "SORT_");
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @param prefix
+     * @return modified field name
+     */
+    static String adaptField(String fieldName, String prefix) {
+        if (fieldName == null) {
+            return null;
         }
-        return null;
+        if (prefix == null) {
+            prefix = "";
+        }
+
+        switch (fieldName) {
+            case SolrConstants.DC:
+            case SolrConstants.DOCSTRCT:
+            case SolrConstants.DOCSTRCT_SUB:
+            case SolrConstants.DOCSTRCT_TOP:
+                return prefix + fieldName;
+            default:
+                if (fieldName.startsWith("MD_")) {
+                    fieldName = fieldName.replace("MD_", prefix);
+                }
+                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                return fieldName;
+        }
     }
 
     /**
@@ -1654,21 +1681,22 @@ public final class SearchHelper {
      * @should defacetify correctly
      */
     public static String defacetifyField(String fieldName) {
-        if (fieldName != null) {
-            switch (fieldName) {
-                case SolrConstants.FACET_DC:
-                case "FACET_" + SolrConstants.DOCSTRCT:
-                case "FACET_" + SolrConstants.DOCSTRCT_SUB:
-                case "FACET_" + SolrConstants.DOCSTRCT_TOP:
-                    return fieldName.substring(6);
-                default:
-                    if (fieldName.startsWith("FACET_")) {
-                        return fieldName.replace("FACET_", "MD_");
-                    }
-                    return fieldName;
-            }
+        if (fieldName == null) {
+            return null;
         }
-        return null;
+
+        switch (fieldName) {
+            case SolrConstants.FACET_DC:
+            case "FACET_" + SolrConstants.DOCSTRCT:
+            case "FACET_" + SolrConstants.DOCSTRCT_SUB:
+            case "FACET_" + SolrConstants.DOCSTRCT_TOP:
+                return fieldName.substring(6);
+            default:
+                if (fieldName.startsWith("FACET_")) {
+                    return fieldName.replace("FACET_", "MD_");
+                }
+                return fieldName;
+        }
     }
 
     /**

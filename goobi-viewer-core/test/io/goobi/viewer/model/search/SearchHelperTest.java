@@ -580,6 +580,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#sortifyField(String)
+     * @verifies sortify correctly
+     */
+    @Test
+    public void sortifyField_shouldSortifyCorrectly() throws Exception {
+        Assert.assertEquals("SORT_DC", SearchHelper.sortifyField(SolrConstants.DC));
+        Assert.assertEquals("SORT_DOCSTRCT", SearchHelper.sortifyField(SolrConstants.DOCSTRCT));
+        Assert.assertEquals("SORT_TITLE", SearchHelper.sortifyField("MD_TITLE_UNTOKENIZED"));
+    }
+
+    /**
      * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
      * @verifies add static suffix
      */
