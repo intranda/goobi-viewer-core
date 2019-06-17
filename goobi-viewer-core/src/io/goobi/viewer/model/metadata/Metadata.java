@@ -348,7 +348,6 @@ public class Metadata implements Serializable {
                                     for (NormData normData : marcRecord.getNormDataList()) {
                                         if ("NORM_TYPE".equals(normData.getKey())) {
                                             String val = normData.getValues().get(0).getText();
-                                            logger.trace("val: " + val);
                                             switch (val) {
                                                 case "kiz":
                                                     normDataType = MetadataGroupType.CORPORATION.name();
@@ -366,7 +365,7 @@ public class Metadata implements Serializable {
                         // Popup button
                         String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
                                 .replace("{0}", nh.getApplicationUrl())
-                                .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                .replace("{1}", value)
                                 .replace("{2}", normDataType)
                                 .replace("{3}", nh.getLocaleString())
                                 .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
@@ -571,7 +570,6 @@ public class Metadata implements Serializable {
                         if (groupFieldMap.get(param.getKey()) != null) {
                             found = true;
                             StringBuilder sbValue = new StringBuilder();
-                            // TODO
                             List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                             for (String mdValue : groupFieldMap.get(param.getKey())) {
                                 if (sbValue.length() == 0) {
