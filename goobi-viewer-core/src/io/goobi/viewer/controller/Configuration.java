@@ -1916,6 +1916,15 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getSortFields() {
         return getLocalList("search.sorting.luceneField");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return return all configured elements
+     */
+    public List<String> getStaticSortFields() {
+        return getLocalList("search.sorting.static.field");
+    }
 
     /**
      * 

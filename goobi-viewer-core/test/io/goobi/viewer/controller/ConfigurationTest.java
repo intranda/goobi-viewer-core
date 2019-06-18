@@ -1317,6 +1317,16 @@ public class ConfigurationTest extends AbstractTest {
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSortFields().size());
     }
+    
+
+    /**
+     * @see Configuration#getStaticSortFields()
+     * @verifies return return all configured elements
+     */
+    @Test
+    public void getStaticSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getStaticSortFields().size());
+    }
 
     /**
      * @see Configuration#getViewerMaxImageHeight()

@@ -345,10 +345,10 @@ public class Search implements Serializable {
                 //                    continue;
                 //                }
                 //                // Skip language-specific facet fields if they don't match the given language
-//                if (facetField.getName().contains(SolrConstants._LANG_)
-//                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
-//                    continue;
-//                }
+                //                if (facetField.getName().contains(SolrConstants._LANG_)
+                //                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
+                //                    continue;
+                //                }
                 Map<String, Long> facetResult = new TreeMap<>();
                 for (Count count : facetField.getValues()) {
                     if (StringUtils.isEmpty(count.getName())) {
@@ -387,10 +387,19 @@ public class Search implements Serializable {
                 }
             }
 
+            List<String> staticSortFields = DataManager.getInstance().getConfiguration().getStaticSortFields();
+            List<StringPair> useSortFields = new ArrayList<>(staticSortFields.size() + sortFields.size());
+            if (!staticSortFields.isEmpty()) {
+                for (String s : staticSortFields) {
+                    useSortFields.add(new StringPair(s, "asc"));
+                    logger.trace("Added static sort field: {}", s);
+                }
+            }
+            useSortFields.addAll(sortFields);
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
-                    ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, sortFields, null, activeFacetFilterQueries, params,
+                    ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                             searchTerms, null, BeanUtils.getLocale())
-                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, sortFields, null, activeFacetFilterQueries, params, searchTerms,
+                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params, searchTerms,
                             null, BeanUtils.getLocale(), BeanUtils.getRequest());
             this.hits.addAll(hits);
         }

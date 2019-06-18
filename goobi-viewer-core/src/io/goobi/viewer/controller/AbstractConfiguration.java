@@ -16,6 +16,7 @@
 package io.goobi.viewer.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.configuration.ConversionException;
@@ -155,7 +156,7 @@ public abstract class AbstractConfiguration {
      * @return
      */
     protected List<String> getLocalList(String inPath) {
-        return getLocalList(inPath, null);
+        return getLocalList(inPath, Collections.emptyList());
     }
 
     /**

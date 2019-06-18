@@ -359,6 +359,12 @@
 			<luceneField>SORT_TITLE</luceneField>
 			<luceneField>DATEUPDATED</luceneField>
 			<luceneField>SORT_YEARPUBLISH</luceneField>
+			
+            <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place
+                certain records on top, for example. -->
+            <static>
+                <field>BOOL_PRIORITIZE</field>
+            </static>
 		</sorting>
 		<drillDown>
 			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
