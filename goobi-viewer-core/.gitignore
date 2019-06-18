@@ -9,4 +9,6 @@
 /.tern-project
 /.project
 /target/
-/.settings/
+/.settings/org.eclipse.wst.commons.component
+/.classpath
+/.project
