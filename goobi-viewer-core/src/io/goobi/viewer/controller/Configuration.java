@@ -109,11 +109,8 @@ public final class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
-        } catch (FileNotFoundException e) {
+        } catch (IOException | IllegalArgumentException e) {
             logger.warn(e.getMessage());
-            stopwords = new HashSet<>(0);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
             stopwords = new HashSet<>(0);
         }
     }
