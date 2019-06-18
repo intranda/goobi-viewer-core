@@ -40,17 +40,27 @@ var viewerJS = (function (viewer) {
         this.enable();
         
         // toggle filter input
-        $( 'body' ).on( 'click', '[data-toggle="filter-input"]', function() {
-        	var $input = $( this ).prev(); 
+        $( 'body' ).on( 'click', '[data-toggle="filter-input"]', function( event ) {
+        	event.stopImmediatePropagation();
+
+        	var $input = $( this ).prev();
         	
-        	$input.toggleClass( 'in' ).focus();
+        	if ( !$input.hasClass( 'in' ) ) {
+        		_resetFilters();        		
+        	}
+        	
+        	$input.toggleClass( 'in' ).focus();        	
         	
         	if ( $input.val() !== '' ) {
         		$input.val( '' ).trigger( 'input' );
         	}
         } );
-        $( 'body' ).on( 'click', '.widget-search-drilldown__collection h3', function() {
+        $( 'body' ).on( 'click', '.widget-search-drilldown__collection h3', function( event ) {
+        	event.stopImmediatePropagation();
+        	
         	var $input = $( this ).parent().find( '.widget-search-drilldown__filter-input' );
+        	
+        	_resetFilters();
         	
         	$input.toggleClass( 'in' ).focus();
         	
@@ -59,14 +69,44 @@ var viewerJS = (function (viewer) {
         	}
         } );
 
-        // filter input events
-        $( 'body' ).on( 'click', '.widget-search-drilldown__filter input', function( event ) {
+        // reset filter on esc
+        $( 'body' ).on( 'keyup', '.widget-search-drilldown__filter-input', function( event ) {
         	switch ( event.keyCode ) {
 	        	case 27:
 	        		$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
+	        		$( this ).parents( '.widget-search-drilldown__collection' ).find( 'li' ).show();
 	        		break;
         	}
         } );
+        
+        // reset filter on body click
+        $( 'body' ).on( 'click', function( event ) {
+        	if ( $( '.widget-search-drilldown__filter-input' ).hasClass( 'in' ) ) {
+        		if ( event.target.id == 'searchListDrillDownWrapper' || $( event.target ).closest( '#searchListDrillDownWrapper' ).length ) {
+                    return;
+                }
+                else {
+                	_resetFilters();
+                }
+        	}
+        } );
+    }
+    
+    /**
+     * @description Method to reset all other filter when clicking another one.
+     * @method _resetFilters
+     * */
+    function _resetFilters() {
+    	if ( _debug ) {
+    		console.log( 'EXECUTE: _resetFilters' );
+    	}
+    	
+    	$( '.widget-search-drilldown__filter-input' ).each( function() {
+    		if ( $( this ).hasClass( 'in' ) ) {
+    			$( this ).removeClass( 'in' ).val( '' ).trigger( 'input' );
+    			$( this ).parents( '.widget-search-drilldown__collection' ).find( 'li' ).show();
+    		}
+    	} );
     }
 
     // set event for input
@@ -109,7 +149,7 @@ var viewerJS = (function (viewer) {
     }
 
     // unfilter elements
-    viewer.listFilter.prototype.unfilter = function () {
+    viewer.listFilter.unfilter = function () {
         $( this.config.input ).val( '' );
         $( this.config.elements ).show();
     }
