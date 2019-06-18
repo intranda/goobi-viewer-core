@@ -365,7 +365,7 @@ public class Metadata implements Serializable {
                         // Popup button
                         String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale)
                                 .replace("{0}", nh.getApplicationUrl())
-                                .replace("{1}", value)
+                                .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
                                 .replace("{2}", normDataType)
                                 .replace("{3}", nh.getLocaleString())
                                 .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
