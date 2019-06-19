@@ -84,7 +84,7 @@
                                         aria-expanded="#{status.count eq 1 ? 'true' : 'false'}" 
                                         aria-labelledby="heading-#{faqItem.id}">
     									<div class="panel-body">
-    										<ui:include src="#{faqItem.getContent('text')}" />
+    										<ui:include src="#{faqItem.getPreviewContent()}" />
     									</div>
     								</div>
     							</div>
