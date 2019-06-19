@@ -171,6 +171,7 @@ public class ViewerPathBuilder {
         return Optional.empty();
 
     }
+
     
     /**
      * Gets the {@link PageType} that the given path refers to, if any

@@ -1074,9 +1074,8 @@ public class CMSPage implements Comparable<CMSPage> {
      * @return
      */
     public String getRelativeUrlPath(boolean pretty) {
-        if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
-            return getPersistentUrl() + "/";
-        } else if (pretty) {
+        
+        if(pretty) { 
             try {
                 Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this).stream().findFirst();
                 if (staticPage.isPresent()) {
@@ -1085,11 +1084,13 @@ public class CMSPage implements Comparable<CMSPage> {
             } catch (DAOException e) {
                 logger.error(e.toString(), e);
             }
+            if(StringUtils.isNotBlank(getPersistentUrl())) {
+                return getPersistentUrl() + "/";
+            }
+            if (StringUtils.isNotBlank(getRelatedPI())) {
+                return "page/" + getRelatedPI() + "/" + getId() + "/";
+            }
         }
-        if (StringUtils.isNotBlank(getRelatedPI())) {
-            return "page/" + getRelatedPI() + "/" + getId() + "/";
-        }
-
         return "cms/" + getId() + "/";
     }
 

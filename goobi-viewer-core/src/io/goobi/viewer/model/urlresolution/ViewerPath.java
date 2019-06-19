@@ -17,6 +17,7 @@ package io.goobi.viewer.model.urlresolution;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -163,20 +164,26 @@ public class ViewerPath {
      * @return The alternative url or static page url of a CMSPage if present, otherwise {@link #pagePath}
      */
     public URI getPrettifiedPagePath() {
-        if (getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
-            return URI.create(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", ""));
-        } else if (getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getStaticPageName())) {
-            return URI.create(getCmsPage().getStaticPageName().replaceAll("^\\/|\\/$", ""));
-        } else if (getCmsPage() != null) {
+
+        Optional<URI> path = Optional.empty();
+
+        if (getCmsPage() != null) {
             try {
-                return DataManager.getInstance().getDao().getStaticPageForCMSPage(getCmsPage()).stream().findFirst()
-                .map(staticPage -> staticPage.getPageName().replaceAll("^\\/|\\/$", ""))
-                .map(pageName -> URI.create(pageName))
-                .orElse(getPagePath());
+                path = DataManager.getInstance()
+                        .getDao()
+                        .getStaticPageForCMSPage(getCmsPage())
+                        .stream()
+                        .findFirst()
+                        .map(staticPage -> staticPage.getPageName().replaceAll("^\\/|\\/$", ""))
+                        .map(pageName -> URI.create(pageName));
             } catch (DAOException e) {
             }
+            if (!path.isPresent() &&  StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
+                path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", "")));
+            }
         }
-        return getPagePath();
+        return path.orElse(getPagePath());
+
     }
 
     /**
