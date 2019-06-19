@@ -17,18 +17,23 @@
     	& > thead > tr > th {
     		vertical-align: middle;
     	}
+    	.table-col-clean {
+    		border: 1px solid @white !important;
+    		border-left: 0;
+    		background-color: @white;
+    	}
     }
     &__table-head-name,
-    &__table-head-url,
-    &__table-head-action {
+    &__table-head-url {
     	width: 15%;
     }
     &__table-head-name {}
     &__table-head-url {}
     &__table-head-override {
-    	width: 55%;
+    	width: 60%;
     }
     &__table-head-action {
+    	width: 10%;
     	text-align: center;
     }
     &__table-body-name {}
@@ -39,13 +44,6 @@
     &__table-body-override {}
     &__table-body-action {
     	text-align: center;
-    }
-    /* SAVE */
-    &__save {
-        text-align: right;
-        .btn {
-            margin: 0;
-        }
     }
 }
 /* MODIFICATION */

@@ -34,7 +34,7 @@
 									<th class="cms-static-pages__table-head-name">#{msg.cms__static_pages__name}</th>
 									<th class="cms-static-pages__table-head-url">#{msg.cms__static_pages__url}</th>
 									<th class="cms-static-pages__table-head-override">#{msg.cms__static_pages__overridden_cms_page}</th>
-									<th class="cms-static-pages__table-head-action">#{msg.cms__static_pages__page_actions}</th>
+									<th class="cms-static-pages__table-head-action table-col-clean"></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -55,30 +55,38 @@
 												</h:selectOneMenu>
 											</div>
 										</td>
-										<td class="cms-static-pages__table-body-action">
+										<td class="cms-static-pages__table-body-action table-col-clean">
 											<ui:fragment rendered="#{page.hasCmsPage}">
-												<h:outputLink 
-													styleClass="btn btn--default"
-													value="#{cmsBean.getUrl(page.cmsPage)}"
-													title="#{msg.cms_pageView}" 
-													target="_blank"
-													rel="noopener">
-													#{msg.button__preview}
-                                                </h:outputLink>
+												<div class="cms-module__actions">
+													<h:outputLink 
+														styleClass="btn btn--clean"
+														value="#{cmsBean.getUrl(page.cmsPage)}"
+														title="#{msg.cms_pageView}" 
+														target="_blank"
+														rel="noopener">
+														#{msg.button__preview}
+	                                                </h:outputLink>
+												</div>
 											</ui:fragment>
 										</td>
 									</tr>
 								</ui:repeat>
+								
+								<!-- SAVE -->
+								<tr>
+									<td class="cms-static-pages__table-body-name table-col-clean"></td>
+									<td class="cms-static-pages__table-body-url table-col-clean"></td>
+									<td class="cms-static-pages__table-body-override table-col-clean"></td>
+									<td class="cms-static-pages__table-body-action table-col-clean">
+										<h:commandButton 
+											id="saveStaticPages"
+											styleClass="btn btn--success" 
+											value="#{msg.save}" 
+											action="#{cmsBean.saveStaticPages}" />
+									</td>
+								</tr>
 							</tbody>
 						</table>
-
-						<div class="cms-static-pages__save">
-							<h:commandButton 
-								id="saveStaticPages"
-								styleClass="btn btn--success" 
-								value="#{msg.save}" 
-								action="#{cmsBean.saveStaticPages}" />
-						</div>
 					</h:form>
 				</div>
 			</div>
