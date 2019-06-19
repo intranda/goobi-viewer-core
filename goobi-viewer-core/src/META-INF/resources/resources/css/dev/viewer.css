@@ -9341,6 +9341,12 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext.static {
   display: inline-block;
 }
+.cms-module__option-control-helptext.standalone {
+  display: block;
+  margin-bottom: 2rem;
+  font-size: 1.4rem;
+  font-style: normal;
+}
 .cms-module__option-control-helptext.in.inline {
   display: inline;
 }
@@ -11778,24 +11784,37 @@ div[id*="-Modal"] .email-form .form-group {
 /* STATIC PAGES */
 /* BLOCK */
 .cms-static-pages {
-  /* ELEMENT */
+  /* TABLE */
+  /* SAVE */
 }
-.cms-static-pages__page-language-head {
+.cms-static-pages__table {
+  font-size: 1.4rem;
+}
+.cms-static-pages__table > tbody > tr > td,
+.cms-static-pages__table > tbody > tr > th,
+.cms-static-pages__table > tfoot > tr > td,
+.cms-static-pages__table > tfoot > tr > th,
+.cms-static-pages__table > thead > tr > td,
+.cms-static-pages__table > thead > tr > th {
+  vertical-align: middle;
+}
+.cms-static-pages__table-head-name,
+.cms-static-pages__table-head-url,
+.cms-static-pages__table-head-action {
+  width: 15%;
+}
+.cms-static-pages__table-head-override {
+  width: 55%;
+}
+.cms-static-pages__table-head-action {
   text-align: center;
 }
-.cms-static-pages__page-action-head {
+.cms-static-pages__table-body-url {
+  font-style: italic;
+  color: #666;
+}
+.cms-static-pages__table-body-action {
   text-align: center;
-}
-.cms-static-pages__page-language {
-  text-align: center;
-}
-.cms-static-pages__page-language img {
-  width: 16px;
-  opacity: 0.5;
-}
-.cms-static-pages__page-action a,
-.cms-static-pages__page-action span {
-  padding: 0;
 }
 .cms-static-pages__save {
   text-align: right;
