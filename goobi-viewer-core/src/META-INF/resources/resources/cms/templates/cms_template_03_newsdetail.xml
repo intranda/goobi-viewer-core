@@ -8,7 +8,7 @@
         <item order="1" id="A0" label="cms__template_03__date__label" type="TEXT"/>
         <item order="2" id="A1" label="cms__template_03__header__label" type="TEXT"/>
         <item order="3" id="A2" label="cms__template_03__text_section__label" type="HTML"/>
-        <item order="4" id="preview01" label="cms__template_03__text_section_preview__label" type="HTML"/>
+        <item order="4" id="preview01" preview="true" label="cms__template_03__text_section_preview__label" type="HTML"/>
         <item order="5" id="image01" label="cms__template_03__image__label" type="MEDIA" />
         
         <item order="6" id="B1" label="cms__template_03__header__label" type="TEXT"/>

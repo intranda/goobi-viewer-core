@@ -5,7 +5,7 @@
     <icon>cms_template_04_news.png</icon>
     <html>cms_template_04_news.xhtml</html>
     <content>
-        <item id="preview01" type="HTML" label="cms__template_04__preview__label" inlinehelp="cms__template_04__preview__help" />
+        <item id="preview01" preview="true" type="HTML" label="cms__template_04__preview__label" inlinehelp="cms__template_04__preview__help" />
         <item id="text01" type="HTML" label="cms__template_04__text__label" mandatory="true" inlinehelp="cms__template_04__text__help" />
     </content>
 </cms_page_template>

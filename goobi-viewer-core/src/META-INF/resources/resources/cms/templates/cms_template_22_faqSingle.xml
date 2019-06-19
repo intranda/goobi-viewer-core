@@ -9,6 +9,6 @@
     </options>
     <content>
         <item id="heading" type="TEXT" label="cms__template_22__header__label" mandatory="true" />
-        <item id="text" type="HTML" label="cms__template_22__text__label" mandatory="true" />
+        <item id="text" type="HTML" preview="true" label="cms__template_22__text__label" mandatory="true" />
     </content>
 </cms_page_template>

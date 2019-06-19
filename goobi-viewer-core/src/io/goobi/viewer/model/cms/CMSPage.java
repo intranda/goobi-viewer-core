@@ -140,10 +140,9 @@ public class CMSPage implements Comparable<CMSPage> {
     private List<CMSSidebarElement> unusedSidebarElements;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
@@ -178,8 +177,8 @@ public class CMSPage implements Comparable<CMSPage> {
 
     @Transient
     private int listPage = 1;
-    
-    @Transient 
+
+    @Transient
     private List<Selectable<CMSCategory>> selectableCategories = null;
 
     /**
@@ -474,12 +473,12 @@ public class CMSPage implements Comparable<CMSPage> {
 
     public void addCategory(CMSCategory category) {
         if (category != null && !categories.contains(category)) {
-        	categories.add(category);
+            categories.add(category);
         }
     }
 
     public void removeCategory(CMSCategory category) {
-    	categories.remove(category);
+        categories.remove(category);
     }
 
     /**
@@ -598,7 +597,7 @@ public class CMSPage implements Comparable<CMSPage> {
             return getMenuTitle();
         }
     }
-    
+
     public String getMenuTitleOrTitle() {
         String title;
         try {
@@ -766,7 +765,7 @@ public class CMSPage implements Comparable<CMSPage> {
         CMSPageLanguageVersion language = getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
-                .sorted( (p1, p2) -> p2.getStatus().compareTo(p1.getStatus()))
+                .sorted((p1, p2) -> p2.getStatus().compareTo(p1.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
         return language;
@@ -826,8 +825,21 @@ public class CMSPage implements Comparable<CMSPage> {
         }
     }
 
-    public String getContent(String itemId) throws ViewerConfigurationException {
+    public String getContent(String itemId) {
         return getContent(itemId, null, null);
+    }
+
+    /**
+     * 
+     * @return the first TEXT or HTML contentItem with preview="true"
+     */
+    public String getPreviewContent() {
+        return getContentItems().stream()
+                .filter(CMSContentItem::isPreview)
+                .map(CMSContentItem::getItemId)
+                .map(id -> getContent(id))
+                .findFirst()
+                .orElse("");
     }
 
     public Optional<CMSMediaItem> getMediaItem(String itemId) {
@@ -852,72 +864,76 @@ public class CMSPage implements Comparable<CMSPage> {
      * @return the content of the content item with the given item ID as a string
      * @throws ViewerConfigurationException
      */
-    public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
+    public String getContent(String itemId, String width, String height) {
         logger.trace("Getting content {} from page {}", itemId, getId());
         CMSContentItem item;
         try {
             item = getContentItem(itemId);
+
+            String contentString = "";
+            switch (item.getType()) {
+                case TEXT:
+                    contentString = item.getHtmlFragment();
+                    break;
+                case HTML:
+                    contentString = CMSContentResource.getContentUrl(item);
+                    break;
+                case MEDIA:
+                    String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
+                    switch (type) {
+                        case CMSMediaItem.CONTENT_TYPE_DOCX:
+                        case CMSMediaItem.CONTENT_TYPE_HTML:
+                        case CMSMediaItem.CONTENT_TYPE_RTF:
+                            //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                            contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
+                            break;
+                        case CMSMediaItem.CONTENT_TYPE_XML:
+                            contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
+                            try {
+                                String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
+                                if (format != null) {
+                                    switch (format.toLowerCase()) {
+                                        case "tei":
+                                            contentString = TEITools.convertTeiToHtml(contentString);
+                                            break;
+                                    }
+
+                                }
+                            } catch (JDOMException | IOException e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                            break;
+                        case CMSMediaItem.CONTENT_TYPE_PDF:
+                            URI uri = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "cms/media/get/"
+                                    + item.getMediaItem().getId() + ".pdf");
+                            return uri.toString();
+                        default:
+                            // Images
+                            contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                    }
+
+                    break;
+                case COMPONENT:
+                    contentString = item.getComponent();
+                    break;
+                case GLOSSARY:
+                    try {
+                        contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+                    } catch (ContentNotFoundException | IOException e) {
+                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+                    }
+                    break;
+                default:
+                    contentString = "";
+            }
+            return contentString;
         } catch (CmsElementNotFoundException e1) {
             logger.error("No content item of id {} found in page {}", itemId, this.getId());
             return "";
+        } catch (ViewerConfigurationException e1) {
+            logger.error("Error in viewer configuration: " + e1.toString());
+            return "";
         }
-        String contentString = "";
-        switch (item.getType()) {
-            case TEXT:
-                contentString = item.getHtmlFragment();
-                break;
-            case HTML:
-                contentString = CMSContentResource.getContentUrl(item);
-                break;
-            case MEDIA:
-                String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
-                switch (type) {
-                    case CMSMediaItem.CONTENT_TYPE_DOCX:
-                    case CMSMediaItem.CONTENT_TYPE_HTML:
-                    case CMSMediaItem.CONTENT_TYPE_RTF:
-                        //                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), null, null);
-                        break;
-                    case CMSMediaItem.CONTENT_TYPE_XML:
-                        contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                        try {
-                            String format = XmlTools.determineFileFormat(contentString, Helper.DEFAULT_ENCODING);
-                            if (format != null) {
-                                switch (format.toLowerCase()) {
-                                    case "tei":
-                                        contentString = TEITools.convertTeiToHtml(contentString);
-                                        break;
-                                }
-
-                            }
-                        } catch (JDOMException | IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                        break;
-                    case CMSMediaItem.CONTENT_TYPE_PDF:
-                        URI uri = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "cms/media/get/" + item.getMediaItem().getId() + ".pdf");
-                        return uri.toString();
-                    default:
-                        // Images
-                        contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
-                }
-
-                break;
-            case COMPONENT:
-                contentString = item.getComponent();
-                break;
-            case GLOSSARY:
-                try {
-                    contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
-                } catch (ContentNotFoundException | IOException e) {
-                    logger.error("Failed to load glossary " + item.getGlossaryName(), e);
-                }
-                break;
-            default:
-                contentString = "";
-        }
-        // logger.trace("Got content as string: {}", contentString);
-        return contentString;
     }
 
     public List<CMSContentItem> getGlobalContentItems() {
@@ -1074,8 +1090,8 @@ public class CMSPage implements Comparable<CMSPage> {
      * @return
      */
     public String getRelativeUrlPath(boolean pretty) {
-        
-        if(pretty) { 
+
+        if (pretty) {
             try {
                 Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this).stream().findFirst();
                 if (staticPage.isPresent()) {
@@ -1084,7 +1100,7 @@ public class CMSPage implements Comparable<CMSPage> {
             } catch (DAOException e) {
                 logger.error(e.toString(), e);
             }
-            if(StringUtils.isNotBlank(getPersistentUrl())) {
+            if (StringUtils.isNotBlank(getPersistentUrl())) {
                 return getPersistentUrl() + "/";
             }
             if (StringUtils.isNotBlank(getRelatedPI())) {
@@ -1276,10 +1292,11 @@ public class CMSPage implements Comparable<CMSPage> {
     public String toString() {
         try {
             String title = getBestLanguageIncludeUnfinished(Locale.ENGLISH).getTitle();
-            if(StringUtils.isBlank(title)) {
+            if (StringUtils.isBlank(title)) {
                 return "ID: " + this.getId() + " (no title)";
 
-            } else return title;
+            } else
+                return title;
         } catch (CmsElementNotFoundException e) {
             return "ID: " + this.getId() + " (no title)";
         }
@@ -1482,39 +1499,41 @@ public class CMSPage implements Comparable<CMSPage> {
                 break;
         }
     }
-    
+
     /**
-     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
-     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
+     * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
-    	
-    	if(selectableCategories != null) {
-	    	try {
-				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
-				List<CMSCategory> tempCats = new ArrayList<>();
-				for (CMSCategory cat : allCats) {
-					if(this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-						tempCats.add(cat);
-					} else if(selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
-						tempCats.add(cat);
-					}
-				}
-				this.categories = tempCats;
-	    	} catch (DAOException e) {
-	    		logger.error(e.toString(), e);
-			}
-    	}
+
+        if (selectableCategories != null) {
+            try {
+                List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+                List<CMSCategory> tempCats = new ArrayList<>();
+                for (CMSCategory cat : allCats) {
+                    if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+                        tempCats.add(cat);
+                    } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                        tempCats.add(cat);
+                    }
+                }
+                this.categories = tempCats;
+            } catch (DAOException e) {
+                logger.error(e.toString(), e);
+            }
+        }
     }
-    
+
     /**
      * @return the selectableCategories
-     * @throws DAOException 
+     * @throws DAOException
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
-        if(selectableCategories == null) {
+        if (selectableCategories == null) {
             List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
-            selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+            selectableCategories = allowedCategories.stream()
+                    .map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat)))
+                    .collect(Collectors.toList());
         }
         return selectableCategories;
     }
