@@ -614,14 +614,14 @@ public class Helper {
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
-        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
+        String query = new StringBuilder().append('+').append(SolrConstants.PI_TOPSTRUCT)
                 .append(':')
                 .append(pi)
-                .append(" AND ")
+                .append(" +")
                 .append(SolrConstants.ORDER)
                 .append(':')
                 .append(page)
-                .append(" AND ")
+                .append(" +")
                 .append(SolrConstants.DOCTYPE)
                 .append(':')
                 .append(DocType.PAGE.name())
@@ -629,14 +629,13 @@ public class Helper {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(query, Arrays.asList(
-                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+                        new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
             return false;
         }
-        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
-        StringBuilder sbNamingScheme = new StringBuilder(pi).append('#').append(iddoc);
+        StringBuilder sbNamingScheme = new StringBuilder(pi).append('#').append(page);
 
         // Module augmentations
         boolean writeTriggerFile = true;
