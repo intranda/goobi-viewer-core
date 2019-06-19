@@ -661,6 +661,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     public void resetData() {
         nestedPages = null;
+        functionality = null;
     }
 
     private List<CMSPage> loadNestedPages() throws DAOException {
