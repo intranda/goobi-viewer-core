@@ -11785,7 +11785,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BLOCK */
 .cms-static-pages {
   /* TABLE */
-  /* SAVE */
 }
 .cms-static-pages__table {
   font-size: 1.4rem;
@@ -11798,15 +11797,20 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-static-pages__table > thead > tr > th {
   vertical-align: middle;
 }
+.cms-static-pages__table .table-col-clean {
+  border: 1px solid #fff !important;
+  border-left: 0;
+  background-color: #fff;
+}
 .cms-static-pages__table-head-name,
-.cms-static-pages__table-head-url,
-.cms-static-pages__table-head-action {
+.cms-static-pages__table-head-url {
   width: 15%;
 }
 .cms-static-pages__table-head-override {
-  width: 55%;
+  width: 60%;
 }
 .cms-static-pages__table-head-action {
+  width: 10%;
   text-align: center;
 }
 .cms-static-pages__table-body-url {
@@ -11815,12 +11819,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .cms-static-pages__table-body-action {
   text-align: center;
-}
-.cms-static-pages__save {
-  text-align: right;
-}
-.cms-static-pages__save .btn {
-  margin: 0;
 }
 /* MODIFICATION */
 img.cms-static-pages__page-language--complete {
