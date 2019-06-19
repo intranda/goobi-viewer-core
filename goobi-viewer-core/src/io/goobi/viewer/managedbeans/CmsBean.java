@@ -656,7 +656,10 @@ public class CmsBean implements Serializable {
             logger.trace("save sidebar elements");
             selectedPage.saveSidebarElements();
             logger.trace("validate page");
-            validatePage(selectedPage, getDefaultLocale().getLanguage());
+            if(!validatePage(selectedPage, getDefaultLocale().getLanguage())) {
+                logger.warn("Cannot save invalid page");
+                return;
+            }
             logger.trace("reset item data");
             selectedPage.resetItemData();
             writeCategoriesToPage();
@@ -742,12 +745,13 @@ public class CmsBean implements Serializable {
      * @param page
      * @param defaultLanguage
      */
-    protected static void validatePage(CMSPage page, String defaultLanguage) {
+    protected static boolean validatePage(CMSPage page, String defaultLanguage) {
 
         if (!page.isUseDefaultSidebar()) {
             for (CMSSidebarElement element : page.getSidebarElements()) {
                 if (!validateSidebarElement(element)) {
                     page.setPublished(false);
+                    return false;
                 }
             }
         }
@@ -812,6 +816,7 @@ public class CmsBean implements Serializable {
                 languageVersion.setStatus(CMSPageStatus.FINISHED);
             }
         }
+        return true;
     }
 
     /**
