@@ -29,6 +29,7 @@ public class CMSContentItemTemplate extends CMSContentItem {
 	private String mediaFilter = "";
     private ContentItemMode mode = ContentItemMode.simple;
     private String inlineHelp = null;
+    private boolean preview = false;
     
     /**
      * @param type
@@ -86,5 +87,20 @@ public class CMSContentItemTemplate extends CMSContentItem {
 	public void setMediaFilter(String mediaFilter) {
 		this.mediaFilter = mediaFilter == null ? "" : mediaFilter;
 	}
+	
+	/* (non-Javadoc)
+	 * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
+	 */
+	@Override
+	public boolean isPreview() {
+	    return this.preview;
+	}
+	
+	/**
+     * @param preview the preview to set
+     */
+    public void setPreview(boolean preview) {
+        this.preview = preview;
+    }
 }
 

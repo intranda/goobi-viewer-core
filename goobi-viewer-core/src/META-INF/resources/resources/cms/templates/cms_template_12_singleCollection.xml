@@ -9,7 +9,7 @@
     </options>
     <content>
  	    <item id="image01" order="1" label="cms__template_12__collection_image__label" type="MEDIA" mandatory="false" />
- 	    <item id="preview01" order="2" label="cms__template_12__preview__label" type="HTML" mandatory="false" />
+ 	    <item id="preview01" preview="true" order="2" label="cms__template_12__preview__label" type="HTML" mandatory="false" />
  	    <item id="A2" order="3" label="cms__template_12__text_section__label" type="HTML" mandatory="false" />
  	    <item id="queryList" order="4" label="cms__template_12__works__label" type="SOLRQUERY" mandatory="false" />
     </content>
