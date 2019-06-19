@@ -6,29 +6,41 @@
 /* BLOCK */
 .cms-static-pages {
     h2 {}
-    /* ELEMENT */
-    &__page-name-head {}
-    &__page-language-head {
-        text-align: center;
+    /* TABLE */
+    &__table {
+    	font-size: @fontMedium;
+    	& > tbody > tr > td, 
+    	& > tbody > tr > th, 
+    	& > tfoot > tr > td, 
+    	& > tfoot > tr > th, 
+    	& > thead > tr > td, 
+    	& > thead > tr > th {
+    		vertical-align: middle;
+    	}
     }
-    &__page-select-head {}
-    &__page-action-head {
-        text-align: center;
+    &__table-head-name,
+    &__table-head-url,
+    &__table-head-action {
+    	width: 15%;
     }
-    &__page-name {}
-    &__page-language {
-        text-align: center;
-        img {
-            width: 16px;
-            opacity: 0.5;
-        }
+    &__table-head-name {}
+    &__table-head-url {}
+    &__table-head-override {
+    	width: 55%;
     }
-    &__page-select {}
-    &__page-action {
-        a, span {
-            padding: 0;
-        }
+    &__table-head-action {
+    	text-align: center;
     }
+    &__table-body-name {}
+    &__table-body-url {
+    	font-style: italic;
+	    color: @inlineStatic;
+    }
+    &__table-body-override {}
+    &__table-body-action {
+    	text-align: center;
+    }
+    /* SAVE */
     &__save {
         text-align: right;
         .btn {

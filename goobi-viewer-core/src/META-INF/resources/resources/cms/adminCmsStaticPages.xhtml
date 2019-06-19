@@ -17,71 +17,75 @@
         </f:metadata>
     </ui:define>
 
-    <ui:define name="content">
-        <h:panelGroup id="cmsStaticPageAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
-            <div id="cmsStaticPages">
-                    <div class="cms-static-pages">
-                        <h2 class="admin__content-inner-title">#{msg.cms_staticPages}</h2>
+	<ui:define name="content">
+		<h:panelGroup id="cmsStaticPageAccessControl" rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
+			<div id="cmsStaticPages" class="cms-static-pages">
+				<h2 class="admin__content-inner-title">#{msg.cms_staticPages}</h2>
 
-                        <div class="admin__content-inner-content">
-                            <h:form id="cmsStaticPageForm" prependId="false">
-                                <table id="cmsStaticPagesTable" class="table table-striped table-bordered admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="cms-static-pages__page-name-head">#{msg.cms_staticPageName}</th>
-                                            <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                <th class="cms-static-pages__page-language-head">#{locale.language}</th>
-                                            </c:forEach>
-                                            <th class="cms-static-pages__page-select-head">#{msg.cms_selectedCmsPage}</th>
-                                            <th class="cms-static-pages__page-action-head">#{msg.cms_pageActions}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ui:repeat var="page" value="#{cmsBean.staticPages}">
-                                            <tr>
-                                                <h:panelGroup layout="block" id="row_page_#{page.pageName}">
-                                                    <td class="cms-static-pages__page-name">#{msg[page.pageName]}</td>
-                                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                        <td class="cms-static-pages__page-language">
-                                                            <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif"
-                                                                class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}"
-                                                                title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" alt="Flag Icon" />
-                                                        </td>
-                                                    </c:forEach>
-                                                    <td class="cms-static-pages__page-select">
-                                                        <div class="form-control__select">
-                                                            <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
-                                                                <f:selectItem itemValue="" itemLabel="#{msg.select}" itemDisabled="true" />
-                                                                <f:selectItem itemValue="" itemLabel="#{msg.none}" />
-                                                                <f:selectItems value="#{cmsBean.getAvailableCmsPages(page)}" var="availablePage" itemValue="#{availablePage}"
-                                                                    itemLabel="#{availablePage.title}" />
-                                                                <f:ajax event="change" render="@form" />
-                                                            </h:selectOneMenu>
-                                                        </div>
-                                                    </td>
-                                                    <td class="cms-static-pages__page-action admin-table__action">
-                                                        <h:panelGroup rendered="#{page.hasCmsPage}">
-                                                            <h:outputLink styleClass="btn btn--icon" value="#{cmsBean.getUrl(page.cmsPage)}" title="#{msg.cms_pageView}" target="_blank">
-                                                                <i class="fa fa-eye" aria-hidden="true"></i>
-                                                            </h:outputLink>
-                                                        </h:panelGroup>
-                                                    </td>
-                                                </h:panelGroup>
-                                            </tr>
-                                        </ui:repeat>
-                                    </tbody>
-                                </table>
-                                <div class="cms-static-pages__save">
-                                    <h:commandButton styleClass="btn btn--success" id="savePages" value="#{msg.save}" action="#{cmsBean.saveStaticPages}" />
-                                </div>
-                            </h:form>
-                        </div>
-                    </div>
-            </div>
-        </h:panelGroup>
-    </ui:define>
+				<div class="admin__content-inner-content">
+					<!-- HELP TEXT -->
+					<p class="cms-module__option-control-helptext standalone">#{msg.cms__static_pages__info_text}</p>
 
-    <!-- SIDEBAR -->
+					<!-- STATIC PAGES TABLE -->
+					<h:form id="cmsStaticPageForm" prependId="false">
+						<table id="cmsStaticPagesTable" class="table table-striped table-bordered cms-static-pages__table">
+							<thead>
+								<tr>
+									<th class="cms-static-pages__table-head-name">#{msg.cms__static_pages__name}</th>
+									<th class="cms-static-pages__table-head-url">#{msg.cms__static_pages__url}</th>
+									<th class="cms-static-pages__table-head-override">#{msg.cms__static_pages__overridden_cms_page}</th>
+									<th class="cms-static-pages__table-head-action">#{msg.cms__static_pages__page_actions}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<ui:repeat var="page" value="#{cmsBean.staticPages}">
+									<tr>
+										<td class="cms-static-pages__table-body-name">#{msg[page.pageName]}</td>
+										<td class="cms-static-pages__table-body-url">/#{page.pageName}/</td>
+										<td class="cms-static-pages__table-body-override">
+											<div class="form-control__select">
+												<h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
+													<f:selectItem itemValue="" itemLabel="#{msg.select}" itemDisabled="true" />
+													<f:selectItem itemValue="" itemLabel="#{msg.none}" />
+													<f:selectItems
+														value="#{cmsBean.getAvailableCmsPages(page)}"
+														var="availablePage" itemValue="#{availablePage}"
+														itemLabel="#{availablePage.title}" />
+													<f:ajax event="change" render="@form" />
+												</h:selectOneMenu>
+											</div>
+										</td>
+										<td class="cms-static-pages__table-body-action">
+											<ui:fragment rendered="#{page.hasCmsPage}">
+												<h:outputLink 
+													styleClass="btn btn--default"
+													value="#{cmsBean.getUrl(page.cmsPage)}"
+													title="#{msg.cms_pageView}" 
+													target="_blank"
+													rel="noopener">
+													#{msg.button__preview}
+                                                </h:outputLink>
+											</ui:fragment>
+										</td>
+									</tr>
+								</ui:repeat>
+							</tbody>
+						</table>
+
+						<div class="cms-static-pages__save">
+							<h:commandButton 
+								id="saveStaticPages"
+								styleClass="btn btn--success" 
+								value="#{msg.save}" 
+								action="#{cmsBean.saveStaticPages}" />
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</h:panelGroup>
+	</ui:define>
+
+	<!-- SIDEBAR -->
     <ui:define name="sidebar">
         <adminWidget:widget_admin />
         <adminWidget:widget_cms />
