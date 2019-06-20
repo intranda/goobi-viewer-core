@@ -9,13 +9,28 @@
     /* TABLE */
     &__table {
     	font-size: @fontMedium;
-    	& > tbody > tr > td, 
-    	& > tbody > tr > th, 
-    	& > tfoot > tr > td, 
-    	& > tfoot > tr > th, 
-    	& > thead > tr > td, 
-    	& > thead > tr > th {
-    		vertical-align: middle;
+    	& > tbody > tr {
+    		height: 6.2rem;
+    		&:hover {
+		    	.cms-module__actions {
+		    		position: static;
+		    	}    			
+    		}
+    		&:last-child {
+    			.cms-static-pages__table-body-override {
+    				padding-right: 0;
+    				text-align: right;
+    			}
+    		}
+    		td {
+    			&.cms-static-pages__table-body-override {
+    				vertical-align: middle;
+    			}
+    		}
+    	}
+    	.cms-module__actions {
+    		position: relative;
+    		left: -9999em;
     	}
     	.table-col-clean {
     		border: 1px solid @white !important;
@@ -23,28 +38,23 @@
     		background-color: @white;
     	}
     }
+    /* HEAD */
     &__table-head-name,
     &__table-head-url {
-    	width: 15%;
+    	width: 20%;
     }
     &__table-head-name {}
     &__table-head-url {}
     &__table-head-override {
     	width: 60%;
     }
-    &__table-head-action {
-    	width: 10%;
-    	text-align: center;
-    }
+    /* BODY */
     &__table-body-name {}
     &__table-body-url {
     	font-style: italic;
 	    color: @inlineStatic;
     }
     &__table-body-override {}
-    &__table-body-action {
-    	text-align: center;
-    }
 }
 /* MODIFICATION */
 img.cms-static-pages__page-language--complete {

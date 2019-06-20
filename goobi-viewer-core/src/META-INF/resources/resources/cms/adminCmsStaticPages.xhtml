@@ -40,7 +40,22 @@
 							<tbody>
 								<ui:repeat var="page" value="#{cmsBean.staticPages}">
 									<tr>
-										<td class="cms-static-pages__table-body-name">#{msg[page.pageName]}</td>
+										<td class="cms-static-pages__table-body-name">
+											#{msg[page.pageName]}
+											
+											<ui:fragment rendered="#{page.hasCmsPage}">
+												<div class="cms-module__actions">
+													<h:outputLink 
+														styleClass="btn btn--clean"
+														value="#{cmsBean.getUrl(page.cmsPage)}"
+														title="#{msg.cms_pageView}" 
+														target="_blank"
+														rel="noopener">
+														#{msg.button__preview}
+	                                                </h:outputLink>
+												</div>
+											</ui:fragment>
+										</td>
 										<td class="cms-static-pages__table-body-url">/#{page.pageName}/</td>
 										<td class="cms-static-pages__table-body-override">
 											<div class="form-control__select">
@@ -55,20 +70,6 @@
 												</h:selectOneMenu>
 											</div>
 										</td>
-										<td class="cms-static-pages__table-body-action table-col-clean">
-											<ui:fragment rendered="#{page.hasCmsPage}">
-												<div class="cms-module__actions">
-													<h:outputLink 
-														styleClass="btn btn--clean"
-														value="#{cmsBean.getUrl(page.cmsPage)}"
-														title="#{msg.cms_pageView}" 
-														target="_blank"
-														rel="noopener">
-														#{msg.button__preview}
-	                                                </h:outputLink>
-												</div>
-											</ui:fragment>
-										</td>
 									</tr>
 								</ui:repeat>
 								
@@ -76,8 +77,7 @@
 								<tr>
 									<td class="cms-static-pages__table-body-name table-col-clean"></td>
 									<td class="cms-static-pages__table-body-url table-col-clean"></td>
-									<td class="cms-static-pages__table-body-override table-col-clean"></td>
-									<td class="cms-static-pages__table-body-action table-col-clean">
+									<td class="cms-static-pages__table-body-override table-col-clean">
 										<h:commandButton 
 											id="saveStaticPages"
 											styleClass="btn btn--success" 
