@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 			jsDevFolder : 'src/META-INF/resources/resources/javascript/dev/',
 			jsDevFolderModules : 'src/META-INF/resources/resources/javascript/dev/modules/',
 			jsDistFolder : 'src/META-INF/resources/resources/javascript/dist/',
+			cssFolder : 'src/META-INF/resources/resources/css/',
 			cssDevFolder : 'src/META-INF/resources/resources/css/dev/',
 			cssDistFolder : 'src/META-INF/resources/resources/css/dist/',
 			lessDevFolder : 'src/META-INF/resources/resources/css/less/viewer/'
@@ -66,6 +67,23 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		kss: {
+			options: {
+				title: 'Goobi viewer Style Guide',
+				verbose: false,
+				builder: "./node_modules/michelangelo/kss_styleguide/custom-template/",
+				css: [
+					"../libs/bs/bootstrap.min.css",
+					"../libs/font-awesome.min.css",
+					"../dist/viewer.min.css",
+					"../dist/kss-reset.css"
+				]
+			},
+			dist: {
+				src: "./src/META-INF/resources/resources/css/less/viewer/",
+				dest: "./src/META-INF/resources/resources/css/styleguide/",
+			}
+		},
 		concat : {
 			options : {
 				banner : banner,
@@ -92,9 +110,9 @@ module.exports = function(grunt) {
 					reload : true
 				}
 			},
-			css : {
+			less : {
 				files : [ '<%=src.lessDevFolder%>**/*.less' ],
-				tasks : [ 'less' ],
+				tasks : [ 'less', 'kss' ],
 				options : {
 					spawn : false,
 				}
@@ -132,6 +150,7 @@ module.exports = function(grunt) {
 	
 	// ---------- LOAD TASKS ----------
 	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-riot');
 	grunt.loadNpmTasks('grunt-contrib-watch');
