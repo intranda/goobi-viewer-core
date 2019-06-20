@@ -579,7 +579,7 @@ public class ContentResource {
         if (!fulltextFiles.isEmpty()) {
             fileMap = fulltextFiles.stream().collect(Collectors.toMap(p -> p, p -> {
                 try {
-                    return FileTools.getStringFromFile(p.toFile(), Helper.DEFAULT_ENCODING);
+                    return FileTools.getStringFromFile(p.toFile(), "ISO-8859-1");
                 } catch (IOException e) {
                     logger.error("Error reading file " + p, e);
                     return "";

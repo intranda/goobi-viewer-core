@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,23 +24,32 @@ import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockserver.client.server.MockServerClient;
-import org.mockserver.integration.ClientAndProxy;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.intranda.api.iiif.image.ImageInformation;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
-import io.goobi.viewer.model.security.authentication.LoginResult;
-import io.goobi.viewer.model.security.authentication.VuFindProvider;
 
 /**
  * @author Florian Alpers
@@ -57,7 +67,7 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
     private static String userSuspended_email = "3@users.org";
     private static String userSuspended_pwHash = "abcdef3";
 
-    private static ClientAndProxy proxy;
+    //    private static ClientAndProxy proxy;
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
@@ -159,5 +169,6 @@ public class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTes
         Assert.assertTrue(future.get().getUser().get().isActive());
         Assert.assertTrue(future.get().getUser().get().isSuspended());
     }
+
 
 }
