@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -38,6 +39,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -100,23 +105,29 @@ public class LitteraProvider extends HttpAuthenticationProvider {
             return CompletableFuture.completedFuture(result);
         } catch (URISyntaxException e) {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
-        } catch(WebApplicationException e) {
+        } catch(IOException e) {
             throw new AuthenticationProviderException("Error requesting authorisation for user " + loginName, e);
         }
     }
 
-	protected LitteraAuthenticationResponse get(URI url, String username, String password) throws WebApplicationException{
-        Client client = ClientBuilder.newClient();
-        try {            
-            client.property(ClientProperties.CONNECT_TIMEOUT, (int)getTimeoutMillis());
-            client.property(ClientProperties.READ_TIMEOUT, (int)getTimeoutMillis());
+	protected LitteraAuthenticationResponse get(URI url, String username, String password) throws IOException{
             url = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
-            WebTarget target = client.target(url);
-            LitteraAuthenticationResponse response = target.request().accept(MediaType.TEXT_XML).get(LitteraAuthenticationResponse.class);
+            String xml = get(url);
+            LitteraAuthenticationResponse response = deserialize(xml);
             return response;
-        } finally {
-            client.close();
-        }
+    }
+
+    /**
+     * @param xml
+     * @return
+     * @throws IOException 
+     * @throws JsonMappingException 
+     * @throws JsonParseException 
+     */
+    private LitteraAuthenticationResponse deserialize(String xml) throws IOException {
+        XmlMapper mapper = new XmlMapper();
+        LitteraAuthenticationResponse response = mapper.readValue(xml, LitteraAuthenticationResponse.class);
+        return response;
     }
 
     /**

@@ -29,7 +29,7 @@
 		<mods.version>3.5</mods.version>
 		<normdataimporter.version>1.2.6-SNAPSHOT</normdataimporter.version>
 		<iiif-api-model.version>1.1.1</iiif-api-model.version>
-		<tei-conversion.version>0.1.4</tei-conversion.version>
+		<tei-conversion.version>1.0.0</tei-conversion.version>
 
 		<!-- other libraries -->
 		<asm-debug-all.version>5.0.4</asm-debug-all.version>
@@ -89,7 +89,7 @@
 		<mariadb-java-client.version>2.3.0</mariadb-java-client.version>
 		<metadata-extractor.version>2.8.1</metadata-extractor.version>
 		<mockito-all.version>1.10.19</mockito-all.version>
-		<mockserver.version>5.3.0</mockserver.version>
+		<mockserver.version>5.5.4</mockserver.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<oauth.version>1.0.2</oauth.version>
 		<poi.version>3.17</poi.version>
@@ -405,6 +405,11 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
+		    <groupId>com.fasterxml.jackson.dataformat</groupId>
+		    <artifactId>jackson-dataformat-xml</artifactId>
+		    <version>2.9.8</version>
+		</dependency>
+		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>${javassist.version}</version>
@@ -510,6 +515,18 @@
 			<artifactId>jersey-hk2</artifactId>
 			<version>${jersey-hk2.version}</version>
 		</dependency>
+		    <!--  for JSON provider -->
+<!--     <dependency> -->
+<!--         <groupId>org.apache.cxf</groupId> -->
+<!--         <artifactId>cxf-rt-rs-extension-providers</artifactId> -->
+<!--         <version>3.1.0</version> -->
+<!--     </dependency> -->
+<!--      for extension providers -->
+<!--     <dependency> -->
+<!--         <groupId>org.codehaus.jettison</groupId> -->
+<!--         <artifactId>jettison</artifactId> -->
+<!--         <version>1.2</version> -->
+<!--     </dependency>    -->
 		<dependency>
 			<groupId>com.timgroup</groupId>
 			<artifactId>jgravatar</artifactId>
@@ -844,6 +861,19 @@
 			<artifactId>xstream</artifactId>
 			<version>${xstream.version}</version>
 		</dependency>
+		
+		<dependency>
+	        <groupId>org.apache.cxf</groupId>
+	        <artifactId>cxf-rt-rs-extension-providers</artifactId>
+	        <version>3.3.2</version>
+	    </dependency>
+	
+<!-- 	    <dependency> -->
+<!-- 	        <groupId>org.codehaus.jackson</groupId> -->
+<!-- 	        <artifactId>jackson-jaxrs</artifactId> -->
+<!-- 	        <version>1.9.0</version> -->
+<!-- 	    </dependency> -->
+		
 	</dependencies>
 
 
@@ -883,7 +913,6 @@
 						<!-- TODO Comment back in -->
 						<exclude>**/IIIFUrlHandlerTest.java</exclude>
 						<exclude>**/ImageHandlerTest.java</exclude>
-						<exclude>**/authentication/*.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

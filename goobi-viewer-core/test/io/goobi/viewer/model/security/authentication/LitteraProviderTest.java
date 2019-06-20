@@ -27,16 +27,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockserver.client.server.MockServerClient;
-import org.mockserver.integration.ClientAndProxy;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
-import io.goobi.viewer.model.security.authentication.LitteraProvider;
 
 /**
  * @author florian
@@ -58,7 +55,7 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     private LitteraProvider provider;
 
-    private static ClientAndProxy proxy;
+//    private static ClientAndProxy proxy;
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
