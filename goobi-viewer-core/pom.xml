@@ -891,9 +891,6 @@
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
-						<!-- TODO Comment back in -->
-						<exclude>**/IIIFUrlHandlerTest.java</exclude>
-						<exclude>**/ImageHandlerTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
