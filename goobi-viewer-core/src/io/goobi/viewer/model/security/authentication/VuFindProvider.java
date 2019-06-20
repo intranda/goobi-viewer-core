@@ -15,6 +15,11 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -33,10 +38,24 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.CharStreams;
+
+import de.intranda.api.iiif.image.ImageInformation;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -84,7 +103,8 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         try {
             VuAuthenticationRequest request = new VuAuthenticationRequest(loginName, password);
-            this.authenticationResponse = post(new URI(getUrl()), request);
+            String response = post(new URI(getUrl()), serialize(request));
+            this.authenticationResponse = deserialize(response);
             Optional<User> user = getUser(request);
             LoginResult result =
                     new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !this.authenticationResponse.getUser().getIsValid());
@@ -93,37 +113,28 @@ public class VuFindProvider extends HttpAuthenticationProvider {
             throw new AuthenticationProviderException("Cannot resolve authentication api url " + getUrl(), e);
         } catch (WebApplicationException e) {
             throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
+        } catch (JsonProcessingException e) {
+            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
+        } catch (IOException e) {
+            throw new AuthenticationProviderException("Error requesting authorizazion for user " + loginName, e);
         }
     }
 
-    protected VuAuthenticationResponse post(URI url, VuAuthenticationRequest request) throws WebApplicationException {
-        Client client = ClientBuilder.newClient();
-        try {
-            client.property(ClientProperties.CONNECT_TIMEOUT, (int) getTimeoutMillis());
-            client.property(ClientProperties.READ_TIMEOUT, (int) getTimeoutMillis());
-            WebTarget vuFindAuthenticationApi = client.target(url);
-            Entity<VuAuthenticationRequest> ent = Entity.entity(request, MediaType.APPLICATION_JSON);
-            VuAuthenticationResponse response = vuFindAuthenticationApi.request().post(ent, VuAuthenticationResponse.class);
-            return response;
-        } catch (ClientErrorException e) {
-            logger.debug("Authentication request returned error " + e.toString());
-            VuAuthenticationResponse.User user = new VuAuthenticationResponse.User();
-            VuAuthenticationResponse response = new VuAuthenticationResponse();
-            response.setUser(user);
-            if (e instanceof ForbiddenException || e instanceof NotAllowedException || e instanceof NotAuthorizedException) {
-                user.setExists(null);
-                user.setIsValid(false);
-            } else if (e instanceof NotFoundException) {
-                user.setExists(false);
-                user.setIsValid(false);
-            } else {
-                throw e;
-            }
-            return response;
-        } finally {
-            client.close();
-        }
+    private String serialize(VuAuthenticationRequest object) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(object);
+        return json;
     }
+
+    private VuAuthenticationResponse deserialize(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        VuAuthenticationResponse response = mapper.readValue(json, VuAuthenticationResponse.class);
+        return response;
+    }
+    
+
 
     /**
      * @param request
