@@ -127,6 +127,15 @@ public class NormdataResource {
         // logger.debug("norm data locale: {}", locale.toString());
 
         url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
+        String secondUrl = null;
+        if (url.contains("$")) {
+            String[] urlSplit = url.split("[$]");
+            if (urlSplit.length > 1) {
+                url = urlSplit[0];
+                secondUrl = urlSplit[1];
+            }
+        }
+
         MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
         if (marcRecord == null) {
             throw new ContentNotFoundException("Resource not found");
@@ -140,9 +149,13 @@ public class NormdataResource {
 
         // Add link elements for Viaf and authority entries
         if (url.contains("viaf.org")) {
+            // Viaf cluster URL
+            if (secondUrl != null) {
+                normDataList.add(
+                        new NormData("NORM_VIAF_CLUSTER_URL", new NormDataValue(secondUrl, null, null, "resources/images/authority/Viaf_icon.png")));
+            }
+            // Authority URL
             NormDataValue authorityUrl = MarcRecord.getAuthorityUrlFromViafUrl(url);
-            normDataList.add(new NormData("NORM_VIAF_CLUSTER_URL",
-                    new NormDataValue("TODO", authorityUrl.getIdentifier(), null, "resources/images/authority/Viaf_icon.png")));
             authorityUrl.setImageFileName("resources/images/authority/" + authorityUrl.getLabel() + ".png");
             normDataList.add(new NormData("NORM_AUTHORITY_" + authorityUrl.getLabel(), authorityUrl));
         }
