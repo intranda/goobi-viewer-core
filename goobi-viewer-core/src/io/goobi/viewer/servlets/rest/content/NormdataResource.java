@@ -15,14 +15,14 @@
  */
 package io.goobi.viewer.servlets.rest.content;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +105,7 @@ public class NormdataResource {
     @CORSBinding
     public String getNormData(@PathParam("url") String url, @PathParam("template") String template, @PathParam("lang") String lang)
             throws MalformedURLException, ContentNotFoundException, ServiceNotAllowedException {
+        logger.trace("getNormData: {}", url);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
@@ -125,16 +126,25 @@ public class NormdataResource {
         }
         // logger.debug("norm data locale: {}", locale.toString());
 
-        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(BeanUtils.unescapeCriticalUrlChracters(url));
+        url = BeanUtils.unescapeCriticalUrlChracters(url.trim());
+        MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(url);
         if (marcRecord == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        // Prefer GND group
         List<NormData> normDataList = marcRecord.getNormDataList();
         if (normDataList == null) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
+        }
+
+        // Add link elements for Viaf and authority entries
+        if (url.contains("viaf.org")) {
+            NormDataValue authorityUrl = MarcRecord.getAuthorityUrlFromViafUrl(url);
+            normDataList.add(new NormData("NORM_VIAF_CLUSTER_URL",
+                    new NormDataValue("TODO", authorityUrl.getIdentifier(), null, "resources/images/authority/Viaf_icon.png")));
+            authorityUrl.setImageFileName("resources/images/authority/" + authorityUrl.getLabel() + ".png");
+            normDataList.add(new NormData("NORM_AUTHORITY_" + authorityUrl.getLabel(), authorityUrl));
         }
 
         JSONArray jsonArray = new JSONArray();
@@ -193,6 +203,12 @@ public class NormdataResource {
             }
             if (value.getUrl() != null && !StringTools.isImageUrl(value.getUrl())) {
                 valueMap.put("url", value.getUrl());
+            }
+            if (value.getImageFileName() != null) {
+                valueMap.put("image", value.getImageFileName());
+            }
+            if (value.getLabel() != null) {
+                valueMap.put("label", value.getLabel());
             }
             valueList.add(valueMap);
             // If no text found, use the identifier
