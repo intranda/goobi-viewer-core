@@ -52,6 +52,7 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<commons-net.version>3.6</commons-net.version>
 		<commons-pool.version>1.6</commons-pool.version>
+		<cxf-rt-rs-extension-providers.version>3.3.2</cxf-rt-rs-extension-providers.version>
 		<dbunit.version>2.6.0</dbunit.version>
 		<docx4j.version>6.1.2</docx4j.version>
 		<fop.version>2.0</fop.version>
@@ -405,9 +406,9 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.fasterxml.jackson.dataformat</groupId>
-		    <artifactId>jackson-dataformat-xml</artifactId>
-		    <version>2.9.8</version>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
@@ -515,18 +516,6 @@
 			<artifactId>jersey-hk2</artifactId>
 			<version>${jersey-hk2.version}</version>
 		</dependency>
-		    <!--  for JSON provider -->
-<!--     <dependency> -->
-<!--         <groupId>org.apache.cxf</groupId> -->
-<!--         <artifactId>cxf-rt-rs-extension-providers</artifactId> -->
-<!--         <version>3.1.0</version> -->
-<!--     </dependency> -->
-<!--      for extension providers -->
-<!--     <dependency> -->
-<!--         <groupId>org.codehaus.jettison</groupId> -->
-<!--         <artifactId>jettison</artifactId> -->
-<!--         <version>1.2</version> -->
-<!--     </dependency>    -->
 		<dependency>
 			<groupId>com.timgroup</groupId>
 			<artifactId>jgravatar</artifactId>
@@ -861,19 +850,11 @@
 			<artifactId>xstream</artifactId>
 			<version>${xstream.version}</version>
 		</dependency>
-		
 		<dependency>
-	        <groupId>org.apache.cxf</groupId>
-	        <artifactId>cxf-rt-rs-extension-providers</artifactId>
-	        <version>3.3.2</version>
-	    </dependency>
-	
-<!-- 	    <dependency> -->
-<!-- 	        <groupId>org.codehaus.jackson</groupId> -->
-<!-- 	        <artifactId>jackson-jaxrs</artifactId> -->
-<!-- 	        <version>1.9.0</version> -->
-<!-- 	    </dependency> -->
-		
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-extension-providers</artifactId>
+			<version>${cxf-rt-rs-extension-providers.version}</version>
+		</dependency>
 	</dependencies>
 
 
