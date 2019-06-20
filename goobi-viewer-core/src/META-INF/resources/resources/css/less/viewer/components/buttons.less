@@ -1,8 +1,23 @@
-/* ==============================================================
-   Buttons
-   style declarations for buttons
-   ==============================================================*/
-/* BUTTONS */
+// Buttons
+// 
+// Various button styles.
+//
+// Weight: 1
+//
+// Markup:
+// <button type="button" class="btn {{modifier_class}}">Button Element</button>
+// <input type="button" class="btn {{modifier_class}}" value="Input Element" />
+// <a href="#" class="btn {{modifier_class}}">Link Element</a>
+//
+// .btn--default - Modifier class for a default button.
+// .btn--success - Modifier class for a success button.
+// .btn--danger - Modifier class for a danger button.
+// .btn--full - Modifier class for a CI button.
+// .btn--clean - Modifier class for a button without styling.
+// .btn--link - Modifier class for a button which looks like a link.
+// .btn--inactive - Modifier class for an inactive button.
+//
+// Styleguide Components.button
 .btn {
 	color: @btnDefault;
 	border-radius: 0;
@@ -20,88 +35,98 @@
 		outline: none;
 		box-shadow: none;
 	}
-	/* MODIFICATION */
-	&--default {
-		border-color: @btnDefaultBorder;
-		background-color: @btnDefaultBgc;
-		&:hover,
-		&:active,
-		&:focus {
-			background-color: @btnDefaultHoverBgc;
-		}
-	}
-	&--success {
-		color: @btnSuccess;
-		border-color: @btnSuccessBorder;
-		background-color: @btnSuccessBgc;
-		&:hover,
-		&:active,
-		&:focus {
-			color: @btnSuccess;
-			background-color: @btnSuccessHoverBgc;
-		}
-	}
-	&--danger {
-		color: @btnDanger;
-		border-color: @btnDangerBorder;
-		background-color: @btnDangerBgc;
-		&:hover,
-		&:active,
-		&:focus {
-			color: @btnDanger;
-			background-color: @btnDangerHoverBgc;
-		}
-	}
-	&--full {
-		color: @white;
-		border-color: @blue;
-		background-color: @blue;
-		&:hover,
-		&:active,
-		&:focus {
-			color: @white;
-			background-color: @btnFullHoverBgc;
-		}
-	}
-	&--clean {
-		padding: 0;
-		line-height: inherit;
-		color: inherit;
-		border: none;
-	}
-	&--link {
-		padding: 0;
-		color: @blue;
-		border: none;
-		&:hover,
-		&:active,
-		&:focus {
-			text-decoration: underline;
-			color: @btnDefault;
-		}
-	}
-	&--hidden {
-		display: none !important;
-	}
-	&--inactive {
-		cursor: not-allowed;
-		opacity: .65;
-	}
-	&--icon {
-		padding: 2px;
-		font-size: inherit;
-		color: @black;
-		border: none;
-		&:hover,
-		&:focus,
-		&:active {
-			color: @black;
-		}
-	}
 }
 
 /* MODIFICATIONS */
-a.btn--icon { line-height: normal; }
+.btn--default {
+	border-color: @btnDefaultBorder;
+	background-color: @btnDefaultBgc;
+	&:hover, 
+	&:active, 
+	&:focus {
+		background-color: @btnDefaultHoverBgc;
+	}
+}
+
+.btn--success {
+	color: @btnSuccess;
+	border-color: @btnSuccessBorder;
+	background-color: @btnSuccessBgc;
+	&:hover, 
+	&:active, 
+	&:focus {
+		color: @btnSuccess;
+		background-color: @btnSuccessHoverBgc;
+	}
+}
+
+.btn--danger {
+	color: @btnDanger;
+	border-color: @btnDangerBorder;
+	background-color: @btnDangerBgc;
+	&:hover, 
+	&:active, 
+	&:focus {
+		color: @btnDanger;
+		background-color: @btnDangerHoverBgc;
+	}
+}
+
+.btn--full {
+	color: @white;
+	border-color: @blue;
+	background-color: @blue;
+	&:hover, 
+	&:active, 
+	&:focus {
+		color: @white;
+		background-color: @btnFullHoverBgc;
+	}
+}
+
+.btn--clean {
+	padding: 0;
+	line-height: inherit;
+	color: inherit;
+	border: none;
+}
+
+.btn--link {
+	padding: 0;
+	color: @blue;
+	border: none;
+	&:hover, 
+	&:active, 
+	&:focus {
+		text-decoration: underline;
+		color: @btnDefault;
+	}
+}
+
+.btn--hidden {
+	display: none ! important;
+}
+
+.btn--inactive {
+	cursor: not-allowed;
+	opacity: .65;
+}
+
+.btn--icon {
+	padding: 2px;
+	font-size: inherit;
+	color: @black;
+	border: none;
+	&:hover, 
+	&:active, 
+	&:focus {
+		color: @black;
+	}
+}
+
+a.btn--icon {
+	line-height: normal;
+}
 
 @media screen and (max-width: @largeBreakpoint) {} 
 

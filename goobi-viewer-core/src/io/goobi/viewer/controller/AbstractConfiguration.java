@@ -144,7 +144,7 @@ public abstract class AbstractConfiguration {
      * 
      * @param inPath
      * @param defaultList
-     * @return
+     * @return configured list; defaultList if none found
      */
     protected List<String> getLocalList(String inPath, List<String> defaultList) {
         return getLocalList(configLocal, config, inPath, defaultList);
@@ -153,7 +153,7 @@ public abstract class AbstractConfiguration {
     /**
      * 
      * @param inPath
-     * @return
+     * @return configured list; empty list if none found
      */
     protected List<String> getLocalList(String inPath) {
         return getLocalList(inPath, Collections.emptyList());

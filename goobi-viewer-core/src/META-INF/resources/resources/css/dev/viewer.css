@@ -619,15 +619,185 @@ button {
 }
 /* BASIC COMPONENTS */
 /* ==============================================================
-   Buttons
-   style declarations for buttons
+   Forms
+   style declarations for forms
    ==============================================================*/
-/* BUTTONS */
+/* INPUT PLACEHOLDER */
+::-webkit-input-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+/* Mozilla Firefox 4 to 18 */
+:-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+  opacity: 1;
+}
+/* Mozilla Firefox 19+ */
+::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+  opacity: 1;
+}
+/* Internet Explorer 10-11 */
+:-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+/* iOS Webkit Hack to prevent input zoom in */
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+  select,
+  textarea,
+  input[type="color"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="email"],
+  input[type="file"],
+  input[type="hidden"],
+  input[type="image"],
+  input[type="month"],
+  input[type="number"],
+  input[type="password"],
+  input[type="radio"],
+  input[type="range"],
+  input[type="reset"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="text"],
+  input[type="time"],
+  input[type="url"],
+  input[type="week"] {
+    font-size: 1.6rem !important;
+  }
+}
+.custom-control {
+  position: relative;
+  padding-right: 15px;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.custom-control input[type="checkbox"],
+.custom-control input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+.custom-control__icon {
+  color: #3365a9;
+}
+.custom-control .fa-check-circle-o,
+.custom-control .fa-check-square-o {
+  display: none;
+}
+/* MODIFICATIONS */
+.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-square-o {
+  display: none;
+}
+.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-check-square-o {
+  display: inline-block;
+}
+.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-square-o,
+.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-check-square-o {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-circle-o {
+  display: none;
+}
+.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-check-circle-o {
+  display: inline-block;
+}
+.custom-control--select {
+  width: 100%;
+  height: 34px;
+  padding: 0 6px;
+  font-size: 1.4rem;
+  line-height: 1.42857143;
+  color: #1a1a1a;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+}
+.custom-control--select:after {
+  content: "";
+  position: absolute;
+}
+.custom-control--select:after {
+  display: inline-block;
+  top: 50%;
+  right: 10px;
+  width: 0;
+  height: 0;
+  margin-top: -0.15rem;
+  pointer-events: none;
+  border-top: 0.35rem solid #1a1a1a;
+  border-right: 0.35rem solid transparent;
+  border-bottom: 0.35rem solid transparent;
+  border-left: 0.35rem solid transparent;
+}
+.custom-control--select.multiple {
+  min-height: 150px;
+  padding: 0;
+}
+.custom-control--select.multiple:after {
+  display: none;
+}
+.custom-control--select.multiple select {
+  padding: 12px;
+}
+.custom-control--select select {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding-right: 26px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  border: 0;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  cursor: pointer;
+  outline: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.custom-control--select select.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.custom-control--select select[disabled="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+/* DEPRECATED */
+/* WILL BE REMOVED IN NEXT VERSION */
+.form-control__select {
+  height: 34px;
+  padding: 6px;
+  font-size: 1.4rem;
+  line-height: 1.42857143;
+  color: #1a1a1a;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+}
+.form-control__select select {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: #fff;
+}
+.form-control__select select[disabled="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.form-control--multi-select {
+  height: 125px;
+  overflow-y: auto;
+}
 .btn {
   color: #555;
   border-radius: 0;
   background-color: transparent;
-  /* MODIFICATION */
 }
 .btn:hover,
 .btn:active,
@@ -642,6 +812,7 @@ button {
   outline: none;
   box-shadow: none;
 }
+/* MODIFICATIONS */
 .btn--default {
   border-color: #ccc;
   background-color: #f7f7f7;
@@ -702,11 +873,11 @@ button {
   color: #555;
 }
 .btn--hidden {
-  display: none !important;
+  display: none ! important;
 }
 .btn--inactive {
   cursor: not-allowed;
-  opacity: .65;
+  opacity: 0.65;
 }
 .btn--icon {
   padding: 2px;
@@ -715,195 +886,12 @@ button {
   border: none;
 }
 .btn--icon:hover,
-.btn--icon:focus,
-.btn--icon:active {
+.btn--icon:active,
+.btn--icon:focus {
   color: #1a1a1a;
 }
-/* MODIFICATIONS */
 a.btn--icon {
   line-height: normal;
-}
-/* BREAKPOINT FOR DESKTOPS */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Forms
-   style declarations for forms
-   ==============================================================*/
-/* INPUT MODIFICATIONS */
-.form-control__select {
-  height: 34px;
-  padding: 6px;
-  font-size: 1.4rem;
-  line-height: 1.42857143;
-  color: #1a1a1a;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid #ccc;
-}
-.form-control__select select {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: #fff;
-}
-.form-control__select select[disabled="disabled"] {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-.form-control--multi-select {
-  height: 125px;
-  overflow-y: auto;
-}
-/* CUSTOM CONTROL */
-/* BLOCK */
-.custom-control {
-  position: relative;
-  padding-right: 15px;
-  color: #1a1a1a;
-  cursor: pointer;
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.custom-control input[type="checkbox"],
-.custom-control input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  z-index: -1;
-}
-.custom-control__icon {
-  color: #3365a9;
-}
-.custom-control .fa-check-circle-o,
-.custom-control .fa-check-square-o {
-  display: none;
-}
-.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-square-o {
-  display: none;
-}
-.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-check-square-o {
-  display: inline-block;
-}
-.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-square-o,
-.custom-control--checkbox input[type="checkbox"].disabled ~ .custom-control__icon .fa-check-square-o {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-circle-o {
-  display: none;
-}
-.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-check-circle-o {
-  display: inline-block;
-}
-.custom-control--select {
-  width: 100%;
-  height: 34px;
-  padding: 0 6px;
-  font-size: 1.4rem;
-  line-height: 1.42857143;
-  color: #1a1a1a;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid #ccc;
-}
-.custom-control--select:after {
-  content: "";
-  position: absolute;
-}
-.custom-control--select:after {
-  display: inline-block;
-  top: 50%;
-  right: 10px;
-  width: 0;
-  height: 0;
-  margin-top: -0.15rem;
-  pointer-events: none;
-  border-top: 0.35rem solid #1a1a1a;
-  border-right: .35rem solid transparent;
-  border-bottom: .35rem solid transparent;
-  border-left: .35rem solid transparent;
-}
-.custom-control--select.multiple {
-  min-height: 150px;
-  padding: 0;
-}
-.custom-control--select.multiple:after {
-  display: none;
-}
-.custom-control--select.multiple select {
-  padding: 12px;
-}
-.custom-control--select select {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding-right: 26px;
-  line-height: 1.5;
-  color: #1a1a1a;
-  border: 0;
-  border-radius: .25rem;
-  background-color: #fff;
-  cursor: pointer;
-  outline: 0;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-.custom-control--select select.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-.custom-control--select select[disabled="disabled"] {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-/* INPUT PLACEHOLDER */
-/* WebKit, Blink, Edge */
-::-webkit-input-placeholder {
-  color: rgba(0, 0, 0, 0.25);
-}
-/* Mozilla Firefox 4 to 18 */
-:-moz-placeholder {
-  color: rgba(0, 0, 0, 0.25);
-  opacity: 1;
-}
-/* Mozilla Firefox 19+ */
-::-moz-placeholder {
-  color: rgba(0, 0, 0, 0.25);
-  opacity: 1;
-}
-/* Internet Explorer 10-11 */
-:-ms-input-placeholder {
-  color: rgba(0, 0, 0, 0.25);
-}
-/* iOS Webkit Hack to prevent input zoom in */
-@media only screen and (-webkit-min-device-pixel-ratio: 2) {
-  select,
-  textarea,
-  input[type="color"],
-  input[type="date"],
-  input[type="datetime-local"],
-  input[type="email"],
-  input[type="file"],
-  input[type="hidden"],
-  input[type="image"],
-  input[type="month"],
-  input[type="number"],
-  input[type="password"],
-  input[type="radio"],
-  input[type="range"],
-  input[type="reset"],
-  input[type="search"],
-  input[type="tel"],
-  input[type="text"],
-  input[type="time"],
-  input[type="url"],
-  input[type="week"] {
-    font-size: 1.6rem !important;
-  }
 }
 /* BREAKPOINT FOR DESKTOPS */
 /* BREAKPOINT FOR TABLETS */
@@ -2545,7 +2533,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 1.6rem;
   height: 1.6rem;
   line-height: 1.6rem;
-  margin-right: .5rem;
+  margin-right: 0.5rem;
   padding: 0;
   color: #3365a9;
   border: none;
@@ -3125,7 +3113,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tag89 a,
 .tag90 a {
   font-size: 170%;
-  color: #696969  !important;
+  color: #696969 !important;
   /*border-bottom: 1px dotted #5F4C2F  !important;*/
 }
 .tag91 a,
@@ -3195,7 +3183,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
 }
 .title__body-metadata dl dt,
 .title__body-metadata dl dd {
@@ -4472,8 +4460,8 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__group .remove {
   position: absolute;
   top: 0;
-  right: .5rem;
-  padding: .5rem;
+  right: 0.5rem;
+  padding: 0.5rem;
   color: #1a1a1a;
 }
 .search-advanced__loader {
@@ -4572,7 +4560,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-advanced__add-group {
   margin-bottom: 21px;
-  padding: .5rem 18px;
+  padding: 0.5rem 18px;
   text-align: right;
 }
 .search-advanced__add-group a {
@@ -4868,7 +4856,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list a[data-toggle="hit-content"] .fa,
 .search-list button[data-toggle="hit-content"] .fa {
   margin-right: 7px;
-  transition: all .2s linear;
+  transition: all 0.2s linear;
 }
 .search-list a[data-toggle="hit-content"].in .fa,
 .search-list button[data-toggle="hit-content"].in .fa {
@@ -5180,7 +5168,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day,
 .search-calendar__month-day-empty {
   float: left;
-  width: calc(14.28571429%);
+  width: calc(100% / 7);
 }
 .search-calendar__month-days span {
   display: block;
@@ -5238,7 +5226,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__incomplete .label {
   padding: 7px 15px;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 .search-calendar__month-day.active {
   background-color: #ccc;
@@ -5741,7 +5729,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 .user-login__body-action {
-  padding-top: .5rem;
+  padding-top: 0.5rem;
   padding-bottom: 1.6rem;
 }
 .user-login__body-action .btn--link {
@@ -6458,7 +6446,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 70px;
   border-bottom: 1px solid #c6c6c6;
   background-color: #fff;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
   opacity: 1;
   z-index: 1050;
 }
@@ -6543,7 +6531,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .fullscreen__view {
   position: relative;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
 }
 .fullscreen__view-sidebar-panel-controls {
   position: absolute;
@@ -6654,7 +6642,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 5px;
   background-color: #fff;
   opacity: 0;
-  transition: all .3s linear;
+  transition: all 0.3s linear;
   z-index: 1010;
 }
 .fullscreen__view-sidebar-open.in {
@@ -6967,7 +6955,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   cursor: pointer;
   overflow: hidden;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 #timematrixCanvas .timematrix-box .timematrix-body .timematrix-thumb:hover {
   border: 2px solid red;
@@ -7016,7 +7004,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .timematrix-popover .timematrix-popover-header {
   height: 4rem;
-  padding: .3rem .5rem;
+  padding: 0.3rem 0.5rem;
   border-bottom: 1px solid #ccc;
 }
 .timematrix-popover .timematrix-popover-header h4 {
@@ -7032,7 +7020,7 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-flex-pack: center;
       justify-content: center;
   height: 20rem;
-  padding: .5rem;
+  padding: 0.5rem;
   background-color: #fff;
 }
 .timematrix-popover .timematrix-popover-body .timematrix-popover-imageloader {
@@ -7288,7 +7276,7 @@ div[id*="-Modal"] .email-form .form-group {
 .widget__title .fa {
   display: none;
   margin-left: auto;
-  transition: all .2s linear;
+  transition: all 0.2s linear;
 }
 .widget__title.collapseable {
   cursor: pointer;
@@ -8534,7 +8522,7 @@ div[id*="-Modal"] .email-form .form-group {
 .admin__content-inner-title {
   margin: 0;
   padding: 15px;
-  font-size: 2rem;
+  font-size: 3.2rem;
   background-color: #f2f3f4;
 }
 .admin__content-inner-title-exit {
@@ -9296,9 +9284,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: -0.15rem;
   pointer-events: none;
   border-top: 0.35rem solid #1a1a1a;
-  border-right: .35rem solid transparent;
-  border-bottom: .35rem solid transparent;
-  border-left: .35rem solid transparent;
+  border-right: 0.35rem solid transparent;
+  border-bottom: 0.35rem solid transparent;
+  border-left: 0.35rem solid transparent;
 }
 .cms-module__option-dropdown ul {
   display: none;
@@ -9340,6 +9328,12 @@ div[id*="-Modal"] .email-form .form-group {
 .cms-module__option-control-helptext.in,
 .cms-module__option-control-helptext.static {
   display: inline-block;
+}
+.cms-module__option-control-helptext.standalone {
+  display: block;
+  margin-bottom: 2rem;
+  font-size: 1.4rem;
+  font-style: normal;
 }
 .cms-module__option-control-helptext.in.inline {
   display: inline;
@@ -9435,7 +9429,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 400px;
   max-width: 100%;
   margin: 0 auto;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   opacity: 0;
 }
 .slideshow__image img.active {
@@ -9513,7 +9507,7 @@ div[id*="-Modal"] .email-form .form-group {
   bottom: 0;
   overflow: hidden;
   opacity: 0.2;
-  line-height: 1.0;
+  line-height: 1;
 }
 .pdf-container .text-layer > div {
   color: transparent;
@@ -9568,7 +9562,7 @@ div[id*="-Modal"] .email-form .form-group {
   bottom: 0;
   overflow: hidden;
   opacity: 0.2;
-  line-height: 1.0;
+  line-height: 1;
 }
 .pdf-container .annotation-layer > section {
   color: transparent;
@@ -11778,30 +11772,45 @@ div[id*="-Modal"] .email-form .form-group {
 /* STATIC PAGES */
 /* BLOCK */
 .cms-static-pages {
-  /* ELEMENT */
+  /* TABLE */
+  /* HEAD */
+  /* BODY */
 }
-.cms-static-pages__page-language-head {
-  text-align: center;
+.cms-static-pages__table {
+  font-size: 1.4rem;
 }
-.cms-static-pages__page-action-head {
-  text-align: center;
+.cms-static-pages__table > tbody > tr {
+  height: 6.2rem;
 }
-.cms-static-pages__page-language {
-  text-align: center;
+.cms-static-pages__table > tbody > tr:hover .cms-module__actions {
+  position: static;
 }
-.cms-static-pages__page-language img {
-  width: 16px;
-  opacity: 0.5;
-}
-.cms-static-pages__page-action a,
-.cms-static-pages__page-action span {
-  padding: 0;
-}
-.cms-static-pages__save {
+.cms-static-pages__table > tbody > tr:last-child .cms-static-pages__table-body-override {
+  padding-right: 0;
   text-align: right;
 }
-.cms-static-pages__save .btn {
-  margin: 0;
+.cms-static-pages__table > tbody > tr td.cms-static-pages__table-body-override {
+  vertical-align: middle;
+}
+.cms-static-pages__table .cms-module__actions {
+  position: relative;
+  left: -9999em;
+}
+.cms-static-pages__table .table-col-clean {
+  border: 1px solid #fff !important;
+  border-left: 0;
+  background-color: #fff;
+}
+.cms-static-pages__table-head-name,
+.cms-static-pages__table-head-url {
+  width: 20%;
+}
+.cms-static-pages__table-head-override {
+  width: 60%;
+}
+.cms-static-pages__table-body-url {
+  font-style: italic;
+  color: #666;
 }
 /* MODIFICATION */
 img.cms-static-pages__page-language--complete {

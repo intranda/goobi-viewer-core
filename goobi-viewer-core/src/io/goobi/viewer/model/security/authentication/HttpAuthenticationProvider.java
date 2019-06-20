@@ -15,17 +15,43 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.ws.rs.WebApplicationException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.CharStreams;
+
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRequest;
+import io.goobi.viewer.model.security.authentication.model.VuAuthenticationResponse;
 
 /**
  * @author Florian Alpers
  *
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
+
+    protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected final String name;
     protected final String type;
@@ -115,4 +141,47 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
     }
+    
+    protected String post(URI url, String requestEntity) throws WebApplicationException {
+        //client from connectionManager is reused, so don't close it
+        CloseableHttpClient client =
+                HttpClientBuilder.create().setConnectionManager(connectionManager).setRedirectStrategy(new LaxRedirectStrategy()).build();
+        try {
+            HttpPost post = new HttpPost(url);
+            RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
+            post.setConfig(config);
+            post.addHeader("Content-Type", "application/json");
+            HttpEntity e = new StringEntity(requestEntity);
+            post.setEntity(e);
+            try(CloseableHttpResponse httpResponse = client.execute(post)) {
+               try(InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
+                       String jsonResponse = CharStreams.toString(reader);
+                       return jsonResponse;
+                   }
+               }
+        } catch (IOException e) {
+            throw new WebApplicationException("Error posting " + requestEntity + " to " + url, e);
+        }
+    }
+    
+    protected String get(URI url) throws WebApplicationException {
+        //client from connectionManager is reused, so don't close it
+        CloseableHttpClient client =
+                HttpClientBuilder.create().setConnectionManager(connectionManager).setRedirectStrategy(new LaxRedirectStrategy()).build();
+        try {
+            HttpGet get = new HttpGet(url);
+            RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
+            get.setConfig(config);
+            try(CloseableHttpResponse httpResponse = client.execute(get)) {
+               try(InputStream input = httpResponse.getEntity().getContent(); final Reader reader = new InputStreamReader(input)) {
+                       String jsonResponse = CharStreams.toString(reader);
+                       return jsonResponse;
+                   }
+               }
+        } catch (IOException e) {
+            throw new WebApplicationException("Error getting url " + url, e);
+        }
+    }
+    
+
 }

@@ -153,8 +153,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     private String getCompleteFacetString(String baseFacetString) {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotBlank(getPageFacetString())) {
-            sb.append(getPageFacetString());
-            if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {
+            String pageFacetString = getPageFacetString().replaceAll("(?i)^(AND|OR)\\s", "");
+            sb.append(pageFacetString);
+            if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString) && !sb.toString().equals(baseFacetString)) {
                 sb.append(";;").append(baseFacetString);
             }
         } else if (StringUtils.isNotBlank(baseFacetString) && !"-".equals(baseFacetString)) {

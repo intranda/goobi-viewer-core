@@ -661,6 +661,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     public void resetData() {
         nestedPages = null;
+        functionality = null;
     }
 
     private List<CMSPage> loadNestedPages() throws DAOException {
@@ -1120,6 +1121,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
     
+    
+    public boolean isPreview() {
+        return getTemplateItem().isPreview();
+    }
+    
     /**
      * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
      * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
@@ -1217,4 +1223,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 	public boolean hasMediaItem() {
 		return this.mediaItem != null;
 	}
+
+
 }
