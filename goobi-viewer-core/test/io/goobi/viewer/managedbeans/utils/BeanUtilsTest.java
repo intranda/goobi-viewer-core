@@ -38,6 +38,6 @@ public class BeanUtilsTest {
      */
     @Test
     public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("A/\\%7C?Z", BeanUtils.unescapeCriticalUrlChracters("AU002FU005CU007CU003FZ"));
+        Assert.assertEquals("A/\\|?Z", BeanUtils.unescapeCriticalUrlChracters("AU002FU005CU007CU003FZ"));
     }
 }

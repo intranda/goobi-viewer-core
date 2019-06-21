@@ -329,7 +329,7 @@ public class BeanUtils {
 
         return value.replace(SLASH_REPLACEMENT, "/")
                 .replace(BACKSLASH_REPLACEMENT, "\\")
-                .replace(PIPE_REPLACEMENT, "%7C")
+                .replace(PIPE_REPLACEMENT, "|")
                 .replace(QUESTION_MARK_REPLACEMENT, "?")
                 .replace(PERCENT_REPLACEMENT, "%");
     }
