@@ -181,6 +181,19 @@
                                #{msg.dfgViewerLink}
                             </a>
                         </ui:fragment>
+                        
+                        <!-- MIRADOR -->
+						<ui:fragment
+							rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">						
+								<a
+									href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" 
+									id="mirador"
+									class="label label-default widget-usage__work-link-mirador-viewer" 
+	                                title="#{msg.action__view_in_mirador__tooltip}" 
+	                                target="_blank" rel="nofollow"> 
+									#{msg.action__view_in_mirador}
+								</a>
+						</ui:fragment>
     
                         <!-- OPAC -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
