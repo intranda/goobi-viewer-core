@@ -35,6 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -57,6 +60,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.bookshelf.BookshelfItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -1439,4 +1443,5 @@ public class ActiveDocumentBean implements Serializable {
     public void setDeleteRecordKeepTrace(Boolean deleteRecordKeepTrace) {
         this.deleteRecordKeepTrace = deleteRecordKeepTrace;
     }
+
 }

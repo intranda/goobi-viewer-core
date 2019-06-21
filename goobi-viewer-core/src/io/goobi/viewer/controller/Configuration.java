@@ -1592,6 +1592,14 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return
+     */
+    public boolean isSidebarMiradorLinkVisible() {
+        return getLocalBoolean("sidebar.mirador.visible", false);
+
+    }
+    
+    /**
      * 
      * @return
      * @should return correct value
@@ -1683,6 +1691,8 @@ public final class Configuration extends AbstractConfiguration {
         // logger.trace("Tree view for {} not allowed", docStructType);
         return false;
     }
+    
+
 
     /**
      * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
@@ -3307,4 +3317,6 @@ public final class Configuration extends AbstractConfiguration {
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
     }
+
+
 }
