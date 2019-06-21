@@ -157,7 +157,7 @@ public class NormdataResource {
             // Authority URL
             NormDataValue authorityUrl = MarcRecord.getAuthorityUrlFromViafUrl(url);
             authorityUrl.setImageFileName("resources/images/authority/" + authorityUrl.getLabel() + ".png");
-            normDataList.add(new NormData("NORM_AUTHORITY_" + authorityUrl.getLabel(), authorityUrl));
+            normDataList.add(new NormData("NORM_PROVIDER", authorityUrl));
         }
 
         JSONArray jsonArray = new JSONArray();
