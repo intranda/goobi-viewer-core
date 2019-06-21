@@ -764,9 +764,6 @@ public class ConfigurationBean implements Serializable {
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
-   
-    public boolean isSidebarMiradorLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMiradorLinkVisible();
-    }
+
 
 }
