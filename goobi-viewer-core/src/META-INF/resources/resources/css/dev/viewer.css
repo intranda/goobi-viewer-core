@@ -727,9 +727,9 @@ button {
   margin-top: -0.15rem;
   pointer-events: none;
   border-top: 0.35rem solid #1a1a1a;
-  border-right: 0.35rem solid transparent;
-  border-bottom: 0.35rem solid transparent;
-  border-left: 0.35rem solid transparent;
+  border-right: .35rem solid transparent;
+  border-bottom: .35rem solid transparent;
+  border-left: .35rem solid transparent;
 }
 .custom-control--select.multiple {
   min-height: 150px;
@@ -750,7 +750,7 @@ button {
   line-height: 1.5;
   color: #1a1a1a;
   border: 0;
-  border-radius: 0.25rem;
+  border-radius: .25rem;
   background-color: #fff;
   cursor: pointer;
   outline: 0;
@@ -877,7 +877,7 @@ button {
 }
 .btn--inactive {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: .65;
 }
 .btn--icon {
   padding: 2px;
@@ -2533,7 +2533,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 1.6rem;
   height: 1.6rem;
   line-height: 1.6rem;
-  margin-right: 0.5rem;
+  margin-right: .5rem;
   padding: 0;
   color: #3365a9;
   border: none;
@@ -3113,7 +3113,7 @@ div[id*="-Modal"] .email-form .form-group {
 .tag89 a,
 .tag90 a {
   font-size: 170%;
-  color: #696969 !important;
+  color: #696969  !important;
   /*border-bottom: 1px dotted #5F4C2F  !important;*/
 }
 .tag91 a,
@@ -3183,7 +3183,7 @@ div[id*="-Modal"] .email-form .form-group {
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  margin-bottom: 0.25rem;
+  margin-bottom: .25rem;
 }
 .title__body-metadata dl dt,
 .title__body-metadata dl dd {
@@ -4460,8 +4460,8 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__group .remove {
   position: absolute;
   top: 0;
-  right: 0.5rem;
-  padding: 0.5rem;
+  right: .5rem;
+  padding: .5rem;
   color: #1a1a1a;
 }
 .search-advanced__loader {
@@ -4560,7 +4560,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-advanced__add-group {
   margin-bottom: 21px;
-  padding: 0.5rem 18px;
+  padding: .5rem 18px;
   text-align: right;
 }
 .search-advanced__add-group a {
@@ -4856,7 +4856,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list a[data-toggle="hit-content"] .fa,
 .search-list button[data-toggle="hit-content"] .fa {
   margin-right: 7px;
-  transition: all 0.2s linear;
+  transition: all .2s linear;
 }
 .search-list a[data-toggle="hit-content"].in .fa,
 .search-list button[data-toggle="hit-content"].in .fa {
@@ -5168,7 +5168,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day,
 .search-calendar__month-day-empty {
   float: left;
-  width: calc(100% / 7);
+  width: calc(14.28571429%);
 }
 .search-calendar__month-days span {
   display: block;
@@ -5226,7 +5226,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__incomplete .label {
   padding: 7px 15px;
-  font-size: 0.9rem;
+  font-size: .9rem;
 }
 .search-calendar__month-day.active {
   background-color: #ccc;
@@ -5729,7 +5729,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 .user-login__body-action {
-  padding-top: 0.5rem;
+  padding-top: .5rem;
   padding-bottom: 1.6rem;
 }
 .user-login__body-action .btn--link {
@@ -5989,9 +5989,6 @@ div[id*="-Modal"] .email-form .form-group {
   max-width: 100%;
   height: 100vh;
   max-height: 100%;
-}
-.view-mirador .mirador-osd-annotation-controls {
-  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOPS */
@@ -6446,7 +6443,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 70px;
   border-bottom: 1px solid #c6c6c6;
   background-color: #fff;
-  transition: all 0.3s linear;
+  transition: all .3s linear;
   opacity: 1;
   z-index: 1050;
 }
@@ -6531,7 +6528,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .fullscreen__view {
   position: relative;
-  transition: all 0.3s linear;
+  transition: all .3s linear;
 }
 .fullscreen__view-sidebar-panel-controls {
   position: absolute;
@@ -6642,7 +6639,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-top: 5px;
   background-color: #fff;
   opacity: 0;
-  transition: all 0.3s linear;
+  transition: all .3s linear;
   z-index: 1010;
 }
 .fullscreen__view-sidebar-open.in {
@@ -6955,7 +6952,7 @@ div[id*="-Modal"] .email-form .form-group {
   border: 1px solid #ccc;
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all .3s;
 }
 #timematrixCanvas .timematrix-box .timematrix-body .timematrix-thumb:hover {
   border: 2px solid red;
@@ -7004,7 +7001,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .timematrix-popover .timematrix-popover-header {
   height: 4rem;
-  padding: 0.3rem 0.5rem;
+  padding: .3rem .5rem;
   border-bottom: 1px solid #ccc;
 }
 .timematrix-popover .timematrix-popover-header h4 {
@@ -7020,7 +7017,7 @@ div[id*="-Modal"] .email-form .form-group {
   -ms-flex-pack: center;
       justify-content: center;
   height: 20rem;
-  padding: 0.5rem;
+  padding: .5rem;
   background-color: #fff;
 }
 .timematrix-popover .timematrix-popover-body .timematrix-popover-imageloader {
@@ -7276,7 +7273,7 @@ div[id*="-Modal"] .email-form .form-group {
 .widget__title .fa {
   display: none;
   margin-left: auto;
-  transition: all 0.2s linear;
+  transition: all .2s linear;
 }
 .widget__title.collapseable {
   cursor: pointer;
@@ -9285,9 +9282,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: -0.15rem;
   pointer-events: none;
   border-top: 0.35rem solid #1a1a1a;
-  border-right: 0.35rem solid transparent;
-  border-bottom: 0.35rem solid transparent;
-  border-left: 0.35rem solid transparent;
+  border-right: .35rem solid transparent;
+  border-bottom: .35rem solid transparent;
+  border-left: .35rem solid transparent;
 }
 .cms-module__option-dropdown ul {
   display: none;
@@ -9430,7 +9427,7 @@ div[id*="-Modal"] .email-form .form-group {
   height: 400px;
   max-width: 100%;
   margin: 0 auto;
-  transition: all 0.3s ease;
+  transition: all .3s ease;
   opacity: 0;
 }
 .slideshow__image img.active {
@@ -9508,7 +9505,7 @@ div[id*="-Modal"] .email-form .form-group {
   bottom: 0;
   overflow: hidden;
   opacity: 0.2;
-  line-height: 1;
+  line-height: 1.0;
 }
 .pdf-container .text-layer > div {
   color: transparent;
@@ -9534,6 +9531,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .pdf-container .text-layer .highlight.selected {
   background-color: #006400;
+}
+.pdf-container .text-layer ::-moz-selection {
+  background: #0000ff;
 }
 .pdf-container .text-layer ::selection {
   background: #0000ff;
@@ -9563,7 +9563,7 @@ div[id*="-Modal"] .email-form .form-group {
   bottom: 0;
   overflow: hidden;
   opacity: 0.2;
-  line-height: 1;
+  line-height: 1.0;
 }
 .pdf-container .annotation-layer > section {
   color: transparent;

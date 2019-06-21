@@ -35,6 +35,16 @@ var viewerJS = ( function( viewer ) {
     	userLoggedIn: false,
     };
     
+    var dataObject = {
+        location: "Goobi viewer" 
+    }
+    var windowObject = {
+        bottomPanel: false,
+        sidePanel: true,
+        sidePanelVisible: false,
+        viewType: "ImageView"                            
+    }
+    
     viewer.mirador = {
         /**
          * Method to initialize the mirador viewer.
@@ -159,18 +169,6 @@ var viewerJS = ( function( viewer ) {
     function _getMiradorConfigForManifestUrls(manifests, _defaults) {
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length/columns);
-        
-        var dataObject = {
-            location: "Goobi viewer" 
-        }
-        var windowObject = {
-            annotationCreation: false,
-            annotationLayer: false,
-            bottomPanel: false,
-            sidePanel: true,
-            sidePanelVisible: false,
-            viewType: "ImageView"                            
-        }
         
         var miradorConfig = {
                 buildPath : _defaults.root + "/resources/javascript/libs/mirador/",
