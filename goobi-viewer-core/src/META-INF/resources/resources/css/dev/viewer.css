@@ -7282,9 +7282,10 @@ div[id*="-Modal"] .email-form .form-group {
   cursor: pointer;
 }
 .widget__title.collapseable .fa {
+  font-size: 1.6rem;
   display: inline-block;
 }
-.widget__title.collapseable.in .fa-chevron-down {
+.widget__title.collapseable.in .fa-angle-down {
   transform: rotate(-180deg);
 }
 .widget__body {

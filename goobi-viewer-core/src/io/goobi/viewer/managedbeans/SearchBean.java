@@ -40,6 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -50,6 +51,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
@@ -1993,6 +1996,69 @@ public class SearchBean implements SearchInterface, Serializable {
         } catch (IOException e) {
             logger.error("Failed to redirect to url", e);
         }
+    }
+
+    /**
+     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery). Replaces the
+     * method in the old TagLib class.
+     *
+     * @param field
+     * @param subQuery
+     * @param resultLimit
+     * @param sortDescending If true, the facet items are sorted in a descending order
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<FacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
+            throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder(100);
+        sbQuery.append('(')
+                .append(SolrConstants.ISWORK)
+                .append(":true OR ")
+                .append(SolrConstants.ISANCHOR)
+                .append(":true)")
+                .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true, true));
+
+        if (StringUtils.isNotEmpty(subQuery)) {
+            if (subQuery.startsWith(" AND ")) {
+                subQuery = subQuery.substring(5);
+            }
+            sbQuery.append(" AND (").append(subQuery).append(')');
+        }
+        // logger.debug("getDrillDown query: " + query);
+        field = SearchHelper.facetifyField(field);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field), Collections.singletonList(SolrConstants.IDDOC));
+        // TODO Filter with the docstruct whitelist?
+        if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field).getValues() != null) {
+            Map<String, Long> result =
+                    resp.getFacetField(field).getValues().stream().filter(count -> count.getName().charAt(0) != 1).sorted((count1, count2) -> {
+                        int compValue;
+                        if (count1.getName().matches("\\d+") && count2.getName().matches("\\d+")) {
+                            compValue = Long.compare(Long.parseLong(count1.getName()), Long.parseLong(count2.getName()));
+                        } else {
+                            compValue = count1.getName().compareToIgnoreCase(count2.getName());
+                        }
+                        if (Boolean.TRUE.equals(reverseOrder)) {
+                            compValue *= -1;
+                        }
+                        return compValue;
+                    })
+                            .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
+                            .collect(Collectors.toMap(Count::getName, Count::getCount));
+            List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
+            Locale locale = null;
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            if (nh != null) {
+                locale = nh.getLocale();
+            }
+
+            return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
+        }
+
+        return Collections.emptyList();
     }
 
     /* (non-Javadoc)
