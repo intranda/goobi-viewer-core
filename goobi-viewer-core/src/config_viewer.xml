@@ -1165,6 +1165,9 @@
 		<fulltext>
 			<visible>true</visible>
 		</fulltext>
+		
+		<!-- if visible is true, a link to a miradorviewer with the current work opened will be listed in the sidebar -->
+    	<mirador><visible>true</visible></mirador>
 
 
 		<!-- sidebarTo/opt configuration of the sidebar TOC component -->
