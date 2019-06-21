@@ -112,7 +112,7 @@ module.exports = function(grunt) {
 			},
 			less : {
 				files : [ '<%=src.lessDevFolder%>**/*.less' ],
-				tasks : [ 'less', 'kss' ],
+				tasks : [ 'less' ],
 				options : {
 					spawn : false,
 				}
