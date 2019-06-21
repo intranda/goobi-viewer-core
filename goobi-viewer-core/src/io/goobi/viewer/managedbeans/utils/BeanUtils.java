@@ -309,7 +309,7 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        value = value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("|", PIPE_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
+        value = value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("|", PIPE_REPLACEMENT).replace("%7C", PIPE_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
         if (escapePercentCharacters) {
             value = value.replace("%", PERCENT_REPLACEMENT);
         }
@@ -329,7 +329,7 @@ public class BeanUtils {
 
         return value.replace(SLASH_REPLACEMENT, "/")
                 .replace(BACKSLASH_REPLACEMENT, "\\")
-                .replace(PIPE_REPLACEMENT, "|")
+                .replace(PIPE_REPLACEMENT, "%7C")
                 .replace(QUESTION_MARK_REPLACEMENT, "?")
                 .replace(PERCENT_REPLACEMENT, "%");
     }
