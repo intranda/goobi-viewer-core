@@ -28,7 +28,8 @@ public class BeanUtilsTest {
      */
     @Test
     public void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("AU002FU005CU003FZ", BeanUtils.escapeCriticalUrlChracters("A/\\?Z"));
+        Assert.assertEquals("AU002FU005CU007CU003FZ", BeanUtils.escapeCriticalUrlChracters("A/\\|?Z"));
+        Assert.assertEquals("U007C", BeanUtils.escapeCriticalUrlChracters("%7C"));
     }
 
     /**
@@ -37,6 +38,6 @@ public class BeanUtilsTest {
      */
     @Test
     public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("A/\\?Z", BeanUtils.unescapeCriticalUrlChracters("AU002FU005CU003FZ"));
+        Assert.assertEquals("A/\\%7C?Z", BeanUtils.unescapeCriticalUrlChracters("AU002FU005CU007CU003FZ"));
     }
 }
