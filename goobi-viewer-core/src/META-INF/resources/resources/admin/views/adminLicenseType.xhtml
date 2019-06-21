@@ -31,8 +31,8 @@
                             <div class="form-group">
                                 <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.name} *" />
                                 <div class="col-sm-8">
-                                    <div class="form-control__select">
-                                        <h:selectOneMenu id="name" styleClass="form-control" value="#{adminBean.currentLicenseType.name}">
+                                    <div class="custom-control custom-control--select">
+                                        <h:selectOneMenu id="name" value="#{adminBean.currentLicenseType.name}">
                                             <f:selectItems value="#{adminBean.possibleAccessConditions}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
                                             <f:ajax render="@none" />
                                         </h:selectOneMenu>
