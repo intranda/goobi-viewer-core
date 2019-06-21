@@ -47,7 +47,12 @@
                     <div class="user-comments__comment">
                         <!-- USER IMAGE -->
                         <div class="user-comments__comment-image">
-                            <img src="#{comment.owner.avatarUrl}" alt="User Gravatar" />
+                        	<ui:fragment rendered="#{user.useGravatar}">
+	                            <img src="#{comment.owner.avatarUrl}" alt="User Gravatar" />
+        					</ui:fragment>
+        					<ui:fragment rendered="#{!user.useGravatar}">
+        						<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/thumbnail_person.jpg" alt="User Gravatar" />
+        					</ui:fragment>
                         </div>
                         
                         <!-- COMMENT METADATA -->
