@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,7 +75,7 @@ public class GeoLocation {
      * @param string
      * @return
      */
-    private String formatJson(String string) {
+    private static String formatJson(String string) {
         string = StringEscapeUtils.unescapeJava(string);
         string = string.replaceAll("(\\r)?\\n", "<br/>");
         return string;
