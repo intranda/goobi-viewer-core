@@ -1036,13 +1036,13 @@
 		<labelConfig>
 			<template name="_DEFAULT">
 				<metadata label="" value="{LABEL}{CURRENTNO}">
-					<param type="translatedfield" key="LABEL" />
+					<param type="field" key="LABEL" />
 					<param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
 				</metadata>
 			</template>
 			<template name="_GROUPS">
 				<metadata label="" value="{LABEL}{MD_SERIESDISPLAYORDER}">
-					<param type="translatedfield" key="LABEL" />
+					<param type="field" key="LABEL" />
 					<param type="field" key="MD_SERIESDISPLAYORDER" prefix="_SPACE_("
 						suffix=")" />
 				</metadata>

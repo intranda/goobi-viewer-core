@@ -703,7 +703,7 @@ public class TocMaker {
             for (MetadataParameter param : labelConfig.getParams()) {
                 // logger.trace("param key: {}", param.getKey());
                 IMetadataValue value;
-                if (MetadataParameterType.FIELD.equals(param.getType())) {
+                if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     value = createMultiLanguageValue(doc, param.getKey());
                 } else {
                     value = new SimpleMetadataValue();
@@ -712,7 +712,7 @@ public class TocMaker {
                 }
                 // Special case: If LABEL is missing, use MD_TITLE. If MD_TITLE is missing, use DOCSTRCT.
                 if (StringUtils.isEmpty(value.toString()) && SolrConstants.LABEL.equals(param.getKey())) {
-                    if (MetadataParameterType.FIELD.equals(param.getType())) {
+                    if (MetadataParameterType.FIELD.equals(param.getType()) || MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                         value = createMultiLanguageValue(doc, SolrConstants.TITLE);
                     } else {
                         value.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE));
@@ -723,11 +723,6 @@ public class TocMaker {
                         value = ViewerResourceBundle.getTranslations(docstruct);
                         //                        value.setValue(Helper.getTranslation(docstruct, null));
                     }
-                }
-                // Translate parameter value, if so configured and not already translated
-                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                    //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
-                    value = ViewerResourceBundle.getTranslations(value.getValue().orElse(""));
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);
