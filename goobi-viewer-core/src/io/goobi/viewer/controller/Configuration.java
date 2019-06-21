@@ -1591,13 +1591,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.fulltext.visible", true);
     }
 
-    /**
-     * @return
-     */
-    public boolean isSidebarMiradorLinkVisible() {
-        return getLocalBoolean("sidebar.mirador.visible", false);
-
-    }
     
     /**
      * 

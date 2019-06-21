@@ -23,12 +23,16 @@
     					<ui:repeat value="#{navigationHelper.breadcrumbs}" var="breadcrumb" varStatus="status">
                             <h:panelGroup rendered="#{!status.last and breadcrumb.link}">
     							<li class="breadcrumbs__crumb">
-    								<a href="#{breadcrumb.url}">#{msg[breadcrumb.name]}</a>
+    								<a href="#{breadcrumb.url}">
+    									<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+    								</a>
     							</li>
     						</h:panelGroup>
     						<h:panelGroup rendered="#{status.last or !breadcrumb.link}">
     							<li class="breadcrumbs__crumb">
-    								<span>#{msg[breadcrumb.name]}</span>
+    								<span>
+    									<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
+    								</span>
     							</li>
     						</h:panelGroup>
     					</ui:repeat>

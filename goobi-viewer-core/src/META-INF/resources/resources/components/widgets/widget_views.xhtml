@@ -118,17 +118,6 @@
 						</li>
 					</h:panelGroup>
 
-					<!-- MIRADOR -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarMiradorLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">						
-						<li>
-							<h:outputLink
-								value="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}" target="_blank">
-								<h:outputText value="#{msg.action__view_in_mirador}" />
-							</h:outputLink>
-						</li>
-					</h:panelGroup>
-
 					<!-- EXTERNAL URL -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
 						<li> 
