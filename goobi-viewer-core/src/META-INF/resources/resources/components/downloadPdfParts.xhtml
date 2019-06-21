@@ -19,11 +19,10 @@
 					<label for="selectPageFrom">#{msg.downloadPdfPartsFrom}:</label>
 				</div>
 				<div class="col-xs-3 download-pdf-parts__select-from">
-					<div class="form-control__select">
+					<div class="custom-control custom-control--select">
                         <h:selectOneMenu
                             id="selectPageFrom"
-                            value="#{activeDocumentBean.viewManager.firstPdfPage}"
-                            styleClass="form-control">
+                            value="#{activeDocumentBean.viewManager.firstPdfPage}">
                             <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                             <f:ajax execute="@form" render="@form" />
                         </h:selectOneMenu>
@@ -34,11 +33,10 @@
 					<label for="selectPageTo">#{msg.downloadPdfPartsTo}:</label>
 				</div>
 				<div class="col-xs-3 download-pdf-parts__select-to">
-					<div class="form-control__select">
+					<div class="custom-control custom-control--select">
                         <h:selectOneMenu
                             id="selectPageTo"
-                            value="#{activeDocumentBean.viewManager.lastPdfPage}"
-                            styleClass="form-control">
+                            value="#{activeDocumentBean.viewManager.lastPdfPage}">
                             <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                             <f:ajax immediate="true" render="@form" />
                         </h:selectOneMenu>
