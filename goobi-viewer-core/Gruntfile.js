@@ -27,28 +27,11 @@ module.exports = function(grunt) {
 			jsDevFolderModules : 'src/META-INF/resources/resources/javascript/dev/modules/',
 			jsDistFolder : 'src/META-INF/resources/resources/javascript/dist/',
 			cssFolder : 'src/META-INF/resources/resources/css/',
-			cssDevFolder : 'src/META-INF/resources/resources/css/dev/',
 			cssDistFolder : 'src/META-INF/resources/resources/css/dist/',
-			lessDevFolder : 'src/META-INF/resources/resources/css/less/viewer/'
+			lessDevFolder : 'src/META-INF/resources/resources/css/less/'
 		},
 		less : {
-			development : {
-				options : {
-					paths : [ '<%=src.lessDevFolder%>' ],
-					plugins : [
-						new ( require('less-plugin-autoprefix') )({
-							browsers : [ "last 2 versions" ],
-							grid : true
-						})
-					],
-					compress : false,
-					optimization : 9
-				},
-				files : {
-					'<%=src.cssDevFolder %><%=theme.name%>.css' : '<%=src.lessDevFolder%>constructor.less'
-				}
-			},
-			production : {
+			dist : {
 				options : {
 					banner : banner,
 					paths : [ '<%=src.lessDevFolder%>' ],
@@ -80,7 +63,7 @@ module.exports = function(grunt) {
 				]
 			},
 			dist: {
-				src: "./src/META-INF/resources/resources/css/less/viewer/",
+				src: "./src/META-INF/resources/resources/css/less/",
 				dest: "./src/META-INF/resources/resources/css/styleguide/",
 			}
 		},
@@ -91,7 +74,7 @@ module.exports = function(grunt) {
 				stripBanners : true,
 				sourceMap : false
 			},
-			distViewer : {
+			dist : {
 				src : [
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
@@ -112,7 +95,7 @@ module.exports = function(grunt) {
 			},
 			less : {
 				files : [ '<%=src.lessDevFolder%>**/*.less' ],
-				tasks : [ 'less' ],
+				tasks : [ 'less', 'kss' ],
 				options : {
 					spawn : false,
 				}

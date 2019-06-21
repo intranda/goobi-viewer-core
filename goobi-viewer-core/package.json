@@ -36,6 +36,7 @@
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",
-    "jasmine-tests": "karma start karma.conf.js --single-run"
+    "jasmine-tests": "karma start karma.conf.js --single-run",
+    "kss": "kss --config kss-config.json"
   }
 }
