@@ -126,6 +126,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
             Canvas canvas = generateCanvas(doc, page);
             if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
+                addSeeAlsos(canvas, doc, page  );
                 Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
 
                 merge(annotationMap, content);
@@ -134,7 +135,11 @@ public class SequenceBuilder extends AbstractBuilder {
             sequence.addCanvas(canvas);
         }
         if (getBuildMode().equals(BuildMode.IIIF)) {
-            annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+            try {                
+                annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+            } catch(DAOException e) {
+                logger.error(e.toString());
+            }
         }
 
         if (manifest != null && sequence.getCanvases() != null) {
@@ -143,6 +148,40 @@ public class SequenceBuilder extends AbstractBuilder {
 
         return annotationMap;
     }
+
+    /**
+     * @param canvas
+     * @throws ViewerConfigurationException 
+     * @throws URISyntaxException 
+     */
+    public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
+        
+        if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
+        
+            LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
+            fulltextLink.setFormat(Format.TEXT_PLAIN);
+            fulltextLink.setType(DcType.TEXT);
+            fulltextLink.setLabel(ViewerResourceBundle.getTranslations("FULLTEXT"));
+            canvas.addSeeAlso(fulltextLink);
+        }
+
+        if (StringUtils.isNotBlank(page.getAltoFileName())) {
+            LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
+            altoLink.setFormat(Format.TEXT_XML);
+            altoLink.setType(DcType.TEXT);
+            altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));
+            canvas.addSeeAlso(altoLink);
+        }
+        
+        if (PhysicalElement.MIME_TYPE_IMAGE.equals(page.getMimeType())) {
+                String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+                LinkingContent link = new LinkingContent(new URI(url));
+                link.setFormat(Format.APPLICATION_PDF);
+                link.setType(DcType.SOFTWARE);
+                link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
+                canvas.addSeeAlso(link);
+            }
+        }
 
     /**
      * Adds a comment annotation to all cavases which contain comments
@@ -325,6 +364,25 @@ public class SequenceBuilder extends AbstractBuilder {
                 altoAnnotation.setResource(altoLink);
             }
         }
+        
+        if (PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType())) {
+            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.PDF));
+            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.PDF.name()));
+
+            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.PDF, 1));
+            annotation.setMotivation(Motivation.PAINTING);
+            annotation.setOn(canvas);
+            annoList.addResource(annotation);
+            annotationMap.put(AnnotationType.PDF, annoList);
+            if (populate) {
+                String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+                LinkingContent link = new LinkingContent(new URI(url));
+                link.setFormat(Format.APPLICATION_PDF);
+                link.setType(DcType.SOFTWARE);
+                link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
+                annotation.setResource(link);
+            }
+        }
 
         if (PhysicalElement.MIME_TYPE_AUDIO.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
@@ -390,39 +448,6 @@ public class SequenceBuilder extends AbstractBuilder {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
 
-        if (PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType()) || PhysicalElement.MIME_TYPE_IMAGE.equals(page.getMimeType())) {
-            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.PDF));
-            annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.PDF.name()));
-
-            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.PDF, 1));
-            annotation.setMotivation(Motivation.PAINTING);
-            annotation.setOn(canvas);
-            annoList.addResource(annotation);
-            annotationMap.put(AnnotationType.PDF, annoList);
-            if (populate) {
-                String url = imageDelivery.getPdf().getPdfUrl(doc, page);
-                LinkingContent link = new LinkingContent(new URI(url));
-                link.setFormat(Format.APPLICATION_PDF);
-                link.setType(DcType.SOFTWARE);
-                link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
-                annotation.setResource(link);
-            }
-        }
-
-        //        try {
-        //            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.COMMENT));
-        //            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.COMMENT.name()));
-        //            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(page.getPi(), page.getOrder(), false);
-        //            for (Comment comment : comments) {
-        //                CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
-        //                annoList.addResource(anno);
-        //            }
-        //            if(comments != null && !comments.isEmpty()) {                
-        //                annotationMap.put(AnnotationType.COMMENT, annoList);
-        //            }
-        //        } catch (DAOException e) {
-        //            logger.error(e.toString(), e);
-        //        }
 
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));

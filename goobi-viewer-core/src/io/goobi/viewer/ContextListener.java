@@ -73,7 +73,7 @@ public class ContextListener implements ServletContextListener {
                 }
             }
             LicenseType.addCoreLicenseTypesToDB();
-        } catch (DAOException | PersistenceException e) {
+        } catch (Throwable e) {
             logger.error(e.getMessage());
         }
         //        createResources();
@@ -130,7 +130,7 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             DataManager.getInstance().getDao().shutdown();
-        } catch (DAOException e) {
+        } catch (Throwable e) {
             logger.error(e.getMessage());
         }
 
