@@ -60,48 +60,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
     }
 
-//    /**
-//     * @see PhysicalElement#getWordCoords(List)
-//     * @verifies load XML document if none yet set
-//     */
-//    @Test
-//    public void getWordCoords_shouldLoadXMLDocumentIfNoneYetSet() throws Exception {
-//        PhysicalElement pe = new PhysicalElement("PHYS_0000", "00000001.tif", 0, "1", null, null, "PPN517154005", PhysicalElement.MIME_TYPE_IMAGE,
-//                null);
-//        Assert.assertNull(pe.getAltoText());
-//        Assert.assertEquals(CoordsFormat.UNCHECKED, pe.getWordCoordsFormat());
-//        pe.getWordCoords(new HashSet<>(Collections.singletonList("test")));
-//        Assert.assertNotNull(pe.getAltoText());
-//        Assert.assertEquals(CoordsFormat.ALTO, pe.getWordCoordsFormat());
-//    }
-
-//    /**
-//     * @see PhysicalElement#loadFullText()
-//     * @verifies load full-text correctly if not yet loaded
-//     */
-//    @Test
-//    public void loadFullText_shouldLoadFulltextCorrectlyIfNotYetLoaded() throws Exception {
-//        PhysicalElement pe = new PhysicalElement("PHYS_0000", "00000001.tif", 1, "1", null, null, "PPN517154005", PhysicalElement.MIME_TYPE_IMAGE,
-//                null);
-//        Assert.assertTrue(pe.loadFullText());
-//        Assert.assertNotNull(pe.getFullText());
-//    }
-
-//    /**
-//     * @see PhysicalElement#loadFullText()
-//     * @verifies return false if already loaded
-//     */
-//    @Test
-//    public void loadFullText_shouldReturnFalseIfAlreadyLoaded() throws Exception {
-//        PhysicalElement pe = new PhysicalElement("PHYS_0000", "00000001.tif", 1, "1", null, null, "PPN517154005", PhysicalElement.MIME_TYPE_IMAGE,
-//                null);
-//        File file = new File("resources/test/METS/kleiuniv_PPN517154005/kleiuniv_PPN517154005_txt/00000001.txt");
-//        Assert.assertTrue(file.isFile());
-//        FileUtils.copyFile(file, new File("resources/test/data/viewer"));
-//        pe.setFulltextFileName("00000001.txt");
-//        Assert.assertTrue(pe.loadFullText());
-//        Assert.assertFalse(pe.loadFullText());
-//    }
 
     /**
      * @see PhysicalElement#handleAltoComposedBlock(Element)
@@ -170,42 +128,14 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
-//    /**
-//     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
-//     * @verifies replace dimensions correctly
-//     */
-//    @Test
-//    public void getModifiedIIIFFUrl_shouldReplaceDimensionsCorrectly() throws Exception {
-//        Assert.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/!200,220/0/native.jpg", PhysicalElement
-//                .getModifiedIIIFFUrl("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/full/0/native.jpg", 200, 220));
-//    }
-//
-//    /**
-//     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
-//     * @verifies do nothing if not iiif url
-//     */
-//    @Test
-//    public void getModifiedIIIFFUrl_shouldDoNothingIfNotIiifUrl() throws Exception {
-//        Assert.assertEquals("http://rosdok.uni-rostock.de/random/url/image.jpg", PhysicalElement.getModifiedIIIFFUrl(
-//                "http://rosdok.uni-rostock.de/random/url/image.jpg", 200, 220));
-//    }
-//
-//    /**
-//     * @see PhysicalElement#isExternalURI(String)
-//     * @verifies return true for external urls
-//     */
-//    @Test
-//    public void isExternalURI_shouldReturnTrueForExternalUrls() throws Exception {
-//        Assert.assertTrue(PhysicalElement.isExternalUrl("http://www.example.com/image.jpg"));
-//        Assert.assertTrue(PhysicalElement.isExternalUrl("https://www.example.com/image.jpg"));
-//    }
-//
-//    /**
-//     * @see PhysicalElement#isExternalURI(String)
-//     * @verifies return false for local paths
-//     */
-//    @Test
-//    public void isExternalURI_shouldReturnFalseForLocalPaths() throws Exception {
-//        Assert.assertFalse(PhysicalElement.isExternalUrl("/opt/digiverso/viewer/media/123/image.jpg"));
-//    }
+    
+    
+    @Test
+    public void isAdaptImageViewHeight_test() {
+        PhysicalElement page =
+                new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+        Assert.assertEquals(0, page.getImageWidth());
+        Assert.assertEquals(0, page.getImageHeight());
+        Assert.assertTrue(page.isAdaptImageViewHeight());
+    }
 }
