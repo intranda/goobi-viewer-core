@@ -1150,6 +1150,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAdaptImageViewHeight() {
         float ratio = getImageWidth()/(float)getImageHeight();
+        //if dimensions cannot be determined (usually widht, height == 0), then return true
+        if(Float.isNaN(ratio) || Float.isInfinite(ratio)) {
+            return true;
+        }
         float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
         float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
 
