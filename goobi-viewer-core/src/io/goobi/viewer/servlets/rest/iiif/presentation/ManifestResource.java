@@ -323,6 +323,7 @@ public class ManifestResource extends AbstractResource {
             PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
             Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
             if (canvas != null) {
+                getSequenceBuilder().addSeeAlsos(canvas, doc, page  );
                 getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
                 return canvas;
             }

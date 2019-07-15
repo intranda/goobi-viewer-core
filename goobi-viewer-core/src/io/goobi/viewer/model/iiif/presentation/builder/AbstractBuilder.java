@@ -500,6 +500,7 @@ public abstract class AbstractBuilder {
 				.append("/list/").append(type.name());
 		return URI.create(sb.toString());
 	}
+
 	
    public URI getCommentAnnotationURI(String pi, int pageNo, long id) {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("webannotation/comments/").append(pi)
