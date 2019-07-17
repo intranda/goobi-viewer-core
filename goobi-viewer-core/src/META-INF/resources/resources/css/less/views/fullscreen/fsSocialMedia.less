@@ -1,0 +1,33 @@
+/* ==============================================================
+   View Fullscreen Social Media
+   ==============================================================*/
+/* FULLSCREEN SOCIAL MEDIA */
+.fullscreen__view-sidebar-social-media {
+	margin-left: auto;
+	ul {
+		.mx-list-reset;
+		display: flex;
+		align-items: center;
+		font-size: @fontXLarge;
+		& > * + * {
+			margin-left: .5rem;
+		}
+	}
+	a {
+		display: inline-block;
+		padding: .5rem;
+		color: @gray;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+ 
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
