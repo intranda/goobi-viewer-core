@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -37,6 +36,7 @@ import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -50,32 +50,33 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class SequenceBuilderTest {
+public class SequenceBuilderTest extends AbstractSolrEnabledTest {
 
-    public static final String PI = "1019375248";
+    public static final String PI = "PPN517154005";
     public static final int ORDER = 1;
-    
+
     @Test
-    public void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IOException {
+    public void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException, ContentNotFoundException, IOException {
         DataManager.getInstance().injectConfiguration(new Configuration("src/config_viewer.xml"));
 
         ManifestBuilder manifestBuilder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        
+
         List<StructElement> docs = manifestBuilder.getDocumentWithChildren(PI);
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + PI);
         }
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = manifestBuilder.generateManifest(mainDoc);
-        
+
         PhysicalElement page = sequenceBuilder.getPage(mainDoc, ORDER);
-        
+
         Canvas canvas = sequenceBuilder.generateCanvas(mainDoc, page);
-        
+
         Map<AnnotationType, AnnotationList> annoMap = sequenceBuilder.addOtherContent(mainDoc, page, canvas, null, true);
         AnnotationList fulltext = annoMap.get(AnnotationType.FULLTEXT);
-        
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -83,7 +84,7 @@ public class SequenceBuilderTest {
         String json = writer.writeValueAsString(fulltext);
         Assert.assertTrue(StringUtils.isNotBlank(json));
         File jsonFile = new File("C:\\opt\\digiverso\\viewer\\annolist.json");
-        FileUtils.write(jsonFile, json);
+        FileUtils.write(jsonFile, json, "UTF-8");
     }
 
 }
