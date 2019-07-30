@@ -9,7 +9,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
+        <ui:fragment rendered="#{configurationBean.displayWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
                 <h3 class="widget__title collapseable">
