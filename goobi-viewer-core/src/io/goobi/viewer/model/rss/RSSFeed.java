@@ -48,8 +48,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -152,7 +152,7 @@ public class RSSFeed {
                     && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
             boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-            boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
+            boolean ePublication = MimeType.APPLICATION.getName().equals(doc.getFieldValue(SolrConstants.MIMETYPE));
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {
@@ -404,7 +404,7 @@ public class RSSFeed {
                     && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
             boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-            boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
+            boolean ePublication = MimeType.APPLICATION.getName().equals(doc.getFieldValue(SolrConstants.MIMETYPE));
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {

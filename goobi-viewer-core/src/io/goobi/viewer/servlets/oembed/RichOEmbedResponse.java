@@ -15,10 +15,8 @@
  */
 package io.goobi.viewer.servlets.oembed;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.MimeType;
 
 public class RichOEmbedResponse extends OEmbedResponse {
 
@@ -49,10 +47,15 @@ public class RichOEmbedResponse extends OEmbedResponse {
 
         StringBuilder sb = new StringBuilder();
         sb.append("<div>");
-        switch (record.getPhysicalElement().getMimeType()) {
-            case PhysicalElement.MIME_TYPE_IMAGE:
-                sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
-                break;
+        MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
+        if (mimeType != null) {
+            switch (mimeType) {
+                case IMAGE:
+                    sb.append("<img src=\"").append(record.getPhysicalElement().getImageUrl(size)).append("\"><br />");
+                    break;
+                default:
+                    break;
+            }
         }
         sb.append("<h3>").append(record.getStructElement().getLabel()).append("</h3>");
 

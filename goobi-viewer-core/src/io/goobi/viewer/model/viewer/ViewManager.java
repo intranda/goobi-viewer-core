@@ -535,13 +535,12 @@ public class ViewManager implements Serializable {
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
         if (filesOnly == null) {
-            if (PhysicalElement.MIME_TYPE_APPLICATION.equals(mainMimeType)) {
+            if (MimeType.APPLICATION.getName().equals(mainMimeType)) {
                 filesOnly = true;
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
                 PhysicalElement firstPage = pageLoader.getPage(pageLoader.getFirstPageOrder());
-                filesOnly = childIsFilesOnly
-                        || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(PhysicalElement.MIME_TYPE_APPLICATION));
+                filesOnly = childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(MimeType.APPLICATION.getName()));
             }
 
         }
@@ -559,7 +558,7 @@ public class ViewManager implements Serializable {
         if (currentDocument != null && (currentDocument.isAnchor() || currentDocument.isGroup())) {
             try {
                 String mimeType = currentDocument.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
-                if (PhysicalElement.MIME_TYPE_APPLICATION.equals(mimeType)) {
+                if (MimeType.APPLICATION.getName().equals(mimeType)) {
                     childIsFilesOnly = true;
                 }
             } catch (PresentationException e) {
@@ -1182,6 +1181,9 @@ public class ViewManager implements Serializable {
     public boolean isAccessPermissionPdf() {
         try {
             if (topDocument == null || !topDocument.isWork() || !isHasPages()) {
+                return false;
+            }
+            if (!MimeType.isImageOrPdfDownloadAllowed(topDocument.getMetadataValue(SolrConstants.MIMETYPE))) {
                 return false;
             }
         } catch (IndexUnreachableException e) {
