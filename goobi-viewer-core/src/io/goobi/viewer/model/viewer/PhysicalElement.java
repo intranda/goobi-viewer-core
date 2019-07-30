@@ -92,6 +92,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public static final String MIME_TYPE_AUDIO = "audio";
     public static final String MIME_TYPE_APPLICATION = "application";
     public static final String MIME_TYPE_SANDBOXED_HTML = "text";
+    public static final String MIME_TYPE_OBJECT = "object";
 
     private static List<String> watermarkTextConfiguration;
     public static int defaultVideoWidth = 320;
@@ -444,6 +445,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     @Deprecated
     public String getFullMimeType() {
         return getDisplayMimeType();
+    }
+
+    /**
+     * 
+     * @return true if image or PDF download is allowed for this page's mime type; false otherwise
+     */
+    public boolean isImageOrPdfDownloadAllowed() {
+        if (mimeType == null) {
+            return false;
+        }
+
+        switch (mimeType) {
+            case MIME_TYPE_AUDIO:
+            case MIME_TYPE_VIDEO:
+            case MIME_TYPE_OBJECT:
+                return false;
+            default:
+                return true;
+        }
     }
 
     /**
@@ -888,6 +908,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessForJs() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
+        // Prevent access if mime type incompatible
+        if (!isImageOrPdfDownloadAllowed()) {
+            return false;
+        }
+
         if (getFilepath().startsWith("http")) {
             //External urls are always free to use
             return true;
@@ -1129,6 +1154,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
+        // Prevent access if mime type incompatible
+        if (!isImageOrPdfDownloadAllowed()) {
+            return false;
+        }
+
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
@@ -1142,25 +1172,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
     }
-    
+
     /**
      * 
-     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the upper threshold
-             Otherwise return true
+     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the
+     *         upper threshold Otherwise return true
      */
     public boolean isAdaptImageViewHeight() {
-        float ratio = getImageWidth()/(float)getImageHeight();
+        float ratio = getImageWidth() / (float) getImageHeight();
         //if dimensions cannot be determined (usually widht, height == 0), then return true
-        if(Float.isNaN(ratio) || Float.isInfinite(ratio)) {
+        if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
             return true;
         }
         float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
         float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
 
-        if(DataManager.getInstance().getConfiguration().isLimitImageHeight()) {            
+        if (DataManager.getInstance().getConfiguration().isLimitImageHeight()) {
             return ratio > lowerThreshold && ratio < upperThreshold;
-        } else {
-            return true;
         }
+
+        return true;
     }
 }
