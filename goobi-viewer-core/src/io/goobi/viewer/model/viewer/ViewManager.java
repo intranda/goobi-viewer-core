@@ -1431,10 +1431,13 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return true if there are no pages
      */
-    private boolean isBelowFulltextThreshold(double threshold) throws PresentationException, IndexUnreachableException {
+    boolean isBelowFulltextThreshold(double threshold) throws PresentationException, IndexUnreachableException {
+        if (pageLoader.getNumPages() == 0) {
+            return true;
+        }
         if (pagesWithFulltext == null) {
-
             pagesWithFulltext = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -1480,7 +1483,6 @@ public class ViewManager implements Serializable {
      */
     private boolean isWorkHasTEIFiles() throws IndexUnreachableException, PresentationException {
         if (workHasTEIFiles == null) {
-
             long teiDocs = DataManager.getInstance()
                     .getSearchIndex()
                     .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
