@@ -2400,4 +2400,23 @@ public class ConfigurationTest extends AbstractTest {
     public void getTwitterUserName_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("@goobi", DataManager.getInstance().getConfiguration().getTwitterUserName());
     }
+    
+
+    /**
+     * @see Configuration#isDisplaySidebarUsageWidgetLinkToJpegImage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarUsageWidgetLinkToJpegImage_shouldReturnCorrectValue() throws Exception {
+       Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
+    }
+
+    /**
+     * @see Configuration#isDisplaySidebarUsageWidgetLinkToTiffImage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplaySidebarUsageWidgetLinkToTiffImage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToTiffImage());
+    }
 }

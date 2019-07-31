@@ -516,6 +516,22 @@ public final class Configuration extends AbstractConfiguration {
         }
         return new Metadata();
     }
+    
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
+    }
+    
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarUsageWidgetLinkToTiffImage() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToTiffImage", false);
+    }
 
     /**
      * Creates a {@link Metadata} instance from the given subnode configuration

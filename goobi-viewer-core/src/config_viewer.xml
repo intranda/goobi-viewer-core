@@ -1109,6 +1109,12 @@
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
                 </licenseText>
+                <page>
+                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                    <displayLinkToJpegImage>true</displayLinkToJpegImage>
+                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                    <displayLinkToTiffImage>true</displayLinkToTiffImage>
+                </page>
             </sidebarWidgetUsage>
     
 		<!-- This defines the order of sidebar-elements related to the navigation 

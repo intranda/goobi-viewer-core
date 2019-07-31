@@ -818,6 +818,12 @@
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
                 </licenseText>
+                <page>
+                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                    <displayLinkToJpegImage>true</displayLinkToJpegImage>
+                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                    <displayLinkToTiffImage>true</displayLinkToTiffImage>
+                </page>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->
