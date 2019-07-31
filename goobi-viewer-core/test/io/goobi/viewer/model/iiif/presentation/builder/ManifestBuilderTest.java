@@ -32,7 +32,7 @@ import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class ManifestBuilderTest extends AbstractSolrEnabledTest {
+public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     public static final String PI = "PPN517154005";
     
