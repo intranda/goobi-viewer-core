@@ -45,9 +45,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.tools.ant.util.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
@@ -194,14 +194,16 @@ public class ContentResource {
                 } finally {
                     out.flush();
                     out.close();
+                    if (tempFile.exists()) {
+                        FileUtils.deleteQuietly(tempFile);
+                    }
                 }
             };
         } catch (IOException e) {
-            throw new ContentNotFoundException("Resource not found or not accessible", e);
-        } finally {
             if (tempFile.exists()) {
-                FileUtils.delete(tempFile);
+                FileUtils.deleteQuietly(tempFile);
             }
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
         }
     }
 
@@ -285,16 +287,17 @@ public class ContentResource {
                 } finally {
                     out.flush();
                     out.close();
+                    if (tempFile.exists()) {
+                        FileUtils.deleteQuietly(tempFile);
+                    }
                 }
             };
         } catch (IOException e) {
-            throw new ContentNotFoundException("Resource not found or not accessible", e);
-        } finally {
             if (tempFile.exists()) {
-                FileUtils.delete(tempFile);
+                FileUtils.deleteQuietly(tempFile);
             }
+            throw new ContentNotFoundException("Resource not found or not accessible", e);
         }
-
     }
 
     /**
