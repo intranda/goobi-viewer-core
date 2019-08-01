@@ -47,6 +47,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.tools.ant.util.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
@@ -176,11 +177,11 @@ public class ContentResource {
         java.nio.file.Path altoPath = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder(), null, null);
         java.nio.file.Path altoPathCrowd = getPath(pi, DataManager.getInstance().getConfiguration().getAltoFolder() + "_crowd", null, null);
 
+        File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_alto.zip");
         try {
             List<File> altoFilePaths =
                     getFiles(altoPathCrowd, altoPath, "(?i).*\\.(alto|xml)").stream().map(java.nio.file.Path::toFile).collect(Collectors.toList());
 
-            File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_alto.zip");
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
             }
@@ -195,9 +196,12 @@ public class ContentResource {
                     out.close();
                 }
             };
-
         } catch (IOException e) {
             throw new ContentNotFoundException("Resource not found or not accessible", e);
+        } finally {
+            if (tempFile.exists()) {
+                FileUtils.delete(tempFile);
+            }
         }
     }
 
@@ -267,9 +271,8 @@ public class ContentResource {
 
         Map<java.nio.file.Path, String> fileMap = getFulltext(pi);
 
+        File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
         try {
-
-            File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_text.zip");
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
             }
@@ -284,9 +287,12 @@ public class ContentResource {
                     out.close();
                 }
             };
-
         } catch (IOException e) {
             throw new ContentNotFoundException("Resource not found or not accessible", e);
+        } finally {
+            if (tempFile.exists()) {
+                FileUtils.delete(tempFile);
+            }
         }
 
     }
