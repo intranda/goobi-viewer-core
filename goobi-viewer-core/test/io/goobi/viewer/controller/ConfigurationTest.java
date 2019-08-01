@@ -832,7 +832,6 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isSubthemeAddFilterQuery_shouldReturnCorrectValue() throws Exception {
-        //TODO auto-generated
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
     }
 
@@ -1317,7 +1316,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getSortFields().size());
     }
-    
 
     /**
      * @see Configuration#getStaticSortFields()
@@ -2132,13 +2130,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getCollectionHierarchyField()
+     * @verifies return first field where hierarchy enabled
+     */
+    @Test
+    public void getCollectionHierarchyField_shouldReturnFirstFieldWhereHierarchyEnabled() throws Exception {
+        Assert.assertEquals("MD_KNOWLEDGEFIELD", DataManager.getInstance().getConfiguration().getCollectionHierarchyField());
+    }
+
+    /**
      * @see Configuration#isAddCollectionHierarchyToBreadcrumbs(String)
      * @verifies return correct value
      */
     @Test
     public void isAddCollectionHierarchyToBreadcrumbs_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("DC"));
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_KNOWLEDGEFIELD"));
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("DC"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs("MD_KNOWLEDGEFIELD"));
     }
 
     /**
@@ -2400,7 +2407,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getTwitterUserName_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("@goobi", DataManager.getInstance().getConfiguration().getTwitterUserName());
     }
-    
 
     /**
      * @see Configuration#isDisplaySidebarUsageWidgetLinkToJpegImage()
@@ -2408,7 +2414,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isDisplaySidebarUsageWidgetLinkToJpegImage_shouldReturnCorrectValue() throws Exception {
-       Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage());
     }
 
     /**

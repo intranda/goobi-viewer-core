@@ -516,7 +516,7 @@ public final class Configuration extends AbstractConfiguration {
         }
         return new Metadata();
     }
-    
+
     /**
      * @return
      * @should return correct value
@@ -524,7 +524,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarUsageWidgetLinkToJpegImage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage", false);
     }
-    
+
     /**
      * @return
      * @should return correct value
@@ -844,6 +844,21 @@ public final class Configuration extends AbstractConfiguration {
             return -1;
         }
         return collection.getInt("displayDepthForSearch", -1);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return first field where hierarchy enabled
+     */
+    public String getCollectionHierarchyField() {
+        for (String field : getConfiguredCollections()) {
+            if (isAddCollectionHierarchyToBreadcrumbs(field)) {
+                return field;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -1607,7 +1622,6 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.fulltext.visible", true);
     }
 
-    
     /**
      * 
      * @return
@@ -1700,8 +1714,6 @@ public final class Configuration extends AbstractConfiguration {
         // logger.trace("Tree view for {} not allowed", docStructType);
         return false;
     }
-    
-
 
     /**
      * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
@@ -1932,7 +1944,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getSortFields() {
         return getLocalList("search.sorting.luceneField");
     }
-    
+
     /**
      * 
      * @return
@@ -3304,11 +3316,11 @@ public final class Configuration extends AbstractConfiguration {
     public float getLimitImageHeightUpperRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@upperRatioThreshold]", 0.3f);
     }
-    
+
     public float getLimitImageHeightLowerRatioThreshold() {
         return getLocalFloat("viewer.limitImageHeight[@lowerRatioThreshold]", 3f);
     }
-    
+
     public boolean isLimitImageHeight() {
         return getLocalBoolean("viewer.limitImageHeight", true);
     }
@@ -3326,6 +3338,5 @@ public final class Configuration extends AbstractConfiguration {
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
     }
-
 
 }

@@ -527,13 +527,13 @@
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
 			
-            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
-                breadcrumbs (if not multivalued). Default is false. -->
-            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
 		</collection>
 		
         <collection field="MD_KNOWLEDGEFIELD">
-                    <splittingCharacter>/</splittingCharacter>
+            <splittingCharacter>/</splittingCharacter>
+            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
+                breadcrumbs (if not multivalued). Default is false. -->
+            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
         </collection>
         
         <collection field="MD_HIERARCHICALFIELD"/>
