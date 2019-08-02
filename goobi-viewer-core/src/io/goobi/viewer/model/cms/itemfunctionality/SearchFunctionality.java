@@ -72,6 +72,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         this.baseUrl = baseUrl;
     }
 
+    @Override
     public String resetSearch() {
         getSearchBean().resetSearchAction();
         redirectToSearchUrl(false);
@@ -86,7 +87,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         try {
             ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {
                 if (path != null) {
-                    if(keepUrlParameter) {                        
+                    if (keepUrlParameter) {
                         path.setParameterPath(getParameterPath());
                     }
                     final FacesContext context = FacesContext.getCurrentInstance();
@@ -103,6 +104,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         }
     }
 
+    @Override
     public String searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
@@ -114,6 +116,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return "";
     }
 
+    @Override
     public String searchAdvanced() {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
@@ -137,14 +140,15 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     public void search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
-        if (getSearchBean() == null) {
+        SearchBean searchBean = getSearchBean();
+        if (searchBean == null) {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-            String facetString = getSearchBean().getFacets().getCurrentFacetString();
-            getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
-            getSearchBean().search();
-            getSearchBean().getFacets().setCurrentFacetString(facetString);
+        String facetString = getSearchBean().getFacets().getCurrentFacetString();
+        searchBean.getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
+        searchBean.search();
+        searchBean.getFacets().setCurrentFacetString(facetString);
     }
 
     /**
@@ -208,10 +212,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return getSearchBean().getCurrentPage();
     }
 
+    @Override
     public int getCurrentPage() {
         return getPageNo();
     }
-    
+
     /**
      * @return the searchBean
      */
@@ -229,6 +234,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * @return the solrSortFields
      */
+    @Override
     public String getSortString() {
         return getSearchBean().getSortString();
     }
@@ -236,6 +242,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /**
      * @param solrSortFields the solrSortFields to set
      */
+    @Override
     public void setSortString(String solrSortFields) {
         getSearchBean().setSortString(solrSortFields);
     }
@@ -271,7 +278,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
     }
-    
+
+    @Override
     public String getExactSearchString() {
         return getQueryString();
     }
@@ -401,7 +409,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public void setCurrentSearchFilterString(String filter) {
         getSearchBean().setCurrentSearchFilterString(filter);
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#getActiveSearchType()
@@ -417,7 +424,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public void setActiveSearchType(int type) {
         getSearchBean().setActiveSearchType(type);
-        
+
     }
 
     /* (non-Javadoc)
@@ -449,11 +456,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     @Override
     public String getCurrentSearchUrlRoot() {
-        if(getBaseUrl().endsWith("/")) {
-            return getBaseUrl().substring(0, getBaseUrl().length()-1);
-        } else {
-            return getBaseUrl();
+        if (getBaseUrl().endsWith("/")) {
+            return getBaseUrl().substring(0, getBaseUrl().length() - 1);
         }
+
+        return getBaseUrl();
     }
 
     /* (non-Javadoc)
@@ -463,7 +470,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public int getLastPage() {
         return getSearchBean().getLastPage();
     }
-    
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.SearchInterface#isExplicitSearchPerformed()
      */
