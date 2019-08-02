@@ -441,7 +441,7 @@ public class ActiveDocumentBean implements Serializable {
     public String open()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
-            logger.trace("open");
+            logger.trace("open()");
             try {
                 update();
                 if (navigationHelper == null || viewManager == null) {
@@ -467,7 +467,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
                     String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
                     if (collectionHierarchyField != null) {
-                        List<String> collections = viewManager.getTopDocument().getCollections();
+                        List<String> collections = viewManager.getTopDocument().getMetadataValues(collectionHierarchyField);
                         if (collections.size() == 1) {
                             navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), collectionHierarchyField,
                                     DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionHierarchyField));
