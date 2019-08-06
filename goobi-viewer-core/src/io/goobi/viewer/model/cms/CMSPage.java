@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1119,16 +1118,7 @@ public class CMSPage implements Comparable<CMSPage> {
         synchronized (languageVersions) {
             List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
             for (CMSPageLanguageVersion language : languages) {
-                CMSContentItem item = new CMSContentItem(templateItem, null);
-                if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-                    if (!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
-                        language.addContentItem(item);
-                    }
-                } else {
-                    if (language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
-                        language.addContentItem(item);
-                    }
-                }
+                language.addContentItemFromTemplateItem(templateItem);
             }
 
             // getLanguageVersions().stream().filter(lang ->
@@ -1157,7 +1147,7 @@ public class CMSPage implements Comparable<CMSPage> {
     }
 
     /**
-     * Returns the first found SearchFunctionality of any containted content items If no fitting item is found, a new default SearchFunctionality is
+     * Returns the first found SearchFunctionality of any contained content items If no fitting item is found, a new default SearchFunctionality is
      * returned
      * 
      * @return SearchFunctionality, not null

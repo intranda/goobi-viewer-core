@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
+import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 
 /**
  * Content instance of a CMS page for a particular language.
@@ -196,7 +197,7 @@ public class CMSPageLanguageVersion {
     public String getMenuTitle() {
         return menuTitle;
     }
-    
+
     /**
      * @return the menuTitle or the title if no menu title exists
      */
@@ -250,6 +251,22 @@ public class CMSPageLanguageVersion {
     }
 
     /**
+     * @param itemId
+     * @return
+     */
+    public boolean hasContentItem(final String itemId) {
+//        logger.trace("template item id: {}", itemId);
+//        for(CMSContentItem item : getContentItems()) {
+//            logger.trace(item.getItemId());
+//            if(item.getItemId().equals(itemId)) {
+//                return true;
+//            }
+//        }
+//        return false;
+        return getContentItems().stream().filter(item -> item.getItemId().equals(itemId)).findAny().isPresent();
+    }
+
+    /**
      * Generates complete content item list for this page language version. The language version must be added to a CMS page before calling this
      * method!
      */
@@ -294,6 +311,32 @@ public class CMSPageLanguageVersion {
     @Override
     public String toString() {
         return CMSPageLanguageVersion.class.getSimpleName() + ": " + getLanguage();
+    }
+
+    /**
+     * Adds a new content item from a template item.
+     * 
+     * @param templateItem
+     */
+    public boolean addContentItemFromTemplateItem(CMSContentItem templateItem) {
+        if (templateItem == null) {
+            throw new IllegalArgumentException("templateItem may not be null");
+        }
+
+        CMSContentItem item = new CMSContentItem(templateItem, null);
+        if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+            if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                addContentItem(item);
+                return true;
+            }
+        } else {
+            if (getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                addContentItem(item);
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**

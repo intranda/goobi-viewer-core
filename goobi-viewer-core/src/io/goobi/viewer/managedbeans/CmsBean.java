@@ -334,7 +334,7 @@ public class CmsBean implements Serializable {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
         }
-        //check if all page content items exist in templage
+        //check if all page content items exist in template
         List<CMSContentItem> allPageItems =
                 page.getLanguageVersions().stream().flatMap(lang -> lang.getContentItems().stream()).distinct().collect(Collectors.toList());
         for (CMSContentItem pageItem : allPageItems) {
@@ -343,11 +343,20 @@ public class CmsBean implements Serializable {
                 page.removeContentItem(pageItem.getItemId());
             }
         }
-        //check if app template content items exist in page
+        //check if all template content items exist in page and add missing items
         for (CMSContentItem templateItem : template.getContentItems()) {
+            // completely new item
             if (!page.hasContentItem(templateItem.getItemId())) {
-                //if not, add them
                 page.addContentItem(templateItem);
+                logger.info("Added new template item '{}' all languages.", templateItem.getItemLabel());
+            }
+            // new language version
+            for (CMSPageLanguageVersion language : page.getLanguageVersions()) {
+                if (!language.hasContentItem(templateItem.getItemId())) {
+                    if (language.addContentItemFromTemplateItem(templateItem)) {
+                        logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), language.getLanguage());
+                    }
+                }
             }
         }
         return PageValidityStatus.VALID;
@@ -1043,7 +1052,7 @@ public class CmsBean implements Serializable {
         if (this.selectedPage != null) {
             for (CMSCategory category : categories) {
                 boolean used = this.selectedPage.getCategories().contains(category);
-                Selectable<CMSCategory> selectable = new Selectable<CMSCategory>(category, used);
+                Selectable<CMSCategory> selectable = new Selectable<>(category, used);
                 selectables.add(selectable);
             }
         }
@@ -1058,10 +1067,9 @@ public class CmsBean implements Serializable {
         if (this.selectedPage != null) {
             return userBean.getUser().hasPrivilegeForAllCategories()
                     || this.selectedPage.getSelectableCategories().stream().anyMatch(c -> c.isSelected());
-        } else {
-            return true;
         }
-
+        
+        return true;
     }
 
     /**
@@ -1868,9 +1876,9 @@ public class CmsBean implements Serializable {
                 }
                 return mayEdit;
             }
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**
@@ -1905,9 +1913,9 @@ public class CmsBean implements Serializable {
         if (mayEdit(page)) {
             setSelectedPage(page);
             return "pretty:adminCmsCreatePage";
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
 }
