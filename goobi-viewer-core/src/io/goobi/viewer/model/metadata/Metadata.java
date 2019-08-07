@@ -350,7 +350,7 @@ public class Metadata implements Serializable {
                                             // gndspec
                                             String val = normData.getValues().get(0).getText();
                                             if (val.length() == 3) {
-                                                switch (val.substring(0, 1)) {
+                                                switch (val.substring(0, 2)) {
                                                     case "ki":
                                                         normDataType = MetadataGroupType.CORPORATION.name();
                                                         break;
