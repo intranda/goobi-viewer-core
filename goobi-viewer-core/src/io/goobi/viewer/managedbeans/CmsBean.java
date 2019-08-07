@@ -352,11 +352,7 @@ public class CmsBean implements Serializable {
             }
             // new language version
             for (CMSPageLanguageVersion language : page.getLanguageVersions()) {
-                if (!language.hasContentItem(templateItem.getItemId())) {
-                    if (language.addContentItemFromTemplateItem(templateItem)) {
-                        logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), language.getLanguage());
-                    }
-                }
+                language.addContentItemFromTemplateItem(templateItem);
             }
         }
         return PageValidityStatus.VALID;
@@ -948,8 +944,8 @@ public class CmsBean implements Serializable {
             if (validityStatus.isValid()) {
                 this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
             }
-            this.selectedPage.createMissingLangaugeVersions(getAllLocales());
-            logger.debug("Selected page " + currentPage);
+            this.selectedPage.createMissingLanguageVersions(getAllLocales());
+            logger.debug("Selected page: {}", currentPage);
 
         } else {
             this.selectedPage = null;
@@ -1068,7 +1064,7 @@ public class CmsBean implements Serializable {
             return userBean.getUser().hasPrivilegeForAllCategories()
                     || this.selectedPage.getSelectableCategories().stream().anyMatch(c -> c.isSelected());
         }
-        
+
         return true;
     }
 
@@ -1877,7 +1873,7 @@ public class CmsBean implements Serializable {
                 return mayEdit;
             }
         }
-        
+
         return false;
     }
 
@@ -1914,7 +1910,7 @@ public class CmsBean implements Serializable {
             setSelectedPage(page);
             return "pretty:adminCmsCreatePage";
         }
-        
+
         return "";
     }
 

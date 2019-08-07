@@ -1322,13 +1322,21 @@ public class CMSPage implements Comparable<CMSPage> {
      * @param page
      * @param locales
      */
-    public void createMissingLangaugeVersions(List<Locale> locales) {
+    public void createMissingLanguageVersions(List<Locale> locales) {
         for (Locale locale : locales) {
-            if (!hasLanguageVersion(locale)) {
-                addLanguageVersion(new CMSPageLanguageVersion(locale.getLanguage()));
+            if (hasLanguageVersion(locale)) {
+                continue;
+            }
+            CMSPageLanguageVersion langVersion = new CMSPageLanguageVersion(locale.getLanguage());
+            addLanguageVersion(langVersion);
+            logger.info("Added new language version: {}", langVersion.getLanguage());
+
+            //check if all template content items exist in page and add missing items
+            for (CMSContentItem templateItem : getTemplate().getContentItems()) {
+                // new language version
+                langVersion.addContentItemFromTemplateItem(templateItem);
             }
         }
-
     }
 
     /**

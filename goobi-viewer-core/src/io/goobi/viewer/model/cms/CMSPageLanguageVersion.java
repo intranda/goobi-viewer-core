@@ -255,14 +255,14 @@ public class CMSPageLanguageVersion {
      * @return
      */
     public boolean hasContentItem(final String itemId) {
-//        logger.trace("template item id: {}", itemId);
-//        for(CMSContentItem item : getContentItems()) {
-//            logger.trace(item.getItemId());
-//            if(item.getItemId().equals(itemId)) {
-//                return true;
-//            }
-//        }
-//        return false;
+        //        logger.trace("template item id: {}", itemId);
+        //        for(CMSContentItem item : getContentItems()) {
+        //            logger.trace(item.getItemId());
+        //            if(item.getItemId().equals(itemId)) {
+        //                return true;
+        //            }
+        //        }
+        //        return false;
         return getContentItems().stream().filter(item -> item.getItemId().equals(itemId)).findAny().isPresent();
     }
 
@@ -317,25 +317,31 @@ public class CMSPageLanguageVersion {
      * Adds a new content item from a template item.
      * 
      * @param templateItem
+     * @should return false if content item already in list
      */
     public boolean addContentItemFromTemplateItem(CMSContentItem templateItem) {
         if (templateItem == null) {
             throw new IllegalArgumentException("templateItem may not be null");
+        }
+        if (hasContentItem(templateItem.getItemId())) {
+            return false;
         }
 
         CMSContentItem item = new CMSContentItem(templateItem, null);
         if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
                 return true;
             }
         } else {
             if (getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
+                logger.info("Added new template item '{}' to language version: {}", templateItem.getItemLabel(), getLanguage());
                 return true;
             }
         }
-        
+
         return false;
     }
 
