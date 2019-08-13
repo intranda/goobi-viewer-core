@@ -341,6 +341,21 @@
               //]]>
             </script>
 		</f:view>
+		
+        <script type="text/javascript">            
+            var normdataConfig = {
+                path: "#{request.contextPath}",
+                lang: {
+                    popoverTitle: "#{msg.normdataPopverTitle}",
+                    popoverClose: "#{msg.normdataPopoverClose}",
+                    showNormdata: "#{msg.normdataExpand}"
+                },
+                elemWrapper: $( "#metadataElementWrapper" )
+            };
+            
+            viewerJS.normdata.init( normdataConfig );
+        </script>
+		
 	</ui:define>
 
 	<!-- SIDEBAR -->
