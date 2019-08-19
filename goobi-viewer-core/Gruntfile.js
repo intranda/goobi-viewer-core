@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	// ---------- VARIABLES ----------
 	var banner = '/*!\n'
 		+ ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
@@ -18,35 +18,35 @@ module.exports = function(grunt) {
 
 	// ---------- PROJECT CONFIG ----------
 	grunt.initConfig({
-		theme : {
-			name : 'viewer'
+		theme: {
+			name: 'viewer'
 		},
-		pkg : grunt.file.readJSON('package.json'),
-		src : {
-			jsDevFolder : 'src/META-INF/resources/resources/javascript/dev/',
-			jsDevFolderModules : 'src/META-INF/resources/resources/javascript/dev/modules/',
-			jsDistFolder : 'src/META-INF/resources/resources/javascript/dist/',
-			cssFolder : 'src/META-INF/resources/resources/css/',
-			cssDistFolder : 'src/META-INF/resources/resources/css/dist/',
-			lessDevFolder : 'src/META-INF/resources/resources/css/less/'
+		pkg: grunt.file.readJSON('package.json'),
+		src: {
+			jsDevFolder: 'src/META-INF/resources/resources/javascript/dev/',
+			jsDevFolderModules: 'src/META-INF/resources/resources/javascript/dev/modules/',
+			jsDistFolder: 'src/META-INF/resources/resources/javascript/dist/',
+			cssFolder: 'src/META-INF/resources/resources/css/',
+			cssDistFolder: 'src/META-INF/resources/resources/css/dist/',
+			lessDevFolder: 'src/META-INF/resources/resources/css/less/',
 		},
-		less : {
-			dist : {
-				options : {
-					banner : banner,
-					paths : [ '<%=src.lessDevFolder%>' ],
-					plugins : [
-						new ( require('less-plugin-autoprefix') )({
-							browsers : [ "last 2 versions" ],
-							grid : true
+		less: {
+			dist: {
+				options: {
+					banner: banner,
+					paths: ['<%=src.lessDevFolder%>'],
+					plugins: [
+						new (require('less-plugin-autoprefix'))({
+							browsers: ["last 2 versions"],
+							grid: true
 						})
 					],
-					compress : true,
-					sourceMap : true,
+					compress: true,
+					sourceMap: true,
 					outputSourceFiles: true,
 				},
-				files : {
-					'<%=src.cssDistFolder %><%=theme.name%>.min.css' : '<%=src.lessDevFolder%>constructor.less'
+				files: {
+					'<%=src.cssDistFolder %><%=theme.name%>.min.css': '<%=src.lessDevFolder%>constructor.less'
 				}
 			}
 		},
@@ -67,15 +67,15 @@ module.exports = function(grunt) {
 				dest: "./src/META-INF/resources/resources/css/styleguide/",
 			}
 		},
-		concat : {
-			options : {
-				banner : banner,
-				separator : '\n',
-				stripBanners : true,
-				sourceMap : false
+		concat: {
+			options: {
+				banner: banner,
+				separator: '\n',
+				stripBanners: true,
+				sourceMap: false
 			},
-			dist : {
-				src : [
+			dist: {
+				src: [
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
 					'<%=src.jsDevFolderModules %>cms/cmsJS.js',
@@ -83,61 +83,139 @@ module.exports = function(grunt) {
 					'<%=src.jsDevFolderModules %>admin/adminJS.js',
 					'<%=src.jsDevFolderModules %>admin/adminJS.*.js'
 				],
-				dest : '<%=src.jsDistFolder%>viewer.min.js'
+				dest: '<%=src.jsDistFolder%>viewer.min.js'
 			}
 		},
-		watch : {
-			configFiles : {
-				files : [ 'Gruntfile.js' ],
-				options : {
-					reload : true
+		sync: {
+			resources: {
+				files: [{
+					cwd: 'src/META-INF/resources/resources',
+					src: ['**'],
+					dest: '/Applications/apache-tomcat-8.5.14/webapps/viewer/resources/',
+				}],
+			},
+			xhtml: {
+				files: [{
+					cwd: 'src/META-INF/resources',
+					src: ['**'],
+					dest: '/Applications/apache-tomcat-8.5.14/webapps/viewer/',
+				}],
+			},
+		},
+		riot: {
+			options: {
+				concat: true
+			},
+			dist: {
+				expand: false,
+				src: '<%=src.jsDevFolder %>tags/**/*.tag',
+				dest: '<%=src.jsDistFolder%>riot-tags.js'
+			}
+		},
+		watch: {
+			configFiles: {
+				files: ['Gruntfile.js'],
+				options: {
+					reload: true
 				}
 			},
-			less : {
-				files : [ '<%=src.lessDevFolder%>**/*.less' ],
-				tasks : [ 'less', 'kss' ],
-				options : {
-					spawn : false,
+			less: {
+				files: ['<%=src.lessDevFolder%>**/*.less'],
+				tasks: ['less'],
+				options: {
+					spawn: false,
 				}
 			},
-			scripts : {
-				files : [
+			static: {
+				files: [
+					'src/META-INF/resources/*.xhtml',
+					'src/META-INF/resources/*.xml',
+					'src/META-INF/resources/*.xls',
+					'src/META-INF/resources/resources/**/*.xhtml',
+					'src/META-INF/resources/resources/**/*.html',
+					'src/META-INF/resources/resources/**/*.jpg',
+					'src/META-INF/resources/resources/**/*.png',
+					'src/META-INF/resources/resources/**/*.svg',
+					'src/META-INF/resources/resources/**/*.gif',
+					'src/META-INF/resources/resources/**/*.ico',
+					'src/META-INF/resources/resources/**/*.css',
+					'src/META-INF/resources/resources/**/*.js',
+				],
+				tasks: ['sync'],
+				options: {
+					spawn: false,
+				}
+			},
+			scripts: {
+				files: [
 					'<%=src.jsDevFolderModules%>**/*.js'
 				],
-				tasks : [ 'concat' ],
-				options : {
-					spawn : false,
+				tasks: ['concat'],
+				options: {
+					spawn: false,
 				}
 			},
 			riot: {
-				files : [
+				files: [
 					'<%=src.jsDevFolder %>tags/**/*.tag'
 				],
-				tasks : [ 'riot' ],
-				options : {
-					spawn : false,
+				tasks: ['riot'],
+				options: {
+					spawn: false,
 				}
 			}
 		},
-		riot: {
-            options:{
-                concat: true
-            },
-            dist: {
-                expand: false,
-                src: '<%=src.jsDevFolder %>tags/**/*.tag',
-                dest: '<%=src.jsDistFolder%>riot-tags.js'
-            }
-        },
+		concurrent: {
+			options: {
+				logConcurrentOutput: true
+			},
+			dev: {
+				tasks: ['watch:configFiles', 'watch:less', 'watch:scripts', 'watch:riot']
+			},
+			devsync: {
+				tasks: ['watch:configFiles', 'watch:less', 'watch:scripts', 'watch:riot', 'watch:static']
+			}
+		},
 	});
-	
+
 	// ---------- LOAD TASKS ----------
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-kss');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-riot');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-sync');
+	grunt.loadNpmTasks('grunt-concurrent');
 
-	// ---------- REGISTER DEVELOPMENT TASKS ----------
-	grunt.registerTask('default', [ 'watch' ]);
+	// ---------- REGISTER TASKS ----------
+
+	// ----------
+    // concurrent:dev task.
+	// This runs all tasks without sync.
+	// $ grunt dev
+	grunt.registerTask('dev', ['concurrent:dev']);
+	
+	// ----------
+    // concurrent:devsync task.
+    // This runs all tasks including sync.
+	// $ grunt devsync
+	grunt.registerTask('devsync', ['concurrent:devsync']);
+	
+	// ----------
+    // styleguide task.
+    // This runs a tasks to create a css styleguide.
+	// $ grunt styleguide
+	grunt.registerTask('styleguide', ['kss']);
+	
+	// ----------
+    // build task.
+    // This runs all tasks to compile the neccessary CSS and JS files.
+	// $ grunt build
+	grunt.registerTask('build', ['less', 'concat', 'riot']);
+	
+	// ----------
+    // default task.
+    // Default which runs the build task.
+	// $ grunt
+	grunt.registerTask('default', ['build']);
 };

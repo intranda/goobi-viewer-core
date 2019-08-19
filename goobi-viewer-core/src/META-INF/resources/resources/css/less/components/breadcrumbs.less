@@ -1,14 +1,39 @@
-/* ==============================================================
-   Breadcrumbs
-   style declarations for breadcrumbs.xhtml
-   ==============================================================*/
-/* BREADCRUMBS */
-/* BLOCK */
+// Breadcrumbs
+// 
+// Styledeclarations for breadcrumbs.<br />
+// <strong>File:</strong> src/META-INF/resources/resources/includes/breadcrumbs.xhtml
+//
+// Weight: 3
+//
+// Markup:
+// <nav class="breadcrumbs">
+//     <ul>
+//     	<li class="breadcrumbs__starttext">
+//     		<span>You are here:</span>
+//     	</li>
+//     	<li class="breadcrumbs__crumb">
+//             <a href="#">
+//                 A breadcrumb entry
+//             </a>
+//     	</li>
+//     	<li class="breadcrumbs__crumb">
+//             <a href="#">
+//                 A breadcrumb entry
+//             </a>
+//     	</li>
+// 		<li class="breadcrumbs__crumb">
+//             <span>
+//                 The last breadcrumb entry
+//             </span>
+//     	</li>
+//     </ul>                    
+// </nav>
+//
+// Styleguide Components.breadcrumbs
 .breadcrumbs-wrapper {
     font-size: @fontSmall;
 }
 .breadcrumbs {
-    /* ELEMENTS */
     ul {}
     li {
         display: inline-block;
@@ -19,23 +44,23 @@
     }
     a {}
     span {}
-    &__starttext {
-        a, span {
-            padding: 5px 0;
-        }
-    }
-    &__starttext + li {
-        a, span {
-            padding-left: 5px;
-        }
-    }
-    &__crumb + li:before {
-        content:"\203A";
-        display: block;
-        float: left;
-        clear: left;
+}
+.breadcrumbs__starttext {
+    a, span {
         padding: 5px 0;
     }
+}
+.breadcrumbs__starttext + li {
+    a, span {
+        padding-left: 5px;
+    }
+}
+.breadcrumbs__crumb + li:before {
+    content:"\203A";
+    display: block;
+    float: left;
+    clear: left;
+    padding: 5px 0;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

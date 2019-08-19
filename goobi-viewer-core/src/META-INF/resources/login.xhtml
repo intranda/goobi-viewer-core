@@ -4,57 +4,55 @@
 	<!ENTITY nbsp "&#160;">
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-      
-          <!-- METADATA -->
-	    <ui:define name="metadata">
-	        <f:metadata>
-	        	<f:viewParam name="from" value="#{userBean.redirectUrl}" />
-	        </f:metadata>
-	    </ui:define>
-      
-      <h:head profile="http://dublincore.org/documents/dcq-html/">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-		<ui:insert name="head" />
-	
-		<meta charset="utf-8" />
-		<meta name="description" content="" />
-		<meta name="generator" content="Goobi viewer" />
-		<meta name="version" content="#{navigationHelper.version}" />
-	    <meta name="viewport" content="width=device-width, initial-scale=1" />
-	    <ui:fragment rendered="#{navigationHelper.displayNoIndexMetaTag}">
-	        <meta name="robots" content="noindex" />
-	    </ui:fragment>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<!-- METADATA -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="from" value="#{userBean.redirectUrl}" />
+		</f:metadata>
+	</ui:define>
 
-		<title>Goobi viewer - Login</title>
+<h:head profile="http://dublincore.org/documents/dcq-html/">
 
-	    <!-- BASIC CSS -->
-	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.min.css" />
-	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css" />
-	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css" />
-	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/font-awesome.min.css" />
-		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css" />
-	
-		<!-- CUSTOM CSS -->
-		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css" />
-	    
-	    <!-- SUBTHEME CSS -->
-	    <h:panelGroup rendered="#{navigationHelper.subthemeSelected}">
-	        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css" />
-	    </h:panelGroup>
-	    
-	    <!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
-	    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
-	    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
+	<ui:insert name="head" />
 
-	</h:head>
-      
-    <h:body id="login-body">
+	<meta charset="utf-8" />
+	<meta name="description" content="" />
+	<meta name="generator" content="Goobi viewer" />
+	<meta name="version" content="#{navigationHelper.version}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<ui:fragment rendered="#{navigationHelper.displayNoIndexMetaTag}">
+		<meta name="robots" content="noindex" />
+	</ui:fragment>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<title>Goobi viewer - Login</title>
+
+	<!-- BASIC CSS -->
+	<link rel="stylesheet" href="#{request.contextPath}/resources/css/libs/bs/bootstrap.min.css" />
+	<link rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css" />
+	<link rel="stylesheet" href="#{request.contextPath}/resources/css/libs/jQueryUI-1.12.1/jquery-ui.structure.min.css" />
+	<link rel="stylesheet" href="#{request.contextPath}/resources/css/libs/font-awesome.min.css" />
+	<link rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css" />
+
+	<!-- CUSTOM CSS -->
+    <link rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}Styles.css" />
     
-    	<ui:include src="/resources/includes/user/userLogin.xhtml" />
-    
-    </h:body>
+    <!-- SUBTHEME CSS -->
+    <h:panelGroup rendered="#{navigationHelper.subthemeSelected}">
+        <link rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}Styles.css" />
+    </h:panelGroup>
+
+	<!-- FORCES PRIMEFACES TO INCLUDE JQUERY & JQUERY-UI -->
+	<h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
+	<h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
+</h:head>
+
+<h:body id="login-body">
+	<!-- USER LOGIN -->
+	<ui:include src="/resources/includes/user/userLogin.xhtml" />
+</h:body>
 </html>
