@@ -116,7 +116,7 @@ public class CMSContentResource {
         } else {
             output = "<span></span>";
         }
-        logger.trace("Sending cms content string '{}'", output);
+        // logger.trace("Sending cms content string '{}'", output);
         return output;
     }
 
