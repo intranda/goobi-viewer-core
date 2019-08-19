@@ -78,11 +78,12 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     
     /**
      * @param name
+     * @param label
      * @param url
      * @param image
      */
-    public LitteraProvider(String name, String url, String image, long timeoutMillis) {
-        super(name, TYPE_USER_PASSWORD, url, image, timeoutMillis);
+    public LitteraProvider(String name, String label, String url, String image, long timeoutMillis) {
+        super(name, label, TYPE_USER_PASSWORD, url, image, timeoutMillis);
     }
 
     /* (non-Javadoc)

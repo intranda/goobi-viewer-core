@@ -1350,6 +1350,7 @@ public final class Configuration extends AbstractConfiguration {
         int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
         List<IAuthenticationProvider> providers = new ArrayList<>(max + 1);
         for (int i = 0; i <= max; i++) {
+        	String label = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@label]");
             String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
             String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
@@ -1363,19 +1364,19 @@ public final class Configuration extends AbstractConfiguration {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
                     case "openid":
-                        providers.add(new OpenIdProvider(name, endpoint, image, timeoutMillis, clientId, clientSecret));
+                        providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
                             case "vufind":
-                                provider = new VuFindProvider(name, endpoint, image, timeoutMillis);
+                                provider = new VuFindProvider(name, label, endpoint, image, timeoutMillis);
                                 break;
                             case "x-service":
                             case "xservice":
-                                provider = new XServiceProvider(name, endpoint, image, timeoutMillis);
+                                provider = new XServiceProvider(name, label, endpoint, image, timeoutMillis);
                                 break;
                             case "littera":
-                                provider = new LitteraProvider(name, endpoint, image, timeoutMillis);
+                                provider = new LitteraProvider(name, label, endpoint, image, timeoutMillis);
                                 break;
                             default:
                                 logger.error("Cannot add userpassword authentification provider with name {}. No implementation found", name);
