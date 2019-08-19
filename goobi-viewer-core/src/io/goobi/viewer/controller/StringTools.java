@@ -165,8 +165,8 @@ public class StringTools {
     }
 
     /**
-     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} and additionally converts all linebreaks (\r\n, \r, \n) to html
-     * linebraks ({@code <br/>
+     * Escapes the given string using {@link StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks (\r\n, \r, \n) to html
+     * line breaks ({@code <br/>
      * })
      * 
      * @param text the text to escape

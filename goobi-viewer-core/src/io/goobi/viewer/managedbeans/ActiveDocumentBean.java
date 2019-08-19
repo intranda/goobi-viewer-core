@@ -441,7 +441,7 @@ public class ActiveDocumentBean implements Serializable {
     public String open()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
-            logger.trace("open");
+            logger.trace("open()");
             try {
                 update();
                 if (navigationHelper == null || viewManager == null) {
@@ -465,11 +465,12 @@ public class ActiveDocumentBean implements Serializable {
                 if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
 
                     // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
-                    if (DataManager.getInstance().getConfiguration().isAddCollectionHierarchyToBreadcrumbs(SolrConstants.DC)) {
-                        List<String> collections = viewManager.getTopDocument().getCollections();
+                    String collectionHierarchyField = DataManager.getInstance().getConfiguration().getCollectionHierarchyField();
+                    if (collectionHierarchyField != null) {
+                        List<String> collections = viewManager.getTopDocument().getMetadataValues(collectionHierarchyField);
                         if (collections.size() == 1) {
-                            navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), SolrConstants.DC,
-                                    DataManager.getInstance().getConfiguration().getCollectionSplittingChar(SolrConstants.DC));
+                            navigationHelper.addCollectionHierarchyToBreadcrumb(collections.get(0), collectionHierarchyField,
+                                    DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionHierarchyField));
                         }
                     }
                     navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),

@@ -527,13 +527,13 @@
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
 			
-            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
-                breadcrumbs (if not multivalued). Default is false. -->
-            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
 		</collection>
 		
         <collection field="MD_KNOWLEDGEFIELD">
-                    <splittingCharacter>/</splittingCharacter>
+            <splittingCharacter>/</splittingCharacter>
+            <!-- addHierarchyToBreadcrumbs: If true, the value hierarchy of this field will be added to
+                breadcrumbs (if not multivalued). Default is false. -->
+            <addHierarchyToBreadcrumbs>true</addHierarchyToBreadcrumbs>
         </collection>
         
         <collection field="MD_HIERARCHICALFIELD"/>
@@ -818,6 +818,12 @@
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
                 </licenseText>
+                <page>
+                    <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
+                    <displayLinkToJpegImage>true</displayLinkToJpegImage>
+                    <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
+                    <displayLinkToTiffImage>true</displayLinkToTiffImage>
+                </page>
         </sidebarWidgetUsage>
 
 		<!-- page: if false, the image view is hidden -->

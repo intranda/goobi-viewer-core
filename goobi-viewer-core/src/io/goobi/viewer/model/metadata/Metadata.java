@@ -347,16 +347,28 @@ public class Metadata implements Serializable {
                                 if (marcRecord != null && !marcRecord.getNormDataList().isEmpty())
                                     for (NormData normData : marcRecord.getNormDataList()) {
                                         if ("NORM_TYPE".equals(normData.getKey())) {
+                                            // gndspec
                                             String val = normData.getValues().get(0).getText();
-                                            switch (val) {
-                                                case "kiz":
-                                                    normDataType = MetadataGroupType.CORPORATION.name();
-                                                    break;
-                                                case "piz":
-                                                    normDataType = MetadataGroupType.PERSON.name();
-                                                    break;
+                                            if (val.length() == 3) {
+                                                switch (val.substring(0, 2)) {
+                                                    case "ki":
+                                                        normDataType = MetadataGroupType.CORPORATION.name();
+                                                        break;
+                                                    case "pi":
+                                                        normDataType = MetadataGroupType.PERSON.name();
+                                                        break;
+                                                    case "sa":
+                                                        normDataType = MetadataGroupType.SUBJECT.name();
+                                                        break;
+                                                    case "vi":
+                                                        normDataType = MetadataGroupType.CONFERENCE.name();
+                                                        break;
+                                                    case "wi":
+                                                        normDataType = MetadataGroupType.RECORD.name();
+                                                        break;
+                                                }
+                                                logger.trace("norm data type determined from 075$b (gndspec): {}", normDataType);
                                             }
-                                            logger.trace("norm data type determined from 075$b: {}", normDataType);
                                             break;
                                         }
                                     }

@@ -614,7 +614,8 @@ public class Helper {
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
-        String query = new StringBuilder().append('+').append(SolrConstants.PI_TOPSTRUCT)
+        String query = new StringBuilder().append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
                 .append(':')
                 .append(pi)
                 .append(" +")
@@ -628,8 +629,8 @@ public class Helper {
                 .toString();
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc(query, Arrays.asList(
-                        new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+                .getFirstDoc(query,
+                        Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
@@ -797,7 +798,8 @@ public class Helper {
                     // IOUtils.copy(response.getEntity().getContent(), writer);
                     // return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(), IOUtils.toString(response.getEntity().getContent()));
+                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
+                        IOUtils.toString(response.getEntity().getContent(), DEFAULT_ENCODING));
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
@@ -858,10 +860,11 @@ public class Helper {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
                     logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
-                    IOUtils.copy(response.getEntity().getContent(), writer);
+                    IOUtils.copy(response.getEntity().getContent(), writer, DEFAULT_ENCODING);
                     return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(), IOUtils.toString(response.getEntity().getContent()));
+                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(),
+                        IOUtils.toString(response.getEntity().getContent(), DEFAULT_ENCODING));
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
@@ -1118,4 +1121,6 @@ public class Helper {
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
     }
+    
+    
 }

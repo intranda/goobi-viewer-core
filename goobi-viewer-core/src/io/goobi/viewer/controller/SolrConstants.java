@@ -64,6 +64,7 @@ public class SolrConstants {
     public enum MetadataGroupType {
         PERSON,
         CORPORATION,
+        CONFERENCE,
         LOCATION,
         SUBJECT,
         ORIGININFO,
@@ -77,6 +78,8 @@ public class SolrConstants {
                         return PERSON;
                     case "CORPORATION":
                         return CORPORATION;
+                    case "CONFERENCE":
+                        return CONFERENCE;
                     case "LOCATION":
                         return LOCATION;
                     case "SUBJECT":

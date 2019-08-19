@@ -89,7 +89,14 @@ public class TocMaker {
             for (MetadataParameter param : metadataList.get(0).getParams()) {
                 if (StringUtils.isNotEmpty(param.getKey())) {
                     ret.add(param.getKey());
-                    ret.add(param.getKey() + "_LANG_" + "*");
+                    ret.add(param.getKey() + "_LANG_EN");
+                    ret.add(param.getKey() + "_LANG_DE");
+                    ret.add(param.getKey() + "_LANG_FR");
+                    ret.add(param.getKey() + "_LANG_ES");
+                    ret.add(param.getKey() + "_LANG_PT");
+                    ret.add(param.getKey() + "_LANG_HR");
+                    ret.add(param.getKey() + "_LANG_AR");
+                    // TODO Add all available language versions
                 }
             }
         }
@@ -98,8 +105,7 @@ public class TocMaker {
         if (ancestorFields != null) {
             ret.addAll(ancestorFields);
         }
-        //        ret.add("MD_TITLE_LANG_EN");
-        //        ret.add("MD_TITLE_LANG_DE");
+        
         return new ArrayList<>(ret);
     }
 
@@ -147,7 +153,7 @@ public class TocMaker {
         if (doc == null) {
             return ret;
         }
-        
+
         if (structElement.isGroup()) {
             // Group
             int level = 0;
@@ -516,7 +522,7 @@ public class TocMaker {
         if (pi == null) {
             logger.error("No PI found for: {}", doc.getFieldValue(SolrConstants.IDDOC));
         }
-        logger.info("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
+        logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check PDF download permissions for all docstructs and save into map
         Map<String, Boolean> pdfPermissionMap = null;

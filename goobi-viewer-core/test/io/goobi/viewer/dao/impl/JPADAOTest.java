@@ -1609,7 +1609,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void updateCMSPage_shouldUpdatePageCorrectly() throws Exception {
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        page.createMissingLangaugeVersions(Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH }));
+        page.createMissingLanguageVersions(Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH }));
         Assert.assertNotNull(page);
         page.getLanguageVersion("de").setTitle("Deutscher Titel");
         page.getLanguageVersion("en").setTitle("English title");

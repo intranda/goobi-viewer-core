@@ -539,6 +539,7 @@ public class ThumbnailHandler {
         String thumbnailUrl = null;
 
         String mimeType = page.getMimeType();
+        // TODO use enum
         switch (mimeType) {
             case "image":
             case "image/png":
@@ -547,20 +548,20 @@ public class ThumbnailHandler {
             case "image/jp2":
                 thumbnailUrl = page.getFilepath();
                 break;
-            case PhysicalElement.MIME_TYPE_VIDEO:
-            case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
+            case "video":
+            case "text":
                 thumbnailUrl = page.getFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                 }
                 break;
-            case PhysicalElement.MIME_TYPE_AUDIO:
+            case "audio":
                 thumbnailUrl = page.getFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                 }
                 break;
-            case PhysicalElement.MIME_TYPE_APPLICATION:
+            case "application":
             case "application/pdf":
                 thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                 break;
@@ -623,6 +624,7 @@ public class ThumbnailHandler {
                 case DOCSTRCT:
                 case PAGE:
                 default:
+                    // TODO use enum
                     String mimeType = getMimeType(doc).orElse("unknown");
                     switch (mimeType) {
                         case "image":
@@ -633,20 +635,20 @@ public class ThumbnailHandler {
                         case "image/jp2":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
                             break;
-                        case PhysicalElement.MIME_TYPE_VIDEO:
-                        case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
+                        case "video":
+                        case "text":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
                             if (StringUtils.isEmpty(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                             }
                             break;
-                        case PhysicalElement.MIME_TYPE_AUDIO:
+                        case "audio":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
                             if (StringUtils.isEmpty(thumbnailUrl)) {
                                 thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                             }
                             break;
-                        case PhysicalElement.MIME_TYPE_APPLICATION:
+                        case "application":
                         case "application/pdf":
                             thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                             break;

@@ -64,13 +64,13 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
-import io.goobi.viewer.servlets.rest.content.CommentAnnotation;
 import io.goobi.viewer.servlets.rest.content.ContentResource;
 
 /**
@@ -132,7 +132,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
             Canvas canvas = generateCanvas(doc, page);
             if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
-                addSeeAlsos(canvas, doc, page  );
+                addSeeAlsos(canvas, doc, page);
                 Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
 
                 merge(annotationMap, content);
@@ -141,9 +141,9 @@ public class SequenceBuilder extends AbstractBuilder {
             sequence.addCanvas(canvas);
         }
         if (getBuildMode().equals(BuildMode.IIIF)) {
-            try {                
+            try {
                 annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
-            } catch(DAOException e) {
+            } catch (DAOException e) {
                 logger.error(e.toString());
             }
         }
@@ -157,13 +157,13 @@ public class SequenceBuilder extends AbstractBuilder {
 
     /**
      * @param canvas
-     * @throws ViewerConfigurationException 
-     * @throws URISyntaxException 
+     * @throws ViewerConfigurationException
+     * @throws URISyntaxException
      */
     public void addSeeAlsos(Canvas canvas, StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
-        
+
         if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
-        
+
             LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
             fulltextLink.setFormat(Format.TEXT_PLAIN);
             fulltextLink.setType(DcType.TEXT);
@@ -178,16 +178,16 @@ public class SequenceBuilder extends AbstractBuilder {
             altoLink.setLabel(ViewerResourceBundle.getTranslations("ALTO"));
             canvas.addSeeAlso(altoLink);
         }
-        
-        if (PhysicalElement.MIME_TYPE_IMAGE.equals(page.getMimeType())) {
-                String url = imageDelivery.getPdf().getPdfUrl(doc, page);
-                LinkingContent link = new LinkingContent(new URI(url));
-                link.setFormat(Format.APPLICATION_PDF);
-                link.setType(DcType.SOFTWARE);
-                link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
-                canvas.addSeeAlso(link);
-            }
+
+        if (MimeType.IMAGE.getName().equals(page.getMimeType())) {
+            String url = imageDelivery.getPdf().getPdfUrl(doc, page);
+            LinkingContent link = new LinkingContent(new URI(url));
+            link.setFormat(Format.APPLICATION_PDF);
+            link.setType(DcType.SOFTWARE);
+            link.setLabel(ViewerResourceBundle.getTranslations("PDF"));
+            canvas.addSeeAlso(link);
         }
+    }
 
     /**
      * Adds a comment annotation to all cavases which contain comments
@@ -214,7 +214,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     for (Comment comment : comments) {
                         TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
-//                        anno.setOn(canvas);
+                        //                        anno.setOn(canvas);
                         anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                         TextualAnnotationBody body = new TextualAnnotationBody();
                         body.setValue(comment.getText());
@@ -229,9 +229,9 @@ public class SequenceBuilder extends AbstractBuilder {
         }
         return list;
     }
-    
+
     public List<AnnotationList> addFulltextAnnotations(Map<Integer, Canvas> canvases, String pi, boolean populate)
-            throws DAOException, URISyntaxException, ViewerConfigurationException {
+            throws DAOException  {
         List<AnnotationList> list = new ArrayList<>();
         List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
         for (Integer order : pages) {
@@ -268,7 +268,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param height
      * @return
      */
-    private ICanvas createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
+    private static ICanvas createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
         PartOfCanvas part = new PartOfCanvas();
         part.setCanvas(canvas);
         part.setArea(new Rectangle(x, y, width, height));
@@ -372,25 +372,25 @@ public class SequenceBuilder extends AbstractBuilder {
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
             if (populate) {
-                
-                if(StringUtils.isNotBlank(page.getAltoFileName())) {
+                if (StringUtils.isNotBlank(page.getAltoFileName())) {
                     try {
                         String altoText = page.loadAlto();
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
-                        if(alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
-                            List<IAnnotation> annos = new AltoAnnotationBuilder().createAnnotations(alto.getFirstPage(), canvas, AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString());                       
+                        if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
+                            List<IAnnotation> annos = new AltoAnnotationBuilder().createAnnotations(alto.getFirstPage(), canvas,
+                                    AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString());
                             for (IAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }
                         }
-                    } catch (AccessDeniedException | JDOMException | IOException | DAOException  e) {
-                       logger.error("Error loading alto text from " + page.getAltoFileName(), e);
+                    } catch (AccessDeniedException | JDOMException | IOException | DAOException e) {
+                        logger.error("Error loading alto text from " + page.getAltoFileName(), e);
                     }
-                    
+
                 } else {
                     TextualAnnotation anno = new TextualAnnotation(URI.create(annoList.getId().toString() + "/text"));
                     anno.setMotivation(Motivation.PAINTING);
-                    anno.setOn(createSpecificResource(canvas, 0,0, canvas.getWidth(), canvas.getHeight()));
+                    anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
                     TextualAnnotationBody body = new TextualAnnotationBody();
                     body.setValue(page.getFullText());
                     anno.setBody(body);
@@ -399,7 +399,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        if (PhysicalElement.MIME_TYPE_AUDIO.equals(page.getMimeType())) {
+        if (MimeType.AUDIO.getName().equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
             LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
@@ -421,7 +421,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
         videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
-        if (PhysicalElement.MIME_TYPE_VIDEO.equals(page.getMimeType())) {
+        if (MimeType.VIDEO.getName().equals(page.getMimeType())) {
             LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setOn(canvas);
@@ -437,7 +437,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
 
         }
-        if (PhysicalElement.MIME_TYPE_SANDBOXED_HTML.equals(page.getMimeType())) {
+        if (MimeType.SANDBOXED_HTML.getName().equals(page.getMimeType())) {
             try {
                 LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
@@ -462,8 +462,6 @@ public class SequenceBuilder extends AbstractBuilder {
         if (videoList.getResources() != null) {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
-
-
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));
         }

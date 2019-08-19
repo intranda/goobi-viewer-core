@@ -15,29 +15,24 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ctc.wstx.util.StringUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.intranda.api.iiif.presentation.Collection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -51,9 +46,9 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class ManifestBuilderTest {
+public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    public static final String PI = "1019375248";
+    public static final String PI = "PPN517154005";
     
     @Test
     public void test() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException, URISyntaxException, ContentNotFoundException, IOException {

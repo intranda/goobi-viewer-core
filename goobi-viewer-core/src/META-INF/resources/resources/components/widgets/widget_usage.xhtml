@@ -1,6 +1,7 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -9,7 +10,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displayWidgetUsage}">
+        <ui:fragment rendered="#{configurationBean.displayWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
                 <!-- WIDGET TITLE -->
                 <h3 class="widget__title collapseable">
@@ -224,13 +225,23 @@
 
 							<!-- JPEG -->
 							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
+								rendered="#{configurationBean.displaySidebarUsageWidgetLinkToJpegImage and activeDocumentBean.viewManager.currentPage.accessForJs}">
 								<a href="#{activeDocumentBean.viewManager.currentImageUrl}"
 									id="jpeg"
 									class="label label-default widget-usage__page-download-jpeg"
 									title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
 									#{msg.imageLink} </a>
 							</ui:fragment>
+							
+                            <!-- TIFF -->
+                            <ui:fragment
+                                rendered="#{configurationBean.displaySidebarUsageWidgetLinkToTiffImage and activeDocumentBean.viewManager.currentPage.accessForJs}">
+                                <a href="#{fn:replace(activeDocumentBean.viewManager.currentImageUrl, '.jpg', '.tif')}"
+                                    id="tiff"
+                                    class="label label-default widget-usage__page-download-tiff"
+                                    title="#{msg.imageLinkDesc}" target="_blank" rel="nofollow">
+                                    #{msg.imageLinkTIFF} </a>
+                            </ui:fragment>
 
 							<!-- ALTO (PAGE) -->
 							<ui:fragment

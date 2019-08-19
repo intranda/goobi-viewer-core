@@ -17,27 +17,16 @@ package io.goobi.viewer.model.viewer;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
-import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -241,5 +230,23 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String purl = viewManager.getPersistentUrl(null);
         Assert.assertEquals("/toc/PPN123/1/", purl);
+    }
+
+    /**
+     * @see ViewManager#isBelowFulltextThreshold(double)
+     * @verifies return true if there are no pages
+     */
+    @Test
+    public void isBelowFulltextThreshold_shouldReturnTrueIfThereAreNoPages() throws Exception {
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        
+        Assert.assertTrue(viewManager.isBelowFulltextThreshold(0));
     }
 }

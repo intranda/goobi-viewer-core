@@ -87,11 +87,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
-    public static final String MIME_TYPE_IMAGE = "image";
-    public static final String MIME_TYPE_VIDEO = "video";
-    public static final String MIME_TYPE_AUDIO = "audio";
-    public static final String MIME_TYPE_APPLICATION = "application";
-    public static final String MIME_TYPE_SANDBOXED_HTML = "text";
 
     private static List<String> watermarkTextConfiguration;
     public static int defaultVideoWidth = 320;
@@ -113,7 +108,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private final String urn;
     private String purlPart;
     /** Media mime type. */
-    private String mimeType = MIME_TYPE_IMAGE;
+    private String mimeType = MimeType.IMAGE.getName();
     /** Actual image/video width (if available). */
     private int width = 0;
     /** Actual image/video height (if available). */
@@ -269,17 +264,21 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws ViewerConfigurationException
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
-
+        MimeType mimeType = MimeType.getByName(this.mimeType);
+        if (mimeType == null) {
+            logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, this.mimeType);
+            return "";
+        }
         switch (mimeType) {
-            case MIME_TYPE_IMAGE:
+            case IMAGE:
                 return getImageUrl();
-            case MIME_TYPE_VIDEO:
-            case MIME_TYPE_AUDIO: {
+            case VIDEO:
+            case AUDIO: {
 
                 String format = getFileNames().keySet().stream().findFirst().orElse("");
                 return getMediaUrl(format);
             }
-            case MIME_TYPE_APPLICATION:
+            case APPLICATION:
                 if (StringUtils.isEmpty(fileName)) {
                     fileName = determineFileName(filePath);
                 }
@@ -287,14 +286,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
                 PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
                 return pdfHandler.getPdfUrl(pi, localFilename);
-
-            case MIME_TYPE_SANDBOXED_HTML:
+            case SANDBOXED_HTML:
                 return getSandboxedUrl();
             default:
-                logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, mimeType);
+                logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, mimeType);
+                return "";
         }
-
-        return "";
     }
 
     public String getSandboxedUrl() {
@@ -429,7 +426,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return
      */
     public static String getFullMimeType(String baseType, String fileName) {
-        if (baseType.equals(MIME_TYPE_IMAGE)) {
+        if (baseType.equals(MimeType.IMAGE.getName())) {
             //            return baseType + "/jpeg";
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
             if (ImageFileFormat.PNG.equals(fileFormat)) {
@@ -864,18 +861,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getPageLinkLabel() {
-        switch (mimeType) {
-            case MIME_TYPE_IMAGE:
-                return "viewImage";
-            case MIME_TYPE_VIDEO:
-                return "viewVideo";
-            case MIME_TYPE_AUDIO:
-                return "viewAudio";
-            case MIME_TYPE_SANDBOXED_HTML:
-                return "viewSandboxedHtml";
+        MimeType mimeType = MimeType.getByName(this.mimeType);
+        if (mimeType == null) {
+            return "viewImage";
         }
 
-        return "viewImage";
+        switch (mimeType) {
+            case IMAGE:
+                return "viewImage";
+            case VIDEO:
+                return "viewVideo";
+            case AUDIO:
+                return "viewAudio";
+            case SANDBOXED_HTML:
+                return "viewSandboxedHtml";
+            default:
+                return "viewImage";
+        }
     }
 
     /**
@@ -888,6 +890,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessForJs() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
+        // Prevent access if mime type incompatible
+        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+            return false;
+        }
+
         if (getFilepath().startsWith("http")) {
             //External urls are always free to use
             return true;
@@ -1129,6 +1136,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
+        // Prevent access if mime type incompatible
+        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+            return false;
+        }
+
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
@@ -1142,25 +1154,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
     }
-    
+
     /**
      * 
-     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the upper threshold
-             Otherwise return true
+     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the
+     *         upper threshold Otherwise return true
      */
     public boolean isAdaptImageViewHeight() {
-        float ratio = getImageWidth()/(float)getImageHeight();
+        float ratio = getImageWidth() / (float) getImageHeight();
         //if dimensions cannot be determined (usually widht, height == 0), then return true
-        if(Float.isNaN(ratio) || Float.isInfinite(ratio)) {
+        if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
             return true;
         }
         float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
         float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
 
-        if(DataManager.getInstance().getConfiguration().isLimitImageHeight()) {            
+        if (DataManager.getInstance().getConfiguration().isLimitImageHeight()) {
             return ratio > lowerThreshold && ratio < upperThreshold;
-        } else {
-            return true;
         }
+
+        return true;
     }
 }

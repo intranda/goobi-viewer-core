@@ -52,22 +52,22 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getAltoDocument_shouldReturnDocumentCorrectly() throws Exception {
         Assert.assertNotNull(resource.getAltoDocument("PPN517154005", "00000001.xml"));
     }
-    
+
     @Test
     public void getAltoDocumentZip() throws Exception {
         StreamingOutput response = resource.getAltoDocument("PPN517154005");
         Path tempFile = Paths.get("test.zip");
-        if(Files.exists(tempFile)) {
+        if (Files.exists(tempFile)) {
             Files.delete(tempFile);
         }
         Assert.assertFalse(Files.exists(tempFile));
-        try(OutputStream out = Files.newOutputStream(tempFile)) {            
+        try (OutputStream out = Files.newOutputStream(tempFile)) {
             response.write(out);
             out.flush();
         }
         Assert.assertTrue(Files.exists(tempFile));
         Assert.assertTrue(isValid(tempFile.toFile()));
-        Files.delete(tempFile);        
+        Files.delete(tempFile);
     }
 
     /**
@@ -134,92 +134,78 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getTeiDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getTeiDocument("notfound", "en");
     }
-    
+
     public static boolean isValid(final File file) {
-        ZipFile zipfile = null;
-        try {
-            zipfile = new ZipFile(file);
+        try (ZipFile zipfile = new ZipFile(file)) {
             return true;
         } catch (IOException e) {
             return false;
-        } finally {
-            try {
-                if (zipfile != null) {
-                    zipfile.close();
-                    zipfile = null;
-                }
-            } catch (IOException e) {
-            }
         }
     }
-    
+
     @Test
     public void testGetFiles() throws IOException {
-        
+
         Path tempPath = Paths.get("test", "data", "temp");
         try {
             Path folder1 = tempPath.resolve("folder1");
             Path folder2 = tempPath.resolve("folder2");
-            
+
             Files.createDirectories(folder1);
             Files.createDirectories(folder2);
-        
-        createFile(folder1, "A");
-        createFile(folder1, "B");
-        createFile(folder2, "C");
-        createFile(folder2, "D");
-        createFile(folder1, "E");
-        createFile(folder2, "E");
-        createFile(folder1, "F");
-        createFile(folder2, "G");
-        createFile(folder1, "H");
-        createFile(folder2, "H");
-        
-        List<Path> files = new ContentResource().getFiles(folder1, folder2, ".*\\.txt");
-        List<String> content = files.stream()
-                .sorted((p1,p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                .map(file -> {
-            try {
-                return Files.readAllLines(file);
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
-        
-        Assert.assertEquals(8, content.size(), 0);
-        
-        Assert.assertEquals("folder1/A", content.get(0));
-        Assert.assertEquals("folder1/B", content.get(1));
-        Assert.assertEquals("folder2/C", content.get(2));
-        Assert.assertEquals("folder2/D", content.get(3));
-        Assert.assertEquals("folder1/E", content.get(4));
-        Assert.assertEquals("folder1/F", content.get(5));
-        Assert.assertEquals("folder2/G", content.get(6));
-        Assert.assertEquals("folder1/H", content.get(7));
-        
-        files = new ContentResource().getFiles(folder2, folder1, ".*\\.txt");
-        content = files.stream()
-                .sorted((p1,p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))
-                .map(file -> {
-            try {
-                return Files.readAllLines(file);
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
-        
-        Assert.assertEquals(8, content.size(), 0);
-        
-        Assert.assertEquals("folder1/A", content.get(0));
-        Assert.assertEquals("folder1/B", content.get(1));
-        Assert.assertEquals("folder2/C", content.get(2));
-        Assert.assertEquals("folder2/D", content.get(3));
-        Assert.assertEquals("folder2/E", content.get(4));
-        Assert.assertEquals("folder1/F", content.get(5));
-        Assert.assertEquals("folder2/G", content.get(6));
-        Assert.assertEquals("folder2/H", content.get(7));
-        
-        }finally {
+
+            createFile(folder1, "A");
+            createFile(folder1, "B");
+            createFile(folder2, "C");
+            createFile(folder2, "D");
+            createFile(folder1, "E");
+            createFile(folder2, "E");
+            createFile(folder1, "F");
+            createFile(folder2, "G");
+            createFile(folder1, "H");
+            createFile(folder2, "H");
+
+            List<Path> files = new ContentResource().getFiles(folder1, folder2, ".*\\.txt");
+            List<String> content = files.stream().sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString())).map(file -> {
+                try {
+                    return Files.readAllLines(file);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
+
+            Assert.assertEquals(8, content.size(), 0);
+
+            Assert.assertEquals("folder1/A", content.get(0));
+            Assert.assertEquals("folder1/B", content.get(1));
+            Assert.assertEquals("folder2/C", content.get(2));
+            Assert.assertEquals("folder2/D", content.get(3));
+            Assert.assertEquals("folder1/E", content.get(4));
+            Assert.assertEquals("folder1/F", content.get(5));
+            Assert.assertEquals("folder2/G", content.get(6));
+            Assert.assertEquals("folder1/H", content.get(7));
+
+            files = new ContentResource().getFiles(folder2, folder1, ".*\\.txt");
+            content = files.stream().sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString())).map(file -> {
+                try {
+                    return Files.readAllLines(file);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+            }).map(list -> StringUtils.join(list, "")).collect(Collectors.toList());
+
+            Assert.assertEquals(8, content.size(), 0);
+
+            Assert.assertEquals("folder1/A", content.get(0));
+            Assert.assertEquals("folder1/B", content.get(1));
+            Assert.assertEquals("folder2/C", content.get(2));
+            Assert.assertEquals("folder2/D", content.get(3));
+            Assert.assertEquals("folder2/E", content.get(4));
+            Assert.assertEquals("folder1/F", content.get(5));
+            Assert.assertEquals("folder2/G", content.get(6));
+            Assert.assertEquals("folder2/H", content.get(7));
+
+        } finally {
             FileUtils.deleteDirectory(tempPath.toFile());
         }
     }
@@ -227,10 +213,10 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @param folder1
      * @param string
-     * @throws IOException 
+     * @throws IOException
      */
-    private void createFile(Path folder, String name) throws IOException {
-        if(folder != null) {
+    private static void createFile(Path folder, String name) throws IOException {
+        if (folder != null) {
             Files.write(folder.resolve(name + ".txt"), Collections.singletonList(folder.getFileName().toString() + "/" + name));
         }
 
