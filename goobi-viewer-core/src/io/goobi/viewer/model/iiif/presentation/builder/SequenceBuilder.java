@@ -33,16 +33,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.LinkedAnnotation;
-import de.intranda.api.annotation.TextualAnnotation;
-import de.intranda.api.annotation.TextualAnnotationBody;
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.oa.FragmentSelector;
+import de.intranda.api.annotation.oa.ImageResource;
+import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.SpecificResource;
+import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.ICanvas;
 import de.intranda.api.iiif.presentation.Manifest;
-import de.intranda.api.iiif.presentation.PartOfCanvas;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
@@ -212,42 +213,11 @@ public class SequenceBuilder extends AbstractBuilder {
                 if (populate) {
                     List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
                     for (Comment comment : comments) {
-                        TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
+                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
                         //                        anno.setOn(canvas);
-                        anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                        TextualAnnotationBody body = new TextualAnnotationBody();
-                        body.setValue(comment.getText());
-                        anno.setBody(body);
-                        //                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
-                        annoList.addResource(anno);
-                    }
-                }
-                canvas.addOtherContent(annoList);
-                list.add(annoList);
-            }
-        }
-        return list;
-    }
-
-    public List<AnnotationList> addFulltextAnnotations(Map<Integer, Canvas> canvases, String pi, boolean populate)
-            throws DAOException  {
-        List<AnnotationList> list = new ArrayList<>();
-        List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
-        for (Integer order : pages) {
-            Canvas canvas = canvases.get(order);
-            if (canvas != null) {
-                AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
-                annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
-                if (populate) {
-                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
-                    for (Comment comment : comments) {
-                        TextualAnnotation anno = new TextualAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
-                        anno.setMotivation(Motivation.COMMENTING);
-//                        anno.setOn(canvas);
-                        anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                        TextualAnnotationBody body = new TextualAnnotationBody();
-                        body.setValue(comment.getText());
+                        anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
+                        TextualResource body = new TextualResource(comment.getText());
                         anno.setBody(body);
                         //                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
                         annoList.addResource(anno);
@@ -268,11 +238,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param height
      * @return
      */
-    private static ICanvas createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
-        PartOfCanvas part = new PartOfCanvas();
-        part.setCanvas(canvas);
-        part.setArea(new Rectangle(x, y, width, height));
-        return part;
+    private static IResource createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
+        FragmentSelector selector = new FragmentSelector(new Rectangle(x, y, width, height));
+        SpecificResource resource = new SpecificResource(canvas.getId(), selector);
+        return resource;
     }
 
     /**
@@ -351,10 +320,9 @@ public class SequenceBuilder extends AbstractBuilder {
                 }
                 resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
 
-                LinkedAnnotation imageAnnotation = new LinkedAnnotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
+                OpenAnnotation imageAnnotation = new OpenAnnotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
                 imageAnnotation.setMotivation(Motivation.PAINTING);
-                imageAnnotation.setOn(new Canvas(canvas.getId()));
-                imageAnnotation.setResource(resource);
+                imageAnnotation.setBody(resource);
                 canvas.addImage(imageAnnotation);
             }
 
@@ -388,11 +356,10 @@ public class SequenceBuilder extends AbstractBuilder {
                     }
 
                 } else {
-                    TextualAnnotation anno = new TextualAnnotation(URI.create(annoList.getId().toString() + "/text"));
+                    OpenAnnotation anno = new OpenAnnotation(URI.create(annoList.getId().toString() + "/text"));
                     anno.setMotivation(Motivation.PAINTING);
-                    anno.setOn(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                    TextualAnnotationBody body = new TextualAnnotationBody();
-                    body.setValue(page.getFullText());
+                    anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
+                    TextualResource body = new TextualResource(page.getFullText());
                     anno.setBody(body);
                     annoList.addResource(anno);
                 }
@@ -402,9 +369,9 @@ public class SequenceBuilder extends AbstractBuilder {
         if (MimeType.AUDIO.getName().equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
-            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
+            OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
             annotation.setMotivation(Motivation.PAINTING);
-            annotation.setOn(canvas);
+            annotation.setTarget(canvas);
             annoList.addResource(annotation);
             annotationMap.put(AnnotationType.AUDIO, annoList);
             if (populate) {
@@ -414,7 +381,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 audioLink.setFormat(format);
                 audioLink.setType(DcType.SOUND);
                 audioLink.setLabel(ViewerResourceBundle.getTranslations("AUDIO"));
-                annotation.setResource(audioLink);
+                annotation.setBody(audioLink);
             }
 
         }
@@ -422,9 +389,9 @@ public class SequenceBuilder extends AbstractBuilder {
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
         videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
         if (MimeType.VIDEO.getName().equals(page.getMimeType())) {
-            LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+            OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
             annotation.setMotivation(Motivation.PAINTING);
-            annotation.setOn(canvas);
+            annotation.setTarget(canvas);
             videoList.addResource(annotation);
             if (populate) {
                 String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
@@ -433,15 +400,15 @@ public class SequenceBuilder extends AbstractBuilder {
                 link.setFormat(format);
                 link.setType(DcType.MOVING_IMAGE);
                 link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
-                annotation.setResource(link);
+                annotation.setBody(link);
             }
 
         }
         if (MimeType.SANDBOXED_HTML.getName().equals(page.getMimeType())) {
             try {
-                LinkedAnnotation annotation = new LinkedAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+                OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
-                annotation.setOn(canvas);
+                annotation.setTarget(canvas);
                 videoList.addResource(annotation);
                 if (populate) {
                     String url = page.getUrl();
@@ -453,7 +420,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     link.setFormat(Format.TEXT_HTML);
                     link.setType(DcType.MOVING_IMAGE);
                     link.setLabel(ViewerResourceBundle.getTranslations("VIDEO"));
-                    annotation.setResource(link);
+                    annotation.setBody(link);
                 }
             } catch (ViewerConfigurationException e) {
                 logger.error(e.toString(), e);

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.model.annotation.Comment;
 
 public class CommentAnnotationCollection extends AbstractAnnotation {
@@ -46,8 +47,9 @@ public class CommentAnnotationCollection extends AbstractAnnotation {
         this.label = label;
         this.addContext = addContext;
 
-        List<CommentAnnotation> items = new ArrayList<>(comments.size());
+        List<WebAnnotation> items = new ArrayList<>(comments.size());
         for (Comment comment : comments) {
+            WebAnnotation anno = new WebAnnotation(id)
             items.add(new CommentAnnotation(comment, servletRequest, false));
         }
         page = new CommentAnnotationPage(getId().toString(), items, servletRequest, false);

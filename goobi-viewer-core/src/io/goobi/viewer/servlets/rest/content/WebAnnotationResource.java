@@ -16,6 +16,7 @@
 package io.goobi.viewer.servlets.rest.content;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,9 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.wa.TextualAnnotation;
+import de.intranda.api.annotation.wa.TextualAnnotationBody;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -94,10 +98,10 @@ public class WebAnnotationResource {
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path(CommentAnnotation.PATH + "/{pi}/{page}/{id}")
+    @Path("comments/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CommentAnnotation getAnnotation(@PathParam("id") Long id)
+    public IAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -108,6 +112,14 @@ public class WebAnnotationResource {
             throw new ContentNotFoundException("Resource not found");
         }
 
+        TextualAnnotationBody body = new TextualAnnotationBody();
+        body.setValue(comment.getText());
+        
+        URI resourceId = new URI(servletRequest.getRequestURI());
+        TextualAnnotation anno = new TextualAnnotation(resourceId);
+        anno.setBody(body);
+        anno.setTarget(on);
+        
         return new CommentAnnotation(comment, servletRequest, true);
     }
 

@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.TextualAnnotation;
-import de.intranda.api.annotation.TextualAnnotationBody;
+import de.intranda.api.annotation.oa.FragmentSelector;
+import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.SpecificResource;
+import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.ICanvas;
-import de.intranda.api.iiif.presentation.PartOfCanvas;
 import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
@@ -67,12 +67,11 @@ public class AltoAnnotationBuilder {
         return annoList;
     }
     
-    private TextualAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
-        TextualAnnotation anno = new TextualAnnotation(createAnnotationId(baseUrl, element.getId()));
+    private IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
+        OpenAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
-        anno.setOn(createSpecificResource(canvas, element.getBounds()));
-        TextualAnnotationBody body = new TextualAnnotationBody();
-        body.setValue(element.getContent());
+        anno.setTarget(createSpecificResource(canvas, element.getBounds()));
+        TextualResource body = new TextualResource(element.getContent());
         anno.setBody(body);
         return anno;
     }
@@ -85,11 +84,10 @@ public class AltoAnnotationBuilder {
      * @param height
      * @return
      */
-        private ICanvas createSpecificResource(Canvas canvas, Rectangle area) {
-            PartOfCanvas part = new PartOfCanvas();
-            part.setCanvas(canvas);
-            part.setArea(area);
-            return part;
+        private SpecificResource createSpecificResource(Canvas canvas, Rectangle area) {
+            FragmentSelector selector = new FragmentSelector(area);
+            SpecificResource resource = new SpecificResource(canvas.getId(), selector);
+            return resource;
         }
 
     /**

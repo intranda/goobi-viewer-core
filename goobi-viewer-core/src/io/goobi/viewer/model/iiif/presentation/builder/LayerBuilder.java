@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.LinkedAnnotation;
+import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Layer;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
@@ -89,10 +89,9 @@ public class LayerBuilder extends AbstractBuilder {
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
             language.ifPresent(lang -> {      
-//                    URI link = ContentResource.getTEIURI(pi, lang);
                     URI link = linkGetter.apply(pi, lang);
                     URI annotationURI = getAnnotationListURI(pi, type);
-                    IAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
+                    OpenAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
                     annotations.add(anno);
             });
         }
@@ -103,7 +102,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
     
     
-    public LinkedAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, Motivation motivation) {
+    public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, Motivation motivation) {
         LinkingContent link = new LinkingContent(linkURI);
         if(format != null) {            
             link.setFormat(format);
@@ -114,13 +113,13 @@ public class LayerBuilder extends AbstractBuilder {
         if(annoType != null) {            
             link.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
         }
-        LinkedAnnotation annotation = new LinkedAnnotation(annotationId);
+        OpenAnnotation annotation = new OpenAnnotation(annotationId);
         if(motivation != null) {
             annotation.setMotivation(motivation);
         } else {
             annotation.setMotivation(Motivation.PAINTING);
         }
-        annotation.setResource(link);
+        annotation.setBody(link);
         return annotation;
     }
     
