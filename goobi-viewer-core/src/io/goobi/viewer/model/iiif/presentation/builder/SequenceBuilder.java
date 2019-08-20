@@ -36,6 +36,7 @@ import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.ImageResource;
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.TextualResource;
@@ -50,7 +51,6 @@ import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
-import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -90,7 +90,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public SequenceBuilder(HttpServletRequest request) throws URISyntaxException {
+    public SequenceBuilder(HttpServletRequest request) {
         super(request);
     }
 

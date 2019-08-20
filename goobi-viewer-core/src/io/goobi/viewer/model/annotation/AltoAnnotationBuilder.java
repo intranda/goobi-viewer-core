@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.oa.FragmentSelector;
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
-import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 

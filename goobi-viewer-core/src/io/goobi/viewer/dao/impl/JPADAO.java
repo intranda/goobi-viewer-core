@@ -1438,6 +1438,27 @@ public class JPADAO implements IDAO {
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public long getNumCommentsForWork(String pi, boolean topLevelOnly) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("SELECT COUNT(o) FROM Comment o WHERE o.pi = :pi");
+        if (topLevelOnly) {
+            sbQuery.append(" AND o.parent IS NULL");
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        q.setParameter("pi", pi);
+        q.setFlushMode(FlushModeType.COMMIT);
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        
+        if (q.getResultList().get(0) instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getComment(long)

@@ -72,7 +72,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public ManifestBuilder(HttpServletRequest request) throws URISyntaxException {
+    public ManifestBuilder(HttpServletRequest request) {
         super(request);
     }
 

@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Layer;
@@ -40,7 +41,6 @@ import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
-import de.intranda.api.iiif.presentation.enums.Motivation;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -58,7 +58,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public LayerBuilder(HttpServletRequest request) throws URISyntaxException {
+    public LayerBuilder(HttpServletRequest request)  {
         super(request);
     }
 
@@ -81,7 +81,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public Layer createAnnotationLayer(String pi, AnnotationType type, Motivation motivation, BiFunction<String, String, List<Path>> fileGetter, BiFunction<String, String, URI> linkGetter)
+    public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter, BiFunction<String, String, URI> linkGetter)
             throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
 //        List<Path> files = ContentResource.getTEIFiles(pi, ContentResource.getDataRepository(pi));
         List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
@@ -102,7 +102,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
     
     
-    public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, Motivation motivation) {
+    public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, String motivation) {
         LinkingContent link = new LinkingContent(linkURI);
         if(format != null) {            
             link.setFormat(format);
