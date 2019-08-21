@@ -7,11 +7,6 @@ body {
 pre {
 	border-radius: 0;
 }
-a:hover,
-a:active,
-a:focus {
-	text-decoration: none;
-}
 /* KSS OVERRIDES */
 html input[type=button].btn--inactive {
 	cursor: not-allowed;
