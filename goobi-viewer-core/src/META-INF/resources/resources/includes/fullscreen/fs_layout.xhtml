@@ -23,218 +23,18 @@
             <div class="fullscreen__view-sidebar-inner">            
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
-                    <button
-                    	type="button" 
-                    	class="btn btn--clean" 
-                    	title="#{msg.fullscreen_hideSidebar}" 
-                    	data-close="fs-sidebar" 
-                    	data-toggle="tooltip" 
-                    	data-placement="right">
-                    </button>
+                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right"></button>
+                </div>
+
+                <!-- RIGHT SIGNAL -->
+                <div class="fullscreen__view-sidebar-signal">
+                    [SIGNAL]
                 </div>
                 
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h2>#{activeDocumentBean.titleBarLabel}</h2>
                 </div>
-
-                <!-- FULLSCREEN SIGNAL -->
-				<div class="fullscreen__view-sidebar-signal">
-					<!-- COPY SIGN -->
-					<div class="fullscreen__view-sidebar-copy-sign">
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONDZ') == ''}">
-							<img
-								src="#{request.contextPath}/resources/images/fullscreen_copy-sign/copy-sign_neutral.png"
-								alt="neutral title sign" />
-						</ui:fragment>
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONDZ') == 'Freier Zugang'}">
-							<img
-								src="#{request.contextPath}/resources/images/fullscreen_copy-sign/copy-sign_green.png"
-								alt="free access title sign" 
-								data-toggle="popover"
-								data-trigger="hover" 
-								data-placement="top" 
-								data-container="body"
-								data-content="#{msg.copy_sign__free_access}" />
-						</ui:fragment>
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONDZ') == 'Eingeschränkter Zugang'}">
-							<img
-								src="#{request.contextPath}/resources/images/fullscreen_copy-sign/copy-sign_yellow.png"
-								alt="restricted access title sign" 
-								data-toggle="popover"
-								data-trigger="hover" 
-								data-placement="top" 
-								data-container="body"
-								data-content="#{msg.copy_sign__limited_access}" />
-						</ui:fragment>
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONDZ') == 'Kein Zugang'}">
-							<img
-								src="#{request.contextPath}/resources/images/fullscreen_copy-sign/copy-sign_red.png"
-								alt="no access title sign" 
-								data-toggle="popover"
-								data-trigger="hover" 
-								data-placement="top" 
-								data-container="body"
-								data-content="#{msg.copy_sign__no_access}" />
-						</ui:fragment>
-					</div>
-					
-					<!-- COPY INFO -->					
-					<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') != null}">
-						<div class="fullscreen__view-sidebar-copy-info">
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'Rights reserved'}">
-								<a
-									data-content="#{msg.cc_right__no_license_assigned}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-html="true" 
-									data-container="body" 
-									role="button"
-									tabindex="0"> 
-									<img
-										src="#{request.contextPath}/resources/images/cc-icons/urhg_logo.png"
-										alt="rights reserved icon" />
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'Rights reserved - Rights managed by VG Wort (§ 51 VGG)'}">
-								<a
-									data-content="#{msg.cc_right__rights_reserved}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-html="true" 
-									data-container="body" 
-									role="button"
-									tabindex="0"> 
-									<img
-										src="#{request.contextPath}/resources/images/cc-icons/urhg_logo.png"
-										alt="rights reserved icon" />
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'Public Domain'}">
-								<a
-									data-content="#{msg.cc_right__p}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">p</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY-SA'}">
-								<a
-									data-content="#{msg.cc_right__cba}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cba</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY-SA-NC'}">
-								<a
-									data-content="#{msg.cc_right__cban}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cban</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY'}">
-								<a
-									data-content="#{msg.cc_right__cb}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cb</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY-NC-ND'}">
-								<a
-									data-content="#{msg.cc_right__cbnd}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cbnd</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY-NC'}">
-								<a
-									data-content="#{msg.cc_right__cbn}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cbn</span>
-								</a>
-							</ui:fragment>
-							<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_ACCESSCONDITIONCOPYRIGHT') == 'CC BY-ND'}">
-								<a
-									data-content="#{msg.cc_right__cbd}"
-									data-placement="top" 
-									data-toggle="popover" 
-									data-trigger="click"
-									data-container="body" 
-									data-html="true" 
-									role="button"
-									tabindex="0"> 
-									<span class="cc-icons">cbd</span>
-								</a>
-							</ui:fragment>
-						</div>
-					</ui:fragment>
-
-					<!-- SOCIAL MEDIA -->
-					<div class="fullscreen__view-sidebar-social-media">
-						<ul>
-							<li>
-								<a
-									href="http://facebook.com/sharer.php?u=#{navigationHelper.encodedUrl}&amp;t=#{request.contextPath}"
-									title="#{msg.social__share_on_facebook}"
-									data-toggle="tooltip"
-									data-placement="top" 
-									target="_blank"
-									rel="noopener"
-									role="button">
-									<i class="fa fa-facebook-official" aria-hidden="true"></i>
-								</a>
-							</li>
-							<li>
-								<a
-									href="http://twitter.com/home?status=#{navigationHelper.encodedUrl}"
-									title="#{msg.social__share_on_twitter}"
-									data-toggle="tooltip"
-									data-placement="top" 
-									target="_blank"
-									rel="noopener"
-									role="button"> 
-									<i class="fa fa-twitter" aria-hidden="true"></i>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
                 
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="fullscreen__view-sidebar-accordeon">
@@ -297,19 +97,6 @@
                                 <widgetComponent:widget_searchResultNavigation />
                             </div>
                         </div>                    
-                    </ui:fragment>
-                    
-                    <!-- SEARCH IN CURRENT ITEM -->
-                    <ui:fragment rendered="#{!activeDocumentBean.anchor and configurationBean.showSearchInItem}">
-	                    <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-in-current-item">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title">
-	                            <span>#{msg.search}</span>
-	                        </h3>
-	                        
-	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-	                            <widgetComponent:widget_searchInCurrentItem />
-	                        </div>
-	                    </div>
                     </ui:fragment>
                 </div>
             </div>
