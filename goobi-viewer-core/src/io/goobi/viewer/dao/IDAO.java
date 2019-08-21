@@ -194,7 +194,7 @@ public interface IDAO {
 
     public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException;
     
-    long getNumCommentsForWork(String pi, boolean topLevelOnly) throws DAOException;
+    public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException;
 
     public Comment getComment(long id) throws DAOException;
 
@@ -414,6 +414,7 @@ public interface IDAO {
 	Query createNativeQuery(String string);
 
 	Query createQuery(String string);
+
 
 
 

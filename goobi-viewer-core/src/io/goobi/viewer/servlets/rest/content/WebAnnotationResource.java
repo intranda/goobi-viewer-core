@@ -180,23 +180,25 @@ public class WebAnnotationResource {
     @Path("comments/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public AnnotationPage getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
+    public AnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
             throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
-        if (comments.isEmpty()) {
-            throw new ContentNotFoundException("Resource not found");
-        }
         
-        URI resourceId = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
+        URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi + "/" + page);
 
-        AnnotationPage annoPage = new AnnotationCollectionBuilder().buildPage(
-                comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 0, 0, null, resourceId);
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
+                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                .setItemsPerPage(comments.size())
+                .setPageUrlPrefix("page");
+        AnnotationCollection collection = builder.buildCollection();
+        AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
+        collection.setFirst(first);
         
-        return annoPage;
+        return collection;
     }
 
     /**
@@ -228,19 +230,18 @@ public class WebAnnotationResource {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
-        long totalCount = DataManager.getInstance().getDao().getNumCommentsForWork(pi, false);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
         
         URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
-
-        long docs = DataManager.getInstance().getSearchIndex().count(
-                SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.DOCTYPE + ":PAGE");
         
-        if (docs < 1) {
-            throw new ContentNotFoundException("No comments found for this record");
-        }
-
-        AnnotationCollection collection = new AnnotationCollectionBuilder().buildCollection((int)totalCount, (int)docs, resourceId, ViewerResourceBundle.getTranslations("userComments"));
-
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
+                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                .setItemsPerPage(comments.size())
+                .setPageUrlPrefix("page");
+        AnnotationCollection collection = builder.buildCollection();
+        AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
+        collection.setFirst(first);
+        
         return collection;
     }
 
