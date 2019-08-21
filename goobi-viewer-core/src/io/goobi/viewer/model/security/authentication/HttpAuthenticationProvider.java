@@ -96,8 +96,9 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @return the label
      */
     public String getLabel() {
-        return this.label;
+        return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
     }
+
     
     /**
      * @return the url
