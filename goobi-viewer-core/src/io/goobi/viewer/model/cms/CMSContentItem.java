@@ -947,7 +947,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * @return true if the item has a non-empty inline help text. Taken from contentItem of template
      */
     public boolean isHasInlineHelp() {
-        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).isHasInlineHelp();
+        CMSContentItem item = getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
+        if(item != null) {
+            return item.isHasInlineHelp();
+        } else {
+            return false;
+        }
     }
 
     /**

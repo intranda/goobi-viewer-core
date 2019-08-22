@@ -58,7 +58,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public LayerBuilder(HttpServletRequest request) throws URISyntaxException {
+    public LayerBuilder(HttpServletRequest request)  {
         super(request);
     }
 
@@ -89,10 +89,9 @@ public class LayerBuilder extends AbstractBuilder {
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
             language.ifPresent(lang -> {      
-//                    URI link = ContentResource.getTEIURI(pi, lang);
                     URI link = linkGetter.apply(pi, lang);
                     URI annotationURI = getAnnotationListURI(pi, type);
-                    IAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
+                    OpenAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
                     annotations.add(anno);
             });
         }
@@ -120,8 +119,6 @@ public class LayerBuilder extends AbstractBuilder {
         } else {
             annotation.setMotivation(Motivation.PAINTING);
         }
-        
-        
         annotation.setBody(link);
         return annotation;
     }

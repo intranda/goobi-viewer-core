@@ -16,10 +16,10 @@
 package io.goobi.viewer.servlets.rest.content;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +30,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.AgentType;
+import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.SimpleResource;
+import de.intranda.api.annotation.wa.Agent;
+import de.intranda.api.annotation.wa.TextualResource;
+import de.intranda.api.annotation.wa.WebAnnotation;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -45,7 +52,11 @@ import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -90,6 +101,7 @@ public class WebAnnotationResource {
      * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @throws URISyntaxException 
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
@@ -107,8 +119,46 @@ public class WebAnnotationResource {
         if (comment == null) {
             throw new ContentNotFoundException("Resource not found");
         }
+        
+        WebAnnotation anno = createAnnotation(comment);
+        
+        return anno;
+    }
 
-        return new CommentAnnotation(comment, servletRequest, true);
+    /**
+     * @param comment
+     * @return
+     * @throws URISyntaxException
+     */
+    private WebAnnotation createAnnotation(Comment comment) {
+        try {
+            URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + comment.getPi() + "/" + comment.getPage() + "/" + comment.getId());
+            WebAnnotation anno = new WebAnnotation(resourceId);
+            anno.setBody(new TextualResource(comment.getText()));
+            anno.setTarget(new SimpleResource(new SequenceBuilder(servletRequest).getCanvasURI(comment.getPi(), comment.getPage())));
+            anno.setCreated(comment.getDateCreated());
+            anno.setModified(comment.getDateUpdated());
+            anno.setCreator(createAgent(comment.getOwner()));
+            anno.setGenerator(new Agent(URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)), AgentType.SOFTWARE, "Goobi viewer"));
+            return anno;
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.toString());
+            return null;
+        }
+    }
+
+    /**
+     * @param owner
+     * @return
+     */
+    private Agent createAgent(User owner) {
+        try {
+            Agent agent = new Agent(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/" + owner.getId()), AgentType.PERSON, owner.getDisplayName());
+            return agent;
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.toString());
+            return null;
+        }
     }
 
     /**
@@ -122,25 +172,33 @@ public class WebAnnotationResource {
      * @throws MalformedURLException
      * @throws ContentNotFoundException
      * @throws URISyntaxException 
+     * @throws ViewerConfigurationException 
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path(CommentAnnotation.PATH + "/{pi}/{page}")
+    @Path("comments/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CommentAnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
-            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
+    public AnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
+            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
-        if (comments.isEmpty()) {
-            throw new ContentNotFoundException("Resource not found");
-        }
+        
+        URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi + "/" + page);
 
-        return new CommentAnnotationCollection(pi + ", page " + page, comments, servletRequest, true);
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
+                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                .setItemsPerPage(comments.size())
+                .setPageUrlPrefix("page");
+        AnnotationCollection collection = builder.buildCollection();
+        AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
+        collection.setFirst(first);
+        
+        return collection;
     }
 
     /**
@@ -155,41 +213,36 @@ public class WebAnnotationResource {
      * @throws MalformedURLException
      * @throws ContentNotFoundException
      * @throws URISyntaxException 
+     * @throws ViewerConfigurationException 
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path(CommentAnnotation.PATH + "/{pi}")
+    @Path("comments/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CommentAnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
+    public AnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException, ViewerConfigurationException {
+        
+
+        
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
-        // Get all page numbers
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(
-                SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.DOCTYPE + ":PAGE", Collections.singletonList(SolrConstants.ORDER));
-        if (docs.isEmpty()) {
-            throw new ContentNotFoundException("Record not found in index");
-        }
-        logger.trace("{} pages found", docs.size());
-
-        List<Comment> ret = new ArrayList<>();
-        for (SolrDocument doc : docs) {
-            int order = (int) doc.getFieldValue(SolrConstants.ORDER);
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
-            if (comments.size() > 0) {
-                ret.addAll(comments);
-                logger.trace("{} comments found for page {}", comments.size(), order);
-            }
-        }
-        if (ret.isEmpty()) {
-            throw new ContentNotFoundException("No comments found for this record");
-        }
-
-        return new CommentAnnotationCollection(pi, ret, servletRequest, true);
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+        
+        URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + pi);
+        
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(resourceId, comments.size())
+                .setLabel(ViewerResourceBundle.getTranslations("userComments"))
+                .setItemsPerPage(comments.size())
+                .setPageUrlPrefix("page");
+        AnnotationCollection collection = builder.buildCollection();
+        AnnotationPage first = builder.buildPage(comments.stream().map(this::createAnnotation).collect(Collectors.toList()), 1);
+        collection.setFirst(first);
+        
+        return collection;
     }
 
     /**

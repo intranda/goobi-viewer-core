@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.oa.ImageResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
@@ -89,7 +91,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public SequenceBuilder(HttpServletRequest request) throws URISyntaxException {
+    public SequenceBuilder(HttpServletRequest request) {
         super(request);
     }
 
@@ -215,33 +217,8 @@ public class SequenceBuilder extends AbstractBuilder {
                         OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
                         anno.setMotivation(Motivation.COMMENTING);
                         anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                        anno.setBody(new TextualResource(comment.getText()));
-                        annoList.addResource(anno);
-                    }
-                }
-                canvas.addOtherContent(annoList);
-                list.add(annoList);
-            }
-        }
-        return list;
-    }
-
-    public List<AnnotationList> addFulltextAnnotations(Map<Integer, Canvas> canvases, String pi, boolean populate)
-            throws DAOException  {
-        List<AnnotationList> list = new ArrayList<>();
-        List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
-        for (Integer order : pages) {
-            Canvas canvas = canvases.get(order);
-            if (canvas != null) {
-                AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
-                annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.COMMENT.name()));
-                if (populate) {
-                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
-                    for (Comment comment : comments) {
-                        OpenAnnotation anno = new OpenAnnotation(getCommentAnnotationURI(pi, order, comment.getId()));
-                        anno.setMotivation(Motivation.COMMENTING);
-                        anno.setTarget(createSpecificResource(canvas, 0, 0, canvas.getWidth(), canvas.getHeight()));
-                        anno.setBody(new TextualResource(comment.getText()));
+                        TextualResource body = new TextualResource(comment.getText());
+                        anno.setBody(body);
                         annoList.addResource(anno);
                     }
                 }
@@ -261,7 +238,6 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return
      */
     private static SpecificResource createSpecificResource(Canvas canvas, int x, int y, int width, int height) {
-        
         SpecificResource part = new SpecificResource(canvas.getId(), new FragmentSelector(new Rectangle(x, y, width, height)));
         return part;
     }

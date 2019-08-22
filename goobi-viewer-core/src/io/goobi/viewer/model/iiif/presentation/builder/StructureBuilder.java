@@ -63,7 +63,7 @@ public class StructureBuilder extends AbstractBuilder {
      * @param request
      * @throws URISyntaxException
      */
-    public StructureBuilder(HttpServletRequest request) throws URISyntaxException {
+    public StructureBuilder(HttpServletRequest request) {
         super(request);
     }
 

@@ -29,6 +29,7 @@ import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.FragmentSelector;
+
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;

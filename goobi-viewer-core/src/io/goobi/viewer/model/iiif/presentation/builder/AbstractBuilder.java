@@ -73,10 +73,10 @@ public abstract class AbstractBuilder {
 	private final URI requestURI;
 	private final Optional<HttpServletRequest> request;
 
-	public AbstractBuilder(HttpServletRequest request) throws URISyntaxException {
+	public AbstractBuilder(HttpServletRequest request) {
 		this.request = Optional.ofNullable(request);
-		this.servletURI = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-		this.requestURI = new URI(
+		this.servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+		this.requestURI = URI.create(
 				ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
 	}
 

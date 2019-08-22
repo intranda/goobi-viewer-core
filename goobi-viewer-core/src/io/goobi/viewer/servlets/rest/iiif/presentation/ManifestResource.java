@@ -39,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Collection;
@@ -48,7 +49,6 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.api.iiif.presentation.enums.Motivation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -144,7 +144,6 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifest(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
-
         List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
         if (docs.isEmpty()) {
             throw new ContentNotFoundException("No document found for pi " + pi);
@@ -170,7 +169,7 @@ public class ManifestResource extends AbstractResource {
         return manifest;
 
     }
-    
+
     /**
      * Returns the entire IIIF manifest for the given pi. If the given pi points to an anchor, a IIIF collection is returned instead
      * 
@@ -189,8 +188,7 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifestSimple(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
-
-       StructElement doc = getManifestBuilder().getDocument(pi);
+        StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc == null) {
             throw new ContentNotFoundException("No document found for pi " + pi);
         }
@@ -232,7 +230,7 @@ public class ManifestResource extends AbstractResource {
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
     }
-    
+
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi
      * 
@@ -249,8 +247,9 @@ public class ManifestResource extends AbstractResource {
     @GET
     @Path("/{pi}/{preferredView}/thumbnails")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Canvas> getThumbnailSequence(@PathParam("preferredView") String preferredView, @PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
-            ViewerConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
+    public List<Canvas> getThumbnailSequence(@PathParam("preferredView") String preferredView, @PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException,
+            IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
 
@@ -260,10 +259,12 @@ public class ManifestResource extends AbstractResource {
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
             PageType pageType = PageType.getByName(preferredView);
-            if(pageType == null) {
+            if (pageType == null) {
                 pageType = PageType.viewObject;
             }
-            getSequenceBuilder().setPreferredView(pageType).setBuildMode(BuildMode.THUMBS).addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            getSequenceBuilder().setPreferredView(pageType)
+                    .setBuildMode(BuildMode.THUMBS)
+                    .addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0).getCanvases();
         }
         throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
@@ -317,13 +318,13 @@ public class ManifestResource extends AbstractResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public Canvas getCanvas(@PathParam("pi") String pi, @PathParam("physPageNo") int physPageNo) throws PresentationException,
             IndexUnreachableException, URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
-               
+
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc != null) {
             PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
             Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
             if (canvas != null) {
-                getSequenceBuilder().addSeeAlsos(canvas, doc, page  );
+                getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
                 return canvas;
             }
@@ -464,44 +465,28 @@ public class ManifestResource extends AbstractResource {
 
     private StructureBuilder getStructureBuilder() {
         if (this.structureBuilder == null) {
-            try {
-                this.structureBuilder = new StructureBuilder(this.servletRequest);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
+            this.structureBuilder = new StructureBuilder(this.servletRequest);
         }
         return this.structureBuilder;
     }
 
     public ManifestBuilder getManifestBuilder() {
         if (this.manifestBuilder == null) {
-            try {
-                this.manifestBuilder = new ManifestBuilder(servletRequest);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
+            this.manifestBuilder = new ManifestBuilder(servletRequest);
         }
         return manifestBuilder;
     }
 
     public SequenceBuilder getSequenceBuilder() {
         if (this.sequenceBuilder == null) {
-            try {
-                this.sequenceBuilder = new SequenceBuilder(servletRequest);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
+            this.sequenceBuilder = new SequenceBuilder(servletRequest);
         }
         return sequenceBuilder;
     }
 
     public LayerBuilder getLayerBuilder() {
         if (this.layerBuilder == null) {
-            try {
-                this.layerBuilder = new LayerBuilder(servletRequest);
-            } catch (URISyntaxException e) {
-                throw new IllegalStateException(e);
-            }
+            this.layerBuilder = new LayerBuilder(servletRequest);
         }
         return layerBuilder;
     }
