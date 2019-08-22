@@ -264,21 +264,20 @@ public class SearchQueryItem implements Serializable {
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
             fields.add(SolrConstants.CMS_TEXT_ALL);
-        } else {
-            if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
-                if (aggregateHits) {
-                    fields.add(SolrConstants.SUPERDEFAULT);
-                }
-                fields.add(SolrConstants.DEFAULT);
-            } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
-                if (aggregateHits) {
-                    fields.add(SolrConstants.SUPERFULLTEXT);
-                }
-                fields.add(SolrConstants.FULLTEXT);
-            } else {
-                fields.add(field);
+        } else if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERDEFAULT);
             }
+            fields.add(SolrConstants.DEFAULT);
+        } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERFULLTEXT);
+            }
+            fields.add(SolrConstants.FULLTEXT);
+        } else {
+            fields.add(field);
         }
+
         switch (operator) {
             case IS:
             case PHRASE:

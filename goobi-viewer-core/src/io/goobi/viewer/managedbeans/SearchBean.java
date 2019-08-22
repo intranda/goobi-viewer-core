@@ -509,8 +509,42 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
                     searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
                 }
-                String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
-                // logger.trace("Item query: {}", itemQuery);
+
+                String itemQuery = null;
+                if (SolrConstants.BOOKSHELF.equals(queryItem.getField())) {
+
+                    // Bookshelf search
+                    if (StringUtils.isEmpty(queryItem.getValue())) {
+                        continue;
+                    }
+                    if (userBean.isLoggedIn()) {
+                        // User bookshelf
+                        try {
+                            Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(queryItem.getValue());
+                            if (bookshelf != null) {
+                                itemQuery = bookshelf.getFilterQuery();
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    } else {
+                        // Session bookshelf
+                        Optional<Bookshelf> obs = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
+                        if (obs.isPresent()) {
+                            itemQuery = obs.get().getFilterQuery();
+                            logger.trace("obs");
+                        }
+                    }
+                    if (StringUtils.isEmpty(itemQuery)) {
+                        // Skip empty bookshelf
+                        continue;
+                    }
+                } else {
+                    // Generate item query
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
+                }
+
+                logger.trace("Item query: {}", itemQuery);
                 sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
                 switch (queryItem.getOperator()) {
                     case IS:
@@ -622,7 +656,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
-        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, advancedQueryGroups, navigationHelper.getLocale());
+        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale());
     }
 
     /**
@@ -1461,7 +1495,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (ret == null) {
             ret = new ArrayList<>();
             logger.trace("Generating drop-down values for {}", field);
-            if ("BOOKSHELF".equals(field)) {
+            if (SolrConstants.BOOKSHELF.equals(field)) {
                 if (userBean != null && userBean.isLoggedIn()) {
                     // User bookshelves
                     List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(userBean.getUser());
