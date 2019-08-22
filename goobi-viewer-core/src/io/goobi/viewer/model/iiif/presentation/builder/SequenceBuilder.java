@@ -372,7 +372,6 @@ public class SequenceBuilder extends AbstractBuilder {
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.FULLTEXT.name()));
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
             if (populate) {
-
                 if (StringUtils.isNotBlank(page.getAltoFileName())) {
                     try {
                         String altoText = page.loadAlto();
@@ -463,7 +462,6 @@ public class SequenceBuilder extends AbstractBuilder {
         if (videoList.getResources() != null) {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
-
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));
         }
