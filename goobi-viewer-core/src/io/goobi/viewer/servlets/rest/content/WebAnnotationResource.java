@@ -94,10 +94,10 @@ public class WebAnnotationResource {
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path(CommentAnnotation.PATH + "/{pi}/{page}/{id}")
+    @Path("comments/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CommentAnnotation getAnnotation(@PathParam("id") Long id)
+    public IAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);

@@ -1,0 +1,139 @@
+/* ==============================================================
+   Crowdsourcing 
+   global style declarations for crowdsourcing_layout.xhtml
+   ==============================================================*/
+/* ADMIN LAYOUT */
+.crowd { 
+	
+	width: 100vw;
+	height: 100vh;
+
+	
+	/* HEADER */
+	.page-header {
+		/* TOP */
+		&__top-wrapper {
+			height: 40px;
+			position: sticky;
+			top: 0;
+			background-color: black;
+			z-index: 2020;		
+		}
+		&__top {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			min-height: 30px;
+			color: white;
+			a, button {
+				color: white;
+				&:hover,
+				&:active,
+				&:focus {
+					color: white;
+					text-decoration: none;
+				}
+			}
+		}
+		&__top-mobile-nav,
+		&__top-mobile-sidebar {
+			display: none;
+			flex: 0 0 0%;
+			max-width: 0%;
+		}
+		&__top-brand {
+			flex: 0 0 30%;
+			max-width: 30%;
+		}
+		&__top-actions {
+			flex: 0 0 70%;
+			max-width: 70%;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: flex-end;		
+		}
+		&__top-actions-language,
+		&__top-actions-watchlist,
+		&__top-actions-login {
+			margin-left: 1.5rem;
+		}
+		&__top-actions-language {
+			position: relative;
+			[data-toggle="local"] {
+				text-transform: uppercase;			
+			}
+		}
+		&__top-actions-watchlist {}
+		&__top-actions-login {}
+		&__top-mobile-sidebar {
+			text-align: right;
+		}
+		/* BOTTOM */
+		&__bottom-wrapper {
+			background-color: rgba(242,243,244,0.95);
+		}
+		&__bottom {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			padding: 2rem 0;
+		}
+		&__bottom-logo {
+			flex: 0 0 75%;
+			max-width: 75%;
+			padding-right: .75rem;
+			h1 {
+				display: flex;
+				align-items: center;
+				margin: 0;
+				font-size: 3.2rem;
+				font-weight: 600;
+				a {
+					color: black;
+					&:hover,
+					&:active,
+					&:focus {
+						color: black;
+						text-decoration: none;
+					}
+				}
+				img {
+					display: inline-block;
+					max-width: 13rem;
+					margin-right: 1rem;
+					vertical-align: middle;
+				}
+				span {}
+			}
+		}
+		&__bottom-search {
+			flex: 0 0 25%;
+			max-width: 25%;
+			padding-left: .75rem;
+			.widget {
+				margin-bottom: 0;
+			}		
+		}
+		&__bottom-search-link {
+			padding: .3rem 0 0 .7rem;
+		}
+	}
+
+	&__content {
+		
+		background-color: #f2f3f4;
+		padding: 15px;
+		height: calc(~"100vh - 40px");
+		width: 100vw;
+		
+	}
+	
+	&__content-inner {
+	
+		background-color: white;
+		width: 100%;
+		height: 100%;
+	}
+}
+
