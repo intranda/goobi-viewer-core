@@ -24,18 +24,22 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 import io.goobi.viewer.model.crowdsourcing.queries.QueryType;
 import io.goobi.viewer.model.crowdsourcing.queries.TargetType;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
  * @author florian
@@ -50,13 +54,24 @@ public class CampaignItemResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    private final URI requestURI;
+    
+    public CampaignItemResource() {        
+        try {
+            this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        } catch (ViewerConfigurationException e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
+
     @GET
     @Path("/{campaignId}/annotate/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
-        
-        URI manifestURI = new ManifestBuilder(servletRequest).getManifestURI(pi);
+        URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
+        URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
         
         //TODO: Create item from campaign
         CampaignItem item = new CampaignItem();

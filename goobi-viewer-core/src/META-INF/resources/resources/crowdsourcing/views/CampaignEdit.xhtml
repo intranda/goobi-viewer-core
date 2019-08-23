@@ -17,15 +17,13 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="crowdsourcingEdit">
                 
-                <imageView id="single" source="https://viewer.goobi.io/rest/iiif/manifests/396/canvas/1/"/>
+                <campaignItem source="http://localhost:8082/viewer/rest/crowdsourcing/campaign/1/annotate/2267461/"/>
                 
-            </div>
         </f:view>
         
         <script>
-        	riot.mount("imageView");
+        	riot.mount("campaignItem");
         </script>
         
     </ui:define>

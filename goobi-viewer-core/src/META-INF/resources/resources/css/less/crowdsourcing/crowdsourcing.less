@@ -134,6 +134,96 @@
 		background-color: white;
 		width: 100%;
 		height: 100%;
+		
+		.content {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: stretch;
+			.content_left {
+				width: 50%;
+			}
+			.content_right {
+				width: 50%;
+			}
+		}
+		
+		.imageview_wrapper {
+			width: 100%;
+			height:calc(~"100% - 50px") ;
+			.image_controls {
+				width: 100%;
+				height: 50px;
+				display: flex;
+				flex-wrap: wrap;
+				align-items: stretch;
+				justify-content: center;
+				&__item {
+					margin: 9px 15px 6px 15px;
+					button {
+						width: 32px;
+						height:32px;
+					}
+					&.zoom-slider-wrapper {
+				        width: 100px;
+				        border: none;
+						.zoom-slider {
+				            height: 16px;
+				            margin-top: 8px;
+				            border: 1px solid gray;
+						}
+						.zoom-slider-handle {
+				            position: relative;
+				            top: -9px;
+				            width: 15px;
+				            min-width: inherit;
+				            height: 32px;
+				            line-height: inherit;
+				            border: none;
+				            background-color: gray;
+				       }
+					}
+				}
+			}
+			.image_container {
+				width: 100%;
+				height: calc(~"100% - 50px") ;
+				.image {
+					width: 100%;
+					height:100%;
+				}
+			}
+		}
+		.canvas_paginator {
+			height: 50px;
+			&__list {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: stretch;
+				justify-content: center;
+			}
+			&__button {
+				border: 1px solid lightblue;
+				margin: 5px;
+				width: 36px;
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				padding: 0 3px;
+				&:hover {
+					background-color: lightblue;
+					cursor: pointer;
+				}
+				&.current {
+					background-color: lightblue;
+				}
+			}
+			&__separator {
+				line-height: 30px;
+				padding: 0 3px;
+				text-align: center;
+			}
+		}
 	}
 }
 

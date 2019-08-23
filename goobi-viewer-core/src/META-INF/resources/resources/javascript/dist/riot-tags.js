@@ -156,6 +156,144 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
+riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.loader}" id="mainImage" source="{this.loader.getCurrentImage()}" loader="{this.loader}"></imageView><canvaspaginator if="{this.loader}" loader="{this.loader}"></canvasPaginator></div><div class="content_right"></div></div>', '', '', function(opts) {
+
+	let CanvasLoader = function(canvasList, initialIndex, loadMethod) {
+
+		this.canvasList = canvasList;
+		this.imageIndex = initialIndex;
+		this.load = loadMethod;
+		this.loadImage = (index) =>  {
+		    this.imageIndex = index;
+		    this.load();
+		}
+		this.getCurrentImage = () => this.canvasList[this.imageIndex];
+
+	};
+
+	this.on("mount", function() {
+		console.log("load ", this.opts.source);
+	    fetch(this.opts.source)
+	    .then( response => response.json() )
+	    .then( item => this.loadItem(item));
+	});
+
+	this.loadItem = function(item) {
+		console.log("load item ", item);
+		fetch(item.source)
+		.then( response => response.json() )
+		.then((imageSource) => this.initImageView(this.getCanvasList(imageSource), 0))
+		.catch( error => console.error("ERROR ", error));
+	}.bind(this)
+
+	this.initImageView = function(canvases, initialCanvasIndex) {
+	    if(!canvases || !canvases.length) {
+	        return;
+	    }
+	    initialCanvasIndex = Math.max(0, Math.min(initialCanvasIndex, canvases.length-1));
+	    this.loader = new CanvasLoader(canvases, initialCanvasIndex, this.loadImage);
+	    console.log("initialized image loader ", this.loader);
+	    this.update();
+	}.bind(this)
+
+	this.loadImage = function() {
+	    this.loader.updateImageSource();
+	}.bind(this)
+
+	this.resolveCanvas = function(source) {
+	    if(isString(source)) {
+	        return fetch(source)
+	        .then( response => response.json() );
+	    } else {
+	        return Q.fcall(() => source);
+	    }
+	}.bind(this)
+
+	this.isString = function(variable) {
+	    return typeof variable === 'string' || variable instanceof String
+	}.bind(this)
+
+	this.getCanvasList = function(source) {
+	    let sourceType = source.type;
+	    if(!sourceType) {
+	        sourceType = source["@type"];
+	    }
+
+	    switch(sourceType) {
+	        case "sc:Manifest":
+	            return source.sequences[0].canvases;
+	        case "sc:Canvas":
+	            return [source];
+	        case "sc:Range":
+	            return source.canvases;
+	        default:
+	            console.log("Unknown source type, cannot retrieve canvases", source);
+	    }
+	}.bind(this)
+
+});
+riot.tag2('canvaspaginator', '<div class="canvas_paginator"><div class="canvas_paginator__list"><div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div><div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div><div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div></div></div>', '', '', function(opts) {
+
+this.load = function(e) {
+    let index = parseInt(e.target.attributes["index"].value);
+    if(index != this.getCurrentIndex()) {
+	    console.log("paginator loading image " + index);
+		this.opts.loader.loadImage(index);
+		this.update();
+    }
+}.bind(this)
+
+this.getCurrentIndex = function() {
+    return this.opts.loader.imageIndex;
+}.bind(this)
+
+this.getIndex = function(canvas) {
+    return this.opts.loader.canvasList.indexOf(canvas);
+}.bind(this)
+
+this.getOrder = function(canvas) {
+    return this.getIndex(canvas) + 1;
+}.bind(this)
+
+this.useMiddleButtons = function() {
+    return this.opts.loader.canvasList.length > 9 && this.opts.loader.imageIndex > 4 && this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5;
+}.bind(this)
+
+this.useLastButtons = function() {
+    return this.opts.loader.canvasList.length > 9;
+}.bind(this)
+
+this.firstCanvases = function() {
+    if(this.opts.loader.canvasList.length < 10) {
+        return this.opts.loader.canvasList;
+    } else if(this.opts.loader.imageIndex < 5) {
+        return this.opts.loader.canvasList.slice(0, this.opts.loader.imageIndex+3);
+    } else {
+        return this.opts.loader.canvasList.slice(0, 2);
+    }
+}.bind(this)
+
+this.middleCanvases = function() {
+    if(this.opts.loader.canvasList.length < 10) {
+        return [];
+    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5 && this.opts.loader.imageIndex > 4) {
+        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2, this.opts.loader.imageIndex+3);
+    } else {
+        return [];
+    }
+}.bind(this)
+
+this.lastCanvases = function() {
+    if(this.opts.loader.canvasList.length < 10) {
+        return [];
+    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5) {
+        return this.opts.loader.canvasList.slice(this.opts.loader.canvasList.length-2);
+    } else {
+        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2);
+    }
+}.bind(this)
+
+});
 
 
 
@@ -489,19 +627,26 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		this.update();
     	}.bind( this ) );
 });
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="wrapper"><div class="image_container"><div id="image_{opts.id}" class="image"></div></div><div id="controls_{opts.id}" class="controls"><div><button class="controls__item fa fa-rotate-left" onclick="{rotateLeft}"></button><button class="controls__item fa fa-rotate-right" onclick="{rotateRight}"></button></div><button class="controls__item draw_overlay">Draw Overlay</button><input type="range" class="custom-range controls__item rotation_slider" step="0.01" min="-20" max="20"><label id="rotationLabel">0</label><div><label>Point coordinates: </label><label id="coordinatesLabel"></label></div></div></div>', '', '', function(opts) {
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_controls__item"><button class="controls__item fa fa-rotate-left" onclick="{rotateLeft}"></button></div><div class="image_controls__item"><button class="controls__item fa fa-rotate-right" onclick="{rotateRight}"></button></div><div class="image_controls__item zoom-slider-wrapper"><div class="zoom-slider"><div class="zoom-slider-handle"></div></div></div></div>', '', '', function(opts) {
+    this.on( "mount", function() {
+        console.log( "mount image controls" );
+    } );
 
-	this.rotateLeft = function() {
-		if(this.image) {
-			this.image.controls.rotateLeft();
-		}
-	}.bind(this)
+    this.rotateRight = function()
+    {
+        if ( this.opts.image ) {
+            this.opts.image.controls.rotateRight();
+        }
+    }.bind(this)
 
-	this.rotateRight = function() {
-		if(this.image) {
-			this.image.controls.rotateRight();
-		}
-	}.bind(this)
+    this.rotateLeft = function()
+    {
+        if ( this.opts.image ) {
+            this.opts.image.controls.rotateLeft();
+        }
+    }.bind(this)
+});
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><imagecontrols if="{this.image}" image="{this.image}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
 
 	this.getPosition = function() {
 		let pos_os = this.dataPoint.getPosition();
@@ -511,41 +656,31 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="wrapper"><div class="
 	}.bind(this)
 
 	this.on("mount", function() {
-
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true;
 		}.bind(this));
-
+		console.log("load image ", imageViewConfig);
 		this.image = new ImageView.Image(imageViewConfig);
 		this.loadImage(this.image);
-
-		$("#controls_" + opts.id + " .rotation_slider").on("input", function(event) {
-			let element = $(event.target);
-			let rot = parseFloat($(element).val());
-
-			this.image.controls.rotateTo(parseFloat($(element).val()));
-			$("#rotationLabel").html(this.image.controls.getRotation().toFixed(2));
-			$("#coordinatesLabel").html(ImageView.DataPoint.convertPointsToString(this.getPosition(), 2));
-		}.bind(this))
-
-		$("#controls_" + opts.id + " button").on("click", function(event) {
-			$("#rotationLabel").html(this.image.controls.getRotation().toFixed(2));
-			$("#coordinatesLabel").html(ImageView.DataPoint.convertPointsToString(this.getPosition(), 2));
-		}.bind(this));
+		this.opts.loader.updateImageSource = () => this.image.setTileSource(this.getImageInfo(this.opts.loader.getCurrentImage()));
 	})
+
+	this.getImageInfo = function(canvas) {
+	    return canvas.images[0].resource.service["@id"] + "/info.json"
+	}.bind(this)
 
 		const imageViewConfig = {
 				global : {
 					divId : "image_" + opts.id,
 					fitToContainer: true,
-					adaptContainerWidth: true,
+					adaptContainerWidth: false,
 					adaptContainerHeight: false,
 					footerHeight: 00,
-					zoomSpeed: 1.1,
+					zoomSpeed: 1.3,
 					allowPanning : true,
 				},
 				image : {
-					tileSource : opts.source.images[0].resource.service["@id"]
+					tileSource : this.getImageInfo(opts.source)
 				}
 		};
 
@@ -569,21 +704,8 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="wrapper"><div class="
 					this.drawing = false;
 					rect.draw();
 				}.bind(this))
-
-				let p = new OpenSeadragon.Point(0.2, image.getSizes().getAspectRatio()/2.0);
-				let lineStyleY = ImageView.DataPoint.getLineStyle(4, "#0803C4");
-				let pointStyle = ImageView.DataPoint.getPointStyle(6, "#FF063C");
-				this.dataPoint = new ImageView.DataPoint(p, image.viewer, ImageView.DataPoint.getStyle(pointStyle, undefined, lineStyle));
-				this.dataPoint.draw();
-
-				const lineMover = new ImageView.DataPoint.Transform(image.viewer,  () => true);
-				lineMover.addDataPoint(this.dataPoint);
-				lineMover.finishedTransforming().subscribe(function(p) {
-					$("#coordinatesLabel").html(ImageView.DataPoint.convertPointsToString(this.getPosition(), 2));
-					console.log("line position ", p.point);
-				}.bind(this))
-
 			}.bind(this))
+			.then( () => this.update());
 		}.bind(this)
 
 });
