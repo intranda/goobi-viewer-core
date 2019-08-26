@@ -271,7 +271,7 @@ public class RssResource {
             @PathParam("advancedSearchGroupOperator") String advancedSearchGroupOperator, @PathParam("language") String language)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, FeedException {
         if (query.equals("-")) {
-            query = createQuery(null, null, null, servletRequest, false);
+            query = createQuery(null, null, null, servletRequest, true);
         } else {
             try {
                 query = URLDecoder.decode(query, SearchBean.URL_ENCODING);

@@ -398,7 +398,7 @@ public class BookshelfBean implements Serializable {
 
     public void bookshelfSelectAction(ValueChangeEvent event) throws DAOException {
         logger.debug("bookshelf selected: {}", event.getNewValue());
-        currentBookshelf = DataManager.getInstance().getDao().getBookshelf(String.valueOf(event.getNewValue()));
+        currentBookshelf = DataManager.getInstance().getDao().getBookshelf(String.valueOf(event.getNewValue()), userBean.getUser());
         syncCurrentBookshelfToInputFields();
     }
 
@@ -660,8 +660,8 @@ public class BookshelfBean implements Serializable {
                     Messages.info(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUCCESS, null));
                 } catch (UnsupportedEncodingException | MessagingException e) {
                     logger.error(e.getMessage(), e);
-                    Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null).replace("{0}",
-                            DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+                    Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null)
+                            .replace("{0}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
                 }
             });
         }

@@ -123,8 +123,11 @@ public class MetadataTools {
             }
             if (isoLanguage != null && isoLanguage.length() == 2) {
                 // iso2
-                result.append("\r\n<meta name=\"DC.language\" content=\"").append(isoLanguage).append("\" xml:lang=\"").append(isoLanguage).append(
-                        "\" scheme=\"DCTERMS.RFC1766\" />");
+                result.append("\r\n<meta name=\"DC.language\" content=\"")
+                        .append(isoLanguage)
+                        .append("\" xml:lang=\"")
+                        .append(isoLanguage)
+                        .append("\" scheme=\"DCTERMS.RFC1766\" />");
             }
 
         }
@@ -259,6 +262,145 @@ public class MetadataTools {
     }
 
     /**
+     * 
+     * @param structElement
+     * @return
+     */
+    public static String generateRIS(StructElement structElement) {
+        if (structElement == null) {
+            return null;
+        }
+
+        StringBuilder result = new StringBuilder(100);
+        result.append("TY  - ").append(getRISTypeMapping(structElement.getDocStructType())).append("\r\n");
+        for (String field : structElement.getMetadataFields().keySet()) {
+            List<String> values = structElement.getMetadataFields().get(field);
+            if (values == null || values.isEmpty()) {
+                continue;
+            }
+            String risTag = null;
+            switch (field) {
+                case "CURRENTNO":
+                    risTag = "VL";
+                    break;
+                case "MD_ABSTRACT":
+                    risTag = "AB";
+                    break;
+                case "MD_ALTERNATETITLE":
+                    risTag = "J2";
+                    break;
+                case "MD_AUTHOR":
+                    risTag = "AU";
+                    break;
+                case "MD_EDITION":
+                    risTag = "ET";
+                    break;
+                case "MD_EDITOR":
+                    risTag = "ED";
+                    break;
+                case "MD_GEOKEYWORD":
+                case "MD_PERSONKEYWORD":
+                case "MD_WORKKEYWORD":
+                    risTag = "KW";
+                    break;
+                case "MD_ISBN":
+                case "MD_ISSN":
+                    risTag = "SN";
+                    break;
+                case "MD_LANGUAGE":
+                    risTag = "LA";
+                    break;
+                case "MD_NOTE":
+                    risTag = "N1";
+                    break;
+                case "MD_PLACEPUBLISH":
+                    risTag = "PP";
+                    break;
+                case "MD_PUBLISHER":
+                    risTag = "PB";
+                    break;
+                case "MD_TITLE":
+                    risTag = "TI";
+                    break;
+                case "MD_YEARPUBLISH":
+                    risTag = "PY";
+                    break;
+                case "NUMPAGES":
+                    risTag = "SP";
+                    break;
+                case "NUMVOLUMES":
+                    risTag = "NV";
+                    break;
+                case "PI_TOPSTRUCT":
+                    risTag = "CN";
+                    break;
+            }
+            if (risTag == null) {
+                continue;
+            }
+            int count = 1;
+            for (String value : values) {
+                String useRisTag = risTag;
+                if (useRisTag.length() == 1) {
+                    useRisTag += count;
+                    count++;
+                }
+                result.append(useRisTag).append("  - ").append(value).append("\r\n");
+            }
+
+        }
+
+        result.append("ER  - \r\n");
+
+        return result.toString();
+    }
+
+    /**
+     * 
+     * @param docstructType
+     * @return
+     */
+    static String getRISTypeMapping(String docstructType) {
+        if (docstructType == null) {
+            return null;
+        }
+
+        switch (docstructType.toLowerCase()) {
+            case "abstract":
+                return "ABST";
+            case "article":
+                return "MGZN";
+            case "audio":
+                return "AUDIO";
+            case "chapter":
+                return "CHAP";
+            case "figure":
+            case "picture":
+                return "FIGURE";
+            case "manuscript":
+                return "MANSCPT";
+            case "monograph":
+                return "BOOK";
+            case "map":
+                return "MAP";
+            case "mutivolumework":
+            case "multivolume_work":
+                return "SER";
+            case "periodical":
+                return "JFULL";
+            case "periodicalvolume":
+            case "periodical_volume":
+                return "JOUR";
+            case "sheetmusic":
+                return "MUSIC";
+            case "video":
+                return "VIDEO";
+            default:
+                return "GEN";
+        }
+    }
+
+    /**
      * Converts given language name or ISO-3 code to ISO-2, if possible.
      * 
      * @param language
@@ -271,9 +413,9 @@ public class MetadataTools {
 
         if (language.length() == 3) {
             Language lang = null;
-            try {                
+            try {
                 lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
-            } catch(IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 logger.warn("No language found for " + lang);
             }
             if (lang != null) {

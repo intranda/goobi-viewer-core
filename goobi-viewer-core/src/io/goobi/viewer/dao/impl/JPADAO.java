@@ -612,10 +612,11 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getBookshelf(java.lang.String)
      */
     @Override
-    public Bookshelf getBookshelf(String name) throws DAOException {
+    public Bookshelf getBookshelf(String name, User user) throws DAOException {
         preQuery();
-        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.name = :name");
+        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.name = :name AND bs.owner = :user");
         q.setParameter("name", name);
+        q.setParameter("user", user);
         try {
             Bookshelf o = (Bookshelf) q.getSingleResult();
             if (o != null) {

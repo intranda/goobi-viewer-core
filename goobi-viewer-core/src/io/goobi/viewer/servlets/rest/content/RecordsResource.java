@@ -15,7 +15,11 @@
  */
 package io.goobi.viewer.servlets.rest.content;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,7 +36,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -45,6 +51,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.SolrConstants;
@@ -54,8 +61,12 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.CompareYearSolrDocWrapper;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -309,5 +320,83 @@ public class RecordsResource {
         ret.put("count", count);
 
         return ret.toJSONString();
+    }
+
+    /**
+     * 
+     * @param iddoc
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     * @throws IOException
+     */
+    @GET
+    @Path("/ris/file/{iddoc}")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public StreamingOutput getRISAsFile(@PathParam("iddoc") long iddoc)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, IOException {
+        StructElement se = new StructElement(iddoc);
+
+        String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
+        setResponseHeader(fileName);
+
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        String ris = MetadataTools.generateRIS(se);
+
+        java.nio.file.Path tempFile = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), fileName);
+        Files.write(tempFile, ris.getBytes());
+
+        return (out) -> {
+            try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
+                FileTools.copyStream(out, in);
+            } finally {
+                out.flush();
+                out.close();
+                if (Files.exists(tempFile)) {
+                    FileUtils.deleteQuietly(tempFile.toFile());
+                }
+            }
+        };
+    }
+
+    /**
+     * 
+     * @param iddoc
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws DAOException
+     */
+    @GET
+    @Path("/ris/text/{iddoc}")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getRISAsText(@PathParam("iddoc") long iddoc)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
+        setResponseHeader("");
+        StructElement se = new StructElement(iddoc);
+
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, servletRequest)) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        return MetadataTools.generateRIS(se);
+    }
+
+    /**
+     * @param filename
+     */
+    private void setResponseHeader(String filename) {
+        if (servletResponse != null) {
+            if (StringUtils.isNotBlank(filename)) {
+                servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            }
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
     }
 }

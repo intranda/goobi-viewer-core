@@ -203,7 +203,8 @@
                                 class="label label-default widget-usage__work-link-opac" 
                                 title="#{msg.opacLink}" 
                                 target="_blank" rel="nofollow"> #{msg.opacLink} </a>
-                        </ui:fragment>                        
+                        </ui:fragment>
+                      
                     </div>
                     
                     <!-- PAGE -->
@@ -298,6 +299,24 @@
                                 title="#{msg.copyUrl}">
                                 #{msg.citeLinkPage}
                            </a>
+                        </ui:fragment>
+                                                
+                        <!-- RIS (topstruct) -->
+                        <ui:fragment>
+                            <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.topDocumentIddoc}"
+                                id="ris"
+                                class="label label-default widget-usage__work-link-opac" 
+                                title="#{msg.risLinkTopstruct}" 
+                                target="_blank" rel="nofollow"> #{msg.risLinkTopstruct} </a>
+                        </ui:fragment>
+                        <!-- RIS (current) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentDocumentIddoc != activeDocumentBean.viewManager.topDocumentIddoc}">
+                            <a href="#{configurationBean.restApiUrl}records/ris/file/#{activeDocumentBean.viewManager.currentDocumentIddoc}"
+                                id="ris"
+                                class="label label-default widget-usage__work-link-opac" 
+                                title="#{navigationHelper.getTranslationWithParams('risLinkCurrentDocstruct', activeDocumentBean.viewManager.currentDocument.label)}" 
+                                target="_blank" rel="nofollow">
+                                #{navigationHelper.getTranslationWithParams('risLinkCurrentDocstruct', activeDocumentBean.viewManager.currentDocument.label)} </a>
                         </ui:fragment>
                     </div>
                 </div>

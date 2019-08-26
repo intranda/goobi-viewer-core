@@ -77,6 +77,7 @@ public class SessionStoreBookshelfManager {
 
         if (session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME) == null) {
             Bookshelf bookshelf = new Bookshelf();
+            bookshelf.setName("session");
             session.setAttribute(BOOKSHELF_ATTRIBUTE_NAME, bookshelf);
             return getBookshelf(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
         }

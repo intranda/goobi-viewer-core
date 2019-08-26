@@ -567,17 +567,17 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         if (valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
             //only default language: Simple MEtadata value
             return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
-        } else {
-            return new MultiLanguageMetadataValue(valueMap);
         }
+        
+        return new MultiLanguageMetadataValue(valueMap);
     }
 
-    private String getLanguage(String fieldName) {
+    private static String getLanguage(String fieldName) {
         if (fieldName.contains("_LANG_")) {
             return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
-        } else {
-            return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
         }
+        
+        return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
     }
 
     /**

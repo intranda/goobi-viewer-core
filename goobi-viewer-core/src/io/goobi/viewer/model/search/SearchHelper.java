@@ -1810,6 +1810,7 @@ public final class SearchHelper {
                         case SolrConstants.PI_TOPSTRUCT:
                         case SolrConstants.DC:
                         case SolrConstants.DOCSTRCT:
+                        case SolrConstants.BOOKSHELF:
                             continue;
                     }
                     String itemQuery = item.generateQuery(new HashSet<String>(), false);

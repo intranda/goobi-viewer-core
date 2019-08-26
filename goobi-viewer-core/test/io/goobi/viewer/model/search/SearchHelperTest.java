@@ -785,7 +785,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
         List<SearchQueryGroup> groups = new ArrayList<>(1);
 
-        SearchQueryGroup group = new SearchQueryGroup(null, 4);
+        SearchQueryGroup group = new SearchQueryGroup(null, 5);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
@@ -799,6 +799,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(3).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(3).setField("MD_FIELD");
         group.getQueryItems().get(3).setValue("val");
+        group.getQueryItems().get(4).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(4).setField(SolrConstants.BOOKSHELF);
+        group.getQueryItems().get(4).setValue("bookshelf");
         groups.add(group);
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);

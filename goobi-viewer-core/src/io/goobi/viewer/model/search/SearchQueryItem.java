@@ -34,6 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -90,7 +91,7 @@ public class SearchQueryItem implements Serializable {
         return Arrays.asList(new SearchItemOperator[] { SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.PHRASE });
     }
 
-    public List<StringPair> getSelectItems() throws PresentationException, IndexUnreachableException {
+    public List<StringPair> getSelectItems() throws PresentationException, IndexUnreachableException, DAOException {
         if (locale != null) {
             return getSelectItems(locale.getLanguage());
         }
@@ -98,7 +99,7 @@ public class SearchQueryItem implements Serializable {
         return getSelectItems(locale.getLanguage());
     }
 
-    public List<StringPair> getSelectItems(String language) throws PresentationException, IndexUnreachableException {
+    public List<StringPair> getSelectItems(String language) throws PresentationException, IndexUnreachableException, DAOException {
         if (searchBean == null) {
             searchBean = BeanUtils.getSearchBean();
         }
@@ -221,6 +222,7 @@ public class SearchQueryItem implements Serializable {
                 case SolrConstants.DOCSTRCT:
                 case SolrConstants.DOCSTRCT_TOP:
                 case SolrConstants.DOCSTRCT_SUB:
+                case "BOOKSHELF":
                     displaySelectItems = true;
                     break;
                 default:
@@ -262,21 +264,20 @@ public class SearchQueryItem implements Serializable {
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
             fields.add(SolrConstants.CMS_TEXT_ALL);
-        } else {
-            if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
-                if (aggregateHits) {
-                    fields.add(SolrConstants.SUPERDEFAULT);
-                }
-                fields.add(SolrConstants.DEFAULT);
-            } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
-                if (aggregateHits) {
-                    fields.add(SolrConstants.SUPERFULLTEXT);
-                }
-                fields.add(SolrConstants.FULLTEXT);
-            } else {
-                fields.add(field);
+        } else if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERDEFAULT);
             }
+            fields.add(SolrConstants.DEFAULT);
+        } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERFULLTEXT);
+            }
+            fields.add(SolrConstants.FULLTEXT);
+        } else {
+            fields.add(field);
         }
+
         switch (operator) {
             case IS:
             case PHRASE:
