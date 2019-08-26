@@ -22,8 +22,7 @@
 						</dd>
 					</h:panelGroup>
 
-                <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement">
-					<ui:repeat value="#{metadataElement.sidebarMetadataList}" var="metadata">
+					<ui:repeat value="#{metadataBean.bottomMetadataElement.sidebarMetadataList}" var="metadata">
 						<dt title="#{msg[metadata.label]}">
 							<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 						</dt>
@@ -80,8 +79,6 @@
 							</dd>
 						</h:panelGroup>
 					</ui:repeat>
-					<h3 />
-                </ui:repeat>
 				</dl>
 
 				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0 and fn:length(event.sidebarMetadata) > 0}">
