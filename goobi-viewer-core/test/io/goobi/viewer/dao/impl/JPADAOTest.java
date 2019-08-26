@@ -1081,7 +1081,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getBookshelfByNameTest() throws DAOException {
-        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf("bookshelf 1 name");
+        User user = DataManager.getInstance().getDao().getUser(1);
+        Assert.assertNotNull(user);
+        
+        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf("bookshelf 1 name", user);
         Assert.assertNotNull(bookshelf);
         Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
         Assert.assertNotNull(bookshelf.getOwner());
@@ -1105,7 +1108,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         bookshelf.addItem(item);
         Assert.assertTrue(DataManager.getInstance().getDao().addBookshelf(bookshelf));
 
-        Bookshelf bookshelf2 = DataManager.getInstance().getDao().getBookshelf("add bookshelf test");
+        Bookshelf bookshelf2 = DataManager.getInstance().getDao().getBookshelf("add bookshelf test", user);
         Assert.assertNotNull(bookshelf2);
         Assert.assertNotNull(bookshelf2.getId());
         Assert.assertEquals(user, bookshelf2.getOwner());

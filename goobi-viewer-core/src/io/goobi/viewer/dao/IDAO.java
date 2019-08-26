@@ -102,7 +102,7 @@ public interface IDAO {
 
     public Bookshelf getBookshelf(long id) throws DAOException;
 
-    public Bookshelf getBookshelf(String name) throws DAOException;
+    public Bookshelf getBookshelf(String name, User user) throws DAOException;
 
     public boolean addBookshelf(Bookshelf bookshelf) throws DAOException;
 

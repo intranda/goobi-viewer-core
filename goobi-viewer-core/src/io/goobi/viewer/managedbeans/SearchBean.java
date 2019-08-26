@@ -520,7 +520,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (userBean.isLoggedIn()) {
                         // User bookshelf
                         try {
-                            Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(queryItem.getValue());
+                            Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(queryItem.getValue(), userBean.getUser());
                             if (bookshelf != null) {
                                 itemQuery = bookshelf.getFilterQuery();
                             }
@@ -532,7 +532,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         Optional<Bookshelf> obs = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
                         if (obs.isPresent()) {
                             itemQuery = obs.get().getFilterQuery();
-                            logger.trace("obs");
                         }
                     }
                     if (StringUtils.isEmpty(itemQuery)) {
