@@ -1500,13 +1500,15 @@ public class SearchBean implements SearchInterface, Serializable {
                     List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(userBean.getUser());
                     if (!bookshelves.isEmpty()) {
                         for (Bookshelf bookshelf : bookshelves) {
-                            ret.add(new StringPair(bookshelf.getName(), bookshelf.getName()));
+                            if (!bookshelf.getItems().isEmpty()) {
+                                ret.add(new StringPair(bookshelf.getName(), bookshelf.getName()));
+                            }
                         }
                     }
                 } else {
                     // Session bookshelf
                     Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
-                    if (bookshelf.isPresent()) {
+                    if (bookshelf.isPresent() && !bookshelf.get().getItems().isEmpty()) {
                         ret.add(new StringPair(bookshelf.get().getName(), bookshelf.get().getName()));
                     }
                 }
