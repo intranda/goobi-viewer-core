@@ -284,9 +284,10 @@ public final class Configuration extends AbstractConfiguration {
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
-                    boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                    boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
+                    boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                     paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                            prefix, suffix, addUrl, dontUseTopstructValue));
+                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group));
@@ -310,7 +311,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(template, templateList, true);
+        return getMetadataForTemplate(template, templateList, true, true);
     }
 
     /**
@@ -329,7 +330,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(template, templateList, true);
+        return getMetadataForTemplate(template, templateList, true, false);
     }
 
     /**
@@ -347,7 +348,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(template, templateList, false);
+        return getMetadataForTemplate(template, templateList, false, false);
     }
 
     /**
@@ -355,10 +356,12 @@ public final class Configuration extends AbstractConfiguration {
      * 
      * @param template Requested template name
      * @param templateList List of templates in which to look
-     * @param fallbackToDefault If true, the _DEFAULT template will be loaded if the given template is not found
+     * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
+     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value passed here
      * @return
      */
-    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration> templateList, boolean fallbackToDefault) {
+    private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration> templateList,
+            boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
         if (templateList == null) {
             return Collections.emptyList();
         }
@@ -376,24 +379,24 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         // If the requested template does not exist in the config, use _DEFAULT
-        if (usingTemplate == null && fallbackToDefault) {
+        if (usingTemplate == null && fallbackToDefaultTemplate) {
             usingTemplate = defaultTemplate;
         }
         if (usingTemplate == null) {
             return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(usingTemplate);
+        return getMetadataForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
     }
 
     /**
      * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
      * 
-     * @param templateList
-     * @param template
+     * @param usingTemplate
+     * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
      * @return
      */
-    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration usingTemplate) {
+    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration usingTemplate, boolean topstructValueFallbackDefaultValue) {
         if (usingTemplate == null) {
             return Collections.emptyList();
         }
@@ -426,9 +429,10 @@ public final class Configuration extends AbstractConfiguration {
                     String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                     String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                     boolean addUrl = sub2.getBoolean("[@url]", false);
-                    boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                    boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
+                    boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                     paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
-                            prefix, suffix, addUrl, dontUseTopstructValue));
+                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group, number));
@@ -477,7 +481,7 @@ public final class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
 
-        return getMetadataForTemplate(template, templateList, true);
+        return getMetadataForTemplate(template, templateList, true, false);
     }
 
     /**
@@ -559,9 +563,10 @@ public final class Configuration extends AbstractConfiguration {
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                 boolean addUrl = sub2.getBoolean("[@url]", false);
-                boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
+                boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
+                boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                        prefix, suffix, addUrl, dontUseTopstructValue));
+                        prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
             }
         }
         Metadata md = new Metadata(label, masterValue, type, paramList, group, number);
@@ -605,8 +610,13 @@ public final class Configuration extends AbstractConfiguration {
                                 boolean addUrl = eleParam.getAttribute("url") != null ? eleParam.getAttribute("url").getBooleanValue() : false;
                                 boolean dontUseTopstructValue = eleParam.getAttribute("dontUseTopstructValue") != null
                                         ? eleParam.getAttribute("dontUseTopstructValue").getBooleanValue() : false;
+                                boolean topstructValueFallback = eleParam.getAttribute("topstructValueFallback") != null
+                                        ? eleParam.getAttribute("topstructValueFallback").getBooleanValue() : false;
+                                boolean topstructOnly = eleParam.getAttribute("topstructOnly") != null
+                                        ? eleParam.getAttribute("topstructOnly").getBooleanValue() : false;
+
                                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                        defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
+                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
                             }
                         }
                         ret.add(new Metadata(label, masterValue, type, paramList, group, number));

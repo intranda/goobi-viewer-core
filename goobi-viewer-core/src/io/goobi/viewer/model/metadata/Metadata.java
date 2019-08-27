@@ -55,6 +55,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * Metadata field configuration.
@@ -520,24 +521,25 @@ public class Metadata implements Serializable {
      * @param locale
      * @return
      * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     @SuppressWarnings("unchecked")
-    public boolean populate(Map<String, List<String>> metadataMap, Locale locale) throws IndexUnreachableException {
-        if (metadataMap == null) {
+    public boolean populate(StructElement se, Locale locale) throws IndexUnreachableException, PresentationException {
+        if (se == null) {
             return false;
         }
         boolean found = false;
 
         if (group) {
             // Metadata grouped in an own Solr document
-            if (metadataMap.get(label) == null) {
+            if (se.getMetadataFields().get(label) == null) {
                 // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
                 return false;
             }
-            if (metadataMap.get(SolrConstants.IDDOC) == null || metadataMap.get(SolrConstants.IDDOC).isEmpty()) {
+            if (se.getMetadataFields().get(SolrConstants.IDDOC) == null || se.getMetadataFields().get(SolrConstants.IDDOC).isEmpty()) {
                 return false;
             }
-            String iddoc = metadataMap.get(SolrConstants.IDDOC).get(0);
+            String iddoc = se.getMetadataFields().get(SolrConstants.IDDOC).get(0);
             try {
                 StringBuilder sbQuery = new StringBuilder();
                 sbQuery.append(SolrConstants.LABEL)
@@ -579,6 +581,11 @@ public class Metadata implements Serializable {
                     for (int i = 0; i < params.size(); ++i) {
                         MetadataParameter param = params.get(i);
                         // logger.trace("param: {}", param.getKey());
+
+                        // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+                        if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
+                            continue;
+                        }
                         if (groupFieldMap.get(param.getKey()) != null) {
                             found = true;
                             StringBuilder sbValue = new StringBuilder();
@@ -613,10 +620,26 @@ public class Metadata implements Serializable {
         } else {
             // Regular, atomic metadata
             for (MetadataParameter param : params) {
+                // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+                if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
+                    continue;
+                }
+
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
                 //            logger.debug(params.toString());
-                List<String> mdValues = getMetadata(metadataMap, param.getKey(), locale);
+                List<String> mdValues = null;
+                if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
+                    // Topstruct values as the first choice
+                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                } else {
+                    // Own values
+                    mdValues = getMetadata(se.getMetadataFields(), param.getKey(), locale);
+                }
+                if (mdValues == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
+                    // Topstruct values as a fallback
+                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                }
                 if (mdValues == null) {
                     continue;
                 }
@@ -676,7 +699,7 @@ public class Metadata implements Serializable {
      * @param locale
      * @return
      */
-    private List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
+    private static List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
         List<String> mdValues = null;
         if (locale != null) {
             String langKey = key + "_LANG_" + locale.getLanguage().toUpperCase();
