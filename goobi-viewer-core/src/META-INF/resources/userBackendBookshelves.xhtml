@@ -92,6 +92,8 @@
                                                         target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
                                                     <f:setPropertyActionListener value="BOOKSHELF" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
                                                     <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                    <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
                                                 <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookshelf_showBookshelf}" data-toggle="tooltip" data-placement="top">
@@ -125,7 +127,7 @@
 	</ui:define>
 
     <ui:define name="sidebar">
-		<widgetComponent:widget_bookshelfList />
+<!-- 		<widgetComponent:widget_bookshelfList /> -->
         
         <widgetComponent:widget_mySearches />
         
