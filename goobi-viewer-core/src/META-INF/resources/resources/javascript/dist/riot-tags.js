@@ -156,7 +156,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geocoordsquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoCoordsQuery></div></span></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geocoordsquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoCoordsQuery></div></span></div></div>', '', '', function(opts) {
 
 	this.on("mount", function() {
 	    fetch(this.opts.source)
@@ -794,22 +794,79 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquery', '<img class="selected_image" riot-src="{this.imageUrl}"></img><input id="textInput" class="text_input"></input>', '', '', function(opts) {
+riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" each="{answer, index in this.answers}"><div if="{this.showAnswerImages()}" class="annotation_area__image"><img riot-src="{this.getImage(answer.selector)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><input onchange="{answer.setTextFromEvent}" riot-value="{answer.body.text}"></input></div></div>', '', '', function(opts) {
+
+	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
+	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
+	this.targetSelector = Crowdsourcing.Query.getSelector(this.opts.query);
+
+	console.log("this.queryType = ", this.queryType);
+	console.log("this.targetFrequency = ", this.targetFrequency);
+	console.log("this.targetSelector = ", this.targetSelector);
+
+	this.answers = [];
 
 	this.on("mount", function() {
-	    if(this.opts.query.)
+
+	    switch(this.targetSelector) {
+	        case Crowdsourcing.Query.Selector.RECTANGLE:
+	            this.initAreaSelector();
+	            break;
+	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
+	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
+	    }
+
+	    switch(this.targetFrequency) {
+	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
+	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
+	    		this.opts.item.onImageOpen( () => this.resetAnswers());
+	    }
+
+	});
+
+	this.on("updated", function() {
+		if(this.answers.length > 0) {
+		    let answerId = "answer_" + (this.answers.length-1);
+		    let inputSelector = "#"+answerId + " input";
+		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
+
+		}
+
+	}.bind(this));
+
+	this.showAnswerImages = function() {
+	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
+	}.bind(this)
+
+	this.resetAnswers = function() {
+	    this.answers = [];
+
+	    switch(this.targetSelector) {
+	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
+	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
+	            this.answers.push(new Crowdsourcing.Answer());
+	    }
+	    this.update();
+	}.bind(this)
+
+	this.initAreaSelector = function() {
 		this.areaSelector = new Crowdsourcing.AreaSelector(this.opts.item, true);
 		this.areaSelector.init();
 		this.areaSelector.finishedDrawing.subscribe(this.handleFinishedDrawing);
+		this.opts.item.onImageOpen( () => this.areaSelector.reset());
+	}.bind(this)
 
-		this.item.
-	});
+	this.getId = function(answer) {
+	    return this.answers.indexOf(answer);
+	}.bind(this)
+
+	this.getImage = function(answer) {
+	    return this.getImageUrl(answer.region, this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
+	}.bind(this)
 
 	this.handleFinishedDrawing = function(result) {
 	    console.log("Finished drawing ", result);
-	    this.imageUrl = this.getImageUrl(result.region, this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
-
-	    window.setTimeout(function(){this.root.querySelector('.text_input').focus();}.bind(this),1);
+	    this.answers.push(new Crowdsourcing.Answer({}, result));
 	    this.update();
 	}.bind(this)
 
