@@ -2387,9 +2387,9 @@ public class ViewManager implements Serializable {
 
     }
 
-    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException {
+    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
         Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
-        md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
+        md.populate(getTopDocument(), BeanUtils.getLocale());
         return md;
     }
 

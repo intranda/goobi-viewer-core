@@ -359,7 +359,7 @@ public class ActiveDocumentBean implements Serializable {
                 StructElement topSe = viewManager.getCurrentDocument().getTopStruct();
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                    md.populate(topSe.getMetadataFields(), BeanUtils.getLocale());
+                    md.populate(topSe, BeanUtils.getLocale());
                     if (!md.isBlank()) {
                         titleBarMetadata.add(md);
                     }
