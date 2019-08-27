@@ -17,59 +17,62 @@
 load(e) {
     let index = parseInt(e.target.attributes["index"].value);
     if(index != this.getCurrentIndex()) {        
-	    console.log("paginator loading image " + index);
-		this.opts.loader.loadImage(index);
+		this.opts.item.loadImage(index);
 		this.update();
     }
 }
 
 getCurrentIndex() {
-    return this.opts.loader.imageIndex;
+    return this.opts.item.currentCanvasIndex;
 }
 
 getIndex(canvas) {
-    return this.opts.loader.canvasList.indexOf(canvas);
+    return this.opts.item.canvases.indexOf(canvas);
 }
 
 getOrder(canvas) {
     return this.getIndex(canvas) + 1;
 }
 
+getTotalImageCount() {
+    return this.opts.item.canvases.length;
+}
+
 useMiddleButtons() {
-    return this.opts.loader.canvasList.length > 9 && this.opts.loader.imageIndex > 4 && this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5;
+    return this.getTotalImageCount() > 9 && this.getCurrentIndex() > 4 && this.getCurrentIndex() < this.getTotalImageCount()-5;
 }
 
 useLastButtons() {
-    return this.opts.loader.canvasList.length > 9;
+    return this.getTotalImageCount() > 9;
 }
 
 firstCanvases() {
-    if(this.opts.loader.canvasList.length < 10) {
-        return this.opts.loader.canvasList;
-    } else if(this.opts.loader.imageIndex < 5) {
-        return this.opts.loader.canvasList.slice(0, this.opts.loader.imageIndex+3);
+    if(this.getTotalImageCount() < 10) {
+        return this.opts.item.canvases;
+    } else if(this.getCurrentIndex() < 5) {
+        return this.opts.item.canvases.slice(0, this.getCurrentIndex()+3);
     } else {
-        return this.opts.loader.canvasList.slice(0, 2);
+        return this.opts.item.canvases.slice(0, 2);
     }
 }
 
 middleCanvases() {
-    if(this.opts.loader.canvasList.length < 10) {
+    if(this.getTotalImageCount() < 10) {
         return [];
-    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5 && this.opts.loader.imageIndex > 4) {
-        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2, this.opts.loader.imageIndex+3);
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5 && this.getCurrentIndex() > 4) {
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
     } else {
         return [];
     }
 }
 
 lastCanvases() {
-    if(this.opts.loader.canvasList.length < 10) {
+    if(this.getTotalImageCount() < 10) {
         return [];
-    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5) {
-        return this.opts.loader.canvasList.slice(this.opts.loader.canvasList.length-2);
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5) {
+        return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
     } else {
-        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2);
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
     }
 }
 

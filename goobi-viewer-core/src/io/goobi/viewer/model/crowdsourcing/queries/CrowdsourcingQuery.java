@@ -33,15 +33,17 @@ public class CrowdsourcingQuery {
     private IMetadataValue description;
     private IMetadataValue help;
     private QueryType queryType;
-    private TargetType targetType;
+    private TargetFrequency targetFrequency;
+    private TargetSelector targetSelector;
     
     public CrowdsourcingQuery() {
         
     }
     
-    public CrowdsourcingQuery(QueryType queryType, TargetType targetType) {
+    public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector) {
         this.queryType = queryType;
-        this.targetType = targetType;
+        this.targetFrequency = targetFrequency;
+        this.targetSelector = targetSelector;
     }
     
     /**
@@ -98,15 +100,28 @@ public class CrowdsourcingQuery {
     /**
      * @return the targetType
      */
-    public TargetType getTargetType() {
-        return targetType;
+    public TargetFrequency getTargetFrequency() {
+        return targetFrequency;
     }
     /**
      * @param targetType the targetType to set
      */
-    public void setTargetType(TargetType targetType) {
-        this.targetType = targetType;
+    public void setTargetFrequency(TargetFrequency targetFrequency) {
+        this.targetFrequency = targetFrequency;
     }
     
+    /**
+     * @return the targetSelector
+     */
+    public TargetSelector getTargetSelector() {
+        return targetSelector;
+    }
+    
+    /**
+     * @param targetSelector the targetSelector to set
+     */
+    public void setTargetSelector(TargetSelector targetSelector) {
+        this.targetSelector = targetSelector;
+    }
     
 }

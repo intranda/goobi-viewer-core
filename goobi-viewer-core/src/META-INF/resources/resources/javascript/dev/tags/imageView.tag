@@ -1,3 +1,10 @@
+/**
+ * Takes a IIIF canvas object in opts.source. 
+ * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
+ * and provides an observable in opts.item.imageChanged triggered every time a new image source is loaded (including the first time)
+ * The imageView itself is stored in opts.item.image
+ */
+
 <imageView>
 	<div id="wrapper_{opts.id}" class="imageview_wrapper">
 	
@@ -24,10 +31,22 @@
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true; 
 		}.bind(this));
-		console.log("load image ", imageViewConfig);
 		this.image = new ImageView.Image(imageViewConfig);
-		this.loadImage(this.image);
-		this.opts.loader.updateImageSource = () => this.image.setTileSource(this.getImageInfo(this.opts.loader.getCurrentImage()));
+		this.image.load()
+		.then( (image) => {
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+			    var now = Rx.Observable.of(image);
+				this.opts.item.setImageSource = function(source) {
+				    this.image.setTileSource(this.getImageInfo(source));
+				}.bind(this);
+			    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
+			}
+			return image;
+		})
+		.then(function() {
+		  	this.update();
+		}.bind(this));
 	})
 	
 	
@@ -61,19 +80,7 @@
 		}
 		
 		const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
-	
-		loadImage(image) {
-			image.load()
-			.then(function(image) {	
-				const drawer = new ImageView.Draw(image.viewer, drawStyle, () => this.drawing);
-				drawer.finishedDrawing().subscribe(function(rect) {
-					this.drawing = false;
-					rect.draw();
-				}.bind(this))			
-			}.bind(this))
-			.then( () => this.update());
-		}
-	
+
 	
 	</script>
 

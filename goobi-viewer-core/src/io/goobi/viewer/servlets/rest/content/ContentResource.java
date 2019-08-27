@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +42,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
@@ -185,7 +187,7 @@ public class ContentResource {
             if (!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()) {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
             }
-
+            
             FileTools.compressZipFile(altoFilePaths, tempFile, 9);
             return (out) -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {

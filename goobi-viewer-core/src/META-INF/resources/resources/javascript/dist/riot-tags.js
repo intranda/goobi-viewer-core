@@ -156,48 +156,30 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.loader}" id="mainImage" source="{this.loader.getCurrentImage()}" loader="{this.loader}"></imageView><canvaspaginator if="{this.loader}" loader="{this.loader}"></canvasPaginator></div><div class="content_right"></div></div>', '', '', function(opts) {
-
-	let CanvasLoader = function(canvasList, initialIndex, loadMethod) {
-
-		this.canvasList = canvasList;
-		this.imageIndex = initialIndex;
-		this.load = loadMethod;
-		this.loadImage = (index) =>  {
-		    this.imageIndex = index;
-		    this.load();
-		}
-		this.getCurrentImage = () => this.canvasList[this.imageIndex];
-
-	};
+riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geocoordsquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoCoordsQuery></div></span></div></div>', '', '', function(opts) {
 
 	this.on("mount", function() {
-		console.log("load ", this.opts.source);
 	    fetch(this.opts.source)
 	    .then( response => response.json() )
-	    .then( item => this.loadItem(item));
+	    .then( itemConfig => this.loadItem(itemConfig));
 	});
 
-	this.loadItem = function(item) {
-		console.log("load item ", item);
-		fetch(item.source)
+	this.loadItem = function(itemConfig) {
+
+	    this.item = new Crowdsourcing.Item(itemConfig.source, itemConfig.queries, 0)
+	    console.log("load item ", this.item);
+
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
-		.then((imageSource) => this.initImageView(this.getCanvasList(imageSource), 0))
-		.catch( error => console.error("ERROR ", error));
+		.then((imageSource) => this.initImageView())
+
 	}.bind(this)
 
-	this.initImageView = function(canvases, initialCanvasIndex) {
-	    if(!canvases || !canvases.length) {
-	        return;
-	    }
-	    initialCanvasIndex = Math.max(0, Math.min(initialCanvasIndex, canvases.length-1));
-	    this.loader = new CanvasLoader(canvases, initialCanvasIndex, this.loadImage);
-	    console.log("initialized image loader ", this.loader);
-	    this.update();
-	}.bind(this)
-
-	this.loadImage = function() {
-	    this.loader.updateImageSource();
+	this.initImageView = function() {
+	    this.item.initViewer()
+	    .then( function() {
+	    	this.update();
+	    }.bind(this) )
 	}.bind(this)
 
 	this.resolveCanvas = function(source) {
@@ -213,83 +195,68 @@ riot.tag2('campaignitem', '<div class="content"><div class="content_left"><image
 	    return typeof variable === 'string' || variable instanceof String
 	}.bind(this)
 
-	this.getCanvasList = function(source) {
-	    let sourceType = source.type;
-	    if(!sourceType) {
-	        sourceType = source["@type"];
-	    }
-
-	    switch(sourceType) {
-	        case "sc:Manifest":
-	            return source.sequences[0].canvases;
-	        case "sc:Canvas":
-	            return [source];
-	        case "sc:Range":
-	            return source.canvases;
-	        default:
-	            console.log("Unknown source type, cannot retrieve canvases", source);
-	    }
-	}.bind(this)
-
 });
 riot.tag2('canvaspaginator', '<div class="canvas_paginator"><div class="canvas_paginator__list"><div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div><div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div><div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div></div></div>', '', '', function(opts) {
 
 this.load = function(e) {
     let index = parseInt(e.target.attributes["index"].value);
     if(index != this.getCurrentIndex()) {
-	    console.log("paginator loading image " + index);
-		this.opts.loader.loadImage(index);
+		this.opts.item.loadImage(index);
 		this.update();
     }
 }.bind(this)
 
 this.getCurrentIndex = function() {
-    return this.opts.loader.imageIndex;
+    return this.opts.item.currentCanvasIndex;
 }.bind(this)
 
 this.getIndex = function(canvas) {
-    return this.opts.loader.canvasList.indexOf(canvas);
+    return this.opts.item.canvases.indexOf(canvas);
 }.bind(this)
 
 this.getOrder = function(canvas) {
     return this.getIndex(canvas) + 1;
 }.bind(this)
 
+this.getTotalImageCount = function() {
+    return this.opts.item.canvases.length;
+}.bind(this)
+
 this.useMiddleButtons = function() {
-    return this.opts.loader.canvasList.length > 9 && this.opts.loader.imageIndex > 4 && this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5;
+    return this.getTotalImageCount() > 9 && this.getCurrentIndex() > 4 && this.getCurrentIndex() < this.getTotalImageCount()-5;
 }.bind(this)
 
 this.useLastButtons = function() {
-    return this.opts.loader.canvasList.length > 9;
+    return this.getTotalImageCount() > 9;
 }.bind(this)
 
 this.firstCanvases = function() {
-    if(this.opts.loader.canvasList.length < 10) {
-        return this.opts.loader.canvasList;
-    } else if(this.opts.loader.imageIndex < 5) {
-        return this.opts.loader.canvasList.slice(0, this.opts.loader.imageIndex+3);
+    if(this.getTotalImageCount() < 10) {
+        return this.opts.item.canvases;
+    } else if(this.getCurrentIndex() < 5) {
+        return this.opts.item.canvases.slice(0, this.getCurrentIndex()+3);
     } else {
-        return this.opts.loader.canvasList.slice(0, 2);
+        return this.opts.item.canvases.slice(0, 2);
     }
 }.bind(this)
 
 this.middleCanvases = function() {
-    if(this.opts.loader.canvasList.length < 10) {
+    if(this.getTotalImageCount() < 10) {
         return [];
-    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5 && this.opts.loader.imageIndex > 4) {
-        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2, this.opts.loader.imageIndex+3);
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5 && this.getCurrentIndex() > 4) {
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2, this.getCurrentIndex()+3);
     } else {
         return [];
     }
 }.bind(this)
 
 this.lastCanvases = function() {
-    if(this.opts.loader.canvasList.length < 10) {
+    if(this.getTotalImageCount() < 10) {
         return [];
-    } else if(this.opts.loader.imageIndex < this.opts.loader.canvasList.length-5) {
-        return this.opts.loader.canvasList.slice(this.opts.loader.canvasList.length-2);
+    } else if(this.getCurrentIndex() < this.getTotalImageCount()-5) {
+        return this.opts.item.canvases.slice(this.getTotalImageCount()-2);
     } else {
-        return this.opts.loader.canvasList.slice(this.opts.loader.imageIndex-2);
+        return this.opts.item.canvases.slice(this.getCurrentIndex()-2);
     }
 }.bind(this)
 
@@ -629,7 +596,6 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 });
 riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_controls__item"><button class="controls__item fa fa-rotate-left" onclick="{rotateLeft}"></button></div><div class="image_controls__item"><button class="controls__item fa fa-rotate-right" onclick="{rotateRight}"></button></div><div class="image_controls__item zoom-slider-wrapper"><div class="zoom-slider"><div class="zoom-slider-handle"></div></div></div></div>', '', '', function(opts) {
     this.on( "mount", function() {
-        console.log( "mount image controls" );
     } );
 
     this.rotateRight = function()
@@ -646,6 +612,13 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_contro
         }
     }.bind(this)
 });
+/**
+ * Takes a IIIF canvas object in opts.source. 
+ * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
+ * and provides an observable in opts.item.imageChanged triggered every time a new image source is loaded (including the first time)
+ * The imageView itself is stored in opts.item.image
+ */
+
 riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><imagecontrols if="{this.image}" image="{this.image}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
 
 	this.getPosition = function() {
@@ -659,10 +632,22 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><i
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true;
 		}.bind(this));
-		console.log("load image ", imageViewConfig);
 		this.image = new ImageView.Image(imageViewConfig);
-		this.loadImage(this.image);
-		this.opts.loader.updateImageSource = () => this.image.setTileSource(this.getImageInfo(this.opts.loader.getCurrentImage()));
+		this.image.load()
+		.then( (image) => {
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+			    var now = Rx.Observable.of(image);
+				this.opts.item.setImageSource = function(source) {
+				    this.image.setTileSource(this.getImageInfo(source));
+				}.bind(this);
+			    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
+			}
+			return image;
+		})
+		.then(function() {
+		  	this.update();
+		}.bind(this));
 	})
 
 	this.getImageInfo = function(canvas) {
@@ -695,18 +680,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><i
 		}
 
 		const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
-
-		this.loadImage = function(image) {
-			image.load()
-			.then(function(image) {
-				const drawer = new ImageView.Draw(image.viewer, drawStyle, () => this.drawing);
-				drawer.finishedDrawing().subscribe(function(rect) {
-					this.drawing = false;
-					rect.draw();
-				}.bind(this))
-			}.bind(this))
-			.then( () => this.update());
-		}.bind(this)
 
 });
 
@@ -821,3 +794,28 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
+riot.tag2('plaintextquery', '<img class="selected_image" riot-src="{this.imageUrl}"></img><input id="textInput" class="text_input"></input>', '', '', function(opts) {
+
+	this.on("mount", function() {
+	    if(this.opts.query.)
+		this.areaSelector = new Crowdsourcing.AreaSelector(this.opts.item, true);
+		this.areaSelector.init();
+		this.areaSelector.finishedDrawing.subscribe(this.handleFinishedDrawing);
+
+		this.item.
+	});
+
+	this.handleFinishedDrawing = function(result) {
+	    console.log("Finished drawing ", result);
+	    this.imageUrl = this.getImageUrl(result.region, this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
+
+	    window.setTimeout(function(){this.root.querySelector('.text_input').focus();}.bind(this),1);
+	    this.update();
+	}.bind(this)
+
+	this.getImageUrl = function(rect, imageId) {
+	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
+	    return url;
+	}.bind(this)
+
+});

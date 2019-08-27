@@ -19,13 +19,10 @@ package io.goobi.viewer.model.crowdsourcing.queries;
  * @author florian
  *
  */
-public enum QueryType {
+public enum TargetFrequency {
 
-    PLAINTEXT,
-    DATE_PICKER,
-    GEOLOCATION_POINT,
-    GEOLOCATION_AREA,
-    TRANSCRIPTION,
-    KEY_VALUE_LIST;
-    
+    ONE_PER_MANIFEST,
+    MULTIPLE_PER_MANIFEST,
+    ONE_PER_CANVAS,
+    MULTIPLE_PER_CANVAS;
 }

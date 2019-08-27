@@ -19,7 +19,6 @@
 
 <script>
     this.on( "mount", function() {
-        console.log( "mount image controls" );
     } );
     
     rotateRight()

@@ -1,56 +1,47 @@
 <campaignItem>
 
 	<div class="content">
-		<div class="content_left">
-			<imageView if="{this.loader}" id="mainImage" source="{this.loader.getCurrentImage()}" loader="{this.loader}"></imageView>
-			<canvasPaginator if="{this.loader}" loader="{this.loader}"></canvasPaginator>
+		<div class="content_left" >
+			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
+			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
 		<div class="content_right">
+		
+			<span  if="{this.item}" >
+				<div class="query_wrapper"each="{query in this.item.queries}">
+					<h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2>
+					<div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div>
+					<plaintextQuery if="{query.queryType == 'PLAINTEXT'}" query="{query}" item="{this.item}"></plaintextQuery>
+					<geoCoordsQuery if="{query.queryType == 'GEOLOCATION_POINT'}" query="{query}" item="{this.item}"></geoCoordsQuery>
+				</div>
+			</span>
 		</div>
 	 </div>
 
 <script>
 
-	let CanvasLoader = function(canvasList, initialIndex, loadMethod) {
-	
-		this.canvasList = canvasList;
-		this.imageIndex = initialIndex;
-		this.load = loadMethod;
-		this.loadImage = (index) =>  {
-		    this.imageIndex = index;
-		    this.load();
-		}
-		this.getCurrentImage = () => this.canvasList[this.imageIndex];
-		
-	};
-
 	this.on("mount", function() {
-		console.log("load ", this.opts.source);
 	    fetch(this.opts.source)
 	    .then( response => response.json() )
-	    .then( item => this.loadItem(item));
+	    .then( itemConfig => this.loadItem(itemConfig));
 	});
-	
-	loadItem(item) {
-		console.log("load item ", item);
-		fetch(item.source)
+
+	loadItem(itemConfig) {
+	    
+	    this.item = new Crowdsourcing.Item(itemConfig.source, itemConfig.queries, 0)
+	    console.log("load item ", this.item);
+// 		this.update();
+		fetch(this.item.imageSource)
 		.then( response => response.json() )
-		.then((imageSource) => this.initImageView(this.getCanvasList(imageSource), 0))
-		.catch( error => console.error("ERROR ", error));  
+		.then((imageSource) => this.initImageView())
+// 		.catch( error => console.error("ERROR ", error));  
 	}
 	
-	initImageView(canvases, initialCanvasIndex) {
-	    if(!canvases || !canvases.length) {
-	        return;
-	    }
-	    initialCanvasIndex = Math.max(0, Math.min(initialCanvasIndex, canvases.length-1));
-	    this.loader = new CanvasLoader(canvases, initialCanvasIndex, this.loadImage);
-	    console.log("initialized image loader ", this.loader);
-	    this.update();
-	}
-	
-	loadImage() {
-	    this.loader.updateImageSource();
+	initImageView() {
+	    this.item.initViewer()
+	    .then( function() {	
+	    	this.update();
+	    }.bind(this) )
 	}
 
 	
@@ -66,28 +57,7 @@
 	isString(variable) {
 	    return typeof variable === 'string' || variable instanceof String
 	}
-	
-	/**
-		get a list containing all canvas json items or canvas urls contained in the source object
-		The source must be either a manifest, a range or a single canvas
-	*/
-	getCanvasList(source) {
-	    let sourceType = source.type;
-	    if(!sourceType) {
-	        sourceType = source["@type"];
-	    }
-	    
-	    switch(sourceType) {
-	        case "sc:Manifest":
-	            return source.sequences[0].canvases;
-	        case "sc:Canvas":
-	            return [source];
-	        case "sc:Range":
-	            return source.canvases;
-	        default:
-	            console.log("Unknown source type, cannot retrieve canvases", source);
-	    }
-	}
+
 
 </script>
 

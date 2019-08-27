@@ -19,10 +19,10 @@ package io.goobi.viewer.model.crowdsourcing.queries;
  * @author florian
  *
  */
-public enum TargetType {
+public enum TargetSelector {
 
-    ONE_PER_MANIFEST,
-    MULTIPLE_PER_MANIFEST,
-    ONE_PER_CANVAS,
-    MULTIPLE_PER_CANVAS;
+    WHOLE_SOURCE,
+    WHOLE_PAGE,
+    RECTANGLE;
+    
 }
