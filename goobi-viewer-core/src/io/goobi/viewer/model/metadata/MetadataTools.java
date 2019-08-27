@@ -15,7 +15,9 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -284,12 +286,14 @@ public class MetadataTools {
                     risTag = "VL";
                     break;
                 case "MD_ABSTRACT":
+                case "MD_INFORMATION":
                     risTag = "AB";
                     break;
                 case "MD_ALTERNATETITLE":
                     risTag = "J2";
                     break;
                 case "MD_AUTHOR":
+                case "MD_CREATOR":
                     risTag = "AU";
                     break;
                 case "MD_EDITION":
@@ -339,13 +343,18 @@ public class MetadataTools {
                 continue;
             }
             int count = 1;
+            Set<String> usedValues = new HashSet<>(values.size());
             for (String value : values) {
+                if (usedValues.contains(value)) {
+                    continue;
+                }
                 String useRisTag = risTag;
                 if (useRisTag.length() == 1) {
                     useRisTag += count;
                     count++;
                 }
                 result.append(useRisTag).append("  - ").append(value).append("\r\n");
+                usedValues.add(value);
             }
 
         }
