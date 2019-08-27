@@ -50,6 +50,23 @@
                                     </a>
                                 </div>
                                 
+                                <!-- BOOKSHELF NAVIGATION DROPDOWN LIST SEND -->
+                                <div class="bookshelf-navigation__dropdown-list-search">
+                                    <h:form>
+                                    	<h:commandLink action="pretty:searchadvanced">
+                                           <span>#{msg.action__search_in_bookshelf}</span>
+                               			   <i class="fa fa-search" aria-hidden="true"></i>
+                                           <f:setPropertyActionListener value="#{bookshelf.name}" 
+                                               target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
+                                           <f:setPropertyActionListener value="BOOKSHELF" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                           <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                           <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                           <f:passThroughAttribute name="data-placement" value="top" />
+                                       </h:commandLink>   
+                                    </h:form>
+
+                                </div>
+                                
                                 <!-- TODO: Link nur rendern, wenn auch Objekte in der Liste sind (/rest/session/count > 1) -->
                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                 
