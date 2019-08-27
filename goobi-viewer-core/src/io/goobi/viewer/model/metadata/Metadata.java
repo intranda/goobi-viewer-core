@@ -628,8 +628,16 @@ public class Metadata implements Serializable {
                 int count = 0;
                 int indexOfParam = params.indexOf(param);
                 //            logger.debug(params.toString());
-                List<String> mdValues = getMetadata(se.getMetadataFields(), param.getKey(), locale);
-                if (mdValues == null && (param.isTopstructValueFallback() || MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()))) {
+                List<String> mdValues = null;
+                if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
+                    // Topstruct values as the first choice
+                    mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                } else {
+                    // Own values
+                    mdValues = getMetadata(se.getMetadataFields(), param.getKey(), locale);
+                }
+                if (mdValues == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
+                    // Topstruct values as a fallback
                     mdValues = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
                 }
                 if (mdValues == null) {
