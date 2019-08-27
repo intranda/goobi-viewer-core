@@ -31,34 +31,7 @@ var Crowdsourcing = ( function() {
     var queries = [];
     
     var crowdsourcing = {};
-    
-    crowdsourcing.Query.Type.PLAINTEXT = "PLAINTEXT";
-    crowdsourcing.Query.Type.DATE_PICKER = "DATE_PICKER";
-    crowdsourcing.Query.Type.GEOLOCATION_POINT = "GEOLOCATION_POINT";
-    crowdsourcing.Query.Type.GEOLOCATION_AREA = "GEOLOCATION_AREA";
-    crowdsourcing.Query.Type.TRANSCRIPTION = "TRANSCRIPTION";
-    crowdsourcing.Query.Type.KEY_VALUE_LIST = "KEY_VALUE_LIST";
-    crowdsourcing.Query.Type.get = function(text) {
-        crowdsourcing.Query.Type[text];
-    }
-    crowdsourcing.Query.getType(query) {
-        return
-    }
-    
-    crowdsourcing.Query.Frequency.ONE_PER_MANIFEST = "ONE_PER_MANIFEST";
-    crowdsourcing.Query.Frequency.MULTIPLE_PER_MANIFEST = "MULTIPLE_PER_MANIFEST";
-    crowdsourcing.Query.Frequency.ONE_PER_CANVAS = "ONE_PER_CANVAS";
-    crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS = "MULTIPLE_PER_CANVAS";
-    crowdsourcing.Query.Frequency.get = function(text) {
-        crowdsourcing.Query.Frequency[text];
-    }
-    
-    crowdsourcing.Query.Selector.MULTIPLE_PER_CANVAS = "WHOLE_SOURCE";
-    crowdsourcing.Query.Selector.MULTIPLE_PER_CANVAS = "WHOLE_PAGE";
-    crowdsourcing.Query.Selector.MULTIPLE_PER_CANVAS = "RECTANGLE";
-    crowdsourcing.Query.Selector.get = function(text) {
-        crowdsourcing.Query.Selector[text];
-    }
+   
     
     crowdsourcing.Item = function(imageSource, queries, initialCanvasIndex) {
         if ( _debug ) {

@@ -38,7 +38,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.AreaSelector.prototype.init = function() {
         this.crowdsourcingItem.onImageOpen( (imageView) => {
-            console.log("areaSelectorQuery: ImageOpened ", imageView.viewer.world.getItemAt(0).source);
             if(!this.drawer) {
                 this.createDrawer(imageView);
                 this.createTransformer(imageView);
@@ -48,30 +47,37 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.AreaSelector.prototype.createDrawer = function (imageView) {
-    this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle(), (e) => e.shiftKey);
-    this.drawer.finishedDrawing().subscribe(function(rect) {
-        if(this.rect && !this.multiRect) {
-            this.rect.remove();
-            this.rects.remove(this.rect);
-	        if(this.transformer) {	            
-	       		this.transformer.removeOverlay(this.rect)
-	        }
-        }
-        rect.style = this.drawer.style;
-        this.drawer.style = this.getStyle();
-		rect.draw();
-        if(this.transformer) {	   
-			this.transformer.addOverlay(rect);
-        }
-		this.rect = rect;
-		this.rects.push(this.rect);
-	}.bind(this))
-	this.drawer.finishedDrawing().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedDrawing);
-}
+        this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle(), (e) => e.shiftKey);
+        this.drawer.finishedDrawing().subscribe(function(rect) {
+            if(this.rect && !this.multiRect) {
+                this.rect.remove();
+                this.rects.remove(this.rect);
+    	        if(this.transformer) {	            
+    	       		this.transformer.removeOverlay(this.rect)
+    	        }
+            }
+            rect.style = this.drawer.style;
+            this.drawer.style = this.getStyle();
+    		rect.draw();
+            if(this.transformer) {	   
+    			this.transformer.addOverlay(rect);
+            }
+    		this.rect = rect;
+    		this.rects.push(this.rect);
+    	}.bind(this))
+    	this.drawer.finishedDrawing().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedDrawing);
+    }
+    
+    crowdsourcing.AreaSelector.prototype.reset = function() {
+        this.rects.forEach(function(rect) {
+            this.transformer.removeOverlay(rect);
+            rect.remove();
+        }.bind(this));
+        this.rects = [];
+    }
 
     crowdsourcing.AreaSelector.prototype.createTransformer = function(imageView) {
         this.transformer = new ImageView.Transform(imageView.viewer, this.drawStyle, () => true); 
-       	console.log("create transformer", this.transformer);
     }
 
     crowdsourcing.AreaSelector.prototype.getStyle = function() {
