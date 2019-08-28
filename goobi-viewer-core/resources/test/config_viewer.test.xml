@@ -820,9 +820,9 @@
                 </licenseText>
                 <page>
                     <!-- displayLinkToJpegImage: Enables JPEG image download links for pages. Default is false.  -->
-                    <displayLinkToJpegImage>true</displayLinkToJpegImage>
+                    <displayLinkToJpegImage maxSize="2000">true</displayLinkToJpegImage>
                     <!-- displayLinkToJpegImage: Enables TIFF image download links for pages. Default is false.  -->
-                    <displayLinkToTiffImage>true</displayLinkToTiffImage>
+                    <displayLinkToMasterImage maxSize="max">true</displayLinkToMasterImage>
                 </page>
         </sidebarWidgetUsage>
 
