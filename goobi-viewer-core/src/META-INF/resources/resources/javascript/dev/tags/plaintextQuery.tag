@@ -7,7 +7,7 @@
 		</div>
 		<div class="annotation_area__text_input">
 			<label>{viewerJS.getMetadataValue(this.opts.query.label)}</label>			
-			<input  onChange="{answer.setTextFromEvent}" value="{answer.body.text}"></input>
+			<textarea  onChange="{answer.setTextFromEvent}" value="{answer.body.text}"></textarea>
 		</div>
 	
 	</div>
@@ -45,7 +45,7 @@
 	this.on("updated", function() {
 		if(this.answers.length > 0) {
 		    let answerId = "answer_" + (this.answers.length-1);
-		    let inputSelector = "#"+answerId + " input";
+		    let inputSelector = "#"+answerId + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 
 		}
@@ -91,6 +91,11 @@
 	getImageUrl(rect, imageId) {
 	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
 	    return url;
+	}
+	
+	saveToLocalStorage() {
+	    let annos = this.answers.forEach( answer => answer.createAnnotation());
+	    console.log("annotation list ", annos);
 	}
 
 </script>

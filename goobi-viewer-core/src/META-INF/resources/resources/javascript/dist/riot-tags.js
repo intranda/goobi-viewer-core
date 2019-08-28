@@ -794,7 +794,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" each="{answer, index in this.answers}"><div if="{this.showAnswerImages()}" class="annotation_area__image"><img riot-src="{this.getImage(answer.selector)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><input onchange="{answer.setTextFromEvent}" riot-value="{answer.body.text}"></input></div></div>', '', '', function(opts) {
+riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" each="{answer, index in this.answers}"><div if="{this.showAnswerImages()}" class="annotation_area__image"><img riot-src="{this.getImage(answer.selector)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><textarea onchange="{answer.setTextFromEvent}" riot-value="{answer.body.text}"></textarea></div></div>', '', '', function(opts) {
 
 	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
 	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
@@ -827,7 +827,7 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 	this.on("updated", function() {
 		if(this.answers.length > 0) {
 		    let answerId = "answer_" + (this.answers.length-1);
-		    let inputSelector = "#"+answerId + " input";
+		    let inputSelector = "#"+answerId + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 
 		}
@@ -873,6 +873,11 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 	this.getImageUrl = function(rect, imageId) {
 	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
 	    return url;
+	}.bind(this)
+
+	this.saveToLocalStorage = function() {
+	    let annos = this.answers.forEach( answer => answer.createAnnotation());
+	    console.log("annotation list ", annos);
 	}.bind(this)
 
 });
