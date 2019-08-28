@@ -881,6 +881,61 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * Checks if the media type is displayable as a 3d object and access is granted for viewing it
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
+        logger.trace("AccessPermission3DObject");
+        // Prevent access if mime type incompatible
+        if (!MimeType.OBJECT.equals(MimeType.getByName(mimeType))) {
+            return false;
+        }
+
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
+        } else {
+            logger.trace("FacesContext not found");
+        }
+
+        return false;
+    }
+    
+    
+    /**
+     * Checks if the media type is displayable as an image and access is granted for viewing an image
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
+        logger.trace("AccessPermissionImage");
+        // Prevent access if mime type incompatible
+        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+            return false;
+        }
+
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
+        } else {
+            logger.trace("FacesContext not found");
+        }
+
+        return false;
+    }
+    
+    /**
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
      * 
@@ -888,7 +943,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public boolean isAccessForJs() throws IndexUnreachableException, DAOException {
+    public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
         // Prevent access if mime type incompatible
         if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
@@ -1136,10 +1191,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
+        if(!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
+            return false;
+        }
         // Prevent access if mime type incompatible
         if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
+        
 
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {

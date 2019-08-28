@@ -21,7 +21,7 @@
     </div>
 
     <!-- MOBILE IMAGE VIEW -->
-    <div id="imageContainerMobile" class="view-object__image-mobile"></div>
+        <div id="imageContainerMobile" class="view-object__image-mobile"></div>
 
     <!-- 3D-Models -->
     <script type="text/javascript"
@@ -53,8 +53,7 @@
   		//<![CDATA[
     	var imageMap = $( "#imageMap" );
         var objectVisible = $( "#imageContainer" ).is( ":visible" );
-        var staticImage = $( "<img />" ).attr( "src", "#{activeDocumentBean.viewManager.currentImageUrl}" ).attr( "alt", "current object" ).addClass( "img-responsive" );
-        var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
+        var access = #{activeDocumentBean.viewManager.currentPage.accessPermission3DObject};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         
         var worldConfig = {
@@ -111,16 +110,6 @@
 	 		
         } else if ( objectVisible ) {
        		imageMap.append( accessDeniedMessage );
-       	}
-
-       	// mobile object view
-       	if ( $( "#imageContainerMobile" ).is( ":visible" ) ) {
-       		if ( access ) {
-       			$( "#imageContainerMobile" ).append( staticImage );
-       		}
-       		else {
-       			$( "#imageContainerMobile" ).append( accessDeniedMessage );
-       		}
        	}
 
         function freeJSResources(data) {

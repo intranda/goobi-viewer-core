@@ -2422,7 +2422,7 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    public void isDisplaySidebarUsageWidgetLinkToTiffImage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToTiffImage());
+    public void isDisplaySidebarUsageWidgetLinkToMasterImage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage());
     }
 }

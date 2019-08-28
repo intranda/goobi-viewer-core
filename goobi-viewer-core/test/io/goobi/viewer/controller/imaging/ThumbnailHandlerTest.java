@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -93,6 +94,40 @@ public class ThumbnailHandlerTest {
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
         Assert.assertEquals(refrenceUrl, url);
     }
+    
+    @Test 
+    public void testGetFullImageUrl() throws ViewerConfigurationException {
+        String fileUrl = "00000001.tif";
+        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+
+        String urlMax = handler.getFullImageUrl(page, Scale.MAX);
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.tif", urlMax);
+        System.out.println("Max image = " + urlMax);
+        
+        String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.tif", urlBox);
+        System.out.println("Box image = " + urlBox);
+        
+        String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/pct:50/0/default.tif", urlFraction);
+        System.out.println("Fraction image = " + urlFraction);
+    }
+    
+    @Test 
+    public void testThumbnailUrl() throws ViewerConfigurationException {
+        String fileUrl = "00000001.tif";
+        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+
+        String urlMax = handler.getThumbnailUrl(page, 0,0);
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.jpg", urlMax);
+        System.out.println("Max image = " + urlMax);
+        
+        String urlBox = handler.getThumbnailUrl(page, 1500,1500);
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.jpg", urlBox);
+        System.out.println("Box image = " + urlBox);
+
+    }
+
 
     @Test
     public void testDocLocal() throws IndexUnreachableException, ViewerConfigurationException {

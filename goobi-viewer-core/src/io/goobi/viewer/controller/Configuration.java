@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -533,8 +534,17 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isDisplaySidebarUsageWidgetLinkToTiffImage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToTiffImage", false);
+    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
+    }
+    
+
+    public String getWidgetUsageMaxJpegSize() {
+        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
+    }
+    
+    public String getWidgetUsageMaxMasterImageSize() {
+        return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
     }
 
     /**
@@ -2007,7 +2017,8 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTitlePdfEnabled() {
-        return getLocalBoolean("pdf.titlePdfEnabled", true);
+        boolean enabled = getLocalBoolean("pdf.titlePdfEnabled", true);
+        return enabled;
     }
 
     /**
@@ -3348,5 +3359,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
     }
+
+
 
 }

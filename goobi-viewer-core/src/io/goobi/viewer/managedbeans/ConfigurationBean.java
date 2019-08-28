@@ -761,8 +761,8 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToJpegImage();
     }
     
-    public boolean isDisplaySidebarUsageWidgetLinkToTiffImage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToTiffImage();
+    public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage();
     }
 
     public boolean isSubthemeDiscriminatorFieldSet() {
