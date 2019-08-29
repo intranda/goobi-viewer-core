@@ -397,7 +397,8 @@ public class ViewManager implements Serializable {
             throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
         }
         
-        return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+        return getCurrentMasterImageUrl(scale);
+
     }
 
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
