@@ -43,7 +43,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                 selector : {
                     type : "FragmentSelector",
                     conformsTo: "http://www.w3.org/TR/media-frags/",
-                    value : "xywh=" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height
+                    value : "xywh=" + Math.round(rect.x) + "," + Math.round(rect.y) + "," + Math.round(rect.width) + "," + Math.round(rect.height)         
                 }
             }
             this.target = newTarget;
@@ -77,6 +77,21 @@ var Crowdsourcing = ( function(crowdsourcing) {
         } else {
             this.target = target;
         }
+    }
+    
+    crowdsourcing.Annotation.prototype.getColor = function() {
+        if(this.body) {
+            return this.body.color;
+        } else {
+            return undefined;
+        }
+    }
+
+    crowdsourcing.Annotation.prototype.setColor = function(color) {
+        if(!this.body) {
+            this.body = {}
+        }
+        this.body.color = color;
     }
     
     return crowdsourcing;

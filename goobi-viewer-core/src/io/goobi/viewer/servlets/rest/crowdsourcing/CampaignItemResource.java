@@ -78,11 +78,13 @@ public class CampaignItemResource {
         item.setSource(manifestURI);
         
         CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);
+        query.setId(1l);
         query.setLabel(new MultiLanguageMetadataValue(new String[]{"de", "Bild auswählen"}, new String[]{"en", "Select image"}));
         query.setDescription(new MultiLanguageMetadataValue(new String[]{"de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein."}, new String[]{"en", "Select an area in the image and enter a short description about it."}));
         item.addQuery(query);
         
         CrowdsourcingQuery comment = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE);
+        comment.setId(2l);
         comment.setLabel(new MultiLanguageMetadataValue(new String[]{"de", "Anmerkungen"}, new String[]{"en", "Notes"}));
         comment.setDescription(new MultiLanguageMetadataValue(new String[]{"de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite"}, new String[]{"en", "This is a space for notes about the annotations on this page"}));
 
