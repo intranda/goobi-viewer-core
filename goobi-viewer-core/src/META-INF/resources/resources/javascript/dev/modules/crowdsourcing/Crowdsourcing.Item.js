@@ -31,7 +31,11 @@ var Crowdsourcing = ( function() {
     var queries = [];
     
     var crowdsourcing = {};
-   
+    
+    crowdsourcing.isString = function(variable) {
+        return typeof variable === 'string' || variable instanceof String
+    }
+
     
     crowdsourcing.Item = function(imageSource, queries, initialCanvasIndex) {
         if ( _debug ) {

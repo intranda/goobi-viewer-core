@@ -30,6 +30,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.transformer = null;
         this.rects = [];
         this.finishedDrawing = new Rx.Subject();
+        this.lastRectangleId = -1;
         
         this.crowdsourcingItem = item;
         this.multiRect = multiple;
@@ -56,6 +57,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     	       		this.transformer.removeOverlay(this.rect)
     	        }
             }
+            rect.id = ++this.lastRectangleId;
             rect.style = this.drawer.style;
             this.drawer.style = this.getStyle();
     		rect.draw();
@@ -88,8 +90,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return style;
     }
     
+    crowdsourcing.AreaSelector.prototype.getRect = function(id) {
+        return this.rects.find( rect => rect.id == id);
+    }
+
+    
     function _getResultObject(rect, image) {
         let result = {
+                id: 
                 color: rect.style.borderColor,
                 region: ImageView.CoordinateConversion.convertRectFromOpenSeadragonToImage(rect.rect, image.viewer, image.viewer.world.getItemAt(0).source)
         }

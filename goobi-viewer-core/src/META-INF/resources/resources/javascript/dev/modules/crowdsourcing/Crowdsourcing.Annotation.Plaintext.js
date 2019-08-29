@@ -23,26 +23,36 @@
  */
 var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
-    
-    var _debug = false; 
 
-    crowdsourcing.Answer = function(body, selector) {
-        if(body) {
-            this.body = body;            
-        } else {
-            this.body = {text: ""};
-        }
-        if(selector) {            
-            this.selector = selector;
-        } else {
-            this.selector = {color: undefined, region: undefined};
-        }
+
+    crowdsourcing.Annotation.Plaintext = function(annotation) {
+        crowdsourcing.Annotation.call(this, annotation);
+ 
     }
+    crowdsourcing.Annotation.Plaintext.prototype = Object.create(crowdsourcing.Annotation.prototype);
     
-    crowdsourcing.Answer.prototype.setTextFromEvent = function(e) {
-        console.log("set text from ", e);
+    crowdsourcing.Annotation.Plaintext.prototype.getText = function() {
+        if(this.body) {            
+            return this.body.value;
+        } else {
+            return undefined;
+        }
+     
     }
-    
+        
+    crowdsourcing.Annotation.Plaintext.prototype.setText = function(text) {
+        if(!this.body) {
+            this.body = {
+                    type: "TextualBody",
+                    format: "text/plain",
+            }
+        }
+        this.body.value = text;
+    }
+    crowdsourcing.Annotation.Plaintext.prototype.setTextFromEvent = function(event) {
+        this.setText(event.target.value);
+    }
+
     
     
     return crowdsourcing;

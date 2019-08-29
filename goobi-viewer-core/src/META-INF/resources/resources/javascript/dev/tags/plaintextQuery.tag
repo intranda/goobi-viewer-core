@@ -1,13 +1,13 @@
 <plaintextQuery>
 
-	<div id="answer_{index}" class="annotation_area" each="{answer, index in this.answers}">
+	<div id="annotation_{index}" class="annotation_area" each="annottation, index in this.annotations}">
 		
-		<div if="{this.showAnswerImages()}" class="annotation_area__image">
-			<img  src="{this.getImage(answer.selector)}"></img>
+		<div if="{this.showAnnotationImages()}" class="annotation_area__image">
+			<img  src="{this.getImage(annotation.selector)}"></img>
 		</div>
 		<div class="annotation_area__text_input">
 			<label>{viewerJS.getMetadataValue(this.opts.query.label)}</label>			
-			<input  onChange="{answer.setTextFromEvent}" value="{answer.body.text}"></input>
+			<textarea  onChange="{annotation.setTextFromEvent}" value="{annotation.getText()}"></textarea>
 		</div>
 	
 	</div>
@@ -22,8 +22,10 @@
 	console.log("this.targetFrequency = ", this.targetFrequency);
 	console.log("this.targetSelector = ", this.targetSelector);
 
-	this.answers = [];
-	
+	this.annotations = [];
+	this.selectedAnnotation = undefined;
+	this.target = this.opts.item.getCurrentCanvas();
+
 	this.on("mount", function() {
 	    
 	    switch(this.targetSelector) {
@@ -37,32 +39,35 @@
 	    switch(this.targetFrequency) {
 	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
-	    		this.opts.item.onImageOpen( () => this.resetAnswers());
+	    		this.opts.item.onImageOpen( () => this.resetAnnotations());
 	    }
 
 	});
 	
 	this.on("updated", function() {
-		if(this.answers.length > 0) {
-		    let answerId = "answer_" + (this.answers.length-1);
-		    let inputSelector = "#"+answerId + " input";
+		if(this.annotations.length > 0) {
+		    let id = "annotation_" + (this.annotations.length-1);
+		    this.selectedAnnotation = this.annotations[this.annotations.length-1];
+		    let inputSelector = "#"id + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 
 		}
 	
 	}.bind(this));
 	
-	showAnswerImages() {
+	showAnnotationImages() {
 	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
 	}
 	
-	resetAnswers() {
-	    this.answers = [];
+	resetAnnotations() {
+	    this.annotations = [];
 	    
 	    switch(this.targetSelector) {
 	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
 	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
-	            this.answers.push(new Crowdsourcing.Answer());
+	            let anno = new Crowdsourcing.Annotation.Plaintext({});
+	            anno.setTarget(this.target);
+	            this.annotations.push(anno));
 	    }
 	    this.update();
 	}
@@ -74,16 +79,18 @@
 		this.opts.item.onImageOpen( () => this.areaSelector.reset());
 	}
 	
-	getId(answer) {
-	    return this.answers.indexOf(answer);
+	getId(annotation) {
+	    return this.annotations.indexOf(annotation);
 	}
 
-	getImage(answer) {
-	    return this.getImageUrl(answer.region, this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
+	getImage(annotation) {
+	    return this.getImageUrl(annotation.getRegion(), this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
 	}
 	
 	handleFinishedDrawing(result) {
 	    console.log("Finished drawing ", result);
+	    let Annotation
+	    
 	    this.answers.push(new Crowdsourcing.Answer({}, result));
 	    this.update();
 	}
@@ -91,6 +98,11 @@
 	getImageUrl(rect, imageId) {
 	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
 	    return url;
+	}
+	
+	saveToLocalStorage() {
+	    let annos = this.annotations.forEach( anno => JSON.parse(anno));
+	    console.log("annotation list ", annos);
 	}
 
 </script>
