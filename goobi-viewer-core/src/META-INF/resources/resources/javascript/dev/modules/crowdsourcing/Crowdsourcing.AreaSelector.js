@@ -30,6 +30,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.transformer = null;
         this.rects = [];
         this.finishedDrawing = new Rx.Subject();
+        this.finishedTransforming = new Rx.Subject();
         this.lastRectangleId = -1;
         
         this.crowdsourcingItem = item;
@@ -51,11 +52,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle(), (e) => e.shiftKey);
         this.drawer.finishedDrawing().subscribe(function(rect) {
             if(this.rect && !this.multiRect) {
-                this.rect.remove();
-                this.rects.remove(this.rect);
-    	        if(this.transformer) {	            
-    	       		this.transformer.removeOverlay(this.rect)
-    	        }
+                this.removeOverlay(this.rect)
             }
             rect.id = ++this.lastRectangleId;
             rect.style = this.drawer.style;
@@ -79,13 +76,15 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.AreaSelector.prototype.createTransformer = function(imageView) {
-        this.transformer = new ImageView.Transform(imageView.viewer, this.drawStyle, () => true); 
+        this.transformer = new ImageView.Transform(imageView.viewer, this.drawStyle, (e) => !e.shiftKey); 
+        this.transformer.finishedTransforming().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedTransforming);
+
     }
 
-    crowdsourcing.AreaSelector.prototype.getStyle = function() {
+    crowdsourcing.AreaSelector.prototype.getStyle = function(color) {
         let style = {
         		borderWidth: 2,
-        		borderColor: this.colors.next()
+        		borderColor: color ? color : this.colors.next()
         }
         return style;
     }
@@ -93,11 +92,42 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.AreaSelector.prototype.getRect = function(id) {
         return this.rects.find( rect => rect.id == id);
     }
+    
+    crowdsourcing.AreaSelector.prototype.addOverlay = function(object, viewer) {
+        
+        let rect = ImageView.CoordinateConversion.convertRectFromImageToOpenSeadragon(object.region, viewer, viewer.world.getItemAt(0).source);
+        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle(object.color));
+        overlay.id = object.id;
+        this.lastRectangleId = overlay.id;
+        overlay.draw();
+        if(this.transformer) {     
+            this.transformer.addOverlay(overlay);
+        }
+        this.rects.push(overlay);
+    }
+
+    crowdsourcing.AreaSelector.prototype.removeOverlay = function(object) {
+        
+        let rect = this.rects.find(rect => rect.id == object.id);
+        if(rect) {
+            rect.remove();
+            let index = this.rects.indexOf(rect);
+            if(index > -1) {                
+                this.rects.splice(index, 1);
+            }
+            if(this.rect == rect) {
+                this.rect = undefined;
+            }
+            if(this.transformer) {              
+                this.transformer.removeOverlay(rect)
+            }
+        }
+    }
 
     
     function _getResultObject(rect, image) {
         let result = {
-                id: 
+                id: rect.id,
                 color: rect.style.borderColor,
                 region: ImageView.CoordinateConversion.convertRectFromOpenSeadragonToImage(rect.rect, image.viewer, image.viewer.world.getItemAt(0).source)
         }

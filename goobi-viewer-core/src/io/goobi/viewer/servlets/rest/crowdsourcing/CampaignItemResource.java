@@ -76,6 +76,7 @@ public class CampaignItemResource {
         item.setSource(manifestURI);
 
         CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);
+        query.setId(1l);
         query.setLabel("de", "Bild auswählen");
         query.setLabel("en", "Select image");
         query.setDescription("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
@@ -83,6 +84,7 @@ public class CampaignItemResource {
         item.addQuery(query);
 
         CrowdsourcingQuery comment = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE);
+        comment.setId(2l);
         comment.setLabel("de", "Anmerkungen");
         comment.setLabel("en", "Notes");
         comment.setDescription("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");

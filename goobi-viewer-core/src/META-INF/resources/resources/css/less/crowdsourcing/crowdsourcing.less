@@ -145,7 +145,6 @@
 				width: 50%;
 			}
 			.content_right {
-				background-color: white;
 				margin: 20px;
 				width: 50%;
 				overflow: auto;
@@ -231,7 +230,18 @@
 	}
 	
 	.query_wrapper {
-		
+		background-color: white;
+		padding: 5px;
+		margin-bottom: 5px;
+		.annotation_instruction {
+			margin: 30px;
+			border: 2px solid @lightgray;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100px;
+			color: @middlegray;
+		}
 		.annotation_area {
 			display: flex;
 			margin: 30px;
@@ -270,6 +280,7 @@
 	    			border: 0px solid;
 	    			height: 100%;
 	    			margin-left: 20px;
+	    			margin-bottom: 15px;
 	    			resize: none;
 	    			border: 1px solid @middlegray;
 	    			&:focus {
@@ -279,6 +290,15 @@
 	    			}
 				}
 				
+			}
+			&__button {
+				float: right;
+				margin-top: -56px;
+				margin-right: 52px;
+				color: red;
+				&:hover {
+					cursor: pointer;
+				}
 			}
 		}
 

@@ -35,6 +35,20 @@ var Crowdsourcing = ( function() {
     crowdsourcing.isString = function(variable) {
         return typeof variable === 'string' || variable instanceof String
     }
+    
+    crowdsourcing.getResourceId = function(resource) {
+        if(crowdsourcing.isString(resource)) {
+            return resource;
+        } else if(resource.id) {
+            return resource.id;
+        } else if(resource["@id"]) {
+            return resource["@id"];
+        } else if(resource.source) {
+            return resource.source;
+        } else {
+            return JSON.stringify(resource);
+        }
+    }
 
     
     crowdsourcing.Item = function(imageSource, queries, initialCanvasIndex) {

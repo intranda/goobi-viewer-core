@@ -49,9 +49,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
         this.body.value = text;
     }
-    crowdsourcing.Annotation.Plaintext.prototype.setTextFromEvent = function(event) {
-        this.setText(event.target.value);
-    }
+
 
     
     

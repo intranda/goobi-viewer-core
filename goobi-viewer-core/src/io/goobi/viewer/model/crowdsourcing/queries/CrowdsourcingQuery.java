@@ -224,5 +224,4 @@ public class CrowdsourcingQuery {
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
     }
-
 }
