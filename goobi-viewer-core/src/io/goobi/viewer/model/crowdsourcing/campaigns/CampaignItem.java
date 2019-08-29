@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.intranda.api.iiif.presentation.Range;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 
 /**
@@ -27,40 +26,65 @@ import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
  *
  */
 public class CampaignItem {
-    
+
     private URI source;
-    private List<CrowdsourcingQuery> queries = new ArrayList<>();
+    private Campaign campaign;
     private CampaignItemStatus status = CampaignItemStatus.CREATED;
+
     /**
      * @return the source
      */
     public URI getSource() {
         return source;
     }
+
     /**
      * @param source the source to set
      */
     public void setSource(URI source) {
         this.source = source;
     }
+
+    /**
+     * @return the campaign
+     */
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
+    /**
+     * @param campaign the campaign to set
+     */
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
+    }
+
     /**
      * @return a new list containing all queries
      */
     public List<CrowdsourcingQuery> getQueries() {
-        return new ArrayList(queries);
+        return new ArrayList<>(campaign.getQueries());
     }
-    /**
-     * @param queries the queries to set
-     */
-    public void setQueries(List<CrowdsourcingQuery> queries) {
-        this.queries = queries;
-    }
-    
+
     public void addQuery(CrowdsourcingQuery query) {
-        this.queries.add(query);
+        campaign.getQueries().add(query);
     }
-    
+
     public void removeQuery(CrowdsourcingQuery query) {
-        this.queries.remove(query);
+        campaign.getQueries().remove(query);
+    }
+
+    /**
+     * @return the status
+     */
+    public CampaignItemStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(CampaignItemStatus status) {
+        this.status = status;
     }
 }

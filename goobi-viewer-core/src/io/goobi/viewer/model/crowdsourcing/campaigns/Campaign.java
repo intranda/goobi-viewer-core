@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.model.cms.Translation;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 
 @Entity
@@ -83,7 +85,212 @@ public class Campaign {
     @Column(name = "permalink")
     private String permalink;
 
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private List<Translation> translations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CrowdsourcingQuery> queries;
+
+    /**
+     * 
+     * @param lang
+     * @return
+     */
+    public String getTitle(String lang) {
+        return getTranslation("title", lang);
+    }
+
+    /**
+     * 
+     * @param lang
+     * @return
+     */
+    public String getDescription(String lang) {
+        return getTranslation("description", lang);
+    }
+
+    /**
+     * 
+     * @param lang
+     * @return
+     */
+    public String getMenuTitle(String lang) {
+        return getTranslation("menu_title", lang);
+    }
+
+    /**
+     * 
+     * @param tag
+     * @param lang
+     * @return
+     */
+    String getTranslation(String tag, String lang) {
+        if (tag == null || lang == null) {
+            return null;
+        }
+
+        for (Translation translation : translations) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+                return translation.getValue();
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the dateCreated
+     */
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    /**
+     * @param dateCreated the dateCreated to set
+     */
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    /**
+     * @return the dateUpdated
+     */
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    /**
+     * @param dateUpdated the dateUpdated to set
+     */
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * @return the visibility
+     */
+    public CampaignVisibility getVisibility() {
+        return visibility;
+    }
+
+    /**
+     * @param visibility the visibility to set
+     */
+    public void setVisibility(CampaignVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    /**
+     * @return the dateStart
+     */
+    public Date getDateStart() {
+        return dateStart;
+    }
+
+    /**
+     * @param dateStart the dateStart to set
+     */
+    public void setDateStart(Date dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    /**
+     * @return the dateEnd
+     */
+    public Date getDateEnd() {
+        return dateEnd;
+    }
+
+    /**
+     * @param dateEnd the dateEnd to set
+     */
+    public void setDateEnd(Date dateEnd) {
+        this.dateEnd = dateEnd;
+    }
+
+    /**
+     * @return the imageFileName
+     */
+    public String getImageFileName() {
+        return imageFileName;
+    }
+
+    /**
+     * @param imageFileName the imageFileName to set
+     */
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
+    }
+
+    /**
+     * @return the solrQuery
+     */
+    public String getSolrQuery() {
+        return solrQuery;
+    }
+
+    /**
+     * @param solrQuery the solrQuery to set
+     */
+    public void setSolrQuery(String solrQuery) {
+        this.solrQuery = solrQuery;
+    }
+
+    /**
+     * @return the permalink
+     */
+    public String getPermalink() {
+        return permalink;
+    }
+
+    /**
+     * @param permalink the permalink to set
+     */
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
+    }
+
+    /**
+     * @return the translations
+     */
+    public List<Translation> getTranslations() {
+        return translations;
+    }
+
+    /**
+     * @param translations the translations to set
+     */
+    public void setTranslations(List<Translation> translations) {
+        this.translations = translations;
+    }
+
+    /**
+     * @return the queries
+     */
+    public List<CrowdsourcingQuery> getQueries() {
+        return queries;
+    }
+
+    /**
+     * @param queries the queries to set
+     */
+    public void setQueries(List<CrowdsourcingQuery> queries) {
+        this.queries = queries;
+    }
 }
