@@ -60,6 +60,7 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
 import io.goobi.viewer.model.overviewpage.OverviewPageUpdate;
@@ -84,6 +85,7 @@ public class JPADAO implements IDAO {
     private final EntityManagerFactory factory;
     private EntityManager em;
     private Object cmsRequestLock = new Object();
+    private Object crowdsourcingRequestLock = new Object();
     private Object overviewPageRequestLock = new Object();
 
     public JPADAO() throws DAOException {
@@ -3298,6 +3300,7 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCMSPagesForRecord(java.lang.String, io.goobi.viewer.model.cms.Category)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException {
         preQuery();
@@ -3382,6 +3385,7 @@ public class JPADAO implements IDAO {
     /**
      * @return a list of all persisted {@link CMSCategory CMSCategories}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSCategory> getAllCategories() throws DAOException {
         preQuery();
@@ -3541,6 +3545,72 @@ public class JPADAO implements IDAO {
     @Override
     public Query createQuery(String string) {
         return em.createQuery(string);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAllCampaigns()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Campaign> getAllCampaigns() throws DAOException {
+        try {
+            synchronized (crowdsourcingRequestLock) {
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSPage o");
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            }
+        } catch (PersistenceException e) {
+            logger.error(e.toString());
+            return  Collections.emptyList();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
+     */
+    @Override
+    public Campaign getCampaign(Long id) throws DAOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
+     */
+    @Override
+    public List<CMSPage> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean addCampaign(Campaign campaign) throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean updateCampaign(Campaign campaign) throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean deleteCampaign(Campaign campaign) throws DAOException {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

@@ -15,20 +15,40 @@
  */
 package io.goobi.viewer.model.crowdsourcing.queries;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.api.serializer.MetadataSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 
 /**
  * @author florian
  *
  */
 @JsonInclude(Include.NON_NULL)
+@Table(name = "cs_queries")
 public class CrowdsourcingQuery {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "query_id")
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "owner_campaign_id")
+    private Campaign ownerCampaign;
+    
+    // TODO find a way to persist multi-language values in DB
     private IMetadataValue label;
     private IMetadataValue description;
     private IMetadataValue help;

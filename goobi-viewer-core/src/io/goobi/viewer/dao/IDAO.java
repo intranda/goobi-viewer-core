@@ -33,6 +33,7 @@ import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
 import io.goobi.viewer.model.overviewpage.OverviewPageUpdate;
@@ -143,16 +144,16 @@ public interface IDAO {
     // LicenseType
 
     public List<LicenseType> getAllLicenseTypes() throws DAOException;
-    
+
     public long getLicenseTypeCount(Map<String, String> filters) throws DAOException;
-    
+
     public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException;
 
     public List<LicenseType> getNonOpenAccessLicenseTypes() throws DAOException;
 
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-    
+
     public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
@@ -193,7 +194,7 @@ public interface IDAO {
     public List<Comment> getComments(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
     public List<Comment> getCommentsForPage(String pi, int page, boolean topLevelOnly) throws DAOException;
-    
+
     public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException;
 
     public Comment getComment(long id) throws DAOException;
@@ -285,9 +286,11 @@ public interface IDAO {
 
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
 
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
+    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+            List<String> allowedCategories) throws DAOException;
 
-    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
+    public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
+            List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
     public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException;
 
@@ -329,7 +332,6 @@ public interface IDAO {
 
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException;
 
-
     public List<CMSStaticPage> getAllStaticPages() throws DAOException;
 
     public void addStaticPage(CMSStaticPage page) throws DAOException;
@@ -341,19 +343,18 @@ public interface IDAO {
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
 
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
-    
+
     public List<CMSCategory> getAllCategories() throws DAOException;
-    
+
     public void addCategory(CMSCategory category) throws DAOException;
-    
+
     public void updateCategory(CMSCategory category) throws DAOException;
-    
+
     public boolean deleteCategory(CMSCategory category) throws DAOException;
-    
+
     public CMSCategory getCategoryByName(String name) throws DAOException;
 
     public CMSCategory getCategory(Long id) throws DAOException;
-
 
     // Transkribus
 
@@ -366,6 +367,20 @@ public interface IDAO {
     public boolean updateTranskribusJob(TranskribusJob job) throws DAOException;
 
     public boolean deleteTranskribusJob(TranskribusJob job) throws DAOException;
+
+    // Crowdsourcing campaigns
+
+    public List<Campaign> getAllCampaigns() throws DAOException;
+
+    public Campaign getCampaign(Long id) throws DAOException;
+
+    public List<CMSPage> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+
+    public boolean addCampaign(Campaign campaign) throws DAOException;
+
+    public boolean updateCampaign(Campaign campaign) throws DAOException;
+
+    public boolean deleteCampaign(Campaign campaign) throws DAOException;
 
     // Misc
 
@@ -403,21 +418,16 @@ public interface IDAO {
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
 
-	boolean tableExists(String tableName) throws SQLException;
+    boolean tableExists(String tableName) throws SQLException;
 
-	boolean columnsExists(String tableName, String columnName) throws SQLException;
-	
-	void startTransaction();
+    boolean columnsExists(String tableName, String columnName) throws SQLException;
 
-	void commitTransaction();
+    void startTransaction();
 
-	Query createNativeQuery(String string);
+    void commitTransaction();
 
-	Query createQuery(String string);
+    Query createNativeQuery(String string);
 
-
-
-
-
+    Query createQuery(String string);
 
 }
