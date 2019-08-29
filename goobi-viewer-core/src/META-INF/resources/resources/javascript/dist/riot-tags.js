@@ -794,7 +794,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" each="{answer, index in this.answers}"><div if="{this.showAnswerImages()}" class="annotation_area__image"><img riot-src="{this.getImage(answer.selector)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><textarea onchange="{answer.setTextFromEvent}" riot-value="{answer.body.text}"></textarea></div></div>', '', '', function(opts) {
+riot.tag2('plaintextquery', '<div id="annotation_{index}" class="annotation_area" each="annottation, index in this.annotations}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.getImage(annotation.selector)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><textarea onchange="{annotation.setTextFromEvent}" riot-value="{annotation.getText()}"></textarea></div></div>', '', '', function(opts) {
 
 	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
 	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
@@ -804,7 +804,9 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 	console.log("this.targetFrequency = ", this.targetFrequency);
 	console.log("this.targetSelector = ", this.targetSelector);
 
-	this.answers = [];
+	this.annotations = [];
+	this.selectedAnnotation = undefined;
+	this.target = this.opts.item.getCurrentCanvas();
 
 	this.on("mount", function() {
 
@@ -819,32 +821,35 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 	    switch(this.targetFrequency) {
 	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
-	    		this.opts.item.onImageOpen( () => this.resetAnswers());
+	    		this.opts.item.onImageOpen( () => this.resetAnnotations());
 	    }
 
 	});
 
 	this.on("updated", function() {
-		if(this.answers.length > 0) {
-		    let answerId = "answer_" + (this.answers.length-1);
-		    let inputSelector = "#"+answerId + " textarea";
+		if(this.annotations.length > 0) {
+		    let id = "annotation_" + (this.annotations.length-1);
+		    this.selectedAnnotation = this.annotations[this.annotations.length-1];
+		    let inputSelector = "#"id + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 
 		}
 
 	}.bind(this));
 
-	this.showAnswerImages = function() {
+	this.showAnnotationImages = function() {
 	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
 	}.bind(this)
 
-	this.resetAnswers = function() {
-	    this.answers = [];
+	this.resetAnnotations = function() {
+	    this.annotations = [];
 
 	    switch(this.targetSelector) {
 	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
 	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
-	            this.answers.push(new Crowdsourcing.Answer());
+	            let anno = new Crowdsourcing.Annotation.Plaintext({});
+	            anno.setTarget(this.target);
+	            this.annotations.push(anno));
 	    }
 	    this.update();
 	}.bind(this)
@@ -856,16 +861,18 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 		this.opts.item.onImageOpen( () => this.areaSelector.reset());
 	}.bind(this)
 
-	this.getId = function(answer) {
-	    return this.answers.indexOf(answer);
+	this.getId = function(annotation) {
+	    return this.annotations.indexOf(annotation);
 	}.bind(this)
 
-	this.getImage = function(answer) {
-	    return this.getImageUrl(answer.region, this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
+	this.getImage = function(annotation) {
+	    return this.getImageUrl(annotation.getRegion(), this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
 	}.bind(this)
 
 	this.handleFinishedDrawing = function(result) {
 	    console.log("Finished drawing ", result);
+	    let Annotation
+
 	    this.answers.push(new Crowdsourcing.Answer({}, result));
 	    this.update();
 	}.bind(this)
@@ -876,7 +883,7 @@ riot.tag2('plaintextquery', '<div id="answer_{index}" class="annotation_area" ea
 	}.bind(this)
 
 	this.saveToLocalStorage = function() {
-	    let annos = this.answers.forEach( answer => answer.createAnnotation());
+	    let annos = this.annotations.forEach( anno => JSON.parse(anno));
 	    console.log("annotation list ", annos);
 	}.bind(this)
 
