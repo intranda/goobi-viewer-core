@@ -1722,9 +1722,14 @@ public final class SearchHelper {
                 // every single doc
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
+                    case SolrConstants.PI_ANCHOR:
                     case SolrConstants.DC:
                     case SolrConstants.DOCSTRCT:
                         continue;
+                    default:
+                        if (field.startsWith(SolrConstants.GROUPID_)) {
+                            continue;
+                        }
                 }
                 Set<String> terms = searchTerms.get(field);
                 if (terms == null || terms.isEmpty()) {
@@ -1808,10 +1813,15 @@ public final class SearchHelper {
                     // return every single doc
                     switch (item.getField()) {
                         case SolrConstants.PI_TOPSTRUCT:
+                        case SolrConstants.PI_ANCHOR:
                         case SolrConstants.DC:
                         case SolrConstants.DOCSTRCT:
                         case SolrConstants.BOOKSHELF:
                             continue;
+                        default:
+                            if (item.getField().startsWith(SolrConstants.GROUPID_)) {
+                                continue;
+                            }
                     }
                     String itemQuery = item.generateQuery(new HashSet<String>(), false);
                     if (StringUtils.isNotEmpty(itemQuery)) {
