@@ -176,7 +176,8 @@
     
     <cms_content_item_cms_categories content_item_id="4" category_id="4" />
     
-    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
+    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD"
+        inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"
@@ -191,6 +192,22 @@
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
+    
+    <cs_campaigns campaign_id="1" visibility="PUBLIC" date_created="2019-08-29 00:00:00.000000000"
+        date_start="2019-08-29 00:00:00.000000000" date_end="2020-08-29 00:00:00.000000000"
+        solr_query="+DC:varia" />
+        
+    <cs_campaigns campaign_id="2" visibility="PRIVATE" date_created="2019-08-30 00:00:00.000000000"
+        date_start="2019-09-01 00:00:00.000000000" date_end="2020-09-02 00:00:00.000000000"
+        solr_query="+(DOCSTRCT:manuscript DOCSTRCT:Manuscript)" />
+        
+    <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
+    
+    <cs_queries query_id="1" owner_id="1"  />
+    
+    <cs_query_translations translation_id="1" owner_id="1" language="en" tag="label" value="English label" />
+    <cs_query_translations translation_id="2" owner_id="1" language="en" tag="description" value="English description" />
+    <cs_query_translations translation_id="3" owner_id="1" language="en" tag="help" value="English help" />
     
 </dataset>
 

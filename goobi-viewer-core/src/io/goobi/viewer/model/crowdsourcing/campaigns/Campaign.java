@@ -37,7 +37,6 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.model.cms.Translation;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 
 @Entity
@@ -87,7 +86,7 @@ public class Campaign {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<Translation> translations = new ArrayList<>();
+    private List<CampaignTranslation> translations = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
@@ -131,7 +130,7 @@ public class Campaign {
             return null;
         }
 
-        for (Translation translation : translations) {
+        for (CampaignTranslation translation : translations) {
             if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
                 return translation.getValue();
             }
@@ -269,14 +268,14 @@ public class Campaign {
     /**
      * @return the translations
      */
-    public List<Translation> getTranslations() {
+    public List<CampaignTranslation> getTranslations() {
         return translations;
     }
 
     /**
      * @param translations the translations to set
      */
-    public void setTranslations(List<Translation> translations) {
+    public void setTranslations(List<CampaignTranslation> translations) {
         this.translations = translations;
     }
 

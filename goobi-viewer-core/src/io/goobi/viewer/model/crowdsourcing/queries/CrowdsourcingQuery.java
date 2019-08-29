@@ -15,20 +15,26 @@
  */
 package io.goobi.viewer.model.crowdsourcing.queries;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.intranda.api.serializer.MetadataSerializer;
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 
 /**
@@ -36,6 +42,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
  *
  */
 @JsonInclude(Include.NON_NULL)
+@Entity
 @Table(name = "cs_queries")
 public class CrowdsourcingQuery {
 
@@ -43,105 +50,179 @@ public class CrowdsourcingQuery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "query_id")
     private Long id;
-    
+
     @ManyToOne
-    @JoinColumn(name = "owner_campaign_id")
-    private Campaign ownerCampaign;
-    
-    // TODO find a way to persist multi-language values in DB
-    private IMetadataValue label;
-    private IMetadataValue description;
-    private IMetadataValue help;
+    @JoinColumn(name = "owner_id")
+    private Campaign owner;
+
+    /** Translated metadata. */
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private List<QueryTranslation> translations = new ArrayList<>();
+
     private QueryType queryType;
     private TargetFrequency targetFrequency;
     private TargetSelector targetSelector;
-    
+
     public CrowdsourcingQuery() {
-        
+
     }
-    
+
     public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector) {
         this.queryType = queryType;
         this.targetFrequency = targetFrequency;
         this.targetSelector = targetSelector;
     }
-    
-    /**
-     * @return the label
-     */
-    @JsonSerialize(using = MetadataSerializer.class)
-    public IMetadataValue getLabel() {
-        return label;
+
+    public String getLabel(String lang) {
+        return getTranslation(lang, "label");
     }
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(IMetadataValue label) {
-        this.label = label;
+
+    public void setLabel(String lang, String value) {
+        setTranslation(lang, value, "label");
     }
-    /**
-     * @return the description
-     */
-    @JsonSerialize(using = MetadataSerializer.class)
-    public IMetadataValue getDescription() {
-        return description;
+
+    public String getDescription(String lang) {
+        return getTranslation(lang, "description");
     }
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(IMetadataValue description) {
-        this.description = description;
+
+    public void setDescription(String lang, String value) {
+        setTranslation(lang, value, "description");
     }
-    /**
-     * @return the help
-     */
-    @JsonSerialize(using = MetadataSerializer.class)
-    public IMetadataValue getHelp() {
-        return help;
+
+    public String getHelp(String lang) {
+        return getTranslation(lang, "help");
     }
-    /**
-     * @param help the help to set
-     */
-    public void setHelp(IMetadataValue help) {
-        this.help = help;
+
+    public void setHelp(String lang, String value) {
+        setTranslation(lang, value, "help");
     }
+
+    /**
+     * 
+     * @param tag
+     * @param lang
+     * @return
+     */
+    String getTranslation(String lang, String tag) {
+        if (tag == null || lang == null) {
+            return null;
+        }
+
+        for (QueryTranslation translation : translations) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+                return translation.getValue();
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param lang
+     * @param value
+     * @param tag
+     */
+    void setTranslation(String lang, String value, String tag) {
+        if (lang == null) {
+            throw new IllegalArgumentException("lang may not be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        for (QueryTranslation translation : translations) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+                translation.setValue(value);
+                return;
+            }
+        }
+        translations.add(new QueryTranslation(lang, tag, value));
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the owner
+     */
+    public Campaign getOwner() {
+        return owner;
+    }
+
+    /**
+     * @param owner the owner to set
+     */
+    public void setOwner(Campaign owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * @return the translations
+     */
+    public List<QueryTranslation> getTranslations() {
+        return translations;
+    }
+
+    /**
+     * @param translations the translations to set
+     */
+    public void setTranslations(List<QueryTranslation> translations) {
+        this.translations = translations;
+    }
+
     /**
      * @return the queryType
      */
     public QueryType getQueryType() {
         return queryType;
     }
+
     /**
      * @param queryType the queryType to set
      */
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
     }
+
     /**
      * @return the targetType
      */
     public TargetFrequency getTargetFrequency() {
         return targetFrequency;
     }
+
     /**
      * @param targetType the targetType to set
      */
     public void setTargetFrequency(TargetFrequency targetFrequency) {
         this.targetFrequency = targetFrequency;
     }
-    
+
     /**
      * @return the targetSelector
      */
     public TargetSelector getTargetSelector() {
         return targetSelector;
     }
-    
+
     /**
      * @param targetSelector the targetSelector to set
      */
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
     }
-    
+
 }
