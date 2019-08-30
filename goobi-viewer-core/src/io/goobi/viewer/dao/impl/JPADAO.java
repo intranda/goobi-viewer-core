@@ -1440,7 +1440,7 @@ public class JPADAO implements IDAO {
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public List<Comment> getCommentsForWork(String pi, boolean topLevelOnly) throws DAOException {
@@ -2867,10 +2867,54 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getTranskribusJobs(java.lang.String, java.lang.String, io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<TranskribusJob> getTranskribusJobs(String pi, String transkribusUserId, JobStatus status) throws DAOException {
-        // TODO Auto-generated method stub
-        return null;
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("SELECT o FROM TranskribusJob o");
+        int filterCount = 0;
+        if (pi != null) {
+            if (filterCount == 0) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append(" WHERE o.pi = :pi");
+            filterCount++;
+        }
+        if (transkribusUserId != null) {
+            if (filterCount == 0) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append(" WHERE o.ownerId = :ownerId");
+            filterCount++;
+        }
+        if (status != null) {
+            if (filterCount == 0) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(" AND ");
+            }
+            sbQuery.append(" WHERE o.status = :status");
+            filterCount++;
+        }
+
+        Query q = em.createQuery(sbQuery.toString());
+        if (pi != null) {
+            q.setParameter("pi", pi);
+        }
+        if (transkribusUserId != null) {
+            q.setParameter("ownerId", transkribusUserId);
+        }
+        if (status != null) {
+            q.setParameter("status", status);
+        }
+        q.setFlushMode(FlushModeType.COMMIT);
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
     }
 
     /**
@@ -2927,6 +2971,149 @@ public class JPADAO implements IDAO {
             return false;
         } finally {
             em.close();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAllCampaigns()
+     * @should return all campaigns
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Campaign> getAllCampaigns() throws DAOException {
+        try {
+            synchronized (crowdsourcingRequestLock) {
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM Campaign o");
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return q.getResultList();
+            }
+        } catch (PersistenceException e) {
+            logger.error(e.toString());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
+     * @should return correct campaign
+     */
+    @Override
+    public Campaign getCampaign(Long id) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            try {
+                Campaign o = em.getReference(Campaign.class, id);
+                if (o != null) {
+                    updateFromDatabase(id, Campaign.class);
+                }
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            }
+        }
+
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
+            StringBuilder order = new StringBuilder();
+            try {
+                Map<String, String> params = new HashMap<>();
+
+                String filterString = createFilterQuery(null, filters, params);
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(filterString).append(order);
+
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                List<Campaign> list = q.getResultList();
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean addCampaign(Campaign campaign) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            EntityManager em = factory.createEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.persist(campaign);
+                em.getTransaction().commit();
+                return updateFromDatabase(campaign.getId(), Campaign.class);
+            } finally {
+                em.close();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean updateCampaign(Campaign campaign) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = factory.createEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.merge(campaign);
+                em.getTransaction().commit();
+                return updateFromDatabase(campaign.getId(), Campaign.class);
+            } finally {
+                em.close();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
+     */
+    @Override
+    public boolean deleteCampaign(Campaign campaign) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = factory.createEntityManager();
+            try {
+                em.getTransaction().begin();
+                Campaign o = em.getReference(Campaign.class, campaign.getId());
+                em.remove(o);
+                em.getTransaction().commit();
+                return !updateFromDatabase(campaign.getId(), Campaign.class);
+            } catch (RollbackException e) {
+                return false;
+            } finally {
+                em.close();
+            }
         }
     }
 
@@ -3310,7 +3497,7 @@ public class JPADAO implements IDAO {
                     "SELECT DISTINCT page FROM CMSPage page JOIN page.categories category WHERE category.id = :id AND page.relatedPI = :pi");
             q.setParameter("id", category.getId());
         } else {
-        	StringBuilder sbQuery = new StringBuilder(70);
+            StringBuilder sbQuery = new StringBuilder(70);
             sbQuery.append("SELECT o from CMSPage o WHERE o.relatedPI='").append(pi).append("'");
 
             q = em.createQuery("SELECT page FROM CMSPage page WHERE page.relatedPI = :pi");
@@ -3546,71 +3733,4 @@ public class JPADAO implements IDAO {
     public Query createQuery(String string) {
         return em.createQuery(string);
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllCampaigns()
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Campaign> getAllCampaigns() throws DAOException {
-        try {
-            synchronized (crowdsourcingRequestLock) {
-                preQuery();
-                Query q = em.createQuery("SELECT o FROM CMSPage o");
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-                return q.getResultList();
-            }
-        } catch (PersistenceException e) {
-            logger.error(e.toString());
-            return  Collections.emptyList();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
-     */
-    @Override
-    public Campaign getCampaign(Long id) throws DAOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
-     */
-    @Override
-    public List<CMSPage> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    @Override
-    public boolean addCampaign(Campaign campaign) throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    @Override
-    public boolean updateCampaign(Campaign campaign) throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
-    @Override
-    public boolean deleteCampaign(Campaign campaign) throws DAOException {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }

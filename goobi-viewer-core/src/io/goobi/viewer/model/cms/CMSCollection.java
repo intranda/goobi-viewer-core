@@ -97,7 +97,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<Translation> translations = new ArrayList<>();
+    private List<CMSCollectionTranslation> translations = new ArrayList<>();
 
     public CMSCollection() {
 
@@ -152,7 +152,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * 
      * @param label
      */
-    public void addLabel(Translation label) {
+    public void addLabel(CMSCollectionTranslation label) {
         label.setTag(LABEL_TAG);
         label.setOwner(this);
         translations.add(label);
@@ -163,7 +163,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * 
      * @param label
      */
-    public void addDescription(Translation description) {
+    public void addDescription(CMSCollectionTranslation description) {
         description.setTag(DESCRIPTION_TAG);
         description.setOwner(this);
         translations.add(description);
@@ -174,7 +174,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * 
      * @return all labels for this collections
      */
-    public List<Translation> getLabels() {
+    public List<CMSCollectionTranslation> getLabels() {
         return translations.stream().filter(translation -> LABEL_TAG.equals(translation.getTag())).collect(Collectors.toList());
     }
 
@@ -183,7 +183,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * 
      * @return all descriptions for this collections
      */
-    public List<Translation> getDescriptions() {
+    public List<CMSCollectionTranslation> getDescriptions() {
         return translations.stream().filter(translation -> DESCRIPTION_TAG.equals(translation.getTag())).collect(Collectors.toList());
     }
 
@@ -222,11 +222,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getLabel(BeanUtils.getLocale());
     }
 
-    public Translation getLabelAsTranslation(String language) {
+    public CMSCollectionTranslation getLabelAsTranslation(String language) {
         return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
 
-    public Translation getDescriptionAsTranslation(String language) {
+    public CMSCollectionTranslation getDescriptionAsTranslation(String language) {
         return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
 
@@ -330,7 +330,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
             if (getLabels().stream().noneMatch(label -> label.getLanguage().equalsIgnoreCase(language))) {
-                addLabel(new Translation(language, ""));
+                addLabel(new CMSCollectionTranslation(language, ""));
             }
         }
     }
@@ -339,7 +339,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
             if (getDescriptions().stream().noneMatch(description -> description.getLanguage().equalsIgnoreCase(language))) {
-                addDescription(new Translation(language, ""));
+                addDescription(new CMSCollectionTranslation(language, ""));
             }
         }
     }

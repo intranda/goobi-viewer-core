@@ -28,7 +28,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -49,22 +48,21 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 @Path("/crowdsourcing/campaign")
 @ViewerRestServiceBinding
 public class CampaignItemResource {
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
     private final URI requestURI;
-    
-    public CampaignItemResource() {        
+
+    public CampaignItemResource() {
         try {
             this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
         } catch (ViewerConfigurationException e) {
             throw new WebApplicationException(e);
         }
     }
-
 
     @GET
     @Path("/{campaignId}/annotate/{pi}")
@@ -73,25 +71,28 @@ public class CampaignItemResource {
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
         URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
         URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
-        
+
         //TODO: Create item from campaign
         CampaignItem item = new CampaignItem();
         item.setCampaign(new Campaign());
         item.setSource(manifestURI);
-        
+
         CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);
         query.setId(1l);
-        query.setLabel(new MultiLanguageMetadataValue(new String[]{"de", "Bild auswählen"}, new String[]{"en", "Select image"}));
-        query.setDescription(new MultiLanguageMetadataValue(new String[]{"de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein."}, new String[]{"en", "Select an area in the image and enter a short description about it."}));
+        query.setLabel("de", "Bild auswählen");
+        query.setLabel("en", "Select image");
+        query.setDescription("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
+        query.setDescription("en", "Select an area in the image and enter a short description about it.");
         item.addQuery(query);
-        
+
         CrowdsourcingQuery comment = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE);
         comment.setId(2l);
-        comment.setLabel(new MultiLanguageMetadataValue(new String[]{"de", "Anmerkungen"}, new String[]{"en", "Notes"}));
-        comment.setDescription(new MultiLanguageMetadataValue(new String[]{"de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite"}, new String[]{"en", "This is a space for notes about the annotations on this page"}));
-
+        comment.setLabel("de", "Anmerkungen");
+        comment.setLabel("en", "Notes");
+        comment.setDescription("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
+        comment.setDescription("en", "This is a space for notes about the annotations on this page");
         item.addQuery(comment);
-        
+
         return item;
     }
 

@@ -31,7 +31,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
@@ -39,19 +38,21 @@ import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.bookshelf.BookshelfItem;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
 import io.goobi.viewer.model.download.PDFDownloadJob;
-import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -2064,6 +2065,34 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         Assert.assertEquals("t1", params.get("tpl1"));
         Assert.assertEquals("t2", params.get("tpl2"));
+    }
+
+    /**
+     * @see JPADAO#getAllCampaigns()
+     * @verifies return all campaigns
+     */
+    @Test
+    public void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCampaigns().size());
+    }
+
+    /**
+     * @see JPADAO#getCampaign(Long)
+     * @verifies return correct campaign
+     */
+    @Test
+    public void getCampaign_shouldReturnCorrectCampaign() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+        Assert.assertEquals(Long.valueOf(1), campaign.getId());
+        Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+        Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
+        Assert.assertEquals("English title", campaign.getTitle("en"));
+        
+        Assert.assertEquals(1, campaign.getQueries().size());
+        Assert.assertEquals("English label", campaign.getQueries().get(0).getLabel("en"));
+        Assert.assertEquals("English description", campaign.getQueries().get(0).getDescription("en"));
+        Assert.assertEquals("English help", campaign.getQueries().get(0).getHelp("en"));
     }
 
 }

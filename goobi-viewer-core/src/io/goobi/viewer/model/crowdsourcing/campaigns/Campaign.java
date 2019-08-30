@@ -37,8 +37,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.model.cms.Translation;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
+import io.goobi.viewer.model.misc.Translation;
 
 @Entity
 @Table(name = "cs_campaigns")
@@ -87,7 +87,7 @@ public class Campaign {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<Translation> translations = new ArrayList<>();
+    private List<CampaignTranslation> translations = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
@@ -99,7 +99,7 @@ public class Campaign {
      * @return
      */
     public String getTitle(String lang) {
-        return getTranslation("title", lang);
+        return Translation.getTranslation(translations, lang, "title");
     }
 
     /**
@@ -108,7 +108,7 @@ public class Campaign {
      * @return
      */
     public String getDescription(String lang) {
-        return getTranslation("description", lang);
+        return Translation.getTranslation(translations, lang, "description");
     }
 
     /**
@@ -117,27 +117,7 @@ public class Campaign {
      * @return
      */
     public String getMenuTitle(String lang) {
-        return getTranslation("menu_title", lang);
-    }
-
-    /**
-     * 
-     * @param tag
-     * @param lang
-     * @return
-     */
-    String getTranslation(String tag, String lang) {
-        if (tag == null || lang == null) {
-            return null;
-        }
-
-        for (Translation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                return translation.getValue();
-            }
-        }
-
-        return "";
+        return Translation.getTranslation(translations, lang, "menu_title");
     }
 
     /**
@@ -269,14 +249,14 @@ public class Campaign {
     /**
      * @return the translations
      */
-    public List<Translation> getTranslations() {
+    public List<CampaignTranslation> getTranslations() {
         return translations;
     }
 
     /**
      * @param translations the translations to set
      */
-    public void setTranslations(List<Translation> translations) {
+    public void setTranslations(List<CampaignTranslation> translations) {
         this.translations = translations;
     }
 
