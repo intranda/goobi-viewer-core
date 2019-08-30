@@ -39,7 +39,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             throw "Annotation needs a target before a fragment can be applied";
         } else {
             let newTarget = {
-                source : this.target,
+                source : Crowdsourcing.getResourceId(this.target),
                 selector : {
                     type : "FragmentSelector",
                     conformsTo: "http://www.w3.org/TR/media-frags/",
@@ -70,6 +70,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Annotation.prototype.setTarget = function(target) {
         if(crowdsourcing.isString(target)) {
             this.target = target;
+        } else if(target.source) {
+            this.target = target.source;
         } else if(target.id) {
             this.target = target.id;
         } else if(target["@id"]) {

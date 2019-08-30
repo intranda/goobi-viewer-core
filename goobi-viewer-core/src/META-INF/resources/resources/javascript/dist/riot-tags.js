@@ -156,7 +156,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geocoordsquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoCoordsQuery></div></span></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geolocationquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoLocationQuery></div></span></div></div>', '', '', function(opts) {
 
 	this.on("mount", function() {
 	    fetch(this.opts.source)
@@ -594,6 +594,168 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		this.update();
     	}.bind( this ) );
 });
+riot.tag2('geolocationquery', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label></div><div id="geoMap"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
+
+	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
+	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
+	this.targetSelector = Crowdsourcing.Query.getSelector(this.opts.query);
+
+	this.annotations = [];
+	this.currentAnnotationIndex = -1;
+
+	this.on("mount", function() {
+	    this.initMap();
+	    switch(this.targetSelector) {
+	        case Crowdsourcing.Query.Selector.RECTANGLE:
+	            this.initAreaSelector();
+	            break;
+	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
+	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
+	    }
+
+	    switch(this.targetFrequency) {
+	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
+	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
+	    		this.opts.item.onImageOpen( () => this.resetAnnotations());
+	    }
+
+	});
+
+	this.on("updated", function() {
+		if(this.currentAnnotationIndex > -1 && this.annotations && this.annotations.length > this.currentAnnotationIndex) {
+
+		}
+
+	}.bind(this));
+
+	this.initMap = function() {
+	    this.geoMap = L.map('geoMap').setView([51.505, -0.09], 13);
+	}.bind(this)
+
+	this.showAnnotationImages = function() {
+	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
+	}.bind(this)
+
+	this.showInstructions = function() {
+	    return false;
+	}.bind(this)
+
+	this.initAnnotations = function() {
+	    switch(this.targetSelector) {
+	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
+	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
+	            if(this.annotations.length == 0) {
+
+	            }
+	            this.currentAnnotationIndex = this.annotations.length - 1;
+	    }
+	}.bind(this)
+
+	this.resetAnnotations = function() {
+	    this.annotations = this.restoreFromLocalStorage();
+	    console.log("reset annotations to ", this.annotations);
+	    this.initAnnotations()
+	    if(this.areaSelector) {
+	    }
+	    this.update();
+	}.bind(this)
+
+	this.initAreaSelector = function() {
+		this.areaSelector = new Crowdsourcing.AreaSelector(this.opts.item, true);
+		this.areaSelector.init();
+		this.areaSelector.finishedDrawing.subscribe(this.handleFinishedDrawing);
+		this.areaSelector.finishedTransforming.subscribe(this.handleFinishedTransforming);
+		this.opts.item.onImageOpen( () => this.areaSelector.reset());
+	}.bind(this)
+
+	this.getAnnotation = function(id) {
+	    return this.annotations.find(anno => anno.id == id);
+	}.bind(this)
+
+	this.getIndex = function(anno) {
+	    return this.annotations.indexOf(anno);
+	}.bind(this)
+
+	this.getImage = function(annotation) {
+	    return this.getImageUrl(annotation.getRegion(), this.opts.item.getImageId(this.opts.item.getCurrentCanvas()));
+	}.bind(this)
+
+	this.handleFinishedDrawing = function(result) {
+
+	}.bind(this)
+
+	this.handleFinishedTransforming = function(result) {
+
+	}.bind(this)
+
+	this.getImageUrl = function(rect, imageId) {
+	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
+	    return url;
+	}.bind(this)
+
+    this.getTarget = function() {
+    	return this.opts.item.getCurrentCanvas();
+
+    }.bind(this)
+
+    this.deleteAnnotationFromEvent = function(event) {
+        if(event.item.anno) {
+            this.deleteAnnotation(event.item.anno);
+        }
+    }.bind(this)
+
+    this.deleteAnnotation = function(anno) {
+        let index = this.getIndex(anno);
+        if(index > -1) {
+	        this.annotations.splice(index,1);
+	        if(this.currentAnnotationIndex >= index) {
+	            this.currentAnnotationIndex--;
+	        }
+	        if(this.areaSelector) {
+	        	this.areaSelector.removeOverlay(anno, this.opts.item.image.viewer);
+	        }
+	    	this.saveToLocalStorage();
+	    	this.initAnnotations();
+	    	this.update();
+        }
+    }.bind(this)
+
+	this.saveToLocalStorage = function() {
+	    let map = this.getAnnotationsFromLocalStorage();
+	    map.set(Crowdsourcing.getResourceId(this.getTarget()), this.annotations );
+	    let value = JSON.stringify(Array.from(map.entries()));
+	    localStorage.setItem("CrowdsourcingQuery_" + this.opts.query.id, value);
+	}.bind(this)
+
+	this.restoreFromLocalStorage = function() {
+	    let map = this.getAnnotationsFromLocalStorage();
+	    let annotations;
+	    if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
+	        annotations = map.get(Crowdsourcing.getResourceId(this.getTarget())).map( anno => new Crowdsourcing.Annotation.GeoJson(anno));
+	    } else {
+	        annotations = [];
+	    }
+	    return annotations;
+	}.bind(this)
+
+	this.getAnnotationsFromLocalStorage = function() {
+	    let string = localStorage.getItem("CrowdsourcingQuery_" + this.opts.query.id);
+	    try {
+	        let array = JSON.parse(string);
+		    if(Array.isArray(array)) {
+		        return new Map(JSON.parse(string));
+		    } else {
+		        return new Map();
+		    }
+	    } catch(e) {
+	        console.log("Error loading json ", e);
+	        return new Map();
+	    }
+	}.bind(this)
+
+});
+
+
 riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_controls__item"><button class="controls__item fa fa-rotate-left" onclick="{rotateLeft}"></button></div><div class="image_controls__item"><button class="controls__item fa fa-rotate-right" onclick="{rotateRight}"></button></div><div class="image_controls__item zoom-slider-wrapper"><div class="zoom-slider"><div class="zoom-slider-handle"></div></div></div></div>', '', '', function(opts) {
     this.on( "mount", function() {
     } );
@@ -968,10 +1130,15 @@ riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotati
 
 	this.getAnnotationsFromLocalStorage = function() {
 	    let string = localStorage.getItem("CrowdsourcingQuery_" + this.opts.query.id);
-	    let array = JSON.parse(string);
-	    if(Array.isArray(array)) {
-	        return new Map(JSON.parse(string));
-	    } else {
+	    try {
+	        let array = JSON.parse(string);
+		    if(Array.isArray(array)) {
+		        return new Map(JSON.parse(string));
+		    } else {
+		        return new Map();
+		    }
+	    } catch(e) {
+	        console.log("Error loading json ", e);
 	        return new Map();
 	    }
 	}.bind(this)

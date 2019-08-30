@@ -12,7 +12,7 @@
 <!-- 					<h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2> -->
 					<div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div>
 					<plaintextQuery if="{query.queryType == 'PLAINTEXT'}" query="{query}" item="{this.item}"></plaintextQuery>
-					<geoCoordsQuery if="{query.queryType == 'GEOLOCATION_POINT'}" query="{query}" item="{this.item}"></geoCoordsQuery>
+					<geoLocationQuery if="{query.queryType == 'GEOLOCATION_POINT'}" query="{query}" item="{this.item}"></geoLocationQuery>
 				</div>
 			</span>
 		</div>

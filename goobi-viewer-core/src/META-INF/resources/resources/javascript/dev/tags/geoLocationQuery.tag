@@ -1,19 +1,15 @@
-<plaintextQuery>
+<geoLocationQuery>
+	
+
+	
 	<div if="{this.showInstructions()}" class="annotation_instruction">
 		<label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label>
 	</div>
+	
+	<div id="geoMap"></div>
+	
 	<div id="annotation_{index}" each="{anno, index in this.annotations}">
-		<div class="annotation_area" style="border-color: {anno.getColor()}" >
-			<div if="{this.showAnnotationImages()}" class="annotation_area__image">
-				<img src="{this.getImage(anno)}"></img>
-			</div>
-			<div class="annotation_area__text_input">
-				<label>{viewerJS.getMetadataValue(this.opts.query.label)}</label>			
-				<textarea onChange="{this.setTextFromEvent}" value="{anno.getText()}">
-				</textarea>
-			</div>
-		</div>
-		<span onClick="{this.deleteAnnotationFromEvent}" class="annotation_area__button">Annotation l&#x00F6schen</span>
+		
 	</div>
 
 <script>
@@ -21,16 +17,13 @@
 	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
 	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
 	this.targetSelector = Crowdsourcing.Query.getSelector(this.opts.query);
-	
-// 	console.log("this.queryType = ", this.queryType);
-// 	console.log("this.targetFrequency = ", this.targetFrequency);
-// 	console.log("this.targetSelector = ", this.targetSelector);
+
 
 	this.annotations = [];
 	this.currentAnnotationIndex = -1;
 
 	this.on("mount", function() {
-	    
+	    this.initMap();
 	    switch(this.targetSelector) {
 	        case Crowdsourcing.Query.Selector.RECTANGLE:
 	            this.initAreaSelector();
@@ -49,19 +42,22 @@
 	
 	this.on("updated", function() {
 		if(this.currentAnnotationIndex > -1 && this.annotations && this.annotations.length > this.currentAnnotationIndex) {
-		    let id = "annotation_" + this.currentAnnotationIndex;
-		    let inputSelector = "#" + id + " textarea";
-		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
+		    
 		}
 	
 	}.bind(this));
+	
+	initMap() {
+	    this.geoMap = L.map('geoMap').setView([51.505, -0.09], 13);
+	}
+	
 	
 	showAnnotationImages() {
 	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
 	}
 	
 	showInstructions() {
-	    return this.targetSelector == Crowdsourcing.Query.Selector.RECTANGLE && this.annotations.length == 0;
+	    return false;
 	}
 	
 	initAnnotations() {
@@ -70,9 +66,7 @@
 	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
 	            if(this.annotations.length == 0) {
 	                //create empty annotation
-		            let anno = new Crowdsourcing.Annotation.Plaintext({});
-		            anno.setTarget(this.getTarget());
-		            this.annotations.push(anno);	                
+		                            
 	            }
 	            this.currentAnnotationIndex = this.annotations.length - 1;
 	    }
@@ -83,10 +77,6 @@
 	    console.log("reset annotations to ", this.annotations);
 	    this.initAnnotations()
 	    if(this.areaSelector) {
-	        this.annotations.map(anno => {return {id: anno.id,
-	            					      region: anno.getRegion(), 
-	            						  color: anno.getColor()
-	            					     }}).forEach(anno => this.areaSelector.addOverlay(anno, this.opts.item.image.viewer))
 	    }
 	    this.update();
 	}
@@ -112,40 +102,17 @@
 	}
 	
 	handleFinishedDrawing(result) {
-	    let annotation = new Crowdsourcing.Annotation.Plaintext({});
-	    annotation.id = result.id;
-	    annotation.setTarget(this.getTarget());
-	    annotation.setRegion(result.region);
-	    annotation.setColor(result.color);
-	    this.annotations.push(annotation);
-	    this.currentAnnotationIndex = this.annotations.length - 1;
-    	this.saveToLocalStorage();
-	    this.update();
+	   
 	}
 	
 	handleFinishedTransforming(result) {
-		let anno = this.getAnnotation(result.id);
-		if(anno) {
-		    anno.setRegion(result.region);
-		    this.currentAnnotationIndex = this.getIndex(anno);
-        	this.saveToLocalStorage();
-		    this.update();
-		}
+		
 	}
 	
 	getImageUrl(rect, imageId) {
 	    let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
 	    return url;
 	}
-	
-    setTextFromEvent(event) {
-        if(event.item.anno) {            
-            event.item.anno.setText(event.target.value);
-        	this.saveToLocalStorage();
-        } else {
-            throw "No annotation to set"
-        }
-    }
     
     getTarget() {
     	return this.opts.item.getCurrentCanvas();
@@ -185,7 +152,7 @@
 	    let map = this.getAnnotationsFromLocalStorage();
 	    let annotations;
 	    if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
-	        annotations = map.get(Crowdsourcing.getResourceId(this.getTarget())).map( anno => new Crowdsourcing.Annotation.Plaintext(anno));
+	        annotations = map.get(Crowdsourcing.getResourceId(this.getTarget())).map( anno => new Crowdsourcing.Annotation.GeoJson(anno));
 	    } else {
 	        annotations = [];
 	    }
@@ -210,4 +177,5 @@
 </script>
 
 
-</plaintextQuery>
+</geoLocationQuery>
+

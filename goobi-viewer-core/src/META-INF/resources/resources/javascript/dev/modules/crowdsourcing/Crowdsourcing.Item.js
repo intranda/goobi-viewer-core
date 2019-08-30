@@ -39,12 +39,12 @@ var Crowdsourcing = ( function() {
     crowdsourcing.getResourceId = function(resource) {
         if(crowdsourcing.isString(resource)) {
             return resource;
+        } else if(resource.source) {
+            return resource.source;
         } else if(resource.id) {
             return resource.id;
         } else if(resource["@id"]) {
             return resource["@id"];
-        } else if(resource.source) {
-            return resource.source;
         } else {
             return JSON.stringify(resource);
         }
