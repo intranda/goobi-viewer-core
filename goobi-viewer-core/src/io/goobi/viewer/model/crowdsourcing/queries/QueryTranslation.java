@@ -15,14 +15,14 @@
  */
 package io.goobi.viewer.model.crowdsourcing.queries;
 
-import javax.persistence.Column;
+import java.util.List;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import io.goobi.viewer.model.misc.Translation;
 
 /**
  * A persistence object holding a translated String value
@@ -32,13 +32,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "cs_query_translations")
-public class QueryTranslation {
-
-    /** Unique database ID. */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "translation_id")
-    private Long id;
+public class QueryTranslation extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne
@@ -46,73 +40,53 @@ public class QueryTranslation {
     private CrowdsourcingQuery owner;
 
     /**
-     * An additional optional field used to identify the purpose or categorization of a translation. Usefull if an object has more than one
-     * relationship with Translation entities and needs to distinguish them in some way
-     **/
-    @Column(name = "tag", nullable = true, columnDefinition = "LONGTEXT")
-    private String tag;
-
-    @Column(name = "language")
-    private String language;
-
-    @Column(name = "value", nullable = true, columnDefinition = "LONGTEXT")
-    private String value;
-
+     * 
+     */
     public QueryTranslation() {
-
+        super();
     }
 
-    public QueryTranslation(String language, String tag, String value) {
-        this.language = language;
-        this.tag = tag;
-        this.value = value;
-    }
-
+    /**
+     * 
+     * @param language
+     * @param value
+     */
     public QueryTranslation(String language, String value) {
-        this.language = language;
-        this.value = value;
+        super(language, value);
     }
 
     /**
-     * @return the language
+     * 
+     * @param language
+     * @param tag
+     * @param value
      */
-    public String getLanguage() {
-        return language;
+    public QueryTranslation(String language, String tag, String value) {
+        super(language, tag, value);
     }
 
     /**
-     * @param language the language to set
+     * 
+     * @param translations
+     * @param lang
+     * @param value
+     * @param tag
      */
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+    public static void setTranslation(List<QueryTranslation> translations, String lang, String value, String tag) {
+        if (lang == null) {
+            throw new IllegalArgumentException("lang may not be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
 
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * @return the tag
-     */
-    public String getTag() {
-        return tag;
-    }
-
-    /**
-     * @param tag the tag to set
-     */
-    public void setTag(String tag) {
-        this.tag = tag;
+        for (Translation translation : translations) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+                translation.setValue(value);
+                return;
+            }
+        }
+        translations.add(new QueryTranslation(lang, tag, value));
     }
 
     /**
@@ -128,13 +102,4 @@ public class QueryTranslation {
     public void setOwner(CrowdsourcingQuery owner) {
         this.owner = owner;
     }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return value;
-    }
-
 }

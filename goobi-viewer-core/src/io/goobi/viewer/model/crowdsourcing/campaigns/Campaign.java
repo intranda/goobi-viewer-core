@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
+import io.goobi.viewer.model.misc.Translation;
 
 @Entity
 @Table(name = "cs_campaigns")
@@ -98,7 +99,7 @@ public class Campaign {
      * @return
      */
     public String getTitle(String lang) {
-        return getTranslation("title", lang);
+        return Translation.getTranslation(translations, lang, "title");
     }
 
     /**
@@ -107,7 +108,7 @@ public class Campaign {
      * @return
      */
     public String getDescription(String lang) {
-        return getTranslation("description", lang);
+        return Translation.getTranslation(translations, lang, "description");
     }
 
     /**
@@ -116,27 +117,7 @@ public class Campaign {
      * @return
      */
     public String getMenuTitle(String lang) {
-        return getTranslation("menu_title", lang);
-    }
-
-    /**
-     * 
-     * @param tag
-     * @param lang
-     * @return
-     */
-    String getTranslation(String tag, String lang) {
-        if (tag == null || lang == null) {
-            return null;
-        }
-
-        for (CampaignTranslation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                return translation.getValue();
-            }
-        }
-
-        return "";
+        return Translation.getTranslation(translations, lang, "menu_title");
     }
 
     /**

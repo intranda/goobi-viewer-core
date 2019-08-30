@@ -21,6 +21,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.misc.Translation;
 
 /**
  * @author florian
@@ -60,12 +63,19 @@ public class CrowdsourcingQuery {
     @PrivateOwned
     private List<QueryTranslation> translations = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "query_type", nullable = false)
     private QueryType queryType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_frequency")
     private TargetFrequency targetFrequency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_selector", nullable = false)
     private TargetSelector targetSelector;
 
     public CrowdsourcingQuery() {
-
     }
 
     public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector) {
@@ -75,70 +85,27 @@ public class CrowdsourcingQuery {
     }
 
     public String getLabel(String lang) {
-        return getTranslation(lang, "label");
+        return Translation.getTranslation(translations, lang, "label");
     }
 
     public void setLabel(String lang, String value) {
-        setTranslation(lang, value, "label");
+        QueryTranslation.setTranslation(translations, lang, value, "label");
     }
 
     public String getDescription(String lang) {
-        return getTranslation(lang, "description");
+        return Translation.getTranslation(translations, lang, "description");
     }
 
     public void setDescription(String lang, String value) {
-        setTranslation(lang, value, "description");
+        QueryTranslation.setTranslation(translations, lang, value, "description");
     }
 
     public String getHelp(String lang) {
-        return getTranslation(lang, "help");
+        return Translation.getTranslation(translations, lang, "help");
     }
 
     public void setHelp(String lang, String value) {
-        setTranslation(lang, value, "help");
-    }
-
-    /**
-     * 
-     * @param tag
-     * @param lang
-     * @return
-     */
-    String getTranslation(String lang, String tag) {
-        if (tag == null || lang == null) {
-            return null;
-        }
-
-        for (QueryTranslation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                return translation.getValue();
-            }
-        }
-
-        return "";
-    }
-
-    /**
-     * 
-     * @param lang
-     * @param value
-     * @param tag
-     */
-    void setTranslation(String lang, String value, String tag) {
-        if (lang == null) {
-            throw new IllegalArgumentException("lang may not be null");
-        }
-        if (value == null) {
-            throw new IllegalArgumentException("value may not be null");
-        }
-
-        for (QueryTranslation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                translation.setValue(value);
-                return;
-            }
-        }
-        translations.add(new QueryTranslation(lang, tag, value));
+        QueryTranslation.setTranslation(translations, lang, value, "help");
     }
 
     /**

@@ -203,7 +203,7 @@
         
     <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
     
-    <cs_queries query_id="1" owner_id="1"  />
+    <cs_queries query_id="1" owner_id="1" query_type="GEOLOCATION_AREA" target_selector="RECTANGLE"  />
     
     <cs_query_translations translation_id="1" owner_id="1" language="en" tag="label" value="English label" />
     <cs_query_translations translation_id="2" owner_id="1" language="en" tag="description" value="English description" />

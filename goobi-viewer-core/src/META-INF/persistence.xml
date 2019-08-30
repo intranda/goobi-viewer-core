@@ -11,20 +11,20 @@
 		<class>io.goobi.viewer.model.annotation.Comment</class>
 		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
 		<class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
-		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
-		<class>io.goobi.viewer.model.cms.CMSMediaItem</class>
-		<class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
-		<class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
-		<class>io.goobi.viewer.model.cms.CMSPage</class>
-		<class>io.goobi.viewer.model.cms.CMSStaticPage</class>
-		<class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
-		<class>io.goobi.viewer.model.cms.CMSProperty</class>
-		<class>io.goobi.viewer.model.cms.CMSCollection</class>
-		<class>io.goobi.viewer.model.cms.CMSCategory</class>
-		<class>io.goobi.viewer.model.cms.Translation</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
+        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
+        <class>io.goobi.viewer.model.cms.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
 		<class>io.goobi.viewer.model.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
@@ -71,20 +71,20 @@
 		<class>io.goobi.viewer.model.annotation.Comment</class>
 		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
 		<class>io.goobi.viewer.model.bookshelf.BookshelfItem</class>
+        <class>io.goobi.viewer.model.cms.CMSCategory</class>
 		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
-		<class>io.goobi.viewer.model.cms.CMSMediaItem</class>
-		<class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
-		<class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
-		<class>io.goobi.viewer.model.cms.CMSPage</class>
-		<class>io.goobi.viewer.model.cms.CMSStaticPage</class>
-		<class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
-		<class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
 		<class>io.goobi.viewer.model.cms.CMSCollection</class>
-		<class>io.goobi.viewer.model.cms.CMSProperty</class>
-		<class>io.goobi.viewer.model.cms.Translation</class>
-		<class>io.goobi.viewer.model.cms.CMSCategory</class>
+		<class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
+        <class>io.goobi.viewer.model.cms.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
+        <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
+        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
 		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
 		<class>io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery</class>

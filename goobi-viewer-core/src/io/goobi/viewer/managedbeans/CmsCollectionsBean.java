@@ -44,7 +44,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.TranslatedSelectable;
-import io.goobi.viewer.model.cms.Translation;
+import io.goobi.viewer.model.cms.CMSCollectionTranslation;
 import io.goobi.viewer.model.viewer.CollectionView;
 
 /**
@@ -200,11 +200,11 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsEditCollection";
     }
 
-    public Translation getCurrentLabel(String language) {
+    public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
     }
 
-    public Translation getCurrentDescription(String language) {
+    public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
     }
 
