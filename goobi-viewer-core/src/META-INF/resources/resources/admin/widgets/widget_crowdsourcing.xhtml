@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_PAGES')}">
+            <div id="widgetCms" class="admin-widget">
+                <h:form id="widgetCmsForm">
+                    <h3>#{msg.crowdsourcing}</h3>
+
+                    <ul>
+                        <li class="#{navigationHelper.currentPage == 'adminCrowdCampaigns' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdCampaigns')}/">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                <span>#{msg.admin__campaigns}</span>
+                            </h:outputLink>
+                        </li>
+                        <c:forEach var="module" items="#{configurationBean.modules}">
+                            <c:forEach var="contribution" items="#{module.adminContributions}">
+                                <ui:include src="/#{contribution}" />
+                            </c:forEach>
+                        </c:forEach>
+                    </ul>
+                </h:form>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

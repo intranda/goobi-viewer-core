@@ -825,6 +825,13 @@
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+	
+    <!-- ADMIN CROWDSOURCING -->
+    <url-mapping id="adminCrowdCampaigns">
+        <pattern value="/admin/crowdsourcing/campaigns/" />
+        <view-id value="/resources/crowdsourcing/adminCrowdCampaigns.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
     <!-- SITELINKS -->
     <url-mapping id="sitelinks">

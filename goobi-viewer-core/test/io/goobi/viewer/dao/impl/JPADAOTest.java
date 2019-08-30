@@ -2075,6 +2075,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCampaigns().size());
     }
+    
+
+    /**
+     * @see JPADAO#getCampaignCount(Map)
+     * @verifies count correctly
+     */
+    @Test
+    public void getCampaignCount_shouldCountCorrectly() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(null));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
+    }
 
     /**
      * @see JPADAO#getCampaign(Long)
@@ -2094,5 +2105,4 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("English description", campaign.getQueries().get(0).getDescription("en"));
         Assert.assertEquals("English help", campaign.getQueries().get(0).getHelp("en"));
     }
-
 }

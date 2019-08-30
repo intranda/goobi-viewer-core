@@ -2994,28 +2994,17 @@ public class JPADAO implements IDAO {
             return Collections.emptyList();
         }
     }
+    
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
-     * @should return correct campaign
+     * @see io.goobi.viewer.dao.IDAO#getCampaignCount(java.util.Map)
+     * @should count correctly
      */
     @Override
-    public Campaign getCampaign(Long id) throws DAOException {
-        synchronized (crowdsourcingRequestLock) {
-            preQuery();
-            try {
-                Campaign o = em.getReference(Campaign.class, id);
-                if (o != null) {
-                    updateFromDatabase(id, Campaign.class);
-                }
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            }
-        }
-
+    public long getCampaignCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("Campaign", null, filters);
     }
-
+    
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
      */
@@ -3055,6 +3044,29 @@ public class JPADAO implements IDAO {
             }
         }
     }
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
+     * @should return correct campaign
+     */
+    @Override
+    public Campaign getCampaign(Long id) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            try {
+                Campaign o = em.getReference(Campaign.class, id);
+                if (o != null) {
+                    updateFromDatabase(id, Campaign.class);
+                }
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            }
+        }
+
+    }
+
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)

@@ -58,13 +58,6 @@
                                 <span>#{msg.admin__comments}</span>
                             </h:outputLink>
                         </li>
-                        
-                        <!-- CROWDSOURCING -->
-                        <c:forEach var="module" items="#{configurationBean.modules}">
-                            <c:forEach var="contribution" items="#{module.adminContributions}">
-                                <ui:include src="/#{contribution}" />
-                            </c:forEach>
-                        </c:forEach>
                     </ul>
                 </h:form>
             </div>

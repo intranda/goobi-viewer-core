@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdCampagins')}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
+            <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+	<ui:define name="content">
+        <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
+            <div id="crowdCampaigns">
+                    <h2 class="admin__content-inner-title">#{msg.cs_campaigns}</h2>
+
+                    <div class="admin__content-inner-content">
+                        <div id="csCampaignsWrapper" class="sortable-table-wrapper">
+                            <h:form id="csCampaignsForm" prependId="false">
+                                <!-- paginator -->
+                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
+
+                                <table id="csCampaignsTable" class="table table-striped table-bordered admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="column_title">
+                                                #{msg.admin__cs_campaign}
+                                            </th>
+                                            <th class="column_visibility">
+                                                #{msg.admin__cs_campaign_visibility}
+                                            </th>
+                                            <th class="column_duration">
+                                                #{msg.admin__cs_campaign_duration}
+                                            </th>
+                                            <th class="column_statistics">#{msg.admin__cs_statistics}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ui:repeat var="page" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
+                                            <tr class="#{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                                <td class="column_title">
+                                                    <span class="column_title__main_title">#{campaign.title}</span>
+                                                    <span class="column_title__menu_title">#{campaign.menuTitle}</span>
+                                                </td>
+                                                <td class="column_visibility">
+                                                    <h:outputText value="#{msg[campaign.visibility]} " />
+                                                </td>
+                                                <td class="column_duration">
+                                                    <h:outputText value="#{campaign.dateStart}">
+                                                        <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
+                                                    </h:outputText>
+                                                    <h:outputText value="#{campaign.dateEnd}">
+                                                        <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
+                                                    </h:outputText>
+                                                </td>
+                                                <td class="column_statistics">
+                                                    // TODO
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+
+                                <!-- paginator -->
+                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
+                            </h:form>
+                        </div>
+                    </div>
+            </div>
+
+            <script type="text/javascript">
+                $( document ).ready( function() {
+                    var displayDateUpdated = true;
+                    if ( !displayDateUpdated ) {
+                        $( ".column_date_updated" ).hide();
+                    }
+                    
+                    var dataTableConfig = {
+                        dataTablePaginator: "#dataTablePaginator",
+                        txtField1: "#txtMoveTo1",
+                        txtField2: "#txtMoveTo2",
+                        totalCount: "#totalCount",
+                        reloadBtn: 'input[id*="cmdMoveTo"]',
+                    };
+                    
+                    viewerJS.dataTable.init( dataTableConfig );
+                } );
+            </script>
+        </h:panelGroup>
+    </ui:define>
+
+	<!-- SIDEBAR -->
+    <ui:define name="sidebar">
+        <adminWidget:widget_admin />
+        <adminWidget:widget_crowdsourcing />
+    	<adminWidget:widget_cms />
+    </ui:define>
+</ui:composition>

@@ -60,7 +60,6 @@ public enum PageType {
     adminLicenseType("admin/license"),
     adminRoles("admin/roles"),
     adminUserComments("admin/comments"),
-    adminUserActivity("admin/user/activity/"),
     //admin/cms
     adminCms("admin/cms"),
     adminCmsOverview("admin/cms/pages"),
@@ -74,6 +73,9 @@ public enum PageType {
     adminCmsEditCollection("admin/cms/collections/edit"),
     cmsPageOfWork("page"),
     cmsPage("cms"),
+    //admin/crowdsourcing
+    adminCrowdCampaigns("admin/crowdsourcing/campaigns"),
+    adminUserActivity("admin/user/activity/"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
