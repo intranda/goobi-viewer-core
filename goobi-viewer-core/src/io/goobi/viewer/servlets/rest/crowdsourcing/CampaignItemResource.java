@@ -32,6 +32,7 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 import io.goobi.viewer.model.crowdsourcing.queries.QueryType;
@@ -75,6 +76,7 @@ public class CampaignItemResource {
         
         //TODO: Create item from campaign
         CampaignItem item = new CampaignItem();
+        item.setCampaign(new Campaign());
         item.setSource(manifestURI);
         
         CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);

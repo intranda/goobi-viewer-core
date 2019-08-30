@@ -91,7 +91,7 @@ public class Campaign {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<CrowdsourcingQuery> queries;
+    private List<CrowdsourcingQuery> queries = new ArrayList<>();
 
     /**
      * 
