@@ -456,7 +456,8 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("VuFind", providers.get(2).getName());
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
         Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
-
+        Assert.assertEquals("label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
+        
         //local
         Assert.assertEquals("Goobi viewer", providers.get(3).getName());
         Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
