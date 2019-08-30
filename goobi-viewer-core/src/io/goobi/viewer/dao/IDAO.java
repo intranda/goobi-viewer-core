@@ -372,6 +372,8 @@ public interface IDAO {
 
     public List<Campaign> getAllCampaigns() throws DAOException;
 
+    public long getCampaignCount(Map<String, String> filters) throws DAOException;
+
     public Campaign getCampaign(Long id) throws DAOException;
 
     public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
