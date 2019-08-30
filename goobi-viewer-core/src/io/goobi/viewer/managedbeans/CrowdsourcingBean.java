@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -37,13 +36,12 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.PageValidityStatus;
+import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 
 @Named
@@ -59,14 +57,12 @@ public class CrowdsourcingBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
-    private CmsNavigationBean cmsNavigationBean;
-    @Inject
-    private SearchBean searchBean;
-    @Inject
     private UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Locale selectedLocale;
+    private Campaign selectedCampaign;
+    private boolean editMode = false;
 
     @PostConstruct
     public void init() {
@@ -123,6 +119,11 @@ public class CrowdsourcingBean implements Serializable {
         return lazyModelCampaigns;
     }
 
+    public String createNewCampaignAction() {
+        selectedCampaign = new Campaign();
+        return "pretty:adminCrowdAddCampaign";
+    }
+
     /**
      * @return
      * @throws DAOException
@@ -130,6 +131,20 @@ public class CrowdsourcingBean implements Serializable {
     public List<Campaign> getAllCampaigns() throws DAOException {
         List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
         return pages;
+    }
+
+    /**
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
 
 }

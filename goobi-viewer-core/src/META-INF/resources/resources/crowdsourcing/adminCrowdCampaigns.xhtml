@@ -24,6 +24,11 @@
         <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
             <div id="crowdCampaigns">
                     <h2 class="admin__content-inner-title">#{msg.cs_campaigns}</h2>
+                    
+                    <h:commandLink action="#{crowdsourcingBean.createNewCampaignAction}" title="#{msg.add}" alt="#{msg.add}">
+                        #{msg.add}
+                        <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
+                    </h:commandLink>
 
                     <div class="admin__content-inner-content">
                         <div id="csCampaignsWrapper" class="sortable-table-wrapper">
