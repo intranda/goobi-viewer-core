@@ -158,8 +158,13 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><span if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geolocationquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoLocationQuery></div></span></div></div>', '', '', function(opts) {
 
+	this.messageKeys = ["action__new_crowdsourcing_item", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
+	console.log("url ", this.itemSource);
 	this.on("mount", function() {
-	    fetch(this.opts.source)
+	    Crowdsourcing.initTranslations(this.messageKeys, this.opts.restapiurl)
+	    .then(() => fetch(this.itemSource))
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig));
 	});
@@ -956,7 +961,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label></div><div id="annotation_{index}" each="{anno, index in this.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.getImage(anno)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><textarea onchange="{this.setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span onclick="{this.deleteAnnotationFromEvent}" class="annotation_area__button">Annotation l&#x00F6schen</span></div>', '', '', function(opts) {
+riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.getImage(anno)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.opts.query.label)}</label><textarea onchange="{this.setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{anno.getText() || anno.getRegion()}" onclick="{this.deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
 
 	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
 	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
@@ -966,7 +971,7 @@ riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotati
 	this.currentAnnotationIndex = -1;
 
 	this.on("mount", function() {
-
+	    this.deleteFromLocalStorage();
 	    switch(this.targetSelector) {
 	        case Crowdsourcing.Query.Selector.RECTANGLE:
 	            this.initAreaSelector();
@@ -1108,6 +1113,15 @@ riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotati
 	    	this.initAnnotations();
 	    	this.update();
         }
+    }.bind(this)
+
+    this.deleteFromLocalStorage = function() {
+        let map = this.getAnnotationsFromLocalStorage();
+	    if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
+		    map.set(Crowdsourcing.getResourceId(this.getTarget()), [] );
+	    }
+	    let value = JSON.stringify(Array.from(map.entries()));
+	    localStorage.setItem("CrowdsourcingQuery_" + this.opts.query.id, value);
     }.bind(this)
 
 	this.saveToLocalStorage = function() {

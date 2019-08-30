@@ -36,17 +36,19 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
  * @author florian
  *
  */
-@JsonInclude(Include.NON_NULL)
 @Entity
 @Table(name = "cs_queries")
+@JsonInclude(Include.NON_EMPTY)
 public class CrowdsourcingQuery {
 
     @Id
@@ -61,6 +63,7 @@ public class CrowdsourcingQuery {
     /** Translated metadata. */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
+    @JsonSerialize(using=TranslationListSerializer.class)
     private List<QueryTranslation> translations = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

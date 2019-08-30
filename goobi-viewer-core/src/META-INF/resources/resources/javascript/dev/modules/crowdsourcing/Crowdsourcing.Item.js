@@ -21,35 +21,10 @@
  * @module Crowdsourcing.js
  * @requires jQuery
  */
-var Crowdsourcing = ( function() {
+var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
-    
-    var _debug = false; 
-    var canvases = [];
-    var currentCanvasIndex = 0;
-    var viewer = null;
-    var queries = [];
-    
-    var crowdsourcing = {};
-    
-    crowdsourcing.isString = function(variable) {
-        return typeof variable === 'string' || variable instanceof String
-    }
-    
-    crowdsourcing.getResourceId = function(resource) {
-        if(crowdsourcing.isString(resource)) {
-            return resource;
-        } else if(resource.source) {
-            return resource.source;
-        } else if(resource.id) {
-            return resource.id;
-        } else if(resource["@id"]) {
-            return resource["@id"];
-        } else {
-            return JSON.stringify(resource);
-        }
-    }
 
+    let _debug = false;
     
     crowdsourcing.Item = function(imageSource, queries, initialCanvasIndex) {
         if ( _debug ) {
@@ -79,7 +54,7 @@ var Crowdsourcing = ( function() {
         .then( (response) => response.json())
         .then( function(json) {
             this.canvases = _getCanvasList(json);
-            currentCanvasIndex = Math.max(0, Math.min(currentCanvasIndex, this.canvases.length-1));
+            this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length-1));
         }.bind(this) )
     }
     
@@ -125,4 +100,4 @@ var Crowdsourcing = ( function() {
     
     return crowdsourcing;
     
-} )( jQuery );
+} )( Crowdsourcing );

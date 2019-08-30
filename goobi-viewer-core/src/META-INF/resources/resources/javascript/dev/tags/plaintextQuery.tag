@@ -1,6 +1,6 @@
 <plaintextQuery>
 	<div if="{this.showInstructions()}" class="annotation_instruction">
-		<label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label>
+		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
 	<div id="annotation_{index}" each="{anno, index in this.annotations}">
 		<div class="annotation_area" style="border-color: {anno.getColor()}" >
@@ -13,7 +13,7 @@
 				</textarea>
 			</div>
 		</div>
-		<span onClick="{this.deleteAnnotationFromEvent}" class="annotation_area__button">Annotation l&#x00F6schen</span>
+		<span if="{anno.getText() || anno.getRegion()}" onClick="{this.deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
 	</div>
 
 <script>
@@ -30,7 +30,7 @@
 	this.currentAnnotationIndex = -1;
 
 	this.on("mount", function() {
-	    
+	    this.deleteFromLocalStorage();
 	    switch(this.targetSelector) {
 	        case Crowdsourcing.Query.Selector.RECTANGLE:
 	            this.initAreaSelector();
@@ -174,6 +174,15 @@
         }
     }
 	
+    deleteFromLocalStorage() {
+        let map = this.getAnnotationsFromLocalStorage();
+	    if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
+		    map.set(Crowdsourcing.getResourceId(this.getTarget()), [] );
+	    }
+	    let value = JSON.stringify(Array.from(map.entries()));
+	    localStorage.setItem("CrowdsourcingQuery_" + this.opts.query.id, value);
+    }
+    
 	saveToLocalStorage() {
 	    let map = this.getAnnotationsFromLocalStorage();
 	    map.set(Crowdsourcing.getResourceId(this.getTarget()), this.annotations );

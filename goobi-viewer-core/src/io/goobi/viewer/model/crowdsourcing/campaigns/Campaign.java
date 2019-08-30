@@ -37,11 +37,15 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 import io.goobi.viewer.model.misc.Translation;
 
 @Entity
 @Table(name = "cs_campaigns")
+@JsonInclude(Include.NON_EMPTY)
 public class Campaign {
 
     public enum CampaignVisibility {

@@ -20,8 +20,13 @@
 
 <script>
 
+	this.messageKeys = ["action__new_crowdsourcing_item", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
+	console.log("url ", this.itemSource);	
 	this.on("mount", function() {
-	    fetch(this.opts.source)
+	    Crowdsourcing.initTranslations(this.messageKeys, this.opts.restapiurl)
+	    .then(() => fetch(this.itemSource))
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig));
 	});
