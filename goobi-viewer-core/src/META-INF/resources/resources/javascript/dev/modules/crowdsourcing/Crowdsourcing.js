@@ -36,6 +36,10 @@ var Crowdsourcing = ( function() {
         return typeof variable === 'string' || variable instanceof String
     }
     
+    crowdsourcing.deepCopy = function(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+    
     crowdsourcing.getResourceId = function(resource) {
         if(crowdsourcing.isString(resource)) {
             return resource;

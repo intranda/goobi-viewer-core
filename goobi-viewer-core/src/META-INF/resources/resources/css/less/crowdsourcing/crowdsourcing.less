@@ -127,13 +127,6 @@
 		height: calc(~"100vh - 40px");
 		width: 100vw;
 		
-	}
-	
-	&__content-inner {
-	
-		width: 100%;
-		height: 100%;
-		
 		.content {
 			width: 100%;
 			height: 100%;
@@ -143,167 +136,178 @@
 				background-color: white;
 				margin: 20px;
 				width: 50%;
+				.imageview_wrapper {
+					width: 100%;
+					height:calc(~"100% - 50px") ;
+					.image_controls {
+						width: 100%;
+						height: 50px;
+						display: flex;
+						flex-wrap: wrap;
+						align-items: stretch;
+						justify-content: center;
+						&__item {
+							margin: 9px 15px 6px 15px;
+							button {
+								width: 32px;
+								height:32px;
+							}
+							&.zoom-slider-wrapper {
+						        width: 100px;
+						        border: none;
+								.zoom-slider {
+						            height: 16px;
+						            margin-top: 8px;
+						            border: 1px solid gray;
+								}
+								.zoom-slider-handle {
+						            position: relative;
+						            top: -9px;
+						            width: 15px;
+						            min-width: inherit;
+						            height: 32px;
+						            line-height: inherit;
+						            border: none;
+						            background-color: gray;
+						       }
+							}
+						}
+					}
+					.image_container {
+						width: 100%;
+						height: calc(~"100% - 50px") ;
+						.image {
+							width: 100%;
+							height:100%;
+						}
+					}
+				}
+				.canvas_paginator {
+					height: 50px;
+					&__list {
+						display: flex;
+						flex-wrap: wrap;
+						align-items: stretch;
+						justify-content: center;
+					}
+					&__button {
+						border: 1px solid lightblue;
+						margin: 5px;
+						width: 36px;
+						height: 30px;
+						line-height: 30px;
+						text-align: center;
+						padding: 0 3px;
+						&:hover {
+							background-color: lightblue;
+							cursor: pointer;
+						}
+						&.current {
+							background-color: lightblue;
+						}
+					}
+					&__separator {
+						line-height: 30px;
+						padding: 0 3px;
+						text-align: center;
+					}
+				}
 			}
 			.content_right {
 				margin: 20px;
 				width: 50%;
-				overflow: auto;
-			}
-		}
-		
-		.imageview_wrapper {
-			width: 100%;
-			height:calc(~"100% - 50px") ;
-			.image_controls {
-				width: 100%;
-				height: 50px;
-				display: flex;
-				flex-wrap: wrap;
-				align-items: stretch;
-				justify-content: center;
-				&__item {
-					margin: 9px 15px 6px 15px;
-					button {
-						width: 32px;
-						height:32px;
-					}
-					&.zoom-slider-wrapper {
-				        width: 100px;
-				        border: none;
-						.zoom-slider {
-				            height: 16px;
-				            margin-top: 8px;
-				            border: 1px solid gray;
+				.queries_wrapper {
+					overflow: auto;
+					.query_wrapper {
+						background-color: white;
+						padding: 5px;
+						margin-bottom: 5px;
+						.annotation_instruction {
+							margin: 30px;
+							border: 2px solid @lightgray;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							height: 100px;
+							color: @middlegray;
 						}
-						.zoom-slider-handle {
-				            position: relative;
-				            top: -9px;
-				            width: 15px;
-				            min-width: inherit;
-				            height: 32px;
-				            line-height: inherit;
-				            border: none;
-				            background-color: gray;
-				       }
+						.annotation_area {
+							display: flex;
+							margin: 30px;
+							border: 3px solid @blue;
+							min-height: 100px;
+							&__image {
+								width: 100px;
+								height: 100px;
+								display: flex;
+						   	    flex-flow: row nowrap;
+							    align-items: center;
+							    justify-content: center;
+								border: 2px solid @darkgray;
+								margin-top: -20px;
+								margin-left: 20px;
+								background-color: #f1f2f3;
+								img {
+									max-width: 100%;
+									max-height: 100%;
+								}
+							}
+							&__text_input {
+								flex: 1;
+								margin: 20px;
+								display: flex;
+						   	    flex-flow: row nowrap;
+							    align-items: center;
+							    justify-content: center;
+							    label {
+							    	max-width: 150px;
+							    }
+								textarea {
+									flex: 1;
+									text-align: left;
+									background-color: transparent;
+					    			border: 0px solid;
+					    			height: 100%;
+					    			margin-left: 20px;
+					    			margin-bottom: 15px;
+					    			resize: none;
+					    			border: 1px solid @middlegray;
+					    			&:focus {
+					    				border: 1px solid @darkgray;
+					    				background: @lightgray2;
+					    				resize: vertical;
+					    			}
+								}
+							}
+							&__button {
+								float: right;
+								margin-top: -56px;
+								margin-right: 52px;
+								color: red;
+								&:hover {
+									cursor: pointer;
+								}
+							}
+						}
+						#geoMap {
+							height: 200px;
+						}
+						
 					}
 				}
-			}
-			.image_container {
-				width: 100%;
-				height: calc(~"100% - 50px") ;
-				.image {
+				.options-wrapper {
 					width: 100%;
-					height:100%;
-				}
+					padding: 5px 0;
+					display: flex;
+					justify-content: right;
+					&__option {
+						margin-left: 10px;
+						background-color: white;
+						border: 1px solid @darkgray;
+					}
+				}				
 			}
 		}
-		.canvas_paginator {
-			height: 50px;
-			&__list {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: stretch;
-				justify-content: center;
-			}
-			&__button {
-				border: 1px solid lightblue;
-				margin: 5px;
-				width: 36px;
-				height: 30px;
-				line-height: 30px;
-				text-align: center;
-				padding: 0 3px;
-				&:hover {
-					background-color: lightblue;
-					cursor: pointer;
-				}
-				&.current {
-					background-color: lightblue;
-				}
-			}
-			&__separator {
-				line-height: 30px;
-				padding: 0 3px;
-				text-align: center;
-			}
-		}
-	}
-	
-	.query_wrapper {
-		background-color: white;
-		padding: 5px;
-		margin-bottom: 5px;
-		.annotation_instruction {
-			margin: 30px;
-			border: 2px solid @lightgray;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			height: 100px;
-			color: @middlegray;
-		}
-		.annotation_area {
-			display: flex;
-			margin: 30px;
-			border: 3px solid @blue;
-			min-height: 100px;
-			&__image {
-				width: 100px;
-				height: 100px;
-				display: flex;
-		   	    flex-flow: row nowrap;
-			    align-items: center;
-			    justify-content: center;
-				border: 2px solid @darkgray;
-				margin-top: -20px;
-				margin-left: 20px;
-				background-color: #f1f2f3;
-				img {
-					max-width: 100%;
-					max-height: 100%;
-				}
-			}
-			&__text_input {
-				flex: 1;
-				margin: 20px;
-				display: flex;
-		   	    flex-flow: row nowrap;
-			    align-items: center;
-			    justify-content: center;
-			    label {
-			    	max-width: 150px;
-			    }
-				textarea {
-					flex: 1;
-					text-align: left;
-					background-color: transparent;
-	    			border: 0px solid;
-	    			height: 100%;
-	    			margin-left: 20px;
-	    			margin-bottom: 15px;
-	    			resize: none;
-	    			border: 1px solid @middlegray;
-	    			&:focus {
-	    				border: 1px solid @darkgray;
-	    				background: @lightgray2;
-	    				resize: vertical;
-	    			}
-				}
-			}
-			&__button {
-				float: right;
-				margin-top: -56px;
-				margin-right: 52px;
-				color: red;
-				&:hover {
-					cursor: pointer;
-				}
-			}
-		}
-		#geoMap {
-			height: 200px;
-		}
-		
 	}
 }
 

@@ -26,14 +26,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
 
     crowdsourcing.Annotation = function(anno) {
-        let temp = crowdsourcing.Annotation.deepCopy(anno);
+        let temp = crowdsourcing.deepCopy(anno);
         Object.assign(this, temp);
     }
-    
-    crowdsourcing.Annotation.deepCopy = function(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
-    
+
     crowdsourcing.Annotation.prototype.setRegion = function(rect) {
         if(!this.target) {
             throw "Annotation needs a target before a fragment can be applied";

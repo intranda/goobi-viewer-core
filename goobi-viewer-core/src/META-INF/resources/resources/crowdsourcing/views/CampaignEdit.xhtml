@@ -31,7 +31,11 @@
         </f:view>
         
         <script>
-        	riot.mount("campaignItem");
+	    	const messageKeys = ["action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+	        
+	    	Crowdsourcing.initTranslations(messageKeys, "http://localhost:8082/viewer/rest/")
+	    	.then(() => riot.mount("campaignItem"));
+        	
         </script>
         
     </ui:define>

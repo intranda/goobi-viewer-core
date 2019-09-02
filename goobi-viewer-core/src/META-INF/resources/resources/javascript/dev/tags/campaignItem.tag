@@ -7,26 +7,27 @@
 		</div>
 		<div class="content_right">
 		
-			<span  if="{this.item}" >
+			<div class="queries_wrapper" if="{this.item}" >
 				<div class="query_wrapper" each="{query in this.item.queries}">
 <!-- 					<h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2> -->
-					<div class="query_wrapper__description">{viewerJS.getMetadataValue(query.description)}</div>
+					<div class="query_wrapper__description">{viewerJS.getMetadataValue(query.translations.description)}</div>
 					<plaintextQuery if="{query.queryType == 'PLAINTEXT'}" query="{query}" item="{this.item}"></plaintextQuery>
 					<geoLocationQuery if="{query.queryType == 'GEOLOCATION_POINT'}" query="{query}" item="{this.item}"></geoLocationQuery>
 				</div>
-			</span>
+			</div>
+			<div class="options-wrapper">
+				<button onclick="{this.resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate("action__restart")}</button>
+				<button class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<button class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+			</div>
 		</div>
 	 </div>
 
 <script>
-
-	this.messageKeys = ["action__new_crowdsourcing_item", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
-
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
-	console.log("url ", this.itemSource);	
+	console.log("url ", this.itemSource);
 	this.on("mount", function() {
-	    Crowdsourcing.initTranslations(this.messageKeys, this.opts.restapiurl)
-	    .then(() => fetch(this.itemSource))
+	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig));
 	});
@@ -51,7 +52,7 @@
 
 	
 	resolveCanvas(source) {
-	    if(isString(source)) {
+	    if(Crowdsourcing.isString(source)) {
 	        return fetch(source)
 	        .then( response => response.json() );
 	    } else {
@@ -59,9 +60,14 @@
 	    }
 	}
 	
-	isString(variable) {
-	    return typeof variable === 'string' || variable instanceof String
+	resetItems() {
+	    this.item.queries.forEach( function(query) {
+	        query.deleteFromLocalStorage();
+        	query.resetAnnotations();
+	    });
+		this.update();
 	}
+
 
 
 </script>

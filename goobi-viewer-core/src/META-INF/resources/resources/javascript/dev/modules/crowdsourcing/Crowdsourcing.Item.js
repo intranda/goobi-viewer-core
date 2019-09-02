@@ -34,7 +34,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             console.log( 'Crowdsourcing.Item.queries ', queries );
             console.log( '##############################' );
         }
-        this.queries = queries;
+        this.queries = queries.map(query => new Crowdsourcing.Query(query, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = imageSource;
         this.imageOpenEvents = new Rx.Subject();
