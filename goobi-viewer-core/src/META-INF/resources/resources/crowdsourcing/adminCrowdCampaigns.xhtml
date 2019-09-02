@@ -24,15 +24,16 @@
         <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
             <div id="crowdCampaigns">
                     <h2 class="admin__content-inner-title">#{msg.cs_campaigns}</h2>
-                    
-                    <h:commandLink action="#{crowdsourcingBean.createNewCampaignAction}" title="#{msg.add}" alt="#{msg.add}">
-                        #{msg.add}
-                        <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
-                    </h:commandLink>
+                    <h:form id="csCampaignsForm" prependId="false">
+                                                
+                        <h:commandLink action="#{crowdsourcingBean.createNewCampaignAction}" title="#{msg.add}" alt="#{msg.add}">
+                            #{msg.add}
+                            <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
+                        </h:commandLink>
 
-                    <div class="admin__content-inner-content">
-                        <div id="csCampaignsWrapper" class="sortable-table-wrapper">
-                            <h:form id="csCampaignsForm" prependId="false">
+                        <div class="admin__content-inner-content">
+                            <div id="csCampaignsWrapper" class="sortable-table-wrapper">
+
                                 <!-- paginator -->
                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
 
@@ -79,9 +80,9 @@
 
                                 <!-- paginator -->
                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
-                            </h:form>
+                            </div>
                         </div>
-                    </div>
+                    </h:form>
             </div>
 
             <script type="text/javascript">

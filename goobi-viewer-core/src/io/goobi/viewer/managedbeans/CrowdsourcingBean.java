@@ -17,6 +17,9 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,6 +27,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -32,16 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 
 @Named
@@ -60,7 +63,6 @@ public class CrowdsourcingBean implements Serializable {
     private UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
-    private Locale selectedLocale;
     private Campaign selectedCampaign;
     private boolean editMode = false;
 
@@ -109,18 +111,28 @@ public class CrowdsourcingBean implements Serializable {
             lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
             lazyModelCampaigns.addFilter("classifications", "classification");
         }
-        selectedLocale = ViewerResourceBundle.getDefaultLocale();
     }
 
     /**
-     * @return the lazyModelCampaigns
+     * @return
      */
-    public TableDataProvider<Campaign> getLazyModelCampaigns() {
-        return lazyModelCampaigns;
+    public static List<Locale> getAllLocales() {
+        List<Locale> list = new LinkedList<>();
+        list.add(ViewerResourceBundle.getDefaultLocale());
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+            while (iter.hasNext()) {
+                Locale locale = iter.next();
+                if (!list.contains(locale)) {
+                    list.add(locale);
+                }
+            }
+        }
+        return list;
     }
 
     public String createNewCampaignAction() {
-        selectedCampaign = new Campaign();
+        selectedCampaign = new Campaign(ViewerResourceBundle.getDefaultLocale());
         return "pretty:adminCrowdAddCampaign";
     }
 
@@ -131,6 +143,69 @@ public class CrowdsourcingBean implements Serializable {
     public List<Campaign> getAllCampaigns() throws DAOException {
         List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
         return pages;
+    }
+
+    /**
+     * Adds the current page to the database, if it doesn't exist or updates it otherwise
+     *
+     * @throws DAOException
+     *
+     */
+    public void saveSelectedCampaign() throws DAOException {
+        logger.trace("saveSelectedCampaign");
+        if (userBean == null || !userBean.getUser().isSuperuser()) {
+            // Only authorized admins may save
+            return;
+        }
+        if (selectedCampaign == null) {
+            return;
+        }
+
+        // Save
+        boolean success = false;
+        Date now = new Date();
+        if (selectedCampaign.getDateCreated() == null) {
+            selectedCampaign.setDateCreated(now);
+        }
+        selectedCampaign.setDateUpdated(now);
+        logger.trace("update dao");
+        if (selectedCampaign.getId() != null) {
+            success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+        } else {
+            success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+        }
+        if (success) {
+            Messages.info("crowdsoucing_campaignSaveSuccess");
+            logger.trace("reload campaign");
+            //                selectedPage = getCMSPage(selectedPage.getId());
+            setSelectedCampaign(selectedCampaign);
+            logger.trace("update pages");
+            lazyModelCampaigns.update();
+        } else {
+            Messages.error("crowdsourcing_campaignSaveFailure");
+        }
+        logger.trace("Done saving campaign");
+    }
+
+    /**
+     * @return the lazyModelCampaigns
+     */
+    public TableDataProvider<Campaign> getLazyModelCampaigns() {
+        return lazyModelCampaigns;
+    }
+
+    /**
+     * @return the selectedCampaign
+     */
+    public Campaign getSelectedCampaign() {
+        return selectedCampaign;
+    }
+
+    /**
+     * @param selectedCampaign the selectedCampaign to set
+     */
+    public void setSelectedCampaign(Campaign selectedCampaign) {
+        this.selectedCampaign = selectedCampaign;
     }
 
     /**
