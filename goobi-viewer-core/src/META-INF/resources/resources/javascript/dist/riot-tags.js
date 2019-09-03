@@ -156,7 +156,8 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><div class="queries_wrapper" if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.translations.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geolocationquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoLocationQuery></div></div><div class="options-wrapper"><button onclick="{this.resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate(⁗action__restart⁗)}</button><button class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><div class="queries_wrapper" if="{this.item}"><div class="query_wrapper" each="{query in this.item.queries}"><div class="query_wrapper__description">{viewerJS.getMetadataValue(query.translations.description)}</div><plaintextquery if="{query.queryType == \'PLAINTEXT\'}" query="{query}" item="{this.item}"></plaintextQuery><geolocationquery if="{query.queryType == \'GEOLOCATION_POINT\'}" query="{query}" item="{this.item}"></geoLocationQuery></div></div><div class="options-wrapper"><button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate(⁗action__restart⁗)}</button><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button></div></div></div>', '', '', function(opts) {
+
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
 	console.log("url ", this.itemSource);
 	this.on("mount", function() {
@@ -167,13 +168,11 @@ riot.tag2('campaignitem', '<div class="content"><div class="content_left"><image
 
 	this.loadItem = function(itemConfig) {
 
-	    this.item = new Crowdsourcing.Item(itemConfig.source, itemConfig.queries, 0)
-	    console.log("load item ", this.item);
-
+	    this.item = new Crowdsourcing.Item(itemConfig, 0)
 		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
-
+		.catch( error => console.error("ERROR ", error));
 	}.bind(this)
 
 	this.initImageView = function() {
@@ -198,6 +197,34 @@ riot.tag2('campaignitem', '<div class="content"><div class="content_left"><image
         	query.resetAnnotations();
 	    });
 		this.update();
+	}.bind(this)
+
+	this.saveToServer = function() {
+	    this.item.queries.forEach(function(query) {
+	        let annoMap = query.getAnnotationsFromLocalStorage();
+	        let json = [];
+	        annoMap.forEach(function(pageAnnotations, pageId) {
+				json.push({"id": pageId, "annotations": pageAnnotations});
+	        })
+	        console.log("send ", json, " to ", this.itemSource);
+	        fetch(this.itemSource, {
+	            method: "PUT",
+	            headers: {
+	                'Content-Type': 'application/json',
+
+	            },
+	            mode: 'cors',
+	            cache: 'no-cache',
+	            body: JSON.stringify(json)
+	        })
+
+	        let saveString = JSON.stringify(json);
+	        console.log("PUT to server ", saveString);
+	    }.bind(this))
+	}.bind(this)
+
+	this.submitForReview = function() {
+
 	}.bind(this)
 
 });
@@ -961,12 +988,15 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.query.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.query.getImage(anno)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.query.translations.label)}</label><textarea onchange="{this.setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{anno.getText() || anno.getRegion()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
+riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.query.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.query.getImage(anno)}"></img></div><div class="annotation_area__text_input"><label>{viewerJS.getMetadataValue(this.query.translations.label)}</label><textarea onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{anno.getText() || anno.getRegion()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
 
 	this.query = this.opts.query;
-	this.query.createAnnotation = (anno) => new Crowdsourcing.Annotation.Plaintext(anno);
-
-	console.log("query = ", this.query);
+	this.query.createAnnotation = function(anno) {
+	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
+	    annotation.generator = this.opts.item.getGenerator();
+	    annotation.creator = this.opts.item.getCreator();
+	    return annotation;
+	}.bind(this);
 
 	this.on("mount", function() {
 	    switch(this.query.targetSelector) {
@@ -981,7 +1011,6 @@ riot.tag2('plaintextquery', '<div if="{this.showInstructions()}" class="annotati
 	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
 	    		this.opts.item.onImageOpen(function() {
-	    		    console.log("opened image");
 	    		    this.query.resetAnnotations();
 	    			this.update();
 	    		}.bind(this));

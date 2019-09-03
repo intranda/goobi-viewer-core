@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 
 /**
@@ -62,6 +64,7 @@ public class CampaignItem {
     /**
      * @return a new list containing all queries
      */
+    @JsonIgnore
     public List<CrowdsourcingQuery> getQueries() {
         return new ArrayList<>(campaign.getQueries());
     }

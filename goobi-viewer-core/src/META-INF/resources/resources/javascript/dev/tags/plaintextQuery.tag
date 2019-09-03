@@ -9,7 +9,7 @@
 			</div>
 			<div class="annotation_area__text_input">
 				<label>{viewerJS.getMetadataValue(this.query.translations.label)}</label>			
-				<textarea onChange="{this.setTextFromEvent}" value="{anno.getText()}">
+				<textarea onChange="{setTextFromEvent}" value="{anno.getText()}">
 				</textarea>
 			</div>
 		</div>
@@ -19,9 +19,13 @@
 <script>
 
 	this.query = this.opts.query;
-	this.query.createAnnotation = (anno) => new Crowdsourcing.Annotation.Plaintext(anno);
+	this.query.createAnnotation = function(anno) {
+	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
+	    annotation.generator = this.opts.item.getGenerator();
+	    annotation.creator = this.opts.item.getCreator();
+	    return annotation;
+	}.bind(this);
 
-	console.log("query = ", this.query);
 	
 	this.on("mount", function() {
 	    switch(this.query.targetSelector) {
@@ -36,7 +40,6 @@
 	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
 	    		this.opts.item.onImageOpen(function() {
-	    		    console.log("opened image");
 	    		    this.query.resetAnnotations();
 	    			this.update();
 	    		}.bind(this));

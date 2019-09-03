@@ -26,13 +26,17 @@
     
         <f:view contentType="text/html" encoding="utf-8">
                 
-                <campaignItem restApiUrl="http://localhost:8082/viewer/rest/" campaign="1" pi="PPN631877738" />
+                <campaignItem restApiUrl="http://localhost:8082/viewer/rest/" campaign="1" pi="PPN631877738"/>
                 
         </f:view>
         
         <script>
 	    	const messageKeys = ["action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
-	        
+	        const user = {
+	                id : #{userBean.user.id},
+	                name : "#{userBean.user.nickName}"
+	        }
+	        Crowdsourcing.user = user;
 	    	Crowdsourcing.initTranslations(messageKeys, "http://localhost:8082/viewer/rest/")
 	    	.then(() => riot.mount("campaignItem"));
         	

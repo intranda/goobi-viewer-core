@@ -16,14 +16,15 @@
 				</div>
 			</div>
 			<div class="options-wrapper">
-				<button onclick="{this.resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate("action__restart")}</button>
-				<button class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
-				<button class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+				<button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate("action__restart")}</button>
+				<button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
 			</div>
 		</div>
 	 </div>
 
 <script>
+
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
 	console.log("url ", this.itemSource);
 	this.on("mount", function() {
@@ -34,13 +35,11 @@
 
 	loadItem(itemConfig) {
 	    
-	    this.item = new Crowdsourcing.Item(itemConfig.source, itemConfig.queries, 0)
-	    console.log("load item ", this.item);
-// 		this.update();
+	    this.item = new Crowdsourcing.Item(itemConfig, 0)
 		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
-// 		.catch( error => console.error("ERROR ", error));  
+		.catch( error => console.error("ERROR ", error));  
 	}
 	
 	initImageView() {
@@ -66,6 +65,34 @@
         	query.resetAnnotations();
 	    });
 		this.update();
+	}
+	
+	saveToServer() {
+	    this.item.queries.forEach(function(query) {
+	        let annoMap = query.getAnnotationsFromLocalStorage();
+	        let json = [];
+	        annoMap.forEach(function(pageAnnotations, pageId) {
+				json.push({"id": pageId, "annotations": pageAnnotations});
+	        })
+	        console.log("send ", json, " to ", this.itemSource);
+	        fetch(this.itemSource, {
+	            method: "PUT",
+	            headers: {
+	                'Content-Type': 'application/json',
+	                // 'Content-Type': 'application/x-www-form-urlencoded',
+	            },
+	            mode: 'cors', // no-cors, cors, *same-origin
+	            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+	            body: JSON.stringify(json)
+	        })
+	        
+	        let saveString = JSON.stringify(json);
+	        console.log("PUT to server ", saveString);
+	    }.bind(this))
+	}
+	
+	submitForReview() {
+	    //TODO: change item status
 	}
 
 

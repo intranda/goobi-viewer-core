@@ -36,6 +36,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         } else {
             let newTarget = {
                 source : Crowdsourcing.getResourceId(this.target),
+                type: "SpecificResource",
                 selector : {
                     type : "FragmentSelector",
                     conformsTo: "http://www.w3.org/TR/media-frags/",

@@ -17,10 +17,13 @@ package io.goobi.viewer.servlets.rest.crowdsourcing;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,6 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -75,6 +79,7 @@ public class CampaignItemResource {
         //TODO: Create item from campaign
         CampaignItem item = new CampaignItem();
         item.setCampaign(new Campaign());
+        item.getCampaign().setId(42l);
         item.setSource(manifestURI);
 
         CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);
@@ -94,6 +99,47 @@ public class CampaignItemResource {
         item.addQuery(comment);
 
         return item;
+    }
+    
+    @PUT
+    @Path("/{campaignId}/annotate/{pi}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
+        
+    }
+
+    public static class Entry {
+        private String id;
+        private List<WebAnnotation> annotations;
+        
+        /**
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+        
+        /**
+         * @param id the id to set
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
+        
+        /**
+         * @return the annotations
+         */
+        public List<WebAnnotation> getAnnotations() {
+            return annotations;
+        }
+        
+        /**
+         * @param annotations the annotations to set
+         */
+        public void setAnnotations(List<WebAnnotation> annotations) {
+            this.annotations = annotations;
+        }
     }
 
 }

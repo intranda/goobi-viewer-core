@@ -26,7 +26,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     let _debug = false;
     
-    crowdsourcing.Item = function(imageSource, queries, initialCanvasIndex) {
+    crowdsourcing.Item = function(item, initialCanvasIndex) {
         if ( _debug ) {
             console.log( '##############################' );
             console.log( 'Crowdsourcing.Item' );
@@ -34,9 +34,12 @@ var Crowdsourcing = ( function(crowdsourcing) {
             console.log( 'Crowdsourcing.Item.queries ', queries );
             console.log( '##############################' );
         }
-        this.queries = queries.map(query => new Crowdsourcing.Query(query, this));
+        
+        this.id = item.campaign.id;
+        this.status = item.status;
+        this.queries = item.campaign.queries.map(query => new Crowdsourcing.Query(query, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
-        this.imageSource = imageSource;
+        this.imageSource = item.source;
         this.imageOpenEvents = new Rx.Subject();
 
     };
@@ -74,6 +77,23 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.getImageService = (canvas) =>  canvas.images[0].resource.service["@id"] + "/info.json";
     
     crowdsourcing.Item.prototype.getImageId = (canvas) =>  canvas.images[0].resource.service["@id"];
+    
+    crowdsourcing.Item.prototype.getGenerator = function() {
+        return  {
+            id: String(this.id),
+            type: "Software"
+        }
+    }
+
+    crowdsourcing.Item.prototype.getCreator = function() {
+        return {
+            id: String(Crowdsourcing.user.id),
+            type: "Person",
+            name: Crowdsourcing.user.name,
+        }
+    }
+
+    
     
     /**
         get a list containing all canvas json items or canvas urls contained in the source object

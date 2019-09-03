@@ -58,7 +58,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Query.prototype.resetAnnotations = function() {
         this.annotations = this.restoreFromLocalStorage();
-        console.log("reset annotations to ", this.annotations);
         this.initAnnotations();
         if(this.areaSelector) {
             this.areaSelector.reset();
@@ -133,7 +132,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Query.prototype.deleteFromLocalStorage = function() {
         let map = this.getAnnotationsFromLocalStorage();
         if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
-            map.set(Crowdsourcing.getResourceId(this.getTarget()), [] );
+            map.delete(Crowdsourcing.getResourceId(this.getTarget()));
+//            map.set(Crowdsourcing.getResourceId(this.getTarget()), [] );
         }
         let value = JSON.stringify(Array.from(map.entries()));
         localStorage.setItem("CrowdsourcingQuery_" + this.id, value);
