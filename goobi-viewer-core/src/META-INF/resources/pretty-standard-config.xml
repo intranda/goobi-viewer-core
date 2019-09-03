@@ -834,7 +834,7 @@
     </url-mapping>
     <url-mapping id="adminCrowdAddCampaign">
         <pattern value="/admin/crowdsourcing/campaigns/new/" />
-        <view-id value="/resources/cms/adminCrowdAddCampaign.xhtml" />
+        <view-id value="/resources/crowdsourcing/adminCrowdAddCampaign.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 

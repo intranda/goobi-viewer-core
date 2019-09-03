@@ -1,0 +1,79 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <div id="cmsCreatePageMetadataItemWrapper">
+        
+            <!-- METADATA ITEM STATUS -->
+            <h:panelGroup id="metadata-status">
+                <div class="page-metadata-item page-metadata-item-status">
+                    <h3>#{msg.crowdsourcing_campaigneMetadata_settings}</h3>
+
+                    <dl class="dl-horizontal">
+                        <dt>
+                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_visibility}:" />
+                        </dt>
+                        <dd>
+                <h:selectOneRadio value="#{crowdsourcingBean.selectedCampaign.visibility}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
+                    <f:ajax event="valueChange" />
+                    <f:selectItem id="select_private" itemLabel="private" itemValue="PRIVATE"></f:selectItem>
+                    <f:selectItem id="select_public" itemLabel="public" itemValue="PUBLIC"></f:selectItem>
+                </h:selectOneRadio>
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration}:" />
+                        </dt>
+                        <dd>
+                           // TODO remove button
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration_from}:" />
+                        </dt>
+                        <dd>
+                             <h:outputText value="#{cmsBean.selectedPage.dateStart}" />
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration_until}:" />
+                        </dt>
+                        <dd>
+                             <h:outputText value="#{cmsBean.selectedPage.dateEnd}" />
+                        </dd>
+                    </dl>
+                </div>
+            </h:panelGroup>
+
+            <!-- metadata item action -->
+            <div class="page-metadata-item page-metadata-item-action">
+                <ul>
+                    <li>
+                        <!-- preview description text -->
+                        <div id="previewDescription" class="alert alert-danger" role="alert">
+                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                            #{msg.cms_pagePreview_info}
+                        </div>
+
+                        <!-- preview page -->
+                        <button type="button" id="preview-button" class="btn btn--default" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
+                            #{msg.cms_pagePreview}
+                        </button>
+                    </li>
+
+                    <li>
+                        <!-- save page -->
+                        <h:commandButton type="submit" action="#{crowdsourcingBean.saveSelectedCampaign}" id="save-button" styleClass="btn btn--success" value="#{msg.crowdsourcing_campaignMetadata_save}"
+                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
+                        </h:commandButton>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </composite:implementation>
+</ui:composition>

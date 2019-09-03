@@ -18,6 +18,7 @@ package io.goobi.viewer.servlets.rest.crowdsourcing;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,7 +79,7 @@ public class CampaignItemResource {
 
         //TODO: Create item from campaign
         CampaignItem item = new CampaignItem();
-        item.setCampaign(new Campaign());
+        item.setCampaign(new Campaign(Locale.GERMAN));
         item.getCampaign().setId(42l);
         item.setSource(manifestURI);
 

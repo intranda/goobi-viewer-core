@@ -18,6 +18,7 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +33,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
@@ -70,7 +72,7 @@ public class Campaign {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
-    private CampaignVisibility visibility;
+    private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_start")
@@ -96,6 +98,71 @@ public class Campaign {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CrowdsourcingQuery> queries = new ArrayList<>();
+
+    @Transient
+    private Locale selectedLocale;
+
+    public Campaign() {
+        this.selectedLocale = Locale.ENGLISH;
+    }
+
+    public Campaign(Locale selectedLocale) {
+        this.selectedLocale = selectedLocale;
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getTitle() {
+        return Translation.getTranslation(translations, selectedLocale.getLanguage(), "title");
+    }
+
+    /**
+     * 
+     * @param title
+     * @should set value correctly
+     */
+    public void setTitle(String title) {
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), title, "title");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getMenuTitle() {
+        return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
+    }
+
+    /**
+     * 
+     * @param title
+     * @should set value correctly
+     */
+    public void setMenuTitle(String menuTitle) {
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getDescription() {
+        return Translation.getTranslation(translations, selectedLocale.getLanguage(), "description");
+    }
+
+    /**
+     * 
+     * @param title
+     * @should set value correctly
+     */
+    public void setDescription(String description) {
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description");
+    }
 
     /**
      * 
@@ -276,5 +343,19 @@ public class Campaign {
      */
     public void setQueries(List<CrowdsourcingQuery> queries) {
         this.queries = queries;
+    }
+
+    /**
+     * @return the selectedLocale
+     */
+    public Locale getSelectedLocale() {
+        return selectedLocale;
+    }
+
+    /**
+     * @param selectedLocale the selectedLocale to set
+     */
+    public void setSelectedLocale(Locale selectedLocale) {
+        this.selectedLocale = selectedLocale;
     }
 }
