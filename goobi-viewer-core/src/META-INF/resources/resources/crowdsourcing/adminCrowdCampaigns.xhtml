@@ -59,20 +59,31 @@
                                                     <span class="column_title__main_title">#{campaign.title}</span>
                                                     <br />
                                                     <span class="column_title__menu_title">#{campaign.menuTitle}</span>
+                                                    <br />
+                                                    <!-- Edit link -->
+                                                    <h:commandLink action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
+                                                        #{msg.edit}
+                                                        <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
+                                                    </h:commandLink> | 
+                                                    <!-- Delete link -->
+                                                    <h:commandLink action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
+                                                        #{msg.delete}
+                                                    </h:commandLink>
                                                 </td>
                                                 <td class="column_visibility">
                                                     <h:outputText value="#{msg[campaign.visibility]} " />
                                                 </td>
                                                 <td class="column_duration">
-                                                    <h:outputText value="#{campaign.dateStart}">
-                                                        <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
+                                                    <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
+                                                        #{msg.from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
                                                     </h:outputText>
-                                                    <h:outputText value="#{campaign.dateEnd}">
-                                                        <f:convertDateTime type="both" dateStyle="medium" timeStyle="short" />
+                                                    <br />
+                                                    <h:outputText rendered="#{campaign.dateEnd != null}" value="#{campaign.dateEnd}">
+                                                        #{msg.until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
                                                     </h:outputText>
                                                 </td>
                                                 <td class="column_statistics">
-                                                    // TODO
+                                                    TODO
                                                 </td>
                                             </tr>
                                         </ui:repeat>

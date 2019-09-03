@@ -80,35 +80,50 @@ public class CrowdsourcingQuery {
 
     public CrowdsourcingQuery() {
     }
+    
+    public CrowdsourcingQuery(Campaign owner) {
+        this.owner = owner;
+    }
 
-    public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector) {
+    public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector, Campaign owner) {
         this.queryType = queryType;
         this.targetFrequency = targetFrequency;
         this.targetSelector = targetSelector;
+        this.owner = owner;
     }
 
-    public String getLabel(String lang) {
-        return Translation.getTranslation(translations, lang, "label");
+    public String getLabel() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "label");
     }
 
+    public void setLabel(String label) {
+        QueryTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), label, "label", this);
+    }
+
+    public String getDescription() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "description");
+    }
+
+    public void setDescription(String description) {
+        QueryTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), description, "description", this);
+    }
+
+    public String getHelp() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "help");
+    }
+
+    public void setHelp(String help) {
+        QueryTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), help, "help", this);
+    }
+
+    @Deprecated
     public void setLabel(String lang, String value) {
         QueryTranslation.setTranslation(translations, lang, value, "label", this);
     }
 
-    public String getDescription(String lang) {
-        return Translation.getTranslation(translations, lang, "description");
-    }
-
+    @Deprecated
     public void setDescription(String lang, String value) {
         QueryTranslation.setTranslation(translations, lang, value, "description", this);
-    }
-
-    public String getHelp(String lang) {
-        return Translation.getTranslation(translations, lang, "help");
-    }
-
-    public void setHelp(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "help", this);
     }
 
     /**

@@ -83,7 +83,8 @@ public class CampaignItemResource {
         item.getCampaign().setId(42l);
         item.setSource(manifestURI);
 
-        CrowdsourcingQuery query = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE);
+        CrowdsourcingQuery query =
+                new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
         query.setId(1l);
         query.setLabel("de", "Bild auswählen");
         query.setLabel("en", "Select image");
@@ -91,7 +92,8 @@ public class CampaignItemResource {
         query.setDescription("en", "Select an area in the image and enter a short description about it.");
         item.addQuery(query);
 
-        CrowdsourcingQuery comment = new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE);
+        CrowdsourcingQuery comment =
+                new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
         comment.setId(2l);
         comment.setLabel("de", "Anmerkungen");
         comment.setLabel("en", "Notes");
@@ -101,40 +103,41 @@ public class CampaignItemResource {
 
         return item;
     }
-    
+
     @PUT
     @Path("/{campaignId}/annotate/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
-        
+    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+            throws URISyntaxException {
+
     }
 
     public static class Entry {
         private String id;
         private List<WebAnnotation> annotations;
-        
+
         /**
          * @return the id
          */
         public String getId() {
             return id;
         }
-        
+
         /**
          * @param id the id to set
          */
         public void setId(String id) {
             this.id = id;
         }
-        
+
         /**
          * @return the annotations
          */
         public List<WebAnnotation> getAnnotations() {
             return annotations;
         }
-        
+
         /**
          * @param annotations the annotations to set
          */
