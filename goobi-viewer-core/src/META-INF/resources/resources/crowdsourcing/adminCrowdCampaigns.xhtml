@@ -53,10 +53,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <ui:repeat var="page" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
-                                            <tr class="#{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                        <ui:repeat var="campaign" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
+                                            <tr>
                                                 <td class="column_title">
                                                     <span class="column_title__main_title">#{campaign.title}</span>
+                                                    <br />
                                                     <span class="column_title__menu_title">#{campaign.menuTitle}</span>
                                                 </td>
                                                 <td class="column_visibility">

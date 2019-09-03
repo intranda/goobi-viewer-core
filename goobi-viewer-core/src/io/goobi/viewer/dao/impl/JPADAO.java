@@ -3005,8 +3005,9 @@ public class JPADAO implements IDAO {
         return getRowCount("Campaign", null, filters);
     }
     
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
+     * @should filter campaigns correctly
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3014,7 +3015,7 @@ public class JPADAO implements IDAO {
             throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
-            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM Campaign a");
             StringBuilder order = new StringBuilder();
             try {
                 Map<String, String> params = new HashMap<>();

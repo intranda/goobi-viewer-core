@@ -36,7 +36,7 @@ public class CampaignTranslation extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private Campaign owner;
 
     /**
@@ -49,20 +49,13 @@ public class CampaignTranslation extends Translation {
     /**
      * 
      * @param language
-     * @param value
-     */
-    public CampaignTranslation(String language, String value) {
-        super(language, value);
-    }
-
-    /**
-     * 
-     * @param language
      * @param tag
      * @param value
+     * @param owner
      */
-    public CampaignTranslation(String language, String tag, String value) {
+    public CampaignTranslation(String language, String tag, String value, Campaign owner) {
         super(language, tag, value);
+        this.owner = owner;
     }
 
     /**
@@ -71,8 +64,9 @@ public class CampaignTranslation extends Translation {
      * @param lang
      * @param value
      * @param tag
+     * @param owner
      */
-    public static void setTranslation(List<CampaignTranslation> translations, String lang, String value, String tag) {
+    public static void setTranslation(List<CampaignTranslation> translations, String lang, String value, String tag, Campaign owner) {
         if (lang == null) {
             throw new IllegalArgumentException("lang may not be null");
         }
@@ -86,7 +80,7 @@ public class CampaignTranslation extends Translation {
                 return;
             }
         }
-        translations.add(new CampaignTranslation(lang, tag, value));
+        translations.add(new CampaignTranslation(lang, tag, value, owner));
     }
 
     /**

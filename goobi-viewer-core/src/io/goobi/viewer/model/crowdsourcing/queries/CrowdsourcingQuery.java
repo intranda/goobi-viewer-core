@@ -63,7 +63,7 @@ public class CrowdsourcingQuery {
     /** Translated metadata. */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using=TranslationListSerializer.class)
+    @JsonSerialize(using = TranslationListSerializer.class)
     private List<QueryTranslation> translations = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -92,7 +92,7 @@ public class CrowdsourcingQuery {
     }
 
     public void setLabel(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "label");
+        QueryTranslation.setTranslation(translations, lang, value, "label", this);
     }
 
     public String getDescription(String lang) {
@@ -100,7 +100,7 @@ public class CrowdsourcingQuery {
     }
 
     public void setDescription(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "description");
+        QueryTranslation.setTranslation(translations, lang, value, "description", this);
     }
 
     public String getHelp(String lang) {
@@ -108,7 +108,7 @@ public class CrowdsourcingQuery {
     }
 
     public void setHelp(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "help");
+        QueryTranslation.setTranslation(translations, lang, value, "help", this);
     }
 
     /**

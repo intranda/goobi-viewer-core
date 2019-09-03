@@ -36,7 +36,7 @@ public class QueryTranslation extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private CrowdsourcingQuery owner;
 
     /**
@@ -49,20 +49,13 @@ public class QueryTranslation extends Translation {
     /**
      * 
      * @param language
-     * @param value
-     */
-    public QueryTranslation(String language, String value) {
-        super(language, value);
-    }
-
-    /**
-     * 
-     * @param language
      * @param tag
      * @param value
+     * @param owner
      */
-    public QueryTranslation(String language, String tag, String value) {
+    public QueryTranslation(String language, String tag, String value, CrowdsourcingQuery owner) {
         super(language, tag, value);
+        this.owner = owner;
     }
 
     /**
@@ -71,8 +64,9 @@ public class QueryTranslation extends Translation {
      * @param lang
      * @param value
      * @param tag
+     * @param owner
      */
-    public static void setTranslation(List<QueryTranslation> translations, String lang, String value, String tag) {
+    public static void setTranslation(List<QueryTranslation> translations, String lang, String value, String tag, CrowdsourcingQuery owner) {
         if (lang == null) {
             throw new IllegalArgumentException("lang may not be null");
         }
@@ -86,7 +80,7 @@ public class QueryTranslation extends Translation {
                 return;
             }
         }
-        translations.add(new QueryTranslation(lang, tag, value));
+        translations.add(new QueryTranslation(lang, tag, value, owner));
     }
 
     /**

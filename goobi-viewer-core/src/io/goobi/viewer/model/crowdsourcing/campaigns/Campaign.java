@@ -125,7 +125,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setTitle(String title) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), title, "title");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), title, "title", this);
     }
 
     /**
@@ -143,7 +143,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setMenuTitle(String menuTitle) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title", this);
     }
 
     /**
@@ -161,7 +161,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setDescription(String description) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
 
     /**
