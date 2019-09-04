@@ -36,16 +36,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
 @Named
 @SessionScoped
@@ -64,6 +62,7 @@ public class CrowdsourcingBean implements Serializable {
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Campaign selectedCampaign;
+    private Question selectedQuery;
     private boolean editMode = false;
 
     @PostConstruct
@@ -80,9 +79,9 @@ public class CrowdsourcingBean implements Serializable {
                             sortField = "id";
                         }
 
-                        List<Campaign> pages =
+                        List<Campaign> ret =
                                 DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return pages;
+                        return ret;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
                     }
@@ -136,6 +135,24 @@ public class CrowdsourcingBean implements Serializable {
         return "pretty:adminCrowdAddCampaign";
     }
 
+    public String editCampaignAction(Campaign campaign) {
+        selectedCampaign = campaign;
+        return "pretty:adminCrowdEditCampaign";
+    }
+
+    public String createNewQueryAction() {
+        if (selectedCampaign != null) {
+            selectedQuery = new Question(selectedCampaign);
+        }
+        
+        return "";
+    }
+
+    public String editQueryAction(Question query) {
+        selectedQuery = query;
+        return "";
+    }
+
     /**
      * @return
      * @throws DAOException
@@ -153,38 +170,51 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void saveSelectedCampaign() throws DAOException {
         logger.trace("saveSelectedCampaign");
-        if (userBean == null || !userBean.getUser().isSuperuser()) {
-            // Only authorized admins may save
-            return;
+        try {
+            if (userBean == null || !userBean.getUser().isSuperuser()) {
+                // Only authorized admins may save
+                return;
+            }
+            if (selectedCampaign == null) {
+                return;
+            }
+
+            // Save
+            boolean success = false;
+            Date now = new Date();
+            if (selectedCampaign.getDateCreated() == null) {
+                selectedCampaign.setDateCreated(now);
+            }
+            selectedCampaign.setDateUpdated(now);
+            logger.trace("update dao");
+            if (selectedCampaign.getId() != null) {
+                success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+            } else {
+                success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+            }
+            if (success) {
+                Messages.info("crowdsoucing_campaignSaveSuccess");
+                logger.trace("reload campaign");
+                //                selectedPage = getCMSPage(selectedPage.getId());
+                setSelectedCampaign(selectedCampaign);
+                logger.trace("update pages");
+                lazyModelCampaigns.update();
+            } else {
+                Messages.error("crowdsourcing_campaignSaveFailure");
+            }
+        } finally {
+            selectedQuery = null;
         }
-        if (selectedCampaign == null) {
-            return;
+    }
+
+    public String saveSelectedQueryAction() {
+        try {
+
+        } finally {
+            selectedQuery = null;
         }
 
-        // Save
-        boolean success = false;
-        Date now = new Date();
-        if (selectedCampaign.getDateCreated() == null) {
-            selectedCampaign.setDateCreated(now);
-        }
-        selectedCampaign.setDateUpdated(now);
-        logger.trace("update dao");
-        if (selectedCampaign.getId() != null) {
-            success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
-        } else {
-            success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
-        }
-        if (success) {
-            Messages.info("crowdsoucing_campaignSaveSuccess");
-            logger.trace("reload campaign");
-            //                selectedPage = getCMSPage(selectedPage.getId());
-            setSelectedCampaign(selectedCampaign);
-            logger.trace("update pages");
-            lazyModelCampaigns.update();
-        } else {
-            Messages.error("crowdsourcing_campaignSaveFailure");
-        }
-        logger.trace("Done saving campaign");
+        return "";
     }
 
     /**
@@ -206,6 +236,20 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setSelectedCampaign(Campaign selectedCampaign) {
         this.selectedCampaign = selectedCampaign;
+    }
+
+    /**
+     * @return the selectedQuery
+     */
+    public Question getSelectedQuery() {
+        return selectedQuery;
+    }
+
+    /**
+     * @param selectedQuery the selectedQuery to set
+     */
+    public void setSelectedQuery(Question selectedQuery) {
+        this.selectedQuery = selectedQuery;
     }
 
     /**

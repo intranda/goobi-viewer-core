@@ -2075,7 +2075,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getAllCampaigns().size());
     }
-    
+
+    /**
+     * @see JPADAO#getCampaigns(int,int,String,boolean,Map)
+     * @verifies filter campaigns correctly
+     */
+    @Test
+    public void getCampaigns_shouldFilterCampaignsCorrectly() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
+        Assert.assertEquals(1,
+                DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, Collections.singletonMap("visibility", "PUBLIC")).size());
+    }
 
     /**
      * @see JPADAO#getCampaignCount(Map)
@@ -2095,14 +2105,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getCampaign_shouldReturnCorrectCampaign() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
         Assert.assertNotNull(campaign);
+        campaign.setSelectedLocale(Locale.ENGLISH);
         Assert.assertEquals(Long.valueOf(1), campaign.getId());
         Assert.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
         Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
-        Assert.assertEquals("English title", campaign.getTitle("en"));
-        
-        Assert.assertEquals(1, campaign.getQueries().size());
-        Assert.assertEquals("English label", campaign.getQueries().get(0).getLabel("en"));
-        Assert.assertEquals("English description", campaign.getQueries().get(0).getDescription("en"));
-        Assert.assertEquals("English help", campaign.getQueries().get(0).getHelp("en"));
+        Assert.assertEquals("English title", campaign.getTitle());
+
+        Assert.assertEquals(1, campaign.getQuestions().size());
+        Assert.assertEquals("English label", campaign.getQuestions().get(0).getLabel());
+        Assert.assertEquals("English description", campaign.getQuestions().get(0).getDescription());
+        Assert.assertEquals("English help", campaign.getQuestions().get(0).getHelp());
     }
 }

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.queries;
+package io.goobi.viewer.model.crowdsourcing.questions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 @Entity
 @Table(name = "cs_queries")
 @JsonInclude(Include.NON_EMPTY)
-public class CrowdsourcingQuery {
+public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,12 +63,12 @@ public class CrowdsourcingQuery {
     /** Translated metadata. */
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using=TranslationListSerializer.class)
-    private List<QueryTranslation> translations = new ArrayList<>();
+    @JsonSerialize(using = TranslationListSerializer.class)
+    private List<QuestionTranslation> translations = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "query_type", nullable = false)
-    private QueryType queryType;
+    private QuestionType queryType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "target_frequency")
@@ -78,37 +78,52 @@ public class CrowdsourcingQuery {
     @Column(name = "target_selector", nullable = false)
     private TargetSelector targetSelector;
 
-    public CrowdsourcingQuery() {
+    public Question() {
+    }
+    
+    public Question(Campaign owner) {
+        this.owner = owner;
     }
 
-    public CrowdsourcingQuery(QueryType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector) {
+    public Question(QuestionType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector, Campaign owner) {
         this.queryType = queryType;
         this.targetFrequency = targetFrequency;
         this.targetSelector = targetSelector;
+        this.owner = owner;
     }
 
-    public String getLabel(String lang) {
-        return Translation.getTranslation(translations, lang, "label");
+    public String getLabel() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "label");
     }
 
+    public void setLabel(String label) {
+        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), label, "label", this);
+    }
+
+    public String getDescription() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "description");
+    }
+
+    public void setDescription(String description) {
+        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), description, "description", this);
+    }
+
+    public String getHelp() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "help");
+    }
+
+    public void setHelp(String help) {
+        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), help, "help", this);
+    }
+
+    @Deprecated
     public void setLabel(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "label");
+        QuestionTranslation.setTranslation(translations, lang, value, "label", this);
     }
 
-    public String getDescription(String lang) {
-        return Translation.getTranslation(translations, lang, "description");
-    }
-
+    @Deprecated
     public void setDescription(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "description");
-    }
-
-    public String getHelp(String lang) {
-        return Translation.getTranslation(translations, lang, "help");
-    }
-
-    public void setHelp(String lang, String value) {
-        QueryTranslation.setTranslation(translations, lang, value, "help");
+        QuestionTranslation.setTranslation(translations, lang, value, "description", this);
     }
 
     /**
@@ -142,28 +157,28 @@ public class CrowdsourcingQuery {
     /**
      * @return the translations
      */
-    public List<QueryTranslation> getTranslations() {
+    public List<QuestionTranslation> getTranslations() {
         return translations;
     }
 
     /**
      * @param translations the translations to set
      */
-    public void setTranslations(List<QueryTranslation> translations) {
+    public void setTranslations(List<QuestionTranslation> translations) {
         this.translations = translations;
     }
 
     /**
      * @return the queryType
      */
-    public QueryType getQueryType() {
+    public QuestionType getQueryType() {
         return queryType;
     }
 
     /**
      * @param queryType the queryType to set
      */
-    public void setQueryType(QueryType queryType) {
+    public void setQueryType(QuestionType queryType) {
         this.queryType = queryType;
     }
 

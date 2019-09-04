@@ -23,11 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.goobi.viewer.exceptions.DAOException;
-
 public class TableDataProvider<T> {
 
     private int currentPage = 0;
@@ -58,7 +53,7 @@ public class TableDataProvider<T> {
     }
 
     public List<T> getPaginatorList() throws TableDataSourceException {
-        return loadList().orElse(Collections.EMPTY_LIST);
+        return loadList().orElse(Collections.emptyList());
     }
 
     /**
@@ -66,24 +61,22 @@ public class TableDataProvider<T> {
      */
     protected Optional<List<T>> loadList() {
         String filterString = getFilterString(filters);
-        if(!filterString.equals(this.lastFilterString)) {
+        if (!filterString.equals(this.lastFilterString)) {
             this.source.resetTotalNumberOfRecords();
             this.lastFilterString = filterString;
         }
-        return Optional
-                .ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
+        return Optional.ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
     }
 
     /**
      * @param filters2
      * @return
      */
-    private String getFilterString(List<TableDataFilter> filters) {
-        if(filters == null || filters.isEmpty()) {
+    private static String getFilterString(List<TableDataFilter> filters) {
+        if (filters == null || filters.isEmpty()) {
             return "";
-        } else {
-            return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
         }
+        return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
     }
 
     public Map<String, String> getFiltersAsMap() {
@@ -99,8 +92,7 @@ public class TableDataProvider<T> {
     }
 
     /**
-     * Called ony any changes to the currently listed objects
-     * noop - may be implemented by inheriting classes
+     * Called ony any changes to the currently listed objects noop - may be implemented by inheriting classes
      */
     protected void resetCurrentList() {
     }
@@ -248,7 +240,7 @@ public class TableDataProvider<T> {
 
         return false;
     }
-    
+
     public boolean addFilter(String column) {
         if (!getFilterAsOptional(column).isPresent()) {
             addFilter(new TableDataFilter(column, ""));
@@ -260,28 +252,26 @@ public class TableDataProvider<T> {
 
     public Optional<TableDataFilter> getFilterAsOptional(String column) {
         for (TableDataFilter filter : filters) {
-            if (filter.getColumn()
-                    .equalsIgnoreCase(column) && !filter.getJoinTable().isPresent()) {
+            if (filter.getColumn().equalsIgnoreCase(column) && !filter.getJoinTable().isPresent()) {
                 return Optional.of(filter);
             }
         }
         return Optional.empty();
     }
-    
+
     public Optional<TableDataFilter> getFilterAsOptional(String joinTable, String column) {
         for (TableDataFilter filter : filters) {
-            if (filter.getColumn()
-                    .equalsIgnoreCase(column) && filter.getJoinTable().equals(Optional.ofNullable(joinTable))) {
+            if (filter.getColumn().equalsIgnoreCase(column) && filter.getJoinTable().equals(Optional.ofNullable(joinTable))) {
                 return Optional.of(filter);
             }
         }
         return Optional.empty();
     }
-    
+
     public TableDataFilter getFilter(String column) {
         return getFilterAsOptional(column).orElse(null);
     }
-    
+
     public TableDataFilter getFilter(String joinTable, String column) {
         return getFilterAsOptional(joinTable, column).orElse(null);
     }
@@ -294,7 +284,7 @@ public class TableDataProvider<T> {
     public void removeFilter(String column) {
         getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
     }
-    
+
     public void removeFilter(String joinTable, String column) {
         getFilterAsOptional(joinTable, column).ifPresent(filter -> removeFilter(filter));
     }
@@ -320,8 +310,7 @@ public class TableDataProvider<T> {
         filters.forEach(filter -> filter.setValue(""));
         resetCurrentList();
         source.resetTotalNumberOfRecords();
-        
-        
+
     }
 
     /**

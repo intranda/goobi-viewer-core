@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 
 @Entity
@@ -105,7 +105,7 @@ public class Campaign {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<CrowdsourcingQuery> queries = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();
 
     @Transient
     private Locale selectedLocale;
@@ -133,7 +133,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setTitle(String title) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), title, "title");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), title, "title", this);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setMenuTitle(String menuTitle) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), menuTitle, "menu_title", this);
     }
 
     /**
@@ -169,7 +169,7 @@ public class Campaign {
      * @should set value correctly
      */
     public void setDescription(String description) {
-        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description");
+        CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
 
     /**
@@ -355,17 +355,17 @@ public class Campaign {
     }
 
     /**
-     * @return the queries
+     * @return the questions
      */
-    public List<CrowdsourcingQuery> getQueries() {
-        return queries;
+    public List<Question> getQuestions() {
+        return questions;
     }
 
     /**
-     * @param queries the queries to set
+     * @param questions the questions to set
      */
-    public void setQueries(List<CrowdsourcingQuery> queries) {
-        this.queries = queries;
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 
     /**

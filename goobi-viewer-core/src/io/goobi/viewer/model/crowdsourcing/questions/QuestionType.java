@@ -13,16 +13,19 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.queries;
+package io.goobi.viewer.model.crowdsourcing.questions;
 
 /**
  * @author florian
  *
  */
-public enum TargetFrequency {
+public enum QuestionType {
 
-    ONE_PER_MANIFEST,
-    MULTIPLE_PER_MANIFEST,
-    ONE_PER_CANVAS,
-    MULTIPLE_PER_CANVAS;
+    PLAINTEXT,
+    DATE_PICKER,
+    GEOLOCATION_POINT,
+    GEOLOCATION_AREA,
+    TRANSCRIPTION,
+    KEY_VALUE_LIST;
+    
 }

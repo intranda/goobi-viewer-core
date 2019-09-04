@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.crowdsourcing.queries;
+package io.goobi.viewer.model.crowdsourcing.questions;
 
 import java.util.List;
 
@@ -32,27 +32,18 @@ import io.goobi.viewer.model.misc.Translation;
  */
 @Entity
 @Table(name = "cs_query_translations")
-public class QueryTranslation extends Translation {
+public class QuestionTranslation extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private CrowdsourcingQuery owner;
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Question owner;
 
     /**
      * 
      */
-    public QueryTranslation() {
+    public QuestionTranslation() {
         super();
-    }
-
-    /**
-     * 
-     * @param language
-     * @param value
-     */
-    public QueryTranslation(String language, String value) {
-        super(language, value);
     }
 
     /**
@@ -60,9 +51,11 @@ public class QueryTranslation extends Translation {
      * @param language
      * @param tag
      * @param value
+     * @param owner
      */
-    public QueryTranslation(String language, String tag, String value) {
+    public QuestionTranslation(String language, String tag, String value, Question owner) {
         super(language, tag, value);
+        this.owner = owner;
     }
 
     /**
@@ -71,8 +64,9 @@ public class QueryTranslation extends Translation {
      * @param lang
      * @param value
      * @param tag
+     * @param owner
      */
-    public static void setTranslation(List<QueryTranslation> translations, String lang, String value, String tag) {
+    public static void setTranslation(List<QuestionTranslation> translations, String lang, String value, String tag, Question owner) {
         if (lang == null) {
             throw new IllegalArgumentException("lang may not be null");
         }
@@ -86,20 +80,20 @@ public class QueryTranslation extends Translation {
                 return;
             }
         }
-        translations.add(new QueryTranslation(lang, tag, value));
+        translations.add(new QuestionTranslation(lang, tag, value, owner));
     }
 
     /**
      * @return the owner
      */
-    public CrowdsourcingQuery getOwner() {
+    public Question getOwner() {
         return owner;
     }
 
     /**
      * @param owner the owner to set
      */
-    public void setOwner(CrowdsourcingQuery owner) {
+    public void setOwner(Question owner) {
         this.owner = owner;
     }
 }
