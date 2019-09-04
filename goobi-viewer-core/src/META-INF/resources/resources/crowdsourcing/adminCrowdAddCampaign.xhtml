@@ -54,12 +54,9 @@
                                             <ul class="nav nav-tabs" role="tablist">
                                                 <c:forEach var="locale" items="#{crowdsourcingBean.getAllLocales()}">
                                                     <li role="presentation" class="#{crowdsourcingBean.selectedCampaign.selectedLocale == locale ? 'active':''}">
-                                                        <h:commandLink value="#{locale}" action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}" immediate="false" />
+                                                        <h:commandLink value="#{msg['changeLocal_' += locale]}" action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(locale)}" immediate="false" />
                                                     </li>
                                                 </c:forEach>
-                                                <li role="presentation" class="#{crowdsourcingBean.selectedCampaign.selectedLocale == null ? 'active':''}">
-                                                    <h:commandLink value="#{msg.cms_pageSidebar}" action="#{crowdsourcingBean.selectedCampaign.setSelectedLocale(null)}" />
-                                                </li>
                                             </ul>
 
                                             <div class="tab-content">
