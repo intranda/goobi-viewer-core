@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.crowdsourcing.questions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -48,13 +49,13 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
  *
  */
 @Entity
-@Table(name = "cs_queries")
+@Table(name = "cs_questions")
 @JsonInclude(Include.NON_EMPTY)
 public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "query_id")
+    @Column(name = "question_id")
     private Long id;
 
     @ManyToOne
@@ -69,8 +70,8 @@ public class Question {
     private List<QuestionTranslation> translations = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "query_type", nullable = false)
-    private QuestionType queryType;
+    @Column(name = "question_type", nullable = false)
+    private QuestionType questionType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "target_frequency")
@@ -82,13 +83,13 @@ public class Question {
 
     public Question() {
     }
-    
+
     public Question(Campaign owner) {
         this.owner = owner;
     }
 
-    public Question(QuestionType queryType, TargetFrequency targetFrequency, TargetSelector targetSelector, Campaign owner) {
-        this.queryType = queryType;
+    public Question(QuestionType questionType, TargetFrequency targetFrequency, TargetSelector targetSelector, Campaign owner) {
+        this.questionType = questionType;
         this.targetFrequency = targetFrequency;
         this.targetSelector = targetSelector;
         this.owner = owner;
@@ -126,6 +127,15 @@ public class Question {
     @Deprecated
     public void setDescription(String lang, String value) {
         QuestionTranslation.setTranslation(translations, lang, value, "description", this);
+    }
+    
+    public List<QuestionType> getAvailableQuestionTypes() {
+        System.out.println(QuestionType.values().toString());
+        return Arrays.asList(QuestionType.values());
+    }
+
+    public List<TargetSelector> getAvailableTargetSelectors() {
+        return Arrays.asList(TargetSelector.values());
     }
 
     /**
@@ -171,17 +181,17 @@ public class Question {
     }
 
     /**
-     * @return the queryType
+     * @return the questionType
      */
-    public QuestionType getQueryType() {
-        return queryType;
+    public QuestionType getQuestionType() {
+        return questionType;
     }
 
     /**
-     * @param queryType the queryType to set
+     * @param questionType the questionType to set
      */
-    public void setQueryType(QuestionType queryType) {
-        this.queryType = queryType;
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
     }
 
     /**

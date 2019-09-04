@@ -31,7 +31,7 @@ import io.goobi.viewer.model.misc.Translation;
  *
  */
 @Entity
-@Table(name = "cs_query_translations")
+@Table(name = "cs_question_translations")
 public class QuestionTranslation extends Translation {
 
     /** Reference to the owning {@link PersistentEntity}. */

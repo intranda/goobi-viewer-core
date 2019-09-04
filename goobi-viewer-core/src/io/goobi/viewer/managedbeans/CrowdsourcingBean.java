@@ -62,7 +62,6 @@ public class CrowdsourcingBean implements Serializable {
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Campaign selectedCampaign;
-    private Question selectedQuery;
     private boolean editMode = false;
 
     @PostConstruct
@@ -140,16 +139,11 @@ public class CrowdsourcingBean implements Serializable {
         return "pretty:adminCrowdEditCampaign";
     }
 
-    public String createNewQueryAction() {
+    public String addNewQuestionAction() {
         if (selectedCampaign != null) {
-            selectedQuery = new Question(selectedCampaign);
+            selectedCampaign.getQuestions().add(new Question(selectedCampaign));
         }
-        
-        return "";
-    }
 
-    public String editQueryAction(Question query) {
-        selectedQuery = query;
         return "";
     }
 
@@ -203,18 +197,7 @@ public class CrowdsourcingBean implements Serializable {
                 Messages.error("crowdsourcing_campaignSaveFailure");
             }
         } finally {
-            selectedQuery = null;
         }
-    }
-
-    public String saveSelectedQueryAction() {
-        try {
-
-        } finally {
-            selectedQuery = null;
-        }
-
-        return "";
     }
 
     /**
@@ -236,20 +219,6 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setSelectedCampaign(Campaign selectedCampaign) {
         this.selectedCampaign = selectedCampaign;
-    }
-
-    /**
-     * @return the selectedQuery
-     */
-    public Question getSelectedQuery() {
-        return selectedQuery;
-    }
-
-    /**
-     * @param selectedQuery the selectedQuery to set
-     */
-    public void setSelectedQuery(Question selectedQuery) {
-        this.selectedQuery = selectedQuery;
     }
 
     /**
