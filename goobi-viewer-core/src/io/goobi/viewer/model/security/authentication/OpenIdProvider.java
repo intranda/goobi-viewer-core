@@ -62,8 +62,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     private Object responseLock = new Object();
 
-    public OpenIdProvider(String name, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
-        super(name, TYPE_OPENID, url, image, timeoutMillis);
+    public OpenIdProvider(String name, String label, String url, String image, long timeoutMillis, String clientId, String clientSecret) {
+        super(name, label, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }

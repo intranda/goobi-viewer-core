@@ -214,9 +214,10 @@ public class OverviewPage implements Harvestable, Serializable {
      * @throws IllegalArgumentException
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws PresentationException 
      */
     public void init(StructElement structElement, Locale locale)
-            throws IllegalArgumentException, IndexUnreachableException, ViewerConfigurationException {
+            throws IllegalArgumentException, IndexUnreachableException, ViewerConfigurationException, PresentationException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -328,10 +329,11 @@ public class OverviewPage implements Harvestable, Serializable {
      * @param metadata
      * @param locale
      * @throws IndexUnreachableException
+     * @throws PresentationException 
      */
-    private void fillMetadataValues(List<Metadata> metadata, Locale locale) throws IndexUnreachableException {
+    private void fillMetadataValues(List<Metadata> metadata, Locale locale) throws IndexUnreachableException, PresentationException {
         for (Metadata md : metadata) {
-            md.populate(structElement.getMetadataFields(), locale);
+            md.populate(structElement, locale);
         }
     }
 
@@ -567,10 +569,11 @@ public class OverviewPage implements Harvestable, Serializable {
      *
      * @return
      * @throws IndexUnreachableException
+     * @throws PresentationException 
      * @should add given field correctly
      * @should add given field's label to usedMetaadataNames
      */
-    public String addMetadataFieldAction() throws IndexUnreachableException {
+    public String addMetadataFieldAction() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotEmpty(metadataFieldNameToAdd)) {
             try {
                 for (Metadata md : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(structElement.getDocStructType())) {
@@ -865,8 +868,8 @@ public class OverviewPage implements Harvestable, Serializable {
                     if (param.isAddUrl()) {
                         eleParam.setAttribute(new Attribute("url", "true"));
                     }
-                    if (param.isDontUseTopstructValue()) {
-                        eleParam.setAttribute(new Attribute("dontUseTopstructValue", "true"));
+                    if (param.isTopstructValueFallback()) {
+                        eleParam.setAttribute(new Attribute("topstructValueFallback", "true"));
                     }
                     eleMetadata.addContent(eleParam);
                 }

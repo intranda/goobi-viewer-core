@@ -431,4 +431,23 @@ public class Bookshelf implements Serializable {
 
         return root.toJSONString();
     }
+
+    /**
+     * 
+     * @return
+     * @should construct query correctly
+     */
+    public String getFilterQuery() {
+        if (items.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder("+(");
+        for (BookshelfItem item : items) {
+            sb.append(' ').append(SolrConstants.PI).append(':').append(item.getPi());
+        }
+        sb.append(')');
+
+        return sb.toString();
+    }
 }

@@ -69,6 +69,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -108,6 +109,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     @Inject
     private NavigationHelper navigationHelper;
+    @Inject
+    UserBean userBean;
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPage();
@@ -506,8 +509,41 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
                     searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
                 }
-                String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
-                // logger.trace("Item query: {}", itemQuery);
+
+                String itemQuery = null;
+                if (SolrConstants.BOOKSHELF.equals(queryItem.getField())) {
+
+                    // Bookshelf search
+                    if (StringUtils.isEmpty(queryItem.getValue())) {
+                        continue;
+                    }
+                    if (userBean.isLoggedIn()) {
+                        // User bookshelf
+                        try {
+                            Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(queryItem.getValue(), userBean.getUser());
+                            if (bookshelf != null) {
+                                itemQuery = bookshelf.getFilterQuery();
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    } else {
+                        // Session bookshelf
+                        Optional<Bookshelf> obs = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
+                        if (obs.isPresent()) {
+                            itemQuery = obs.get().getFilterQuery();
+                        }
+                    }
+                    if (StringUtils.isEmpty(itemQuery)) {
+                        // Skip empty bookshelf
+                        continue;
+                    }
+                } else {
+                    // Generate item query
+                    itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
+                }
+
+                logger.trace("Item query: {}", itemQuery);
                 sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
                 switch (queryItem.getOperator()) {
                     case IS:
@@ -619,7 +655,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
-        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, advancedQueryGroups, navigationHelper.getLocale());
+        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale());
     }
 
     /**
@@ -1442,9 +1478,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("getAdvancedSearchSelectItems: {}", field);
         if (field == null) {
             throw new IllegalArgumentException("field may not be null.");
@@ -1457,7 +1494,25 @@ public class SearchBean implements SearchInterface, Serializable {
         if (ret == null) {
             ret = new ArrayList<>();
             logger.trace("Generating drop-down values for {}", field);
-            if (hierarchical) {
+            if (SolrConstants.BOOKSHELF.equals(field)) {
+                if (userBean != null && userBean.isLoggedIn()) {
+                    // User bookshelves
+                    List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(userBean.getUser());
+                    if (!bookshelves.isEmpty()) {
+                        for (Bookshelf bookshelf : bookshelves) {
+                            if (!bookshelf.getItems().isEmpty()) {
+                                ret.add(new StringPair(bookshelf.getName(), bookshelf.getName()));
+                            }
+                        }
+                    }
+                } else {
+                    // Session bookshelf
+                    Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession());
+                    if (bookshelf.isPresent() && !bookshelf.get().getItems().isEmpty()) {
+                        ret.add(new StringPair(bookshelf.get().getName(), bookshelf.get().getName()));
+                    }
+                }
+            } else if (hierarchical) {
                 BrowseBean browseBean = BeanUtils.getBrowseBean();
                 if (browseBean == null) {
                     browseBean = new BrowseBean();
@@ -1513,6 +1568,8 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.debug("PresentationException thrown here");
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here");
+        } catch (DAOException e) {
+            logger.debug("DAOException thrown here");
         }
 
         return new ArrayList<>();
@@ -1525,8 +1582,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws DAOException
      */
-    public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException {
+    public List<StringPair> getAllCollections(String language) throws PresentationException, IndexUnreachableException, DAOException {
         return getAdvancedSearchSelectItems(SolrConstants.DC, language, true);
     }
 

@@ -210,15 +210,13 @@ public class Search implements Serializable {
      * @param searchTerms
      * @param hitsPerPage
      * @param advancedSearchGroupOperator
-     * @param advancedQueryGroups
      * @param locale Selected locale
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
-            List<SearchQueryGroup> advancedQueryGroups, Locale locale)
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -399,8 +397,8 @@ public class Search implements Serializable {
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
                     ? SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                             searchTerms, null, BeanUtils.getLocale())
-                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params, searchTerms,
-                            null, BeanUtils.getLocale(), BeanUtils.getRequest());
+                    : SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                            searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest());
             this.hits.addAll(hits);
         }
     }

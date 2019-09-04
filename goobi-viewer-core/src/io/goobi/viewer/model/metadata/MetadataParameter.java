@@ -82,7 +82,8 @@ public class MetadataParameter implements Serializable {
     private final String prefix;
     private final String suffix;
     private final boolean addUrl;
-    private final boolean dontUseTopstructValue;
+    private final boolean topstructValueFallback;
+    private final boolean topstructOnly;
 
     /*
      * (non-Javadoc)
@@ -138,10 +139,10 @@ public class MetadataParameter implements Serializable {
      * @param prefix
      * @param suffix
      * @param addUrl
-     * @param dontUseTopstructValue
+     * @param topstructValueFallback
      */
     public MetadataParameter(MetadataParameterType type, String source, String key, String masterValueFragment, String defaultValue, String prefix,
-            String suffix, boolean addUrl, boolean dontUseTopstructValue) {
+            String suffix, boolean addUrl, boolean topstructValueFallback, boolean topstructOnly) {
         this.type = type;
         this.source = source;
         this.key = key;
@@ -150,7 +151,8 @@ public class MetadataParameter implements Serializable {
         this.prefix = prefix;
         this.suffix = suffix;
         this.addUrl = addUrl;
-        this.dontUseTopstructValue = dontUseTopstructValue;
+        this.topstructValueFallback = topstructValueFallback;
+        this.topstructOnly = topstructOnly;
     }
 
     /**
@@ -219,8 +221,15 @@ public class MetadataParameter implements Serializable {
     /**
      * @return the dontUseTopstructValue
      */
-    public boolean isDontUseTopstructValue() {
-        return dontUseTopstructValue;
+    public boolean isTopstructValueFallback() {
+        return topstructValueFallback;
+    }
+
+    /**
+     * @return the topstructOnly
+     */
+    public boolean isTopstructOnly() {
+        return topstructOnly;
     }
 
     @Override

@@ -72,4 +72,20 @@ public class BookshelfTest extends AbstractSolrEnabledTest {
         Assert.assertFalse(StringUtils.isBlank(json));
         // TODO check json contents
     }
+
+    /**
+     * @see Bookshelf#getFilterQuery()
+     * @verifies construct query correctly
+     */
+    @Test
+    public void getFilterQuery_shouldConstructQueryCorrectly() throws Exception {
+        Bookshelf bookshelf = new Bookshelf();
+        for (int i = 1; i <= 4; ++i) {
+            BookshelfItem item = new BookshelfItem();
+            item.setPi("PI" + i);
+            bookshelf.getItems().add(item);
+        }
+
+        Assert.assertEquals("+( PI:PI1 PI:PI2 PI:PI3 PI:PI4)", bookshelf.getFilterQuery());
+    }
 }

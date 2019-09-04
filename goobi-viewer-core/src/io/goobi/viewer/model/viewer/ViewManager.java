@@ -41,12 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
@@ -322,12 +324,17 @@ public class ViewManager implements Serializable {
         return getCurrentImageUrl(PageType.viewImage, size);
     }
 
-    public String getCurrentImageOriginalUrl() throws IndexUnreachableException, DAOException {
+    public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
+        return getCurrentMasterImageUrl(Scale.MAX);
+    }
+        
+    public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
+
         PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage()));
+        StringBuilder sb = new StringBuilder(imageDelivery.getThumbs().getFullImageUrl(getCurrentPage(), scale));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, getCurrentPage().getImageType()) > 0) {
                 sb.append("?ignoreWatermark=false");
@@ -359,6 +366,39 @@ public class ViewManager implements Serializable {
             logger.error("Unable to read watermark config, ignore watermark", e);
         }
         return sb.toString();
+    }
+    
+    public String getJpegUrlForDownload() throws IndexUnreachableException, DAOException {
+        
+        Scale scale;
+        
+        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxJpegSize();
+        if(maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+            scale = Scale.MAX;
+        } else if(maxSize.matches("\\d{1,9}")) {
+            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
+        } else {
+            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+        }
+        
+        return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
+    }
+    
+    public String getMasterImageUrlForDownload() throws IndexUnreachableException, DAOException {
+        
+        Scale scale;
+        
+        String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxMasterImageSize();
+        if(maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+            scale = Scale.MAX;
+        } else if(maxSize.matches("\\d{1,9}")) {
+            scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
+        } else {
+            throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
+        }
+        
+        return getCurrentMasterImageUrl(scale);
+
     }
 
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -1128,6 +1168,22 @@ public class ViewManager implements Serializable {
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), currentPage);
     }
 
+    /**
+     * Returns the pdf download link for the current struct element
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws PresentationException 
+     */
+    public String getPdfStructDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException, PresentationException {
+        StructElement currentStruct = getCurrentDocument();
+        return imageDelivery.getPdf().getPdfUrl(currentStruct, currentStruct.getLabel());
+
+    }
+
+    
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
      * 
@@ -2387,9 +2443,9 @@ public class ViewManager implements Serializable {
 
     }
 
-    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException {
+    public Metadata getUsageWidgetAccessCondition() throws IndexUnreachableException, PresentationException {
         Metadata md = DataManager.getInstance().getConfiguration().getWidgetUsageLicenceTextMetadata();
-        md.populate(getTopDocument().getMetadataFields(), BeanUtils.getLocale());
+        md.populate(getTopDocument(), BeanUtils.getLocale());
         return md;
     }
 
@@ -2468,5 +2524,7 @@ public class ViewManager implements Serializable {
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
     }
+    
+    
 
 }

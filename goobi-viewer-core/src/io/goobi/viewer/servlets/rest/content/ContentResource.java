@@ -501,15 +501,15 @@ public class ContentResource {
     /**
      * @param pi
      * @param fileName
-     * @param privilegeHolder
+     * @param privilegeType
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ServiceNotAllowedException
      */
-    public void checkAccess(String pi, String fileName, String privilegeHolder)
+    public void checkAccess(String pi, String fileName, String privilegeType)
             throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
         boolean access =
-                AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName, privilegeHolder);
+                AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName, privilegeType);
         if (!access) {
             throw new ServiceNotAllowedException("No permission found");
         }
@@ -517,12 +517,13 @@ public class ContentResource {
 
     /**
      * @param pi
+     * @param privilegeType
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ServiceNotAllowedException
      */
-    public void checkAccess(String pi, String privilegeHolder) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeHolder, servletRequest);
+    public void checkAccess(String pi, String privilegeType) throws IndexUnreachableException, DAOException, ServiceNotAllowedException {
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeType, servletRequest);
         if (!access) {
             throw new ServiceNotAllowedException("No permission found");
         }

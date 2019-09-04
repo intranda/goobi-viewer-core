@@ -223,7 +223,7 @@ public class BrowseElement implements Serializable {
                             this.metadataList.add(position,
                                     new Metadata(
                                             anchorStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                                    anchorStructElement.getDocStructType(), null, null, null, null, false, false),
+                                                    anchorStructElement.getDocStructType(), null, null, null, null, false, false, false),
                                             Helper.intern(anchorLabel)));
                             position++;
                         }
@@ -241,7 +241,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(
                                     topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                            topStructElement.getDocStructType(), null, null, null, null, false, false),
+                                            topStructElement.getDocStructType(), null, null, null, null, false, false, false),
                                     Helper.intern(topstructLabel)));
                 }
             }
@@ -280,7 +280,7 @@ public class BrowseElement implements Serializable {
                     // If the current element does not contain metadata values, look in the topstruct
                     if (metadataValues.isEmpty()) {
                         if (topStructElement != null && !topStructElement.equals(elementToUse)
-                                && !MetadataParameterType.ANCHORFIELD.equals(param.getType()) && !param.isDontUseTopstructValue()) {
+                                && !MetadataParameterType.ANCHORFIELD.equals(param.getType()) && param.isTopstructValueFallback()) {
                             metadataValues = topStructElement.getMetadataValues(param.getKey());
                             // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
                         } else {

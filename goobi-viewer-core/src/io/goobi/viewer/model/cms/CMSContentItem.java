@@ -193,7 +193,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
 
-    /** Lucence field on which to base a collecion view */
+    /** Lucene field on which to base a collection view */
     @Column(name = "collection_field")
     private String collectionField = null;
 

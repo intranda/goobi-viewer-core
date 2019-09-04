@@ -695,13 +695,15 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateExpandQuery_shouldSkipReservedFields() throws Exception {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
-                SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.DC, SolrConstants.DOCSTRCT });
+                SolrConstants.UGCTERMS, SolrConstants.CMS_TEXT_ALL, SolrConstants.PI_TOPSTRUCT, SolrConstants.PI_ANCHOR, SolrConstants.DC, SolrConstants.DOCSTRCT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
         searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "two", "three" })));
         searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
         searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
         searchTerms.put(SolrConstants.CMS_TEXT_ALL, new HashSet<>(Arrays.asList(new String[] { "seven" })));
+        searchTerms.put(SolrConstants.PI_ANCHOR, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        searchTerms.put(SolrConstants.PI_TOPSTRUCT, new HashSet<>(Arrays.asList(new String[] { "nine" })));
         Assert.assertEquals(
                 " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":(two OR three) OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
@@ -785,7 +787,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
         List<SearchQueryGroup> groups = new ArrayList<>(1);
 
-        SearchQueryGroup group = new SearchQueryGroup(null, 4);
+        SearchQueryGroup group = new SearchQueryGroup(null, 6);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
@@ -799,6 +801,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(3).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(3).setField("MD_FIELD");
         group.getQueryItems().get(3).setValue("val");
+        group.getQueryItems().get(4).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(4).setField(SolrConstants.BOOKSHELF);
+        group.getQueryItems().get(4).setValue("bookshelf");
+        group.getQueryItems().get(5).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(5).setField(SolrConstants.PI_ANCHOR);
+        group.getQueryItems().get(5).setValue("PPN000");
         groups.add(group);
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);

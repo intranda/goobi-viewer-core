@@ -83,7 +83,7 @@ public class SearchHitsNotificationResource {
                 facets.setCurrentFacetString(search.getFacetString());
                 String oldSortString = search.getSortString();
                 search.setSortString('!' + SolrConstants.DATECREATED);
-                search.execute(facets, null, 100, 0, null, null);
+                search.execute(facets, null, 100, 0, null);
                 // TODO what if there're >100 new hits?
                 if (search.getHitsCount() > search.getLastHitsCount()) {
                     List<SearchHit> newHits = search.getHits().subList(0, (int) (search.getHitsCount() - search.getLastHitsCount()));

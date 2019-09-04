@@ -38,7 +38,7 @@
                                         value="#{userBean.getProvidersOfType('userpassword')}" 
                                         var="provider" 
                                         itemValue="#{provider.name}" 
-                                        itemLabel="#{provider.name}" />
+                                        itemLabel="#{provider.label}" />
 	                            	<f:ajax event="change" execute="@form" render="userLoginForm"/>
 	                            </h:selectOneMenu>
 	                        </div>

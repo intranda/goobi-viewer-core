@@ -279,6 +279,11 @@ public class ThumbnailHandler {
      * @return
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
+        return getThumbnailUrl(page, getScale(width, height));
+    }
+    
+    public String getThumbnailUrl(PhysicalElement page, Scale scale) {
+
         String path = getImagePath(page);
         if (path == null) {
             return "";
@@ -286,11 +291,11 @@ public class ThumbnailHandler {
         if (isStaticImageResource(path)) {
             return path;
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
-            return iiifUrlHandler.getModifiedIIIFFUrl(path, null, getScale(width, height), null, null, null);
+            return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
+            return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, getScale(width, height).toString(), "0", "default",
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default",
                     "jpg");
         }
     }
@@ -455,6 +460,12 @@ public class ThumbnailHandler {
      *         contentServer, then this streams the original image file to the client
      */
     public String getFullImageUrl(PhysicalElement page) {
+        return getFullImageUrl(page, Scale.MAX);
+    }
+        
+        
+    public String getFullImageUrl(PhysicalElement page, Scale scale) {
+
         String path = getImagePath(page);
         if (path == null) {
             return "";
@@ -467,7 +478,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, Scale.MAX_SIZE, "0", "default",
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default",
                     format.getFileExtension());
         }
     }
