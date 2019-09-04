@@ -43,7 +43,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
 @Named
 @SessionScoped
@@ -62,7 +62,7 @@ public class CrowdsourcingBean implements Serializable {
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Campaign selectedCampaign;
-    private CrowdsourcingQuery selectedQuery;
+    private Question selectedQuery;
     private boolean editMode = false;
 
     @PostConstruct
@@ -142,13 +142,13 @@ public class CrowdsourcingBean implements Serializable {
 
     public String createNewQueryAction() {
         if (selectedCampaign != null) {
-            selectedQuery = new CrowdsourcingQuery(selectedCampaign);
+            selectedQuery = new Question(selectedCampaign);
         }
         
         return "";
     }
 
-    public String editQueryAction(CrowdsourcingQuery query) {
+    public String editQueryAction(Question query) {
         selectedQuery = query;
         return "";
     }
@@ -241,14 +241,14 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * @return the selectedQuery
      */
-    public CrowdsourcingQuery getSelectedQuery() {
+    public Question getSelectedQuery() {
         return selectedQuery;
     }
 
     /**
      * @param selectedQuery the selectedQuery to set
      */
-    public void setSelectedQuery(CrowdsourcingQuery selectedQuery) {
+    public void setSelectedQuery(Question selectedQuery) {
         this.selectedQuery = selectedQuery;
     }
 

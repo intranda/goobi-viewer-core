@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
 /**
  * @author florian
@@ -65,16 +65,16 @@ public class CampaignItem {
      * @return a new list containing all queries
      */
     @JsonIgnore
-    public List<CrowdsourcingQuery> getQueries() {
-        return new ArrayList<>(campaign.getQueries());
+    public List<Question> getQuestions() {
+        return new ArrayList<>(campaign.getQuestions());
     }
 
-    public void addQuery(CrowdsourcingQuery query) {
-        campaign.getQueries().add(query);
+    public void addQuestion(Question question) {
+        campaign.getQuestions().add(question);
     }
 
-    public void removeQuery(CrowdsourcingQuery query) {
-        campaign.getQueries().remove(query);
+    public void removeQuestion(Question question) {
+        campaign.getQuestions().remove(question);
     }
 
     /**

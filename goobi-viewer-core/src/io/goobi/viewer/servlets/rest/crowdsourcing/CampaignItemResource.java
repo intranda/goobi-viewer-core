@@ -38,10 +38,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
-import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
-import io.goobi.viewer.model.crowdsourcing.queries.QueryType;
-import io.goobi.viewer.model.crowdsourcing.queries.TargetFrequency;
-import io.goobi.viewer.model.crowdsourcing.queries.TargetSelector;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
+import io.goobi.viewer.model.crowdsourcing.questions.TargetFrequency;
+import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -83,23 +83,23 @@ public class CampaignItemResource {
         item.getCampaign().setId(42l);
         item.setSource(manifestURI);
 
-        CrowdsourcingQuery query =
-                new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
-        query.setId(1l);
-        query.setLabel("de", "Bild auswählen");
-        query.setLabel("en", "Select image");
-        query.setDescription("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
-        query.setDescription("en", "Select an area in the image and enter a short description about it.");
-        item.addQuery(query);
+        Question question =
+                new Question(QuestionType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
+        question.setId(1l);
+        question.setLabel("de", "Bild auswählen");
+        question.setLabel("en", "Select image");
+        question.setDescription("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
+        question.setDescription("en", "Select an area in the image and enter a short description about it.");
+        item.addQuestion(question);
 
-        CrowdsourcingQuery comment =
-                new CrowdsourcingQuery(QueryType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
+        Question comment =
+                new Question(QuestionType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
         comment.setId(2l);
         comment.setLabel("de", "Anmerkungen");
         comment.setLabel("en", "Notes");
         comment.setDescription("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
         comment.setDescription("en", "This is a space for notes about the annotations on this page");
-        item.addQuery(comment);
+        item.addQuestion(comment);
 
         return item;
     }
