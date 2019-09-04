@@ -31,13 +31,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
             console.log( '##############################' );
             console.log( 'Crowdsourcing.Item' );
             console.log( 'Crowdsourcing.Item.canvases ', canvases );
-            console.log( 'Crowdsourcing.Item.queries ', queries );
+            console.log( 'Crowdsourcing.Item.questions ', questions );
             console.log( '##############################' );
         }
         
         this.id = item.campaign.id;
         this.status = item.status;
-        this.queries = item.campaign.queries.map(query => new Crowdsourcing.Query(query, this));
+        this.queries = item.campaign.questions.map(query => new Crowdsourcing.Query(query, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
         this.imageOpenEvents = new Rx.Subject();

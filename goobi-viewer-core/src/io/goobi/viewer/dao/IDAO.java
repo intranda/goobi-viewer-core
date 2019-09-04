@@ -425,9 +425,13 @@ public interface IDAO {
     
     public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
     
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Optional<Integer> page) throws DAOException;
+    public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException;
     
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Optional<Integer> page) throws DAOException;
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
+
+    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException;
     
     public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException;
     

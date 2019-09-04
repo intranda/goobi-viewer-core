@@ -146,7 +146,7 @@ public class PersistentAnnotation{
      * @param id2
      * @return
      */
-    private String parsePI(URI uri) {
+    public static String parsePI(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
         if(matcher.find()) {
             return matcher.group(1);
@@ -155,7 +155,7 @@ public class PersistentAnnotation{
         }
     }
     
-    private Integer parsePageOrder(URI uri) {
+    public static Integer parsePageOrder(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
         if(matcher.find()) {
             return Integer.parseInt(matcher.group(2));
