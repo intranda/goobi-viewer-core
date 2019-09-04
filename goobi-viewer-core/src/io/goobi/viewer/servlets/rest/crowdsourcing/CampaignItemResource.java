@@ -80,19 +80,15 @@ public class CampaignItemResource {
         Question question =
                 new Question(QuestionType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
         question.setId(1l);
-        question.setLabel("de", "Bild auswählen");
-        question.setLabel("en", "Select image");
-        question.setDescription("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
-        question.setDescription("en", "Select an area in the image and enter a short description about it.");
+        question.setText("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
+        question.setText("en", "Select an area in the image and enter a short description about it.");
         item.addQuestion(question);
 
         Question comment =
                 new Question(QuestionType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
         comment.setId(2l);
-        comment.setLabel("de", "Anmerkungen");
-        comment.setLabel("en", "Notes");
-        comment.setDescription("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
-        comment.setDescription("en", "This is a space for notes about the annotations on this page");
+        comment.setText("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
+        comment.setText("en", "This is a space for notes about the annotations on this page");
         item.addQuestion(comment);
 
         return item;

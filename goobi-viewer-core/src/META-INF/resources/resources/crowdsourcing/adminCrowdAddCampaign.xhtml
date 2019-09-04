@@ -22,7 +22,7 @@
                 <!-- BACK TO OVERVIEW -->
                 <h:form rendered="#{crowdsourcingBean.selectedCampaign == null}">
                     <h:commandLink action="pretty:adminCrowdCampaigns">
-                        <h:outputText value="#{msg.cms_backToOverview}" />
+                        <h:outputText value="#{msg.crowdsourcing_backToOverview}" />
                     </h:commandLink>
                 </h:form>
 
@@ -47,7 +47,7 @@
                                     <!-- CREATE PAGE WRAPPER -->
                                     <div class="crowdsourcing-add-campaign_wrapper">
                                     
-                                        <h2>#{msg.general}</h2>
+<!--                                         <h2>#{msg.general}</h2> -->
                                     
                                         <div role="tabpanel">
                                             <!-- NAV TABS -->
@@ -70,6 +70,7 @@
                                                         id="#{locale.language}">
                                                         <!-- PAGE CONTENT -->
                                                         <div class="edit-content-page edit-content-page-content">
+                                                        
                                                             <!-- TITLE -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
@@ -112,7 +113,7 @@
                                                                 <div class="cms-module__option-control">
                                                                     <h:inputTextarea id="adminCrowdAddCampaignDescription" styleClass="form-control"
                                                                         value="#{crowdsourcingBean.selectedCampaign.description}" />
-                                                                    <span class="cms-module__option-control-helptext">#{msg.help__cms_page_description}</span>
+                                                                    <span class="cms-module__option-control-helptext">#{msg.help__crowdsourcing_campaign_description}</span>
                                                                 </div>
                                                                 <div class="cms-module__option-help">
                                                                     <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -155,16 +156,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </h:panelGroup>
-
-                                                <!-- SIDEBAR EDITOR TAB -->
-             <!--                               <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" /> -->
-                                            </div>
-                                        </div>
-                                        
-                                        <br />
-                            
+                                                        
                                         <h2>#{msg.crowdsourcing_questions}</h2>
                                         
                                         <!-- Add new question link -->
@@ -174,15 +166,27 @@
   
                                         <ui:repeat var="question" value="#{crowdsourcingBean.selectedCampaign.questions}" varStatus="status">
                                             <div class="edit-content-page edit-content-page-content">
-                                                <!-- QUESTION -->
+                                            
+                                                <!-- TEXT -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
-                                                        <label for="adminCrowdAddCampaignQuestionQuestion">#{msg.question}:</label>
+                                                        <label for="adminCrowdAddCampaignQuestionText_#{status.count}">#{msg.admin__crowdsourcing_question_text}*:</label>
+                                                    </div>
+                                                    <div class="cms-module__option-message">
+                                                        <h:messages for="adminCrowdAddCampaignQuestionText_#{status.count}" 
+                                                            infoClass="cms-module__option-message-status success" 
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="cms-module__option-message-mark">
+                                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                        </div>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputTextarea id="adminCrowdAddCampaignQuestionQuestion" required="true" styleClass="form-control"
-                                                            value="#{question.label}" />
-                                                        <span class="cms-module__option-control-helptext">#{msg.help__crowdsourcing_question_question}</span>
+                                                        <h:inputTextarea id="adminCrowdAddCampaignQuestionText_#{status.count}" required="true" styleClass="form-control"
+                                                            value="#{question.text}" />
+                                                        <span class="cms-module__option-control-helptext">#{msg.help__crowdsourcing_question_text}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -190,6 +194,7 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                                
                                                 <!-- TYPE -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
@@ -208,6 +213,7 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                                
                                                 <!-- TARGET SELECTOR -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
@@ -226,10 +232,97 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                                
+                                               <!-- Add new question link -->
+                                               <h:commandLink action="#{crowdsourcingBean.removeQuestionAction(question)}" title="#{msg.delete}" alt="#{msg.delete}">
+                                                   #{msg.delete}
+                                               </h:commandLink>
                                             </div>
                                         </ui:repeat>
+                                                        
+                                                    </div>
+                                                </h:panelGroup>
+
+                                                <!-- SIDEBAR EDITOR TAB -->
+             <!--                               <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" /> -->
+                                            </div>
+                         
+                                        </div>
+                                        
+                                        <br />
+
+                                        <!-- PERMALINK -->
+                                        <div class="cms-module__option-group">
+                                            <div class="cms-module__option-label">
+                                                <label for="adminCrowdAddCampaignPermalink">#{msg.label__crowdsourcing_campaign_permalink}:</label>
+                                            </div>
+                                            <div class="cms-module__option-control">
+                                                #{crowdsourcingBean.campaignsRootUrl}
+                                                <h:inputText id="adminCrowdAddCampaignPermalink" styleClass="form-control"
+                                                    value="#{crowdsourcingBean.selectedCampaign.permalink}" />
+                                                <span class="cms-module__option-control-helptext">#{msg.crowdsourcing_campaign_permalink}</span>
+                                            </div>
+                                            <div class="cms-module__option-help">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- BREADCRUMB PARENT PAGE -->
+                                        <div class="cms-module__option-group">
+                                            <div class="cms-module__option-label">
+                                                <label for="pageBreadcrumbParent">#{msg.cms_page_breadcrumb_parent}:</label>
+                                            </div>
+                                            <div class="cms-module__option-control">
+                                                <!-- AREA FOR AJAX REFRESH -->
+                                                <h:panelGroup id="pageBreadcrumbParentGroup">
+                                                    <!-- VALIDATION MESSAGE -->
+                                                    <div class="cms-module__option-message">
+                                                        <h:messages for="pageBreadcrumbParent" 
+                                                            infoClass="cms-module__option-message-status success" 
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="cms-module__option-message-mark">
+                                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                
+                                                    <!-- SELECT MENU -->
+                                                    <div class="custom-control custom-control--select">
+                                                        <h:selectOneMenu 
+                                                            id="pageBreadcrumbParent" 
+                                                            styleClass="form-control" 
+                                                            value="#{crowdsourcingBean.selectedCampaign.breadcrumbParentCmsPageId}">
+                                                            <f:selectItem 
+                                                                itemValue="#{null}"
+                                                                itemLabel="-" />
+                                                            <f:selectItems 
+                                                                value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" 
+                                                                var="availablePage" 
+                                                                itemValue="#{availablePage.id}"
+                                                                itemLabel="#{availablePage.title}" />
+                                                            <f:ajax event="change" render="pageBreadcrumbParentGroup" />
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                </h:panelGroup>
+                                                <!-- INLINE HELP -->
+                                                <span class="cms-module__option-control-helptext">#{msg.cms_page_breadcrumb_parent_help}</span>
+                                            </div>
+                                            <!-- TOGGLE INLINE HELP -->
+                                            <div class="cms-module__option-help">
+                                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+    
                                     </div>
                                 </div>
+                                
+                                
 
                                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
                                     <!-- METADATA WRAPPER -->

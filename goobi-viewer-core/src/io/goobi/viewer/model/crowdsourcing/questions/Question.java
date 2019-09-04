@@ -93,42 +93,20 @@ public class Question {
         this.owner = owner;
     }
 
-    public String getLabel() {
-        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "label");
+    public String getText() {
+        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "text");
     }
 
-    public void setLabel(String label) {
-        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), label, "label", this);
-    }
-
-    public String getDescription() {
-        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "description");
-    }
-
-    public void setDescription(String description) {
-        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), description, "description", this);
-    }
-
-    public String getHelp() {
-        return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "help");
-    }
-
-    public void setHelp(String help) {
-        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), help, "help", this);
+    public void setText(String text) {
+        QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), text, "text", this);
     }
 
     @Deprecated
-    public void setLabel(String lang, String value) {
-        QuestionTranslation.setTranslation(translations, lang, value, "label", this);
+    public void setText(String lang, String value) {
+        QuestionTranslation.setTranslation(translations, lang, value, "text", this);
     }
 
-    @Deprecated
-    public void setDescription(String lang, String value) {
-        QuestionTranslation.setTranslation(translations, lang, value, "description", this);
-    }
-    
     public List<QuestionType> getAvailableQuestionTypes() {
-        System.out.println(QuestionType.values().toString());
         return Arrays.asList(QuestionType.values());
     }
 

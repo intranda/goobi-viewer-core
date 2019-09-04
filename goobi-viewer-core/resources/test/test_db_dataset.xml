@@ -203,11 +203,9 @@
         
     <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
     
-    <cs_questions query_id="1" owner_id="1" query_type="GEOLOCATION_AREA" target_selector="RECTANGLE"  />
+    <cs_questions question_id="1" owner_id="1" question_type="GEOLOCATION_AREA" target_selector="RECTANGLE"  />
     
-    <cs_question_translations translation_id="1" owner_id="1" language="en" tag="label" value="English label" />
-    <cs_question_translations translation_id="2" owner_id="1" language="en" tag="description" value="English description" />
-    <cs_question_translations translation_id="3" owner_id="1" language="en" tag="help" value="English help" />
+    <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
     
 </dataset>
 

@@ -142,6 +142,16 @@ public class CrowdsourcingBean implements Serializable {
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
             selectedCampaign.getQuestions().add(new Question(selectedCampaign));
+            selectedCampaign.setDirty(true);
+        }
+
+        return "";
+    }
+    
+    public String removeQuestionAction(Question question) {
+        if (selectedCampaign != null && question != null) {
+            selectedCampaign.getQuestions().remove(question);
+            selectedCampaign.setDirty(true);
         }
 
         return "";
@@ -187,9 +197,9 @@ public class CrowdsourcingBean implements Serializable {
                 success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
             }
             if (success) {
+                selectedCampaign.setDirty(false);
                 Messages.info("crowdsoucing_campaignSaveSuccess");
                 logger.trace("reload campaign");
-                //                selectedPage = getCMSPage(selectedPage.getId());
                 setSelectedCampaign(selectedCampaign);
                 logger.trace("update pages");
                 lazyModelCampaigns.update();
@@ -198,6 +208,10 @@ public class CrowdsourcingBean implements Serializable {
             }
         } finally {
         }
+    }
+    
+    public String getCampaignsRootUrl() {
+        return navigationHelper.getApplicationUrl() + "campaigns/";
     }
 
     /**

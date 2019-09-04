@@ -54,11 +54,13 @@
             <div class="page-metadata-item page-metadata-item-action">
                 <ul>
                     <li>
-                        <!-- preview description text -->
-                        <div id="previewDescription" class="alert alert-danger" role="alert">
-                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                            #{msg.cms_pagePreview_info}
-                        </div>
+                        <!-- Changes need to be saved warning -->
+                        <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.dirty}">
+                            <div id="previewDescription" class="alert alert-danger" role="alert">
+                                <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                #{msg.admin__crowdsourcing_campaign_dirty_warning}
+                            </div>
+                        </ui:fragment>
 
                         <!-- preview page -->
                         <button type="button" id="preview-button" class="btn btn--default" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
@@ -68,7 +70,8 @@
 
                     <li>
                         <!-- save page -->
-                        <h:commandButton type="submit" action="#{crowdsourcingBean.saveSelectedCampaign}" id="save-button" styleClass="btn btn--success" value="#{msg.crowdsourcing_campaignMetadata_save}"
+                        <h:commandButton type="submit" action="#{crowdsourcingBean.saveSelectedCampaign}" id="save-button"
+                            styleClass="btn btn--success" value="#{msg.button__save}"
                             onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
                         </h:commandButton>
                     </li>

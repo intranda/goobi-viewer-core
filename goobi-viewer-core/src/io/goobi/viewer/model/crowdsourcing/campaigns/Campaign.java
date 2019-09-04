@@ -64,7 +64,7 @@ public class Campaign {
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{id}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "campaign_id")
@@ -99,6 +99,13 @@ public class Campaign {
     @Column(name = "permalink")
     private String permalink;
 
+    /**
+     * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
+     * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
+     */
+    @Column(name = "breadcrumb_parent_page")
+    private String breadcrumbParentCmsPageId = null;
+
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CampaignTranslation> translations = new ArrayList<>();
@@ -109,6 +116,9 @@ public class Campaign {
 
     @Transient
     private Locale selectedLocale;
+
+    @Transient
+    private boolean dirty = false;
 
     public Campaign() {
         this.selectedLocale = Locale.ENGLISH;
@@ -206,17 +216,17 @@ public class Campaign {
     public Long getId() {
         return id;
     }
-    
+
     public static Long getId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
-        if(matcher.find()) {
+        if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
-        } else {
-            return null;
         }
+
+        return null;
     }
-    
+
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
@@ -341,6 +351,20 @@ public class Campaign {
     }
 
     /**
+     * @return the breadcrumbParentCmsPageId
+     */
+    public String getBreadcrumbParentCmsPageId() {
+        return breadcrumbParentCmsPageId;
+    }
+
+    /**
+     * @param breadcrumbParentCmsPageId the breadcrumbParentCmsPageId to set
+     */
+    public void setBreadcrumbParentCmsPageId(String breadcrumbParentCmsPageId) {
+        this.breadcrumbParentCmsPageId = breadcrumbParentCmsPageId;
+    }
+
+    /**
      * @return the translations
      */
     public List<CampaignTranslation> getTranslations() {
@@ -380,5 +404,19 @@ public class Campaign {
      */
     public void setSelectedLocale(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
+    }
+
+    /**
+     * @return the dirty
+     */
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    /**
+     * @param dirty the dirty to set
+     */
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }
