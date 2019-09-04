@@ -131,7 +131,6 @@ public class WebAnnotationResource {
      * @throws URISyntaxException
      */
     private WebAnnotation createAnnotation(Comment comment) {
-        try {
             URI resourceId = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "webannotation/comments/" + comment.getPi() + "/" + comment.getPage() + "/" + comment.getId());
             WebAnnotation anno = new WebAnnotation(resourceId);
             anno.setBody(new TextualResource(comment.getText()));
@@ -141,10 +140,6 @@ public class WebAnnotationResource {
             anno.setCreator(createAgent(comment.getOwner()));
             anno.setGenerator(new Agent(URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)), AgentType.SOFTWARE, "Goobi viewer"));
             return anno;
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.toString());
-            return null;
-        }
     }
 
     /**
@@ -152,13 +147,8 @@ public class WebAnnotationResource {
      * @return
      */
     private Agent createAgent(User owner) {
-        try {
             Agent agent = new Agent(URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/" + owner.getId()), AgentType.PERSON, owner.getDisplayName());
             return agent;
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.toString());
-            return null;
-        }
     }
 
     /**

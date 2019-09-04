@@ -760,8 +760,6 @@ public class ContentResource {
             uri = uri.resolve("content/tei/" + pi + "/" + locale);
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.toString());
         }
         return uri;
     }
@@ -773,8 +771,6 @@ public class ContentResource {
             uri = uri.resolve("content/cmdi/" + pi + "/" + locale);
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.toString());
         }
         return uri;
     }

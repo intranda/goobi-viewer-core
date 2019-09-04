@@ -15,10 +15,13 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,9 +42,11 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
 import io.goobi.viewer.model.misc.Translation;
 
@@ -57,6 +62,9 @@ public class Campaign {
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
 
+    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{id}";
+    private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/?$";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "campaign_id")
@@ -194,8 +202,23 @@ public class Campaign {
     /**
      * @return the id
      */
+    @JsonIgnore
     public Long getId() {
         return id;
+    }
+    
+    public static Long getId(URI idAsURI) {
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        if(matcher.find()) {
+            String idString = matcher.group(1);
+            return Long.parseLong(idString);
+        } else {
+            return null;
+        }
+    }
+    
+    public URI getIdAsURI() {
+        return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
 
     /**

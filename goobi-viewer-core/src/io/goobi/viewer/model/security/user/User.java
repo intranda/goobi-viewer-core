@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -85,6 +88,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
 	public static final String ATTRIBUTE_LOGINS = "logins";
 
 	public static final int AVATAR_DEFAULT_SIZE = 96;
+	
+    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
+    private static final String URI_ID_REGEX = ".*/users/(\\d+)/?$";
+	
 
 	@Transient
 	private BCrypt bcrypt = new BCrypt();
@@ -1308,7 +1315,17 @@ public class User implements ILicensee, HttpSessionBindingListener {
 		this.bcrypt = bcrypt;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
-	}
+    public static Long getId(URI idAsURI) {
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        if(matcher.find()) {
+            String idString = matcher.group(1);
+            return Long.parseLong(idString);
+        } else {
+            return null;
+        }
+    }
+    
+    public URI getIdAsURI() {
+        return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
+    }
 }

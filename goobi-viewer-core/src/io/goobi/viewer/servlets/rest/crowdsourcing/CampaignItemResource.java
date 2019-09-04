@@ -28,14 +28,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.queries.CrowdsourcingQuery;
@@ -62,11 +60,7 @@ public class CampaignItemResource {
     private final URI requestURI;
 
     public CampaignItemResource() {
-        try {
-            this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
-        } catch (ViewerConfigurationException e) {
-            throw new WebApplicationException(e);
-        }
+        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
     @GET
@@ -102,11 +96,23 @@ public class CampaignItemResource {
         return item;
     }
     
+    /**
+     * Takes a map of annotation target (canvas/manifest) ids 
+     * and replaces all annotations for the given campaign, pi and targeted pages (if target is canvas) with the ones
+     * contained in the map
+     * 
+     * @param map
+     * @param campaignId
+     * @param pi
+     * @throws URISyntaxException
+     */
     @PUT
     @Path("/{campaignId}/annotate/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
+        
+        
         
     }
 

@@ -920,7 +920,7 @@ public final class Configuration extends AbstractConfiguration {
      * @throws ViewerConfigurationException
      * @should return correct value
      */
-    public String getContentRestApiUrl() throws ViewerConfigurationException {
+    public String getContentRestApiUrl()  {
         return getRestApiUrl() + "content/";
 
     }
@@ -929,10 +929,10 @@ public final class Configuration extends AbstractConfiguration {
      * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
      * @throws ViewerConfigurationException
      */
-    public String getRestApiUrl() throws ViewerConfigurationException {
+    public String getRestApiUrl() {
         String urlString = getLocalString("urls.rest");
         if (urlString == null) {
-            throw new ViewerConfigurationException("urls.rest is not configured.");
+            urlString = "localhost:8080/default-viewer/rest";
         }
 
         if (!urlString.endsWith("/")) {

@@ -78,24 +78,18 @@ public class ImageHandler {
                 pageName = "image";
 
         }
-
-        try {
-            if (isRestrictedUrl(page.getFilepath())) {
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
-                sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
-                return sb.toString();
-            } else if (isExternalUrl(page.getFilepath())) {
-                return page.getFilepath();
-            } else {
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
-                sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
-                return sb.toString();
-            }
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.getMessage());
+        if (isRestrictedUrl(page.getFilepath())) {
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
+            return sb.toString();
+        } else if (isExternalUrl(page.getFilepath())) {
+            return page.getFilepath();
+        } else {
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
+            return sb.toString();
         }
 
-        return null;
     }
 
     /**
@@ -129,8 +123,10 @@ public class ImageHandler {
                     sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
                 }
                 sbUrl.append(page.getDataRepository()).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
-            } else {                
-                sbUrl.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/");
+            } else {
+                sbUrl.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                        .append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                        .append("/");
             }
             sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
             url = Paths.get(sbUrl.toString()).toUri().toString();
@@ -152,7 +148,7 @@ public class ImageHandler {
             url = url.replace("info.json", "full/max/0/default.jpg");
         }
         PageSource imageSource = new PageSource(0, url, Collections.emptyMap());
-        try(ImageManager manager = new ImageManager(imageSource.getImageUri())) {
+        try (ImageManager manager = new ImageManager(imageSource.getImageUri())) {
             ImageInformation info = manager.getImageInformation(new URI(""));
             return info;
         } catch (FileNotFoundException e) {
@@ -196,8 +192,11 @@ public class ImageHandler {
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
     public static boolean isRestrictedUrl(String path) {
-        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(
-                regex -> Pattern.compile(regex).matcher(path).matches());
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getRestrictedImageUrls()
+                .stream()
+                .anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
 
     protected static ImageType getImageType(ImageInformation info) {

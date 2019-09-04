@@ -120,9 +120,6 @@ public class IIIFUrlHandler {
 //                thumbCompression.ifPresent(compr -> sb.append("?compression=").append(thumbCompression));
                 return sb.toString();
             }
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.getMessage());
-            return "";
         } catch (URISyntaxException e) {
             logger.error("Not a valid url: " + fileUrl,e.getMessage());
             return "";
