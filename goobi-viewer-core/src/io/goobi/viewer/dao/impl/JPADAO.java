@@ -3774,20 +3774,54 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
+    
+    /**
+     * Get all annotations associated with the work of the given pi
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException 
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        Query q = em.createQuery(query);
+        q.setParameter("pi", pi);
+
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForTarget(java.lang.String, java.util.Optional)
      */
     @Override
-    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Optional<Integer> page) throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        if(page.isPresent()) {
+        if(page !=null) {
             query += " AND a.targetPageOrder = :page";
+        } else {
+            query += " AND a.targetPageOrder IS NULL";
         }
         Query q = em.createQuery(query);
         q.setParameter("pi", pi);
-        page.ifPresent(p -> q.setParameter("page", p));
+        if(page !=null) {
+            q.setParameter("page", page);
+        }
+
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+    
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator = :campaign AND a.targetPI = :pi";
+        Query q = em.createQuery(query);
+        q.setParameter("campaign", campaign);
+        q.setParameter("pi", pi);
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -3797,16 +3831,20 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndTarget(java.lang.Long, java.lang.String, java.util.Optional)
      */
     @Override
-    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Optional<Integer> page) throws DAOException {
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE  a.generator = :campaign AND a.targetPI = :pi";
-        if(page.isPresent()) {
+        if(page !=null) {
             query += " AND a.targetPageOrder = :page";
+        } else {
+            query += " AND a.targetPageOrder IS NULL";
         }
         Query q = em.createQuery(query);
         q.setParameter("campaign", campaign);
         q.setParameter("pi", pi);
-        page.ifPresent(p -> q.setParameter("page", p));
+        if(page !=null) {
+            q.setParameter("page", page);
+        }
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();

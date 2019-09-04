@@ -35,6 +35,7 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -59,6 +60,7 @@ public class Question {
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
+    @JsonIgnore
     private Campaign owner;
 
     /** Translated metadata. */

@@ -25,10 +25,6 @@ var Crowdsourcing = ( function() {
     'use strict';
     
     var _debug = false; 
-    var canvases = [];
-    var currentCanvasIndex = 0;
-    var viewer = null;
-    var queries = [];
     
     var crowdsourcing = {};
     

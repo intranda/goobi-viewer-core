@@ -227,6 +227,7 @@ public class Campaign {
         return null;
     }
 
+    @JsonIgnore
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
