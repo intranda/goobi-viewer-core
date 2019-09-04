@@ -108,7 +108,7 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.servlets.rest.crowdsourcing.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

@@ -51,6 +51,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -3745,5 +3746,128 @@ public class JPADAO implements IDAO {
     @Override
     public Query createQuery(String string) {
         return em.createQuery(string);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotation(java.lang.Long)
+     */
+    @Override
+    public PersistentAnnotation getAnnotation(Long id) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT a FROM PersistentAnnotation a WHERE a.id = :id");
+        q.setParameter("id", id);
+        q.setFlushMode(FlushModeType.COMMIT);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        PersistentAnnotation annotation = (PersistentAnnotation) getSingleResult(q).orElse(null);
+        return annotation;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaign(java.lang.Long)
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator = :campaign";
+        Query q = em.createQuery(query);
+        q.setParameter("campaign", campaign);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForTarget(java.lang.String, java.util.Optional)
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Optional<Integer> page) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        if(page.isPresent()) {
+            query += " AND a.targetPageOrder = :page";
+        }
+        Query q = em.createQuery(query);
+        q.setParameter("pi", pi);
+        page.ifPresent(p -> q.setParameter("page", p));
+
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndTarget(java.lang.Long, java.lang.String, java.util.Optional)
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Optional<Integer> page) throws DAOException {
+        preQuery();
+        String query = "SELECT a FROM PersistentAnnotation a WHERE  a.generator = :campaign AND a.targetPI = :pi";
+        if(page.isPresent()) {
+            query += " AND a.targetPageOrder = :page";
+        }
+        Query q = em.createQuery(query);
+        q.setParameter("campaign", campaign);
+        q.setParameter("pi", pi);
+        page.ifPresent(p -> q.setParameter("page", p));
+
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /**
+     * @return false if the annotation already exists, true if it was persisted
+     */
+    @Override
+    public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException {
+        if(getAnnotation(annotation.getId()) != null) {
+            return false;
+        }
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(annotation);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     */
+    @Override
+    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch(IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     */
+    @Override
+    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(annotation);
+            em.getTransaction().commit();
+            return true;
+        } catch(IllegalArgumentException e) {
+            return false;
+        } finally {
+            em.close();
+        }
     }
 }

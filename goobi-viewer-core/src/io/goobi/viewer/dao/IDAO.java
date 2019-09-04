@@ -25,6 +25,7 @@ import javax.persistence.Query;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
@@ -394,14 +395,14 @@ public interface IDAO {
      * @return
      * @throws DAOException
      */
-    CMSPage getCMSPageForEditing(long id) throws DAOException;
+    public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
     /**
      * @param pi
      * @return
      * @throws DAOException
      */
-    List<Integer> getPagesWithComments(String pi) throws DAOException;
+    public List<Integer> getPagesWithComments(String pi) throws DAOException;
 
     /**
      * @param solrField
@@ -418,6 +419,22 @@ public interface IDAO {
 
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
 
+    
+    /**Annotations**/
+    public PersistentAnnotation getAnnotation(Long id) throws DAOException;
+    
+    public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
+    
+    public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Optional<Integer> page) throws DAOException;
+    
+    public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Optional<Integer> page) throws DAOException;
+    
+    public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException;
+    
+    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException;
+    
+    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException;
+    
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
 
