@@ -66,7 +66,9 @@
                                                         <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                     </h:commandLink> | 
                                                     <!-- Delete link -->
-                                                    <h:commandLink action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
+                                                    <h:commandLink
+                                                        onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 
+                                                        action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
                                                         #{msg.delete}
                                                     </h:commandLink>
                                                 </td>

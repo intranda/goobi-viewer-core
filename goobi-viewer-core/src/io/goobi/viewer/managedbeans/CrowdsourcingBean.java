@@ -139,6 +139,17 @@ public class CrowdsourcingBean implements Serializable {
         return "pretty:adminCrowdEditCampaign";
     }
 
+    public String deleteCampaignAction(Campaign campaign) throws DAOException {
+        if (campaign != null) {
+            if (DataManager.getInstance().getDao().deleteCampaign(campaign)) {
+                Messages.info("admin__crowdsoucing_campaign_deleteSuccess");
+                lazyModelCampaigns.update();
+            }
+        }
+
+        return "";
+    }
+
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
             selectedCampaign.getQuestions().add(new Question(selectedCampaign));
@@ -147,7 +158,7 @@ public class CrowdsourcingBean implements Serializable {
 
         return "";
     }
-    
+
     public String removeQuestionAction(Question question) {
         if (selectedCampaign != null && question != null) {
             selectedCampaign.getQuestions().remove(question);
@@ -209,7 +220,7 @@ public class CrowdsourcingBean implements Serializable {
         } finally {
         }
     }
-    
+
     public String getCampaignsRootUrl() {
         return navigationHelper.getApplicationUrl() + "campaigns/";
     }
