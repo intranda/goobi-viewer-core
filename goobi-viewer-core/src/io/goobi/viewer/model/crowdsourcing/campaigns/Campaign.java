@@ -47,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 
@@ -307,6 +308,28 @@ public class Campaign {
         this.dateStart = dateStart;
     }
 
+    public String getDateStartString() {
+        if (dateStart == null) {
+            return null;
+        }
+
+        return DateTools.formatterISO8601Date.print(dateStart.getTime());
+    }
+
+    /**
+     * 
+     * @param dateStartString
+     * @should parse string correctly
+     */
+    public void setDateStartString(String dateStartString) {
+        logger.trace("setDateStartString: {}", dateStartString);
+        if (dateStartString != null) {
+            this.dateStart = DateTools.parseDateFromString(dateStartString);
+        } else {
+            this.dateStart = null;
+        }
+    }
+
     /**
      * @return the dateEnd
      */
@@ -319,6 +342,27 @@ public class Campaign {
      */
     public void setDateEnd(Date dateEnd) {
         this.dateEnd = dateEnd;
+    }
+
+    public String getDateEndString() {
+        if (dateEnd == null) {
+            return null;
+        }
+
+        return DateTools.formatterISO8601Date.print(dateEnd.getTime());
+    }
+
+    /**
+     * 
+     * @param dateEndString
+     * @should parse string correctly
+     */
+    public void setDateEndString(String dateEndString) {
+        if (dateEndString != null) {
+            this.dateEnd = DateTools.parseDateFromString(dateEndString);
+        } else {
+            this.dateEnd = null;
+        }
     }
 
     /**

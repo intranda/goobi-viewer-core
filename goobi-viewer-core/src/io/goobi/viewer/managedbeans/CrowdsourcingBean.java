@@ -169,6 +169,20 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * Resets dateStart + dateEnd to null.
+     * 
+     * @return
+     */
+    public String resetDurationAction() {
+        if (selectedCampaign != null) {
+            selectedCampaign.setDateStart(null);
+            selectedCampaign.setDateEnd(null);
+        }
+
+        return "";
+    }
+
+    /**
      * @return
      * @throws DAOException
      */
@@ -201,7 +215,6 @@ public class CrowdsourcingBean implements Serializable {
                 selectedCampaign.setDateCreated(now);
             }
             selectedCampaign.setDateUpdated(now);
-            logger.trace("update dao");
             if (selectedCampaign.getId() != null) {
                 success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
             } else {
@@ -210,9 +223,7 @@ public class CrowdsourcingBean implements Serializable {
             if (success) {
                 selectedCampaign.setDirty(false);
                 Messages.info("crowdsoucing_campaignSaveSuccess");
-                logger.trace("reload campaign");
                 setSelectedCampaign(selectedCampaign);
-                logger.trace("update pages");
                 lazyModelCampaigns.update();
             } else {
                 Messages.error("crowdsourcing_campaignSaveFailure");

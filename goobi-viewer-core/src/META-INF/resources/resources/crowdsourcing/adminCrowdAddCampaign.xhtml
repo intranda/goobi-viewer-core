@@ -12,7 +12,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsBean.editMode ? 'adminCrowdEditCampaign' : 'adminCrowdAddCampaign')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(crowdsourcingBean.editMode ? 'adminCrowdEditCampaign' : 'adminCrowdAddCampaign')}" />
         </f:metadata>
     </ui:define>
 
@@ -28,7 +28,7 @@
 
                 <h:panelGroup rendered="#{crowdsourcingBean.selectedCampaign != null}">
                     <h2 class="admin__content-inner-title clearfix">
-                        #{cmsBean.editMode ? msg.admin__crowdsourcing_campaign_edit : msg.admin__crowdsourcing_campaign_new}
+                        #{crowdsourcingBean.editMode ? msg.admin__crowdsourcing_campaign_edit : msg.admin__crowdsourcing_campaign_new}
                     
 	                    <!-- EXIT -->
                         <a 
@@ -160,9 +160,8 @@
                                         <h2>#{msg.admin__crowdsourcing_questions}</h2>
                                         
                                         <!-- Add new question link -->
-                                        <h:commandLink action="#{crowdsourcingBean.addNewQuestionAction}" title="#{msg.add}" alt="#{msg.add}">
-                                            #{msg.add}
-                                        </h:commandLink>
+                                        <h:commandButton action="#{crowdsourcingBean.addNewQuestionAction}" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+                                        </h:commandButton>
   
                                         <ui:repeat var="question" value="#{crowdsourcingBean.selectedCampaign.questions}" varStatus="status">
                                             <div class="edit-content-page edit-content-page-content">

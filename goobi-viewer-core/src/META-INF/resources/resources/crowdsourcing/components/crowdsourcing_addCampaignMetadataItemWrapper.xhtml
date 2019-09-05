@@ -1,9 +1,9 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:t="http://myfaces.apache.org/tomahawk" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
@@ -22,29 +22,29 @@
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_visibility}:" />
                         </dt>
                         <dd>
-                <h:selectOneRadio value="#{crowdsourcingBean.selectedCampaign.visibility}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
-                    <f:ajax event="valueChange" />
-                    <f:selectItem id="select_private" itemLabel="private" itemValue="PRIVATE"></f:selectItem>
-                    <f:selectItem id="select_public" itemLabel="public" itemValue="PUBLIC"></f:selectItem>
-                </h:selectOneRadio>
+                            <h:selectOneRadio value="#{crowdsourcingBean.selectedCampaign.visibility}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
+                                <f:ajax event="valueChange" />
+                                <f:selectItem id="select_private" itemLabel="private" itemValue="PRIVATE"></f:selectItem>
+                                <f:selectItem id="select_public" itemLabel="public" itemValue="PUBLIC"></f:selectItem>
+                            </h:selectOneRadio>
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration}:" />
                         </dt>
                         <dd>
-                           // TODO remove button
+                           <h:commandButton action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}" />
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_from}:" />
                         </dt>
                         <dd>
-                             <h:outputText value="#{cmsBean.selectedPage.dateStart}" />
+                            <input type="date" jsf:id="campaignDateStart" jsf:value="#{crowdsourcingBean.selectedCampaign.dateStartString}" />
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_until}:" />
                         </dt>
                         <dd>
-                             <h:outputText value="#{cmsBean.selectedPage.dateEnd}" />
+                            <input type="date" jsf:id="campaignDateEnd" jsf:value="#{crowdsourcingBean.selectedCampaign.dateEndString}" />
                         </dd>
                     </dl>
                 </div>
@@ -71,8 +71,7 @@
                     <li>
                         <!-- save page -->
                         <h:commandButton type="submit" action="#{crowdsourcingBean.saveSelectedCampaign}" id="save-button"
-                            styleClass="btn btn--success" value="#{msg.button__save}"
-                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
+                            styleClass="btn btn--success" value="#{msg.button__save}">
                         </h:commandButton>
                     </li>
                 </ul>
