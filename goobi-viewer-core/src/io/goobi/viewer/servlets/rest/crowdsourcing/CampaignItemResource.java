@@ -46,7 +46,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
-import io.goobi.viewer.model.crowdsourcing.questions.TargetFrequency;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
@@ -62,7 +61,6 @@ public class CampaignItemResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
 
-    
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -88,15 +86,13 @@ public class CampaignItemResource {
         item.getCampaign().setId(42l);
         item.setSource(manifestURI);
 
-        Question question =
-                new Question(QuestionType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
+        Question question = new Question(QuestionType.PLAINTEXT, TargetSelector.RECTANGLE, 0, item.getCampaign());
         question.setId(1l);
         question.setText("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
         question.setText("en", "Select an area in the image and enter a short description about it.");
         item.addQuestion(question);
 
-        Question comment =
-                new Question(QuestionType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
+        Question comment = new Question(QuestionType.PLAINTEXT, TargetSelector.WHOLE_PAGE, 1, item.getCampaign());
         comment.setId(2l);
         comment.setText("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
         comment.setText("en", "This is a space for notes about the annotations on this page");
@@ -104,45 +100,46 @@ public class CampaignItemResource {
 
         return item;
     }
-    
+
     /**
-     * Takes a map of annotation target (canvas/manifest) ids 
-     * and replaces all annotations for the given campaign, pi and targeted pages (if target is canvas) with the ones
-     * contained in the map
+     * Takes a map of annotation target (canvas/manifest) ids and replaces all annotations for the given campaign, pi and targeted pages (if target is
+     * canvas) with the ones contained in the map
      * 
      * @param map
      * @param campaignId
      * @param pi
      * @throws URISyntaxException
-     * @throws DAOException 
+     * @throws DAOException
      */
     @PUT
     @Path("/{campaignId}/annotate/{pi}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
+    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
+            throws URISyntaxException, DAOException {
 
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
-        
+
         for (Entry entry : map) {
             URI targetURI = URI.create(entry.getId());
             Integer pageOrder = PersistentAnnotation.parsePageOrder(targetURI);
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
             List<PersistentAnnotation> newAnnotations = entry.annotations.stream().map(PersistentAnnotation::new).collect(Collectors.toList());
-                  
+
             //delete existing annotations not in the new annotations list
-            List persistenceExceptions =  existingAnnotations.stream()
+            List persistenceExceptions = existingAnnotations.stream()
                     .filter(anno -> newAnnotations.stream().noneMatch(annoNew -> anno.getId().equals(annoNew.getId())))
                     .map(Try.lift(dao::deleteAnnotation))
-                    .filter(t -> t.isException()).map(t -> t.getException().get())
+                    .filter(t -> t.isException())
+                    .map(t -> t.getException().get())
                     .collect(Collectors.toList());
             for (Object exception : persistenceExceptions) {
                 logger.error("Error deleting annotation " + exception.toString());
             }
-            
+
             //add entirely new annotations
-            persistenceExceptions =  newAnnotations.stream()
+            persistenceExceptions = newAnnotations.stream()
                     .filter(anno -> anno.getId() == null)
                     .map(Try.lift(dao::addAnnotation))
                     .filter(either -> either.isException())
@@ -151,9 +148,9 @@ public class CampaignItemResource {
             for (Object exception : persistenceExceptions) {
                 logger.error("Error adding annotation " + exception.toString());
             }
-            
+
             //update changed annotations
-            persistenceExceptions =  newAnnotations.stream()
+            persistenceExceptions = newAnnotations.stream()
                     .filter(anno -> anno.getId() != null)
                     .map(Try.lift(dao::updateAnnotation))
                     .filter(either -> either.isException())

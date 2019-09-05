@@ -15,11 +15,11 @@
             <!-- METADATA ITEM STATUS -->
             <h:panelGroup id="metadata-status">
                 <div class="page-metadata-item page-metadata-item-status">
-                    <h3>#{msg.crowdsourcing_campaigneMetadata_settings}</h3>
+                    <h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
 
                     <dl class="dl-horizontal">
                         <dt>
-                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_visibility}:" />
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_visibility}:" />
                         </dt>
                         <dd>
                 <h:selectOneRadio value="#{crowdsourcingBean.selectedCampaign.visibility}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
@@ -29,19 +29,19 @@
                 </h:selectOneRadio>
                         </dd>
                         <dt>
-                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration}:" />
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration}:" />
                         </dt>
                         <dd>
                            // TODO remove button
                         </dd>
                         <dt>
-                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration_from}:" />
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_from}:" />
                         </dt>
                         <dd>
                              <h:outputText value="#{cmsBean.selectedPage.dateStart}" />
                         </dd>
                         <dt>
-                            <h:outputText value="#{msg.crowdsourcing_campaignMetadata_duration_until}:" />
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_until}:" />
                         </dt>
                         <dd>
                              <h:outputText value="#{cmsBean.selectedPage.dateEnd}" />

@@ -57,10 +57,12 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 @JsonInclude(Include.NON_EMPTY)
 public class Question {
 
-    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
+    private static final String URI_ID_TEMPLATE =
+            DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
 
-    
+    private static int TARGET_FREQUENCY_MULTIPLE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
@@ -82,12 +84,11 @@ public class Question {
     private QuestionType questionType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "target_frequency")
-    private TargetFrequency targetFrequency;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "target_selector", nullable = false)
     private TargetSelector targetSelector;
+
+    @Column(name = "target_frequency", nullable = false)
+    private int targetFrequency;
 
     public Question() {
     }
@@ -96,10 +97,10 @@ public class Question {
         this.owner = owner;
     }
 
-    public Question(QuestionType questionType, TargetFrequency targetFrequency, TargetSelector targetSelector, Campaign owner) {
+    public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
         this.questionType = questionType;
-        this.targetFrequency = targetFrequency;
         this.targetSelector = targetSelector;
+        this.targetFrequency = targetFrequency;
         this.owner = owner;
     }
 
@@ -183,20 +184,6 @@ public class Question {
     }
 
     /**
-     * @return the targetType
-     */
-    public TargetFrequency getTargetFrequency() {
-        return targetFrequency;
-    }
-
-    /**
-     * @param targetType the targetType to set
-     */
-    public void setTargetFrequency(TargetFrequency targetFrequency) {
-        this.targetFrequency = targetFrequency;
-    }
-
-    /**
      * @return the targetSelector
      */
     public TargetSelector getTargetSelector() {
@@ -209,7 +196,21 @@ public class Question {
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
     }
-    
+
+    /**
+     * @return the targetFrequency
+     */
+    public int getTargetFrequency() {
+        return targetFrequency;
+    }
+
+    /**
+     * @param targetFrequency the targetFrequency to set
+     */
+    public void setTargetFrequency(int targetFrequency) {
+        this.targetFrequency = targetFrequency;
+    }
+
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -219,7 +220,7 @@ public class Question {
 
         return null;
     }
-    
+
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -232,7 +233,8 @@ public class Question {
 
     @JsonIgnore
     public URI getIdAsURI() {
-        return URI.create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
+        return URI
+                .create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
     }
 
 }
