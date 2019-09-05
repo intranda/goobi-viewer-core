@@ -48,6 +48,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 
@@ -132,6 +134,10 @@ public class Campaign {
     @Transient
     @JsonIgnore
     private boolean dirty = false;
+
+    @Transient
+    @JsonIgnore
+    private CMSContentItem contentItem = new CMSContentItem();
 
     public Campaign() {
         this.selectedLocale = Locale.ENGLISH;
@@ -377,6 +383,13 @@ public class Campaign {
      */
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+    }
+
+    /**
+     * @return the contentItem
+     */
+    public CMSContentItem getContentItem() {
+        return contentItem;
     }
 
     /**

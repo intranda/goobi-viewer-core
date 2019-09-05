@@ -80,7 +80,7 @@ import io.goobi.viewer.model.viewer.CollectionView.BrowseDataProvider;
 public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolder {
 
     private static final String DEFAULT_METADATA_FIELD_SELECTION = "URN,PI,MD_TITLE,DOCSTRCT_TOP";
-    
+
     /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
      * item
@@ -269,8 +269,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     @Transient
     private CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper = null;
-    
-    @Transient 
+
+    @Transient
     private List<Selectable<CMSCategory>> selectableCategories = null;
     /**
      *  
@@ -541,6 +541,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * @return the mediaItem
      */
+    @Override
     public CMSMediaItem getMediaItem() {
         return mediaItem;
     }
@@ -548,34 +549,38 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * @param mediaItem the mediaItem to set
      */
+    @Override
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
-        if(mediaItem != null) {        	
-        	this.mediaItemWrapper = new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());;
+        if (mediaItem != null) {
+            this.mediaItemWrapper = new CategorizableTranslatedSelectable<>(mediaItem, true,
+                    mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+            ;
         } else {
-        	this.mediaItemWrapper = null;
+            this.mediaItemWrapper = null;
         }
-        
+
     }
-    
+
     /**
-	 * @return the mediaItemWrapper
-	 */
-	public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
-		return mediaItemWrapper;
-	}
-	
-	/**
-	 * @param mediaItemWrapper the mediaItemWrapper to set
-	 */
-	public void setMediaItemWrapper(CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
-		this.mediaItemWrapper = mediaItemWrapper;
-		if(mediaItemWrapper != null)  {			
-			this.mediaItem = this.mediaItemWrapper.getValue();
-		} else {
-			this.mediaItem = null;
-		}
-	}
+     * @return the mediaItemWrapper
+     */
+    @Override
+    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+        return mediaItemWrapper;
+    }
+
+    /**
+     * @param mediaItemWrapper the mediaItemWrapper to set
+     */
+    public void setMediaItemWrapper(CategorizableTranslatedSelectable<CMSMediaItem> mediaItemWrapper) {
+        this.mediaItemWrapper = mediaItemWrapper;
+        if (mediaItemWrapper != null) {
+            this.mediaItem = this.mediaItemWrapper.getValue();
+        } else {
+            this.mediaItem = null;
+        }
+    }
 
     /**
      * @return the pageClassification
@@ -583,7 +588,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public List<CMSCategory> getCategories() {
         return this.categories;
     }
-    
+
     /**
      * @param classifications the classifications to set
      */
@@ -593,12 +598,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     public void addCategory(CMSCategory category) {
         if (!categories.contains(category)) {
-        	categories.add(category);
+            categories.add(category);
         }
     }
 
     public void removeCategory(CMSCategory category) {
-    	categories.remove(category);
+        categories.remove(category);
     }
 
     public List<CMSCategory> getSortedCategories() throws DAOException {
@@ -673,7 +678,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             allPages = DataManager.getInstance().getDao().getAllCMSPages();
         } else {
             for (CMSCategory category : getCategories()) {
-            	allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
+                allPages.addAll(DataManager.getInstance().getDao().getCMSPagesByCategory(category));
             }
         }
 
@@ -935,24 +940,23 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
     }
-    
+
     /**
      * Message key to display when clicking the inline help button. Taken from contentItem of template
      */
     public String getInlineHelp() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getInlineHelp();
     }
-    
+
     /**
      * @return true if the item has a non-empty inline help text. Taken from contentItem of template
      */
     public boolean isHasInlineHelp() {
         CMSContentItem item = getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
-        if(item != null) {
+        if (item != null) {
             return item.isHasInlineHelp();
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -1114,6 +1118,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * 
      * @return a regex to be used as a filter for listing available media items. If empty, no filtering should be applied
      */
+    @Override
     public String getMediaFilter() {
         CMSContentItemTemplate template = getTemplateItem();
         return template.getMediaFilter();
@@ -1125,48 +1130,48 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private CMSContentItemTemplate getTemplateItem() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId());
     }
-    
-    
+
     public boolean isPreview() {
         return getTemplateItem().isPreview();
     }
-    
+
     /**
-     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list.
-     * Saving the categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
+     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
+     * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
-    	
-    	if(this.selectableCategories != null) {
-	    	try {
-				List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
-				List<CMSCategory> tempCats = new ArrayList<>();
-				for (CMSCategory cat : allCats) {
-					if(this.categories.contains(cat) && this.selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-						tempCats.add(cat);
-					} else if(this.selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
-						tempCats.add(cat);
-					}
-				}
-				this.categories = tempCats;
-	    	} catch (DAOException e) {
-	    		logger.error(e.toString(), e);
-			}
-    	}
-    	this.selectableCategories = null;
+
+        if (this.selectableCategories != null) {
+            try {
+                List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
+                List<CMSCategory> tempCats = new ArrayList<>();
+                for (CMSCategory cat : allCats) {
+                    if (this.categories.contains(cat) && this.selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
+                        tempCats.add(cat);
+                    } else if (this.selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                        tempCats.add(cat);
+                    }
+                }
+                this.categories = tempCats;
+            } catch (DAOException e) {
+                logger.error(e.toString(), e);
+            }
+        }
+        this.selectableCategories = null;
     }
-	
-	/**
-	 * @return the selectableCategories
-	 * @throws DAOException 
-	 */
-	public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
-		if(selectableCategories == null) {
-			List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
-			selectableCategories = allowedCategories.stream().map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat))).collect(Collectors.toList());
-		}
-		return selectableCategories;
-	}
+
+    /**
+     * @return the selectableCategories
+     * @throws DAOException
+     */
+    public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
+        if (selectableCategories == null) {
+            List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
+            selectableCategories =
+                    allowedCategories.stream().map(cat -> new Selectable<>(cat, this.categories.contains(cat))).collect(Collectors.toList());
+        }
+        return selectableCategories;
+    }
 
     /**
      * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
@@ -1221,13 +1226,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         }
     }
 
-	/* (non-Javadoc)
-	 * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
-	 */
-	@Override
-	public boolean hasMediaItem() {
-		return this.mediaItem != null;
-	}
-
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
+     */
+    @Override
+    public boolean hasMediaItem() {
+        return this.mediaItem != null;
+    }
 
 }

@@ -39,9 +39,14 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSMediaHolder;
+import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
@@ -59,10 +64,13 @@ public class CrowdsourcingBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private UserBean userBean;
+    @Inject
+    private CmsMediaBean cmsMediaBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Campaign selectedCampaign;
     private boolean editMode = false;
+    private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
 
     @PostConstruct
     public void init() {
@@ -271,4 +279,69 @@ public class CrowdsourcingBean implements Serializable {
         this.editMode = editMode;
     }
 
+    /**
+     * Set a {@link CMSMediaHolder} in the {@link CmsMediaBean} which may receive a {@link CMSMediaItem} selected in the selectMedia dialog
+     * 
+     * @param selectedMediaHolder the selectedMediaHolder to set
+     */
+    public void setSelectedMediaHolder(CMSMediaHolder item) {
+        this.selectedMediaHolder = Optional.ofNullable(item);
+        this.selectedMediaHolder.ifPresent(contentItem -> {
+            String filter = contentItem.getMediaFilter();
+            if (StringUtils.isBlank(filter)) {
+                filter = CmsMediaBean.getImageFilter();
+            }
+            cmsMediaBean.setFilenameFilter(filter);
+            if (contentItem.hasMediaItem()) {
+                CategorizableTranslatedSelectable<CMSMediaItem> wrapper = contentItem.getMediaItemWrapper();
+                try {
+                    List<CMSCategory> categories =
+                            BeanUtils.getUserBean().getUser().getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
+                    wrapper.setCategories(contentItem.getMediaItem().wrapCategories(categories));
+                } catch (DAOException e) {
+                    logger.error("Unable to determine allowed categories for media holder", e);
+                }
+                cmsMediaBean.setSelectedMediaItem(wrapper);
+            } else {
+                cmsMediaBean.setSelectedMediaItem(null);
+            }
+        });
+    }
+
+    /**
+     * Set the given (wrapped) {@link CMSMediaItem} to Media holder set by {@link #setSelectedMediaHolder}
+     */
+    public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem) {
+        fillSelectedMediaHolder(mediaItem, false);
+    }
+
+    /**
+     * Set the given (wrapped) {@link CMSMediaItem} to Media holder set by {@link #setSelectedMediaHolder} Additionally save the given media item if
+     * the parameter saveMedia is set to true
+     */
+    public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
+        this.selectedMediaHolder.ifPresent(item -> {
+            if (mediaItem != null) {
+                item.setMediaItem(mediaItem.getValue());
+                if (saveMedia) {
+                    try {
+                        cmsMediaBean.saveMedia(mediaItem.getValue(), mediaItem.getCategories());
+                    } catch (DAOException e) {
+                        logger.error("Failed to save media item: {}", e.toString());
+                    }
+                }
+            } else {
+                item.setMediaItem(null);
+            }
+        });
+        this.selectedMediaHolder = Optional.empty();
+        cmsMediaBean.setSelectedMediaItem(null);
+    }
+
+    /**
+     * @return true if a mediaHolder is present
+     */
+    public boolean hasSelectedMediaHolder() {
+        return this.selectedMediaHolder.isPresent();
+    }
 }
