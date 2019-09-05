@@ -28,7 +28,7 @@
 
                 <h:panelGroup rendered="#{crowdsourcingBean.selectedCampaign != null}">
                     <h2 class="admin__content-inner-title clearfix">
-                        #{cmsBean.editMode ? msg.admin__cs_campaign_edit : msg.admin__cs_campaign_addNew}
+                        #{cmsBean.editMode ? msg.admin__crowdsourcing_campaign_edit : msg.admin__crowdsourcing_campaign_new}
                     
 	                    <!-- EXIT -->
                         <a 
@@ -71,10 +71,11 @@
                                                             <!-- TITLE -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
-                                                                    <label for="adminCrowdAddCampaignTitle">#{msg.label__cms_page_title}*:</label>
+                                                                    <label for="adminCrowdAddCampaignTitle">#{msg.label__cms_page_title}:</label>
                                                                 </div>
                                                                 <div class="cms-module__option-control">
-                                                                    <h:inputText id="adminCrowdAddCampaignTitle" required="true" styleClass="form-control"
+                                                                    <h:inputText id="adminCrowdAddCampaignTitle" styleClass="form-control"
+                                                                        required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}"
                                                                         value="#{crowdsourcingBean.selectedCampaign.title}" />
                                                                     <span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span>
                                                                 </div>
@@ -122,7 +123,7 @@
                                                             <!-- SOLR QUERY -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
-                                                                    <label for="adminCrowdAddCampaignSolrQuery">#{msg.solrQuery}*:</label>
+                                                                    <label for="adminCrowdAddCampaignSolrQuery">#{msg.admin__crowdsourcing_campaign_solrQuery}*:</label>
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <h:panelGroup id="solrQueryInputGroup">
@@ -154,7 +155,7 @@
                                                             </div>
                                                         </div>
                                                         
-                                        <h2>#{msg.crowdsourcing_questions}</h2>
+                                        <h2>#{msg.admin__crowdsourcing_questions}</h2>
                                         
                                         <!-- Add new question link -->
                                         <h:commandLink action="#{crowdsourcingBean.addNewQuestionAction}" title="#{msg.add}" alt="#{msg.add}">
@@ -181,8 +182,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="cms-module__option-control">
-                                                        <h:inputTextarea id="adminCrowdAddCampaignQuestionText_#{status.count}" required="true" styleClass="form-control"
-                                                            value="#{question.text}" />
+                                                        <h:inputTextarea id="adminCrowdAddCampaignQuestionText_#{status.count}"
+                                                            styleClass="form-control" value="#{question.text}"
+                                                            required="#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale}" />
                                                         <span class="cms-module__option-control-helptext">#{msg.help__crowdsourcing_question_text}</span>
                                                     </div>
                                                     <div class="cms-module__option-help">
@@ -257,7 +259,7 @@
                                                 #{crowdsourcingBean.campaignsRootUrl}
                                                 <h:inputText id="adminCrowdAddCampaignPermalink" styleClass="form-control"
                                                     value="#{crowdsourcingBean.selectedCampaign.permalink}" />
-                                                <span class="cms-module__option-control-helptext">#{msg.crowdsourcing_campaign_permalink}</span>
+                                                <span class="cms-module__option-control-helptext">#{msg.help__crowdsourcing_campaign_permalink}</span>
                                             </div>
                                             <div class="cms-module__option-help">
                                                 <button type="button" class="btn btn--clean" data-toggle="helptext">

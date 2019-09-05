@@ -313,8 +313,8 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSitelinks() {
         setCurrentPage("sitelinks", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("sitelinks", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sitelinks/", NavigationHelper.WEIGHT_SITELINKS));
+        updateBreadcrumbs(new LabeledLink("sitelinks", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sitelinks/",
+                NavigationHelper.WEIGHT_SITELINKS));
 
     }
 
@@ -354,6 +354,14 @@ public class NavigationHelper implements Serializable {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
         setCurrentPage(currentView);
+    }
+
+    public Locale getDefaultLocale() {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            return FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+        }
+
+        return null;
     }
 
     public Locale getLocale() {

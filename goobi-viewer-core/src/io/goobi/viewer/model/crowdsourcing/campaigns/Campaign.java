@@ -57,7 +57,8 @@ public class Campaign {
 
     public enum CampaignVisibility {
         PRIVATE,
-        PUBLIC
+        PUBLIC,
+        FINISHED
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);

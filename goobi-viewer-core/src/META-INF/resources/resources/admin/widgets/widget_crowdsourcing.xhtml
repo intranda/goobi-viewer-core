@@ -8,16 +8,16 @@
 	<composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_PAGES')}">
+        <h:panelGroup rendered="#{userBean.user.superuser}">
             <div id="widgetCms" class="admin-widget">
                 <h:form id="widgetCmsForm">
-                    <h3>#{msg.crowdsourcing}</h3>
+                    <h3>#{msg.admin__crowdsourcing}</h3>
 
                     <ul>
                         <li class="#{navigationHelper.currentPage == 'adminCrowdCampaigns' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdCampaigns')}/">
                                 <i class="fa fa-user" aria-hidden="true"></i>
-                                <span>#{msg.admin__campaigns}</span>
+                                <span>#{msg.admin__crowdsourcing_campaigns}</span>
                             </h:outputLink>
                         </li>
                         <c:forEach var="module" items="#{configurationBean.modules}">

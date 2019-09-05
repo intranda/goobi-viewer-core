@@ -23,7 +23,7 @@
 	<ui:define name="content">
         <h:panelGroup id="crowdCampaignOverview" rendered="#{userBean.user.superuser}">
             <div id="crowdCampaigns">
-                    <h2 class="admin__content-inner-title">#{msg.cs_campaigns}</h2>
+                    <h2 class="admin__content-inner-title">#{msg.admin__crowdsourcing_campaigns}</h2>
                     <h:form id="csCampaignsForm" prependId="false">
                                                 
                         <h:commandLink action="#{crowdsourcingBean.createNewCampaignAction}" title="#{msg.add}" alt="#{msg.add}">
@@ -41,15 +41,15 @@
                                     <thead>
                                         <tr>
                                             <th class="column_title">
-                                                #{msg.admin__cs_campaign}
+                                                #{msg.admin__crowdsourcing_campaign}
                                             </th>
                                             <th class="column_visibility">
-                                                #{msg.admin__cs_campaign_visibility}
+                                                #{msg.admin__crowdsourcing_campaign_visibility}
                                             </th>
                                             <th class="column_duration">
-                                                #{msg.admin__cs_campaign_duration}
+                                                #{msg.admin__crowdsourcing_campaign_duration}
                                             </th>
-                                            <th class="column_statistics">#{msg.admin__cs_statistics}</th>
+                                            <th class="column_statistics">#{msg.statistics}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
