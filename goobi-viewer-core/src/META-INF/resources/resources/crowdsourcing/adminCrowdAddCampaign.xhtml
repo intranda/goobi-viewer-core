@@ -71,7 +71,9 @@
                                                             <!-- TITLE -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
-                                                                    <label for="adminCrowdAddCampaignTitle">#{msg.label__cms_page_title}:</label>
+                                                                    <label for="adminCrowdAddCampaignTitle">
+                                                                        #{msg.label__cms_page_title}#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale ? '*' : ''}:
+                                                                    </label>
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <h:inputText id="adminCrowdAddCampaignTitle" styleClass="form-control"
@@ -168,7 +170,9 @@
                                                 <!-- TEXT -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
-                                                        <label for="adminCrowdAddCampaignQuestionText_#{status.count}">#{msg.admin__crowdsourcing_question_text}*:</label>
+                                                        <label for="adminCrowdAddCampaignQuestionText_#{status.count}">
+                                                            #{msg.admin__crowdsourcing_question_text}#{crowdsourcingBean.selectedCampaign.selectedLocale == navigationHelper.defaultLocale ? '*' : ''}:
+                                                        </label>
                                                     </div>
                                                     <div class="cms-module__option-message">
                                                         <h:messages for="adminCrowdAddCampaignQuestionText_#{status.count}" 
@@ -216,7 +220,7 @@
                                                 <!-- TARGET SELECTOR -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
-                                                        <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}:</label>
+                                                        <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}*:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
                                                         <h:selectOneMenu value="#{question.targetSelector}">
@@ -235,7 +239,7 @@
                                                 <!-- TARGET FREQUENCY -->
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
-                                                        <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}:</label>
+                                                        <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}*:</label>
                                                     </div>
                                                     <div class="cms-module__option-control">
                                                         <h:selectOneMenu value="#{question.targetFrequency}">
