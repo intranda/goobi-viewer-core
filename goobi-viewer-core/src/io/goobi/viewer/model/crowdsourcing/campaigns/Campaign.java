@@ -72,31 +72,39 @@ public class Campaign {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
+    @JsonIgnore
     private Date dateCreated;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated")
+    @JsonIgnore
     private Date dateUpdated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
+    @JsonIgnore
     private CampaignVisibility visibility = CampaignVisibility.PRIVATE;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_start")
+    @JsonIgnore
     private Date dateStart;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_end")
+    @JsonIgnore
     private Date dateEnd;
 
     @Column(name = "image_file_name")
+    @JsonIgnore
     private String imageFileName;
 
     @Column(name = "solr_query", nullable = false)
+    @JsonIgnore
     private String solrQuery;
 
     @Column(name = "permalink")
+    @JsonIgnore
     private String permalink;
 
     /**
@@ -104,6 +112,7 @@ public class Campaign {
      * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
      */
     @Column(name = "breadcrumb_parent_page")
+    @JsonIgnore
     private String breadcrumbParentCmsPageId = null;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
@@ -115,9 +124,11 @@ public class Campaign {
     private List<Question> questions = new ArrayList<>();
 
     @Transient
+    @JsonIgnore
     private Locale selectedLocale;
 
     @Transient
+    @JsonIgnore
     private boolean dirty = false;
 
     public Campaign() {

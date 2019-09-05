@@ -7,12 +7,11 @@
 		</div>
 		<div class="content_right">
 		
-			<div class="queries_wrapper" if="{this.item}" >
-				<div class="query_wrapper" each="{query in this.item.queries}">
-<!-- 					<h2 class="query_wrapper__title">{viewerJS.getMetadataValue(query.label)}</h2> -->
-					<div class="query_wrapper__description">{viewerJS.getMetadataValue(query.translations.description)}</div>
-					<plaintextQuery if="{query.queryType == 'PLAINTEXT'}" query="{query}" item="{this.item}"></plaintextQuery>
-					<geoLocationQuery if="{query.queryType == 'GEOLOCATION_POINT'}" query="{query}" item="{this.item}"></geoLocationQuery>
+			<div class="questions_wrapper" if="{this.item}" >
+				<div class="question_wrapper" each="{question in this.item.questions}">
+					<div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div>
+					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}"></plaintextQuestion>
+					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}"></geoLocationQuestion>
 				</div>
 			</div>
 			<div class="options-wrapper">
@@ -60,16 +59,16 @@
 	}
 	
 	resetItems() {
-	    this.item.queries.forEach( function(query) {
-	        query.deleteFromLocalStorage();
-        	query.resetAnnotations();
+	    this.item.questions.forEach( function(question) {
+	        question.deleteFromLocalStorage();
+	        question.resetAnnotations();
 	    });
 		this.update();
 	}
 	
 	saveToServer() {
-	    this.item.queries.forEach(function(query) {
-	        let annoMap = query.getAnnotationsFromLocalStorage();
+	    this.item.questions.forEach(function(question) {
+	        let annoMap = question.getAnnotationsFromLocalStorage();
 	        let json = [];
 	        annoMap.forEach(function(pageAnnotations, pageId) {
 				json.push({"id": pageId, "annotations": pageAnnotations});

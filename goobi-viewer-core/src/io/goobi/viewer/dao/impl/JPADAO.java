@@ -62,6 +62,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
 import io.goobi.viewer.model.overviewpage.OverviewPageUpdate;
@@ -3068,6 +3069,26 @@ public class JPADAO implements IDAO {
             }
         }
 
+    }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getQuestion(java.lang.Long)
+     */
+    @Override
+    public Question getQuestion(Long id) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            try {
+                Question o = em.getReference(Question.class, id);
+                if (o != null) {
+                    updateFromDatabase(id, Question.class);
+                }
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            }
+        }
     }
 
 

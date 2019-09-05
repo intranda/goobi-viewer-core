@@ -52,6 +52,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -93,7 +94,7 @@ public class PersistentAnnotation{
     
     @ManyToOne
     @JoinColumn(name = "generator_id")
-    private Campaign generator;
+    private Question generator;
     
     @Column(name = "body", columnDefinition="LONGTEXT")
     private String body;
@@ -115,12 +116,17 @@ public class PersistentAnnotation{
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
         try {
-            this.creator = DataManager.getInstance().getDao().getUser(Long.parseLong(source.getCreator().getId().toString()));
+            this.creator = DataManager.getInstance().getDao().getUser(User.getId(source.getCreator().getId()));
         } catch (NumberFormatException | DAOException e) {
             logger.error("Error getting creator of " + source, e);
         }
         try {
-            this.generator = DataManager.getInstance().getDao().getCampaign(Long.parseLong(source.getGenerator().getId().toString()));
+            Long questionId = Question.getQuestionId(source.getGenerator().getId());
+            Long campaignId = Question.getCampaignId(source.getGenerator().getId());
+            if(questionId != null && campaignId != null) {                
+                Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+                this.generator = campaign.getQuestions().stream().filter(q -> questionId.equals(q.getId())).findFirst().orElse(null);
+            }
         } catch (NumberFormatException | DAOException e) {
             logger.error("Error getting generator of " + source, e);
         }
@@ -244,7 +250,7 @@ public class PersistentAnnotation{
     /**
      * @return the generator
      */
-    public Campaign getGenerator() {
+    public Question getGenerator() {
         return generator;
     }
 
@@ -252,7 +258,7 @@ public class PersistentAnnotation{
     /**
      * @param generator the generator to set
      */
-    public void setGenerator(Campaign generator) {
+    public void setGenerator(Question generator) {
         this.generator = generator;
     }
 
@@ -359,7 +365,7 @@ public class PersistentAnnotation{
             annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
         }
         if(getGenerator() != null) {            
-            annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getTitle()));
+            annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
         }
         annotation.setBody(this.getBodyAsResource());
         annotation.setTarget(this.getTargetAsResource());

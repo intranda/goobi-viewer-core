@@ -15,9 +15,12 @@
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
@@ -53,6 +57,10 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 @JsonInclude(Include.NON_EMPTY)
 public class Question {
 
+    private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
+    private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
+
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
@@ -108,10 +116,12 @@ public class Question {
         QuestionTranslation.setTranslation(translations, lang, value, "text", this);
     }
 
+    @JsonIgnore
     public List<QuestionType> getAvailableQuestionTypes() {
         return Arrays.asList(QuestionType.values());
     }
 
+    @JsonIgnore
     public List<TargetSelector> getAvailableTargetSelectors() {
         return Arrays.asList(TargetSelector.values());
     }
@@ -199,4 +209,30 @@ public class Question {
     public void setTargetSelector(TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
     }
+    
+    public static Long getQuestionId(URI idAsURI) {
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        if (matcher.find()) {
+            String idString = matcher.group(2);
+            return Long.parseLong(idString);
+        }
+
+        return null;
+    }
+    
+    public static Long getCampaignId(URI idAsURI) {
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        if (matcher.find()) {
+            String idString = matcher.group(1);
+            return Long.parseLong(idString);
+        }
+
+        return null;
+    }
+
+    @JsonIgnore
+    public URI getIdAsURI() {
+        return URI.create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
+    }
+
 }

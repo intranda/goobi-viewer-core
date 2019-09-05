@@ -37,7 +37,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         
         this.id = item.campaign.id;
         this.status = item.status;
-        this.queries = item.campaign.questions.map(query => new Crowdsourcing.Query(query, this));
+        this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
         this.imageOpenEvents = new Rx.Subject();

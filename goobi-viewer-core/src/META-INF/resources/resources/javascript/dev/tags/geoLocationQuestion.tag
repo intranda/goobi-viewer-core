@@ -1,4 +1,4 @@
-<geoLocationQuery>
+<geoLocationQuestion>
 	
 
 	
@@ -13,10 +13,10 @@
 	</div>
 
 <script>
-
-	this.queryType = Crowdsourcing.Query.getType(this.opts.query);
-	this.targetFrequency = Crowdsourcing.Query.getFrequency(this.opts.query);
-	this.targetSelector = Crowdsourcing.Query.getSelector(this.opts.query);
+	
+	this.questionType = Crowdsourcing.Question.getType(this.opts.question);
+	this.targetFrequency = Crowdsourcing.Question.getFrequency(this.opts.question);
+	this.targetSelector = Crowdsourcing.Question.getSelector(this.opts.question);
 
 
 	this.annotations = [];
@@ -25,16 +25,16 @@
 	this.on("mount", function() {
 	    this.initMap();
 	    switch(this.targetSelector) {
-	        case Crowdsourcing.Query.Selector.RECTANGLE:
+	        case Crowdsourcing.Question.Selector.RECTANGLE:
 	            this.initAreaSelector();
 	            break;
-	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
-	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
+	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
 	    }
 	    
 	    switch(this.targetFrequency) {
-	        case Crowdsourcing.Query.Frequency.ONE_PER_CANVAS:
-	        case Crowdsourcing.Query.Frequency.MULTIPLE_PER_CANVAS:
+	        case Crowdsourcing.Question.Frequency.ONE_PER_CANVAS:
+	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_CANVAS:
 	    		this.opts.item.onImageOpen( () => this.resetAnnotations());
 	    }
 
@@ -53,7 +53,7 @@
 	
 	
 	showAnnotationImages() {
-	    return this.targetSelector === Crowdsourcing.Query.Selector.RECTANGLE;
+	    return this.targetSelector === Crowdsourcing.Question.Selector.RECTANGLE;
 	}
 	
 	showInstructions() {
@@ -62,8 +62,8 @@
 	
 	initAnnotations() {
 	    switch(this.targetSelector) {
-	        case Crowdsourcing.Query.Selector.WHOLE_PAGE:
-	        case Crowdsourcing.Query.Selector.WHOLE_SOURCE:
+	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
 	            if(this.annotations.length == 0) {
 	                //create empty annotation
 		                            
@@ -145,7 +145,7 @@
 	    let map = this.getAnnotationsFromLocalStorage();
 	    map.set(Crowdsourcing.getResourceId(this.getTarget()), this.annotations );
 	    let value = JSON.stringify(Array.from(map.entries()));
-	    localStorage.setItem("CrowdsourcingQuery_" + this.opts.query.id, value);
+	    localStorage.setItem("CrowdsourcingQuestion_" + this.opts.question.id, value);
 	}
 	
 	restoreFromLocalStorage() {
@@ -160,7 +160,7 @@
 	}
 	
 	getAnnotationsFromLocalStorage() {
-	    let string = localStorage.getItem("CrowdsourcingQuery_" + this.opts.query.id);
+	    let string = localStorage.getItem("CrowdsourcingQuestion_" + this.opts.question.id);
 	    try {
 	        let array = JSON.parse(string);
 		    if(Array.isArray(array)) {
@@ -177,5 +177,5 @@
 </script>
 
 
-</geoLocationQuery>
+</geoLocationQuestion>
 
