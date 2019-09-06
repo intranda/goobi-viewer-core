@@ -158,12 +158,18 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 riot.tag2('campaignitem', '<div class="content"><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div class="content_right"><div class="questions_wrapper" if="{this.item}"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div class="options-wrapper"><button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate(⁗action__restart⁗)}</button><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button></div></div></div>', '', '', function(opts) {
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
-	console.log("url ", this.itemSource);
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
+	this.annotationSource = this.itemSource + "/annotations";
+	console.log("item url ", this.itemSource);
+	console.log("annotations url ", this.annotationSource);
 	this.on("mount", function() {
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
-	    .then( itemConfig => this.loadItem(itemConfig));
+	    .then( itemConfig => this.loadItem(itemConfig))
+	    .then( () => fetch(this.annotationSource))
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+		.catch( error => console.error("ERROR ", error));
 	});
 
 	this.loadItem = function(itemConfig) {
@@ -191,36 +197,39 @@ riot.tag2('campaignitem', '<div class="content"><div class="content_left"><image
 	    }
 	}.bind(this)
 
+	this.initAnnotations = function(annotations) {
+	    let save = this.item.createAnnotationMap(annotations);
+	    this.item.saveToLocalStorage(save);
+	}.bind(this)
+
 	this.resetItems = function() {
-	    this.item.questions.forEach( function(question) {
-	        question.deleteFromLocalStorage();
-	        question.resetAnnotations();
-	    });
-		this.update();
+	    fetch(this.annotationSource)
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.resetQuestions())
+	    .then( () => this.update())
+		.catch( error => console.error("ERROR ", error));
+	}.bind(this)
+
+	this.resetQuestions = function() {
+	    this.item.questions.forEach(question => {
+		    question.loadAnnotationsFromLocalStorage();
+		    question.initAnnotations();
+	    })
 	}.bind(this)
 
 	this.saveToServer = function() {
-	    this.item.questions.forEach(function(question) {
-	        let annoMap = question.getAnnotationsFromLocalStorage();
-	        let json = [];
-	        annoMap.forEach(function(pageAnnotations, pageId) {
-				json.push({"id": pageId, "annotations": pageAnnotations});
-	        })
-	        console.log("send ", json, " to ", this.itemSource);
-	        fetch(this.itemSource, {
-	            method: "PUT",
-	            headers: {
-	                'Content-Type': 'application/json',
-
-	            },
-	            mode: 'cors',
-	            cache: 'no-cache',
-	            body: JSON.stringify(json)
-	        })
-
-	        let saveString = JSON.stringify(json);
-	        console.log("PUT to server ", saveString);
-	    }.bind(this))
+	    let pages = this.item.loadAnnotationPages();
+	    console.log("save annotations ", pages);
+	    fetch(this.annotationSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            body: JSON.stringify(pages)
+	    })
+	    .then(() => this.resetItems());
 	}.bind(this)
 
 	this.submitForReview = function() {
@@ -993,25 +1002,31 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 	this.question = this.opts.question;
 	this.question.createAnnotation = function(anno) {
 	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
-	    annotation.generator = this.opts.item.getGenerator();
+	    annotation.generator = this.question.getGenerator();
 	    annotation.creator = this.opts.item.getCreator();
 	    return annotation;
 	}.bind(this);
 
 	this.on("mount", function() {
 	    switch(this.question.targetSelector) {
-	        case Crowdsourcing.Question.Selector.RECTANGLE:
-	            this.question.initAreaSelector();
-	            break;
-	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+            case Crowdsourcing.Question.Selector.RECTANGLE:
+                    this.question.initAreaSelector();
+                    break;
 	    }
-
 	    switch(this.question.targetFrequency) {
+	        case Crowdsourcing.Question.Frequency.ONE_PER_MANIFEST:
+	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_MANIFEST:
+	            this.opts.item.onImageOpen(function() {
+	    		    this.question.initAnnotations();
+	    			this.update();
+	    		}.bind(this));
+	        	break;
 	        case Crowdsourcing.Question.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_CANVAS:
+	        default:
 	    		this.opts.item.onImageOpen(function() {
-	    		    this.question.resetAnnotations();
+	    		    this.question.loadAnnotationsFromLocalStorage();
+	    		    this.question.initAnnotations();
 	    			this.update();
 	    		}.bind(this));
 	    }

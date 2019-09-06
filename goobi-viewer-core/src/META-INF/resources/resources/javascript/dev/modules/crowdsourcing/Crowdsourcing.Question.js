@@ -24,6 +24,9 @@
 var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
 
+    const COLORS = [" #e74c3c ", " #2980b9 ",  "#2ecc71 ", " #f1c40f ", " #9b59b6 ", " #d35400 ", " #1abc9c ", " #f06292 ", " #7e57c2 ", " #aed581 ",
+          " #CCFF00 ", " #9575cd ", " #ff8a65 ", " #CC6699 ", " #CC6699 ", " #8e24aa ", " #d35400 ", " #e74c3c "]
+    
     crowdsourcing.Question = function(question, item) {
         let temp = crowdsourcing.deepCopy(question);
         Object.assign(this, temp);
@@ -42,8 +45,22 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     
+    crowdsourcing.Question.prototype.loadAnnotationsFromLocalStorage = function() {
+        this.annotations = this.getAnnotationsFromLocalStorage();
+    }
+
+    /**
+     * Initializes the annotations for the current page
+     */
     crowdsourcing.Question.prototype.initAnnotations = function() {
         switch(this.targetSelector) {
+            case Crowdsourcing.Question.Selector.RECTANGLE:
+                if(this.areaSelector) {                    
+                    this.areaSelector.reset();
+                    this.annotations
+                    .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer));
+                }
+                break;
             case Crowdsourcing.Question.Selector.WHOLE_PAGE:
             case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
                 if(this.annotations.length == 0) {
@@ -52,25 +69,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     anno.setTarget(this.getTarget());
                     this.annotations.push(anno);    
                 }
-                this.currentAnnotationIndex = this.annotations.length - 1;
         }
-    }
-    
-    crowdsourcing.Question.prototype.resetAnnotations = function() {
-        this.annotations = this.restoreFromLocalStorage();
-        this.initAnnotations();
-        if(this.areaSelector) {
-            this.areaSelector.reset();
-            this.annotations.map(anno => {return {id: anno.id,
-                                          region: anno.getRegion(), 
-                                          color: anno.getColor()
-                                         }}).forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer))
-        }
+        this.currentAnnotationIndex = this.annotations.length - 1;
     }
     
     crowdsourcing.Question.prototype.initAreaSelector = function() {
-        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true);
+        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true, COLORS);
         this.areaSelector.init();
+
     }
     
     crowdsourcing.Question.prototype.getAnnotation = function(id) {
@@ -95,7 +101,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
         let annotation = this.createAnnotation({});
-        annotation.id = id;
+        annotation.overlayId = id;
         annotation.setTarget(this.getTarget());
         annotation.setRegion(region);
         annotation.setColor(color);
@@ -111,7 +117,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Question.prototype.getTarget = function() {
         return this.item.getCurrentCanvas();
-
+    }
+    
+    crowdsourcing.Question.prototype.getTargetId = function() {
+        return crowdsourcing.getResourceId(this.item.getCurrentCanvas());
     }
 
     crowdsourcing.Question.prototype.deleteAnnotation = function(anno) {
@@ -122,54 +131,43 @@ var Crowdsourcing = ( function(crowdsourcing) {
                 this.currentAnnotationIndex--;
             }
             if(this.areaSelector) {             
-                this.areaSelector.removeOverlay(anno, this.item.image.viewer);
+                this.areaSelector.removeOverlay(anno);
+            } else if(this.annotations.length == 0) {
+                //create empty annotation
+                let anno = this.createAnnotation({});
+                anno.setTarget(this.getTarget());
+                this.annotations.push(anno);    
             }
             this.saveToLocalStorage();
-            this.initAnnotations();
+            
+        }
+    }
+
+    crowdsourcing.Question.prototype.getGenerator = function() {
+        return  {
+            id: String(this.id),
+            type: "Software"
         }
     }
     
     crowdsourcing.Question.prototype.deleteFromLocalStorage = function() {
-        let map = this.getAnnotationsFromLocalStorage();
-        if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
-            map.delete(Crowdsourcing.getResourceId(this.getTarget()));
-//            map.set(Crowdsourcing.getResourceId(this.getTarget()), [] );
-        }
-        let value = JSON.stringify(Array.from(map.entries()));
-        localStorage.setItem("CrowdsourcingQuestion_" + this.id, value);
+        this.item.deleteAnnotations(save, this.getTargetId(), this.id);
     }
     
     crowdsourcing.Question.prototype.saveToLocalStorage = function() {
-        let map = this.getAnnotationsFromLocalStorage();
-        map.set(Crowdsourcing.getResourceId(this.getTarget()), this.annotations );
-        let value = JSON.stringify(Array.from(map.entries()));
-        localStorage.setItem("CrowdsourcingQuestion_" + this.id, value);
-    }
-    
-    crowdsourcing.Question.prototype.restoreFromLocalStorage = function() {
-        let map = this.getAnnotationsFromLocalStorage();
-        let annotations;
-        if(map.has(Crowdsourcing.getResourceId(this.getTarget()))) {
-            annotations = map.get(Crowdsourcing.getResourceId(this.getTarget())).map( anno => this.createAnnotation(anno));
-        } else {
-            annotations = [];
+        let annotationsToSave = this.annotations;
+        if(this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_PAGE ||
+            this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE) {
+            annotationsToSave = annotationsToSave.filter(anno => anno.getText() && anno.getText().length > 0);
         }
-        return annotations;
+        this.item.saveAnnotations(this.getTargetId(), this.id, annotationsToSave);
     }
     
     crowdsourcing.Question.prototype.getAnnotationsFromLocalStorage = function() {
-        let string = localStorage.getItem("CrowdsourcingQuestion_" + this.id);
-        try {
-            let array = JSON.parse(string);
-            if(Array.isArray(array)) {
-                return new Map(JSON.parse(string));
-            } else {
-                return new Map();
-            }
-        } catch(e) {
-            console.log("Error loading json ", e);
-            return new Map();
-        }
+        let annotations = this.item.loadAnnotations(this.getTargetId(), this.id);
+        annotations = annotations.map(anno => this.createAnnotation(anno));
+
+        return annotations;
     }
     
     

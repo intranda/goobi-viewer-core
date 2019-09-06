@@ -3840,12 +3840,12 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator = :campaign AND a.targetPI = :pi";
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator.owner = :campaign AND a.targetPI = :pi";
         Query q = em.createQuery(query);
         q.setParameter("campaign", campaign);
         q.setParameter("pi", pi);
 
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
 
@@ -3855,7 +3855,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE  a.generator = :campaign AND a.targetPI = :pi";
+        String query = "SELECT a FROM PersistentAnnotation a WHERE  a.generator.owner = :campaign AND a.targetPI = :pi";
         if(page !=null) {
             query += " AND a.targetPageOrder = :page";
         } else {

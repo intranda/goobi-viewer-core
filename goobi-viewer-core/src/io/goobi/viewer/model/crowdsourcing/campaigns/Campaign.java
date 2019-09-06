@@ -45,10 +45,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 @Entity
 @Table(name = "cs_campaigns")
@@ -117,6 +120,7 @@ public class Campaign {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
+    @JsonSerialize(using=TranslationListSerializer.class)
     private List<CampaignTranslation> translations = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
@@ -238,7 +242,7 @@ public class Campaign {
         return null;
     }
 
-    @JsonIgnore
+    @JsonProperty("id")
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }

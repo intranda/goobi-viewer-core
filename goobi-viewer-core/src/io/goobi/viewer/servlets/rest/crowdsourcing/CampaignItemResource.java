@@ -18,7 +18,6 @@ package io.goobi.viewer.servlets.rest.crowdsourcing;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -44,10 +44,6 @@ import io.goobi.viewer.exceptions.streams.Try;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
-import io.goobi.viewer.model.crowdsourcing.questions.TargetFrequency;
-import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -56,7 +52,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  * @author florian
  *
  */
-@Path("/crowdsourcing/campaign")
+@Path("/crowdsourcing/campaigns")
 @ViewerRestServiceBinding
 public class CampaignItemResource {
 
@@ -75,34 +71,50 @@ public class CampaignItemResource {
     }
 
     @GET
-    @Path("/{campaignId}/annotate/{pi}")
+    @Path("/{campaignId}/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException {
+    public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException, ContentNotFoundException {
         URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
         URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
 
-        //TODO: Create item from campaign
-        CampaignItem item = new CampaignItem();
-        item.setCampaign(new Campaign(Locale.GERMAN));
-        item.getCampaign().setId(42l);
-        item.setSource(manifestURI);
-
-        Question question =
-                new Question(QuestionType.PLAINTEXT, TargetFrequency.MULTIPLE_PER_CANVAS, TargetSelector.RECTANGLE, item.getCampaign());
-        question.setId(1l);
-        question.setText("de", "Wählen Sie einen Bildbereich aus und geben Sie eine kurze Beschreibung dazu ein.");
-        question.setText("en", "Select an area in the image and enter a short description about it.");
-        item.addQuestion(question);
-
-        Question comment =
-                new Question(QuestionType.PLAINTEXT, TargetFrequency.ONE_PER_CANVAS, TargetSelector.WHOLE_PAGE, item.getCampaign());
-        comment.setId(2l);
-        comment.setText("de", "Hier ist Platz für Anmerkungen zu den Annotationen dieser Seite");
-        comment.setText("en", "This is a space for notes about the annotations on this page");
-        item.addQuestion(comment);
-
-        return item;
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        if(campaign != null) {
+            CampaignItem item = new CampaignItem();
+            item.setSource(manifestURI);
+            item.setCampaign(campaign);
+            return item;            
+        } else {
+            throw new ContentNotFoundException("No campaign found with id " + campaignId);
+        }
+    }
+    
+    /**
+     * 
+     * @param campaignId
+     * @param pi
+     * @return  A map of target URIs (manifest or canvas) mapped to a submap of question URIs mapped to questions
+     * @throws URISyntaxException
+     * @throws DAOException
+     */
+    @GET
+    @Path("/{campaignId}/{pi}/annotations")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
+    
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+        
+        List webAnnotations = annotations.stream()
+                .map(Try.lift(PersistentAnnotation::getAsAnnotation))
+                .filter(Try::isSuccess)
+                .map(Try::getValue)
+                .map(o -> o.get())
+                .collect(Collectors.toList());
+        webAnnotations.forEach(o -> o.toString());
+        
+        return webAnnotations;
     }
     
     /**
@@ -117,19 +129,19 @@ public class CampaignItemResource {
      * @throws DAOException 
      */
     @PUT
-    @Path("/{campaignId}/annotate/{pi}")
+    @Path("/{campaignId}/{pi}/annotations")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<Entry> map, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
+    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
 
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
         
-        for (Entry entry : map) {
-            URI targetURI = URI.create(entry.getId());
+        for (AnnotationPage page : pages) {
+            URI targetURI = URI.create(page.getId());
             Integer pageOrder = PersistentAnnotation.parsePageOrder(targetURI);
             List<PersistentAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
-            List<PersistentAnnotation> newAnnotations = entry.annotations.stream().map(PersistentAnnotation::new).collect(Collectors.toList());
+            List<PersistentAnnotation> newAnnotations = page.annotations.stream().map(PersistentAnnotation::new).collect(Collectors.toList());
                   
             //delete existing annotations not in the new annotations list
             List persistenceExceptions =  existingAnnotations.stream()
@@ -165,7 +177,7 @@ public class CampaignItemResource {
         }
     }
 
-    public static class Entry {
+    public static class AnnotationPage {
         private String id;
         private List<WebAnnotation> annotations;
 

@@ -25,6 +25,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     'use strict';
 
     let _debug = false;
+    const LOCAL_STORAGE_ITEM = "goobi_viewer_crowdsourcing_annotations";
     
     crowdsourcing.Item = function(item, initialCanvasIndex) {
         if ( _debug ) {
@@ -77,13 +78,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Item.prototype.getImageService = (canvas) =>  canvas.images[0].resource.service["@id"] + "/info.json";
     
     crowdsourcing.Item.prototype.getImageId = (canvas) =>  canvas.images[0].resource.service["@id"];
-    
-    crowdsourcing.Item.prototype.getGenerator = function() {
-        return  {
-            id: String(this.id),
-            type: "Software"
-        }
-    }
 
     crowdsourcing.Item.prototype.getCreator = function() {
         return {
@@ -91,6 +85,121 @@ var Crowdsourcing = ( function(crowdsourcing) {
             type: "Person",
             name: Crowdsourcing.user.name,
         }
+    }
+    
+    crowdsourcing.Item.prototype.createAnnotationMap = function(annotations) {
+        let save = {
+                campaign: this.id,
+                manifest: this.imageSource,
+                questions: []
+            }
+            
+            this.questions.forEach(function(question) {
+               let q = {
+                    id: question.id,
+                    pages: []
+               } 
+               save.questions.push(q);
+            });
+            
+            this.addAnnotations(annotations, save);
+            
+            return save;
+    }
+    
+    crowdsourcing.Item.prototype.deleteAnnotations = function(save, pageId, questionId) {
+        let questions = save.questions;
+        if(questionId) {
+            questions = questions.filter(q => q.id == questionId);
+        }
+        questions.forEach(function(question) {
+            let pages = question.pages;
+            if(pageId) {
+                pages = pages.filter(p => p.id ==pageId);
+            }
+            pages.forEach(function(page) {
+               page.annotations = []; 
+            });
+        })
+        return save;
+    }
+    
+    crowdsourcing.Item.prototype.loadAnnotations = function(pageId, questionId) {
+        let save = this.getFromLocalStorage();
+        let annotations = [];
+        let questions = save.questions;
+        if(questionId) {
+            questions = questions.filter(q => q.id == questionId);
+        }
+        questions.forEach(function(question) {
+            let pages = question.pages;
+            if(pageId) {
+                pages = pages.filter(p => p.id ==pageId);
+            }
+            pages.forEach(function(page) {
+               annotations = annotations.concat(page.annotations) 
+            });
+        })
+        return annotations;
+    }
+    
+    crowdsourcing.Item.prototype.loadAnnotationPages = function(questionId) {
+        let save = this.getFromLocalStorage();
+        let pages = [];
+        let questions = save.questions;
+        if(questionId) {
+            questions = questions.filter(q => q.id == questionId);
+        }
+        questions.forEach(function(question) {
+            question.pages.forEach(function(page) {
+               let pageToLoad = pages.find(p => p.id == page.id);
+               if(!pageToLoad) {
+                   pageToLoad = {
+                       id: page.id,
+                       annotations: []
+                   }
+                   pages.push(pageToLoad);
+               }
+               pageToLoad.annotations = pageToLoad.annotations.concat(page.annotations);
+            });
+        })
+        return pages;
+    }
+    
+    crowdsourcing.Item.prototype.saveAnnotations = function(pageId, questionId, annotations) {
+        let save = this.getFromLocalStorage();
+        this.deleteAnnotations(save, pageId, questionId);
+        this.addAnnotations(annotations, save);
+        this.saveToLocalStorage(save);
+    }
+
+        
+    crowdsourcing.Item.prototype.addAnnotations = function(annotations, save) {
+        annotations.forEach(function(annotation) {
+            let questionId = annotation.generator.id;
+            let question = save.questions.find( q => q.id == questionId);
+            let pageId = Crowdsourcing.getResourceId(annotation.target);
+            if(question && pageId) {
+                let page = question.pages.find( p => p.id == pageId);
+                if(!page) {
+                    page = {
+                        id: pageId,
+                        annotations: []
+                    }
+                    question.pages.push(page);
+                }
+                page.annotations.push(annotation);
+            }
+        });
+        return save;
+    }
+
+    crowdsourcing.Item.prototype.saveToLocalStorage = function(save) {
+        localStorage.setItem(LOCAL_STORAGE_ITEM, JSON.stringify(save));
+    }
+    
+    crowdsourcing.Item.prototype.getFromLocalStorage = function() {
+        return JSON.parse(localStorage.getItem(LOCAL_STORAGE_ITEM));
     }
 
     

@@ -40,6 +40,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -129,6 +130,7 @@ public class Question {
     /**
      * @return the id
      */
+    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -230,7 +232,7 @@ public class Question {
         return null;
     }
 
-    @JsonIgnore
+    @JsonProperty("id")
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{campaignId}", this.getOwner().getId().toString()).replace("{questionId}", this.getId().toString()));
     }

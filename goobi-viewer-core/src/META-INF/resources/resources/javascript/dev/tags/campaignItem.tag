@@ -24,12 +24,18 @@
 
 <script>
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaign/" + this.opts.campaign + "/annotate/" + this.opts.pi;
-	console.log("url ", this.itemSource);
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
+	this.annotationSource = this.itemSource + "/annotations";
+	console.log("item url ", this.itemSource);
+	console.log("annotations url ", this.annotationSource);
 	this.on("mount", function() {
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
-	    .then( itemConfig => this.loadItem(itemConfig));
+	    .then( itemConfig => this.loadItem(itemConfig))
+	    .then( () => fetch(this.annotationSource))
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+		.catch( error => console.error("ERROR ", error));  
 	});
 
 	loadItem(itemConfig) {
@@ -58,36 +64,39 @@
 	    }
 	}
 	
+	initAnnotations(annotations) {
+	    let save = this.item.createAnnotationMap(annotations);
+	    this.item.saveToLocalStorage(save);
+	}
+	
 	resetItems() {
-	    this.item.questions.forEach( function(question) {
-	        question.deleteFromLocalStorage();
-	        question.resetAnnotations();
-	    });
-		this.update();
+	    fetch(this.annotationSource)
+	    .then( response => response.json() )
+	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.resetQuestions())
+	    .then( () => this.update())
+		.catch( error => console.error("ERROR ", error));  
+	}
+	
+	resetQuestions() {
+	    this.item.questions.forEach(question => {
+		    question.loadAnnotationsFromLocalStorage();
+		    question.initAnnotations();
+	    })
 	}
 	
 	saveToServer() {
-	    this.item.questions.forEach(function(question) {
-	        let annoMap = question.getAnnotationsFromLocalStorage();
-	        let json = [];
-	        annoMap.forEach(function(pageAnnotations, pageId) {
-				json.push({"id": pageId, "annotations": pageAnnotations});
-	        })
-	        console.log("send ", json, " to ", this.itemSource);
-	        fetch(this.itemSource, {
-	            method: "PUT",
-	            headers: {
-	                'Content-Type': 'application/json',
-	                // 'Content-Type': 'application/x-www-form-urlencoded',
-	            },
-	            mode: 'cors', // no-cors, cors, *same-origin
-	            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-	            body: JSON.stringify(json)
-	        })
-	        
-	        let saveString = JSON.stringify(json);
-	        console.log("PUT to server ", saveString);
-	    }.bind(this))
+	    let pages = this.item.loadAnnotationPages();
+	    console.log("save annotations ", pages);
+	    fetch(this.annotationSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors', // no-cors, cors, *same-origin
+            body: JSON.stringify(pages)
+	    })
+	    .then(() => this.resetItems());
 	}
 	
 	submitForReview() {

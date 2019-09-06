@@ -27,26 +27,23 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     crowdsourcing.Annotation.Plaintext = function(annotation) {
         crowdsourcing.Annotation.call(this, annotation);
+        if(!this.body) {
+            this.body = {
+                    type: "TextualBody",
+                    format: "text/plain",
+                    value: "",
+            }
+        }
  
     }
     crowdsourcing.Annotation.Plaintext.prototype = Object.create(crowdsourcing.Annotation.prototype);
     
     crowdsourcing.Annotation.Plaintext.prototype.getText = function() {
-        if(this.body) {            
             return this.body.value;
-        } else {
-            return undefined;
-        }
-     
+
     }
         
     crowdsourcing.Annotation.Plaintext.prototype.setText = function(text) {
-        if(!this.body) {
-            this.body = {
-                    type: "TextualBody",
-                    format: "text/plain",
-            }
-        }
         this.body.value = text;
     }
 

@@ -115,6 +115,7 @@ public class PersistentAnnotation{
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
+        this.id = source.getId() != null ? getId(source.getId()) : null;
         try {
             this.creator = DataManager.getInstance().getDao().getUser(User.getId(source.getCreator().getId()));
         } catch (NumberFormatException | DAOException e) {

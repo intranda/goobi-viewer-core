@@ -68,6 +68,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.AreaSelector.prototype.reset = function() {
+        this.colors.index = 0;
         this.rects.forEach(function(rect) {
             this.transformer.removeOverlay(rect);
             rect.remove();
@@ -93,22 +94,23 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return this.rects.find( rect => rect.id == id);
     }
     
-    crowdsourcing.AreaSelector.prototype.addOverlay = function(object, viewer) {
-        
-        let rect = ImageView.CoordinateConversion.convertRectFromImageToOpenSeadragon(object.region, viewer, viewer.world.getItemAt(0).source);
-        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle(object.color));
-        overlay.id = object.id;
+    crowdsourcing.AreaSelector.prototype.addOverlay = function(annotation, viewer) {
+        let rect = ImageView.CoordinateConversion.convertRectFromImageToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source);
+        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle(annotation.getColor()));
+        annotation.setColor(overlay.style.borderColor);
+        overlay.id = ++this.lastRectangleId;
+        annotation.overlayId = overlay.id;
         this.lastRectangleId = overlay.id;
         overlay.draw();
         if(this.transformer) {     
             this.transformer.addOverlay(overlay);
         }
+        //console.log("%c add overlay " + annotation.getText(), "background: " + annotation.getColor());
         this.rects.push(overlay);
     }
 
     crowdsourcing.AreaSelector.prototype.removeOverlay = function(object) {
-        
-        let rect = this.rects.find(rect => rect.id == object.id);
+        let rect = this.rects.find(rect => rect.id == object.overlayId);
         if(rect) {
             rect.remove();
             let index = this.rects.indexOf(rect);

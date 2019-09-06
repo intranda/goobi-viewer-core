@@ -21,7 +21,7 @@
 	this.question = this.opts.question;
 	this.question.createAnnotation = function(anno) {
 	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
-	    annotation.generator = this.opts.item.getGenerator();
+	    annotation.generator = this.question.getGenerator();
 	    annotation.creator = this.opts.item.getCreator();
 	    return annotation;
 	}.bind(this);
@@ -29,18 +29,24 @@
 	
 	this.on("mount", function() {
 	    switch(this.question.targetSelector) {
-	        case Crowdsourcing.Question.Selector.RECTANGLE:
-	            this.question.initAreaSelector();
-	            break;
-	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+            case Crowdsourcing.Question.Selector.RECTANGLE:
+                    this.question.initAreaSelector();
+                    break;
 	    }
-	    
 	    switch(this.question.targetFrequency) {
+	        case Crowdsourcing.Question.Frequency.ONE_PER_MANIFEST:
+	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_MANIFEST:
+	            this.opts.item.onImageOpen(function() {
+	    		    this.question.initAnnotations();
+	    			this.update();
+	    		}.bind(this));
+	        	break;
 	        case Crowdsourcing.Question.Frequency.ONE_PER_CANVAS:
 	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_CANVAS:
+	        default:
 	    		this.opts.item.onImageOpen(function() {
-	    		    this.question.resetAnnotations();
+	    		    this.question.loadAnnotationsFromLocalStorage();
+	    		    this.question.initAnnotations();
 	    			this.update();
 	    		}.bind(this));
 	    }
