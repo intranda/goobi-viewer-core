@@ -33,7 +33,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         
         this.item = item;
         this.questionType = Crowdsourcing.Question.getType(this);
-        this.targetFrequency = Crowdsourcing.Question.getFrequency(this);
+        this.targetFrequency = this.targetFrequency;
         this.targetSelector = Crowdsourcing.Question.getSelector(this);
 
         this.annotations = [];
@@ -48,6 +48,16 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Question.prototype.loadAnnotationsFromLocalStorage = function() {
         this.annotations = this.getAnnotationsFromLocalStorage();
     }
+    
+    crowdsourcing.Question.prototype.setDrawingPermission = function() {
+        if(this.areaSelector) {            
+            if(this.targetFrequency > 0 && this.targetFrequency <= this.annotations.length) {
+                this.areaSelector.disableDrawer();
+            } else {
+                this.areaSelector.enableDrawer();
+            }
+        }
+    }
 
     /**
      * Initializes the annotations for the current page
@@ -57,18 +67,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
             case Crowdsourcing.Question.Selector.RECTANGLE:
                 if(this.areaSelector) {                    
                     this.areaSelector.reset();
+                    this.setDrawingPermission();
                     this.annotations
                     .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer));
                 }
                 break;
             case Crowdsourcing.Question.Selector.WHOLE_PAGE:
             case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                if(this.annotations.length == 0) {
-                    //create empty annotation
-                    let anno = this.createAnnotation({});
-                    anno.setTarget(this.getTarget());
-                    this.annotations.push(anno);    
-                }
+                    this.createDummyAnnotationIfRequired();
         }
 //        this.currentAnnotationIndex = this.annotations.length - 1;
     }
@@ -81,6 +87,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Question.prototype.getAnnotation = function(id) {
         return this.annotations.find(anno => anno.id == id);
+    }
+    
+    crowdsourcing.Question.prototype.getAnnotationByOverlayId = function(id) {
+        return this.annotations.find(anno => anno.overlayId == id);
     }
     
     crowdsourcing.Question.prototype.getIndex = function(anno) {
@@ -108,6 +118,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.annotations.push(annotation);
         this.currentAnnotationIndex = this.annotations.length - 1;
         this.saveToLocalStorage();
+        this.setDrawingPermission();
     }
     
     crowdsourcing.Question.prototype.getImageUrl = function(rect, imageId) {
@@ -116,7 +127,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.getTarget = function() {
-        return this.item.getCurrentCanvas();
+        if(this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE) {
+            return this.item.imageSource;
+        } else {            
+            return this.item.getCurrentCanvas();
+        }
     }
     
     crowdsourcing.Question.prototype.getTargetId = function() {
@@ -132,16 +147,32 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
             if(this.areaSelector) {             
                 this.areaSelector.removeOverlay(anno);
-            } else if(this.annotations.length == 0) {
-                //create empty annotation
-                let anno = this.createAnnotation({});
-                anno.setTarget(this.getTarget());
-                this.annotations.push(anno);    
+            } else {
+                this.createDummyAnnotationIfRequired();
             }
             this.saveToLocalStorage();
-            
+        }
+        this.setDrawingPermission();
+    }
+    
+    crowdsourcing.Question.prototype.createDummyAnnotationIfRequired = function() {
+        switch(this.targetSelector) {
+            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+                if((this.targetFrequency == 0 || this.targetFrequency > this.annotations.length) && !this.annotations.find(anno => anno.dummy)) {
+                    this.createDummyAnnotation();
+                }
         }
     }
+
+    
+    crowdsourcing.Question.prototype.createDummyAnnotation = function() {
+        let anno = this.createAnnotation({});
+        anno.dummy = true;
+        anno.setTarget(this.getTarget());
+        this.annotations.push(anno);    
+    }
+
 
     crowdsourcing.Question.prototype.getGenerator = function() {
         return  {
@@ -164,7 +195,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.getAnnotationsFromLocalStorage = function() {
-        let annotations = this.item.loadAnnotations(this.getTargetId(), this.id);
+        let targetId = this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE ? undefined : this.getTargetId();
+        let annotations = this.item.loadAnnotations(targetId, this.id);
         annotations = annotations.map(anno => this.createAnnotation(anno));
 
         return annotations;
@@ -173,7 +205,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
 
     crowdsourcing.Question.Type = {};
-    crowdsourcing.Question.Frequency = {};
     crowdsourcing.Question.Selector = {};
 
     
@@ -188,17 +219,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     crowdsourcing.Question.getType = function(question) {
         return crowdsourcing.Question.Type.get(question.questionType);
-    }
-    
-    crowdsourcing.Question.Frequency.ONE_PER_MANIFEST = "ONE_PER_MANIFEST";
-    crowdsourcing.Question.Frequency.MULTIPLE_PER_MANIFEST = "MULTIPLE_PER_MANIFEST";
-    crowdsourcing.Question.Frequency.ONE_PER_CANVAS = "ONE_PER_CANVAS";
-    crowdsourcing.Question.Frequency.MULTIPLE_PER_CANVAS = "MULTIPLE_PER_CANVAS";
-    crowdsourcing.Question.Frequency.get = function(text) {
-        return crowdsourcing.Question.Frequency[text];
-    }
-    crowdsourcing.Question.getFrequency = function(question) {
-        return crowdsourcing.Question.Frequency.get(question.targetFrequency);
     }
     
     crowdsourcing.Question.Selector.MULTIPLE_PER_CANVAS = "WHOLE_SOURCE";

@@ -8,7 +8,6 @@
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
 			<div class="annotation_area__text_input">
-				<label>{viewerJS.getMetadataValue(this.question.translations.text)}</label>			
 				<textarea onChange="{setTextFromEvent}" value="{anno.getText()}">
 				</textarea>
 			</div>
@@ -29,26 +28,27 @@
 	
 	this.on("mount", function() {
 	    switch(this.question.targetSelector) {
-            case Crowdsourcing.Question.Selector.RECTANGLE:
-                    this.question.initAreaSelector();
-                    break;
-	    }
-	    switch(this.question.targetFrequency) {
-	        case Crowdsourcing.Question.Frequency.ONE_PER_MANIFEST:
-	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_MANIFEST:
-	            this.opts.item.onImageOpen(function() {
+	        //if target is whole source, load annotations just once
+            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+                this.question.loadAnnotationsFromLocalStorage();
+                this.opts.item.onImageOpen(function() {
 	    		    this.question.initAnnotations();
 	    			this.update();
 	    		}.bind(this));
 	        	break;
-	        case Crowdsourcing.Question.Frequency.ONE_PER_CANVAS:
-	        case Crowdsourcing.Question.Frequency.MULTIPLE_PER_CANVAS:
-	        default:
+		    //if target is a rectangle region on page, initialize drawing on canvas
+            case Crowdsourcing.Question.Selector.RECTANGLE:
+                    this.question.initAreaSelector();
+            //if target is page or region on page, load matching annotations on each image change
+            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+            default:
 	    		this.opts.item.onImageOpen(function() {
 	    		    this.question.loadAnnotationsFromLocalStorage();
 	    		    this.question.initAnnotations();
 	    			this.update();
 	    		}.bind(this));
+                
+                
 	    }
 	    
 	    if(this.question.areaSelector) {	        
@@ -97,7 +97,7 @@
     }
     
     handleFinishedTransforming(result) {
-        this.question.setRegion(result.region, this.question.getAnnotation(result.id));
+        this.question.setRegion(result.region, this.question.getAnnotationByOverlayId(result.id));
         this.update();
     }
 

@@ -125,7 +125,18 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
         }
     }
-
+    
+    crowdsourcing.AreaSelector.prototype.disableDrawer = function() {
+        if(this.drawer) {
+            this.drawer.active = false;
+        }
+    }
+    
+    crowdsourcing.AreaSelector.prototype.enableDrawer = function() {
+        if(this.drawer) {
+            this.drawer.active = true;
+        }
+    }
     
     function _getResultObject(rect, image) {
         let result = {

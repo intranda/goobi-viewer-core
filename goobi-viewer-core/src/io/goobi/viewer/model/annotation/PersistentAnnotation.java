@@ -32,6 +32,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,10 +163,21 @@ public class PersistentAnnotation{
         }
     }
     
+    /**
+     * Extract the page order from a canvas url. If the url points to a manifest, return null
+     * 
+     * @param uri
+     * @return
+     */
     public static Integer parsePageOrder(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
         if(matcher.find()) {
-            return Integer.parseInt(matcher.group(2));
+            String pageNo = matcher.group(2);
+            if(StringUtils.isNotBlank(pageNo)) {                
+                return Integer.parseInt(pageNo);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
