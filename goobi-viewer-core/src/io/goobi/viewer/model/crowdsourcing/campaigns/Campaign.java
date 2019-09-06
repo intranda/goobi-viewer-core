@@ -34,6 +34,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -56,8 +57,12 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
@@ -65,7 +70,7 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
-public class Campaign {
+public class Campaign implements CMSMediaHolder {
 
     public enum CampaignVisibility {
         PRIVATE,
@@ -108,9 +113,9 @@ public class Campaign {
     @JsonIgnore
     private Date dateEnd;
 
-    @Column(name = "image_file_name")
-    @JsonIgnore
-    private String imageFileName;
+    /** Media item reference for media content items. */
+    @JoinColumn(name = "media_item_id")
+    private CMSMediaItem mediaItem;
 
     @Column(name = "solr_query", nullable = false)
     @JsonIgnore
@@ -386,20 +391,6 @@ public class Campaign {
     }
 
     /**
-     * @return the imageFileName
-     */
-    public String getImageFileName() {
-        return imageFileName;
-    }
-
-    /**
-     * @param imageFileName the imageFileName to set
-     */
-    public void setImageFileName(String imageFileName) {
-        this.imageFileName = imageFileName;
-    }
-
-    /**
      * @return the contentItem
      */
     public CMSContentItem getContentItem() {
@@ -527,5 +518,49 @@ public class Campaign {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
         String pi = results.get(new Random(System.nanoTime()).nextInt(results.size())).getFieldValue(SolrConstants.PI).toString();
         setTargetIdentifier(pi);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#setMediaItem(io.goobi.viewer.model.cms.CMSMediaItem)
+     */
+    @Override
+    public void setMediaItem(CMSMediaItem item) {
+        this.mediaItem = item;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItem()
+     */
+    @Override
+    public CMSMediaItem getMediaItem() {
+        return this.mediaItem;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
+     */
+    @Override
+    public String getMediaFilter() {
+        return CmsMediaBean.getImageFilter();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
+     */
+    @Override
+    public boolean hasMediaItem() {
+        return this.mediaItem != null;
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
+     */
+    @Override
+    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+        if(hasMediaItem()) {
+            return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+        } else {
+            return null;
+        }
     }
 }

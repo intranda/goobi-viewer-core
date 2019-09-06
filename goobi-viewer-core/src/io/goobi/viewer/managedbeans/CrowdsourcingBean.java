@@ -381,4 +381,21 @@ public class CrowdsourcingBean implements Serializable {
             getSelectedCampaign().setTargetIdentifier(pi);
         }
     }
+    
+    public String forwardToCrowdsourcingView(Campaign campaign) {
+        setSelectedCampaign(campaign);
+        return "pretty:crowdCampaignAnnotate1";
+    }
+    
+    public String forwardToCrowdsourcingReview(Campaign campaign) {
+        //TODO load review mode
+        setSelectedCampaign(campaign);
+        return "pretty:crowdCampaignAnnotate1";
+    }
+    
+    public String forwardToCrowdsourcingView(Campaign campaign, String pi) {
+        setSelectedCampaign(campaign);
+        setTargetIdentifier(pi);
+        return "pretty:crowdCampaignAnnotate2";
+    }
 }

@@ -102,7 +102,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         GLOSSARY,
         COMPONENT,
         TAGS,
-        METADATA;
+        METADATA,
+        CAMPAIGNOVERVIEW;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type

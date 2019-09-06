@@ -42,7 +42,7 @@
 
                     <div class="admin__content-inner-content">
                         <div class="row">
-                            <h:form id="create_page_form" prependId="false">
+                            <h:form id="create_page_form" prependId="true">
                                 <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 create-page-left">
                                     <!-- CREATE PAGE WRAPPER -->
                                     <div class="crowdsourcing-add-campaign_wrapper">
@@ -130,24 +130,24 @@
         </div>
         <div class="cms-module__option-control">
             <!-- MEDIA FILE -->
-            <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.contentItem.mediaItem != null}">
-<!--                 <ui:include src="/resources/cms/includes/mediaFile.xhtml"> -->
-<!--                     <ui:param name="item" value="#{contentItem.mediaItemWrapper}" /> -->
-<!--                 </ui:include> -->
+            <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.mediaItem != null}">
+                <ui:include src="/resources/cms/includes/mediaFile.xhtml">
+                    <ui:param name="item" value="#{crowdsourcingBean.selectedCampaign.mediaItemWrapper}" />
+                </ui:include>
             </ui:fragment>
 
             <!-- ACTIONS -->
             <div class="cms-module__actions">
                 <h:commandLink 
-                    action="#{crowdsourcingBean.setSelectedMediaHolder(crowdsourcingBean.selectedCampaign.contentItem)}" 
-                    value="#{crowdsourcingBean.selectedCampaign.contentItem.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                    class="btn #{crowdsourcingBean.selectedCampaign.contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+                    action="#{cmsBean.setSelectedMediaHolder(crowdsourcingBean.selectedCampaign)}" 
+                    value="#{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                    class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
                     role="button">
                     <f:ajax execute="@form" render="mediaSelectPanel" />
                 </h:commandLink>
                 <h:commandLink 
-                    rendered="#{crowdsourcingBean.selectedCampaign.contentItem.mediaItem != null}" 
-                    action="#{crowdsourcingBean.selectedCampaign.contentItem.setMediaItem(null)}" 
+                    rendered="#{crowdsourcingBean.selectedCampaign.getMediaItem() != null}" 
+                    action="#{crowdsourcingBean.selectedCampaign.setMediaItem(null)}" 
                     value="#{msg.cms_selectMediaItem_deselect}"
                     class="btn btn--clean delete" 
                     role="button">
@@ -158,6 +158,7 @@
             <!-- HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_media_file}</span>
         </div>
+        
         <div class="cms-module__option-help">
             <button type="button" class="btn btn--clean" data-toggle="helptext">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -400,36 +401,19 @@
                     
                     <!-- MEDIA SELECT PANEL -->
                     <h:panelGroup id="mediaSelectPanel">
-                        <ui:fragment rendered="#{crowdsourcingBean.hasSelectedMediaHolder()}">
+                        <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                             <!-- SELECT MEDIA ITEM OVERLAY -->
                             <div class="admin-cms-media__select-overlay"></div>
                             
                             <!-- SELECT MEDIA ITEM -->
                             <div class="admin-cms-media__select">                            
-                                <ui:include src="/resources/crowdsourcing/includes/crowdsourcingMediaSelect.xhtml" />
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
                             </div>
                         </ui:fragment>
                     </h:panelGroup>
                     
                 </h:panelGroup>
-                
-                <script type="text/javascript">
-                	var createPageConfig = {
-						selectedCampaignID : "#{crowdsourcingBean.selectedCampaign.id}",
-						inputFields : $(".content-input"),
-						prevBtn : $("#preview-button"),
-						prevDescription : $("#previewDescription"),
-						saveBtn : $('a[id*="save-button"]'),
-						sortablesConfig : {
-							componentListInput : document.getElementById("sidebar_editor_component:itemOrderInput"),
-							editButton : $(".widget-edit"),
-							availableItemList : "#availableItemList",
-							visibleItemList : "#visibleItemList"
-						}
-					};
 
-					cmsJS.createPage.init(createPageConfig);
-                </script>
             </div>
         </h:panelGroup>
     </ui:define>
