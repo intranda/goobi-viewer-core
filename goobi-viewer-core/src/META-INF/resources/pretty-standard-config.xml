@@ -842,7 +842,20 @@
         <view-id value="/resources/crowdsourcing/adminCrowdAddCampaign.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
-
+    
+    <!-- CROWDSOURCING -->
+    <url-mapping id="crowdCampaignAnnotate1">
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/"/>
+        <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{crowdsourcingBean.setRandomIdentifier}</action>
+		<action onPostback="false">#{crowdsourcingBean.forwardToTarget}</action>
+	</url-mapping>
+    <url-mapping id="crowdCampaignAnnotate2">
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/#{pi:crowdsourcingBean.targetIdentifier}/"/>
+        <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
     <!-- SITELINKS -->
     <url-mapping id="sitelinks">
         <pattern value="/sitelinks/" />

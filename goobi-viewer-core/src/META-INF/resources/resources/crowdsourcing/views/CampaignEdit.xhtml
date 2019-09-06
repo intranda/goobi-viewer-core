@@ -26,7 +26,7 @@
     
         <f:view contentType="text/html" encoding="utf-8">
                 
-                <campaignItem restApiUrl="#{configurationBean.restApiUrl}" campaign="1" pi="PPN631877738"/>
+                <campaignItem restApiUrl="#{configurationBean.restApiUrl}" campaign="#{crowdsourcingBean.selectedCampaignId}" pi="#{crowdsourcingBean.selectedCampaign.targetIdentifier}"/>
                 
         </f:view>
         

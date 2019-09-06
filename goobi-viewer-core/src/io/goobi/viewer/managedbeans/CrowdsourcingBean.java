@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -343,5 +345,40 @@ public class CrowdsourcingBean implements Serializable {
      */
     public boolean hasSelectedMediaHolder() {
         return this.selectedMediaHolder.isPresent();
+    }
+
+    public void setRandomIdentifier() throws PresentationException, IndexUnreachableException {
+        if(getSelectedCampaign() != null) {
+            getSelectedCampaign().setRandomizedTarget();
+        } 
+    }
+    
+    public String forwardToTarget() {
+        return "pretty:crowdCampaignAnnotate2";
+    }
+    
+    public String getSelectedCampaignId() {
+        Long id = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getId).orElse(null);
+        return id.toString();
+    }
+    
+    public void setSelectedCampaignId(String id) throws DAOException {
+        if(id != null) {
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(Long.parseLong(id));
+            setSelectedCampaign(campaign);
+        } else {
+            setSelectedCampaign(null);
+        }
+    }
+    
+    public String getTargetIdentifier() {
+        String pi = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getTargetIdentifier).orElse(null);
+        return pi; 
+    }
+    
+    public void setTargetIdentifier(String pi) {
+        if(getSelectedCampaign() != null) {
+            getSelectedCampaign().setTargetIdentifier(pi);
+        }
     }
 }

@@ -17,9 +17,11 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +53,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -134,6 +140,10 @@ public class Campaign {
     @Transient
     @JsonIgnore
     private Locale selectedLocale;
+    
+    @Transient
+    @JsonIgnore
+    private String targetIdentifier;
 
     @Transient
     @JsonIgnore
@@ -492,5 +502,30 @@ public class Campaign {
      */
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    /**
+     *  @return the PI of a work selected for editing
+     */
+    public String getTargetIdentifier() {
+        return this.targetIdentifier;
+    }
+    
+    /**
+     * @param targetIdentifier the targetIdentifier to set
+     */
+    public void setTargetIdentifier(String targetIdentifier) {
+        this.targetIdentifier = targetIdentifier;
+    }
+    
+    /**
+     * Set the targetIdentifier to a random PI from the solr query result list
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public void setRandomizedTarget() throws PresentationException, IndexUnreachableException {
+        SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
+        String pi = results.get(new Random(System.nanoTime()).nextInt(results.size())).getFieldValue(SolrConstants.PI).toString();
+        setTargetIdentifier(pi);
     }
 }
