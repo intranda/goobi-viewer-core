@@ -3005,6 +3005,8 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCampaignCount(Map<String, String> filters) throws DAOException {
+        if(filters != null)
+        logger.trace("getCampaignCount: {}", filters.get("visibility"));
         return getRowCount("Campaign", null, filters);
     }
     
@@ -3032,6 +3034,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(order);
 
+                logger.trace(sbQuery.toString());
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());

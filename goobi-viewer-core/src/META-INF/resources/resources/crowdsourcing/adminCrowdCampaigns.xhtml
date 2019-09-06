@@ -32,6 +32,16 @@
 
                         <div class="admin__content-inner-content">
                             <div id="csCampaignsWrapper" class="sortable-table-wrapper">
+                            
+                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction(null)}">
+                                    #{msg.all}
+                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount(null)}) |
+                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction('PUBLIC')}">
+                                    #{msg.PUBLIC}
+                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
+                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction('FINISHED')}">
+                                    #{msg.FINISHED}
+                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount('FINISHED')})
 
                                 <!-- paginator -->
                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />

@@ -76,7 +76,17 @@ public class Campaign implements CMSMediaHolder {
     public enum CampaignVisibility {
         PRIVATE,
         PUBLIC,
-        FINISHED
+        FINISHED;
+
+        public static CampaignVisibility getByName(String name) {
+            for (CampaignVisibility viz : CampaignVisibility.values()) {
+                if (viz.name().equals(name)) {
+                    return viz;
+                }
+            }
+
+            return null;
+        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
@@ -563,8 +573,9 @@ public class Campaign implements CMSMediaHolder {
      */
     @Override
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
-        if(hasMediaItem()) {
-            return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true, mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+        if (hasMediaItem()) {
+            return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,
+                    mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
         } else {
             return null;
         }

@@ -70,7 +70,7 @@ public class UrlRedirectFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        logger.trace("doFilter");
+         // logger.trace("doFilter");
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             if (isPrefetchingRequest(httpRequest)) {
