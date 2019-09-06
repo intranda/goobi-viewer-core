@@ -5,11 +5,11 @@
 			<imageView if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView>
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
-		<div class="content_right">
-		
-			<div class="questions_wrapper" if="{this.item}" >
+		<div if="{this.item}" class="content_right">
+			<h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1>
+			<div class="content_right__description">{viewerJS.getMetadataValue(this.item.translations.description)}</div>
+			<div class="questions_wrapper"  >
 				<div class="question_wrapper" each="{question in this.item.questions}">
-					<div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}"></plaintextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}"></geoLocationQuestion>
 				</div>

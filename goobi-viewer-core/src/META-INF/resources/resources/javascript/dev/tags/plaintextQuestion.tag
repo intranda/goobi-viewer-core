@@ -8,7 +8,7 @@
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
 			<div class="annotation_area__text_input">
-				<label>{viewerJS.getMetadataValue(this.question.translations.label)}</label>			
+				<label>{viewerJS.getMetadataValue(this.question.translations.text)}</label>			
 				<textarea onChange="{setTextFromEvent}" value="{anno.getText()}">
 				</textarea>
 			</div>

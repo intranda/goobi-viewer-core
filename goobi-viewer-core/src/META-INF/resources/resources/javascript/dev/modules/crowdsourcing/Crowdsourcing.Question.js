@@ -70,7 +70,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     this.annotations.push(anno);    
                 }
         }
-        this.currentAnnotationIndex = this.annotations.length - 1;
+//        this.currentAnnotationIndex = this.annotations.length - 1;
     }
     
     crowdsourcing.Question.prototype.initAreaSelector = function() {
