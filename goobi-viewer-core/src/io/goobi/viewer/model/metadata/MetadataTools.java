@@ -17,6 +17,7 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -448,5 +449,41 @@ public class MetadataTools {
         }
 
         return language;
+    }
+
+    /**
+     * 
+     * @param value
+     * @param replaceRules
+     * @return
+     * @should apply rules correctly
+     */
+    public static String applyReplaceRules(String value, Map<Object, String> replaceRules) {
+        if (value == null) {
+            return null;
+        }
+        if (replaceRules == null) {
+            return value;
+        }
+        
+        String ret = value;
+        for (Object key : replaceRules.keySet()) {
+            if (key instanceof Character) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(key);
+                ret = ret.replace(sb.toString(), replaceRules.get(key));
+            } else if (key instanceof String) {
+                logger.debug("replace rule: {} -> {}", key, replaceRules.get(key));
+                if (((String) key).startsWith("REGEX:")) {
+                    ret = ret.replaceAll(((String) key).substring(6), replaceRules.get(key));
+                } else {
+                    ret = ret.replace((String) key, replaceRules.get(key));
+                }
+            } else {
+                logger.error("Unknown replacement key type of '{}: {}", key.toString(), key.getClass().getName());
+            }
+        }
+
+        return ret;
     }
 }

@@ -779,7 +779,9 @@
 					<param type="field" key="MD_ILLUSTRATIONTYPE" />
 				</metadata>
 				<metadata label="MD_ACCESSCONDITIONCOPYRIGHT" value="">
-					<param type="field" key="MD_ACCESSCONDITIONCOPYRIGHT" />
+					<param type="field" key="MD_ACCESSCONDITIONCOPYRIGHT">
+					    <replace string="[year]">2019</replace>
+					</param>
 				</metadata>
 				<metadata label="MD_METAREMARK" value="">
 					<param type="field" key="MD_METAREMARK" />

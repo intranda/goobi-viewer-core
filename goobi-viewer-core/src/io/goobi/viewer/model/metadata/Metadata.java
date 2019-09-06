@@ -582,26 +582,18 @@ public class Metadata implements Serializable {
                         MetadataParameter param = params.get(i);
                         // logger.trace("param: {}", param.getKey());
 
-                        // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+                        // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
                         if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
                             continue;
                         }
                         if (groupFieldMap.get(param.getKey()) != null) {
                             found = true;
-                            StringBuilder sbValue = new StringBuilder();
                             List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                             for (String mdValue : groupFieldMap.get(param.getKey())) {
-                                if (sbValue.length() == 0) {
-                                    sbValue.append(mdValue);
+                                if (!param.getReplaceRules().isEmpty()) {
+                                    mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
                                 }
                                 values.add(mdValue);
-                            }
-                            String paramValue = sbValue.toString();
-                            if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
-                                //                                    Map<String, String> normDataUrl = new HashMap<>();
-                                //                                    normDataUrl.put(param.getKey(), paramValue);
-                                // logger.trace("found normdata uri: {}", normDataUrl.toString());
-                                //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
                             }
                             setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
                         } else if (param.getDefaultValue() != null) {
@@ -649,6 +641,11 @@ public class Metadata implements Serializable {
                         break;
                     }
                     found = true;
+                    // Apply replace rules
+                    if (!param.getReplaceRules().isEmpty()) {
+                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
+                    }
+                    // Format dates
                     if (param.getKey().equals(SolrConstants.DATECREATED)) {
                         DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
                                 FacesContext.getCurrentInstance().getViewRoot().getLocale());
