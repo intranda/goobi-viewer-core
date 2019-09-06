@@ -96,7 +96,7 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        provider = new LitteraProvider("external", "http://" + SERVERURL + ":" + SERVERPORT + "/externauth", "", 1000l);
+        provider = new LitteraProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/externauth", "", 1000l);
     }
 
     @Test

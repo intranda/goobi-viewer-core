@@ -36,8 +36,8 @@ public class XServiceProvider extends VuFindProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(XServiceProvider.class);
 
-    public XServiceProvider(String name, String url, String image, long timeoutMillis) {
-        super(name, url, image, timeoutMillis);
+    public XServiceProvider(String name, String label, String url, String image, long timeoutMillis) {
+        super(name, label, url, image, timeoutMillis);
     }
 
     /* (non-Javadoc)

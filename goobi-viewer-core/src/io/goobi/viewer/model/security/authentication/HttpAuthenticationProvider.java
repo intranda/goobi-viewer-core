@@ -54,6 +54,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected static PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected final String name;
+    protected final String label;
     protected final String type;
     protected final String url;
     protected final String image;
@@ -62,12 +63,14 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
 
     /**
      * @param name
+     * @param label
      * @param url
      * @param image
      */
-    public HttpAuthenticationProvider(String name, String type, String url, String image, long timeoutMillis) {
+    public HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
         this.name = name;
+        this.label = label;
         this.url = url;
         this.image = image;
         this.type = type;
@@ -89,6 +92,14 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         return name;
     }
 
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return (this.label == null || this.label.isEmpty()) ? this.name : this.label;
+    }
+
+    
     /**
      * @return the url
      */

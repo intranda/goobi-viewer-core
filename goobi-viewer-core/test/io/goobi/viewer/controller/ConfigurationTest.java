@@ -451,12 +451,14 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("id_google", ((OpenIdProvider) providers.get(0)).getClientId());
         Assert.assertEquals("secret_google", ((OpenIdProvider) providers.get(0)).getClientSecret());
         Assert.assertEquals("google.png", ((OpenIdProvider) providers.get(0)).getImage());
+        Assert.assertEquals("Google", ((OpenIdProvider) providers.get(0)).getLabel());
 
         //vuFind
         Assert.assertEquals("VuFind", providers.get(2).getName());
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
         Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
-
+        Assert.assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
+        
         //local
         Assert.assertEquals("Goobi viewer", providers.get(3).getName());
         Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
