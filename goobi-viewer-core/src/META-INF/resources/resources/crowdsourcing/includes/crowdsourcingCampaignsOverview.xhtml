@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- INPUT MODULE TEMPLATE -->
+    <div class="crowdsourcing-campaigns-overview">
+		<ui:repeat var="campaign" value="#{crowdsourcingBean.allCampaigns}">
+			<div class="crowdsourcing-campaigns-overview__campaign">
+				<ui:fragment rendered="#{campaign.hasMediaItem()}">
+					<div class="crowdsourcing-campaigns-overview__campaign__image">
+						<img src="#{campaign.mediaItem.iconURI}" />
+					</div>
+				</ui:fragment>
+				<div class="crowdsourcing-campaigns-overview__campaig__text">
+					<h2 class="crowdsourcing-campaigns-overview__campaig__text__title">#{campaign.title}</h2>
+					<div class="crowdsourcing-campaigns-overview__campaig__text__description">
+						#{campaign.description}
+					</div>
+				</div>
+				<div class="crowdsourcing-campaigns-overview__campaign__actions">
+					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingView(campaign)}"></h:commandLink>
+					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"></h:commandLink>
+					<div class="crowdsourcing-campaigns-overview__campaig__text__description">
+						#{campaign.description}
+					</div>
+				</div>
+			</div>
+		
+		</ui:repeat>
+    </div>
+</ui:composition>

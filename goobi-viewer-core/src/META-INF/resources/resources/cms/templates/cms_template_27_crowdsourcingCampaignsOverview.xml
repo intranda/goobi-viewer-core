@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateCrowdsourcingCampaignsOverview" version="2018-11-28">
+	<name>cms__template_27__title</name>
+	<description>cms__template_27__description</description>
+	<icon>cms_template_27_crowdsourcingCampaignsOverview.png</icon>
+	<html>cms_template_27_crowdsourcingCampaignsOverview.xhtml</html>
+
+	<content>
+		<item id="description" order="1" label="cms__template_27__description__label" type="HTML" />
+		<item id="campaigns" order="2" label="cms__template_27__camapaigns__label" type="CAMPAIGNOVERVIEW" />
+	</content>
+</cms_page_template>
