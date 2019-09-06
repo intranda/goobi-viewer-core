@@ -590,6 +590,7 @@ public class Metadata implements Serializable {
                             found = true;
                             List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                             for (String mdValue : groupFieldMap.get(param.getKey())) {
+                                // Apply replace rules
                                 if (!param.getReplaceRules().isEmpty()) {
                                     mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
                                 }
