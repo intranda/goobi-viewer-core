@@ -49,6 +49,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
@@ -60,7 +63,8 @@ public class Campaign {
 
     public enum CampaignVisibility {
         PRIVATE,
-        PUBLIC
+        PUBLIC,
+        FINISHED
     }
 
     private static final Logger logger = LoggerFactory.getLogger(Campaign.class);
@@ -134,6 +138,10 @@ public class Campaign {
     @Transient
     @JsonIgnore
     private boolean dirty = false;
+
+    @Transient
+    @JsonIgnore
+    private CMSContentItem contentItem = new CMSContentItem();
 
     public Campaign() {
         this.selectedLocale = Locale.ENGLISH;
@@ -310,6 +318,28 @@ public class Campaign {
         this.dateStart = dateStart;
     }
 
+    public String getDateStartString() {
+        if (dateStart == null) {
+            return null;
+        }
+
+        return DateTools.formatterISO8601Date.print(dateStart.getTime());
+    }
+
+    /**
+     * 
+     * @param dateStartString
+     * @should parse string correctly
+     */
+    public void setDateStartString(String dateStartString) {
+        logger.trace("setDateStartString: {}", dateStartString);
+        if (dateStartString != null) {
+            this.dateStart = DateTools.parseDateFromString(dateStartString);
+        } else {
+            this.dateStart = null;
+        }
+    }
+
     /**
      * @return the dateEnd
      */
@@ -324,6 +354,27 @@ public class Campaign {
         this.dateEnd = dateEnd;
     }
 
+    public String getDateEndString() {
+        if (dateEnd == null) {
+            return null;
+        }
+
+        return DateTools.formatterISO8601Date.print(dateEnd.getTime());
+    }
+
+    /**
+     * 
+     * @param dateEndString
+     * @should parse string correctly
+     */
+    public void setDateEndString(String dateEndString) {
+        if (dateEndString != null) {
+            this.dateEnd = DateTools.parseDateFromString(dateEndString);
+        } else {
+            this.dateEnd = null;
+        }
+    }
+
     /**
      * @return the imageFileName
      */
@@ -336,6 +387,13 @@ public class Campaign {
      */
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+    }
+
+    /**
+     * @return the contentItem
+     */
+    public CMSContentItem getContentItem() {
+        return contentItem;
     }
 
     /**
