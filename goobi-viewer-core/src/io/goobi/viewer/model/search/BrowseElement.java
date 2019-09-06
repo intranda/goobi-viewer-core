@@ -220,11 +220,12 @@ public class BrowseElement implements Serializable {
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
                         String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
-                            this.metadataList.add(position,
-                                    new Metadata(
-                                            anchorStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                                    anchorStructElement.getDocStructType(), null, null, null, null, false, false, false),
-                                            Helper.intern(anchorLabel)));
+                            this.metadataList
+                                    .add(position,
+                                            new Metadata(anchorStructElement.getDocStructType(), null,
+                                                    new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
+                                                            null, null, null, null, false, false, false, Collections.emptyMap()),
+                                                    Helper.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -241,7 +242,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(
                                     topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                            topStructElement.getDocStructType(), null, null, null, null, false, false, false),
+                                            topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyMap()),
                                     Helper.intern(topstructLabel)));
                 }
             }

@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -253,7 +254,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the list of configured metadata for the title bar component.
+     * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
      * 
      * @return
      * @should return all configured metadata elements
@@ -288,7 +289,7 @@ public final class Configuration extends AbstractConfiguration {
                     boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
                     boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                     paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
+                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
                 }
             }
             ret.add(new Metadata(label, masterValue, type, paramList, group));
@@ -358,7 +359,8 @@ public final class Configuration extends AbstractConfiguration {
      * @param template Requested template name
      * @param templateList List of templates in which to look
      * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
-     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value passed here
+     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
+     *            passed here
      * @return
      */
     private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration> templateList,
@@ -409,37 +411,97 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         List<Metadata> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration> it2 = elements.iterator(); it2.hasNext();) {
-            HierarchicalConfiguration sub = it2.next();
-            String label = sub.getString("[@label]");
-            String masterValue = sub.getString("[@value]");
-            boolean group = sub.getBoolean("[@group]", false);
-            int number = sub.getInt("[@number]", -1);
-            int type = sub.getInt("[@type]", 0);
-            List<HierarchicalConfiguration> params = sub.configurationsAt("param");
-            List<MetadataParameter> paramList = null;
-            if (params != null) {
-                paramList = new ArrayList<>(params.size());
-                for (Iterator<HierarchicalConfiguration> it3 = params.iterator(); it3.hasNext();) {
-                    HierarchicalConfiguration sub2 = it3.next();
-                    String fieldType = sub2.getString("[@type]");
-                    String source = sub2.getString("[@source]", null);
-                    String key = sub2.getString("[@key]");
-                    String masterValueFragment = sub2.getString("[@value]");
-                    String defaultValue = sub2.getString("[@defaultValue]");
-                    String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                    String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                    boolean addUrl = sub2.getBoolean("[@url]", false);
-                    boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
-                    boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                    paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
-                            prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
-                }
+        for (Iterator<HierarchicalConfiguration> it = elements.iterator(); it.hasNext();) {
+            HierarchicalConfiguration sub = it.next();
+
+            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue);
+            if (md != null) {
+                ret.add(md);
             }
-            ret.add(new Metadata(label, masterValue, type, paramList, group, number));
         }
 
         return ret;
+    }
+
+    /**
+     * Creates a {@link Metadata} instance from the given subnode configuration
+     * 
+     * @param sub The subnode configuration
+     * @param topstructValueFallbackDefaultValue
+     * @return the resulting {@link Metadata} instance
+     * @should load replace rules correctly
+     */
+    // TODO
+    static Metadata getMetadataFromSubnodeConfig(HierarchicalConfiguration sub, boolean topstructValueFallbackDefaultValue) {
+        if (sub == null) {
+            throw new IllegalArgumentException("sub may not be null");
+        }
+
+        String label = sub.getString("[@label]");
+        String masterValue = sub.getString("[@value]");
+        boolean group = sub.getBoolean("[@group]", false);
+        int number = sub.getInt("[@number]", -1);
+        int type = sub.getInt("[@type]", 0);
+        List<HierarchicalConfiguration> params = sub.configurationsAt("param");
+        List<MetadataParameter> paramList = null;
+        if (params != null) {
+            paramList = new ArrayList<>(params.size());
+            for (Iterator<HierarchicalConfiguration> it2 = params.iterator(); it2.hasNext();) {
+                HierarchicalConfiguration sub2 = it2.next();
+                String fieldType = sub2.getString("[@type]");
+                String source = sub2.getString("[@source]", null);
+                String key = sub2.getString("[@key]");
+                String masterValueFragment = sub2.getString("[@value]");
+                String defaultValue = sub2.getString("[@defaultValue]");
+                String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
+                String search = sub2.getString("[@search]", "").replace("_SPACE_", " ");
+                String replace = sub2.getString("[@replace]", "").replace("_SPACE_", " ");
+                boolean addUrl = sub2.getBoolean("[@url]", false);
+                boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
+                boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
+                Map<Object, String> replaceRules = new LinkedHashMap<>();
+                List<HierarchicalConfiguration> replaceRuleElements = sub2.configurationsAt("replace");
+                if (replaceRuleElements != null) {
+                    // Replacement rules can be applied to a character, a string or a regex
+                    for (Iterator<HierarchicalConfiguration> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
+                        HierarchicalConfiguration sub3 = it3.next();
+                        Character character = null;
+                        try {
+                            int charIndex = sub3.getInt("[@char]");
+                            character = (char) charIndex;
+                        } catch (NoSuchElementException e) {
+                        }
+                        String string = null;
+                        try {
+                            string = sub3.getString("[@string]");
+                        } catch (NoSuchElementException e) {
+                        }
+                        String regex = null;
+                        try {
+                            regex = sub3.getString("[@regex]");
+                        } catch (NoSuchElementException e) {
+                        }
+                        String replaceWith = sub3.getString("");
+                        if (replaceWith == null) {
+                            replaceWith = "";
+                        }
+                        if (character != null) {
+                            replaceRules.put(character, replaceWith);
+                        } else if (string != null) {
+                            replaceRules.put(string, replaceWith);
+                        } else if (regex != null) {
+                            replaceRules.put("REGEX:" + regex, replaceWith);
+                        }
+                    }
+                }
+
+                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, masterValueFragment, defaultValue,
+                        prefix, suffix, addUrl, topstructValueFallback, topstructOnly, replaceRules));
+            }
+        }
+
+        return new Metadata(label, masterValue, type, paramList, group, number);
     }
 
     /**
@@ -516,7 +578,7 @@ public final class Configuration extends AbstractConfiguration {
             // no or multiple occurrences 
         }
         if (sub != null) {
-            Metadata md = getMetadata(sub);
+            Metadata md = getMetadataFromSubnodeConfig(sub, false);
             return md;
         }
         return new Metadata();
@@ -537,50 +599,13 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySidebarUsageWidgetLinkToMasterImage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage", false);
     }
-    
 
     public String getWidgetUsageMaxJpegSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToJpegImage[@maxSize]", Scale.MAX_SIZE);
     }
-    
+
     public String getWidgetUsageMaxMasterImageSize() {
         return getLocalString("sidebar.sidebarWidgetUsage.page.displayLinkToMasterImage[@maxSize]", Scale.MAX_SIZE);
-    }
-
-    /**
-     * Creates a {@link Metadata} instance from the given subnode configuration
-     * 
-     * @param sub The subnode configuration
-     * @return the resulting {@link Metadata} instance
-     */
-    private static Metadata getMetadata(HierarchicalConfiguration sub) {
-        String label = sub.getString("[@label]");
-        String masterValue = sub.getString("[@value]");
-        boolean group = sub.getBoolean("[@group]", false);
-        int number = sub.getInt("[@number]", -1);
-        int type = sub.getInt("[@type]", 0);
-        List<HierarchicalConfiguration> params = sub.configurationsAt("param");
-        List<MetadataParameter> paramList = null;
-        if (params != null) {
-            paramList = new ArrayList<>(params.size());
-            for (Iterator<HierarchicalConfiguration> it3 = params.iterator(); it3.hasNext();) {
-                HierarchicalConfiguration sub2 = it3.next();
-                String fieldType = sub2.getString("[@type]");
-                String source = sub2.getString("[@source]", null);
-                String key = sub2.getString("[@key]");
-                String overrideMasterValue = sub2.getString("[@value]");
-                String defaultValue = sub2.getString("[@defaultValue]");
-                String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                boolean addUrl = sub2.getBoolean("[@url]", false);
-                boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
-                boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue, defaultValue,
-                        prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
-            }
-        }
-        Metadata md = new Metadata(label, masterValue, type, paramList, group, number);
-        return md;
     }
 
     /**
@@ -588,6 +613,7 @@ public final class Configuration extends AbstractConfiguration {
      * @param eleTemplate
      * @return
      */
+    @Deprecated
     public static List<Metadata> getMetadataForTemplateFromJDOM(Element eleTemplate) {
         List<Metadata> ret = new ArrayList<>();
 
@@ -626,7 +652,7 @@ public final class Configuration extends AbstractConfiguration {
                                         ? eleParam.getAttribute("topstructOnly").getBooleanValue() : false;
 
                                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
-                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly));
+                                        defaultValue, prefix, suffix, addUrl, topstructValueFallback, topstructOnly, Collections.emptyMap()));
                             }
                         }
                         ret.add(new Metadata(label, masterValue, type, paramList, group, number));
@@ -1370,7 +1396,7 @@ public final class Configuration extends AbstractConfiguration {
         int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
         List<IAuthenticationProvider> providers = new ArrayList<>(max + 1);
         for (int i = 0; i <= max; i++) {
-        	String label = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@label]");
+            String label = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@label]");
             String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
             String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
             String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
@@ -3360,7 +3386,5 @@ public final class Configuration extends AbstractConfiguration {
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
     }
-
-
 
 }
