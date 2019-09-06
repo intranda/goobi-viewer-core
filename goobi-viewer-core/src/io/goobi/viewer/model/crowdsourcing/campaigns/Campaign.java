@@ -17,6 +17,7 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -135,7 +136,7 @@ public class Campaign implements CMSMediaHolder {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using=TranslationListSerializer.class)
+    @JsonSerialize(using = TranslationListSerializer.class)
     private List<CampaignTranslation> translations = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
@@ -145,7 +146,7 @@ public class Campaign implements CMSMediaHolder {
     @Transient
     @JsonIgnore
     private Locale selectedLocale;
-    
+
     @Transient
     @JsonIgnore
     private String targetIdentifier;
@@ -164,6 +165,10 @@ public class Campaign implements CMSMediaHolder {
 
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
+    }
+
+    public List<CampaignVisibility> getCampaignVisibilityValues() {
+        return Arrays.asList(CampaignVisibility.values());
     }
 
     /**
@@ -496,23 +501,24 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     *  @return the PI of a work selected for editing
+     * @return the PI of a work selected for editing
      */
     public String getTargetIdentifier() {
         return this.targetIdentifier;
     }
-    
+
     /**
      * @param targetIdentifier the targetIdentifier to set
      */
     public void setTargetIdentifier(String targetIdentifier) {
         this.targetIdentifier = targetIdentifier;
     }
-    
+
     /**
      * Set the targetIdentifier to a random PI from the solr query result list
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public void setRandomizedTarget() throws PresentationException, IndexUnreachableException {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
