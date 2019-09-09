@@ -40,6 +40,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
@@ -121,10 +122,20 @@ public class CrowdsourcingBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public long getCampaignCount(String val) throws DAOException {
-        CampaignVisibility visibility = CampaignVisibility.getByName(val);
+    public long getCampaignCount(String viz) throws DAOException {
+        CampaignVisibility visibility = CampaignVisibility.getByName(viz);
         Map<String, String> filters = visibility != null ? Collections.singletonMap("visibility", visibility.name()) : null;
         return DataManager.getInstance().getDao().getCampaignCount(filters);
+    }
+
+    public String filterCampaignsAction(String viz) {
+        lazyModelCampaigns.resetFilters();
+        CampaignVisibility visibility = CampaignVisibility.getByName(viz);
+        if (visibility != null) {
+            lazyModelCampaigns.addFilter(new TableDataFilter("visibility", visibility.name()));
+        }
+
+        return "";
     }
 
     /**
@@ -143,10 +154,6 @@ public class CrowdsourcingBean implements Serializable {
             }
         }
         return list;
-    }
-
-    public String filterCampaignsAction(CampaignVisibility visibility) {
-        return "";
     }
 
     public String createNewCampaignAction() {
@@ -210,9 +217,12 @@ public class CrowdsourcingBean implements Serializable {
         List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
         return pages;
     }
-    
+
     public List<Campaign> getAllCampaigns(CampaignVisibility visibility) throws DAOException {
-        List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns().stream()
+        List<Campaign> pages = DataManager.getInstance()
+                .getDao()
+                .getAllCampaigns()
+                .stream()
                 .filter(camp -> visibility.equals(camp.getVisibility()))
                 .collect(Collectors.toList());
         return pages;
