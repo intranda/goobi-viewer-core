@@ -26,8 +26,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -44,15 +42,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.ISelector;
+import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.Agent;
-import de.intranda.api.annotation.wa.Motivation;
+import de.intranda.api.annotation.wa.FragmentSelector;
 import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
@@ -348,8 +347,18 @@ public class PersistentAnnotation {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource = mapper.readValue(this.body, TextualResource.class);
+            IResource resource = (IResource) mapper.readValue(this.body, TextualResource.class);
             return resource;
+        } else {
+            return null;
+        }
+    }
+
+    public IResource getBodyAsOAResource() throws JsonParseException, JsonMappingException, IOException {
+        TextualResource resource = (TextualResource) getBodyAsResource();
+        if (resource != null) {
+            IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
+            return oaResource;
         } else {
             return null;
         }
@@ -414,6 +423,23 @@ public class PersistentAnnotation {
         }
     }
 
+    public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
+            IResource resource = (IResource) getTargetAsResource();
+            if (resource != null) {
+                if(resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
+                    FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
+                    ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
+                    IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
+                    return oaResource;                    
+                } else {
+                    return resource;
+                }
+            } else {
+                return null;
+            }
+            
+    }
+
     public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
@@ -426,6 +452,15 @@ public class PersistentAnnotation {
         }
         annotation.setBody(this.getBodyAsResource());
         annotation.setTarget(this.getTargetAsResource());
+        annotation.setMotivation(this.getMotivation());
+
+        return annotation;
+    }
+
+    public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
+        OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
+        annotation.setBody(this.getBodyAsOAResource());
+        annotation.setTarget(this.getTargetAsOAResource());
         annotation.setMotivation(this.getMotivation());
 
         return annotation;

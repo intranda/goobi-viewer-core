@@ -32,6 +32,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -66,6 +69,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -428,6 +432,27 @@ public class SequenceBuilder extends AbstractBuilder {
         if (videoList.getResources() != null) {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
+
+        try {
+            long numCrowdAnnotations = DataManager.getInstance().getDao().getAnnotationCountForTarget(page.getPi(), page.getOrder());
+            if (numCrowdAnnotations > 0) {
+                AnnotationList crowdList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.CROWDSOURCING));
+                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
+                annotationMap.put(AnnotationType.CROWDSOURCING, crowdList);
+                if (populate) {
+                    List<PersistentAnnotation> crowdAnnotations =
+                            DataManager.getInstance().getDao().getAnnotationsForTarget(page.getPi(), page.getOrder());
+                    for (PersistentAnnotation annotation : crowdAnnotations) {
+                        OpenAnnotation openAnnotation = annotation.getAsOpenAnnotation();
+                        openAnnotation.setMotivation(Motivation.convertFromWebAnnotationMotivation(annotation.getMotivation()));
+                        crowdList.addResource(openAnnotation);
+                    }
+                }
+            }
+        } catch (DAOException | IOException e) {
+            logger.error("Error creating crowdsourcing annotations ", e);
+        }
+
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));
         }
