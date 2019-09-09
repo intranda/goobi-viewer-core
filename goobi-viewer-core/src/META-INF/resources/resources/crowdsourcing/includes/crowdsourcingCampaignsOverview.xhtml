@@ -8,6 +8,7 @@
 
     <!-- INPUT MODULE TEMPLATE -->
     <div class="crowdsourcing-campaigns-overview">
+    <h:form>
 		<ui:repeat var="campaign" value="#{crowdsourcingBean.allCampaigns}">
 			<div class="crowdsourcing-campaigns-overview__campaign">
 				<ui:fragment rendered="#{campaign.hasMediaItem()}">
@@ -15,21 +16,18 @@
 						<img src="#{campaign.mediaItem.iconURI}" />
 					</div>
 				</ui:fragment>
-				<div class="crowdsourcing-campaigns-overview__campaig__text">
-					<h2 class="crowdsourcing-campaigns-overview__campaig__text__title">#{campaign.title}</h2>
-					<div class="crowdsourcing-campaigns-overview__campaig__text__description">
+				<div class="crowdsourcing-campaigns-overview__campaign__text">
+					<h3 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.title}</h3>
+					<div class="crowdsourcing-campaigns-overview__campaign__text__description">
 						#{campaign.description}
 					</div>
 				</div>
 				<div class="crowdsourcing-campaigns-overview__campaign__actions">
-					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingView(campaign)}"></h:commandLink>
-					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"></h:commandLink>
-					<div class="crowdsourcing-campaigns-overview__campaig__text__description">
-						#{campaign.description}
-					</div>
+					<h:commandLink target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingView(campaign)}" styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
+					<h:commandLink target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}" styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
 				</div>
 			</div>
-		
 		</ui:repeat>
+	</h:form>
     </div>
 </ui:composition>

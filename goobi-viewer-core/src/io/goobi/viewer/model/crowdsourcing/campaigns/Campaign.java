@@ -126,6 +126,7 @@ public class Campaign implements CMSMediaHolder {
 
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
+    @JsonIgnore
     private CMSMediaItem mediaItem;
 
     @Column(name = "solr_query", nullable = false)
@@ -572,6 +573,7 @@ public class Campaign implements CMSMediaHolder {
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
      */
     @Override
+    @JsonIgnore
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
             return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,

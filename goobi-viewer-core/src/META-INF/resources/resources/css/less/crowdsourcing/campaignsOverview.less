@@ -1,0 +1,58 @@
+/* ==============================================================
+   Crowdsourcing 
+   global style declarations for crowdsourcing_layout.xhtml
+   ==============================================================*/
+/* ADMIN LAYOUT */
+.crowdsourcing-campaigns-overview { 
+	display: flex;
+	flex-direction: column;
+	
+	&__campaign {
+		display: flex;
+		align-items: stretch;
+		justify-content: space-evenly;
+		margin: 5px 0;
+		border: 2px solid @middlegray;
+		background: white;
+		height: 300px;
+		padding: 10px;
+		
+		>div {
+			margin: 10px;
+		}
+		
+		&__image {
+			flex-grow: 1;
+			width: 25%;
+		    flex-shrink: 0;
+		    display: flex;
+		    align-items: center;
+		    flex-direction: column;
+
+			img {
+				max-width: 200px;
+			}
+		}
+		
+		&__text {
+			flex-grow: 2;
+			display: flex;
+		    flex-direction: column;
+		}
+		
+		&__actions {
+			display:flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			flex-grow: 1;
+			
+			a {
+				margin: 10px 15px;
+				width: 100%;
+				
+			}
+		}
+	}
+}
+

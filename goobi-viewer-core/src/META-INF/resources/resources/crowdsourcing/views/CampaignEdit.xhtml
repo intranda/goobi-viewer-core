@@ -26,7 +26,7 @@
     
         <f:view contentType="text/html" encoding="utf-8">
                 
-                <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
+                <campaignItem restapiurl="http://localhost:8082/viewer/rest/" 
                 campaign="#{crowdsourcingBean.selectedCampaignId}"
                  pi="#{crowdsourcingBean.selectedCampaign.targetIdentifier}"
                  loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"/>
@@ -40,7 +40,7 @@
 	                name : "#{userBean.user.displayName}"
 	        }
 	        Crowdsourcing.user = user;
-	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
+	    	Crowdsourcing.initTranslations(messageKeys, "http://localhost:8082/viewer/rest/")
 	    	.then(() => riot.mount("campaignItem"));
         	
         </script>
