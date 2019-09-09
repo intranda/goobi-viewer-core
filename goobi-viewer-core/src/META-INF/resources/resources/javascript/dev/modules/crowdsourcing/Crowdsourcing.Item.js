@@ -43,11 +43,20 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
         this.imageSource = item.source;
         this.imageOpenEvents = new Rx.Subject();
+        this.imageRotationEvents = new Rx.Subject();
 
     };
 
     crowdsourcing.Item.prototype.notifyImageOpened = function(observable) {
         observable.subscribe(this.imageOpenEvents);
+    }
+    
+    crowdsourcing.Item.prototype.notifyImageRotated = function(byDegrees) {
+        this.imageRotationEvents.onNext(byDegrees);
+    }
+    
+    crowdsourcing.Item.prototype.onImageRotated = function(eventHandler, errorHandler, completedHandler) {
+        this.imageRotationEvents.subscribe(eventHandler, errorHandler, completedHandler);
     }
     
     crowdsourcing.Item.prototype.onImageOpen = function(eventHandler, errorHandler, completedHandler) {

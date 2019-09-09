@@ -35,7 +35,7 @@
 	this.annotationSource = this.itemSource + "/annotations";
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
-	console.log(" opts ", this.opts);
+		
 	this.on("mount", function() {
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
@@ -57,6 +57,8 @@
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
 		.catch( error => console.error("ERROR ", error));  
+	    
+		this.item.onImageRotated( () => this.update());
 	}
 	
 	initImageView() {

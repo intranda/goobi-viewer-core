@@ -162,7 +162,7 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.e
 	this.annotationSource = this.itemSource + "/annotations";
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
-	console.log(" opts ", this.opts);
+
 	this.on("mount", function() {
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
@@ -184,6 +184,8 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.e
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
 		.catch( error => console.error("ERROR ", error));
+
+		this.item.onImageRotated( () => this.update());
 	}.bind(this)
 
 	this.initImageView = function() {
@@ -646,6 +648,7 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="ann
 
 riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_controls__item"><button class="controls__item fa fa-rotate-left" onclick="{rotateLeft}"></button></div><div class="image_controls__item"><button class="controls__item fa fa-rotate-right" onclick="{rotateRight}"></button></div><div class="image_controls__item zoom-slider-wrapper"><div class="zoom-slider"><div class="zoom-slider-handle"></div></div></div></div>', '', '', function(opts) {
     this.on( "mount", function() {
+
     } );
 
     this.rotateRight = function()
@@ -653,12 +656,18 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_contro
         if ( this.opts.image ) {
             this.opts.image.controls.rotateRight();
         }
+        if(this.opts.item) {
+            this.opts.item.notifyImageRotated(90);
+        }
     }.bind(this)
 
     this.rotateLeft = function()
     {
         if ( this.opts.image ) {
             this.opts.image.controls.rotateLeft();
+        }
+        if(this.opts.item) {
+            this.opts.item.notifyImageRotated(-90);
         }
     }.bind(this)
 });
@@ -669,7 +678,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image_contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><imagecontrols if="{this.image}" image="{this.image}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><imagecontrols if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls><div class="image_container"><div id="image_{opts.id}" class="image"></div></div></div>', '', '', function(opts) {
 
 	this.getPosition = function() {
 		let pos_os = this.dataPoint.getPosition();

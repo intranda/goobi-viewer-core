@@ -122,7 +122,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.getImageUrl = function(rect, imageId) {
-        let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/0/default.jpg";
+        let rotation = this.item.image ? this.item.image.getRotation() : 0;
+        let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/" + rotation + "/default.jpg";
         return url;
     }
     

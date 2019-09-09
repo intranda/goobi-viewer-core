@@ -8,7 +8,7 @@
 <imageView>
 	<div id="wrapper_{opts.id}" class="imageview_wrapper">
 	
-		<imageControls if="{this.image}" image="{this.image}"></imageControls>
+		<imageControls if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls>
 	
 		<div class="image_container">
 			<div id="image_{opts.id}" class="image"></div>

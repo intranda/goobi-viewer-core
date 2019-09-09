@@ -19,6 +19,8 @@
 
 <script>
     this.on( "mount", function() {
+        
+        
     } );
     
     rotateRight()
@@ -26,12 +28,18 @@
         if ( this.opts.image ) {
             this.opts.image.controls.rotateRight();
         }
+        if(this.opts.item) {
+            this.opts.item.notifyImageRotated(90);
+        }
     }
 
     rotateLeft()
     {
         if ( this.opts.image ) {
             this.opts.image.controls.rotateLeft();
+        }
+        if(this.opts.item) {
+            this.opts.item.notifyImageRotated(-90);
         }
     }
 </script> 

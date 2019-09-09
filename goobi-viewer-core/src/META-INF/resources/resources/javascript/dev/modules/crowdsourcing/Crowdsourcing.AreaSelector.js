@@ -44,15 +44,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
                 this.createDrawer(imageView);
                 this.createTransformer(imageView);
                 
-                imageView.observables.viewerRotate.subscribe(function(event) {
-                    console.log("image rotated ", event, this.rects);
-                    let angle = event.degrees;
+                this.crowdsourcingItem.onImageRotated( (degree) => {
                     this.rects.forEach(function(overlay) {
-
-                        
-                        
+                        overlay.rect = overlay.rect.rotate(degree);
                     })
-                }.bind(this));
+                });
             }
         });
         
@@ -105,7 +101,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.AreaSelector.prototype.addOverlay = function(annotation, viewer) {
-        let rect = ImageView.CoordinateConversion.convertRectFromImageToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source);
+        let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source)
+        rect = rect.rotate(-viewer.viewport.getRotation());
         let overlay = new ImageView.Overlay(rect, viewer, this.getStyle(annotation.getColor()));
         annotation.setColor(overlay.style.borderColor);
         overlay.id = ++this.lastRectangleId;
@@ -149,10 +146,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     function _getResultObject(rect, image) {
+        
+        let region = rect.rect.rotate(-image.getRotation());
+        
         let result = {
                 id: rect.id,
                 color: rect.style.borderColor,
-                region: ImageView.CoordinateConversion.convertRectFromOpenSeadragonToImage(rect.rect, image.viewer, image.viewer.world.getItemAt(0).source)
+                region: ImageView.CoordinateConversion.scaleToImage(region, image.viewer, image.viewer.world.getItemAt(0).source)
         }
         return result;
     }
