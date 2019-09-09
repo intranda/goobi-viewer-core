@@ -1,8 +1,11 @@
 <campaignItem>
 
 	<div class="content">
-	<span if="{!this.item}" class="loader_wrapper">
+	<span if="{!this.item && !this.error}" class="loader_wrapper">
 		<img src="{this.opts.loaderimageurl}" />
+	</span>
+	<span if="{this.error}" class="loader_wrapper">
+		<span class="error_message">{this.error.message}</span>
 	</span>
 	</span>
 		<div class="content_left" >
@@ -40,7 +43,11 @@
 	    .then( () => fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
-		.catch( error => console.error("ERROR ", error));  
+		.catch( error => {
+		    console.error("ERROR ", error);
+	    	this.error = error;
+	    	this.update();
+		})
 	});
 
 	loadItem(itemConfig) {

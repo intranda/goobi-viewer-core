@@ -2117,4 +2117,5 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, campaign.getQuestions().size());
         Assert.assertEquals("English text", campaign.getQuestions().get(0).getText());
     }
+
 }

@@ -3793,9 +3793,19 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator = :campaign";
+        String query = "SELECT a FROM PersistentAnnotation a";
+        if(!campaign.getQuestions().isEmpty()) {    
+            query += " WHERE (";
+            for (Question question : campaign.getQuestions()) {
+                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+            }
+            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query += " )";
+        }
         Query q = em.createQuery(query);
-        q.setParameter("campaign", campaign);
+        for (Question question : campaign.getQuestions()) {            
+            q.setParameter("questionId_"  + question.getId(), question.getId());
+        }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
@@ -3843,9 +3853,19 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE a.generator.owner = :campaign AND a.targetPI = :pi";
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
+        if(!campaign.getQuestions().isEmpty()) {    
+            query += " AND (";
+            for (Question question : campaign.getQuestions()) {
+                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+            }
+            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query += " )";
+        }
         Query q = em.createQuery(query);
-        q.setParameter("campaign", campaign);
+        for (Question question : campaign.getQuestions()) {            
+            q.setParameter("questionId_"  + question.getId(), question.getId());
+        }
         q.setParameter("pi", pi);
 
          q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -3858,14 +3878,24 @@ public class JPADAO implements IDAO {
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
-        String query = "SELECT a FROM PersistentAnnotation a WHERE  a.generator.owner = :campaign AND a.targetPI = :pi";
+        String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
         if(page !=null) {
             query += " AND a.targetPageOrder = :page";
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
+        if(!campaign.getQuestions().isEmpty()) {    
+            query += " AND (";
+            for (Question question : campaign.getQuestions()) {
+                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+            }
+            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query += " )";
+        }
         Query q = em.createQuery(query);
-        q.setParameter("campaign", campaign);
+        for (Question question : campaign.getQuestions()) {            
+            q.setParameter("questionId_"  + question.getId(), question.getId());
+        }
         q.setParameter("pi", pi);
         if(page !=null) {
             q.setParameter("page", page);

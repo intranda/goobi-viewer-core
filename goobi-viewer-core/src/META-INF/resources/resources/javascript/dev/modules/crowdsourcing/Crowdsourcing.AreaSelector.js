@@ -43,6 +43,16 @@ var Crowdsourcing = ( function(crowdsourcing) {
             if(!this.drawer) {
                 this.createDrawer(imageView);
                 this.createTransformer(imageView);
+                
+                imageView.observables.viewerRotate.subscribe(function(event) {
+                    console.log("image rotated ", event, this.rects);
+                    let angle = event.degrees;
+                    this.rects.forEach(function(overlay) {
+
+                        
+                        
+                    })
+                }.bind(this));
             }
         });
         

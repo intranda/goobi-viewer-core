@@ -15,8 +15,6 @@
  */
 package io.goobi.viewer.model.annotation;
 
-import static org.junit.Assert.*;
-
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
@@ -47,6 +45,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
+import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -58,7 +59,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     private WebAnnotation annotation;
     private PersistentAnnotation daoAnno;
     private User creator;
-    private Campaign generator;
+    private Question generator;
     private IResource body;
     private IResource target;
     
@@ -71,8 +72,13 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         
         creator = DataManager.getInstance().getDao().getUser(2);
 
-        generator = new Campaign();
+        Campaign campaign = new Campaign();
+        campaign.setId(5l);
+        generator = new Question(campaign);
         generator.setId(4l);
+        generator.setQuestionType(QuestionType.PLAINTEXT);
+        generator.setTargetFrequency(0);
+        generator.setTargetSelector(TargetSelector.WHOLE_PAGE);
 
         annotation = new WebAnnotation(URI.create("http://www.example.com/anno/1"));
         annotation.setCreated(new Date(2019, 01, 22, 12, 54));
@@ -99,7 +105,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testIdConversion() throws JsonParseException, JsonMappingException, IOException {
+    public void testIdConversion() throws JsonParseException, JsonMappingException, IOException, DAOException {
        
         URI webAnnoURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/562");
         

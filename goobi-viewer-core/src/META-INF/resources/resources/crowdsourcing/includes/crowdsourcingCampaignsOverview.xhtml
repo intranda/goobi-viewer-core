@@ -9,7 +9,7 @@
     <!-- INPUT MODULE TEMPLATE -->
     <div class="crowdsourcing-campaigns-overview">
     <h:form>
-		<ui:repeat var="campaign" value="#{crowdsourcingBean.allCampaigns}">
+		<ui:repeat var="campaign" value="#{crowdsourcingBean.getAllCampaigns('PUBLIC')}">
 			<div class="crowdsourcing-campaigns-overview__campaign">
 				<ui:fragment rendered="#{campaign.hasMediaItem()}">
 					<div class="crowdsourcing-campaigns-overview__campaign__image">

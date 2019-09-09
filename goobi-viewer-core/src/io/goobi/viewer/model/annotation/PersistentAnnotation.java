@@ -64,7 +64,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 @Entity
 @Table(name = "annotations")
-public class PersistentAnnotation{
+public class PersistentAnnotation {
 
     private static final Logger logger = LoggerFactory.getLogger(PersistentAnnotation.class);
 
@@ -72,68 +72,79 @@ public class PersistentAnnotation{
     private static final String URI_ID_REGEX = ".*/annotations/(\\d+)/?$";
     private static final String TARGET_REGEX = ".*/iiif/manifests/(\\w+)/(?:canvas|manifest)?(?:/(\\d+))?/?$";
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "annotation_id")
     private Long id;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created")
     private Date dateCreated;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_modified")
     private Date dateModified;
-    
+
     @Column(name = "motivation")
     private String motivation;
-    
-    @ManyToOne
-    @JoinColumn(name = "creator_id")
-    private User creator;
-    
-    @ManyToOne
-    @JoinColumn(name = "generator_id")
-    private Question generator;
-    
-    @Column(name = "body", columnDefinition="LONGTEXT")
+
+    /**
+     * This is the id of the {@link User} who created the annotation. If it is null, either the annotation wasn't created by a logged in user, or this
+     * information is widtheld for privacy reasons
+     */
+    @Column(name = "creator_id")
+    private Long creatorId;
+
+    /**
+     * This is the id of the {@link Question} this annotation was created with. If it is null, the annotation was generated outside the campaign
+     * framework
+     */
+    @Column(name = "generator_id")
+    private Long generatorId;
+
+    @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
-    
-    @Column(name = "target", columnDefinition="LONGTEXT")
+
+    @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
-    
+
     @Column(name = "target_pi")
     private String targetPI;
-    
+
     @Column(name = "target_page")
     private Integer targetPageOrder;
 
     public PersistentAnnotation() {
     }
-    
+
     public PersistentAnnotation(WebAnnotation source) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
         this.motivation = source.getMotivation();
         this.id = source.getId() != null ? getId(source.getId()) : null;
+        this.creatorId = null;
+        this.generatorId = null;
         try {
-            this.creator = DataManager.getInstance().getDao().getUser(User.getId(source.getCreator().getId()));
-        } catch (NumberFormatException | DAOException e) {
+            if (source.getCreator() != null && source.getCreator().getId() != null) {
+                Long userId = User.getId(source.getCreator().getId());
+                if (userId != null) {
+                    this.creatorId = userId;
+                }
+            }
+        } catch (NumberFormatException e) {
             logger.error("Error getting creator of " + source, e);
         }
         try {
-            Long questionId = Question.getQuestionId(source.getGenerator().getId());
-            Long campaignId = Question.getCampaignId(source.getGenerator().getId());
-            if(questionId != null && campaignId != null) {                
-                Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-                this.generator = campaign.getQuestions().stream().filter(q -> questionId.equals(q.getId())).findFirst().orElse(null);
+            if (source.getGenerator() != null && source.getGenerator().getId() != null) {
+                Long questionId = Question.getQuestionId(source.getGenerator().getId());
+                Long campaignId = Question.getCampaignId(source.getGenerator().getId());
+                this.generatorId = questionId;
             }
-        } catch (NumberFormatException | DAOException e) {
+        } catch (NumberFormatException e) {
             logger.error("Error getting generator of " + source, e);
         }
-        
-        ObjectMapper mapper = new ObjectMapper();        
+
+        ObjectMapper mapper = new ObjectMapper();
         try {
             this.body = mapper.writeValueAsString(source.getBody());
         } catch (JsonProcessingException e) {
@@ -149,20 +160,19 @@ public class PersistentAnnotation{
 
     }
 
-
     /**
      * @param id2
      * @return
      */
     public static String parsePI(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
-        if(matcher.find()) {
+        if (matcher.find()) {
             return matcher.group(1);
         } else {
             return null;
         }
     }
-    
+
     /**
      * Extract the page order from a canvas url. If the url points to a manifest, return null
      * 
@@ -171,9 +181,9 @@ public class PersistentAnnotation{
      */
     public static Integer parsePageOrder(URI uri) {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
-        if(matcher.find()) {
+        if (matcher.find()) {
             String pageNo = matcher.group(2);
-            if(StringUtils.isNotBlank(pageNo)) {                
+            if (StringUtils.isNotBlank(pageNo)) {
                 return Integer.parseInt(pageNo);
             } else {
                 return null;
@@ -190,7 +200,6 @@ public class PersistentAnnotation{
         return id;
     }
 
-
     /**
      * @param id the id to set
      */
@@ -200,14 +209,14 @@ public class PersistentAnnotation{
 
     public static Long getId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
-        if(matcher.find()) {
+        if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
         } else {
             return null;
         }
     }
-    
+
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
@@ -219,14 +228,12 @@ public class PersistentAnnotation{
         return dateCreated;
     }
 
-
     /**
      * @param dateCreated the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
-
 
     /**
      * @return the dateModified
@@ -235,7 +242,6 @@ public class PersistentAnnotation{
         return dateModified;
     }
 
-
     /**
      * @param dateModified the dateModified to set
      */
@@ -243,38 +249,71 @@ public class PersistentAnnotation{
         this.dateModified = dateModified;
     }
 
-
     /**
      * @return the creator
+     * @throws DAOException
      */
-    public User getCreator() {
-        return creator;
+    public User getCreator() throws DAOException {
+        if (getCreatorId() != null) {
+            return DataManager.getInstance().getDao().getUser(getCreatorId());
+        } else {
+            return null;
+        }
     }
-
 
     /**
      * @param creator the creator to set
      */
     public void setCreator(User creator) {
-        this.creator = creator;
+        this.creatorId = creator.getId();
     }
-
 
     /**
      * @return the generator
+     * @throws DAOException
      */
-    public Question getGenerator() {
-        return generator;
+    public Question getGenerator() throws DAOException {
+        if (getGeneratorId() != null) {
+            return DataManager.getInstance().getDao().getQuestion(getGeneratorId());
+        } else {
+            return null;
+        }
     }
-
 
     /**
      * @param generator the generator to set
      */
     public void setGenerator(Question generator) {
-        this.generator = generator;
+        this.generatorId = generator.getId();
     }
 
+    /**
+     * @return the creatorId
+     */
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    /**
+     * @param creatorId the creatorId to set
+     */
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the generatorId
+     */
+    public Long getGeneratorId() {
+        return generatorId;
+    }
+
+    /**
+     * @param generatorId the generatorId to set
+     */
+    public void setGeneratorId(Long generatorId) {
+        this.generatorId = generatorId;
+    }
 
     /**
      * @return the body
@@ -283,36 +322,38 @@ public class PersistentAnnotation{
         return body;
     }
 
-
     /**
      * @param body the body to set
      */
     public void setBody(String body) {
         this.body = body;
     }
-    
+
     /**
      * @return the motivation
      */
     public String getMotivation() {
         return motivation;
     }
-    
+
     /**
      * @param motivation the motivation to set
      */
     public void setMotivation(String motivation) {
         this.motivation = motivation;
     }
-    
-    public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        IResource resource = mapper.readValue(this.body, TextualResource.class);
-        return resource;
-    }
 
+    public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
+        if (this.body != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            IResource resource = mapper.readValue(this.body, TextualResource.class);
+            return resource;
+        } else {
+            return null;
+        }
+    }
 
     /**
      * @return the target
@@ -320,35 +361,34 @@ public class PersistentAnnotation{
     public String getTarget() {
         return target;
     }
-    
+
     /**
      * @return the targetPI
      */
     public String getTargetPI() {
         return targetPI;
     }
-    
+
     /**
      * @return the targetPageOrder
      */
     public Integer getTargetPageOrder() {
         return targetPageOrder;
     }
-    
+
     /**
      * @param targetPI the targetPI to set
      */
     public void setTargetPI(String targetPI) {
         this.targetPI = targetPI;
     }
-    
+
     /**
      * @param targetPageOrder the targetPageOrder to set
      */
     public void setTargetPageOrder(Integer targetPageOrder) {
         this.targetPageOrder = targetPageOrder;
     }
-
 
     /**
      * @param target the target to set
@@ -358,35 +398,37 @@ public class PersistentAnnotation{
     }
 
     public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        IResource resource; 
-        if(this.target.contains("SpecificResource")) {
-            resource = mapper.readValue(this.target, SpecificResource.class);     
+        if (this.target != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            IResource resource;
+            if (this.target.contains("SpecificResource")) {
+                resource = mapper.readValue(this.target, SpecificResource.class);
+            } else {
+                resource = mapper.readValue(this.target, TypedResource.class);
+            }
+            return resource;
         } else {
-            resource = mapper.readValue(this.target, TypedResource.class);   
+            return null;
         }
-        return resource;
     }
 
-    public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException {
+    public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
         annotation.setModified(this.dateModified);
-        if(getCreator() != null) {            
+        if (getCreator() != null) {
             annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
         }
-        if(getGenerator() != null) {            
+        if (getGenerator() != null) {
             annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
         }
         annotation.setBody(this.getBodyAsResource());
         annotation.setTarget(this.getTargetAsResource());
         annotation.setMotivation(this.getMotivation());
-        
-        return annotation;   
+
+        return annotation;
     }
 
-    
-    
 }

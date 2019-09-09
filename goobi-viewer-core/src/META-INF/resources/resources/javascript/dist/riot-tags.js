@@ -156,7 +156,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><span if="{!this.item}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div class="options-wrapper"><button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate(⁗action__restart⁗)}</button><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.error}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div class="options-wrapper"><button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate(⁗action__restart⁗)}</button><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
 	this.annotationSource = this.itemSource + "/annotations";
@@ -170,7 +170,11 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item}" class="l
 	    .then( () => fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
-		.catch( error => console.error("ERROR ", error));
+		.catch( error => {
+		    console.error("ERROR ", error);
+	    	this.error = error;
+	    	this.update();
+		})
 	});
 
 	this.loadItem = function(itemConfig) {

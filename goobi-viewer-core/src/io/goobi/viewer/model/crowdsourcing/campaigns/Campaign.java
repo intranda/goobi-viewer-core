@@ -178,6 +178,7 @@ public class Campaign implements CMSMediaHolder {
         this.selectedLocale = selectedLocale;
     }
 
+    @JsonIgnore
     public List<CampaignVisibility> getCampaignVisibilityValues() {
         return Arrays.asList(CampaignVisibility.values());
     }
@@ -557,6 +558,7 @@ public class Campaign implements CMSMediaHolder {
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
      */
     @Override
+    @JsonIgnore
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
     }

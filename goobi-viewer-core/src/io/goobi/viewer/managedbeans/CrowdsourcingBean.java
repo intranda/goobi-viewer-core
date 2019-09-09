@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -207,6 +208,13 @@ public class CrowdsourcingBean implements Serializable {
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
         List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
+        return pages;
+    }
+    
+    public List<Campaign> getAllCampaigns(CampaignVisibility visibility) throws DAOException {
+        List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns().stream()
+                .filter(camp -> visibility.equals(camp.getVisibility()))
+                .collect(Collectors.toList());
         return pages;
     }
 
