@@ -32,16 +32,27 @@
 
                         <div class="admin__content-inner-content">
                             <div id="csCampaignsWrapper" class="sortable-table-wrapper">
-                            
-                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction(null)}">
-                                    #{msg.all}
-                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount(null)}) |
-                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction('PUBLIC')}">
-                                    #{msg.PUBLIC}
-                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
-                                <h:commandLink action="#{crowdsourcingbean.filterCampaignsAction('FINISHED')}">
-                                    #{msg.FINISHED}
-                                </h:commandLink> (#{crowdsourcingBean.getCampaignCount('FINISHED')})
+                                <!-- all -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') != null}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction(null)}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_ALL}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
+                                <!-- public -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'PUBLIC'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_PUBLIC}" /> (#{crowdsourcingBean.getCampaignCount('PUBLIC')}) |
+                                <!-- finished -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'FINISHED'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('FINISHED')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_FINISHED}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'FINISHED'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_FINISHED}" /> (#{crowdsourcingBean.getCampaignCount('FINISHED')})
 
                                 <!-- paginator -->
                                 <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
