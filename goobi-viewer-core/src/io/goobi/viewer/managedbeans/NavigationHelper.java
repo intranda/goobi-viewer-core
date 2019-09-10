@@ -61,6 +61,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -99,6 +100,8 @@ public class NavigationHelper implements Serializable {
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
+    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
+    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
 
     protected static final String KEY_CURRENT_VIEW = "currentView";
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
@@ -112,6 +115,7 @@ public class NavigationHelper implements Serializable {
     private static final String SEARCH_TERM_LIST_PAGE = "searchTermList";
     private static final String BROWSE_PAGE = "browse";
     private static final String TAGS_PAGE = "tags";
+
 
     private Locale locale = Locale.ENGLISH;
 
@@ -290,6 +294,21 @@ public class NavigationHelper implements Serializable {
         setCurrentPage("statistics", true, true);
         updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
                 NavigationHelper.WEIGHT_TAG_MAIN_MENU));
+    }
+    
+    /**
+     * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
+     */
+    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi) {
+        setCurrentPage("crowdsourcingAnnotation", false, true);
+        if(campaign != null) {            
+            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/",
+                    NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
+        }
+        if(pi != null) {            
+            updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + pi + "/",
+                    NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
+        }
     }
 
     public void setCurrentPageUser() {

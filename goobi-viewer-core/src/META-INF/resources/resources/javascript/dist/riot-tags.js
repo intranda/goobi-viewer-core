@@ -156,10 +156,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.error}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div class="options-wrapper"><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate(⁗action__refuse_reject⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
 	this.annotationSource = this.itemSource + "/annotations";
+	this.loading = true;
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
 
@@ -179,11 +180,16 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.e
 
 	this.loadItem = function(itemConfig) {
 
-	    this.item = new Crowdsourcing.Item(itemConfig, 0)
+	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
-		.catch( error => console.error("ERROR ", error));
+		.then( () => {this.loading = false;})
+		.catch( error => {
+		    this.loading = false;
+		    console.error("ERROR ", error);
+		})
 
 		this.item.onImageRotated( () => this.update());
 	}.bind(this)
@@ -228,6 +234,8 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.e
 	this.saveToServer = function() {
 	    let pages = this.item.loadAnnotationPages();
 	    console.log("save annotations ", pages);
+	    this.loading = true;
+	    this.update();
 	    fetch(this.annotationSource, {
             method: "PUT",
             headers: {
@@ -236,10 +244,22 @@ riot.tag2('campaignitem', '<div class="content"><span if="{!this.item && !this.e
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
-	    .then(() => this.resetItems());
+	    .then(() => this.resetItems())
+	    .then(() => {
+	        this.loading = false;
+		    this.update();
+	    })
 	}.bind(this)
 
 	this.submitForReview = function() {
+
+	}.bind(this)
+
+	this.acceptReview = function() {
+
+	}.bind(this)
+
+	this.rejectReview = function() {
 
 	}.bind(this)
 
@@ -864,7 +884,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="annotation_area__text_input"><textarea onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{anno.getText() || anno.getRegion()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
+riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="annotation_area__text_input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{!this.opts.item.isReviewMode() && (anno.getText() || anno.getRegion())}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 	this.question.createAnnotation = function(anno) {
@@ -919,7 +939,7 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 	}.bind(this)
 
 	this.showInstructions = function() {
-	    return this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
 	}.bind(this)
 
     this.setTextFromEvent = function(event) {

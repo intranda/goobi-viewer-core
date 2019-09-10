@@ -11,11 +11,16 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('campaignEdit')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedCampaign.targetIdentifier)}" />
         </f:metadata>
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
     <ui:define name="content">
+   
     
        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -31,12 +36,12 @@
                  pi="#{crowdsourcingBean.selectedCampaign.targetIdentifier}"
                  loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
                  nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign)}"
-                 />
+                 itemstatus="ANNOTATE"/>
                 
         </f:view>
         
         <script>
-	    	const messageKeys = ["action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+	    	const messageKeys = ["action__reject_review", "action__accept_review", "action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
 	        const user = {
 	                id : "#{userBean.user.idAsURI}",
 	                name : "#{userBean.user.displayName}"

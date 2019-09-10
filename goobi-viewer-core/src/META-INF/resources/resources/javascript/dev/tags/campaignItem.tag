@@ -1,7 +1,7 @@
 <campaignItem>
 
 	<div class="content">
-	<span if="{!this.item && !this.error}" class="loader_wrapper">
+	<span if="{ this.loading }" class="loader_wrapper">
 		<img src="{this.opts.loaderimageurl}" />
 	</span>
 	<span if="{this.error}" class="loader_wrapper">
@@ -21,12 +21,16 @@
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}"></geoLocationQuestion>
 				</div>
 			</div>
-			<div class="options-wrapper">
+			<div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate">
 <!-- 				<button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate("action__restart")}</button> -->
 				<button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
-			
+			</div>
+			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
+				<button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
+				<button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate("action__refuse_reject")}</button>
+				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 		</div>
 	 </div>
@@ -35,6 +39,7 @@
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
 	this.annotationSource = this.itemSource + "/annotations";
+	this.loading = true;
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
 		
@@ -54,11 +59,16 @@
 
 	loadItem(itemConfig) {
 	    
-	    this.item = new Crowdsourcing.Item(itemConfig, 0)
+	    this.item = new Crowdsourcing.Item(itemConfig, 0);
+	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
 		fetch(this.item.imageSource)
 		.then( response => response.json() )
 		.then((imageSource) => this.initImageView())
-		.catch( error => console.error("ERROR ", error));  
+		.then( () => {this.loading = false;})
+		.catch( error => {
+		    this.loading = false;
+		    console.error("ERROR ", error);  
+		})
 	    
 		this.item.onImageRotated( () => this.update());
 	}
@@ -104,6 +114,8 @@
 	saveToServer() {
 	    let pages = this.item.loadAnnotationPages();
 	    console.log("save annotations ", pages);
+	    this.loading = true;
+	    this.update();
 	    fetch(this.annotationSource, {
             method: "PUT",
             headers: {
@@ -112,10 +124,22 @@
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(pages)
 	    })
-	    .then(() => this.resetItems());
+	    .then(() => this.resetItems())
+	    .then(() => {
+	        this.loading = false;
+		    this.update();
+	    })
 	}
 	
 	submitForReview() {
+	    //TODO: change item status
+	}
+	
+	acceptReview() {
+	    //TODO: change item status
+	}
+	
+	rejectReview() {
 	    //TODO: change item status
 	}
 	
