@@ -252,8 +252,9 @@ public class CollectionBuilder extends AbstractBuilder {
 
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
-                CollectionExtent extentService = new CollectionExtent(subCollections, (int) volumes);
-                extentService.setBaseURI(getBaseUrl().toString().replace("rest", "api"));
+                CollectionExtent extentService = new CollectionExtent(getBaseUrl().toString().replace("rest", "api"));
+                extentService.setCcontainedWorks((int) volumes); 
+                extentService.setChildren(subCollections);
                 collection.addService(extentService);
 
                 LinkingContent rss =
