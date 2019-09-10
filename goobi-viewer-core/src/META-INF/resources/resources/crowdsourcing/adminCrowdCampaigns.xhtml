@@ -93,7 +93,7 @@
                                                     </h:commandLink>
                                                 </td>
                                                 <td class="column_visibility">
-                                                    <h:outputText value="#{msg[campaign.visibility]} " />
+                                                    <h:outputText value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
                                                 </td>
                                                 <td class="column_duration">
                                                     <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
