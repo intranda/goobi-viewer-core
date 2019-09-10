@@ -29,12 +29,14 @@
                 <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
                 campaign="#{crowdsourcingBean.selectedCampaignId}"
                  pi="#{crowdsourcingBean.selectedCampaign.targetIdentifier}"
-                 loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"/>
+                 loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
+                 nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign)}"
+                 />
                 
         </f:view>
         
         <script>
-	    	const messageKeys = ["action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+	    	const messageKeys = ["action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
 	        const user = {
 	                id : "#{userBean.user.idAsURI}",
 	                name : "#{userBean.user.displayName}"

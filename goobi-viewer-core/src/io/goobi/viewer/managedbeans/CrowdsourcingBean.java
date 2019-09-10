@@ -36,6 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -44,6 +47,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
@@ -358,5 +362,11 @@ public class CrowdsourcingBean implements Serializable {
         setSelectedCampaign(campaign);
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignAnnotate2";
+    }
+    
+    public String getRandomItemUrl(Campaign campaign) {
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("crowdCampaignAnnotate1").getPatternParser().getMappedURL(campaign.getId());
+        logger.debug("Mapped URL " + mappedUrl);
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 }

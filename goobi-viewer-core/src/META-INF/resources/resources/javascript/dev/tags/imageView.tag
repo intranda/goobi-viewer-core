@@ -7,7 +7,9 @@
 
 <imageView>
 	<div id="wrapper_{opts.id}" class="imageview_wrapper">
-	
+		<span if="{this.error}" class="loader_wrapper">
+			<span class="error_message">{this.error.message}</span>
+		</span>
 		<imageControls if="{this.image}" image="{this.image}" item="{this.opts.item}"></imageControls>
 	
 		<div class="image_container">
@@ -31,22 +33,30 @@
 		$("#controls_" + opts.id + " .draw_overlay").on("click", function() {
 			this.drawing=true; 
 		}.bind(this));
-		this.image = new ImageView.Image(imageViewConfig);
-		this.image.load()
-		.then( (image) => {
-			if(this.opts.item) {
-				this.opts.item.image = this.image;
-			    var now = Rx.Observable.of(image);
-				this.opts.item.setImageSource = function(source) {
-				    this.image.setTileSource(this.getImageInfo(source));
-				}.bind(this);
-			    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
-			}
-			return image;
-		})
-		.then(function() {
-		  	this.update();
-		}.bind(this));
+		try{		    
+			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
+			this.image = new ImageView.Image(imageViewConfig);
+			this.image.load()
+			.then( (image) => {
+				if(this.opts.item) {
+					this.opts.item.image = this.image;
+					//image load notifications
+				    var now = Rx.Observable.of(image);
+					this.opts.item.setImageSource = function(source) {
+					    this.image.setTileSource(this.getImageInfo(source));
+					}.bind(this);
+				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.map(image).merge(now));
+				}
+				return image;
+			})
+			.then(function() {
+			  	this.update();
+			}.bind(this));
+		} catch(error) {
+		    console.error("ERROR ", error);
+	    	this.error = error;
+	    	this.update();
+		}
 	})
 	
 	
@@ -54,32 +64,30 @@
 	    return canvas.images[0].resource.service["@id"] + "/info.json"
 	}
 	
-		const imageViewConfig = {
-				global : {
-					divId : "image_" + opts.id,
-					fitToContainer: true,
-					adaptContainerWidth: false,
-					adaptContainerHeight: false,
-					footerHeight: 00,
-					zoomSpeed: 1.3,
-					allowPanning : true,
-				},
-				image : {
-					tileSource : this.getImageInfo(opts.source)
-				}
-		};
-		
-		const drawStyle = {
-				borderWidth: 2,
-				borderColor: "#2FEAD5"
-		}
-		
-		const lineStyle = {
-				lineWidth : 1,
-				lineColor : "#EEC83B"
-		}
-		
-		const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const imageViewConfig = {
+			global : {
+				divId : "image_" + opts.id,
+				fitToContainer: true,
+				adaptContainerWidth: false,
+				adaptContainerHeight: false,
+				footerHeight: 00,
+				zoomSpeed: 1.3,
+				allowPanning : true,
+			},
+			image : {}
+	};
+	
+	const drawStyle = {
+			borderWidth: 2,
+			borderColor: "#2FEAD5"
+	}
+	
+	const lineStyle = {
+			lineWidth : 1,
+			lineColor : "#EEC83B"
+	}
+	
+	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
 
 	
 	</script>
