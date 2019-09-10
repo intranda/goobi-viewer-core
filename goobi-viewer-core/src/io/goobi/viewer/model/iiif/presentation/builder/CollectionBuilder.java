@@ -231,7 +231,6 @@ public class CollectionBuilder extends AbstractBuilder {
         try {
             collection = new Collection(uri);
             collection.setAttribution(getAttribution());
-
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
@@ -253,7 +252,9 @@ public class CollectionBuilder extends AbstractBuilder {
 
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
-                collection.addService(new CollectionExtent(subCollections, (int) volumes));
+                CollectionExtent extentService = new CollectionExtent(subCollections, (int) volumes);
+                extentService.setBaseURI(getBaseUrl().toString().replace("rest", "api"));
+                collection.addService(extentService);
 
                 LinkingContent rss =
                         new LinkingContent(absolutize(baseElement.getRssUrl(getRequest().orElse(null))), new SimpleMetadataValue(RSS_FEED_LABEL));
