@@ -11,9 +11,11 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('campaignEdit')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedCampaign.targetIdentifier)}" />
         </f:metadata>
     </ui:define>
+    
+
 
     <ui:define name="content">
     

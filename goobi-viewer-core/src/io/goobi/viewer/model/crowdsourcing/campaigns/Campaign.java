@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
@@ -208,6 +209,14 @@ public class Campaign implements CMSMediaHolder {
      */
     public String getMenuTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
+    }
+    
+    public String getMenuTitleOrElseTitle() {
+        String title = getMenuTitle();
+        if(StringUtils.isBlank(title)) {
+            title = getTitle();
+        }
+        return title;
     }
 
     /**
