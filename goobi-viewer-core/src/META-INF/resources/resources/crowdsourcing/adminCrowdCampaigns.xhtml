@@ -27,7 +27,7 @@
                     <h:form id="csCampaignsForm" prependId="false">
                                                 
                         <h:commandButton action="#{crowdsourcingBean.createNewCampaignAction}" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
-                            <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
+                            <f:setPropertyActionListener value="#{false}" target="#{crowdsourcingBean.editMode}" />
                         </h:commandButton>
 
                         <div class="admin__content-inner-content">
@@ -83,7 +83,7 @@
                                                     <!-- Edit link -->
                                                     <h:commandLink action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
                                                         #{msg.edit}
-                                                        <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
+                                                        <f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" />
                                                     </h:commandLink> | 
                                                     <!-- Delete link -->
                                                     <h:commandLink
