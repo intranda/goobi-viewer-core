@@ -197,6 +197,37 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public long getNumRecords() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
+    }
+
+    /**
+     * 
+     * @param status
+     * @return
+     */
+    public int getNumRecordsForStatus(String status) {
+        if (status == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (String pi : statistics.keySet()) {
+            CampaignRecordStatistic statistic = statistics.get(pi);
+            if (statistic.getStatus().name().equals(status)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
      * Returns the number of days between today and the end date for this campaign.
      * 
      * @return days left between today and dateEnd

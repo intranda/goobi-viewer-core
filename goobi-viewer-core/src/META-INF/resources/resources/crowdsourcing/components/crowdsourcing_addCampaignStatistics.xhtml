@@ -23,14 +23,14 @@
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_numRecords}:" />
                         </dt>
                         <dd>
-                            TODO
+                            <h:outputText value="#{crowdsourcingBean.selectedCampaign.numRecords}" />
                         </dd>
                         <!-- QUESTIONS -->
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_questionStatusRatio}:" />
                         </dt>
                         <dd>
-                            TODO
+                            #{crowdsourcingBean.selectedCampaign.getNumRecordsForStatus('REVIEW')} / #{crowdsourcingBean.selectedCampaign.getNumRecordsForStatus('FINISHED')} / #{crowdsourcingBean.selectedCampaign.numRecords}
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_daysLeft}:" />
