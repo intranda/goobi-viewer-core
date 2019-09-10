@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -40,16 +41,18 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @Entity
 @Table(name = "cs_campaign_record_statistics")
 @JsonInclude(Include.NON_EMPTY)
-public class CampaignRecordStatistic {
+public class CampaignRecordStatistic implements Serializable {
 
     public enum CampaignRecordStatus {
         REVIEW,
         FINISHED;
     }
 
+    private static final long serialVersionUID = 8902904205183851565L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "campaign_record_status_id")
+    @Column(name = "campaign_record_statistic_id")
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,11 +72,93 @@ public class CampaignRecordStatistic {
 
     @Column(name = "pi", nullable = false)
     private String pi;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     @JsonIgnore
     private CampaignRecordStatus status;
-    
 
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the dateCreated
+     */
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    /**
+     * @param dateCreated the dateCreated to set
+     */
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    /**
+     * @return the dateUpdated
+     */
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    /**
+     * @param dateUpdated the dateUpdated to set
+     */
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * @return the owner
+     */
+    public Campaign getOwner() {
+        return owner;
+    }
+
+    /**
+     * @param owner the owner to set
+     */
+    public void setOwner(Campaign owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
+    }
+
+    /**
+     * @param pi the pi to set
+     */
+    public void setPi(String pi) {
+        this.pi = pi;
+    }
+
+    /**
+     * @return the status
+     */
+    public CampaignRecordStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(CampaignRecordStatus status) {
+        this.status = status;
+    }
 }

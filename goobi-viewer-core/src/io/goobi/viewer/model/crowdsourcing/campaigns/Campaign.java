@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -157,10 +157,11 @@ public class Campaign implements CMSMediaHolder {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<Question> questions = new ArrayList<>();
-    
-//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-//    @PrivateOwned
-//    private List<CampaignRecordStatistic> statistics;
+
+    /** Status entry for each record that has been worked on in the context of this campaign. The PI of each record is the map key. */
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @MapKeyColumn(name = "pi", insertable = false, updatable = false) // CampaignRecordStatistic.pi may not be writable here
+    private Map<String, CampaignRecordStatistic> statistics = new HashMap<>();
 
     @Transient
     @JsonIgnore
@@ -493,6 +494,20 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * @return the statistics
+     */
+    public Map<String, CampaignRecordStatistic> getStatistics() {
+        return statistics;
+    }
+
+    /**
+     * @param statistics the statistics to set
+     */
+    public void setStatistics(Map<String, CampaignRecordStatistic> statistics) {
+        this.statistics = statistics;
+    }
+
+    /**
      * @return the selectedLocale
      */
     public Locale getSelectedLocale() {
@@ -586,10 +601,10 @@ public class Campaign implements CMSMediaHolder {
     @JsonIgnore
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
-            return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,
+            return new CategorizableTranslatedSelectable<>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

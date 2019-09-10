@@ -26,6 +26,7 @@
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
@@ -91,6 +92,7 @@
         <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
