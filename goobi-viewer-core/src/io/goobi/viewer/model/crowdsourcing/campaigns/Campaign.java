@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +31,6 @@ import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -49,6 +49,9 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -194,6 +197,23 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Returns the number of days between today and the end date for this campaign.
+     * 
+     * @return days left between today and dateEnd
+     * @should return -1 if no dateEnd
+     * @should calculate days correctly
+     */
+    public int getDaysLeft() {
+        if (dateEnd == null) {
+            return -1;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate end = new DateTime(dateEnd).toLocalDate();
+        return Days.daysBetween(now, end).getDays();
+    }
+
+    /**
      * 
      * @return
      * @should return correct value
@@ -219,10 +239,10 @@ public class Campaign implements CMSMediaHolder {
     public String getMenuTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
     }
-    
+
     public String getMenuTitleOrElseTitle() {
         String title = getMenuTitle();
-        if(StringUtils.isBlank(title)) {
+        if (StringUtils.isBlank(title)) {
             title = getTitle();
         }
         return title;
