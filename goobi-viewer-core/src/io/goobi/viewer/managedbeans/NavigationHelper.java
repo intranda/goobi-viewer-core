@@ -100,8 +100,8 @@ public class NavigationHelper implements Serializable {
     public static final int WEIGHT_CROWDSOURCING_OVERVIEW = 3;
     public static final int WEIGHT_CROWDSOURCING_EDIT_OVERVIEW = 4;
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
-    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 1;
-    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 2;
+    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
+    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
 
     protected static final String KEY_CURRENT_VIEW = "currentView";
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
@@ -300,11 +300,15 @@ public class NavigationHelper implements Serializable {
      * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
      */
     public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi) {
-        setCurrentPage("crowdsourcingAnnotation", true, true);
-        updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/",
-                NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
-        updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + pi + "/",
-                NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
+        setCurrentPage("crowdsourcingAnnotation", false, true);
+        if(campaign != null) {            
+            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/",
+                    NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
+        }
+        if(pi != null) {            
+            updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + pi + "/",
+                    NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
+        }
     }
 
     public void setCurrentPageUser() {
