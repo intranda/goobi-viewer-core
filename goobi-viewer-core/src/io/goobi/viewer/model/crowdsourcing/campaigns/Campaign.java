@@ -171,7 +171,7 @@ public class Campaign implements CMSMediaHolder {
     private CMSContentItem contentItem = new CMSContentItem();
 
     public Campaign() {
-        this.selectedLocale = Locale.ENGLISH;
+        this.selectedLocale = BeanUtils.getLocale();
     }
 
     public Campaign(Locale selectedLocale) {
