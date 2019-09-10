@@ -71,7 +71,8 @@ var Crowdsourcing = ( function() {
             throw "Must call 'initTranslations' before translating"
         }
         if(!crowdsourcing.translations[key]) {
-            throw "message key " + key + " not initialized";
+            return key;
+//            throw "message key " + key + " not initialized";
         }
         return viewerJS.getMetadataValue(crowdsourcing.translations[key], language);
 

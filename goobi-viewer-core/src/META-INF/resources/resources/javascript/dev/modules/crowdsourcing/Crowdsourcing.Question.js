@@ -50,11 +50,16 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.setDrawingPermission = function() {
-        if(this.areaSelector) {            
-            if(this.targetFrequency > 0 && this.targetFrequency <= this.annotations.length) {
+        if(this.areaSelector) {       
+            if(this.item.isReviewMode()) {
                 this.areaSelector.disableDrawer();
+                this.areaSelector.disableTransformer();
+            } else if(this.targetFrequency > 0 && this.targetFrequency <= this.annotations.length) {
+                this.areaSelector.disableDrawer();
+                this.areaSelector.enableTransformer();
             } else {
                 this.areaSelector.enableDrawer();
+                this.areaSelector.enableTransformer();
             }
         }
     }
@@ -157,12 +162,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.createDummyAnnotationIfRequired = function() {
-        switch(this.targetSelector) {
-            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                if((this.targetFrequency == 0 || this.targetFrequency > this.annotations.length) && !this.annotations.find(anno => anno.dummy)) {
-                    this.createDummyAnnotation();
-                }
+        if(!this.item.isReviewMode()) {            
+            switch(this.targetSelector) {
+                case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+                case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+                    if((this.targetFrequency == 0 || this.targetFrequency > this.annotations.length) && !this.annotations.find(anno => anno.dummy)) {
+                        this.createDummyAnnotation();
+                    }
+            }
         }
     }
 

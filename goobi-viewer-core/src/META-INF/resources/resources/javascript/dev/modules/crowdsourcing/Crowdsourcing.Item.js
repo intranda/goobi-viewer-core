@@ -37,7 +37,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
         
         this.id = item.campaign.id;
-        this.status = item.status;
+        this.reviewMode = false;
         this.translations = item.campaign.translations;
         this.questions = item.campaign.questions.map(question => new Crowdsourcing.Question(question, this));
         this.currentCanvasIndex = initialCanvasIndex ? initialCanvasIndex : 0;
@@ -210,6 +210,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Item.prototype.getFromLocalStorage = function() {
         return JSON.parse(localStorage.getItem(LOCAL_STORAGE_ITEM));
+    }
+    
+    crowdsourcing.Item.prototype.setReviewMode = function(review) {
+        this.reviewMode = review ? true : false;
+    }
+
+    crowdsourcing.Item.prototype.isReviewMode = function() {
+        return this.reviewMode;
     }
 
     

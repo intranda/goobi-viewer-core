@@ -145,6 +145,18 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
     }
     
+    crowdsourcing.AreaSelector.prototype.disableTransformer = function() {
+        if(this.transformer) {
+            this.transformer.active = false;
+        }
+    }
+    
+    crowdsourcing.AreaSelector.prototype.enableTransformer = function() {
+        if(this.transformer) {
+            this.transformer.active = true;
+        }
+    }
+    
     function _getResultObject(rect, image) {
         
         let region = rect.rect.rotate(-image.getRotation());

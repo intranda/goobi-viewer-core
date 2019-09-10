@@ -8,11 +8,11 @@
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
 			<div class="annotation_area__text_input">
-				<textarea onChange="{setTextFromEvent}" value="{anno.getText()}">
+				<textarea disabled="{this.opts.item.isReviewMode() ? 'disabled' : ''}" onChange="{setTextFromEvent}" value="{anno.getText()}">
 				</textarea>
 			</div>
 		</div>
-		<span if="{anno.getText() || anno.getRegion()}" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
+		<span if="{ !this.opts.item.isReviewMode() && (anno.getText() || anno.getRegion()) }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
 	</div>
 
 <script>
@@ -72,7 +72,7 @@
 	}
 	
 	showInstructions() {
-	    return this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
 	}
 	
     setTextFromEvent(event) {
