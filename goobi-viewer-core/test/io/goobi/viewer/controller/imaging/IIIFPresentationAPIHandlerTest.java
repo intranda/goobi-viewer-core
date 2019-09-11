@@ -27,48 +27,48 @@ public class IIIFPresentationAPIHandlerTest {
 
     @Test
     public void testGetManifestUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/manifest", handler.getManifestUrl("PI-SAMPLE"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/manifest/", handler.getManifestUrl("PI-SAMPLE"));
     }
 
     @Test
     public void testGetCollectionUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC", handler.getCollectionUrl());
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC/", handler.getCollectionUrl());
 
     }
 
     @Test
     public void testGetCollectionUrlString() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC", handler.getCollectionUrl("DC"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC/", handler.getCollectionUrl("DC"));
 
     }
 
     @Test
     public void testGetCollectionUrlStringString() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC/sonstige.ocr", handler.getCollectionUrl("DC", "sonstige.ocr"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/collections/DC/sonstige.ocr/", handler.getCollectionUrl("DC", "sonstige.ocr"));
 
     }
 
     @Test
     public void testGetLayerUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/layer/FULLTEXT", handler.getLayerUrl("PI-SAMPLE", "fulltext"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/layer/FULLTEXT/", handler.getLayerUrl("PI-SAMPLE", "fulltext"));
 
     }
 
     @Test
     public void testGetAnnotationsUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/list/12/PDF", handler.getAnnotationsUrl("PI-SAMPLE", 12, "pdf"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/list/12/PDF/", handler.getAnnotationsUrl("PI-SAMPLE", 12, "pdf"));
 
     }
 
     @Test
     public void testGetCanvasUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/canvas/12", handler.getCanvasUrl("PI-SAMPLE", 12));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/canvas/12/", handler.getCanvasUrl("PI-SAMPLE", 12));
 
     }
 
     @Test
     public void testGetRangeUrl() throws URISyntaxException {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/range/LOG_0007", handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
+        Assert.assertEquals("http://localhost:8080/viewer/rest/iiif/manifests/PI-SAMPLE/range/LOG_0007/", handler.getRangeUrl("PI-SAMPLE", "LOG_0007"));
 
     }
 

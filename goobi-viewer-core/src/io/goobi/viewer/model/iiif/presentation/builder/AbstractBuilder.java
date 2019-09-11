@@ -455,9 +455,9 @@ public abstract class AbstractBuilder {
 
 	public URI getCollectionURI(String collectionField, String baseCollectionName) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/")
-				.append(collectionField);
+				.append(collectionField).append("/");
 		if (StringUtils.isNotBlank(baseCollectionName)) {
-			sb.append("/").append(baseCollectionName).append("/");
+			sb.append(baseCollectionName).append("/");
 		}
 		return URI.create(sb.toString());
 	}
@@ -517,11 +517,11 @@ public abstract class AbstractBuilder {
 
 	public URI getLayerURI(String pi, String logId) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/layer");
+				.append("/layer/");
 		if (StringUtils.isNotBlank(logId)) {
-			sb.append("/").append(logId).append("/");
+			sb.append(logId).append("/");
 		} else {
-			sb.append("/base/");
+			sb.append("base/");
 		}
 		return URI.create(sb.toString());
 	}
