@@ -952,29 +952,42 @@ public class User implements ILicensee, HttpSessionBindingListener {
         }
 
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
-        // Check user licenses
-        for (License license : licenses) {
-            if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                continue;
-            }
-            if (!license.getAllowedCrowdsourcingCampaigns().isEmpty()) {
-                ret.addAll(license.getAllowedCrowdsourcingCampaigns());
-            }
-        }
-        // Check user group licenses
-        try {
-            for (UserGroup userGroup : getUserGroupsWithMembership()) {
-                for (License license : userGroup.getLicenses()) {
-                    if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
-                        continue;
+        for (Campaign campaign : allCampaigns) {
+            switch (campaign.getVisibility()) {
+                case PUBLIC:
+                    ret.add(campaign);
+                    break;
+                case RESTRICTED:
+                    // Check user licenses
+                    for (License license : licenses) {
+                        if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                            continue;
+                        }
+                        if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                            ret.add(campaign);
+                            break;
+                        }
                     }
-                    if (!license.getAllowedCrowdsourcingCampaigns().isEmpty()) {
-                        ret.addAll(license.getAllowedCrowdsourcingCampaigns());
+                    // Check user group licenses
+                    try {
+                        for (UserGroup userGroup : getUserGroupsWithMembership()) {
+                            for (License license : userGroup.getLicenses()) {
+                                if (!LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS.equals(license.getLicenseType().getName())) {
+                                    continue;
+                                }
+                                if (license.getAllowedCrowdsourcingCampaigns().contains(campaign)) {
+                                    ret.add(campaign);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
                     }
-                }
+                    break;
+                default:
+                    break;
             }
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
         }
 
         return ret;

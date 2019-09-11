@@ -31,13 +31,11 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -54,9 +52,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
-import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.security.user.User;
 
 @Named
 @SessionScoped
@@ -136,6 +134,11 @@ public class CrowdsourcingBean implements Serializable {
         return DataManager.getInstance().getDao().getCampaignCount(filters);
     }
 
+    /**
+     * 
+     * @param visibility
+     * @return
+     */
     public String filterCampaignsAction(CampaignVisibility visibility) {
         lazyModelCampaigns.resetFilters();
         if (visibility != null) {
@@ -233,6 +236,21 @@ public class CrowdsourcingBean implements Serializable {
                 .filter(camp -> visibility.equals(camp.getVisibility()))
                 .collect(Collectors.toList());
         return pages;
+    }
+    
+    /**
+     * 
+     * @param user
+     * @return
+     * @throws DAOException
+     */
+    public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
+        logger.trace("getAllowedCampaigns");
+        if (user == null) {
+            return Collections.emptyList();
+        }
+
+        return user.getAllowedCrowdsourcingCampaigns(getAllCampaigns());
     }
 
     /**
