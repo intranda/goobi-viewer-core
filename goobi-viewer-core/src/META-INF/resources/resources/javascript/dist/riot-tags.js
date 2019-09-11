@@ -990,3 +990,25 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
     }.bind(this)
 
 });
+riot.tag2('progressbar', '<div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar" riot-style="width: {getRelativeWidth(value)}; background-color:{colors[index]}"></div></div>', '', '', function(opts) {
+	this.values = JSON.parse(this.opts.values);
+	this.colors = JSON.parse(this.opts.colors);
+	console.log("init progressbar ", this.values, this.colors);
+
+	this.on("mount", function() {
+	    let bar = this.root.querySelector(".goobi-progress-bar");
+	    this.totalBarWidth = bar.offsetWidth;
+
+		this.update();
+	})
+
+	this.getRelativeWidth = function(value) {
+		    let barWidth = value/this.opts.total*this.totalBarWidth;
+		    return barWidth + "px";
+	}.bind(this)
+
+	this.loaded = function() {
+	    console.log("on load");
+	}.bind(this)
+
+});
