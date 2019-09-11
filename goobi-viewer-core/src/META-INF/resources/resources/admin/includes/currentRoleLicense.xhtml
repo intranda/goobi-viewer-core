@@ -184,7 +184,7 @@
                 <div class="col-sm-8">
                     <div class="custom-control custom-control--select multiple">
                         <h:selectManyListbox id="campaigns" value="#{adminBean.currentLicense.allowedCrowdsourcingCampaigns}">
-                            <f:selectItems value="#{crowdsourcingBean.allCampaigns}" var="campaign" itemLabel="#{campaign.title}" itemValue="#{campaign}" />
+                            <f:selectItems value="#{crowdsourcingBean.getAllCampaigns('RESTRICTED')}" var="campaign" itemLabel="#{campaign.title}" itemValue="#{campaign}" />
                         </h:selectManyListbox>
                     </div>
                 </div>

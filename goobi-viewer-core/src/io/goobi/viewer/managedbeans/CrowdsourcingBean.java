@@ -131,15 +131,13 @@ public class CrowdsourcingBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public long getCampaignCount(String viz) throws DAOException {
-        CampaignVisibility visibility = CampaignVisibility.getByName(viz);
+    public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
         Map<String, String> filters = visibility != null ? Collections.singletonMap("visibility", visibility.name()) : null;
         return DataManager.getInstance().getDao().getCampaignCount(filters);
     }
 
-    public String filterCampaignsAction(String viz) {
+    public String filterCampaignsAction(CampaignVisibility visibility) {
         lazyModelCampaigns.resetFilters();
-        CampaignVisibility visibility = CampaignVisibility.getByName(viz);
         if (visibility != null) {
             lazyModelCampaigns.addFilter(new TableDataFilter("visibility", visibility.name()));
         }
