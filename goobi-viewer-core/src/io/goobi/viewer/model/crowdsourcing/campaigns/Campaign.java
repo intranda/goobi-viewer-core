@@ -610,8 +610,12 @@ public class Campaign implements CMSMediaHolder {
                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                 .filter(result -> isRecordStatus(result, status))
                 .collect(Collectors.toList());
-        String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
-        return pi;
+        if(pis.isEmpty()) {
+            return "";
+        } else {            
+            String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
+            return pi;
+        }
     }
 
     /**
@@ -629,6 +633,24 @@ public class Campaign implements CMSMediaHolder {
     public CampaignRecordStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
 
+    }
+    
+
+    /**
+     * @param pi
+     * @param status
+     */
+    public void setRecordStatus(String pi, CampaignRecordStatus status) {
+        CampaignRecordStatistic statistic = statistics.get(pi);
+        if(statistic == null) {
+            statistic = new CampaignRecordStatistic();
+            statistic.setOwner(this);
+            statistic.setDateCreated(new Date());
+        }
+        statistic.setPi(pi);
+        statistic.setStatus(status);
+        statistic.setDateUpdated(new Date());
+        statistics.put(pi, statistic);
     }
 
     /* (non-Javadoc)
@@ -677,6 +699,7 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
+
 
 
 }

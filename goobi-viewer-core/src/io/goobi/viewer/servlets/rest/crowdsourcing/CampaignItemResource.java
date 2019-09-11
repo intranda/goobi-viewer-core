@@ -44,6 +44,7 @@ import io.goobi.viewer.exceptions.streams.Try;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -86,6 +87,19 @@ public class CampaignItemResource {
             return item;            
         } else {
             throw new ContentNotFoundException("No campaign found with id " + campaignId);
+        }
+    }
+    
+    @PUT
+    @Path("/{campaignId}/{pi}/")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
+        CampaignRecordStatus status = item.getRecordStatus();
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        if(status != null && campaign != null) {
+            campaign.setRecordStatus(pi, status);
+            DataManager.getInstance().getDao().updateCampaign(campaign);
         }
     }
     

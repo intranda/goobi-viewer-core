@@ -31,11 +31,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import io.goobi.viewer.model.search.Search;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Annotation status of a record in the context of a particular campaign.
@@ -49,6 +49,20 @@ public class CampaignRecordStatistic implements Serializable {
         ANNOTATE,
         REVIEW,
         FINISHED;
+        
+        
+        public String getName() {
+            return this.name();
+        }
+        
+        public static CampaignRecordStatus forName(String name) {
+            for (CampaignRecordStatus status : CampaignRecordStatus.values()) {
+                if(status.getName().equalsIgnoreCase(name)) {
+                    return status;
+                }
+            }
+            return null;
+        }
     }
 
     private static final long serialVersionUID = 8902904205183851565L;

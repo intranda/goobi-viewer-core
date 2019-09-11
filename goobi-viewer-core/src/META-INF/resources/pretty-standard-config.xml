@@ -852,7 +852,7 @@
 		<action onPostback="false">#{crowdsourcingBean.forwardToAnnotationTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignAnnotate2">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifier}/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
@@ -864,7 +864,7 @@
 		<action onPostback="false">#{crowdsourcingBean.forwardToReviewTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignReview2">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifier}/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>

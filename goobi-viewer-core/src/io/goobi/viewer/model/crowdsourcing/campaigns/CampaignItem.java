@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -28,11 +30,12 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
  * @author florian
  *
  */
+@JsonInclude(Include.NON_NULL)
 public class CampaignItem {
 
     private URI source;
     private Campaign campaign;
-    private CampaignRecordStatistic.CampaignRecordStatus recordStatus = null;
+    private CampaignRecordStatus recordStatus = null;
 
     /**
      * @return the source
@@ -81,15 +84,14 @@ public class CampaignItem {
     /**
      * @return the recordStatus
      */
-    @JsonIgnore
-    public CampaignRecordStatistic.CampaignRecordStatus getRecordStatus() {
+    public CampaignRecordStatus getRecordStatus() {
         return recordStatus;
     }
     
     /**
      * @param recordStatus the recordStatus to set
      */
-    public void setRecordStatus(CampaignRecordStatistic.CampaignRecordStatus recordStatus) {
+    public void setRecordStatus(CampaignRecordStatus recordStatus) {
         this.recordStatus = recordStatus;
     }
     

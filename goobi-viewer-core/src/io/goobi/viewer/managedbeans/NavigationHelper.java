@@ -62,6 +62,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -299,14 +300,15 @@ public class NavigationHelper implements Serializable {
     /**
      * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
      */
-    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi) {
+    public void setCrowdsourcingAnnotationPage(Campaign campaign, String pi, CampaignRecordStatus status) {
+        String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
         if(campaign != null) {            
-            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/",
+            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
         }
         if(pi != null) {            
-            updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + pi + "/",
+            updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM));
         }
     }

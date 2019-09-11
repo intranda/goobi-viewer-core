@@ -1,6 +1,10 @@
 <campaignItem>
 
-	<div class="content">
+	<div if="{!opts.pi}" class="content">
+		{Crowdsourcing.translate("crowdsourcing__error__no_item_available")}
+	</div>
+
+	<div if="{opts.pi}" class="content">
 	<span if="{ this.loading }" class="loader_wrapper">
 		<img src="{this.opts.loaderimageurl}" />
 	</span>
@@ -29,7 +33,7 @@
 			</div>
 			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
-				<button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate("action__refuse_reject")}</button>
+				<button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 		</div>
@@ -116,7 +120,7 @@
 	    console.log("save annotations ", pages);
 	    this.loading = true;
 	    this.update();
-	    fetch(this.annotationSource, {
+	    return fetch(this.annotationSource, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -132,20 +136,41 @@
 	}
 	
 	submitForReview() {
-	    //TODO: change item status
+	    this.saveToServer()
+	    .then(() => this.setStatus("REVIEW"))
+	    .then(() => this.skipItem());
+	            
 	}
-	
+
 	acceptReview() {
-	    //TODO: change item status
+	    this.saveToServer()
+	    .then(() => this.setStatus("FINISHED"))
+	    .then(() => this.skipItem());
 	}
-	
+
 	rejectReview() {
-	    //TODO: change item status
+	    this.saveToServer()
+	    .then(() => this.setStatus("ANNOTATE"))
+	    .then(() => this.skipItem());
 	}
 	
 	skipItem() {
 	    console.log("skip to ", this.opts.nextitemurl);
 	    window.location.href = this.opts.nextitemurl;
+	}
+	
+	setStatus(status) {
+	    let body = {
+	            recordStatus: status
+	    }
+	    return fetch(this.itemSource, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors', // no-cors, cors, *same-origin
+            body: JSON.stringify(body)
+	    })
 	}
 
 

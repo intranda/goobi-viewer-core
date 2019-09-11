@@ -361,6 +361,17 @@ public class CrowdsourcingBean implements Serializable {
     public String getTargetIdentifier() {
         return this.targetIdentifier;
     }
+    
+    /**
+     * @return the PI of a work selected for editing or "-" if no targetIdentifier exists
+     */
+    public String getTargetIdentifierForUrl() {
+        return StringUtils.isBlank(this.targetIdentifier) ? "-" : this.targetIdentifier;
+    }
+    
+    public void setTargetIdentifierForUrl(String pi) {
+        this.targetIdentifier = "-".equals(pi) ? null : pi;
+    }
 
     /**
      * @param targetIdentifier the targetIdentifier to set
@@ -399,7 +410,7 @@ public class CrowdsourcingBean implements Serializable {
     }
     
     public CampaignRecordStatus getSelectedRecordStatus() {
-        if(getSelectedCampaign() != null && getTargetIdentifier() != null) {
+        if(getSelectedCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
             return getSelectedCampaign().getRecordStatus(getTargetIdentifier());
         } else {
             return null;
