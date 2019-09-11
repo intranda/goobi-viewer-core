@@ -31,11 +31,13 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
@@ -73,6 +75,7 @@ public class CrowdsourcingBean implements Serializable {
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private Campaign selectedCampaign;
+    private String targetIdentifier;
     private boolean editMode = false;
 
     @PostConstruct
@@ -316,18 +319,26 @@ public class CrowdsourcingBean implements Serializable {
 
     public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getSelectedCampaign() != null) {
-            getSelectedCampaign().setRandomizedTarget(CampaignRecordStatus.ANNOTATE);
+            String pi = getSelectedCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE);
+            setTargetIdentifier(pi);
+
         }
     }
     
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getSelectedCampaign() != null) {
-            getSelectedCampaign().setRandomizedTarget(CampaignRecordStatus.REVIEW);
+            String pi = getSelectedCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW);
+            setTargetIdentifier(pi);
+
         }
     }
 
-    public String forwardToTarget() {
+    public String forwardToAnnotationTarget() {
         return "pretty:crowdCampaignAnnotate2";
+    }
+    
+    public String forwardToReviewTarget() {
+        return "pretty:crowdCampaignReview2";
     }
 
     public String getSelectedCampaignId() {
@@ -343,38 +354,55 @@ public class CrowdsourcingBean implements Serializable {
             setSelectedCampaign(null);
         }
     }
-
+    
+    /**
+     * @return the PI of a work selected for editing
+     */
     public String getTargetIdentifier() {
-        String pi = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getTargetIdentifier).orElse(null);
-        return pi;
+        return this.targetIdentifier;
     }
 
-    public void setTargetIdentifier(String pi) {
-        if (getSelectedCampaign() != null) {
-            getSelectedCampaign().setTargetIdentifier(pi);
-        }
+    /**
+     * @param targetIdentifier the targetIdentifier to set
+     */
+    public void setTargetIdentifier(String targetIdentifier) {
+        this.targetIdentifier = targetIdentifier;
     }
 
-    public String forwardToCrowdsourcingView(Campaign campaign) {
+    public String forwardToCrowdsourcingAnnotation(Campaign campaign) {
         setSelectedCampaign(campaign);
         return "pretty:crowdCampaignAnnotate1";
     }
 
     public String forwardToCrowdsourcingReview(Campaign campaign) {
-        //TODO load review mode
         setSelectedCampaign(campaign);
-        return "pretty:crowdCampaignAnnotate1";
+        return "pretty:crowdCampaignReview1";
     }
 
-    public String forwardToCrowdsourcingView(Campaign campaign, String pi) {
+    public String forwardToCrowdsourcingAnnotation(Campaign campaign, String pi) {
         setSelectedCampaign(campaign);
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignAnnotate2";
     }
     
-    public String getRandomItemUrl(Campaign campaign) {
-        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById("crowdCampaignAnnotate1").getPatternParser().getMappedURL(campaign.getId());
+    public String forwardToCrowdsourcingReview(Campaign campaign, String pi) {
+        setSelectedCampaign(campaign);
+        setTargetIdentifier(pi);
+        return "pretty:crowdCampaignReview2";
+    }
+    
+    public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
+        String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
         logger.debug("Mapped URL " + mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
+    }
+    
+    public CampaignRecordStatus getSelectedRecordStatus() {
+        if(getSelectedCampaign() != null && getTargetIdentifier() != null) {
+            return getSelectedCampaign().getRecordStatus(getTargetIdentifier());
+        } else {
+            return null;
+        }
     }
 }

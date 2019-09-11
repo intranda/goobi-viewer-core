@@ -175,9 +175,6 @@ public class Campaign implements CMSMediaHolder {
     @JsonIgnore
     private Locale selectedLocale;
 
-    @Transient
-    @JsonIgnore
-    private String targetIdentifier;
 
     @Transient
     @JsonIgnore
@@ -600,35 +597,21 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * @return the PI of a work selected for editing
-     */
-    public String getTargetIdentifier() {
-        return this.targetIdentifier;
-    }
-
-    /**
-     * @param targetIdentifier the targetIdentifier to set
-     */
-    public void setTargetIdentifier(String targetIdentifier) {
-        this.targetIdentifier = targetIdentifier;
-    }
-
-    /**
-     * Set the targetIdentifier to a random PI from the solr query result list
+     * Get the targetIdentifier to a random PI from the solr query result list
      * @param status 
      * 
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public void setRandomizedTarget(CampaignRecordStatus status) throws PresentationException, IndexUnreachableException {
+    public String getRandomizedTarget(CampaignRecordStatus status) throws PresentationException, IndexUnreachableException {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
         List<String> pis = results.stream()
                 .filter(doc -> doc.getFieldValue(SolrConstants.PI) != null)
                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                 .filter(result -> isRecordStatus(result, status))
                 .collect(Collectors.toList());
-        String pi = pis.get(new Random(System.nanoTime()).nextInt(results.size()));
-        setTargetIdentifier(pi);
+        String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
+        return pi;
     }
 
     /**
@@ -636,13 +619,16 @@ public class Campaign implements CMSMediaHolder {
      * @return
      */
     private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
-//        CampaignRecordStatistic statistic = statistics.get(pi);
-//        if(statistic == null) {
-//            return CampaignRecordStatus.ANNOTATE.equals(status);
-//        } else {
-//            return statistic.getStatus().equals(status);
-//        }
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
+    }
+    
+    /**
+     * @param targetIdentifier
+     * @return
+     */
+    public CampaignRecordStatus getRecordStatus(String pi) {
+        return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
+
     }
 
     /* (non-Javadoc)
@@ -691,4 +677,6 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
+
+
 }

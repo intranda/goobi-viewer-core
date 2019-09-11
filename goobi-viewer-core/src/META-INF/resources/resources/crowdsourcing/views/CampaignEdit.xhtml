@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedCampaign.targetIdentifier)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.selectedCampaign, crowdsourcingBean.targetIdentifier)}" />
         </f:metadata>
     </ui:define>
     
@@ -33,10 +33,10 @@
                 
                 <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
                 campaign="#{crowdsourcingBean.selectedCampaignId}"
-                 pi="#{crowdsourcingBean.selectedCampaign.targetIdentifier}"
+                 pi="#{crowdsourcingBean.targetIdentifier}"
                  loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                 nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign)}"
-                 itemstatus="ANNOTATE"/>
+                 nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedRecordStatus)}"
+                 itemstatus="#{crowdsourcingBean.selectedRecordStatus}"/>
                 
         </f:view>
         
