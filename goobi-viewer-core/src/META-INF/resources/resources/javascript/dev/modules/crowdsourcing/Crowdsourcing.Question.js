@@ -75,6 +75,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     this.setDrawingPermission();
                     this.annotations
                     .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer));
+                    this.areaSelector.setDrawingStyle(this.areaSelector.getStyle());
                 }
                 break;
             case Crowdsourcing.Question.Selector.WHOLE_PAGE:

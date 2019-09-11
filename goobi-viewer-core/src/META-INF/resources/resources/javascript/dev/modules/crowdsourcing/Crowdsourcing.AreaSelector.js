@@ -55,7 +55,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.AreaSelector.prototype.createDrawer = function (imageView) {
-        this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle(), (e) => e.shiftKey);
+        this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle("red"), (e) => e.shiftKey);
         this.drawer.finishedDrawing().subscribe(function(rect) {
             if(this.rect && !this.multiRect) {
                 this.removeOverlay(this.rect)
@@ -103,7 +103,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.AreaSelector.prototype.addOverlay = function(annotation, viewer) {
         let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source)
         rect = rect.rotate(-viewer.viewport.getRotation());
-        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle(annotation.getColor()));
+        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle());
         annotation.setColor(overlay.style.borderColor);
         overlay.id = ++this.lastRectangleId;
         annotation.overlayId = overlay.id;
@@ -132,6 +132,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
         }
     }
+    
+    crowdsourcing.AreaSelector.prototype.setDrawingStyle = function(style) {
+        if(this.drawer) {
+            this.drawer.style = style;
+        }
+    }
+
     
     crowdsourcing.AreaSelector.prototype.disableDrawer = function() {
         if(this.drawer) {
