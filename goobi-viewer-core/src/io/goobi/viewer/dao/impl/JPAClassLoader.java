@@ -169,7 +169,7 @@ public class JPAClassLoader extends ClassLoader {
 
     @Override
     public Enumeration<URL> getResources(final String name) throws IOException {
-        logger.trace("getResources: {}", name);
+        // logger.trace("getResources: {}", name);
         if (PERSISTENCE_XML.equals(name)) {
             if (newUrl == null) {
                 try {

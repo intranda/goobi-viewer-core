@@ -27,8 +27,13 @@
 			<h:panelGroup id="editCoreLicense" rendered="#{adminBean.currentLicense != null}">
 				<fieldset>
                     <ui:include src="/resources/admin/includes/currentRoleLicense.xhtml" />
+                    <!-- CMS privileges -->
                     <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
-                        <ui:include src="/resources/admin/includes/currentRolePrivileges.xhtml" />
+                        <ui:include src="/resources/admin/includes/currentRolePrivilegesCMS.xhtml" />
+                    </ui:fragment>
+                    <!-- Crowdsourcing privileges -->
+                    <ui:fragment rendered="#{adminBean.currentLicense.licenseType.crowdsourcingType}">
+                        <ui:include src="/resources/admin/includes/currentRolePrivilegesCrowdsourcing.xhtml" />
                     </ui:fragment>
 				</fieldset>
 				<br />

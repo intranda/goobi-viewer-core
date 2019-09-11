@@ -40,6 +40,9 @@ public interface IPrivilegeHolder {
     public static final String PRIV_CMS_STATIC_PAGES = "CMS_STATIC_PAGES";
     public static final String PRIV_CMS_COLLECTIONS = "CMS_COLLECTIONS";
     public static final String PRIV_CMS_CATEGORIES = "CMS_CATEGORIES";
+    public static final String PRIV_CROWDSOURCING_ALL_CAMPAIGNS = "CROWDSOURCING_ALL_CAMPAIGNS";
+    public static final String PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN = "CROWDSOURCING_ANNOTATE_CAMPAIGN";
+    public static final String PRIV_CROWDSOURCING_REVIEW_CAMPAIGN = "CROWDSOURCING_REVIEW_CAMPAIGN";
 
     public boolean hasPrivilege(String privilege);
 
@@ -118,4 +121,16 @@ public interface IPrivilegeHolder {
     public boolean isPrivCmsCategories();
 
     public void setPrivCmsCategories(boolean priv);
+
+    public boolean isPrivCrowdsourcingAllCampaigns();
+
+    public void setPrivCrowdsourcingAllCampaigns(boolean priv);
+
+    public boolean isPrivCrowdsourcingAnnotateCampaign();
+
+    public void setPrivCrowdsourcingAnnotateCampaign(boolean priv);
+
+    public boolean isPrivCrowdsourcingReviewCampaign();
+
+    public void setPrivCrowdsourcingReviewCampaign(boolean priv);
 }

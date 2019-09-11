@@ -59,6 +59,8 @@ public class LicenseType implements IPrivilegeHolder {
     private static final String LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION = "licenseType_deleteOcrPage_desc";
     public static final String LICENSE_TYPE_CMS = "licenseType_cms";
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
+    public static final String LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns";
+    private static final String LICENSE_TYPE_DESC_CROWDSOURCING_CAMPAIGNS = "licenseType_crowdsourcing_campaigns_desc";
 
     //    private static final String CONDITIONS_QUERY = "QUERY:\\{(.*?)\\}";
     private static final String CONDITIONS_FILENAME = "FILENAME:\\{(.*)\\}";
@@ -251,6 +253,23 @@ public class LicenseType implements IPrivilegeHolder {
 
         switch (name) {
             case LICENSE_TYPE_CMS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 
+     * @return true if this license type has one of the static crowdsourcing type names; false otherwise
+     */
+    public boolean isCrowdsourcingType() {
+        if (name == null) {
+            return false;
+        }
+
+        switch (name) {
+            case LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS:
                 return true;
             default:
                 return false;
@@ -651,6 +670,66 @@ public class LicenseType implements IPrivilegeHolder {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAllCampaigns()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingAllCampaigns() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAllCampaigns(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAnnotateCampaign()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingAnnotateCampaign() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAnnotateCampaign(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingReviewCampaign()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingReviewCampaign() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingReviewCampaign(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+        }
+    }
+
     /**
      * @return the overridingLicenseTypes
      */
@@ -673,6 +752,8 @@ public class LicenseType implements IPrivilegeHolder {
         addCoreLicenseType(LICENSE_TYPE_DELETE_OCR_PAGE, LICENSE_TYPE_DELETE_OCR_PAGE_DESCRIPTION, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE);
         // Add CMS license types, if not yet in the database
         addCoreLicenseType(LICENSE_TYPE_CMS, LICENSE_TYPE_DESC_CMS, IPrivilegeHolder.PRIV_CMS_PAGES);
+        // Add crowdsourcing license types, if not yet in the database
+        addCoreLicenseType(LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, LICENSE_TYPE_DESC_CROWDSOURCING_CAMPAIGNS, new String[0]);
     }
 
     /**
@@ -682,7 +763,7 @@ public class LicenseType implements IPrivilegeHolder {
      * @param privName
      * @throws DAOException
      */
-    private static void addCoreLicenseType(String licenseTypeName, String licenseTypeDesc, String privName) throws DAOException {
+    private static void addCoreLicenseType(String licenseTypeName, String licenseTypeDesc, String... privNames) throws DAOException {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(licenseTypeName);
         if (licenseType != null) {
             // Set core=true
@@ -699,7 +780,12 @@ public class LicenseType implements IPrivilegeHolder {
         licenseType = new LicenseType();
         licenseType.setName(licenseTypeName);
         licenseType.setDescription(licenseTypeDesc);
-        licenseType.getPrivileges().add(privName);
+        licenseType.setCore(true);
+        if (privNames != null && privNames.length > 0) {
+            for (String privName : privNames) {
+                licenseType.getPrivileges().add(privName);
+            }
+        }
         if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
             logger.error("Could not add static license type '{}'.", licenseTypeName);
         }
