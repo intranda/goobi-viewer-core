@@ -128,7 +128,7 @@ public class CMSPage implements Comparable<CMSPage> {
     private String relatedPI;
 
     @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = null;
+    private String subThemeDiscriminatorValue = "";
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -638,7 +638,7 @@ public class CMSPage implements Comparable<CMSPage> {
      * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
      */
     public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
-        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue;
+        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
     }
 
     public String getMediaName(String contentId) {

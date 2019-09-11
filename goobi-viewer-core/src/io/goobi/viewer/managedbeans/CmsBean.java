@@ -189,7 +189,7 @@ public class CmsBean implements Serializable {
                 private void initialize() throws DAOException {
                     if (!initialized) {
                         try {
-                            if (!userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+                            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())  &&  !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
                                 allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
                             }
                             if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
