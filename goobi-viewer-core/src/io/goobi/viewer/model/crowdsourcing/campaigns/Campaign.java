@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -225,6 +226,20 @@ public class Campaign implements CMSMediaHolder {
 
         return count;
     }
+    
+    /**
+     * FINISHED records in percent
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public int getProgress() throws IndexUnreachableException, PresentationException {
+        float numRecords= getNumRecords();
+        float finished = getNumRecordsForStatus(CampaignRecordStatus.FINISHED.getName());
+        return Math.round(finished/numRecords*100);
+    }
+
 
     /**
      * Returns the number of days between today and the end date for this campaign.
@@ -241,6 +256,19 @@ public class Campaign implements CMSMediaHolder {
         LocalDate now = new DateTime().toLocalDate();
         LocalDate end = new DateTime(dateEnd).toLocalDate();
         return Days.daysBetween(now, end).getDays();
+    }
+    
+    public String getDaysLeftAsString() {
+        if(getDateEnd() != null) {
+            int days = getDaysLeft();
+            if(days <= 0) {
+                return "-";
+            } else {
+                return Long.toString(days);
+            }
+        } else {
+            return "\u221e";
+        }
     }
 
     /**
@@ -682,6 +710,8 @@ public class Campaign implements CMSMediaHolder {
     public boolean hasMediaItem() {
         return this.mediaItem != null;
     }
+    
+
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
