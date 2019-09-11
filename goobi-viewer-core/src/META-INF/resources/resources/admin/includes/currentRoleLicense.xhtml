@@ -154,5 +154,43 @@
             </ui:fragment>
             
         </ui:fragment>
+        
+       <!-- CROWDSOURCING SETTINGS -->
+        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.crowdsourcingType}">
+        
+            <!-- CAMPAIGN FILTERING ON/OFF -->
+            <label>
+                <h:selectBooleanCheckbox 
+                    id="privCrowdsourcingAllCampaignsDisabled"
+                    rendered="#{adminBean.currentLicense.licenseType.privCrowdsourcingAllCampaigns}" 
+                    disabled="true" 
+                    selected="true"
+                    title="#{msg.license_privInheritedFromLicenseType}" 
+                    label="privCrowdsourcingAllCampaigns" />
+                <h:selectBooleanCheckbox 
+                    id="privCrowdsourcingAllCampaigns"
+                    rendered="#{!adminBean.currentLicense.licenseType.privCrowdsourcingAllCampaigns}" 
+                    value="#{adminBean.currentLicense.privCrowdsourcingAllCampaigns}"
+                    label="privCrowdsourcingAllCampaigns">
+                    <f:ajax render="@form" />
+                </h:selectBooleanCheckbox> #{msg.license_privCrowdsourcingAllCampaigns}
+            </label>
+            <br />
+            
+            <!-- ALLOWED CAMPAIGNS -->
+            <ui:fragment rendered="#{!adminBean.currentLicense.privCrowdsourcingAllCampaigns}">
+            <div class="form-group">
+                <h:outputLabel for="campaigns" styleClass="col-sm-4 control-label" value="#{msg.license_allowed_crowdsourcing_campaigns}" />
+                <div class="col-sm-8">
+                    <div class="custom-control custom-control--select multiple">
+                        <h:selectManyListbox id="campaigns" value="#{adminBean.currentLicense.allowedCrowdsourcingCampaigns}">
+                            <f:selectItems value="#{crowdsourcingBean.getAllCampaigns('RESTRICTED')}" var="campaign" itemLabel="#{campaign.title}" itemValue="#{campaign}" />
+                        </h:selectManyListbox>
+                    </div>
+                </div>
+            </div>
+            </ui:fragment>
+           
+        </ui:fragment>
     </div>
 </ui:composition>

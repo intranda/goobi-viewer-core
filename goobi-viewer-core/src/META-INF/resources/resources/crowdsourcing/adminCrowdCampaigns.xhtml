@@ -39,6 +39,13 @@
                                 </h:commandLink>
                                 <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility') == null}"
                                     value="#{msg.admin__crowdsourcing_campaign_visibility_ALL}" /> (#{crowdsourcingBean.getCampaignCount(null)}) |
+                                <!-- restricted -->
+                                <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'RESTRICTED'}"
+                                    action="#{crowdsourcingBean.filterCampaignsAction('RESTRICTED')}">
+                                    #{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}
+                                </h:commandLink>
+                                <h:outputText rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value == 'RESTRICTED'}"
+                                    value="#{msg.admin__crowdsourcing_campaign_visibility_RESTRICTED}" /> (#{crowdsourcingBean.getCampaignCount('RESTRICTED')}) |
                                 <!-- public -->
                                 <h:commandLink rendered="#{crowdsourcingBean.lazyModelCampaigns.getFilter('visibility').value != 'PUBLIC'}"
                                     action="#{crowdsourcingBean.filterCampaignsAction('PUBLIC')}">

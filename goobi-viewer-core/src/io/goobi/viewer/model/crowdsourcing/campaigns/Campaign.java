@@ -16,7 +16,6 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +49,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.joda.time.DateTime;
@@ -88,6 +86,7 @@ public class Campaign implements CMSMediaHolder {
 
     public enum CampaignVisibility {
         PRIVATE,
+        RESTRICTED,
         PUBLIC,
         FINISHED;
 
@@ -175,7 +174,6 @@ public class Campaign implements CMSMediaHolder {
     @Transient
     @JsonIgnore
     private Locale selectedLocale;
-
 
     @Transient
     @JsonIgnore
@@ -626,7 +624,8 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Get the targetIdentifier to a random PI from the solr query result list
-     * @param status 
+     * 
+     * @param status
      * 
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -638,12 +637,11 @@ public class Campaign implements CMSMediaHolder {
                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                 .filter(result -> isRecordStatus(result, status))
                 .collect(Collectors.toList());
-        if(pis.isEmpty()) {
+        if (pis.isEmpty()) {
             return "";
-        } else {            
-            String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
-            return pi;
         }
+        String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
+        return pi;
     }
 
     /**
@@ -653,7 +651,7 @@ public class Campaign implements CMSMediaHolder {
     private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
     }
-    
+
     /**
      * @param targetIdentifier
      * @return
@@ -662,7 +660,6 @@ public class Campaign implements CMSMediaHolder {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
 
     }
-    
 
     /**
      * @param pi
@@ -670,7 +667,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public void setRecordStatus(String pi, CampaignRecordStatus status) {
         CampaignRecordStatistic statistic = statistics.get(pi);
-        if(statistic == null) {
+        if (statistic == null) {
             statistic = new CampaignRecordStatistic();
             statistic.setOwner(this);
             statistic.setDateCreated(new Date());
@@ -729,7 +726,5 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
-
-
 
 }

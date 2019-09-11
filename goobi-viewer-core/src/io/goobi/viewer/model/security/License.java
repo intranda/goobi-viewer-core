@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -147,6 +148,12 @@ public class License implements IPrivilegeHolder, Serializable {
     @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
     @Column(name = "template_id")
     private List<String> allowedCmsTemplates = new ArrayList<>();
+
+    /** List of allowed crowdsourcing campaigns. */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_crowdsourcing_campaigns", joinColumns = @JoinColumn(name = "license_id"),
+            inverseJoinColumns = @JoinColumn(name = "campaign_id"))
+    private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -498,6 +505,66 @@ public class License implements IPrivilegeHolder, Serializable {
         }
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAllCampaigns()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingAllCampaigns() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAllCampaigns(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAnnotateCampaign()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingAnnotateCampaign() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAnnotateCampaign(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingReviewCampaign()
+     */
+    @Override
+    public boolean isPrivCrowdsourcingReviewCampaign() {
+        return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingReviewCampaign(boolean)
+     */
+    @Override
+    public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
+        if (priv) {
+            privileges.add(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+        } else {
+            privileges.remove(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+        }
+    }
+
     /**
      * @return the id
      */
@@ -679,5 +746,19 @@ public class License implements IPrivilegeHolder, Serializable {
      */
     public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
+    }
+
+    /**
+     * @return the allowedCrowdsourcingCampaigns
+     */
+    public List<Campaign> getAllowedCrowdsourcingCampaigns() {
+        return allowedCrowdsourcingCampaigns;
+    }
+
+    /**
+     * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
+     */
+    public void setAllowedCrowdsourcingCampaigns(List<Campaign> allowedCrowdsourcingCampaigns) {
+        this.allowedCrowdsourcingCampaigns = allowedCrowdsourcingCampaigns;
     }
 }
