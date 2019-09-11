@@ -24,9 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,6 +49,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
@@ -69,6 +72,7 @@ import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
@@ -560,14 +564,34 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * Set the targetIdentifier to a random PI from the solr query result list
+     * @param status 
      * 
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public void setRandomizedTarget() throws PresentationException, IndexUnreachableException {
+    public void setRandomizedTarget(CampaignRecordStatus status) throws PresentationException, IndexUnreachableException {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
-        String pi = results.get(new Random(System.nanoTime()).nextInt(results.size())).getFieldValue(SolrConstants.PI).toString();
+        List<String> pis = results.stream()
+                .filter(doc -> doc.getFieldValue(SolrConstants.PI) != null)
+                .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                .filter(result -> isRecordStatus(result, status))
+                .collect(Collectors.toList());
+        String pi = pis.get(new Random(System.nanoTime()).nextInt(results.size()));
         setTargetIdentifier(pi);
+    }
+
+    /**
+     * @param result
+     * @return
+     */
+    private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
+//        CampaignRecordStatistic statistic = statistics.get(pi);
+//        if(statistic == null) {
+//            return CampaignRecordStatus.ANNOTATE.equals(status);
+//        } else {
+//            return statistic.getStatus().equals(status);
+//        }
+        return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
     }
 
     /* (non-Javadoc)

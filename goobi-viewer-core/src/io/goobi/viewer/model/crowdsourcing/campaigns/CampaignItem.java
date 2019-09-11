@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
 /**
@@ -31,7 +32,7 @@ public class CampaignItem {
 
     private URI source;
     private Campaign campaign;
-    private CampaignItemStatus status = CampaignItemStatus.CREATED;
+    private CampaignRecordStatistic.CampaignRecordStatus recordStatus = null;
 
     /**
      * @return the source
@@ -76,18 +77,28 @@ public class CampaignItem {
     public void removeQuestion(Question question) {
         campaign.getQuestions().remove(question);
     }
-
+    
     /**
-     * @return the status
+     * @return the recordStatus
      */
-    public CampaignItemStatus getStatus() {
-        return status;
+    @JsonIgnore
+    public CampaignRecordStatistic.CampaignRecordStatus getRecordStatus() {
+        return recordStatus;
+    }
+    
+    /**
+     * @param recordStatus the recordStatus to set
+     */
+    public void setRecordStatus(CampaignRecordStatistic.CampaignRecordStatus recordStatus) {
+        this.recordStatus = recordStatus;
+    }
+    
+    public boolean isFinished() {
+        return CampaignRecordStatus.FINISHED.equals(getRecordStatus());
     }
 
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(CampaignItemStatus status) {
-        this.status = status;
+    public boolean isInReview() {
+        return CampaignRecordStatus.REVIEW.equals(getRecordStatus());
     }
+    
 }

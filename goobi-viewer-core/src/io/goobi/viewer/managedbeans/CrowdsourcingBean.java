@@ -52,6 +52,8 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 
 @Named
@@ -312,9 +314,15 @@ public class CrowdsourcingBean implements Serializable {
         this.editMode = editMode;
     }
 
-    public void setRandomIdentifier() throws PresentationException, IndexUnreachableException {
+    public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getSelectedCampaign() != null) {
-            getSelectedCampaign().setRandomizedTarget();
+            getSelectedCampaign().setRandomizedTarget(CampaignRecordStatus.ANNOTATE);
+        }
+    }
+    
+    public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
+        if (getSelectedCampaign() != null) {
+            getSelectedCampaign().setRandomizedTarget(CampaignRecordStatus.REVIEW);
         }
     }
 

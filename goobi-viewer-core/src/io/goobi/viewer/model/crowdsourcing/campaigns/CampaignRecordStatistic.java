@@ -44,6 +44,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class CampaignRecordStatistic implements Serializable {
 
     public enum CampaignRecordStatus {
+        ANNOTATE,
         REVIEW,
         FINISHED;
     }
