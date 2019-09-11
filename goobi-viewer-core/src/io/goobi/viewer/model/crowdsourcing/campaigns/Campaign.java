@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.net.URI;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -52,6 +52,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,6 +203,54 @@ public class Campaign implements CMSMediaHolder {
     /**
      * 
      * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public long getNumRecords() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
+    }
+
+    /**
+     * 
+     * @param status
+     * @return
+     */
+    public int getNumRecordsForStatus(String status) {
+        if (status == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (String pi : statistics.keySet()) {
+            CampaignRecordStatistic statistic = statistics.get(pi);
+            if (statistic.getStatus().name().equals(status)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Returns the number of days between today and the end date for this campaign.
+     * 
+     * @return days left between today and dateEnd
+     * @should return -1 if no dateEnd
+     * @should calculate days correctly
+     */
+    public int getDaysLeft() {
+        if (dateEnd == null) {
+            return -1;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate end = new DateTime(dateEnd).toLocalDate();
+        return Days.daysBetween(now, end).getDays();
+    }
+
+    /**
+     * 
+     * @return
      * @should return correct value
      */
     public String getTitle() {
@@ -223,10 +274,10 @@ public class Campaign implements CMSMediaHolder {
     public String getMenuTitle() {
         return Translation.getTranslation(translations, selectedLocale.getLanguage(), "menu_title");
     }
-    
+
     public String getMenuTitleOrElseTitle() {
         String title = getMenuTitle();
-        if(StringUtils.isBlank(title)) {
+        if (StringUtils.isBlank(title)) {
             title = getTitle();
         }
         return title;

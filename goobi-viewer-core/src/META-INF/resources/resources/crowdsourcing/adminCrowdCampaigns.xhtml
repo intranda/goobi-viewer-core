@@ -105,7 +105,9 @@
                                                     </h:outputText>
                                                 </td>
                                                 <td class="column_statistics">
-                                                    TODO
+                                                    #{campaign.numRecords} #{msg.records}
+                                                    <br />
+                                                    TODO: #{campaign.getNumRecordsForStatus('REVIEW')} review / #{campaign.getNumRecordsForStatus('FINISHED')} finished / #{campaign.numRecords} total
                                                 </td>
                                             </tr>
                                         </ui:repeat>

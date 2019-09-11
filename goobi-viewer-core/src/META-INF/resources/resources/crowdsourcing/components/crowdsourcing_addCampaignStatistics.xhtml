@@ -1,0 +1,47 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <div id="cmsCreatePageMetadataItemWrapper">
+        
+            <!-- METADATA ITEM STATUS -->
+            <h:panelGroup id="metadata-status">
+                <div>
+                    <h3>#{msg.admin__crowdsourcing_campaign_statistics}</h3>
+
+                    <dl class="dl-horizontal">
+                        <!-- NUMBER OF RECORDS -->
+                        <dt>
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_numRecords}:" />
+                        </dt>
+                        <dd>
+                            <h:outputText value="#{crowdsourcingBean.selectedCampaign.numRecords}" />
+                        </dd>
+                        <!-- QUESTIONS -->
+                        <dt>
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_questionStatusRatio}:" />
+                        </dt>
+                        <dd>
+                            TODO: #{crowdsourcingBean.selectedCampaign.getNumRecordsForStatus('REVIEW')} review / #{crowdsourcingBean.selectedCampaign.getNumRecordsForStatus('FINISHED')} finished / #{crowdsourcingBean.selectedCampaign.numRecords} total
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_statistics_daysLeft}:" />
+                        </dt>
+                        <dd>
+                            <h:outputText value="#{crowdsourcingBean.selectedCampaign.daysLeft}" />
+                        </dd>
+                    </dl>
+                </div>
+            </h:panelGroup>
+            
+        </div>
+    </composite:implementation>
+</ui:composition>

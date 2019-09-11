@@ -35,6 +35,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.model.search.Search;
+
 /**
  * Annotation status of a record in the context of a particular campaign.
  */
@@ -78,6 +80,43 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "status", nullable = false)
     @JsonIgnore
     private CampaignRecordStatus status;
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+        result = prime * result + ((pi == null) ? 0 : pi.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CampaignRecordStatistic other = (CampaignRecordStatistic) obj;
+        if (owner == null) {
+            if (other.owner != null)
+                return false;
+        } else if (!owner.equals(other.owner))
+            return false;
+        if (pi == null) {
+            if (other.pi != null)
+                return false;
+        } else if (!pi.equals(other.pi))
+            return false;
+        return true;
+    }
 
     /**
      * @return the id
