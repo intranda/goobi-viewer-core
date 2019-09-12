@@ -24,7 +24,8 @@
                         </dt>
                         <dd>
                             <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}">
-                                <f:selectItems itemLabel="#{msg[val]}"  var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+                                <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+                                    var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
                             </h:selectOneMenu>
                         </dd>
                         <!-- DURATION -->
