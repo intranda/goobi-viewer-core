@@ -95,7 +95,7 @@ public class LoginFilter implements Filter {
                         ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
             } else if (httpRequest.getRequestURI().contains("/admin")) {
                 try {
-                    if (user.isSuperuser() || user.isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
+                    if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)) {
                         chain.doFilter(request, response); // continue
                         return;
                     }

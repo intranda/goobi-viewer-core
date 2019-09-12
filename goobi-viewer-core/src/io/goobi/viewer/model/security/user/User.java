@@ -351,6 +351,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @return
      * @throws DAOException
      */
+    @Deprecated
     public boolean hasUserPrivilege(String privilegeName) throws DAOException {
         for (UserRole role : DataManager.getInstance().getDao().getUserRoles(null, this, null)) {
             if (role.getRole().hasPrivilege(privilegeName)) {
@@ -423,14 +424,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList,
-        // privilegeName, pi);
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
-        // always allow access if the only condition is open access and there is no
-        // special licence configured for it
+        // always allow access if the only condition is open access and there is no special license configured for it
         if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
             return true;
@@ -488,8 +487,41 @@ public class User implements ILicensee, HttpSessionBindingListener {
         return false;
     }
 
-    public boolean isHasPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
-        return canSatisfyAllAccessConditions(Collections.singletonMap(LicenseType.LICENSE_TYPE_CMS, null).keySet(), privilege, null);
+    /**
+     * 
+     * @param privilege
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isHasCmsPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        return isHasPrivilege(LicenseType.LICENSE_TYPE_CMS, privilege);
+    }
+
+    /**
+     * 
+     * @param privilege
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isHasCrowdsourcingPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        return isHasPrivilege(LicenseType.LICENSE_TYPE_CROWDSOURCING_CAMPAIGNS, privilege);
+    }
+
+    /**
+     * 
+     * @param licenseType
+     * @param privilege
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isHasPrivilege(String licenseType, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null);
     }
 
     /**
@@ -1240,7 +1272,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean isCmsAdmin() {
         try {
-            return isSuperuser() || isHasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
+            return isSuperuser() || isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
         } catch (PresentationException e) {
             logger.error(e.getMessage());
         } catch (IndexUnreachableException e) {

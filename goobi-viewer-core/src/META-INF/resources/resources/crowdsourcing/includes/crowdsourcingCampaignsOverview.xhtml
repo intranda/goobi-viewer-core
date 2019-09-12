@@ -23,8 +23,12 @@
 					</div>
 				</div>
 				<div class="crowdsourcing-campaigns-overview__campaign__actions">
-					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}" styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
-					<h:commandLink action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}" styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+					<h:commandLink rendered="#{campaign.visibility == 'PUBLIC' or userBean.user.isHasCrowdsourcingPrivilege('CROWDSOURCING_ANNOTATE_CAMPAIGN')}"
+					    action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
+					    styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
+					<h:commandLink rendered="#{campaign.visibility == 'PUBLIC' or userBean.user.isHasCrowdsourcingPrivilege('CROWDSOURCING_REVIEW_CAMPAIGN')}"
+					    action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
+					    styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
 				</div>
 				<div class="crowdsourcing-campaigns-overview__campaign__statistics">
 					<div class="crowdsourcing-campaigns-overview__campaign__statistics__text">

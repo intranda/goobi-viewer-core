@@ -7,7 +7,7 @@
 	<composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasPrivilege('CMS_PAGES')}">
+        <h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.user.isHasCmsPrivilege('CMS_PAGES')}">
             <div id="widgetCms" class="admin-widget">
                 <h:form id="widgetCmsForm">
                     <h3>#{msg.cms_title}</h3>
@@ -30,7 +30,7 @@
                         </ui:fragment>
 
                         <!-- CATEGORIES -->
-                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_CATEGORIES')}">
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_CATEGORIES')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsCategories' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCategories')}/">
                                     <i class="fa fa-thumb-tack" aria-hidden="true"></i>
@@ -39,7 +39,7 @@
                             </li>
                         </ui:fragment>
 
-                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_STATIC_PAGES')}">
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_STATIC_PAGES')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsStaticPages')}/">
                                     <i class="fa fa-cogs" aria-hidden="true"></i>
@@ -55,7 +55,7 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_MENU')}">
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsMenuItems')}/">
                                     <i class="fa fa-bars" aria-hidden="true"></i>
@@ -63,7 +63,7 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment rendered="#{userBean.user.isHasPrivilege('CMS_COLLECTIONS')}">
+                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsCollections')}/">
                                     <i class="fa fa-object-group" aria-hidden="true"></i>
