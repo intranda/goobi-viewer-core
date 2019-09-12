@@ -16,6 +16,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -237,7 +238,7 @@ public class CrowdsourcingBean implements Serializable {
                 .collect(Collectors.toList());
         return pages;
     }
-    
+
     /**
      * 
      * @param user
@@ -246,11 +247,25 @@ public class CrowdsourcingBean implements Serializable {
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
         logger.trace("getAllowedCampaigns");
-        if (user == null) {
+        List<Campaign> allCampaigns = getAllCampaigns();
+        if (allCampaigns.isEmpty()) {
+            logger.trace("No campaigns found");
             return Collections.emptyList();
         }
+        // Logged in
+        if (user != null) {
+            return user.getAllowedCrowdsourcingCampaigns(allCampaigns);
+        }
 
-        return user.getAllowedCrowdsourcingCampaigns(getAllCampaigns());
+        // Not logged in - only public campaigns
+        List<Campaign> ret = new ArrayList<>(allCampaigns.size());
+        for (Campaign campaign : allCampaigns) {
+            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+                ret.add(campaign);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -340,7 +355,7 @@ public class CrowdsourcingBean implements Serializable {
 
         }
     }
-    
+
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getSelectedCampaign() != null) {
             String pi = getSelectedCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW);
@@ -352,7 +367,7 @@ public class CrowdsourcingBean implements Serializable {
     public String forwardToAnnotationTarget() {
         return "pretty:crowdCampaignAnnotate2";
     }
-    
+
     public String forwardToReviewTarget() {
         return "pretty:crowdCampaignReview2";
     }
@@ -370,21 +385,21 @@ public class CrowdsourcingBean implements Serializable {
             setSelectedCampaign(null);
         }
     }
-    
+
     /**
      * @return the PI of a work selected for editing
      */
     public String getTargetIdentifier() {
         return this.targetIdentifier;
     }
-    
+
     /**
      * @return the PI of a work selected for editing or "-" if no targetIdentifier exists
      */
     public String getTargetIdentifierForUrl() {
         return StringUtils.isBlank(this.targetIdentifier) ? "-" : this.targetIdentifier;
     }
-    
+
     public void setTargetIdentifierForUrl(String pi) {
         this.targetIdentifier = "-".equals(pi) ? null : pi;
     }
@@ -411,22 +426,22 @@ public class CrowdsourcingBean implements Serializable {
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignAnnotate2";
     }
-    
+
     public String forwardToCrowdsourcingReview(Campaign campaign, String pi) {
         setSelectedCampaign(campaign);
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignReview2";
     }
-    
+
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
         logger.debug("Mapped URL " + mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
-    
+
     public CampaignRecordStatus getSelectedRecordStatus() {
-        if(getSelectedCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
+        if (getSelectedCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
             return getSelectedCampaign().getRecordStatus(getTargetIdentifier());
         } else {
             return null;
