@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -66,6 +65,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -77,6 +77,8 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 @Entity
@@ -203,9 +205,9 @@ public class Campaign implements CMSMediaHolder {
      * @throws PresentationException
      */
     public long getNumRecords() throws IndexUnreachableException {
-        try {            
+        try {
             return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
-        } catch(PresentationException e) {
+        } catch (PresentationException e) {
             logger.warn("Error getting number of records for campaign:" + e.toString());
             return 0;
         }
@@ -231,7 +233,7 @@ public class Campaign implements CMSMediaHolder {
 
         return count;
     }
-    
+
     /**
      * FINISHED records in percent
      * 
@@ -240,11 +242,10 @@ public class Campaign implements CMSMediaHolder {
      * @throws PresentationException
      */
     public int getProgress() throws IndexUnreachableException, PresentationException {
-        float numRecords= getNumRecords();
+        float numRecords = getNumRecords();
         float finished = getNumRecordsForStatus(CampaignRecordStatus.FINISHED.getName());
-        return Math.round(finished/numRecords*100);
+        return Math.round(finished / numRecords * 100);
     }
-
 
     /**
      * Returns the number of days between today and the end date for this campaign.
@@ -262,18 +263,62 @@ public class Campaign implements CMSMediaHolder {
         LocalDate end = new DateTime(dateEnd).toLocalDate();
         return Days.daysBetween(now, end).getDays();
     }
-    
+
     public String getDaysLeftAsString() {
-        if(getDateEnd() != null) {
+        if (getDateEnd() != null) {
             int days = getDaysLeft();
-            if(days <= 0) {
+            if (days <= 0) {
                 return "-";
-            } else {
-                return Long.toString(days);
             }
-        } else {
-            return "\u221e";
+            return Long.toString(days);
         }
+        return "\u221e";
+    }
+
+    /**
+     * Convenience method for checking whether the given user may annotate records in his campaign.
+     * 
+     * @param user
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isUserMayAnnotate(User user) throws PresentationException, IndexUnreachableException, DAOException {
+        return isUserAllowedAction(user, IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+    }
+
+    /**
+     * Convenience method for checking whether the given user may review annotations in his campaign.
+     * 
+     * @param user
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isUserMayReview(User user) throws PresentationException, IndexUnreachableException, DAOException {
+        return isUserAllowedAction(user, IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+    }
+
+    /**
+     * 
+     * @param user
+     * @param privilege
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private boolean isUserAllowedAction(User user, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+        if (CampaignVisibility.PUBLIC.equals(visibility)) {
+            return true;
+        }
+        if (user == null) {
+            return false;
+        }
+
+        return user.isHasCrowdsourcingPrivilege(privilege);
     }
 
     /**
@@ -715,8 +760,6 @@ public class Campaign implements CMSMediaHolder {
     public boolean hasMediaItem() {
         return this.mediaItem != null;
     }
-    
-
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
