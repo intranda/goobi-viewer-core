@@ -277,7 +277,9 @@
                             
                             <!-- SELECT MEDIA ITEM -->
                             <div class="admin-cms-media__select">                            
-                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                 	<ui:param name="mediaDisplayPanel" value="@all" />
+                                </ui:include>
                             </div>
                         </ui:fragment>
                     </h:panelGroup>

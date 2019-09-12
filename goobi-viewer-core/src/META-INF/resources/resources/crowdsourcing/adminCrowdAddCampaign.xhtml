@@ -143,7 +143,7 @@
                     value="#{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
                     class="btn #{crowdsourcingBean.selectedCampaign.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
                     role="button">
-                    <f:ajax execute="@form" render="mediaSelectPanel" />
+                    <f:ajax execute="@this" render="mediaSelectPanel" />
                 </h:commandLink>
                 <h:commandLink 
                     rendered="#{crowdsourcingBean.selectedCampaign.getMediaItem() != null}" 
@@ -412,7 +412,9 @@
                             
                             <!-- SELECT MEDIA ITEM -->
                             <div class="admin-cms-media__select">                            
-                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml" />
+                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                 	<ui:param name="mediaDisplayPanel" value="create_page_form:contentMediaGroup" />
+                                </ui:include>
                             </div>
                         </ui:fragment>
                     </h:panelGroup>

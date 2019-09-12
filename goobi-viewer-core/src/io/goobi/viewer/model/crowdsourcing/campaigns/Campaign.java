@@ -202,8 +202,13 @@ public class Campaign implements CMSMediaHolder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public long getNumRecords() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
+    public long getNumRecords() throws IndexUnreachableException {
+        try {            
+            return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
+        } catch(PresentationException e) {
+            logger.warn("Error getting number of records for campaign:" + e.toString());
+            return 0;
+        }
     }
 
     /**
