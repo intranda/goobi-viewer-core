@@ -69,7 +69,7 @@ public class PersistentAnnotation {
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/{id}";
     private static final String URI_ID_REGEX = ".*/annotations/(\\d+)/?$";
-    private static final String TARGET_REGEX = ".*/iiif/manifests/(\\w+)/(?:canvas|manifest)?(?:/(\\d+))?/?$";
+    private static final String TARGET_REGEX = ".*/iiif/manifests/(.+?)/(?:canvas|manifest)?(?:/(\\d+))?/?$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
