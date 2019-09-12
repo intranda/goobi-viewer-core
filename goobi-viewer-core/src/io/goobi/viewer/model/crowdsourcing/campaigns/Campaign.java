@@ -218,12 +218,12 @@ public class Campaign implements CMSMediaHolder {
      * @param status
      * @return
      */
-    public int getNumRecordsForStatus(String status) {
+    public long getNumRecordsForStatus(String status) {
         if (status == null) {
             return 0;
         }
 
-        int count = 0;
+        long count = 0;
         for (String pi : statistics.keySet()) {
             CampaignRecordStatistic statistic = statistics.get(pi);
             if (statistic.getStatus().name().equals(status)) {
@@ -232,6 +232,28 @@ public class Campaign implements CMSMediaHolder {
         }
 
         return count;
+    }
+
+    /**
+     * 
+     * @return Number of records whose status is neither REVIEW nor FINISHED
+     * @throws IndexUnreachableException
+     */
+    public long getNumRecordsToAnnotate() throws IndexUnreachableException {
+        long all = getNumRecords();
+        long count = 0;
+        for (String pi : statistics.keySet()) {
+            CampaignRecordStatistic statistic = statistics.get(pi);
+            switch (statistic.getStatus()) {
+                case REVIEW:
+                case FINISHED:
+                    count++;
+                default:
+                    break;
+            }
+        }
+
+        return all - count;
     }
 
     /**
@@ -285,7 +307,7 @@ public class Campaign implements CMSMediaHolder {
      * @throws DAOException
      */
     public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("isUserAllowedAction: {}", status);
+        // logger.trace("isUserAllowedAction: {}", status);
         if (CampaignVisibility.PUBLIC.equals(visibility)) {
             return true;
         }
@@ -294,7 +316,6 @@ public class Campaign implements CMSMediaHolder {
         }
         switch (status) {
             case ANNOTATE:
-                logger.trace("jd");
                 return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
             case REVIEW:
                 return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
