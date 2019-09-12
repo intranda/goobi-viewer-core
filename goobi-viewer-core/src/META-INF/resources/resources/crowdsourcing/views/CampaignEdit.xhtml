@@ -31,7 +31,7 @@
     
         <f:view contentType="text/html" encoding="utf-8">
                 <ui:fragment
-                    rendered ="#{crowdsourcingBean.selectedRecordStatus == 'ANNOTATE' and crowdsourcingBean.selectedCampaign.isUserMayAnnotate(userBean.user)}">
+                    rendered="#{crowdsourcingBean.selectedCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.selectedRecordStatus)}">
                     <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
                         campaign="#{crowdsourcingBean.selectedCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
@@ -39,16 +39,6 @@
                         nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedRecordStatus)}"
                         itemstatus="#{crowdsourcingBean.selectedRecordStatus}"/>
                  </ui:fragment>
-                 <ui:fragment
-                    rendered ="#{crowdsourcingBean.selectedRecordStatus == 'REVIEW' and crowdsourcingBean.selectedCampaign.isUserMayReview(userBean.user)}">
-                    <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
-                        campaign="#{crowdsourcingBean.selectedCampaignId}"
-                        pi="#{crowdsourcingBean.targetIdentifier}"
-                        loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedRecordStatus)}"
-                        itemstatus="#{crowdsourcingBean.selectedRecordStatus}"/>
-                 </ui:fragment>
-                
         </f:view>
         
         <script>
