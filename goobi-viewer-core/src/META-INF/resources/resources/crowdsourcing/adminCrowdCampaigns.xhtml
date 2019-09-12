@@ -104,15 +104,15 @@
                                                 </td>
                                                 <td class="column_duration">
                                                     <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
-                                                        #{msg.from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                                        #{msg.admin__crowdsourcing_campaign_duration_from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
                                                     </h:outputText>
                                                     <br />
                                                     <h:outputText rendered="#{campaign.dateEnd != null}" value="#{campaign.dateEnd}">
-                                                        #{msg.until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                                        #{msg.admin__crowdsourcing_campaign_duration_until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
                                                     </h:outputText>
                                                 </td>
                                                 <td class="column_statistics">
-                                                    #{campaign.numRecords} #{msg.records}
+                                                    #{campaign.numRecords} #{msg.admin__crowdsourcing_campaign_statistics_records}
                                                     <br />
                                                     TODO: #{campaign.getNumRecordsForStatus('REVIEW')} review / #{campaign.getNumRecordsForStatus('FINISHED')} finished / #{campaign.numRecords} total
                                                 </td>
