@@ -276,32 +276,6 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * Convenience method for checking whether the given user may annotate records in his campaign.
-     * 
-     * @param user
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public boolean isUserMayAnnotate(User user) throws PresentationException, IndexUnreachableException, DAOException {
-        return isUserAllowedAction(user, IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
-    }
-
-    /**
-     * Convenience method for checking whether the given user may review annotations in his campaign.
-     * 
-     * @param user
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public boolean isUserMayReview(User user) throws PresentationException, IndexUnreachableException, DAOException {
-        return isUserAllowedAction(user, IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
-    }
-
-    /**
      * 
      * @param user
      * @param privilege
@@ -310,15 +284,23 @@ public class Campaign implements CMSMediaHolder {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    private boolean isUserAllowedAction(User user, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+    public boolean isUserAllowedAction(User user, CampaignRecordStatus status) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("isUserAllowedAction: {}", status);
         if (CampaignVisibility.PUBLIC.equals(visibility)) {
             return true;
         }
-        if (user == null) {
+        if (user == null || status == null) {
             return false;
         }
-
-        return user.isHasCrowdsourcingPrivilege(privilege);
+        switch (status) {
+            case ANNOTATE:
+                logger.trace("jd");
+                return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
+            case REVIEW:
+                return user.isHasCrowdsourcingPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
+            default:
+                return false;
+        }
     }
 
     /**
