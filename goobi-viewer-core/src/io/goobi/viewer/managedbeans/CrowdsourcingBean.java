@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -279,9 +283,11 @@ public class CrowdsourcingBean implements Serializable {
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *
      * @throws DAOException
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
      *
      */
-    public void saveSelectedCampaign() throws DAOException {
+    public void saveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
         try {
             if (userBean == null || !userBean.getUser().isSuperuser()) {
@@ -309,6 +315,7 @@ public class CrowdsourcingBean implements Serializable {
                 Messages.info("crowdsoucing_campaignSaveSuccess");
                 setSelectedCampaign(selectedCampaign);
                 lazyModelCampaigns.update();
+                updateActiveCampaigns();
             } else {
                 Messages.error("crowdsourcing_campaignSaveFailure");
             }
@@ -354,7 +361,6 @@ public class CrowdsourcingBean implements Serializable {
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
-    
 
     public String getSelectedCampaignId() {
         Long id = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getId).orElse(null);
@@ -369,21 +375,21 @@ public class CrowdsourcingBean implements Serializable {
             setSelectedCampaign(null);
         }
     }
-    
+
     /**
      * @return the targetCampaign
      */
     public Campaign getTargetCampaign() {
         return targetCampaign;
     }
-    
+
     /**
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
         this.targetCampaign = targetCampaign;
     }
-    
+
     /**
      * @return the targetCampaign
      */
@@ -391,11 +397,11 @@ public class CrowdsourcingBean implements Serializable {
         Long id = Optional.ofNullable(getTargetCampaign()).map(Campaign::getId).orElse(null);
         return id == null ? null : id.toString();
     }
-    
+
     /**
      * @param targetCampaign the targetCampaign to set
-     * @throws DAOException 
-     * @throws NumberFormatException 
+     * @throws DAOException
+     * @throws NumberFormatException
      */
     public void setTargetCampaignId(String id) throws NumberFormatException, DAOException {
         if (id != null) {
@@ -430,15 +436,12 @@ public class CrowdsourcingBean implements Serializable {
         return "pretty:crowdCampaignReview2";
     }
 
-
     /**
      * @return the PI of a work selected for editing
      */
     public String getTargetIdentifier() {
         return this.targetIdentifier;
     }
-    
-
 
     /**
      * @return the PI of a work selected for editing or "-" if no targetIdentifier exists
@@ -486,12 +489,94 @@ public class CrowdsourcingBean implements Serializable {
         logger.debug("Mapped URL " + mappedUrl);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
-    
+
     public CampaignRecordStatus getTargetRecordStatus() {
         if (getTargetCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
             return getTargetCampaign().getRecordStatus(getTargetIdentifier());
-        } else {
-            return null;
         }
+        return null;
+    }
+
+    /**
+     * 
+     * @return Active campaigns for the given identifier that are visible to the current user
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws DAOException 
+     */
+    public List<Campaign> getActiveCampaignsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
+        logger.trace("getActiveCampaignsForRecord: {}", pi);
+        if (pi == null) {
+            return Collections.emptyList();
+        }
+
+        // If the map has not yet been initialized during the application's life cycle, make it so
+        if (DataManager.getInstance().getRecordCampaignMap() == null) {
+            updateActiveCampaigns();
+        }
+
+        List<Campaign> allActiveCampaigns = DataManager.getInstance().getRecordCampaignMap().get(pi);
+        if (allActiveCampaigns == null || allActiveCampaigns.isEmpty()) {
+            logger.trace("No campaigns found for {}", pi);
+            return Collections.emptyList();
+        }
+        logger.trace("Found {} total campaigns for {}", allActiveCampaigns.size(), pi);
+
+        if (userBean.isLoggedIn()) {
+            logger.trace("user logged in");
+            return userBean.getUser().getAllowedCrowdsourcingCampaigns(allActiveCampaigns);
+        }
+
+        List<Campaign> ret = new ArrayList<>(allActiveCampaigns.size());
+        for (Campaign campaign : allActiveCampaigns) {
+            if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+                ret.add(campaign);
+            }
+        }
+
+        logger.trace("Returning {} public campaigns for {}", ret.size(), pi);
+        return ret;
+    }
+
+    /**
+     * Searches for all identifiers that are encompassed by the Solr query of each active campaign and initializes and fills a map of active campaigns
+     * for each identifier. Should be called once after the application first starts (or upon first access) or when a campaign has been updated.
+     * 
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void updateActiveCampaigns() throws DAOException, PresentationException, IndexUnreachableException {
+        logger.trace("updateActiveCampaigns");
+        DataManager.getInstance().setRecordCampaignMap(new HashMap<>());
+
+        List<Campaign> allCampaigns = getAllCampaigns();
+        if (allCampaigns.isEmpty()) {
+            return;
+        }
+
+        for (Campaign campaign : allCampaigns) {
+            // Skip inactive campaigns
+            if (!CampaignVisibility.PUBLIC.equals(campaign.getVisibility()) && !CampaignVisibility.RESTRICTED.equals(campaign.getVisibility())) {
+                continue;
+            }
+            QueryResponse qr = DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(campaign.getSolrQuery(), Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
+            if (qr.getFacetField(SolrConstants.PI_TOPSTRUCT) != null) {
+                for (Count count : qr.getFacetField(SolrConstants.PI_TOPSTRUCT).getValues()) {
+                    String pi = count.getName();
+                    List<Campaign> list = DataManager.getInstance().getRecordCampaignMap().get(pi);
+                    if (list == null) {
+                        list = new ArrayList<>();
+                        DataManager.getInstance().getRecordCampaignMap().put(pi, list);
+                    }
+                    if (!list.contains(campaign)) {
+                        list.add(campaign);
+                    }
+                }
+            }
+        }
+        logger.trace("Added {} identifiers to the map.",  DataManager.getInstance().getRecordCampaignMap().size());
     }
 }

@@ -694,8 +694,8 @@ public class AccessConditionUtils {
         // logger.debug("permissions key: " + key + ": " + permissions.get(key));
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
-            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
-                    request.getSession().getId());
+//            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
+//                    request.getSession().getId());
         } else {
             // TODO check for all images and save to map
             Map<String, Boolean> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);

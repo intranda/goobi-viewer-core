@@ -985,6 +985,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
 
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
+            logger.trace("campaign: {}", campaign.getTitle());
             switch (campaign.getVisibility()) {
                 case PUBLIC:
                     ret.add(campaign);
@@ -1022,6 +1023,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             }
         }
 
+        logger.trace("{} allowed campaigns", ret.size());
         return ret;
     }
 
