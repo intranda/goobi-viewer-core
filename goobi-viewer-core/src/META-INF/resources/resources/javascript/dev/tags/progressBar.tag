@@ -21,7 +21,7 @@
 
 	getRelativeWidth(value) {
 		    let barWidth = value/this.opts.total*this.totalBarWidth;
-		    return barWidth + "px"; 
+		    return Math.floor(barWidth) + "px"; 
 	}
 	
 	loaded() {

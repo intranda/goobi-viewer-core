@@ -112,9 +112,7 @@
                                                     </h:outputText>
                                                 </td>
                                                 <td class="column_statistics">
-                                                    #{campaign.numRecords} #{msg.admin__crowdsourcing_campaign_statistics_records}
-                                                    <br />
-                                                    TODO: #{campaign.getNumRecordsForStatus('REVIEW')} review / #{campaign.getNumRecordsForStatus('FINISHED')} finished / #{campaign.numRecords} total
+                                                   <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"/>
                                                 </td>
                                             </tr>
                                         </ui:repeat>
@@ -145,6 +143,7 @@
                     
                     viewerJS.dataTable.init( dataTableConfig );
                 } );
+        		riot.mount("progressBar");
             </script>
         </h:panelGroup>
     </ui:define>

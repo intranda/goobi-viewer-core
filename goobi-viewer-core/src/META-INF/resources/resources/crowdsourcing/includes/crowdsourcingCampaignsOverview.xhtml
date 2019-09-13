@@ -30,35 +30,7 @@
 					    action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 					    styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
 				</div>
-				<div class="crowdsourcing-campaigns-overview__campaign__statistics">
-					<div class="crowdsourcing-campaigns-overview__campaign__statistics__text">
-						<dl>
-							<dt>#{msg.label__progress}</dt>
-							<dd>#{campaign.progress}%</dd>
-						</dl>
-						<dl>
-							<dt>#{msg.label__total_items}</dt>
-							<dd>#{campaign.numRecords}</dd>
-						</dl>
-						<dl>
-							<dt>#{msg.label__finished_items}</dt>
-							<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
-						</dl>
-						<dl>
-							<dt>#{msg.label__items_in_review}</dt>
-							<dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
-						</dl>
-						<dl>
-							<dt>#{msg.label__days_left}</dt>
-							<dd>#{campaign.daysLeftAsString}</dd>
-						</dl>
-					</div>
-					<div class="crowdsourcing-campaigns-overview__campaign__statistics__bar">
-						<progressBar total="#{campaign.numRecords}" 
-							values="[#{campaign.getNumRecordsForStatus('FINISHED')}, #{campaign.getNumRecordsForStatus('REVIEW')}]" 
-							colors='["green", "yellow"]'></progressBar>
-					</div>
-				</div>
+				<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
 			</div>
 		</ui:repeat>
 	</h:form>

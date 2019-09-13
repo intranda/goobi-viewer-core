@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+<!-- Requires javascript riot.mount("progressBar") -->
+	<div class="campaign-statistics">
+		<div
+			class="campaign-statistics__text">
+			<dl>
+				<dt>#{msg.label__progress}</dt>
+				<dd>#{campaign.progress}%</dd>
+				<dt>#{msg.label__total_items}</dt>
+				<dd>#{campaign.numRecords}</dd>
+				<dt>#{msg.label__finished_items}</dt>
+				<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
+				<dt>#{msg.label__items_in_review}</dt>
+				<dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
+				<dt>#{msg.label__days_left}</dt>
+				<dd>#{campaign.daysLeftAsString}</dd>
+			</dl>
+		</div>
+		<div
+			class="campaign-statistics__bar">
+			<progressBar total="#{campaign.numRecords}"
+				values="[#{campaign.getNumRecordsForStatus('FINISHED')}, #{campaign.getNumRecordsForStatus('REVIEW')}]"
+				colors='["green", "yellow"]'></progressBar>
+		</div>
+	</div>
+</ui:composition>

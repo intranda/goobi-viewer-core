@@ -1,0 +1,45 @@
+.campaign-statistics {
+	width: 100%;
+	border: 4px solid @lightgray;
+	display: flex;
+	&__text {
+		width: 50%;
+		dl {
+			width: 100%;
+			margin-bottom: 0;
+			display: grid;
+			grid-template-columns: 80% 20%;
+			dt {
+				float: left;
+				padding-right: 10px;
+				&:after {
+					content: ": ";
+				}
+			}
+			dd {
+			}
+		}
+	}
+	
+	&__bar {
+		width: 50%;
+		display:flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		progressBar {
+			width: 80%;
+		}
+		.goobi-progress-bar-wrapper {
+			border: 2px solid @darkgray;
+			
+			.goobi-progress-bar {
+				height: 30px;
+				&__bar {
+					display: inline-block;
+					height:100%;
+				}
+			}
+		}
+	}
+}
