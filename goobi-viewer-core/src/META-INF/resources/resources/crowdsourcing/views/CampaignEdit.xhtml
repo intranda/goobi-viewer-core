@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.selectedCampaign, crowdsourcingBean.targetIdentifier, crowdsourcingBean.selectedRecordStatus)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCrowdsourcingAnnotationPage(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetIdentifier, crowdsourcingBean.targetRecordStatus)}" />
         </f:metadata>
     </ui:define>
     
@@ -31,13 +31,13 @@
     
         <f:view contentType="text/html" encoding="utf-8">
                 <ui:fragment
-                    rendered="#{crowdsourcingBean.selectedCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.selectedRecordStatus)}">
+                    rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
                     <campaignItem restapiurl="#{configurationBean.restApiUrl}" 
-                        campaign="#{crowdsourcingBean.selectedCampaignId}"
+                        campaign="#{crowdsourcingBean.targetCampaignId}"
                         pi="#{crowdsourcingBean.targetIdentifier}"
                         loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.selectedCampaign, crowdsourcingBean.selectedRecordStatus)}"
-                        itemstatus="#{crowdsourcingBean.selectedRecordStatus}"/>
+                        nextitemurl="#{crowdsourcingBean.getRandomItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetRecordStatus)}"
+                        itemstatus="#{crowdsourcingBean.targetRecordStatus}"/>
                  </ui:fragment>
         </f:view>
         
@@ -48,6 +48,8 @@
 	                name : "#{userBean.user.displayName}"
 	        }
 	        Crowdsourcing.user = user;
+	        Crowdsourcing.language = "#{navigationHelper.locale}";
+	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}"
 	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
 	    	.then(() => riot.mount("campaignItem"));
         	

@@ -83,9 +83,9 @@
                                         <ui:repeat var="campaign" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
                                             <tr>
                                                 <td class="column_title">
-                                                    <span class="column_title__main_title">#{campaign.title}</span>
+                                                    <span class="column_title__main_title">#{campaign.getTitle(navigationHelper.locale, true)}</span>
                                                     <br />
-                                                    <span class="column_title__menu_title">#{campaign.menuTitle}</span>
+                                                    <span class="column_title__menu_title">#{campaign.getMenuTitle(navigationHelper.locale, true)}</span>
                                                     <br />
                                                     <!-- Edit link -->
                                                     <h:commandLink action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">

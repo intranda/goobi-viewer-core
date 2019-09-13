@@ -845,26 +845,26 @@
     
     <!-- CROWDSOURCING -->
     <url-mapping id="crowdCampaignAnnotate1">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/annotate/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{crowdsourcingBean.setRandomIdentifierForAnnotation}</action>
 		<action onPostback="false">#{crowdsourcingBean.forwardToAnnotationTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignAnnotate2">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="crowdCampaignReview1">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/review/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{crowdsourcingBean.setRandomIdentifierForReview}</action>
 		<action onPostback="false">#{crowdsourcingBean.forwardToReviewTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignReview2">
-		<pattern value="/campaigns/#{campaign:crowdsourcingBean.selectedCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
+		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/review/#{pi:crowdsourcingBean.targetIdentifierForUrl}/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>

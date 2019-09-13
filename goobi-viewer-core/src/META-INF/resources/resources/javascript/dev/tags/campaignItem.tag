@@ -17,10 +17,10 @@
 			<canvasPaginator if="{this.item}" item="{this.item}"></canvasPaginator>
 		</div>
 		<div if="{this.item}" class="content_right">
-			<h1 class="content_right__title">{viewerJS.getMetadataValue(this.item.translations.title)}</h1>
+			<h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
 			<div class="questions_wrapper"  >
 				<div class="question_wrapper" each="{question in this.item.questions}">
-					<div class="question_wrapper__description">{viewerJS.getMetadataValue(question.translations.text)}</div>
+					<div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}"></plaintextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}"></geoLocationQuestion>
 				</div>

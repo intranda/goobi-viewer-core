@@ -135,6 +135,15 @@ public class BeanUtils {
 
         return Locale.ENGLISH;
     }
+    
+    public static Locale getDefaultLocale() {
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
+        if (nh != null) {
+            return nh.getDefaultLocale();
+        }
+
+        return Locale.ENGLISH;
+    }
 
     private static BeanManager getBeanManager() {
         BeanManager ret = null;
