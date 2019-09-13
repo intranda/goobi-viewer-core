@@ -83,13 +83,17 @@
 				progressBar {
 					width: 80%;
 				}
-				.goobi-progress-bar {
-					height: 30px;
+				.goobi-progress-bar-wrapper {
 					border: 2px solid @darkgray;
-					&__bar {
-						display: inline-block;
-						height:100%;
+					
+					.goobi-progress-bar {
+						height: 30px;
+						&__bar {
+							display: inline-block;
+							height:100%;
+						}
 					}
+				
 				}
 			}
 		}

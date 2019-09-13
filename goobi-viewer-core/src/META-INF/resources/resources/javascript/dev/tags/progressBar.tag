@@ -1,8 +1,9 @@
 <progressBar>
-
-	<div class="goobi-progress-bar">
-		<div each="{value, index in this.values}" 
-		class="goobi-progress-bar__bar" style="width: {getRelativeWidth(value)}; background-color:{colors[index]}">
+	<div class="goobi-progress-bar-wrapper">
+		<div class="goobi-progress-bar">
+			<div each="{value, index in this.values}" 
+			class="goobi-progress-bar__bar" style="width: {getRelativeWidth(value)}; background-color:{colors[index]}">
+			</div>
 		</div>
 	</div>
 

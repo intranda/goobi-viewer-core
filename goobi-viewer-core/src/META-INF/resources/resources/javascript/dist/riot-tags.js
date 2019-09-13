@@ -996,7 +996,7 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
     }.bind(this)
 
 });
-riot.tag2('progressbar', '<div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar" riot-style="width: {getRelativeWidth(value)}; background-color:{colors[index]}"></div></div>', '', '', function(opts) {
+riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar" riot-style="width: {getRelativeWidth(value)}; background-color:{colors[index]}"></div></div></div>', '', '', function(opts) {
 	this.values = JSON.parse(this.opts.values);
 	this.colors = JSON.parse(this.opts.colors);
 	console.log("init progressbar ", this.values, this.colors);
