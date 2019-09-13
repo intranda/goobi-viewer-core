@@ -16,12 +16,18 @@
 package io.goobi.viewer.model.misc;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 @MappedSuperclass
 public abstract class Translation {
@@ -69,7 +75,7 @@ public abstract class Translation {
         this.tag = tag;
         this.value = value;
     }
-
+    
     /**
      * 
      * @param tag
@@ -77,18 +83,35 @@ public abstract class Translation {
      * @return
      */
     public static String getTranslation(List<? extends Translation> translations, String lang, String tag) {
+        return getTranslation(translations, lang, tag, false);
+    }
+
+    /**
+     * 
+     * @param tag
+     * @param lang
+     * @param useFallback   if no translation for lang exists, use the application default language
+     * @return
+     */
+    public static String getTranslation(List<? extends Translation> translations, String lang, String tag, boolean useFallback) {
         if (tag == null || lang == null) {
             return null;
         }
 
         for (Translation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
+            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang) && StringUtils.isNotBlank(translation.getValue())) {
                 return translation.getValue();
             }
         }
 
-        return "";
+        if(useFallback) {
+            String defaultLanguage = Optional.of(BeanUtils.getDefaultLocale()).map(Locale::getLanguage).orElse("en");
+            return getTranslation(translations, defaultLanguage, tag, false);
+        } else {
+            return "";
+        }
     }
+
 
     /**
      * @return the id

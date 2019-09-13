@@ -382,14 +382,23 @@ public class Campaign implements CMSMediaHolder {
     public void setDescription(String description) {
         CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
-
+    
     /**
      * 
      * @param lang
      * @return
      */
     public String getTitle(String lang) {
-        return Translation.getTranslation(translations, lang, "title");
+        return getTitle(lang, false);
+    }
+
+    /**
+     * 
+     * @param lang
+     * @return  the title of the given language or if it doesn't exist the title of the default language
+     */
+    public String getTitle(String lang, boolean useFallback) {
+        return Translation.getTranslation(translations, lang, "title", useFallback);
     }
 
     /**
@@ -398,7 +407,16 @@ public class Campaign implements CMSMediaHolder {
      * @return
      */
     public String getDescription(String lang) {
-        return Translation.getTranslation(translations, lang, "description");
+       return getDescription(lang, false);
+    }
+    
+    /**
+     * 
+     * @param lang
+     * @return
+     */
+    public String getDescription(String lang, boolean useFallback) {
+        return Translation.getTranslation(translations, lang, "description", useFallback);
     }
 
     /**
@@ -407,7 +425,16 @@ public class Campaign implements CMSMediaHolder {
      * @return
      */
     public String getMenuTitle(String lang) {
-        return Translation.getTranslation(translations, lang, "menu_title");
+        return getMenuTitle(lang, false);
+    }
+    
+    /**
+     * 
+     * @param lang
+     * @return
+     */
+    public String getMenuTitle(String lang, boolean useFallback) {
+        return Translation.getTranslation(translations, lang, "menu_title", useFallback);
     }
 
     /**

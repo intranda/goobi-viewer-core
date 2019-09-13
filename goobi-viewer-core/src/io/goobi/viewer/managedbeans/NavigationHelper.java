@@ -103,6 +103,7 @@ public class NavigationHelper implements Serializable {
     public static final int WEIGHT_CROWDSOURCING_EDIT_OCR_CONTENTS = 5;
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN = 2;
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_ITEM = 3;
+    public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
     protected static final String KEY_CURRENT_VIEW = "currentView";
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
@@ -306,6 +307,7 @@ public class NavigationHelper implements Serializable {
         if(campaign != null) {            
             updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
+            
         }
         if(pi != null) {            
             updateBreadcrumbs(new LabeledLink(pi, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/" + pi + "/",
