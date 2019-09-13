@@ -79,6 +79,12 @@
         if(event.item.anno) {            
             event.item.anno.setText(event.target.value);
             this.question.saveToLocalStorage();
+            switch(this.question.targetSelector) {
+                case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+                case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+                    this.question.createDummyAnnotationIfRequired();
+                    this.update();
+            }
         } else {
             throw "No annotation to set"
         }

@@ -142,7 +142,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.getTargetId = function() {
-        return crowdsourcing.getResourceId(this.item.getCurrentCanvas());
+        let target = (this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE) ? this.item.imageSource : this.item.getCurrentCanvas();
+        return crowdsourcing.getResourceId(target);
     }
 
     crowdsourcing.Question.prototype.deleteAnnotation = function(anno) {
