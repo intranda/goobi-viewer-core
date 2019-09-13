@@ -66,7 +66,7 @@ public class CampaignTest extends AbstractTest {
             MutableDateTime earlier = new MutableDateTime();
             earlier.addDays(-20);
             campaign.setDateEnd(earlier.toDate());
-            Assert.assertEquals(-20, campaign.getDaysLeft());
+            Assert.assertEquals(0, campaign.getDaysLeft());
         }
     }
 }

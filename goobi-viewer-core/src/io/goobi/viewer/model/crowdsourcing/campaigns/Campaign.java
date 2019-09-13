@@ -283,15 +283,12 @@ public class Campaign implements CMSMediaHolder {
 
         LocalDate now = new DateTime().toLocalDate();
         LocalDate end = new DateTime(dateEnd).toLocalDate();
-        return Days.daysBetween(now, end).getDays();
+        return Math.max(0, Days.daysBetween(now, end).getDays());
     }
 
     public String getDaysLeftAsString() {
         if (getDateEnd() != null) {
             int days = getDaysLeft();
-            if (days <= 0) {
-                return "-";
-            }
             return Long.toString(days);
         }
         return "\u221e";

@@ -19,8 +19,10 @@
 				<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
 				<dt>#{msg.label__items_in_review}</dt>
 				<dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
-				<dt>#{msg.label__days_left}</dt>
-				<dd>#{campaign.daysLeftAsString}</dd>
+				<ui:fragment rendered="#{campaign.daysLeft >= 0}">
+					<dt>#{msg.label__days_left}</dt>
+					<dd>#{campaign.daysLeftAsString}</dd>
+				</ui:fragment>
 			</dl>
 		</div>
 		<div
