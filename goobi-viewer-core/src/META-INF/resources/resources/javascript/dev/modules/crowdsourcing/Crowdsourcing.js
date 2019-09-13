@@ -28,6 +28,9 @@ var Crowdsourcing = ( function() {
     
     var crowdsourcing = {};
     
+    crowdsourcing.language = "de";
+    crowdsourcing.fallbackLanguage = "en";
+    
     crowdsourcing.isString = function(variable) {
         return typeof variable === 'string' || variable instanceof String
     }
@@ -65,16 +68,28 @@ var Crowdsourcing = ( function() {
     
     crowdsourcing.translate = function(key, language) {
         if(!language) {
-            language = "de";
+            language = crowdsourcing.language;
         }
-        if(!crowdsourcing.translations) {
-            throw "Must call 'initTranslations' before translating"
-        }
-        if(!crowdsourcing.translations[key]) {
-            return key;
+        if(crowdsourcing.isString(key)) {            
+            if(!crowdsourcing.translations) {
+                throw "Must call 'initTranslations' before translating"
+            }
+            if(!crowdsourcing.translations[key]) {
+                return key;
 //            throw "message key " + key + " not initialized";
+            }
+            let translation = viewerJS.getMetadataValue(crowdsourcing.translations[key], language);
+            if(!translation) {
+                translation = viewerJS.getMetadataValue(crowdsourcing.translations[key], crowdsourcing.fallbackLanguage);
+            }
+            return translation;
+        } else {
+            let translation = viewerJS.getMetadataValue(key, language);
+            if(!translation) {
+                translation = viewerJS.getMetadataValue(key, crowdsourcing.fallbackLanguage);
+            }
+            return translation;
         }
-        return viewerJS.getMetadataValue(crowdsourcing.translations[key], language);
 
     }
 

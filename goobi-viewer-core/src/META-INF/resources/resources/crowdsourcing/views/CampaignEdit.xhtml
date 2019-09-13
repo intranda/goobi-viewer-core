@@ -48,6 +48,8 @@
 	                name : "#{userBean.user.displayName}"
 	        }
 	        Crowdsourcing.user = user;
+	        Crowdsourcing.language = "#{navigationHelper.locale}";
+	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}"
 	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
 	    	.then(() => riot.mount("campaignItem"));
         	
