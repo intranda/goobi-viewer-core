@@ -66,6 +66,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -94,14 +95,15 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         annotation.setTarget(target);
 
         daoAnno = new PersistentAnnotation(annotation);
-
     }
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -121,7 +123,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     }
     
     @Test
-    public void testSerialize() throws DAOException, JsonParseException, JsonMappingException, IOException {
+    public void testSerialize() throws JsonParseException, JsonMappingException, IOException {
 
         String bodyString = daoAnno.getBody();
         Assert.assertEquals("{\"type\":\"TextualBody\",\"format\":\"text/plain\",\"value\":\"annotation text\"}", bodyString);

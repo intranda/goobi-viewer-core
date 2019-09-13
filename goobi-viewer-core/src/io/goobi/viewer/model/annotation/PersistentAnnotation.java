@@ -94,6 +94,9 @@ public class PersistentAnnotation {
     @Column(name = "creator_id")
     private Long creatorId;
 
+    @Column(name = "reviewer_id")
+    private Long reviewerId;
+
     /**
      * This is the id of the {@link Question} this annotation was created with. If it is null, the annotation was generated outside the campaign
      * framework
@@ -167,9 +170,8 @@ public class PersistentAnnotation {
         Matcher matcher = Pattern.compile(TARGET_REGEX).matcher(uri.toString());
         if (matcher.find()) {
             return matcher.group(1);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -184,12 +186,10 @@ public class PersistentAnnotation {
             String pageNo = matcher.group(2);
             if (StringUtils.isNotBlank(pageNo)) {
                 return Integer.parseInt(pageNo);
-            } else {
-                return null;
             }
-        } else {
             return null;
         }
+        return null;
     }
 
     /**
@@ -211,9 +211,8 @@ public class PersistentAnnotation {
         if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public URI getIdAsURI() {
@@ -255,9 +254,8 @@ public class PersistentAnnotation {
     public User getCreator() throws DAOException {
         if (getCreatorId() != null) {
             return DataManager.getInstance().getDao().getUser(getCreatorId());
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -274,9 +272,8 @@ public class PersistentAnnotation {
     public Question getGenerator() throws DAOException {
         if (getGeneratorId() != null) {
             return DataManager.getInstance().getDao().getQuestion(getGeneratorId());
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -298,6 +295,20 @@ public class PersistentAnnotation {
      */
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the reviewerId
+     */
+    public Long getReviewerId() {
+        return reviewerId;
+    }
+
+    /**
+     * @param reviewerId the reviewerId to set
+     */
+    public void setReviewerId(Long reviewerId) {
+        this.reviewerId = reviewerId;
     }
 
     /**
@@ -347,11 +358,10 @@ public class PersistentAnnotation {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            IResource resource = (IResource) mapper.readValue(this.body, TextualResource.class);
+            IResource resource = mapper.readValue(this.body, TextualResource.class);
             return resource;
-        } else {
-            return null;
         }
+        return null;
     }
 
     public IResource getBodyAsOAResource() throws JsonParseException, JsonMappingException, IOException {
@@ -359,9 +369,8 @@ public class PersistentAnnotation {
         if (resource != null) {
             IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
             return oaResource;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -418,26 +427,23 @@ public class PersistentAnnotation {
                 resource = mapper.readValue(this.target, TypedResource.class);
             }
             return resource;
-        } else {
-            return null;
         }
+        return null;
     }
 
     public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
-            IResource resource = (IResource) getTargetAsResource();
-            if (resource != null) {
-                if(resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
-                    FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
-                    ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
-                    IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
-                    return oaResource;                    
-                } else {
-                    return resource;
-                }
-            } else {
-                return null;
+        IResource resource = getTargetAsResource();
+        if (resource != null) {
+            if (resource instanceof SpecificResource && ((SpecificResource) resource).getSelector() instanceof FragmentSelector) {
+                FragmentSelector selector = (FragmentSelector) ((SpecificResource) resource).getSelector();
+                ISelector oaSelector = new de.intranda.api.annotation.oa.FragmentSelector(selector.getFragment());
+                IResource oaResource = new de.intranda.api.annotation.oa.SpecificResource(resource.getId(), oaSelector);
+                return oaResource;
             }
-            
+            return resource;
+        }
+        return null;
+
     }
 
     public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
@@ -457,7 +463,7 @@ public class PersistentAnnotation {
         return annotation;
     }
 
-    public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
+    public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
         annotation.setBody(this.getBodyAsOAResource());
         annotation.setTarget(this.getTargetAsOAResource());

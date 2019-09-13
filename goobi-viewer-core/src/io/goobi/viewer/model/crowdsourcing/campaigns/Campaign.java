@@ -256,6 +256,17 @@ public class Campaign implements CMSMediaHolder {
         return all - count;
     }
 
+    public long getContributorCount() throws DAOException {
+        List<Long> questionIds = new ArrayList<>(questions.size());
+        for (Question q : questions) {
+            if (q.getId() != null) {
+                questionIds.add(q.getId());
+            }
+        }
+        
+        return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
+    }
+
     /**
      * FINISHED records in percent
      * 
