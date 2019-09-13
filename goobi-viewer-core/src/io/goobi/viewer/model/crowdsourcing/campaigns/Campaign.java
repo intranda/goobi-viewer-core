@@ -185,14 +185,22 @@ public class Campaign implements CMSMediaHolder {
     @JsonIgnore
     private CMSContentItem contentItem = new CMSContentItem();
 
+    /**
+     * Empty constructor.
+     */
     public Campaign() {
         this.selectedLocale = BeanUtils.getLocale();
     }
 
+    /**
+     * Locale constructor.
+     * 
+     * @param selectedLocale
+     */
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -224,6 +232,10 @@ public class Campaign implements CMSMediaHolder {
         return true;
     }
 
+    /**
+     * 
+     * @return available values of the CampaignVisibility enum
+     */
     @JsonIgnore
     public List<CampaignVisibility> getCampaignVisibilityValues() {
         return Arrays.asList(CampaignVisibility.values());
@@ -231,7 +243,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * 
-     * @return
+     * @return total number of records encompassed by the configured solrQuery
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -247,7 +259,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * 
      * @param status
-     * @return
+     * @return number of records with the given status
      */
     public long getNumRecordsForStatus(String status) {
         if (status == null) {
@@ -287,6 +299,12 @@ public class Campaign implements CMSMediaHolder {
         return all - count;
     }
 
+    /**
+     * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
+     * 
+     * @return number of users
+     * @throws DAOException
+     */
     public long getContributorCount() throws DAOException {
         List<Long> questionIds = new ArrayList<>(questions.size());
         for (Question q : questions) {
@@ -294,14 +312,14 @@ public class Campaign implements CMSMediaHolder {
                 questionIds.add(q.getId());
             }
         }
-        
+
         return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
     }
 
     /**
      * FINISHED records in percent
      * 
-     * @return
+     * @return percentage of records marked as finished relative to the total number or records
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -337,10 +355,11 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Checks whether the given user may annotate or review records based on the given status.
      * 
      * @param user
      * @param privilege
-     * @return
+     * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -424,7 +443,7 @@ public class Campaign implements CMSMediaHolder {
     public void setDescription(String description) {
         CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
-    
+
     /**
      * 
      * @param lang
@@ -437,7 +456,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * 
      * @param lang
-     * @return  the title of the given language or if it doesn't exist the title of the default language
+     * @return the title of the given language or if it doesn't exist the title of the default language
      */
     public String getTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "title", useFallback);
@@ -449,9 +468,9 @@ public class Campaign implements CMSMediaHolder {
      * @return
      */
     public String getDescription(String lang) {
-       return getDescription(lang, false);
+        return getDescription(lang, false);
     }
-    
+
     /**
      * 
      * @param lang
@@ -469,7 +488,7 @@ public class Campaign implements CMSMediaHolder {
     public String getMenuTitle(String lang) {
         return getMenuTitle(lang, false);
     }
-    
+
     /**
      * 
      * @param lang
@@ -565,6 +584,10 @@ public class Campaign implements CMSMediaHolder {
         this.dateStart = dateStart;
     }
 
+    /**
+     * 
+     * @return formatted ISO string representation of stateStart
+     */
     public String getDateStartString() {
         if (dateStart == null) {
             return null;
@@ -601,6 +624,10 @@ public class Campaign implements CMSMediaHolder {
         this.dateEnd = dateEnd;
     }
 
+    /**
+     * 
+     * @return formatted ISO string representation of dateEnd
+     */
     public String getDateEndString() {
         if (dateEnd == null) {
             return null;
@@ -742,7 +769,7 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * Get the targetIdentifier to a random PI from the solr query result list
+     * Get the targetIdentifier to a random PI from the Solr query result list.
      * 
      * @param status
      * 
@@ -765,7 +792,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * @param result
-     * @return
+     * @return true if record status for the given pi equals status; false otherwise
      */
     private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
@@ -773,7 +800,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * @param targetIdentifier
-     * @return
+     * @return record status for the given pi
      */
     public CampaignRecordStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
@@ -781,6 +808,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Updates record status in the campaign statistics.
+     * 
      * @param pi
      * @param status
      */

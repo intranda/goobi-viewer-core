@@ -251,9 +251,10 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * Returns the list of campaigns that are visible to the given user.
      * 
      * @param user
-     * @return
+     * @return list of campaigns visible to the given user; only public campaigns if user is null
      * @throws DAOException
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
@@ -283,8 +284,8 @@ public class CrowdsourcingBean implements Serializable {
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *
      * @throws DAOException
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      *
      */
     public void saveSelectedCampaign() throws DAOException, PresentationException, IndexUnreachableException {
@@ -315,6 +316,7 @@ public class CrowdsourcingBean implements Serializable {
                 Messages.info("crowdsoucing_campaignSaveSuccess");
                 setSelectedCampaign(selectedCampaign);
                 lazyModelCampaigns.update();
+                // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
                 updateActiveCampaigns();
             } else {
                 Messages.error("crowdsourcing_campaignSaveFailure");
@@ -323,6 +325,10 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return root URL for the permalink value
+     */
     public String getCampaignsRootUrl() {
         return navigationHelper.getApplicationUrl() + "campaigns/";
     }
@@ -498,11 +504,12 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * Returns a list of active campaigns for the given identifier that are visible to the current user.
      * 
-     * @return Active campaigns for the given identifier that are visible to the current user
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws DAOException 
+     * @return List of campaigns
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
      */
     public List<Campaign> getActiveCampaignsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("getActiveCampaignsForRecord: {}", pi);
@@ -523,7 +530,6 @@ public class CrowdsourcingBean implements Serializable {
         logger.trace("Found {} total campaigns for {}", allActiveCampaigns.size(), pi);
 
         if (userBean.isLoggedIn()) {
-            logger.trace("user logged in");
             return userBean.getUser().getAllowedCrowdsourcingCampaigns(allActiveCampaigns);
         }
 
@@ -577,6 +583,6 @@ public class CrowdsourcingBean implements Serializable {
                 }
             }
         }
-        logger.trace("Added {} identifiers to the map.",  DataManager.getInstance().getRecordCampaignMap().size());
+        logger.trace("Added {} identifiers to the map.", DataManager.getInstance().getRecordCampaignMap().size());
     }
 }
