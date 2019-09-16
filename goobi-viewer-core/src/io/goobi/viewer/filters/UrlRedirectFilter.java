@@ -70,13 +70,13 @@ public class UrlRedirectFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-         // logger.trace("doFilter");
+        // logger.trace("doFilter");
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             if (isPrefetchingRequest(httpRequest)) {
                 return;
             }
-            
+
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
             if (currentPath.isPresent()) {
                 logger.trace("currentPath: {}", currentPath.get());
@@ -91,6 +91,13 @@ public class UrlRedirectFilter implements Filter {
                         d.forward(request, response);
                         return;
                     }
+                } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns") && currentPath.get().getCampaign() != null) {
+                    ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
+                    cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                    logger.debug("Forwarding {} to {}", currentPath.get().toString(), cmsPagePath.getCombinedUrl());
+                    RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                    d.forward(request, response);
+                    return;
                 }
             }
         } catch (DAOException e) {

@@ -289,8 +289,29 @@
                 <!-- DOCUMENT OPTIONS -->
                 <div class="image-controls__options">
                     <ul>
+                        <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
+                        <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
+                            <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
+                                <li style=" margin-top: -5px;">
+                                    <a href="http://localhost:8080/viewer/crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Mitmachen!</a>
+                                </li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
+                                <li style=" margin-top: -5px;">
+                                    <a href="http://localhost:8080/viewer/crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Text bearbeiten</a>
+                                </li>
+                            </ui:fragment>
+                        </ui:fragment>
+                        
+                        <!-- CROWDSOURCING CAMPAIGN -->
+                        <ui:fragment>
+                            <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
+                            <!-- TODO -->
+                            </ui:repeat>
+                        </ui:fragment>
+                    
                         <!-- FULLTEXT -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                        <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
                             <li class="image-controls__option fulltext">
                                 <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
                                     title="#{msg.fulltext}" target="_blank">

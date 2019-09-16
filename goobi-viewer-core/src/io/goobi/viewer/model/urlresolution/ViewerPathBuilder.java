@@ -18,7 +18,6 @@ package io.goobi.viewer.model.urlresolution;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -36,27 +35,26 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
- * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request. 
+ * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
  * 
  * @author Florian Alpers
  *
  */
 public class ViewerPathBuilder {
 
-
-
     /**
-     * Returns the request path of the given {@code httpRequest} as a {@link ViewerPath}, including information
-     * on associated CMSPage and targeted PageType
+     * Returns the request path of the given {@code httpRequest} as a {@link ViewerPath}, including information on associated CMSPage and targeted
+     * PageType
      * 
-     * If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index pretty-mapping
-     * Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
+     * If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index
+     * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
      * 
-     * @param httpRequest       The request from which the path is generated
+     * @param httpRequest The request from which the path is generated
      * @return
      * @throws DAOException
      */
@@ -65,9 +63,9 @@ public class ViewerPathBuilder {
         String serviceUrl = httpRequest.getServletPath(); // /resources/.../index.xhtml
         String serverName = httpRequest.getContextPath(); // /viewer
         PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
-        if (!serviceUrl.contains("/cms/") && context != null && context.getRequestURL() != null) {
-            serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + 
-                    ("/".equals(context.getRequestURL().toURL()) ? "/index" : context.getRequestURL().toURL());
+        if (!serviceUrl.contains("/cms/") && !serviceUrl.contains("/campaigns/") && context != null && context.getRequestURL() != null) {
+            serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest)
+                    + ("/".equals(context.getRequestURL().toURL()) ? "/index" : context.getRequestURL().toURL());
         }
         serviceUrl = serviceUrl.replaceAll("\\/index\\.x?html", "/");
         return createPath(serverUrl, serverName, serviceUrl);
@@ -81,89 +79,95 @@ public class ViewerPathBuilder {
         return createPath(serverUrl, serverName, serviceUrl);
     }
 
-    
-
     /**
-     * Create a combined path from the given url. 
+     * Create a combined path from the given url.
      * 
-     * If the url leads to a known PageType, associates the PageType with the combined path.
-     * If the path leads to a cmsPage, either through direct url {@code /cmds/...}, the cmsPages alternative url or a static page mapping,
-     * the cmsPage is associated with this path
+     * If the url leads to a known PageType, associates the PageType with the combined path. If the path leads to a cmsPage, either through direct url
+     * {@code /cmds/...}, the cmsPages alternative url or a static page mapping, the cmsPage is associated with this path
      * 
-     * @param applicationUrl    The absolute url of the web-application including the application name ('viewer')
-     * @param applicationName   The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
-     * @param serviceUrl        The complete requested url, optionally including the hostUrl 
-     * @return                  A {@link ViewerPath} containing the complete path information
+     * @param applicationUrl The absolute url of the web-application including the application name ('viewer')
+     * @param applicationName The name of the web-application. This is always the last part of the {@code hostUrl}. May be empty
+     * @param serviceUrl The complete requested url, optionally including the hostUrl
+     * @return A {@link ViewerPath} containing the complete path information
      * @throws DAOException
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
-        serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", ""); 
+        serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
         try {
             serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
         } catch (UnsupportedEncodingException e) {
         }
-        
+
         final URI servicePath = URI.create(serviceUrl);
         String[] pathParts = serviceUrl.split("/");
-        
+
         ViewerPath currentPath = new ViewerPath();
         currentPath.setApplicationUrl(applicationUrl);
         currentPath.setApplicationName(applicationName);
-        
-        if(serviceUrl.matches("cms/\\d+/.*")) {
+
+        if (serviceUrl.matches("cms/\\d+/.*")) {
             Long cmsPageId = Long.parseLong(pathParts[1].toString());
             CMSPage page = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
-            if(page != null) {
+            if (page != null) {
                 currentPath.setCmsPage(page);
+            }
+            currentPath.setPagePath(URI.create(pathParts[0] + "/" + pathParts[1]));
+            currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
+        } else if (serviceUrl.matches("campaigns/\\d+/.*")) {
+            Long campaignId = Long.parseLong(pathParts[1].toString());
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+            if (campaign != null) {
+                currentPath.setCampaign(campaign);
             }
             currentPath.setPagePath(URI.create(pathParts[0] + "/" + pathParts[1]));
             currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
         } else {
             Optional<PageType> pageType = getPageType(servicePath);
-            if(pageType.isPresent()) {
+            if (pageType.isPresent()) {
                 currentPath.setPagePath(URI.create(pageType.get().getName()));
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
-                if(pageType.get().isHandledWithCms()) {
+                if (pageType.get().isHandledWithCms()) {
                     Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForTypeType(pageType.get());
                     Optional<CMSPage> oCmsPage = staticPage.map(sp -> sp.getCmsPage());
-                    if(oCmsPage.isPresent()) {
+                    if (oCmsPage.isPresent()) {
                         currentPath.setCmsPage(oCmsPage.get());
                     }
                 }
             } else {
+                // CMS page permalink
                 Optional<CMSPage> cmsPage = getCmsPage(servicePath);
-                if(cmsPage.isPresent()) {
+                if (cmsPage.isPresent()) {
                     currentPath.setPagePath(URI.create(cmsPage.get().getPersistentUrl()));
                     currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                     currentPath.setCmsPage(cmsPage.get());
                 }
             }
         }
-        if(StringUtils.isNotBlank(currentPath.getPagePath().toString())) {            
+        if (StringUtils.isNotBlank(currentPath.getPagePath().toString())) {
             return Optional.of(currentPath);
         }
         return Optional.empty();
     }
 
-    
     /**
      * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path
      * 
      * @param servicePath
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
-        
+
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         //check pages with longer persistent url first because they have a narrower match and should be preferred
-        Collections.sort(cmsPages, (p1, p2) -> Integer.compare(StringTools.getLength(p2.getPersistentUrl()), StringTools.getLength(p1.getPersistentUrl())));
+        Collections.sort(cmsPages,
+                (p1, p2) -> Integer.compare(StringTools.getLength(p2.getPersistentUrl()), StringTools.getLength(p1.getPersistentUrl())));
         for (CMSPage cmsPage : cmsPages) {
             String pagePath = cmsPage.getPersistentUrl();
-            if(StringUtils.isNotBlank(pagePath)) {
+            if (StringUtils.isNotBlank(pagePath)) {
                 pagePath = pagePath.replaceAll("^\\/|\\/$", "").trim();
-                if(startsWith(servicePath, pagePath)) {
+                if (startsWith(servicePath, pagePath)) {
                     return Optional.of(cmsPage);
                 }
             }
@@ -172,7 +176,28 @@ public class ViewerPathBuilder {
 
     }
 
-    
+    /**
+     * 
+     * @param servicePath
+     * @return
+     * @throws DAOException
+     */
+    public static Optional<Campaign> getCampaign(URI servicePath) throws DAOException {
+        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
+        Collections.sort(campaigns, (c1, c2) -> Integer.compare(StringTools.getLength(c2.getPermalink()), StringTools.getLength(c1.getPermalink())));
+        for (Campaign campaign : campaigns) {
+            String pagePath = campaign.getPermalink();
+            if (StringUtils.isNotBlank(pagePath)) {
+                pagePath = pagePath.replaceAll("^\\/|\\/$", "").trim();
+                if (startsWith(servicePath, pagePath)) {
+                    return Optional.of(campaign);
+                }
+            }
+        }
+        return Optional.empty();
+
+    }
+
     /**
      * Gets the {@link PageType} that the given path refers to, if any
      * 
@@ -180,36 +205,37 @@ public class ViewerPathBuilder {
      * @return
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
-    	
-    	List<PageType> matchingTypes = EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
-    	matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
-    	
-    	return matchingTypes.stream().findFirst();
+
+        List<PageType> matchingTypes =
+                EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
+        matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
+
+        return matchingTypes.stream().findFirst();
 
     }
 
     /**
-     * Returns true if the first parts of the uri (separated by '/') are equal to all parts of the given string (separated by '/'). 
-     * If the string has more parts than the uri, false is returned
+     * Returns true if the first parts of the uri (separated by '/') are equal to all parts of the given string (separated by '/'). If the string has
+     * more parts than the uri, false is returned
      * 
      * @param uri
      * @param string
      * @return
      */
     public static boolean startsWith(URI uri, String string) {
-        if(uri != null) {
-        	if(uri.toString().endsWith("/") && !string.endsWith("/")) {
-        		string = string + "/";
-        	}
+        if (uri != null) {
+            if (uri.toString().endsWith("/") && !string.endsWith("/")) {
+                string = string + "/";
+            }
             String[] uriParts = uri.toString().split("/");
             String[] stringParts = string.toString().split("/");
-            if(uriParts.length < stringParts.length) {
+            if (uriParts.length < stringParts.length) {
                 //no match if the uri contains less path parts than the string to match
                 return false;
             }
             boolean match = true;
             for (int i = 0; i < stringParts.length; i++) {
-                if(!stringParts[i].equals(uriParts[i])) {
+                if (!stringParts[i].equals(uriParts[i])) {
                     match = false;
                 }
             }
@@ -218,21 +244,21 @@ public class ViewerPathBuilder {
             return false;
         }
     }
-    
+
     public static URI resolve(URI master, URI slave) {
         return resolve(master, slave.toString());
     }
-    
+
     public static URI resolve(URI master, String slave) {
         String base = master.toString();
-        if(base.endsWith("/")) {
-            base = base.substring(0, base.length()-1);
+        if (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
         }
-        if(StringUtils.isBlank(master.toString())) {
+        if (StringUtils.isBlank(master.toString())) {
             return URI.create(slave);
-        }else {            
+        } else {
             return URI.create(base + "/" + slave);
         }
     }
-    
+
 }

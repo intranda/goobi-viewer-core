@@ -505,7 +505,11 @@ public class ConfigurationBean implements Serializable {
     public boolean isDisplayTimeMatrix() {
         return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }
-
+    
+    public boolean isDisplayCrowdsourcingModuleLinks() {
+        return DataManager.getInstance().getConfiguration().isDisplayCrowdsourcingModuleLinks();
+    }
+    
     /**
      *
      * @return

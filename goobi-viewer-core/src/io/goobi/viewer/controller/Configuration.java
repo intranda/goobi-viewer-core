@@ -1520,6 +1520,14 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayTimeMatrix() {
         return this.getLocalBoolean("webGuiDisplay.displayTimeMatrix", false);
     }
+    
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isDisplayCrowdsourcingModuleLinks() {
+        return this.getLocalBoolean("webGuiDisplay.displayCrowdsourcingModuleLinks", false);
+    }
 
     /**
      * 
