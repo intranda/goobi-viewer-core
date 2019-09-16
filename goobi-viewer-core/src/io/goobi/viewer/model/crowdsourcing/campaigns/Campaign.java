@@ -330,9 +330,27 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * Returns the number of days between today and the end date for this campaign.
+     * Returns the number of whole days between today and the starting date for this campaign.
      * 
-     * @return days left between today and dateEnd
+     * @return whole days left between today and dateStart; -1 if no dateStart
+     * @should return -1 if no dateStart
+     * @should calculate days correctly
+     */
+    public int getDaysBeforeStart() {
+        if (dateStart == null) {
+            return -1;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate start = new DateTime(dateStart).toLocalDate();
+        return Math.max(0, Days.daysBetween(now, start).getDays());
+    }
+
+    /**
+     * Returns the number of whole days between today and the end date for this campaign. Because this method only returns the number of whole days
+     * left, its main purpose is for displaying the number of days to the user, and it shouldn't be used for access control.
+     * 
+     * @return whole days left between today and dateEnd; -1 if no dateEnd
      * @should return -1 if no dateEnd
      * @should calculate days correctly
      */
@@ -346,12 +364,52 @@ public class Campaign implements CMSMediaHolder {
         return Math.max(0, Days.daysBetween(now, end).getDays());
     }
 
+    /**
+     * 
+     * @return number of days left as string; infinity symbol if no dateEnd
+     */
     public String getDaysLeftAsString() {
         if (getDateEnd() != null) {
             int days = getDaysLeft();
             return Long.toString(days);
         }
         return "\u221e";
+    }
+
+    /**
+     * 
+     * @return true if dateStart lies after now; false otherwise
+     * @should return true if dateStart null
+     * @should return true if dateStart before now
+     * @should return false if dateStart after now
+     */
+    public boolean isHasStarted() {
+        if (dateStart == null) {
+            return true;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate start = new DateTime(dateStart).toLocalDate();
+
+        return now.isAfter(start);
+    }
+
+    /**
+     * 
+     * @return true if dateEnd lies before now; false otherwise
+     * @should return false if dateEnd null
+     * @should return false if dateEnd after now
+     * @should return true if dateEnd before now
+     */
+    public boolean isHasEnded() {
+        if (dateEnd == null) {
+            return false;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate end = new DateTime(dateEnd).toLocalDate();
+
+        return now.isAfter(end);
     }
 
     /**
