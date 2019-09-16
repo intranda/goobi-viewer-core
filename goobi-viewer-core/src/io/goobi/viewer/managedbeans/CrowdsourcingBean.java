@@ -313,13 +313,13 @@ public class CrowdsourcingBean implements Serializable {
             }
             if (success) {
                 selectedCampaign.setDirty(false);
-                Messages.info("crowdsoucing_campaignSaveSuccess");
+                Messages.info("admin__crowdsourcing_campaign_save_success");
                 setSelectedCampaign(selectedCampaign);
                 lazyModelCampaigns.update();
                 // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
                 updateActiveCampaigns();
             } else {
-                Messages.error("crowdsourcing_campaignSaveFailure");
+                Messages.error("admin__crowdsourcing_campaign_save_failure");
             }
         } finally {
         }
