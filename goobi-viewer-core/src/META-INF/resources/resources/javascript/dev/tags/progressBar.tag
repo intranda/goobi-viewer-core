@@ -14,14 +14,13 @@
 	
 	this.on("mount", function() {
 	    let bar = this.root.querySelector(".goobi-progress-bar");
-	    this.totalBarWidth = bar.offsetWidth;
-	    
+	    this.totalBarWidth = bar.getBoundingClientRect().width;
 		this.update();
 	})
 
 	getRelativeWidth(value) {
 		    let barWidth = value/this.opts.total*this.totalBarWidth;
-		    return Math.floor(barWidth) + "px"; 
+		    return barWidth + "px"; 
 	}
 	
 	loaded() {

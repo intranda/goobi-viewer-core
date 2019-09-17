@@ -1007,14 +1007,13 @@ riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="go
 
 	this.on("mount", function() {
 	    let bar = this.root.querySelector(".goobi-progress-bar");
-	    this.totalBarWidth = bar.offsetWidth;
-
+	    this.totalBarWidth = bar.getBoundingClientRect().width;
 		this.update();
 	})
 
 	this.getRelativeWidth = function(value) {
 		    let barWidth = value/this.opts.total*this.totalBarWidth;
-		    return Math.floor(barWidth) + "px";
+		    return barWidth + "px";
 	}.bind(this)
 
 	this.loaded = function() {
