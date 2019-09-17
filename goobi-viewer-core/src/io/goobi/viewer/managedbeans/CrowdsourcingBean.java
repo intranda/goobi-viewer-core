@@ -413,6 +413,9 @@ public class CrowdsourcingBean implements Serializable {
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
+        if(this.targetCampaign != targetCampaign) {            
+            resetTarget();
+        }
         this.targetCampaign = targetCampaign;
     }
 
@@ -440,7 +443,7 @@ public class CrowdsourcingBean implements Serializable {
 
     public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE);
+            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE, getTargetIdentifier());
             setTargetIdentifier(pi);
 
         }
@@ -448,10 +451,17 @@ public class CrowdsourcingBean implements Serializable {
 
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW);
+            String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW, getTargetIdentifier());
             setTargetIdentifier(pi);
 
         }
+    }
+    
+    /**
+     * removes the target identifier (pi) from the bean, so that pi can be targeted again by random target resolution
+     */
+    public void resetTarget() {
+        setTargetIdentifier(null);
     }
 
     public String forwardToAnnotationTarget() {

@@ -848,6 +848,7 @@
 		<pattern value="/campaigns/"/>
         <view-id value="/campaigns.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{crowdsourcingBean.resetTarget}</action>
 	</url-mapping>
     <url-mapping id="crowdCampaignAnnotate1">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/"/>

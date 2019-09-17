@@ -857,15 +857,17 @@ public class Campaign implements CMSMediaHolder {
      * Get the targetIdentifier to a random PI from the Solr query result list.
      * 
      * @param status
+     * @param  
      * 
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String getRandomizedTarget(CampaignRecordStatus status) throws PresentationException, IndexUnreachableException {
+    public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
         List<String> pis = results.stream()
                 .filter(doc -> doc.getFieldValue(SolrConstants.PI) != null)
                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
                 .collect(Collectors.toList());
         if (pis.isEmpty()) {
