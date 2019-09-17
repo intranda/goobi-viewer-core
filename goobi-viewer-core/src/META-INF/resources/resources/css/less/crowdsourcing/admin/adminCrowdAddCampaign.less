@@ -1,9 +1,37 @@
 #createCampaign {
 	
+	h2 {
+		.btn {
+			margin-left: 25px;
+		}
+	}
+	
+   .edit-content-page {
+   
+   		&.edit-content-page-content {
+   			padding-bottom: 30px;
+  			border-bottom: 1px dotted #ddd; 
+   		}
+   		&.edit-content-page-single-question {
+   			padding: 10px;
+		    background-color: #fafafa;
+		    border: 1px solid #e5e5e5;
+		    margin-bottom: 5px;
+/* 		    TODO: letztes Element ohne margin-bottom */
+   		}
+   }
+
 	.create-page-right {
+		margin-bottom: 20px;
+	
+		#cmsCreatePageMetadataItemWrapper {
+			border: 1px solid #ccc;
+		}
 	
 		.campaign-statistics {
-				flex-wrap: wrap;
+			border: 1px solid #ccc;
+			background-color: #fff;
+			flex-wrap: wrap;
 			&__text {
 				width: 100%;
 				padding: 10px;

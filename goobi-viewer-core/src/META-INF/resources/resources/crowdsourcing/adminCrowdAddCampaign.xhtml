@@ -203,15 +203,18 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
-                                        <h2>#{msg.admin__crowdsourcing_questions}</h2>
+                                           
+                                        <div class="edit-content-page edit-content-page-questions">       
+                                        <h2>#{msg.admin__crowdsourcing_questions}
                                         
-                                        <!-- Add new question link -->
-                                        <h:commandButton action="#{crowdsourcingBean.addNewQuestionAction}" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
-                                        </h:commandButton>
+	                                        <!-- Add new question link -->
+	                                        <h:commandButton styleClass="btn btn--default" action="#{crowdsourcingBean.addNewQuestionAction}" value="#{msg.add}" title="#{msg.add}" alt="#{msg.add}">
+	                                        </h:commandButton>
+                                        </h2>
+                                        
   
                                         <ui:repeat var="question" value="#{crowdsourcingBean.selectedCampaign.questions}" varStatus="status">
-                                            <div class="edit-content-page edit-content-page-content">
+                                            <div class="edit-content-page edit-content-page-single-question">
                                             
                                                 <!-- TEXT -->
                                                 <div class="cms-module__option-group">
@@ -310,12 +313,12 @@
                                         </ui:repeat>
                                                         
                                                     </div>
-                                                </h:panelGroup>
+                        				 </div>   
+                                       </h:panelGroup>
 
                                                 <!-- SIDEBAR EDITOR TAB -->
              <!--                               <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" /> -->
                                             </div>
-                         
                                         </div>
                                         
                                         <br />
