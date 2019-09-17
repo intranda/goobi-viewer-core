@@ -16,16 +16,21 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -34,6 +39,8 @@ import javax.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import io.goobi.viewer.model.security.user.User;
 
 /**
  * Annotation status of a record in the context of a particular campaign.
@@ -47,15 +54,14 @@ public class CampaignRecordStatistic implements Serializable {
         ANNOTATE,
         REVIEW,
         FINISHED;
-        
-        
+
         public String getName() {
             return this.name();
         }
-        
+
         public static CampaignRecordStatus forName(String name) {
             for (CampaignRecordStatus status : CampaignRecordStatus.values()) {
-                if(status.getName().equalsIgnoreCase(name)) {
+                if (status.getName().equalsIgnoreCase(name)) {
                     return status;
                 }
             }
@@ -92,6 +98,16 @@ public class CampaignRecordStatistic implements Serializable {
     @Column(name = "status", nullable = false)
     @JsonIgnore
     private CampaignRecordStatus status;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cs_campaign_record_statistic_annotators", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> annotators = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cs_campaign_record_statistic_reviewers", joinColumns = @JoinColumn(name = "campaign_record_statistic_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> reviewers = new ArrayList<>();
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -212,5 +228,33 @@ public class CampaignRecordStatistic implements Serializable {
      */
     public void setStatus(CampaignRecordStatus status) {
         this.status = status;
+    }
+
+    /**
+     * @return the annotators
+     */
+    public List<User> getAnnotators() {
+        return annotators;
+    }
+
+    /**
+     * @param annotators the annotators to set
+     */
+    public void setAnnotators(List<User> annotators) {
+        this.annotators = annotators;
+    }
+
+    /**
+     * @return the reviewers
+     */
+    public List<User> getReviewers() {
+        return reviewers;
+    }
+
+    /**
+     * @param reviewers the reviewers to set
+     */
+    public void setReviewers(List<User> reviewers) {
+        this.reviewers = reviewers;
     }
 }

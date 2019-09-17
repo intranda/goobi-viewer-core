@@ -306,7 +306,12 @@
                         <!-- CROWDSOURCING CAMPAIGN -->
                         <ui:fragment>
                             <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
-                            <!-- TODO -->
+                                <li class="image-controls__option" style="padding-top:5px; width: 16px;">
+                                    <a class="btn btn--icon" data-toggle="tooltip" data-placement="bottom"
+                                        data-original-title="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}">
+                                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+                                    </a>
+                                </li>
                             </ui:repeat>
                         </ui:fragment>
                     
