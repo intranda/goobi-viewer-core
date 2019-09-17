@@ -279,6 +279,26 @@ public class CrowdsourcingBean implements Serializable {
 
         return ret;
     }
+    
+    /**
+     * Check if the given user is allowed access to the given campaign from a rights management standpoint alone.
+     * If the user is null, access is granted for public campaigns only, otherwise access is granted if the user
+     * has the appropriate rights
+     * 
+     * @param user
+     * @param campaign
+     * @return
+     * @throws DAOException
+     */
+    public boolean isAllowed(User user, Campaign campaign) throws DAOException {
+        if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
+            return true;
+        } else if(user != null) {
+            return !user.getAllowedCrowdsourcingCampaigns(Collections.singletonList(campaign)).isEmpty();
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
@@ -501,6 +521,28 @@ public class CrowdsourcingBean implements Serializable {
             return getTargetCampaign().getRecordStatus(getTargetIdentifier());
         }
         return null;
+    }
+    
+    public String handleInvalidTarget() {
+        if(StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
+            return "pretty:crowdCampaigns";
+        } else if(getTargetCampaign() == null) {
+            return "pretty:crowdCampaigns";
+        } else if(CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
+            return "pretty:crowdCampaigns";
+        } else if(getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
+            return "pretty:crowdCampaigns";
+        } else
+            try {
+                if(userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
+                    return "pretty:crowdCampaigns";
+                } else {
+                    return "";
+                }
+            } catch (DAOException e) {
+                logger.error(e.toString(), e);
+                return "";
+            }
     }
 
     /**
