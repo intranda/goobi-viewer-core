@@ -18,6 +18,7 @@ package io.goobi.viewer.servlets.rest.crowdsourcing;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +47,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
@@ -97,8 +99,14 @@ public class CampaignItemResource {
     public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws URISyntaxException, DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+        
+        User user = null;
+        Long userId = User.getId(item.getCreatorURI());
+        if(userId != null) {
+            user = DataManager.getInstance().getDao().getUser(userId);
+        }
         if(status != null && campaign != null) {
-            campaign.setRecordStatus(pi, status);
+            campaign.setRecordStatus(pi, status, Optional.ofNullable(user));
             DataManager.getInstance().getDao().updateCampaign(campaign);
         }
     }

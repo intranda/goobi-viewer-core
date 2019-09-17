@@ -308,15 +308,6 @@ public class Campaign implements CMSMediaHolder {
      * @throws DAOException
      */
     public long getContributorCount() throws DAOException {
-        //        List<Long> questionIds = new ArrayList<>(questions.size());
-        //        for (Question q : questions) {
-        //            if (q.getId() != null) {
-        //                questionIds.add(q.getId());
-        //            }
-        //        }
-        //
-        //        return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
-
         Set<Long> userIds = new HashSet<>();
         for (String pi : statistics.keySet()) {
             for (User u : statistics.get(pi).getAnnotators()) {
@@ -900,12 +891,18 @@ public class Campaign implements CMSMediaHolder {
      * @param pi
      * @param status
      */
-    public void setRecordStatus(String pi, CampaignRecordStatus status) {
+    public void setRecordStatus(String pi, CampaignRecordStatus status, Optional<User> user) {
         CampaignRecordStatistic statistic = statistics.get(pi);
         if (statistic == null) {
             statistic = new CampaignRecordStatistic();
             statistic.setOwner(this);
             statistic.setDateCreated(new Date());
+            statistic.setStatus(CampaignRecordStatus.ANNOTATE);
+        }
+        if(CampaignRecordStatus.ANNOTATE.equals(statistic.getStatus())) {
+            user.ifPresent(statistic::addAnnotater);            
+        } else {
+            user.ifPresent(statistic::addReviewer);            
         }
         statistic.setPi(pi);
         statistic.setStatus(status);

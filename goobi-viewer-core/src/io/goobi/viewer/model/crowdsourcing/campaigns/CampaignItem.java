@@ -22,6 +22,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
@@ -36,6 +37,8 @@ public class CampaignItem {
     private URI source;
     private Campaign campaign;
     private CampaignRecordStatus recordStatus = null;
+    @JsonProperty("creator")
+    private URI creatorURI = null;
 
     /**
      * @return the source
@@ -101,6 +104,20 @@ public class CampaignItem {
 
     public boolean isInReview() {
         return CampaignRecordStatus.REVIEW.equals(getRecordStatus());
+    }
+    
+    /**
+     * @return the creatorURI
+     */
+    public URI getCreatorURI() {
+        return creatorURI;
+    }
+    
+    /**
+     * @param creatorURI the creatorURI to set
+     */
+    public void setCreatorURI(URI creatorURI) {
+        this.creatorURI = creatorURI;
     }
     
 }

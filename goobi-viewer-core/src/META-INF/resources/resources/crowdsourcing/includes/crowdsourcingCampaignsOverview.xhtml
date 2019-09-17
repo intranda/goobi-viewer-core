@@ -33,13 +33,19 @@
 					        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
 					</ui:fragment>
 				</div>
-				<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
-				<!-- Future campaign: days left counter -->
-				<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
-                    <f:param value="#{campaign.daysBeforeStart}" />
-                </h:outputFormat>
-                <!-- Current campaign: motivational message-->
-                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
+				<div  class="crowdsourcing-campaigns-overview__campaign__statistics">
+					<ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
+						<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
+					</ui:fragment>
+					<!-- Future campaign: days left counter -->
+					<span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
+						<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
+		                    <f:param value="#{campaign.daysBeforeStart}" />
+		                </h:outputFormat>
+		                <!-- Current campaign: motivational message-->
+		                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
+					</span>
+				</div>
 			</div>
 		</ui:repeat>
 	</h:form>

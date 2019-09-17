@@ -1389,6 +1389,9 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     public static Long getId(URI idAsURI) {
+        if(idAsURI == null) {
+            return null;
+        }
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
             String idString = matcher.group(1);

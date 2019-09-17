@@ -27,7 +27,7 @@
 			</div>
 			<div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate">
 <!-- 				<button onclick="{resetItems}" class="options-wrapper__option" id="restart">{Crowdsourcing.translate("action__restart")}</button> -->
-				<button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<button onclick="{saveAnnotations}" class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
 				<button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
@@ -135,6 +135,11 @@
 	    })
 	}
 	
+	saveAnnotations() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("ANNOTATE"));
+	}
+	
 	submitForReview() {
 	    this.saveToServer()
 	    .then(() => this.setStatus("REVIEW"))
@@ -143,14 +148,12 @@
 	}
 
 	acceptReview() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("FINISHED"))
+	    this.setStatus("FINISHED")
 	    .then(() => this.skipItem());
 	}
 
 	rejectReview() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("ANNOTATE"))
+	    this.setStatus("ANNOTATE")
 	    .then(() => this.skipItem());
 	}
 	
@@ -161,7 +164,8 @@
 	
 	setStatus(status) {
 	    let body = {
-	            recordStatus: status
+	            recordStatus: status,
+	            creator: this.item.getCreator().id 
 	    }
 	    return fetch(this.itemSource, {
             method: "PUT",

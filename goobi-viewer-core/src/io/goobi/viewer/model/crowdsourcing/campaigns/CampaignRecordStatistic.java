@@ -257,4 +257,16 @@ public class CampaignRecordStatistic implements Serializable {
     public void setReviewers(List<User> reviewers) {
         this.reviewers = reviewers;
     }
+    
+    public void addAnnotater(User user) {
+        if(user != null && !getAnnotators().contains(user)) {
+            getAnnotators().add(user);
+        }
+    }
+    
+    public void addReviewer(User user) {
+        if(user != null && !getReviewers().contains(user)) {
+            getReviewers().add(user);
+        }
+    }
 }
