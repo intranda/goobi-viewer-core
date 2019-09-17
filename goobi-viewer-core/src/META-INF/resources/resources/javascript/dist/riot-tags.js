@@ -156,7 +156,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveToServer}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question in this.item.questions}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveAnnotations}" class="options-wrapper__option" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
 	this.annotationSource = this.itemSource + "/annotations";
@@ -251,6 +251,11 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	    })
 	}.bind(this)
 
+	this.saveAnnotations = function() {
+	    this.saveToServer()
+	    .then(() => this.setStatus("ANNOTATE"));
+	}.bind(this)
+
 	this.submitForReview = function() {
 	    this.saveToServer()
 	    .then(() => this.setStatus("REVIEW"))
@@ -259,14 +264,12 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 	this.acceptReview = function() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("FINISHED"))
+	    this.setStatus("FINISHED")
 	    .then(() => this.skipItem());
 	}.bind(this)
 
 	this.rejectReview = function() {
-	    this.saveToServer()
-	    .then(() => this.setStatus("ANNOTATE"))
+	    this.setStatus("ANNOTATE")
 	    .then(() => this.skipItem());
 	}.bind(this)
 
@@ -277,7 +280,8 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 
 	this.setStatus = function(status) {
 	    let body = {
-	            recordStatus: status
+	            recordStatus: status,
+	            creator: this.item.getCreator().id
 	    }
 	    return fetch(this.itemSource, {
             method: "PUT",
@@ -996,10 +1000,10 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
     }.bind(this)
 
 });
-riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar" riot-style="width: {getRelativeWidth(value)}; background-color:{colors[index]}"></div></div></div>', '', '', function(opts) {
+riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="goobi-progress-bar"><div each="{value, index in this.values}" class="goobi-progress-bar__bar {styleClasses[index]}" riot-style="width: {getRelativeWidth(value)};"></div></div></div>', '', '', function(opts) {
 	this.values = JSON.parse(this.opts.values);
-	this.colors = JSON.parse(this.opts.colors);
-	console.log("init progressbar ", this.values, this.colors);
+	this.styleClasses = JSON.parse(this.opts.styleclasses);
+	console.log("init progressbar ", this.values, this.styleClasses);
 
 	this.on("mount", function() {
 	    let bar = this.root.querySelector(".goobi-progress-bar");
