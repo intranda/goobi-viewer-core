@@ -255,6 +255,7 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> normDataUrl,
             String groupType, Locale locale) {
+        // logger.trace("setParamValue: {}", label);
         if (inValues == null) {
             throw new IllegalArgumentException("inValues may not be null");
         }
@@ -614,6 +615,7 @@ public class Metadata implements Serializable {
                     }
                     count++;
                 }
+                // logger.trace("GROUP QUERY END");
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }

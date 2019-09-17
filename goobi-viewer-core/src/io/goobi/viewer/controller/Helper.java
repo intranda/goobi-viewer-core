@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -77,6 +78,8 @@ import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -94,7 +97,10 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
 import io.goobi.viewer.modules.IModule;
 
@@ -117,6 +123,7 @@ public class Helper {
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
+    public static final String SUFFIX_ANNOTATION = "_annotations";
     public static final String SUFFIX_CMS = "_cms";
 
     private static final int HTTP_TIMEOUT = 30000;
@@ -511,24 +518,31 @@ public class Helper {
         }
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
-        File fulltextDir =
-                new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
-        File altoDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
 
-        // If the same record is already being indexed, use an alternative naming scheme
-        File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
-        if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists()) {
-            logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme.toString());
-            int iteration = 0;
-            // Just checking for the presence of the record XML file at this
-            // point, because this method is synchronized and no two
-            // instances should be running at the same time.
-            while ((recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml"))
-                    .exists()) {
-                iteration++;
+        {
+            // If the same record is already being indexed, use an alternative naming scheme
+            File fulltextDir =
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
+            File altoDir =
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
+            File annotationsDir =
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
+            File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
+
+            File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
+            if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists() || annotationsDir.exists() || cmsDir.exists()) {
+                logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme.toString());
+                int iteration = 0;
+                // Just checking for the presence of the record XML file at this
+                // point, because this method is synchronized and no two
+                // instances should be running at the same time.
+                while ((recordXmlFileInHotfolder =
+                        new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml")).exists()) {
+                    iteration++;
+                }
+                sbNamingScheme.append('#').append(iteration);
+                logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
             }
-            sbNamingScheme.append('#').append(iteration);
-            logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
         }
 
         // Export related CMS page contents
@@ -542,6 +556,33 @@ public class Helper {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
+
+        // Export annotations
+        List<CampaignRecordStatistic> statistics =
+                DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
+        if (!statistics.isEmpty()) {
+            // TODO only export annotations that were created via a campaign where this record is marked as finished
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+            if (!annotations.isEmpty()) {
+                logger.debug("Found {} annotations for this record.", annotations.size());
+                File annotationDir =
+                        new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
+                for (PersistentAnnotation annotation : annotations) {
+                    try {
+                        String json = annotation.getAsAnnotation().toString();
+                        String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
+                        FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(Helper.DEFAULT_ENCODING));
+                    } catch (JsonParseException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (JsonMappingException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
         // Module augmentations
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
@@ -1121,6 +1162,5 @@ public class Helper {
     public static boolean parseBoolean(String text) {
         return parseBoolean(text, false);
     }
-    
-    
+
 }

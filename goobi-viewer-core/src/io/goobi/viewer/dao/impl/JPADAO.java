@@ -64,6 +64,8 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
@@ -3089,6 +3091,35 @@ public class JPADAO implements IDAO {
                 return o;
             } catch (EntityNotFoundException e) {
                 return null;
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCampaignStatisticsForRecord(java.lang.String, io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CampaignRecordStatus status) throws DAOException {
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            try {
+                String query = "SELECT a FROM CampaignRecordStatistic a WHERE a.pi = :pi";
+                if (status != null) {
+                    query += " AND a.status = :status";
+                }
+                Query q = em.createQuery(query);
+                q.setParameter("pi", pi);
+                if (status != null) {
+                    q.setParameter("status", status);
+                }
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                List<CampaignRecordStatistic> list = q.getResultList();
+                return list;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
             }
         }
     }

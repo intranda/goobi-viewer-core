@@ -35,6 +35,8 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
@@ -382,6 +384,8 @@ public interface IDAO {
     
     public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
+    
+    public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CampaignRecordStatus status) throws DAOException;
 
     public boolean addCampaign(Campaign campaign) throws DAOException;
 

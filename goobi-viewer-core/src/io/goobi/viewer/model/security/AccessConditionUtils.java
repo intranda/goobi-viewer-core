@@ -623,7 +623,7 @@ public class AccessConditionUtils {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
         }
-        logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder());
+        // logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder());
         return checkAccessPermissionByIdentifierAndPageOrder(page, IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, request);
     }
 

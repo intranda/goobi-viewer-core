@@ -802,7 +802,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getImageWidth() / 100;
     }
 
-    public String getImageUrl() throws ViewerConfigurationException {
+    public String getImageUrl() {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
@@ -812,7 +812,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 Rotation.NONE, Colortype.DEFAULT, format);
     }
 
-    public String getImageUrl(int size) throws ViewerConfigurationException {
+    public String getImageUrl(int size) {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
@@ -1203,7 +1203,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
-            logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
+            // logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
             return accessPermissionPdf;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
