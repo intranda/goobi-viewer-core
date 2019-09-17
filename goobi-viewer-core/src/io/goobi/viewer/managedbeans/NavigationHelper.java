@@ -305,7 +305,7 @@ public class NavigationHelper implements Serializable {
         String urlActionParam = CampaignRecordStatus.REVIEW.equals(status) ? "review" : "annotate";
         setCurrentPage("crowdsourcingAnnotation", false, true);
         if(campaign != null) {            
-            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
+            updateBreadcrumbs(new LabeledLink(campaign.getMenuTitleOrElseTitle(getLocaleString(), true), BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/campaigns/" + campaign.getId() + "/" + urlActionParam + "/",
                     NavigationHelper.WEIGHT_CROWDSOURCING_CAMPAIGN));
             
         }

@@ -357,6 +357,19 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * @param localeString
+     * @param b
+     * @return
+     */
+    public String getMenuTitleOrElseTitle(String lang, boolean useFallback) {
+        String title = getMenuTitle(lang, useFallback);
+        if (StringUtils.isBlank(title)) {
+            title = getTitle(lang, useFallback);
+        }
+        return title;
+    }
+    
+    /**
      * 
      * @param title
      * @should set value correctly
@@ -801,5 +814,7 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
+
+
 
 }
