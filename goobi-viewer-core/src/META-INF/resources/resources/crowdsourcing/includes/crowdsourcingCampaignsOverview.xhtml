@@ -10,45 +10,45 @@
     <div class="crowdsourcing-campaigns-overview">
     <h:form>
 		<ui:repeat var="campaign" value="#{crowdsourcingBean.getAllowedCampaigns(userBean.user)}">
-			<div class="crowdsourcing-campaigns-overview__campaign">
-				<ui:fragment rendered="#{campaign.hasMediaItem()}">
-					<div class="crowdsourcing-campaigns-overview__campaign__image">
-						<img src="#{campaign.mediaItem.iconURI}" />
-					</div>
-				</ui:fragment>
-				<div class="crowdsourcing-campaigns-overview__campaign__text">
-					<h3 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.getTitle(navigationHelper.locale, true)}</h3>
-					<div class="crowdsourcing-campaigns-overview__campaign__text__description">
-						#{campaign.description}
-					</div>
-				</div>
-				<div class="crowdsourcing-campaigns-overview__campaign__actions">
-				    <!-- Current campaigns only -->
-				    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
-					    <h:commandLink rendered="#{campaign.getNumRecordsToAnnotate() > 0 and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
-					        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
-					        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
-					    <h:commandLink rendered="#{campaign.getNumRecordsForStatus('REVIEW') > 0 and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
-					        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
-					        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+			<ui:fragment rendered="#{!campaign.hasEnded}">
+				<div class="crowdsourcing-campaigns-overview__campaign">
+					<ui:fragment rendered="#{campaign.hasMediaItem()}">
+						<div class="crowdsourcing-campaigns-overview__campaign__image">
+							<img src="#{campaign.mediaItem.iconURI}" />
+						</div>
 					</ui:fragment>
-				</div>
-				<ui:fragment rendered="#{!campaign.hasEnded}">
-					<div class="crowdsourcing-campaigns-overview__campaign__statistics">
-						<ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
-							<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
-						</ui:fragment>
-						<!-- Future campaign: days left counter -->
-						<span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
-							<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
-			                    <f:param value="#{campaign.daysBeforeStart}" />
-			                </h:outputFormat>
-			                <!-- Current campaign: motivational message-->
-			                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
-						</span>
+					<div class="crowdsourcing-campaigns-overview__campaign__text">
+						<h3 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.getTitle(navigationHelper.locale, true)}</h3>
+						<div class="crowdsourcing-campaigns-overview__campaign__text__description">
+							#{campaign.description}
+						</div>
 					</div>
-				</ui:fragment>
-			</div>
+					<div class="crowdsourcing-campaigns-overview__campaign__actions">
+					    <!-- Current campaigns only -->
+					    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
+						    <h:commandLink rendered="#{campaign.getNumRecordsToAnnotate() > 0 and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
+						        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
+						        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
+						    <h:commandLink rendered="#{campaign.getNumRecordsForStatus('REVIEW') > 0 and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
+						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
+						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+						</ui:fragment>
+					</div>
+						<div class="crowdsourcing-campaigns-overview__campaign__statistics">
+							<ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
+								<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
+							</ui:fragment>
+							<!-- Future campaign: days left counter -->
+							<span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
+								<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
+				                    <f:param value="#{campaign.daysBeforeStart}" />
+				                </h:outputFormat>
+				                <!-- Current campaign: motivational message-->
+				                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
+							</span>
+						</div>
+				</div>
+			</ui:fragment>
 		</ui:repeat>
 	</h:form>
 	<script>
