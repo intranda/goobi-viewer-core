@@ -1246,6 +1246,9 @@
 		<!-- displayTimeline: if false, time matrix link is hidden (default is 
 			false) -->
 		<displayTimeMatrix>false</displayTimeMatrix>
+		
+		<!-- displayCrowdsourcingModuleLinks: Temporary switch to enable crowdsourcing transcription links (default is false) -->
+		<displayCrowdsourcingModuleLinks>false</displayCrowdsourcingModuleLinks>
 	</webGuiDisplay>
 
 	<!-- ##### RSS-FEED CONFIGURATION ##### -->

@@ -11,16 +11,18 @@
 		<div
 			class="campaign-statistics__text">
 			<dl>
-				<dt>#{msg.label__progress}</dt>
+				<dt>#{msg.label__crowdsourcing_campaign_progress}</dt>
 				<dd>#{campaign.progress}%</dd>
-				<dt>#{msg.label__total_items}</dt>
+				<dt>#{msg.label__crowdsourcing_campaign_total_items}</dt>
 				<dd>#{campaign.numRecords}</dd>
-				<dt>#{msg.label__finished_items}</dt>
+				<dt>#{msg.label__crowdsourcing_campaign_finished_items}</dt>
 				<dd>#{campaign.getNumRecordsForStatus('FINISHED')}</dd>
-				<dt>#{msg.label__items_in_review}</dt>
+				<dt>#{msg.label__crowdsourcing_campaign_items_in_review}</dt>
 				<dd>#{campaign.getNumRecordsForStatus('REVIEW')}</dd>
+				<dt>#{msg.label__crowdsourcing_campaign_contributor_count}</dt>
+                <dd>#{campaign.contributorCount}</dd>
 				<ui:fragment rendered="#{campaign.daysLeft >= 0}">
-					<dt>#{msg.label__days_left}</dt>
+					<dt>#{msg.label__crowdsourcing_campaign_days_left}</dt>
 					<dd>#{campaign.daysLeftAsString}</dd>
 				</ui:fragment>
 			</dl>

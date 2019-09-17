@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
@@ -72,6 +73,8 @@ public class ViewerPath {
      * The {@link CMSPage} referred to by the paths {@link #pagePath}. Is null if no CMSPage is referenced
      */
     private CMSPage cmsPage = null;
+
+    private Campaign campaign = null;
 
     /**
      * Creates an empty {@link ViewerPath}. Usually this does not need to be called directly. Instead a ViewerPath should be created by calling
@@ -178,7 +181,7 @@ public class ViewerPath {
                         .map(pageName -> URI.create(pageName));
             } catch (DAOException e) {
             }
-            if (!path.isPresent() &&  StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
+            if (!path.isPresent() && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
                 path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", "")));
             }
         }
@@ -255,9 +258,8 @@ public class ViewerPath {
     public boolean matches(PageType pageType) {
         if (getPageType() != null) {
             return getPageType().matches(getPagePath());
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -272,6 +274,20 @@ public class ViewerPath {
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;
+    }
+
+    /**
+     * @return the campaign
+     */
+    public Campaign getCampaign() {
+        return campaign;
+    }
+
+    /**
+     * @param campaign the campaign to set
+     */
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
     }
 
     /**

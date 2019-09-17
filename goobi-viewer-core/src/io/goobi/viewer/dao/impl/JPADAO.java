@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -2530,7 +2532,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean updateFromDatabase(Long id, Class clazz) {
         Object o = null;
         try {
@@ -2997,7 +2999,6 @@ public class JPADAO implements IDAO {
             return Collections.emptyList();
         }
     }
-    
 
     /**
      * @see io.goobi.viewer.dao.IDAO#getCampaignCount(java.util.Map)
@@ -3005,11 +3006,11 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCampaignCount(Map<String, String> filters) throws DAOException {
-        if(filters != null)
-        logger.trace("getCampaignCount: {}", filters.get("visibility"));
+        if (filters != null)
+            logger.trace("getCampaignCount: {}", filters.get("visibility"));
         return getRowCount("Campaign", null, filters);
     }
-    
+
     /**
      * @see io.goobi.viewer.dao.IDAO#getCampaigns(int, int, java.lang.String, boolean, java.util.Map)
      * @should filter campaigns correctly
@@ -3051,7 +3052,6 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
 
     /**
      * @see io.goobi.viewer.dao.IDAO#getCampaign(java.lang.Long)
@@ -3073,7 +3073,6 @@ public class JPADAO implements IDAO {
         }
 
     }
-    
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getQuestion(java.lang.Long)
@@ -3093,7 +3092,6 @@ public class JPADAO implements IDAO {
             }
         }
     }
-
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
@@ -3790,33 +3788,35 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaign(java.lang.Long)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a";
-        if(!campaign.getQuestions().isEmpty()) {    
+        if (!campaign.getQuestions().isEmpty()) {
             query += " WHERE (";
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+                query += " a.generatorId = :questionId_" + question.getId() + " OR";
             }
-            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
         Query q = em.createQuery(query);
-        for (Question question : campaign.getQuestions()) {            
-            q.setParameter("questionId_"  + question.getId(), question.getId());
+        for (Question question : campaign.getQuestions()) {
+            q.setParameter("questionId_" + question.getId(), question.getId());
         }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
     /**
      * Get all annotations associated with the work of the given pi
      * 
      * @param pi
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException {
         preQuery();
@@ -3831,40 +3831,41 @@ public class JPADAO implements IDAO {
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForTarget(java.lang.String, java.util.Optional)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        if(page !=null) {
+        if (page != null) {
             query += " AND a.targetPageOrder = :page";
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
         Query q = em.createQuery(query);
         q.setParameter("pi", pi);
-        if(page !=null) {
+        if (page != null) {
             q.setParameter("page", page);
         }
 
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
+
     @Override
     public long getAnnotationCountForTarget(String pi, Integer page) throws DAOException {
         preQuery();
         String query = "SELECT COUNT(a) FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        if(page !=null) {
+        if (page != null) {
             query += " AND a.targetPageOrder = :page";
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
         Query q = em.createQuery(query);
         q.setParameter("pi", pi);
-        if(page !=null) {
+        if (page != null) {
             q.setParameter("page", page);
         }
-    
+
         Object o = q.getResultList().get(0);
         // MySQL
         if (o instanceof BigInteger) {
@@ -3873,55 +3874,103 @@ public class JPADAO implements IDAO {
         // H2
         return (long) q.getResultList().get(0);
     }
-    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getCampaignContributorCount(java.utils.List)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public long getCampaignContributorCount(List<Long> questionIds) throws DAOException {
+        if (questionIds == null) {
+            throw new IllegalArgumentException("questionIds may not be null");
+        }
+        if (questionIds.isEmpty()) {
+            return 0;
+        }
+
+        StringBuilder sbSubQuery = new StringBuilder();
+        for (long questionId : questionIds) {
+            if (sbSubQuery.length() > 0) {
+                sbSubQuery.append(" OR ");
+            }
+            sbSubQuery.append("a.generatorId = :generatorId" + questionId);
+        }
+
+        Set<Long> creators = new HashSet<>();
+        Set<Long> reviewers = new HashSet<>();
+        {
+            preQuery();
+            String query = "SELECT DISTINCT a.creatorId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
+            Query q = em.createQuery(query);
+            for (long questionId : questionIds) {
+                q.setParameter("generatorId" + questionId, questionId);
+            }
+            creators.addAll(q.getResultList());
+        }
+        {
+            preQuery();
+            String query = "SELECT DISTINCT a.reviewerId FROM PersistentAnnotation a WHERE (" + sbSubQuery.toString() + ")";
+            Query q = em.createQuery(query);
+            for (long questionId : questionIds) {
+                q.setParameter("generatorId" + questionId, questionId);
+            }
+            reviewers.addAll(q.getResultList());
+        }
+        creators.addAll(reviewers);
+
+        return creators.size();
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        if(!campaign.getQuestions().isEmpty()) {    
+        if (!campaign.getQuestions().isEmpty()) {
             query += " AND (";
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+                query += " a.generatorId = :questionId_" + question.getId() + " OR";
             }
-            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
         Query q = em.createQuery(query);
-        for (Question question : campaign.getQuestions()) {            
-            q.setParameter("questionId_"  + question.getId(), question.getId());
+        for (Question question : campaign.getQuestions()) {
+            q.setParameter("questionId_" + question.getId(), question.getId());
         }
         q.setParameter("pi", pi);
 
-         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndTarget(java.lang.Long, java.lang.String, java.util.Optional)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException {
         preQuery();
         String query = "SELECT a FROM PersistentAnnotation a WHERE a.targetPI = :pi";
-        if(page !=null) {
+        if (page != null) {
             query += " AND a.targetPageOrder = :page";
         } else {
             query += " AND a.targetPageOrder IS NULL";
         }
-        if(!campaign.getQuestions().isEmpty()) {    
+        if (!campaign.getQuestions().isEmpty()) {
             query += " AND (";
             for (Question question : campaign.getQuestions()) {
-                query += " a.generatorId = :questionId_"  + question.getId() + " OR";
+                query += " a.generatorId = :questionId_" + question.getId() + " OR";
             }
-            query = query.substring(0,query.length()-2);    //remove trailing "OR"
+            query = query.substring(0, query.length() - 2); //remove trailing "OR"
             query += " )";
         }
         Query q = em.createQuery(query);
-        for (Question question : campaign.getQuestions()) {            
-            q.setParameter("questionId_"  + question.getId(), question.getId());
+        for (Question question : campaign.getQuestions()) {
+            q.setParameter("questionId_" + question.getId(), question.getId());
         }
         q.setParameter("pi", pi);
-        if(page !=null) {
+        if (page != null) {
             q.setParameter("page", page);
         }
 
@@ -3934,7 +3983,7 @@ public class JPADAO implements IDAO {
      */
     @Override
     public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException {
-        if(getAnnotation(annotation.getId()) != null) {
+        if (getAnnotation(annotation.getId()) != null) {
             return false;
         }
         preQuery();
@@ -3962,7 +4011,7 @@ public class JPADAO implements IDAO {
             em.remove(o);
             em.getTransaction().commit();
             return true;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         } finally {
             em.close();
@@ -3981,7 +4030,7 @@ public class JPADAO implements IDAO {
             em.merge(annotation);
             em.getTransaction().commit();
             return true;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         } finally {
             em.close();

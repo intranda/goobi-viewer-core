@@ -70,7 +70,7 @@ public class ContentBean implements Serializable {
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("getUserGeneratedContentsForDisplay");
+        // logger.trace("getUserGeneratedContentsForDisplay");
         if (page != null && (userGeneratedContentsForDisplay == null || !page.getPi().equals(pi) || page.getOrder() != currentPage)) {
             loadUserGeneratedContentsForDisplay(page);
         }

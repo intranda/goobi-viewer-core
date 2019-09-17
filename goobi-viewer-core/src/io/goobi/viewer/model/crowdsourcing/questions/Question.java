@@ -62,8 +62,6 @@ public class Question {
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
     private static final String URI_ID_REGEX = ".*/crowdsourcing/campaigns/(\\d+)/questions/(\\d+)/?$";
 
-    private static int TARGET_FREQUENCY_MULTIPLE = 0;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
@@ -91,13 +89,27 @@ public class Question {
     @Column(name = "target_frequency", nullable = false)
     private int targetFrequency;
 
+    /**
+     * Empty constructor.
+     */
     public Question() {
     }
 
+    /**
+     * 
+     * @param owner
+     */
     public Question(Campaign owner) {
         this.owner = owner;
     }
 
+    /**
+     * 
+     * @param questionType
+     * @param targetSelector
+     * @param targetFrequency
+     * @param owner
+     */
     public Question(QuestionType questionType, TargetSelector targetSelector, int targetFrequency, Campaign owner) {
         this.questionType = questionType;
         this.targetSelector = targetSelector;
@@ -105,24 +117,36 @@ public class Question {
         this.owner = owner;
     }
 
+    /**
+     *
+     * @return translation of the 'text' attribute for the currently selected locale in the owner campaign
+     */
     public String getText() {
         return Translation.getTranslation(translations, owner.getSelectedLocale().getLanguage(), "text");
     }
 
+    /**
+     * Sets the translation of the 'text' attribute for the currently selected locale in the owner campaign
+     * 
+     * @param text
+     */
     public void setText(String text) {
         QuestionTranslation.setTranslation(translations, owner.getSelectedLocale().getLanguage(), text, "text", this);
     }
 
-    @Deprecated
-    public void setText(String lang, String value) {
-        QuestionTranslation.setTranslation(translations, lang, value, "text", this);
-    }
-
+    /**
+     * 
+     * @return available values of the QuestionType enum
+     */
     @JsonIgnore
     public List<QuestionType> getAvailableQuestionTypes() {
         return Arrays.asList(QuestionType.values());
     }
 
+    /**
+     * 
+     * @return available values of the TargetSelector enum
+     */
     @JsonIgnore
     public List<TargetSelector> getAvailableTargetSelectors() {
         return Arrays.asList(TargetSelector.values());

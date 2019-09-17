@@ -185,14 +185,57 @@ public class Campaign implements CMSMediaHolder {
     @JsonIgnore
     private CMSContentItem contentItem = new CMSContentItem();
 
+    /**
+     * Empty constructor.
+     */
     public Campaign() {
         this.selectedLocale = BeanUtils.getLocale();
     }
 
+    /**
+     * Locale constructor.
+     * 
+     * @param selectedLocale
+     */
     public Campaign(Locale selectedLocale) {
         this.selectedLocale = selectedLocale;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Campaign other = (Campaign) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    /**
+     * 
+     * @return available values of the CampaignVisibility enum
+     */
     @JsonIgnore
     public List<CampaignVisibility> getCampaignVisibilityValues() {
         return Arrays.asList(CampaignVisibility.values());
@@ -200,7 +243,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * 
-     * @return
+     * @return total number of records encompassed by the configured solrQuery
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -216,7 +259,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * 
      * @param status
-     * @return
+     * @return number of records with the given status
      */
     public long getNumRecordsForStatus(String status) {
         if (status == null) {
@@ -257,9 +300,26 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Determines the number of distinct users that have created or reviewed annotations in the context of this campaign.
+     * 
+     * @return number of users
+     * @throws DAOException
+     */
+    public long getContributorCount() throws DAOException {
+        List<Long> questionIds = new ArrayList<>(questions.size());
+        for (Question q : questions) {
+            if (q.getId() != null) {
+                questionIds.add(q.getId());
+            }
+        }
+
+        return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
+    }
+
+    /**
      * FINISHED records in percent
      * 
-     * @return
+     * @return percentage of records marked as finished relative to the total number or records
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -270,9 +330,27 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * Returns the number of days between today and the end date for this campaign.
+     * Returns the number of whole days between today and the starting date for this campaign.
      * 
-     * @return days left between today and dateEnd
+     * @return whole days left between today and dateStart; -1 if no dateStart
+     * @should return -1 if no dateStart
+     * @should calculate days correctly
+     */
+    public int getDaysBeforeStart() {
+        if (dateStart == null) {
+            return -1;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate start = new DateTime(dateStart).toLocalDate();
+        return Math.max(0, Days.daysBetween(now, start).getDays());
+    }
+
+    /**
+     * Returns the number of whole days between today and the end date for this campaign. Because this method only returns the number of whole days
+     * left, its main purpose is for displaying the number of days to the user, and it shouldn't be used for access control.
+     * 
+     * @return whole days left between today and dateEnd; -1 if no dateEnd
      * @should return -1 if no dateEnd
      * @should calculate days correctly
      */
@@ -286,6 +364,10 @@ public class Campaign implements CMSMediaHolder {
         return Math.max(0, Days.daysBetween(now, end).getDays());
     }
 
+    /**
+     * 
+     * @return number of days left as string; infinity symbol if no dateEnd
+     */
     public String getDaysLeftAsString() {
         if (getDateEnd() != null) {
             int days = getDaysLeft();
@@ -296,9 +378,46 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * 
+     * @return true if dateStart lies after now; false otherwise
+     * @should return true if dateStart null
+     * @should return true if dateStart before now
+     * @should return false if dateStart after now
+     */
+    public boolean isHasStarted() {
+        if (dateStart == null) {
+            return true;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate start = new DateTime(dateStart).toLocalDate();
+
+        return now.isAfter(start);
+    }
+
+    /**
+     * 
+     * @return true if dateEnd lies before now; false otherwise
+     * @should return false if dateEnd null
+     * @should return false if dateEnd after now
+     * @should return true if dateEnd before now
+     */
+    public boolean isHasEnded() {
+        if (dateEnd == null) {
+            return false;
+        }
+
+        LocalDate now = new DateTime().toLocalDate();
+        LocalDate end = new DateTime(dateEnd).toLocalDate();
+
+        return now.isAfter(end);
+    }
+
+    /**
+     * Checks whether the given user may annotate or review records based on the given status.
+     * 
      * @param user
      * @param privilege
-     * @return
+     * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -395,7 +514,7 @@ public class Campaign implements CMSMediaHolder {
     public void setDescription(String description) {
         CampaignTranslation.setTranslation(translations, selectedLocale.getLanguage(), description, "description", this);
     }
-    
+
     /**
      * 
      * @param lang
@@ -408,7 +527,7 @@ public class Campaign implements CMSMediaHolder {
     /**
      * 
      * @param lang
-     * @return  the title of the given language or if it doesn't exist the title of the default language
+     * @return the title of the given language or if it doesn't exist the title of the default language
      */
     public String getTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "title", useFallback);
@@ -420,9 +539,9 @@ public class Campaign implements CMSMediaHolder {
      * @return
      */
     public String getDescription(String lang) {
-       return getDescription(lang, false);
+        return getDescription(lang, false);
     }
-    
+
     /**
      * 
      * @param lang
@@ -440,7 +559,7 @@ public class Campaign implements CMSMediaHolder {
     public String getMenuTitle(String lang) {
         return getMenuTitle(lang, false);
     }
-    
+
     /**
      * 
      * @param lang
@@ -536,6 +655,10 @@ public class Campaign implements CMSMediaHolder {
         this.dateStart = dateStart;
     }
 
+    /**
+     * 
+     * @return formatted ISO string representation of stateStart
+     */
     public String getDateStartString() {
         if (dateStart == null) {
             return null;
@@ -572,6 +695,10 @@ public class Campaign implements CMSMediaHolder {
         this.dateEnd = dateEnd;
     }
 
+    /**
+     * 
+     * @return formatted ISO string representation of dateEnd
+     */
     public String getDateEndString() {
         if (dateEnd == null) {
             return null;
@@ -713,7 +840,7 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * Get the targetIdentifier to a random PI from the solr query result list
+     * Get the targetIdentifier to a random PI from the Solr query result list.
      * 
      * @param status
      * 
@@ -736,7 +863,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * @param result
-     * @return
+     * @return true if record status for the given pi equals status; false otherwise
      */
     private boolean isRecordStatus(String pi, CampaignRecordStatus status) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE).equals(status);
@@ -744,7 +871,7 @@ public class Campaign implements CMSMediaHolder {
 
     /**
      * @param targetIdentifier
-     * @return
+     * @return record status for the given pi
      */
     public CampaignRecordStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CampaignRecordStatus.ANNOTATE);
@@ -752,6 +879,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Updates record status in the campaign statistics.
+     * 
      * @param pi
      * @param status
      */

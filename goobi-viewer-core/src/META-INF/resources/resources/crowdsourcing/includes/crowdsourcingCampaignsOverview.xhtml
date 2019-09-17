@@ -23,14 +23,23 @@
 					</div>
 				</div>
 				<div class="crowdsourcing-campaigns-overview__campaign__actions">
-					<h:commandLink rendered="#{campaign.getNumRecordsToAnnotate() > 0 and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
-					    action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
-					    styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
-					<h:commandLink rendered="#{campaign.getNumRecordsForStatus('REVIEW') > 0 and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
-					    action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
-					    styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+				    <!-- Current campaigns only -->
+				    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
+					    <h:commandLink rendered="#{campaign.getNumRecordsToAnnotate() > 0 and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
+					        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
+					        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
+					    <h:commandLink rendered="#{campaign.getNumRecordsForStatus('REVIEW') > 0 and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
+					        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
+					        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
+					</ui:fragment>
 				</div>
 				<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
+				<!-- Future campaign: days left counter -->
+				<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
+                    <f:param value="#{campaign.daysBeforeStart}" />
+                </h:outputFormat>
+                <!-- Current campaign: motivational message-->
+                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
 			</div>
 		</ui:repeat>
 	</h:form>
