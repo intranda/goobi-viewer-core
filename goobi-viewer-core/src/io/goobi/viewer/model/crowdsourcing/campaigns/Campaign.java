@@ -21,11 +21,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -306,14 +308,26 @@ public class Campaign implements CMSMediaHolder {
      * @throws DAOException
      */
     public long getContributorCount() throws DAOException {
-        List<Long> questionIds = new ArrayList<>(questions.size());
-        for (Question q : questions) {
-            if (q.getId() != null) {
-                questionIds.add(q.getId());
+        //        List<Long> questionIds = new ArrayList<>(questions.size());
+        //        for (Question q : questions) {
+        //            if (q.getId() != null) {
+        //                questionIds.add(q.getId());
+        //            }
+        //        }
+        //
+        //        return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
+
+        Set<Long> userIds = new HashSet<>();
+        for (String pi : statistics.keySet()) {
+            for (User u : statistics.get(pi).getAnnotators()) {
+                userIds.add(u.getId());
+            }
+            for (User u : statistics.get(pi).getReviewers()) {
+                userIds.add(u.getId());
             }
         }
 
-        return DataManager.getInstance().getDao().getCampaignContributorCount(questionIds);
+        return userIds.size();
     }
 
     /**
