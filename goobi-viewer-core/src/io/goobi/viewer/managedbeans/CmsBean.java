@@ -1478,14 +1478,6 @@ public class CmsBean implements Serializable {
     private static List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
 
-        //        if (staticPages == null || staticPages.isEmpty()) {
-        //            //resore from old schema
-        //            staticPages = getAllCMSPages().stream()
-        //                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
-        //                    .map(cmsPage -> new CMSStaticPage(cmsPage))
-        //                    .distinct()
-        //                    .collect(Collectors.toList());
-        //        }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.getName());

@@ -77,7 +77,9 @@ public enum PageType {
     adminCrowdCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
     //crowdsourcing/annotation
-    crowsourcingAnnotation("campaigns/"),
+    crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
+    crowsourcingAnnotation("campaigns/.../annotate"),
+    crowsourcingReview("campaigns/.../review"),
     // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),

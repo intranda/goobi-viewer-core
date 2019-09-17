@@ -3380,7 +3380,7 @@ public class JPADAO implements IDAO {
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
-        q.setParameter("name", pageType.name());
+        q.setParameter("name", pageType.getName());
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return getSingleResult(q);
     }

@@ -77,6 +77,8 @@ public class CMSNavigationManager {
         SelectableNavigationItem user = new SelectableNavigationItem("user", "user");
         user.setDisplayForUsersOnly(true);
         addAvailableItem(user);
+        SelectableNavigationItem campaigns = new SelectableNavigationItem("campaigns", "admin__crowdsourcing_campaigns");
+        addAvailableItem(campaigns);
 
         addModuleItems();
         addCMSPageItems();

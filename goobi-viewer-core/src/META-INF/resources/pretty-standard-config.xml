@@ -844,6 +844,11 @@
     </url-mapping>
     
     <!-- CROWDSOURCING -->
+     <url-mapping id="crowdCampaigns">
+		<pattern value="/campaigns/"/>
+        <view-id value="/campaigns.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
     <url-mapping id="crowdCampaignAnnotate1">
 		<pattern value="/campaigns/#{campaign:crowdsourcingBean.targetCampaignId}/annotate/"/>
         <view-id value="/resources/crowdsourcing/views/CampaignEdit.xhtml" />
