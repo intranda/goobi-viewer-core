@@ -52,7 +52,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -99,6 +98,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
 import io.goobi.viewer.model.overviewpage.OverviewPage;
@@ -557,27 +557,29 @@ public class Helper {
             logger.error(e.getMessage(), e);
         }
 
-        // Export annotations
+        // Export annotations (only those that belong to a campaign for which the statistic for this record is marked as finished)
         List<CampaignRecordStatistic> statistics =
                 DataManager.getInstance().getDao().getCampaignStatisticsForRecord(pi, CampaignRecordStatus.FINISHED);
         if (!statistics.isEmpty()) {
-            // TODO only export annotations that were created via a campaign where this record is marked as finished
-            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
-            if (!annotations.isEmpty()) {
-                logger.debug("Found {} annotations for this record.", annotations.size());
-                File annotationDir =
-                        new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
-                for (PersistentAnnotation annotation : annotations) {
-                    try {
-                        String json = annotation.getAsAnnotation().toString();
-                        String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
-                        FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(Helper.DEFAULT_ENCODING));
-                    } catch (JsonParseException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (JsonMappingException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
+            for (CampaignRecordStatistic statistic : statistics) {
+                Campaign campaign = statistic.getOwner();
+                List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+                if (!annotations.isEmpty()) {
+                    logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
+                    File annotationDir =
+                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
+                    for (PersistentAnnotation annotation : annotations) {
+                        try {
+                            String json = annotation.getAsAnnotation().toString();
+                            String jsonFileName = annotation.getTargetPI() + "_" + annotation.getId() + ".json";
+                            FileUtils.writeStringToFile(new File(annotationDir, jsonFileName), json, Charset.forName(Helper.DEFAULT_ENCODING));
+                        } catch (JsonParseException e) {
+                            logger.error(e.getMessage(), e);
+                        } catch (JsonMappingException e) {
+                            logger.error(e.getMessage(), e);
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     }
                 }
             }
