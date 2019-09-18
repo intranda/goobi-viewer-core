@@ -20,7 +20,6 @@
 <script>
     this.on( "mount", function() {
         
-        
     } );
     
     rotateRight()

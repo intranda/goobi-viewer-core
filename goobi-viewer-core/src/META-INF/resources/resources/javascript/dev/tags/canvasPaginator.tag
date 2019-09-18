@@ -9,18 +9,37 @@
 		<div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div>
 		<div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'current' : ''}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div>
 	</div>
-	
+
 </div>
 
 <script>
 
-load(e) {
+this.on( "mount", function() {
+    
+    var paginatorConfig = {
+	        previous: () => this.load(this.getCurrentIndex()-1),
+	        next: () => this.load(this.getCurrentIndex()+1),
+	        first: () => this.load(0),
+	        last: () => this.load(this.getTotalImageCount()-1),
+	}
+	viewerJS.paginator.init(paginatorConfig);
+    
+})
+
+loadFromEvent(e) {
     let index = parseInt(e.target.attributes["index"].value);
-    if(index != this.getCurrentIndex()) {        
+	this.load(index);
+}
+    
+load(index) {
+    console.log("Loading image ",index+1);
+    if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {        
 		this.opts.item.loadImage(index);
 		this.update();
     }
 }
+
+
 
 getCurrentIndex() {
     return this.opts.item.currentCanvasIndex;

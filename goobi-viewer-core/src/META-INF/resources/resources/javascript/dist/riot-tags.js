@@ -296,9 +296,26 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 });
 riot.tag2('canvaspaginator', '<div class="canvas_paginator"><div class="canvas_paginator__list"><div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div><div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div><div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div></div></div>', '', '', function(opts) {
 
-this.load = function(e) {
+this.on( "mount", function() {
+
+    var paginatorConfig = {
+	        previous: () => this.load(this.getCurrentIndex()-1),
+	        next: () => this.load(this.getCurrentIndex()+1),
+	        first: () => this.load(0),
+	        last: () => this.load(this.getTotalImageCount()-1),
+	}
+	viewerJS.paginator.init(paginatorConfig);
+
+})
+
+this.loadFromEvent = function(e) {
     let index = parseInt(e.target.attributes["index"].value);
-    if(index != this.getCurrentIndex()) {
+	this.load(index);
+}.bind(this)
+
+this.load = function(index) {
+    console.log("Loading image ",index+1);
+    if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {
 		this.opts.item.loadImage(index);
 		this.update();
     }
