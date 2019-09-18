@@ -306,88 +306,18 @@
                                                 </div>
                                                 
                                                <!-- Add new question link -->
-                                               <h:commandLink action="#{crowdsourcingBean.removeQuestionAction(question)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                   #{msg.delete}
-                                               </h:commandLink>
+                                               <div class="cms-module__actions">
+	                                               <h:commandLink styleClass="btn btn--clean delete" action="#{crowdsourcingBean.removeQuestionAction(question)}" title="#{msg.delete}" alt="#{msg.delete}">
+	                                                   #{msg.delete}
+	                                               </h:commandLink>
+                                               </div>
+                                               
                                             </div>
                                         </ui:repeat>
                                                         
                                                     </div>
                         				 </div>   
                                        </h:panelGroup>
-
-                                                <!-- SIDEBAR EDITOR TAB -->
-             <!--                               <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" /> -->
-                                            </div>
-                                        </div>
-                                        
-                                        <br />
-
-                                        <!-- PERMALINK -->
-                                        <div class="cms-module__option-group">
-                                            <div class="cms-module__option-label">
-                                                <label for="adminCrowdAddCampaignPermalink">#{msg.admin__crowdsourcing_campaign_permalink}:</label>
-                                            </div>
-                                            <div class="cms-module__option-control">
-                                                #{crowdsourcingBean.campaignsRootUrl}
-                                                <h:inputText id="adminCrowdAddCampaignPermalink"
-                                                    value="#{crowdsourcingBean.selectedCampaign.permalink}" />
-                                                <span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_campaign_permalink}</span>
-                                            </div>
-                                            <div class="cms-module__option-help">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- BREADCRUMB PARENT PAGE -->
-                                        <div class="cms-module__option-group">
-                                            <div class="cms-module__option-label">
-                                                <label for="pageBreadcrumbParent">#{msg.cms_page_breadcrumb_parent}:</label>
-                                            </div>
-                                            <div class="cms-module__option-control">
-                                                <!-- AREA FOR AJAX REFRESH -->
-                                                <h:panelGroup id="pageBreadcrumbParentGroup">
-                                                    <!-- VALIDATION MESSAGE -->
-                                                    <div class="cms-module__option-message">
-                                                        <h:messages for="pageBreadcrumbParent" 
-                                                            infoClass="cms-module__option-message-status success" 
-                                                            warnClass="cms-module__option-message-status warning"
-                                                            errorClass="cms-module__option-message-status danger" />
-
-                                                        <div class="cms-module__option-message-mark">
-                                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
-                                                        </div>
-                                                    </div>
-                
-                                                    <!-- SELECT MENU -->
-                                                    <div class="custom-control custom-control--select">
-                                                        <h:selectOneMenu 
-                                                            id="pageBreadcrumbParent" 
-                                                            styleClass="form-control" 
-                                                            value="#{crowdsourcingBean.selectedCampaign.breadcrumbParentCmsPageId}">
-                                                            <f:selectItem 
-                                                                itemValue="#{null}"
-                                                                itemLabel="-" />
-                                                            <f:selectItems 
-                                                                value="#{cmsBean.getAvailableParentPages(null)}" 
-                                                                var="availablePage" 
-                                                                itemValue="#{availablePage.id}"
-                                                                itemLabel="#{availablePage.title}" />
-                                                            <f:ajax event="change" render="pageBreadcrumbParentGroup" />
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </h:panelGroup>
-                                                <!-- INLINE HELP -->
-                                                <span class="cms-module__option-control-helptext">#{msg.cms_page_breadcrumb_parent_help}</span>
-                                            </div>
-                                            <!-- TOGGLE INLINE HELP -->
-                                            <div class="cms-module__option-help">
-                                                <button type="button" class="btn btn--clean" data-toggle="helptext">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                </button>
                                             </div>
                                         </div>
     

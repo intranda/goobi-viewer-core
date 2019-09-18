@@ -6,7 +6,6 @@
 .admin {
 	.mx-clearfloats;
 	position: relative;
-	background-color: @neutralgray;
 	button.btn {
 		&:active, 
 		&:focus, 
@@ -82,10 +81,31 @@
 		border-top: 1px solid @white;
 	}
 	/* CONTENT */
+	&__content-background,
 	&__content {
 		width: calc(~"100% - 250px");
 		margin-left: 250px;
+	}
+	&__content {
 		padding: 15px;
+		position: absolute;
+		&.fixed-top,
+		&.fixed-bottom {
+			position: fixed;
+		}
+		&.fixed-top {
+			top: 0;
+		}
+		&.fixed-bottom {
+			bottom: 0;
+		}
+	}
+	&__content-background {
+		background-color: @neutralgray;
+		position: fixed;
+		top: 0;
+		bottom: -120px;
+		z-index: -1;
 	}
 	&__content-inner {
 		min-height: calc(~"100vh - 30px");
