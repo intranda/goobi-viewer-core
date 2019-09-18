@@ -144,4 +144,21 @@ public class StringToolsTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals("a", result.get(0));
     }
+
+    /**
+     * @see StringTools#normalizeWebAnnotationCoordinates(String)
+     * @verifies normalize coordinates correctly
+     */
+    @Test
+    public void normalizeWebAnnotationCoordinates_shouldNormalizeCoordinatesCorrectly() throws Exception {
+        Assert.assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));    }
+
+    /**
+     * @see StringTools#normalizeWebAnnotationCoordinates(String)
+     * @verifies preserve legacy coordinates
+     */
+    @Test
+    public void normalizeWebAnnotationCoordinates_shouldPreserveLegacyCoordinates() throws Exception {
+        Assert.assertEquals("1, 2, 3, 4", StringTools.normalizeWebAnnotationCoordinates("1, 2, 3, 4"));
+    }
 }

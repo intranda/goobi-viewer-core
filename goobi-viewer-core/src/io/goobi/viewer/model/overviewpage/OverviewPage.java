@@ -930,7 +930,7 @@ public class OverviewPage implements Harvestable, Serializable {
             }
 
             // Re-index record
-            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), null);
+            Helper.triggerReIndexRecord(pi);
         }
 
         resetEditModes();

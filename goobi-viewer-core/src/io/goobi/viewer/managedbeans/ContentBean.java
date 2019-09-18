@@ -96,8 +96,9 @@ public class ContentBean implements Serializable {
         pi = page.getPi();
         currentPage = page.getOrder();
         userGeneratedContentsForDisplay = new ArrayList<>();
-        for (DisplayUserGeneratedContent ugcContent : DataManager.getInstance().getSearchIndex().getDisplayUserGeneratedContentsForPage(page.getPi(),
-                page.getOrder())) {
+        for (DisplayUserGeneratedContent ugcContent : DataManager.getInstance()
+                .getSearchIndex()
+                .getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder())) {
             // Do not add empty comments
             if (ugcContent.isEmpty()) {
                 userGeneratedContentsForDisplay.add(ugcContent);
@@ -108,23 +109,24 @@ public class ContentBean implements Serializable {
     }
 
     public List<List<String>> getCurrentUGCCoords(PhysicalElement page) throws IndexUnreachableException, PresentationException {
-        List<DisplayUserGeneratedContent> currentContent;
-        currentContent = getUserGeneratedContentsForDisplay(page);
-        if (currentContent != null) {
-            List<List<String>> coords = new ArrayList<>(currentContent.size());
-            for (DisplayUserGeneratedContent content : currentContent) {
-                if (content.hasArea()) {
-                    String rect = content.getAreaString();
-                    rect += (",\"" + content.getLabel() + "\"");
-                    rect += (",\"" + content.getId() + "\"");
-                    coords.add(Arrays.asList(rect.split(",")));
-                }
-            }
-            logger.debug("getting ugc coordinates {}", coords);
-            return coords;
+        List<DisplayUserGeneratedContent> currentContents;
+        currentContents = getUserGeneratedContentsForDisplay(page);
+        if (currentContents == null) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        List<List<String>> coords = new ArrayList<>(currentContents.size());
+        for (DisplayUserGeneratedContent content : currentContents) {
+            if (content.hasArea()) {
+                String rect = StringTools.normalizeWebAnnotationCoordinates(content.getAreaString());
+
+                rect += (",\"" + content.getLabel() + "\"");
+                rect += (",\"" + content.getId() + "\"");
+                coords.add(Arrays.asList(rect.split(",")));
+            }
+        }
+        logger.trace("getting ugc coordinates {}", coords);
+        return coords;
     }
 
     /**
