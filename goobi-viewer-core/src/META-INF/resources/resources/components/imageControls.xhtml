@@ -292,12 +292,12 @@
                         <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
-                                <li style=" margin-top: -5px;">
+                                <li class="image-controls__option">
                                     <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Mitmachen!</a>
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
-                                <li style=" margin-top: -5px;">
+                                <li class="image-controls__option">
                                     <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Text bearbeiten</a>
                                 </li>
                             </ui:fragment>
@@ -306,7 +306,7 @@
                         <!-- CROWDSOURCING CAMPAIGN -->
                         <ui:fragment>
                             <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
-                                <li class="image-controls__option" style="padding-top:5px; width: 16px;">
+                                <li class="image-controls__option">
                                     <a class="btn btn--icon" data-toggle="tooltip" data-placement="bottom"
                                         data-original-title="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}">
                                         <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
