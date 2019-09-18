@@ -124,10 +124,16 @@
         
         <script type="text/javascript">
         	var paginatorConfig = {
-        	        previous: ".numeric-paginator__navigate.navigate_prev a",
-        	        next: ".numeric-paginator__navigate.navigate_next a",
-        	        first: ".numeric-paginator__navigate.navigate_first a",
-        	        last: ".numeric-paginator__navigate.navigate_last a",
+        	        previous: () => doClick(".numeric-paginator__navigate.navigate_prev a"),
+        	        next: () => doClick(".numeric-paginator__navigate.navigate_next a"),
+        	        first: () => doClick(".numeric-paginator .navigate_first a"),
+        	        last: () => doClick(".numeric-paginator .navigate_last a")
+        	}
+        	function doClick(selector) {
+        	    let query = $(selector);
+        	    if(query.length) {
+        	        query.get(0).click();
+        	    }
         	}
         	viewerJS.paginator.init(paginatorConfig);
         </script>
