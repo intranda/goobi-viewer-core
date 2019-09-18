@@ -457,25 +457,6 @@ public class Helper {
     }
 
     /**
-     * Legacy method signature; TODO update the crowdsourcing module and remove
-     * 
-     * @param pi
-     * @param recordType
-     * @param overviewPage
-     * @return
-     * @throws DAOException
-     */
-    @Deprecated
-    public static synchronized boolean reIndexRecord(String pi, String recordType, OverviewPage overviewPage) throws DAOException {
-        try {
-            return reIndexRecord(pi);
-        } catch (RecordNotFoundException e) {
-            logger.error(e.getMessage());
-            return false;
-        }
-    }
-
-    /**
      * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
      * performance is of importance, use <code>triggerReIndexRecord</code> instead.
      * 
@@ -1001,23 +982,6 @@ public class Helper {
      */
     public static String getVersion() {
         return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
-    }
-
-    public static void main(String[] args) throws DAOException {
-        // FullText ft = new FullText();
-        // ft.setPi("18979459-1830");
-        // ft.setPage(1);
-        // ft.setFileName("00375667.png");
-        // ft.setText("Als Anhang zum Wohnungsanzeiger...");
-        // ft.setUpdatedBy(DataManager.getInstance().getDao().getUser(1));
-        // ft.setDateUpdated(new Date());
-        // try {
-        // DataManager.getInstance().getDao().addFullText(ft);
-        // } catch (PresentationException e) {
-        // e.printStackTrace();
-        // }
-
-        Helper.reIndexRecord("PPN517154005", "METS", null);
     }
 
     public static String intern(String string) {
