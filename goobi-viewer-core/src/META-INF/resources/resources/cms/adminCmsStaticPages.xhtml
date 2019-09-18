@@ -34,7 +34,6 @@
 									<th class="cms-static-pages__table-head-name">#{msg.cms__static_pages__name}</th>
 									<th class="cms-static-pages__table-head-url">#{msg.cms__static_pages__url}</th>
 									<th class="cms-static-pages__table-head-override">#{msg.cms__static_pages__overridden_cms_page}</th>
-									<th class="cms-static-pages__table-head-action table-col-clean"></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -72,21 +71,13 @@
 										</td>
 									</tr>
 								</ui:repeat>
-								
-								<!-- SAVE -->
-								<tr>
-									<td class="cms-static-pages__table-body-name table-col-clean"></td>
-									<td class="cms-static-pages__table-body-url table-col-clean"></td>
-									<td class="cms-static-pages__table-body-override table-col-clean">
-										<h:commandButton 
-											id="saveStaticPages"
-											styleClass="btn btn--success" 
-											value="#{msg.save}" 
-											action="#{cmsBean.saveStaticPages}" />
-									</td>
-								</tr>
 							</tbody>
 						</table>
+										<h:commandButton 
+											id="saveStaticPages"
+											styleClass="btn btn--success " 
+											value="#{msg.save}" 
+											action="#{cmsBean.saveStaticPages}" />
 					</h:form>
 				</div>
 			</div>
