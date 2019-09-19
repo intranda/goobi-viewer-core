@@ -132,6 +132,40 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * Start a persistence context transaction. Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
+     */
+    @Override
+    public void startTransaction() {
+        em.getTransaction().begin();
+    }
+
+    /**
+     * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
+     */
+    @Override
+    public void commitTransaction() {
+        em.getTransaction().commit();
+    }
+
+    /**
+     * Create a query in native sql syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
+     * {@link #commitTransaction()} for this
+     */
+    @Override
+    public Query createNativeQuery(String string) {
+        return em.createNativeQuery(string);
+    }
+
+    /**
+     * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
+     * {@link #commitTransaction()} for this
+     */
+    @Override
+    public Query createQuery(String string) {
+        return em.createQuery(string);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -3076,8 +3110,9 @@ public class JPADAO implements IDAO {
 
     }
 
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.dao.IDAO#getQuestion(java.lang.Long)
+     * @should return correct row
      */
     @Override
     public Question getQuestion(Long id) throws DAOException {
@@ -3095,8 +3130,10 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCampaignStatisticsForRecord(java.lang.String, io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus)
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCampaignStatisticsForRecord(java.lang.String,
+     *      io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus)
+     * @should return correct rows
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3769,41 +3806,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Start a persistence context transaction. Always needs to be succeeded with {@link #commitTransaction()} after the transaction is complete
-     */
-    @Override
-    public void startTransaction() {
-        em.getTransaction().begin();
-    }
-
-    /**
-     * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
-     */
-    @Override
-    public void commitTransaction() {
-        em.getTransaction().commit();
-    }
-
-    /**
-     * Create a query in native sql syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
-     * {@link #commitTransaction()} for this
-     */
-    @Override
-    public Query createNativeQuery(String string) {
-        return em.createNativeQuery(string);
-    }
-
-    /**
-     * Create a query in jpa query syntax in the persistence context. Does not provide its own transaction. Use {@link #startTransaction()} and
-     * {@link #commitTransaction()} for this
-     */
-    @Override
-    public Query createQuery(String string) {
-        return em.createQuery(string);
-    }
-
-    /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getAnnotation(java.lang.Long)
+     * @should return correct row
      */
     @Override
     public PersistentAnnotation getAnnotation(Long id) throws DAOException {
@@ -3816,8 +3820,9 @@ public class JPADAO implements IDAO {
         return annotation;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaign(java.lang.Long)
+     * @should return correct rows
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3846,6 +3851,7 @@ public class JPADAO implements IDAO {
      * @param pi
      * @return
      * @throws DAOException
+     * @should return correct rows
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3859,8 +3865,9 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForTarget(java.lang.String, java.util.Optional)
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForTarget(java.lang.String, java.lang.Integer)
+     * @should return correct rows
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3882,6 +3889,10 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationCountForTarget(java.lang.String, java.lang.Integer)
+     * @should return correct count
+     */
     @Override
     public long getAnnotationCountForTarget(String pi, Integer page) throws DAOException {
         preQuery();
@@ -3911,6 +3922,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
+    @Deprecated
     public long getCampaignContributorCount(List<Long> questionIds) throws DAOException {
         if (questionIds == null) {
             throw new IllegalArgumentException("questionIds may not be null");
@@ -3952,6 +3964,10 @@ public class JPADAO implements IDAO {
         return creators.size();
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndWork(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign, java.lang.String)
+     * @should return correct rows
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException {
@@ -3975,8 +3991,10 @@ public class JPADAO implements IDAO {
         return q.getResultList();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndTarget(java.lang.Long, java.lang.String, java.util.Optional)
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForCampaignAndTarget(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign, java.lang.String,
+     *      java.lang.Integer)
+     * @should return correct rows
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -4030,16 +4048,15 @@ public class JPADAO implements IDAO {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
      */
     @Override
-    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
-            em.remove(o);
+            em.merge(annotation);
             em.getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {
@@ -4050,15 +4067,16 @@ public class JPADAO implements IDAO {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.PersistentAnnotation)
      */
     @Override
-    public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException {
+    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(annotation);
+            PersistentAnnotation o = em.getReference(PersistentAnnotation.class, annotation.getId());
+            em.remove(o);
             em.getTransaction().commit();
             return true;
         } catch (IllegalArgumentException e) {

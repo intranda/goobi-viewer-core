@@ -89,7 +89,7 @@ public class PersistentAnnotation {
 
     /**
      * This is the id of the {@link User} who created the annotation. If it is null, either the annotation wasn't created by a logged in user, or this
-     * information is widtheld for privacy reasons
+     * information is withheld for privacy reasons
      */
     @Column(name = "creator_id")
     private Long creatorId;

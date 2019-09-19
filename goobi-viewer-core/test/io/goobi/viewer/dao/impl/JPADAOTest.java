@@ -34,6 +34,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.annotation.Comment;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.bookshelf.BookshelfItem;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -49,6 +50,10 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
+import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.download.EPUBDownloadJob;
@@ -1084,7 +1089,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void getBookshelfByNameTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
-        
+
         Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf("bookshelf 1 name", user);
         Assert.assertNotNull(bookshelf);
         Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
@@ -2114,12 +2119,151 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("+DC:varia", campaign.getSolrQuery());
         Assert.assertEquals("English title", campaign.getTitle());
 
-        Assert.assertEquals(1, campaign.getQuestions().size());
+        Assert.assertEquals(2, campaign.getQuestions().size());
         Assert.assertEquals("English text", campaign.getQuestions().get(0).getText());
-        
+
         Assert.assertEquals(2, campaign.getStatistics().size());
         Assert.assertNotNull(campaign.getStatistics().get("PI 1"));
         Assert.assertNotNull(campaign.getStatistics().get("PI 2"));
     }
 
+    /**
+     * @see JPADAO#getQuestion(Long)
+     * @verifies return correct row
+     */
+    @Test
+    public void getQuestion_shouldReturnCorrectRow() throws Exception {
+        Question q = DataManager.getInstance().getDao().getQuestion(1L);
+        Assert.assertNotNull(q);
+        Assert.assertEquals(Long.valueOf(1), q.getId());
+        Assert.assertEquals(Long.valueOf(1), q.getOwner().getId());
+        Assert.assertEquals("English text", q.getText());
+        Assert.assertEquals(QuestionType.PLAINTEXT, q.getQuestionType());
+        Assert.assertEquals(TargetSelector.RECTANGLE, q.getTargetSelector());
+        Assert.assertEquals(0, q.getTargetFrequency());
+    }
+
+    /**
+     * @see JPADAO#getCampaignStatisticsForRecord(String,CampaignRecordStatus)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI 1", CampaignRecordStatus.FINISHED).size());
+    }
+
+    /**
+     * @see JPADAO#getAnnotation(Long)
+     * @verifies return correct row
+     */
+    @Test
+    public void getAnnotation_shouldReturnCorrectRow() throws Exception {
+        PersistentAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
+        Assert.assertNotNull(annotation);
+        Assert.assertEquals(Long.valueOf(1), annotation.getId());
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForCampaign(Campaign)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForCampaign_shouldReturnCorrectRows() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+
+        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
+        Assert.assertEquals(3, annotations.size());
+        Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), annotations.get(1).getId());
+        Assert.assertEquals(Long.valueOf(3), annotations.get(2).getId());
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForWork(String)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForWork_shouldReturnCorrectRows() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+
+        List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI 1");
+        Assert.assertEquals(3, annotations.size());
+        Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
+        Assert.assertEquals(Long.valueOf(4), annotations.get(2).getId());
+    }
+
+    /**
+     * @see JPADAO#getAnnotationCountForTarget(String,Integer)
+     * @verifies return correct count
+     */
+    @Test
+    public void getAnnotationCountForTarget_shouldReturnCorrectCount() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI 1", 1));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI 1", null));
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForTarget(String,Integer)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForTarget_shouldReturnCorrectRows() throws Exception {
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI 1", 1);
+            Assert.assertEquals(1, annotations.size());
+            Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        }
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI 1", null);
+            Assert.assertEquals(2, annotations.size());
+            Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
+            Assert.assertEquals(Long.valueOf(4), annotations.get(1).getId());
+        }
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForCampaignAndTarget(Campaign,String,Integer)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForCampaignAndTarget_shouldReturnCorrectRows() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 1", 1);
+            Assert.assertEquals(1, annotations.size());
+            Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        }
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 1", null);
+            Assert.assertEquals(1, annotations.size());
+            Assert.assertEquals(Long.valueOf(3), annotations.get(0).getId());
+        }
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI 2", 6);
+            Assert.assertEquals(1, annotations.size());
+            Assert.assertEquals(Long.valueOf(2), annotations.get(0).getId());
+        }
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForCampaignAndWork(Campaign,String)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotationsForCampaignAndWork_shouldReturnCorrectRows() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        Assert.assertNotNull(campaign);
+
+        {
+            List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI 1");
+            Assert.assertEquals(2, annotations.size());
+            Assert.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+            Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
+        }
+    }
 }

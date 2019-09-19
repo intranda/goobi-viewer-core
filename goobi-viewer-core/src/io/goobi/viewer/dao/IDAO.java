@@ -53,6 +53,18 @@ import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 
 public interface IDAO {
+    
+    boolean tableExists(String tableName) throws SQLException;
+
+    boolean columnsExists(String tableName, String columnName) throws SQLException;
+
+    void startTransaction();
+
+    void commitTransaction();
+
+    Query createNativeQuery(String string);
+
+    Query createQuery(String string);
 
     // User
 
@@ -381,10 +393,10 @@ public interface IDAO {
     public Campaign getCampaign(Long id) throws DAOException;
 
     public Question getQuestion(Long id) throws DAOException;
-    
+
     public List<Campaign> getCampaigns(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-    
+
     public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CampaignRecordStatus status) throws DAOException;
 
     public boolean addCampaign(Campaign campaign) throws DAOException;
@@ -426,43 +438,30 @@ public interface IDAO {
 
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
 
-    
-    /**Annotations**/
+    /** Annotations **/
     public PersistentAnnotation getAnnotation(Long id) throws DAOException;
-    
+
     public List<PersistentAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
-    
+
     public List<PersistentAnnotation> getAnnotationsForWork(String pi) throws DAOException;
-    
+
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
 
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
-    
+
     long getAnnotationCountForTarget(String pi, Integer page) throws DAOException;
-    
+
+    @Deprecated
     public long getCampaignContributorCount(List<Long> questionIds) throws DAOException;
-    
+
     public List<PersistentAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException;
-    
+
     public boolean addAnnotation(PersistentAnnotation annotation) throws DAOException;
-    
-    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException;
-    
+
     public boolean updateAnnotation(PersistentAnnotation annotation) throws DAOException;
-    
+
+    public boolean deleteAnnotation(PersistentAnnotation annotation) throws DAOException;
+
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
-
-    boolean tableExists(String tableName) throws SQLException;
-
-    boolean columnsExists(String tableName, String columnName) throws SQLException;
-
-    void startTransaction();
-
-    void commitTransaction();
-
-    Query createNativeQuery(String string);
-
-    Query createQuery(String string);
-
 }
