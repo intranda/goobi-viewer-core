@@ -14,7 +14,7 @@
 		</div>
 		<span if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
 	</div>
-	<button onclick="{addAnnotation}" class="options-wrapper__option" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
+	<button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
 	
 
 <script>
@@ -75,6 +75,15 @@
 	
 	showInstructions() {
 	    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	}
+	
+	showAddAnnotationButton() {
+	    switch(this.question.targetSelector) {
+	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+				return this.question.targetFrequency == 0 || this.question.targetFrequency > this.question.annotations.length;
+	    }
+	    return false;
 	}
 	
     setTextFromEvent(event) {
