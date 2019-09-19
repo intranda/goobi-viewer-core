@@ -294,7 +294,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 });
-riot.tag2('canvaspaginator', '<div class="canvas_paginator"><div class="canvas_paginator__list"><div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div><div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div><div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.load}">{this.getOrder(canvas)}</div></div></div>', '', '', function(opts) {
+riot.tag2('canvaspaginator', '<div class="canvas_paginator"><div class="canvas_paginator__list"><div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div><div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div><div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div><div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'current\' : \'\'}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div></div></div>', '', '', function(opts) {
 
 this.on( "mount", function() {
 
@@ -926,7 +926,7 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 });
 	
 	
-riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="annotation_area__text_input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{!this.opts.item.isReviewMode() && (anno.getText() || anno.getRegion())}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div>', '', '', function(opts) {
+riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div id="annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area" riot-style="border-color: {anno.getColor()}"><div if="{this.showAnnotationImages()}" class="annotation_area__image"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="annotation_area__text_input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><span if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate(⁗action__delete_annotation⁗)}</span></div><button onclick="{addAnnotation}" class="options-wrapper__option" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 	this.question.createAnnotation = function(anno) {
@@ -988,12 +988,6 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
         if(event.item.anno) {
             event.item.anno.setText(event.target.value);
             this.question.saveToLocalStorage();
-            switch(this.question.targetSelector) {
-                case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-                    this.question.createDummyAnnotationIfRequired();
-                    this.update();
-            }
         } else {
             throw "No annotation to set"
         }
@@ -1004,6 +998,10 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
             this.question.deleteAnnotation(event.item.anno);
             this.update();
         }
+    }.bind(this)
+
+    this.addAnnotation = function() {
+        this.question.createEmptyAnnotation();
     }.bind(this)
 
     this.handleFinishedDrawing = function(result) {

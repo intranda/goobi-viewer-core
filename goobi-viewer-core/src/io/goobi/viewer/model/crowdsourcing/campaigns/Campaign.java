@@ -173,6 +173,7 @@ public class Campaign implements CMSMediaHolder {
     /** Status entry for each record that has been worked on in the context of this campaign. The PI of each record is the map key. */
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @MapKeyColumn(name = "pi", insertable = false, updatable = false) // CampaignRecordStatistic.pi may not be writable here
+    @JsonIgnore
     private Map<String, CampaignRecordStatistic> statistics = new HashMap<>();
 
     @Transient
