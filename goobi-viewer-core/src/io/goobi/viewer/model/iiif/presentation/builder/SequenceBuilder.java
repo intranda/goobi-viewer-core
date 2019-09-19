@@ -293,7 +293,7 @@ public class SequenceBuilder extends AbstractBuilder {
         viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
         canvas.addRendering(viewerPage);
 
-        if (getBuildMode().equals(BuildMode.IIIF)) {
+        if (!getBuildMode().equals(BuildMode.THUMBS)) {
             Dimension size = getSize(page);
             if (size.getWidth() * size.getHeight() > 0) {
                 canvas.setWidth(size.width);

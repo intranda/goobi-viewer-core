@@ -22,5 +22,5 @@ package io.goobi.viewer.model.iiif.presentation.builder;
 public enum BuildMode {
 
     IIIF,
-    THUMBS
+    THUMBS, IIIF_SIMPLE, IIIF_BASE
 }

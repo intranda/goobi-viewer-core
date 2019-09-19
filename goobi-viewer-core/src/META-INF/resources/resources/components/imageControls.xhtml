@@ -293,12 +293,12 @@
                         <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
                                 <li class="image-controls__option">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Mitmachen!</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__crowdsourcing_participate}!</a>
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
                                 <li class="image-controls__option">
-                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">Text bearbeiten</a>
+                                    <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}">#{msg.action__edit_text}</a>
                                 </li>
                             </ui:fragment>
                         </ui:fragment>

@@ -49,6 +49,8 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -144,34 +146,11 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifest(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
-        List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
-        if (docs.isEmpty()) {
-            throw new ContentNotFoundException("No document found for pi " + pi);
-        }
-        StructElement mainDoc = docs.get(0);
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
-
-        if (manifest instanceof Collection && docs.size() > 1) {
-            getManifestBuilder().addVolumes((Collection) manifest, docs.subList(1, docs.size()));
-        } else if (manifest instanceof Manifest) {
-            getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
-
-            String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
-            if (StringUtils.isNotBlank(topLogId)) {
-                List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-                ranges.forEach(range -> {
-                    ((Manifest) manifest).addStructure(range);
-                });
-            }
-        }
-
-        return manifest;
-
+        return createManifest(pi, BuildMode.IIIF);
     }
-
+    
     /**
-     * Returns the entire IIIF manifest for the given pi. If the given pi points to an anchor, a IIIF collection is returned instead
+     * Returns the entire IIIF manifest for the given pi, excluding all "seeAlso" references and annotation lists other than the images themselves. If the given pi points to an anchor, a IIIF collection is returned instead
      * 
      * @param pi
      * @return The manifest or collection
@@ -188,6 +167,27 @@ public class ManifestResource extends AbstractResource {
     public IPresentationModelElement getManifestSimple(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
 
+        return createManifest(pi, BuildMode.IIIF_SIMPLE);
+    }
+    
+    /**
+     * Returns the entire IIIF manifest for the given pi without the sequence and structure lists. If the given pi points to an anchor, a IIIF collection is returned instead
+     * 
+     * @param pi
+     * @return The manifest or collection
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If no object with the given pi was found in the index
+     */
+    @GET
+    @Path("/{pi}/manifest/base")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public IPresentationModelElement getManifestBase(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException,
+            URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException {
+
         StructElement doc = getManifestBuilder().getDocument(pi);
         if (doc == null) {
             throw new ContentNotFoundException("No document found for pi " + pi);
@@ -197,6 +197,51 @@ public class ManifestResource extends AbstractResource {
         return manifest;
 
     }
+
+
+    /**
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
+    private IPresentationModelElement createManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException, ContentNotFoundException,
+            URISyntaxException, ViewerConfigurationException, DAOException {
+        getManifestBuilder().setBuildMode(mode);
+        getSequenceBuilder().setBuildMode(mode);
+        List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
+        if (docs.isEmpty()) {
+            throw new ContentNotFoundException("No document found for pi " + pi);
+        }
+        StructElement mainDoc = docs.get(0);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
+
+        if (manifest instanceof Collection && docs.size() > 1) {
+            getManifestBuilder().addVolumes((Collection) manifest, docs.subList(1, docs.size()));
+        } else if (manifest instanceof Manifest) {
+            getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
+            
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
+            
+            String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
+            if (StringUtils.isNotBlank(topLogId)) {
+                List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+                ranges.forEach(range -> {
+                    ((Manifest) manifest).addStructure(range);
+                });
+            }
+        }
+
+        return manifest;
+    }
+    
+    
+
+
 
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi

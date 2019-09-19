@@ -464,9 +464,20 @@ public abstract class AbstractBuilder {
 
 	public URI getManifestURI(String pi) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append("/manifest");
+				.append("/manifest/");
 		return URI.create(sb.toString());
 	}
+	
+	   public URI getManifestURI(String pi, BuildMode mode) {
+	        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
+	                .append("/manifest/");
+	        if(BuildMode.IIIF_SIMPLE.equals(mode)) {
+	            sb.append("simple/");
+	        } else if(BuildMode.IIIF_BASE.equals(mode)) {
+	            sb.append("base/");
+	        }
+	        return URI.create(sb.toString());
+	    }
 
 	public URI getRangeURI(String pi, String logId) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
