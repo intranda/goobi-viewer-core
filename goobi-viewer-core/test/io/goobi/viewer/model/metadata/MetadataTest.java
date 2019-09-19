@@ -140,26 +140,4 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
     }
-
-    /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies apply replace rules correctly
-     */
-    @Test
-    public void setParamValue_shouldApplyReplaceRulesCorrectly() throws Exception {
-        Metadata metadata = new Metadata("MD_FIELD", "", null);
-        String[] values = new String[] { "fools", "bard" };
-        Map<Object, String> replaceRules = new LinkedHashMap<>();
-        replaceRules.put("ls", "");
-        replaceRules.put('d', "becue");
-
-        metadata.getParams()
-                .add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, null, null, false, false, false, replaceRules));
-        metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
-        Assert.assertEquals(1, metadata.getValues().size());
-        Assert.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
-        Assert.assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
-        Assert.assertEquals("foo", metadata.getValues().get(0).getParamValues().get(0).get(0));
-        Assert.assertEquals("barbecue", metadata.getValues().get(0).getParamValues().get(0).get(1));
-    }
 }
