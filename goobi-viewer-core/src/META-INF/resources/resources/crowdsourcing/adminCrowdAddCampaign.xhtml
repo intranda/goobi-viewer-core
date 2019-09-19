@@ -252,7 +252,7 @@
                                                     <div class="cms-module__option-label">
                                                        <label for="adminCrowdAddCampaignQueryType">#{msg.type}:</label>
                                                     </div>
-                                                    <div class="cms-module__option-control">
+                                                    <div class="cms-module__option-control custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.questionType}">
                                                             <f:selectItems var="type" value="#{question.availableQuestionTypes}"
                                                                 itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
@@ -271,7 +271,7 @@
                                                     <div class="cms-module__option-label">
                                                         <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}*:</label>
                                                     </div>
-                                                    <div class="cms-module__option-control">
+                                                    <div class="cms-module__option-control custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.targetSelector}">
                                                             <f:selectItems var="selector" value="#{question.availableTargetSelectors}"
                                                                 itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
@@ -290,7 +290,7 @@
                                                     <div class="cms-module__option-label">
                                                         <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}*:</label>
                                                     </div>
-                                                    <div class="cms-module__option-control">
+                                                    <div class="cms-module__option-control  custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.targetFrequency}">
                                                             <f:selectItem itemLabel="#{msg.admin__crowdsourcing_question_targetFrequency_one}" itemValue="1"
                                                                 noSelectionOption="true" />

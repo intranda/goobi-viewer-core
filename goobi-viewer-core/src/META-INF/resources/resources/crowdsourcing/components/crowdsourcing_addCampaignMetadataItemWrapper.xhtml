@@ -23,29 +23,35 @@
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_visibility}:" />
                         </dt>
                         <dd>
-                            <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}">
-                                <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
-                                    var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-                            </h:selectOneMenu>
+                        	<div class="custom-control custom-control--select">
+	                            <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}">
+	                                <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+	                                    var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+	                            </h:selectOneMenu>
+                        	</div>
                         </dd>
                         <!-- DURATION -->
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration}:" />
                         </dt>
                         <dd>
-                           <h:commandButton action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}" />
+                        	<div class="cms-module__actions">
+	                           <h:commandLink styleClass="btn btn--clean delete" action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}">
+	                           	<f:ajax render="metadata-status"></f:ajax>
+	                           </h:commandLink>
+                        	</div>
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_from}:" />
                         </dt>
                         <dd>
-                            <input type="date" jsf:id="campaignDateStart" jsf:value="#{crowdsourcingBean.selectedCampaign.dateStartString}" />
+	                    	<input class="form-control" type="date" jsf:id="campaignDateStart" jsf:value="#{crowdsourcingBean.selectedCampaign.dateStartString}" />
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_until}:" />
                         </dt>
                         <dd>
-                            <input type="date" jsf:id="campaignDateEnd" jsf:value="#{crowdsourcingBean.selectedCampaign.dateEndString}" />
+                            <input  class="form-control" type="date" jsf:id="campaignDateEnd" jsf:value="#{crowdsourcingBean.selectedCampaign.dateEndString}" />
                         </dd>
                     </dl>
                 </div>

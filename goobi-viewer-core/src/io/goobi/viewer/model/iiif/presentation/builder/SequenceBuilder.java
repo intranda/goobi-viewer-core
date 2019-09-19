@@ -70,6 +70,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -443,6 +445,13 @@ public class SequenceBuilder extends AbstractBuilder {
                     List<PersistentAnnotation> crowdAnnotations =
                             DataManager.getInstance().getDao().getAnnotationsForTarget(page.getPi(), page.getOrder());
                     for (PersistentAnnotation annotation : crowdAnnotations) {
+                        Question generator = annotation.getGenerator();
+                        if(generator != null) {
+                            if(!CampaignRecordStatus.FINISHED.equals(generator.getOwner().getRecordStatus(page.getPi()))) {
+                                //ignore the annotation if the campaign record is not marked as finished
+                                continue;
+                            }
+                        }
                         OpenAnnotation openAnnotation = annotation.getAsOpenAnnotation();
                         openAnnotation.setMotivation(Motivation.convertFromWebAnnotationMotivation(annotation.getMotivation()));
                         crowdList.addResource(openAnnotation);

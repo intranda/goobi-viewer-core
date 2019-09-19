@@ -1,3 +1,5 @@
+
+
 #createCampaign {
 	
 	h2 {
@@ -19,6 +21,12 @@
 		    margin-bottom: 5px;
 /* 		    TODO: letztes Element ohne margin-bottom */
    		}
+   		.cms-module__option-control {
+   			padding-left: 0;
+   			select {
+   				padding-left: 10px;
+   			}
+   		}
    }
 
 	.create-page-right {
@@ -26,6 +34,17 @@
 	
 		#cmsCreatePageMetadataItemWrapper {
 			border: 1px solid #ccc;
+		}
+		
+		.page-metadata-item-status {
+			dd,
+			dt {
+				padding: 3px 0;
+			}
+			.form-control {
+	   			line-height: 21px;
+	   			text-align: left;
+			}
 		}
 	
 		.campaign-statistics {
