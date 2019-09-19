@@ -101,7 +101,6 @@ import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
-import io.goobi.viewer.model.overviewpage.OverviewPage;
 import io.goobi.viewer.modules.IModule;
 
 /**
@@ -123,7 +122,7 @@ public class Helper {
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";
     public static final String SUFFIX_ALTO_CROWDSOURCING = "_altocrowd";
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
-    public static final String SUFFIX_ANNOTATION = "_annotations";
+    public static final String SUFFIX_ANNOTATIONS = "_annotations";
     public static final String SUFFIX_CMS = "_cms";
 
     private static final int HTTP_TIMEOUT = 30000;
@@ -429,11 +428,10 @@ public class Helper {
     /**
      * Re-index in background thread to significantly decrease saving times.
      * 
-     * @param pageCompleted
-     * @return
+     * @param pi
      * @throws ModuleMissingException
      */
-    public static void triggerReIndexRecord(String pi, String recordType, OverviewPage overviewPage) {
+    public static void triggerReIndexRecord(String pi) {
         Thread backgroundThread = new Thread(new Runnable() {
 
             @Override
@@ -507,7 +505,7 @@ public class Helper {
             File altoDir =
                     new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
             File annotationsDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
+                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
             File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
 
             File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
@@ -548,7 +546,7 @@ public class Helper {
                 if (!annotations.isEmpty()) {
                     logger.debug("Found {} annotations for this record (campaign '{}').", annotations.size(), campaign.getTitle());
                     File annotationDir =
-                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATION);
+                            new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ANNOTATIONS);
                     for (PersistentAnnotation annotation : annotations) {
                         try {
                             String json = annotation.getAsAnnotation().toString();

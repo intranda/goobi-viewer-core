@@ -320,12 +320,14 @@ public class DisplayUserGeneratedContent {
      * @should generate address label correctly
      * @should generate comment label correctly
      * @should return label field value if ugc type unknown
+     * @should return text value for all types if no other fields exist
      */
     public static String generateUgcLabel(StructElement se) {
         if (se == null) {
             throw new IllegalArgumentException("se may not be null");
         }
 
+        String text = StringTools.escapeHtml(se.getMetadataValue("MD_TEXT"));
         if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
             switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
                 case "PERSON": {
@@ -389,10 +391,15 @@ public class DisplayUserGeneratedContent {
                         }
                         sb.append(country);
                     }
+
+                    // Text fallback
+                    if (sb.length() == 0 && StringUtils.isNotEmpty(text)) {
+                        sb.append(text);
+                    }
                     return sb.toString();
                 }
                 case "COMMENT":
-                    return StringTools.escapeHtml(se.getMetadataValue("MD_TEXT"));
+                    return text;
                 default:
                     return se.getMetadataValue(SolrConstants.LABEL);
             }

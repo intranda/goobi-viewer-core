@@ -319,4 +319,31 @@ public class StringTools {
 
         return ret;
     }
+
+    /**
+     * Normalizes WebAnnotation coordinates for rectangle rendering (x,y,w,h -> minX,minY,maxX,maxY).
+     * 
+     * @param coords
+     * @return Legacy format coordinates
+     * @should normalize coordinates correctly
+     * @should preserve legacy coordinates
+     */
+    public static String normalizeWebAnnotationCoordinates(String coords) {
+        if (coords == null) {
+            return null;
+        }
+        if (!coords.startsWith("xywh=")) {
+            return coords;
+        }
+
+        // Normalize WebAnnotation coordinates (x,y,w,h -> minX,minY,maxX,maxY)
+        String ret = coords.substring(5);
+        String[] rectSplit = ret.split(",");
+        if (rectSplit.length == 4) {
+            ret = rectSplit[0].trim() + ", " + rectSplit[1].trim() + ", " + (Integer.parseInt(rectSplit[0].trim())
+                    + Integer.parseInt(rectSplit[2].trim()) + ", " + (Integer.parseInt(rectSplit[1].trim()) + Integer.parseInt(rectSplit[3].trim())));
+        }
+
+        return ret;
+    }
 }
