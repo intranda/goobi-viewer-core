@@ -21,6 +21,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+
 public class MetadataToolsTest {
 
     /**
@@ -34,5 +36,18 @@ public class MetadataToolsTest {
         replaceRules.put(">", "s");
         replaceRules.put("REGEX:[ ]*100[ ]*", "");
         Assert.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules));
+    }
+
+    /**
+     * @see MetadataTools#findMetadataGroupType(String)
+     * @verifies map values correctly
+     */
+    @Test
+    public void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
+        Assert.assertEquals(MetadataGroupType.CORPORATION.name(), MetadataTools.findMetadataGroupType("kiz"));
+        Assert.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("piz"));
+        Assert.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));
+        Assert.assertEquals(MetadataGroupType.CONFERENCE.name(), MetadataTools.findMetadataGroupType("viz"));
+        Assert.assertEquals(MetadataGroupType.RECORD.name(), MetadataTools.findMetadataGroupType("wiz"));
     }
 }
