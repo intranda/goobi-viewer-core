@@ -47,6 +47,7 @@ import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -247,13 +248,13 @@ public class Metadata implements Serializable {
      * @param inValues List with values
      * @param label
      * @param url
-     * @param normDataUrl
+     * @param options
      * @param groupType value of METADATATYPE, if available
      * @param locale
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
-    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> normDataUrl,
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String label, String url, Map<String, String> options,
             String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label);
         if (inValues == null) {
@@ -344,36 +345,22 @@ public class Metadata implements Serializable {
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
-                                // Determine norm data set type from GND field 075$b
-                                MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(value);
-                                if (marcRecord != null && !marcRecord.getNormDataList().isEmpty())
-                                    for (NormData normData : marcRecord.getNormDataList()) {
-                                        if ("NORM_TYPE".equals(normData.getKey())) {
-                                            // gndspec
-                                            String val = normData.getValues().get(0).getText();
-                                            if (val.length() == 3) {
-                                                switch (val.substring(0, 2)) {
-                                                    case "ki":
-                                                        normDataType = MetadataGroupType.CORPORATION.name();
-                                                        break;
-                                                    case "pi":
-                                                        normDataType = MetadataGroupType.PERSON.name();
-                                                        break;
-                                                    case "sa":
-                                                        normDataType = MetadataGroupType.SUBJECT.name();
-                                                        break;
-                                                    case "vi":
-                                                        normDataType = MetadataGroupType.CONFERENCE.name();
-                                                        break;
-                                                    case "wi":
-                                                        normDataType = MetadataGroupType.RECORD.name();
-                                                        break;
-                                                }
-                                                logger.trace("norm data type determined from 075$b (gndspec): {}", normDataType);
+                                if (options != null && options.get("NORM_TYPE") != null) {
+                                    // Try local NORM_TYPE value, if given
+                                    normDataType = MetadataTools.findMetadataGroupType(options.get("NORM_TYPE"));
+                                } else {
+                                    // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
+                                    MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(value);
+                                    if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
+                                        for (NormData normData : marcRecord.getNormDataList()) {
+                                            if ("NORM_TYPE".equals(normData.getKey())) {
+                                                String val = normData.getValues().get(0).getText();
+                                                normDataType = MetadataTools.findMetadataGroupType(val);
+                                                break;
                                             }
-                                            break;
                                         }
                                     }
+                                }
                             }
                         }
                         // Popup button
@@ -425,10 +412,6 @@ public class Metadata implements Serializable {
                 mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
                 mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
                 mdValue.getParamUrls().add(paramIndex, url);
-                if (normDataUrl != null) {
-                    mdValue.getNormDataUrls().putAll(normDataUrl);
-                    // logger.trace("added norm data url: {}", normDataUrl.toString());
-                }
             }
         }
     }
@@ -589,6 +572,7 @@ public class Metadata implements Serializable {
                         }
                         if (groupFieldMap.get(param.getKey()) != null) {
                             found = true;
+                            Map<String, String> options = new HashMap<>();
                             StringBuilder sbValue = new StringBuilder();
                             List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                             for (String mdValue : groupFieldMap.get(param.getKey())) {
@@ -603,8 +587,11 @@ public class Metadata implements Serializable {
                                 //                                    normDataUrl.put(param.getKey(), paramValue);
                                 // logger.trace("found normdata uri: {}", normDataUrl.toString());
                                 //                                    setParamValue(count, i, values, null, null, normDataUrl, groupType, locale);
+                                if (doc.getFieldValue("NORM_TYPE") != null) {
+                                    options.put("NORM_TYPE", SolrSearchIndex.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                                }
                             }
-                            setParamValue(count, i, values, param.getKey(), null, null, groupType, locale);
+                            setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);
                         } else if (param.getDefaultValue() != null) {
                             logger.debug("No value found for {}, using default value", param.getKey());
                             setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
