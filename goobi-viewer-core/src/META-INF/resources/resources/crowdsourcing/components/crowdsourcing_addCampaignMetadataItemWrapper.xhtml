@@ -36,7 +36,9 @@
                         </dt>
                         <dd>
                         	<div class="cms-module__actions">
-	                           <h:commandLink styleClass="btn btn--clean delete" action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}" />
+	                           <h:commandLink styleClass="btn btn--clean delete" action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}">
+	                           	<f:ajax render="metadata-status"></f:ajax>
+	                           </h:commandLink>
                         	</div>
                         </dd>
                         <dt>
