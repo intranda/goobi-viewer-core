@@ -17,6 +17,7 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.controller.language.Language;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -65,7 +67,7 @@ public class MetadataTools {
         result.append("\r\n<link rel=\"schema.DCTERMS\" href=\"http://purl.org/dc/terms/\" />");
         result.append("\r\n<link rel=\"schema.DC\" href=\"http://purl.org/dc/elements/1.1/\" />");
 
-        // Determine langauge and ISO-2 language code
+        // Determine language and ISO-2 language code
         if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
             language = structElement.getMetadataValue("MD_LANGUAGE");
             isoLanguage = convertLanguageToIso2(language);
@@ -448,5 +450,80 @@ public class MetadataTools {
         }
 
         return language;
+    }
+
+    /**
+     * 
+     * @param value
+     * @param replaceRules
+     * @return
+     * @should apply rules correctly
+     */
+    public static String applyReplaceRules(String value, Map<Object, String> replaceRules) {
+        if (value == null) {
+            return null;
+        }
+        if (replaceRules == null) {
+            return value;
+        }
+
+        String ret = value;
+        for (Object key : replaceRules.keySet()) {
+            if (key instanceof Character) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(key);
+                ret = ret.replace(sb.toString(), replaceRules.get(key));
+            } else if (key instanceof String) {
+                logger.debug("replace rule: {} -> {}", key, replaceRules.get(key));
+                if (((String) key).startsWith("REGEX:")) {
+                    ret = ret.replaceAll(((String) key).substring(6), replaceRules.get(key));
+                } else {
+                    ret = ret.replace((String) key, replaceRules.get(key));
+                }
+            } else {
+                logger.error("Unknown replacement key type of '{}: {}", key.toString(), key.getClass().getName());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param gndspec
+     * @return MetadataGroupType value corresponding to the given gndspec type
+     * @should map values correctly
+     */
+    public static String findMetadataGroupType(String gndspec) {
+        if (gndspec == null) {
+            return null;
+        }
+        if (gndspec.length() == 3) {
+            String ret = null;
+            switch (gndspec.substring(0, 2)) {
+                case "ki":
+                    ret = MetadataGroupType.CORPORATION.name();
+                    break;
+                case "pi":
+                    ret = MetadataGroupType.PERSON.name();
+                    break;
+                case "sa":
+                    ret = MetadataGroupType.SUBJECT.name();
+                    break;
+                case "vi":
+                    ret = MetadataGroupType.CONFERENCE.name();
+                    break;
+                case "wi":
+                    ret = MetadataGroupType.RECORD.name();
+                    break;
+            }
+            if (ret != null) {
+                logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
+                return ret;
+            }
+        }
+
+        logger.trace("Authority data type could not be determined for '{}'.", gndspec);
+        return null;
     }
 }

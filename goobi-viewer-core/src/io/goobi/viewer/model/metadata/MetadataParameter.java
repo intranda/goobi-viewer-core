@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.metadata;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +86,7 @@ public class MetadataParameter implements Serializable {
     private final boolean addUrl;
     private final boolean topstructValueFallback;
     private final boolean topstructOnly;
+    private final Map<Object, String> replaceRules;
 
     /*
      * (non-Javadoc)
@@ -142,7 +145,7 @@ public class MetadataParameter implements Serializable {
      * @param topstructValueFallback
      */
     public MetadataParameter(MetadataParameterType type, String source, String key, String masterValueFragment, String defaultValue, String prefix,
-            String suffix, boolean addUrl, boolean topstructValueFallback, boolean topstructOnly) {
+            String suffix, boolean addUrl, boolean topstructValueFallback, boolean topstructOnly, Map<Object, String> replaceRules) {
         this.type = type;
         this.source = source;
         this.key = key;
@@ -150,6 +153,7 @@ public class MetadataParameter implements Serializable {
         this.defaultValue = defaultValue;
         this.prefix = prefix;
         this.suffix = suffix;
+        this.replaceRules = replaceRules;
         this.addUrl = addUrl;
         this.topstructValueFallback = topstructValueFallback;
         this.topstructOnly = topstructOnly;
@@ -230,6 +234,13 @@ public class MetadataParameter implements Serializable {
      */
     public boolean isTopstructOnly() {
         return topstructOnly;
+    }
+
+    /**
+     * @return the replaceRules
+     */
+    public Map<Object, String> getReplaceRules() {
+        return replaceRules;
     }
 
     @Override

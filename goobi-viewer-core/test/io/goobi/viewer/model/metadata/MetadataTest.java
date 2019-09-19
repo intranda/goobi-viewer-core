@@ -2,8 +2,11 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,8 +15,6 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
 public class MetadataTest extends AbstractTest {
@@ -113,7 +114,9 @@ public class MetadataTest extends AbstractTest {
     public void setParamValue_shouldAddMultivaluedParamValuesCorrectly() throws Exception {
         Metadata metadata = new Metadata("MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
-        metadata.getParams().add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false, false));
+        metadata.getParams()
+                .add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false, false,
+                        Collections.emptyMap()));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
@@ -130,7 +133,9 @@ public class MetadataTest extends AbstractTest {
     public void setParamValue_shouldSetGroupTypeCorrectly() throws Exception {
         Metadata metadata = new Metadata("MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
-        metadata.getParams().add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false, false));
+        metadata.getParams()
+                .add(new MetadataParameter(MetadataParameterType.FIELD, null, null, null, null, "pre_", "_suf", false, false, false,
+                        Collections.emptyMap()));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());

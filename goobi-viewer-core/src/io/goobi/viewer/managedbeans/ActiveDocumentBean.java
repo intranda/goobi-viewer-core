@@ -469,8 +469,31 @@ public class ActiveDocumentBean implements Serializable {
                                     DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionHierarchyField));
                         }
                     }
-                    navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
-                            NavigationHelper.WEIGHT_OPEN_DOCUMENT));
+                    int weight = NavigationHelper.WEIGHT_OPEN_DOCUMENT;
+                    if (isVolume() && viewManager.getAnchorPi() != null) {
+                        logger.trace("volume");
+                        // Anchor breadcrumb
+                        StructElement anchorDocument = viewManager.getTopDocument().getParent();
+                        IMetadataValue anchorName = anchorDocument.getMultiLanguageDisplayLabel();
+                        for (String language : anchorName.getLanguages()) {
+                            String translation = anchorName.getValue(language).orElse("");
+                            if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                                translation = new StringBuilder(
+                                        translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping())).append("...")
+                                                .toString();
+                                anchorName.setValue(translation, language);
+                            }
+                        }
+                        PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
+                        String anchorUrl = navigationHelper.getApplicationUrl() + "/" + DataManager.getInstance()
+                        .getUrlBuilder()
+                        .buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
+                        navigationHelper.updateBreadcrumbs(
+                                new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
+                    }
+                    // Volume/monograph breadcrumb
+                    navigationHelper
+                            .updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
                 }
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage(), e);

@@ -916,7 +916,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
-        logger.trace("AccessPermissionImage");
+        // logger.trace("AccessPermissionImage");
         // Prevent access if mime type incompatible
         if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
