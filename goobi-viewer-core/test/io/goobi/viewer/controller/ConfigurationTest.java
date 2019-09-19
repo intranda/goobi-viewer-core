@@ -458,7 +458,7 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("userpassword", providers.get(2).getType().toLowerCase());
         Assert.assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
         Assert.assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
-        
+
         //local
         Assert.assertEquals("Goobi viewer", providers.get(3).getName());
         Assert.assertEquals("local", providers.get(3).getType().toLowerCase());
@@ -2426,5 +2426,19 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplaySidebarUsageWidgetLinkToMasterImage_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDisplaySidebarUsageWidgetLinkToMasterImage());
+    }
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
+     * @verifies load replace rules correctly
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadReplaceRulesCorrectly() throws Exception {
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate("_DEFAULT");
+        Assert.assertEquals(6, metadataList.size());
+        Metadata mdTitle = metadataList.get(2);
+        Assert.assertEquals("MD_TITLE", mdTitle.getLabel());
+        Assert.assertEquals(1, mdTitle.getParams().size());
+        Assert.assertEquals("bar", mdTitle.getParams().get(0).getReplaceRules().get("foo"));
     }
 }

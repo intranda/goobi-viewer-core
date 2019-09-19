@@ -54,6 +54,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -220,11 +221,12 @@ public class BrowseElement implements Serializable {
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
                         String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
-                            this.metadataList.add(position,
-                                    new Metadata(
-                                            anchorStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                                    anchorStructElement.getDocStructType(), null, null, null, null, false, false, false),
-                                            Helper.intern(anchorLabel)));
+                            this.metadataList
+                                    .add(position,
+                                            new Metadata(anchorStructElement.getDocStructType(), null,
+                                                    new MetadataParameter(MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(),
+                                                            null, null, null, null, false, false, false, Collections.emptyMap()),
+                                                    Helper.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -241,7 +243,7 @@ public class BrowseElement implements Serializable {
                     this.metadataList.add(position,
                             new Metadata(
                                     topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
-                                            topStructElement.getDocStructType(), null, null, null, null, false, false, false),
+                                            topStructElement.getDocStructType(), null, null, null, null, false, false, false, Collections.emptyMap()),
                                     Helper.intern(topstructLabel)));
                 }
             }
@@ -292,6 +294,10 @@ public class BrowseElement implements Serializable {
                     for (String value : metadataValues) {
                         if (count >= md.getNumber() && md.getNumber() != -1 || count >= number) {
                             break;
+                        }
+                        // Apply replace rules
+                        if (!param.getReplaceRules().isEmpty()) {
+                            value = MetadataTools.applyReplaceRules(value, param.getReplaceRules());
                         }
                         // Truncate long values
                         if (length > 0 && value.length() > length) {

@@ -223,10 +223,11 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param baseElement
      * @return
      * @throws URISyntaxException
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      * @throws ContentLibException
      */
-    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException, ViewerConfigurationException {
+    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri)
+            throws URISyntaxException, ViewerConfigurationException {
         Collection collection = null;
         try {
             collection = new Collection(uri);
@@ -244,7 +245,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 if (thumbURI != null) {
                     ImageContent thumb = new ImageContent(thumbURI);
                     collection.setThumbnail(thumb);
-                    if(IIIFUrlResolver.isIIIFImageUrl(thumbURI.toString())) {   
+                    if (IIIFUrlResolver.isIIIFImageUrl(thumbURI.toString())) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbURI.toString()));
                         thumb.setService(new ImageInformation(imageInfoURI.toString()));
                     }

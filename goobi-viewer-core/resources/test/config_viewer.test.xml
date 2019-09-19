@@ -556,7 +556,9 @@
 					<param type="field" key="PI" />
 				</metadata>
 				<metadata label="MD_TITLE" value="">
-					<param type="field" key="MD_TITLE" />
+					<param type="field" key="MD_TITLE">
+					    <replace string="foo">bar</replace>
+					</param>
 				</metadata>
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />

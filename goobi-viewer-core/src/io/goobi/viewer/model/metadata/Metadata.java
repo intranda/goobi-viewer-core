@@ -566,7 +566,7 @@ public class Metadata implements Serializable {
                         MetadataParameter param = params.get(i);
                         // logger.trace("param: {}", param.getKey());
 
-                        // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+                        // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
                         if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
                             continue;
                         }
@@ -638,6 +638,11 @@ public class Metadata implements Serializable {
                         break;
                     }
                     found = true;
+                    // Apply replace rules
+                    if (!param.getReplaceRules().isEmpty()) {
+                        mdValue = MetadataTools.applyReplaceRules(mdValue, param.getReplaceRules());
+                    }
+                    // Format dates
                     if (param.getKey().equals(SolrConstants.DATECREATED)) {
                         DateFormat dateFormatMetadata = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT,
                                 FacesContext.getCurrentInstance().getViewRoot().getLocale());

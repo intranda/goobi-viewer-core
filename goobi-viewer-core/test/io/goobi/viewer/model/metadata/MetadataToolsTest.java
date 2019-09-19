@@ -15,12 +15,28 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.controller.SolrConstants.MetadataGroupType;
 
 public class MetadataToolsTest {
+
+    /**
+     * @see MetadataTools#applyReplaceRules(String,Map)
+     * @verifies apply rules correctly
+     */
+    @Test
+    public void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
+        Map<Object, String> replaceRules = new HashMap<>();
+        replaceRules.put('<', "");
+        replaceRules.put(">", "s");
+        replaceRules.put("REGEX:[ ]*100[ ]*", "");
+        Assert.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules));
+    }
 
     /**
      * @see MetadataTools#findMetadataGroupType(String)
