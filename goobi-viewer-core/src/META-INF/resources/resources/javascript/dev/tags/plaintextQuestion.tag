@@ -2,9 +2,9 @@
 	<div if="{this.showInstructions()}" class="annotation_instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
-	<div id="annotation_{index}" each="{anno, index in this.question.annotations}">
-		<div class="annotation_area" style="border-color: {anno.getColor()}" >
-			<div if="{this.showAnnotationImages()}" class="annotation_area__image">
+	<div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
+		<div class="annotation_area" >
+			<div if="{this.showAnnotationImages()}" class="annotation_area__image" style="border-color: {anno.getColor()}">
 				<img src="{this.question.getImage(anno)}"></img>
 			</div>
 			<div class="annotation_area__text_input">
@@ -12,9 +12,12 @@
 				</textarea>
 			</div>
 		</div>
-		<span if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
+		<div class="cms-module__actions">
+			<button if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate("action__delete_annotation")}
+			</button>
+		</div>
 	</div>
-	<button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
+	<button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
 	
 
 <script>
@@ -62,7 +65,7 @@
 	
 	this.on("updated", function() {
 		if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
-		    let id = "annotation_" + this.question.currentAnnotationIndex;
+		    let id = "question_" + this.opts.index + "_annotation_" + this.question.currentAnnotationIndex;
 		    let inputSelector = "#" + id + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 		}
@@ -87,6 +90,7 @@
 	}
 	
     setTextFromEvent(event) {
+        event.preventUpdate = true;
         if(event.item.anno) {            
             event.item.anno.setText(event.target.value);
             this.question.saveToLocalStorage();

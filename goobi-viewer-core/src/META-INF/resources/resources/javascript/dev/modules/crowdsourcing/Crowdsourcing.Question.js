@@ -167,6 +167,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         let anno = this.createAnnotation({});
         anno.setTarget(this.getTarget());
         this.annotations.push(anno);    
+        this.currentAnnotationIndex = this.annotations.length - 1;
     }
 
 

@@ -19,16 +19,18 @@
 		<div if="{this.item}" class="content_right">
 			<h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
 			<div class="questions_wrapper"  >
-				<div class="question_wrapper" each="{question in this.item.questions}">
+				<div class="question_wrapper" each="{question, index in this.item.questions}">
 					<div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div>
-					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}"></plaintextQuestion>
-					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}"></geoLocationQuestion>
+					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion>
+					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
 				</div>
 			</div>
 			<div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate">
-				<button onclick="{saveAnnotations}" class="options-wrapper__option" id="save">{Crowdsourcing.translate("button__save")}</button>
-				<button onclick="{submitForReview}" class="options-wrapper__option" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
-				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
+				<button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
+				<div>oder</div>
+				<button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
+				<div>oder</div>
+				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
@@ -116,7 +118,6 @@
 	
 	saveToServer() {
 	    let pages = this.item.loadAnnotationPages();
-	    console.log("save annotations ", pages);
 	    this.loading = true;
 	    this.update();
 	    return fetch(this.annotationSource, {

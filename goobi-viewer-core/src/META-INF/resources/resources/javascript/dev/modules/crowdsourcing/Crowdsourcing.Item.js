@@ -177,7 +177,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Item.prototype.saveAnnotations = function(pageId, questionId, annotations) {
-        console.log("save annotations ",pageId, questionId, annotations);
         let save = this.getFromLocalStorage();
         this.deleteAnnotations(save, pageId, questionId);
         this.addAnnotations(annotations, save);

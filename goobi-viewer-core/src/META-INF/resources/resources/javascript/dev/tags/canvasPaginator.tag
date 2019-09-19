@@ -1,16 +1,22 @@
 <canvasPaginator>
 
-<div class="canvas_paginator">
+<nav class="numeric-paginator">
 
-	<div class="canvas_paginator__list">
-		<div each="{canvas in this.firstCanvases()}" class="canvas_paginator__button group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'current' : ''}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div>
-		<div class="canvas_paginator__separator" if="{this.useMiddleButtons()}">...</div>
-		<div each="{canvas in this.middleCanvases()}" class="canvas_paginator__button group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? 'current' : ''}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div>
-		<div class="canvas_paginator__separator" if="{this.useLastButtons()}">...</div>
-		<div each="{canvas in this.lastCanvases()}" class="canvas_paginator__button group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'current' : ''}" index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</div>
-	</div>
+	<ul>
+		<li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
+			<span  index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
+		</li>
+		<li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li>
+		<li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}"  >
+			<span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
+		</li>
+		<li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li>
+		<li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
+			<span index="{this.getIndex(canvas)}"  onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
+		</li>
+	</ul>
 
-</div>
+</nav>
 
 <script>
 

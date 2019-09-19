@@ -122,15 +122,18 @@
 
 	&__content {
 		
-		background-color: @lightgray2;
+		background-color: #f2f3f4;
 		padding: 15px;
 		height: calc(~"100vh - 40px");
 		width: 100vw;
+		.breadcrumbs-wrapper {
+			height:30px;
+		}
 		.content {
 			width: 100%;
-			height: 100%;
 			display: flex;
 			align-items: stretch;
+			height:calc(~"100vh - 85px") ;
 			.loader_wrapper {
 				position: absolute;
 				pointer-events: none;
@@ -141,45 +144,20 @@
 				justify-content: center;
 			}
 			.content_left {
-				background-color: white;
-				margin: 20px;
 				width: 50%;
 				.imageview_wrapper {
 					width: 100%;
+					background-color: white;
+					border:1px solid #d5d5d5;
 					height:calc(~"100% - 50px") ;
-					.image_controls {
+					.image-controls__actions {
 						width: 100%;
-						height: 50px;
 						display: flex;
 						flex-wrap: wrap;
-						align-items: stretch;
+						align-items: center;
 						justify-content: center;
-						&__item {
-							margin: 9px 15px 6px 15px;
-							button {
-								width: 32px;
-								height:32px;
-							}
-							&.zoom-slider-wrapper {
-						        width: 100px;
-						        border: none;
-								.zoom-slider {
-						            height: 16px;
-						            margin-top: 8px;
-						            border: 1px solid gray;
-								}
-								.zoom-slider-handle {
-						            position: relative;
-						            top: -9px;
-						            width: 15px;
-						            min-width: inherit;
-						            height: 32px;
-						            line-height: inherit;
-						            border: none;
-						            background-color: gray;
-						       }
-							}
-						}
+						margin: 0;
+						height: 50px;
 					}
 					.image_container {
 						width: 100%;
@@ -190,54 +168,59 @@
 						}
 					}
 				}
-				.canvas_paginator {
+				.numeric-paginator {
 					height: 50px;
-					&__list {
-						display: flex;
-						flex-wrap: wrap;
-						align-items: stretch;
-						justify-content: center;
-					}
-					&__button {
-						border: 1px solid lightblue;
-						margin: 5px;
-						width: 36px;
-						height: 30px;
-						line-height: 30px;
-						text-align: center;
-						padding: 0 3px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					margin: 0;
+					span {
+						color: #3365a9;
 						&:hover {
-							background-color: lightblue;
 							cursor: pointer;
 						}
-						&.current {
-							background-color: lightblue;
+					}
+					&__active {
+						border-color: #3365a9;
+						span {
+							color: #fff;
+							background-color: #3365a9;
+							&:hover {
+								cursor: default;
+							}
 						}
 					}
 					&__separator {
 						line-height: 30px;
 						padding: 0 3px;
 						text-align: center;
+						border: none;
 					}
 				}
 			}
 			.content_right {
-				margin: 20px;
+				margin-left: 20px;
+				padding-right:10px;
 				width: 50%;
 				overflow: auto;
 				.content_right__title {
-					margin: 30px 0;
+					margin-bottom: 10px;
+					margin-top: 0;
 				}
 				.questions_wrapper {
 					.question_wrapper {
 						background-color: white;
 						padding: 5px;
 						margin-bottom: 5px;
+						border: 1px solid #d5d5d5;
 						&__description {
-							margin: 10px 0 30px 30px;
+							margin: 10px 0 30px 10px;
+						}
+						.btn {
+							margin: 0 0 10px 10px;
 						}
 						.annotation_instruction {
-							margin: 30px;
+							margin: 10px;
 							border: 2px solid @lightgray;
 							display: flex;
 							align-items: center;
@@ -245,10 +228,15 @@
 							height: 100px;
 							color: @middlegray;
 						}
+						.annotation_wrapper {
+							margin-bottom: 40px;
+							.btn {
+								margin: 0 10px;
+							}
+						}
 						.annotation_area {
 							display: flex;
-							margin: 30px;
-							border: 3px solid @blue;
+							margin: 0 10px;
 							min-height: 100px;
 							&__image {
 								width: 100px;
@@ -257,9 +245,8 @@
 						   	    flex-flow: row nowrap;
 							    align-items: center;
 							    justify-content: center;
-								border: 2px solid @darkgray;
-								margin-top: -20px;
-								margin-left: 20px;
+								border: 2px solid #d5d5d5;
+								margin-right: 20px;
 								background-color: #f1f2f3;
 								img {
 									max-width: 100%;
@@ -268,7 +255,6 @@
 							}
 							&__text_input {
 								flex: 1;
-								margin: 20px;
 								display: flex;
 						   	    flex-flow: row nowrap;
 							    align-items: center;
@@ -282,10 +268,8 @@
 									background-color: transparent;
 					    			border: 0px solid;
 					    			height: 100%;
-					    			margin-left: 20px;
-					    			margin-bottom: 15px;
 					    			resize: none;
-					    			border: 1px solid @middlegray;
+					    			border: 1px solid #d5d5d5;
 					    			&:focus {
 					    				border: 1px solid @darkgray;
 					    				background: @lightgray2;
@@ -299,12 +283,7 @@
 							}
 							&__button {
 								float: right;
-								margin-top: -56px;
-								margin-right: 52px;
-								color: red;
-								&:hover {
-									cursor: pointer;
-								}
+								margin-right: 10px;
 							}
 						}
 						#geoMap {
@@ -318,10 +297,13 @@
 					padding: 5px 0;
 					display: flex;
 					justify-content: right;
+					div {
+						margin: 5px 20px;
+					}
 					&__option {
-						margin-left: 10px;
-						background-color: white;
-						border: 1px solid @darkgray;
+/* 						margin-left: 10px; */
+/* 						background-color: white; */
+/* 						border: 1px solid @darkgray; */
 					}
 				}				
 			}

@@ -1,19 +1,23 @@
 <imageControls>
 
 <div class="image_controls">
-		<div class="image_controls__item">
-			<button class="controls__item fa fa-rotate-left"
-				onclick="{rotateLeft}"></button>
+	<div class="image-controls__actions">
+		<div class="image-controls__action rotate-left">
+			<a onclick="{rotateLeft}">
+				<i class="image-rotate_left"></i>
+			</a>
 		</div>
-		<div class="image_controls__item">
-			<button class="controls__item fa fa-rotate-right"
-				onclick="{rotateRight}"></button>
+		<div class="image-controls__action rotate-right">
+			<a onclick="{rotateRight}">
+				<i class="image-rotate_right"></i>
+			</a>
 		</div>
-		<div class="image_controls__item zoom-slider-wrapper">
+		<div class="image-controls__action zoom-slider-wrapper">
 	        <div class="zoom-slider">
 	            <div class="zoom-slider-handle"></div>
 	        </div>
 		</div>
+	</div>
 </div>
 
 

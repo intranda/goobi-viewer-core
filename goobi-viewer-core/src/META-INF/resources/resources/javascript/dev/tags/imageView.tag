@@ -15,8 +15,6 @@
 		<div class="image_container">
 			<div id="image_{opts.id}" class="image"></div>
 		</div>
-	
-		
 	</div>
 
 	<script>
