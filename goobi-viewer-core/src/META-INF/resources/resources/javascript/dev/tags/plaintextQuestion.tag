@@ -12,8 +12,10 @@
 				</textarea>
 			</div>
 		</div>
-		<span if="{ !this.opts.item.isReviewMode() && (anno.getText() || anno.getRegion()) }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
+		<span if="{ !this.opts.item.isReviewMode() }" onClick="{deleteAnnotationFromEvent}" class="annotation_area__button">{Crowdsourcing.translate("action__delete_annotation")}</span>
 	</div>
+	<button onclick="{addAnnotation}" class="options-wrapper__option" id="add-annotation">{Crowdsourcing.translate("action__add_annotation")}</button>
+	
 
 <script>
 
@@ -79,12 +81,6 @@
         if(event.item.anno) {            
             event.item.anno.setText(event.target.value);
             this.question.saveToLocalStorage();
-            switch(this.question.targetSelector) {
-                case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-                    this.question.createDummyAnnotationIfRequired();
-                    this.update();
-            }
         } else {
             throw "No annotation to set"
         }
@@ -95,6 +91,10 @@
             this.question.deleteAnnotation(event.item.anno);
             this.update();
         }
+    }
+    
+    addAnnotation() {
+        this.question.createEmptyAnnotation();
     }
     
     handleFinishedDrawing(result) {
