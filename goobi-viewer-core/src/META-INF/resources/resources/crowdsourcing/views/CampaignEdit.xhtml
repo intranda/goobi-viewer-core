@@ -49,10 +49,12 @@
 	                name : "#{userBean.user.displayName}"
 	        }
 	        Crowdsourcing.user = user;
-	        Crowdsourcing.language = "#{navigationHelper.locale}";
+	        Crowdsourcing.translator = new viewerJS.Translator(messageKeys, "#{configurationBean.restApiUrl}", "#{navigationHelper.locale}");
+// 	        Crowdsourcing.language = "#{navigationHelper.locale}";
 	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}";
-	        Crowdsourcing.frameColors = ["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]
-	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
+	        Crowdsourcing.setFrameColors(["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]);
+// 	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
+	    	Crowdsourcing.translator.init()
 	    	.then(() => riot.mount("campaignItem"));
         	
         </script>

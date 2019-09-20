@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * @description Base-Module which initialize the global admin object. * 
- * @version 3.4.0
+ * @description Represents a crowdsourcing item, consisting of a campaign and a manifest which to apply it to * 
+ * @version 3.7.0
  * @module Crowdsourcing.js
  * @requires jQuery
  */
@@ -27,6 +27,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
     let _debug = false;
     const LOCAL_STORAGE_ITEM = "goobi_viewer_crowdsourcing_annotations";
     
+    /**
+     * Constructor for a new item. 
+     * @param item  A json object containing the campaign item data
+     * @param initialCanvasIndex the index of the canvas to open initially. If not used, index = 0 is used
+     */
     crowdsourcing.Item = function(item, initialCanvasIndex) {
         if ( _debug ) {
             console.log( '##############################' );
@@ -47,6 +52,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     };
 
+    /**
+     * Takes an Rx.Observable which should trigger every time a new image is
+     */
     crowdsourcing.Item.prototype.notifyImageOpened = function(observable) {
         observable.subscribe(this.imageOpenEvents);
     }
