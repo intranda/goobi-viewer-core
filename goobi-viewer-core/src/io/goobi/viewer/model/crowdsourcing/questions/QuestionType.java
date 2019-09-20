@@ -22,9 +22,9 @@ package io.goobi.viewer.model.crowdsourcing.questions;
 public enum QuestionType {
 
     PLAINTEXT,
+    GEOLOCATION_POINT
     /** Not implemented yet 
     DATE_PICKER,
-    GEOLOCATION_POINT,
     GEOLOCATION_AREA,
     TRANSCRIPTION,
     KEY_VALUE_LIST

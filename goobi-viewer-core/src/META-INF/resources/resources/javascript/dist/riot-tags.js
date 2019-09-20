@@ -156,7 +156,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
             });
         }.bind(this)
 });
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question, index in this.item.questions}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>oder</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>oder</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>oder</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>oder</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div class="question_wrapper" each="{question, index in this.item.questions}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
 	this.annotationSource = this.itemSource + "/annotations";
@@ -718,6 +718,27 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	}.bind( this ) );
 });
 riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label></div><div id="geoMap"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
+
+on("mount", function() {
+    this.initMap();
+})
+
+this.initMap = function() {
+    var map = new L.Map('geoMap');
+    var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      minZoom: 0,
+      maxZoom: 20,
+      attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    });
+
+    map.setView(new L.LatLng(49.451993, 11.073397), 5);
+    map.addLayer(osm);
+}.bind(this)
+
+this.showInstructions = function() {
+    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+}.bind(this)
+
 });
 
 
