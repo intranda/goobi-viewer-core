@@ -38,6 +38,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
         this.annotations = [];
         this.currentAnnotationIndex = -1;
+        this.colors = Crowdsourcing.frameColors ? Crowdsourcing.frameColors : COLORS;
     }
     
     crowdsourcing.Question.prototype.createAnnotation = function(anno) {
@@ -87,7 +88,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.initAreaSelector = function() {
-        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true, COLORS);
+        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true, this.colors);
         this.areaSelector.init();
 
     }
@@ -177,6 +178,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
             type: "Software"
         }
     }
+    
+    crowdsourcing.Question.prototype.setColors = function(colors) {
+        this.colors = colors;
+    }
+
     
     crowdsourcing.Question.prototype.deleteFromLocalStorage = function() {
         this.item.deleteAnnotations(save, this.getTargetId(), this.id);

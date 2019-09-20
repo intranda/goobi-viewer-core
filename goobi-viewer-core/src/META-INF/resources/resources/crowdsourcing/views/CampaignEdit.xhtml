@@ -50,7 +50,8 @@
 	        }
 	        Crowdsourcing.user = user;
 	        Crowdsourcing.language = "#{navigationHelper.locale}";
-	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}"
+	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}";
+	        Crowdsourcing.frameColors = ["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]
 	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
 	    	.then(() => riot.mount("campaignItem"));
         	
