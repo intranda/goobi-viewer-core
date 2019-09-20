@@ -148,6 +148,9 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
     
         EntityManager em = dao.getFactory().createEntityManager();
+        
+        long existingAnnotations = getAnnotations(em).size();
+        
         try {
             em.getTransaction().begin();
             em.persist(this.daoAnno);
@@ -158,18 +161,27 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         
         em = dao.getFactory().createEntityManager();
         try {
-        Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<PersistentAnnotation> list = q.getResultList();
-        Assert.assertEquals(1, list.size());
-        
-        PersistentAnnotation retrieved = list.get(0);
-        Assert.assertEquals(body, retrieved.getBodyAsResource());
-        Assert.assertEquals(target, retrieved.getTargetAsResource());
+            List<PersistentAnnotation>list = getAnnotations(em);
+            Assert.assertEquals(existingAnnotations+1, list.size());
+            
+            PersistentAnnotation retrieved = list.get(list.size()-1);
+            Assert.assertEquals(body, retrieved.getBodyAsResource());
+            Assert.assertEquals(target, retrieved.getTargetAsResource());
 
         } finally {
             em.close();
         }
+    }
+
+    /**
+     * @param em
+     * @return
+     */
+    private List<PersistentAnnotation> getAnnotations(EntityManager em) {
+        Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<PersistentAnnotation> list = q.getResultList();
+        return list;
     }
     
     @Test

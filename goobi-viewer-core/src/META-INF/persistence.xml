@@ -6,8 +6,6 @@
 	<persistence-unit name="intranda_viewer_tomcat"
 		transaction-type="JTA">
 		<jta-data-source>java:comp/env/viewer</jta-data-source>
-
-		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
 		<class>io.goobi.viewer.model.annotation.Comment</class>
         <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
 		<class>io.goobi.viewer.model.bookshelf.Bookshelf</class>
@@ -111,8 +109,6 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
-
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.h2.Driver" />

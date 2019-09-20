@@ -19,11 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -38,6 +40,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,6 +60,7 @@ public class SequenceBuilderTest extends AbstractSolrEnabledTest {
     @Test
     public void testAddOtherContent() throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, ContentNotFoundException, IOException {
+
         DataManager.getInstance().injectConfiguration(new Configuration("src/config_viewer.xml"));
 
         ManifestBuilder manifestBuilder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
