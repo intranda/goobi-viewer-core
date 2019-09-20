@@ -281,7 +281,7 @@ public class RssResource {
             query = SearchHelper.buildFinalQuery(query, DataManager.getInstance().getConfiguration().isAggregateHits());
         }
 
-        // Optional facetting
+        // Optional faceting
         List<String> filterQueries = null;
         if (!"-".equals(facets)) {
             SearchFacets searchFacets = new SearchFacets();
