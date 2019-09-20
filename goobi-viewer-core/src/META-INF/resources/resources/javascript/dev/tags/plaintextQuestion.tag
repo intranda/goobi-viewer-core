@@ -81,10 +81,12 @@
 	}
 	
 	showAddAnnotationButton() {
-	    switch(this.question.targetSelector) {
-	        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-	        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-				return this.question.targetFrequency == 0 || this.question.targetFrequency > this.question.annotations.length;
+	    if(!this.opts.item.isReviewMode()) {	        
+		    switch(this.question.targetSelector) {
+		        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+		        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+					return this.question.targetFrequency == 0 || this.question.targetFrequency > this.question.annotations.length;
+		    }
 	    }
 	    return false;
 	}

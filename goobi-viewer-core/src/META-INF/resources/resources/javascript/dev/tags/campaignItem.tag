@@ -33,9 +33,11 @@
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
-				<button onclick="{acceptReview}" class="options-wrapper__option" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
-				<button onclick="{rejectReview}" class="options-wrapper__option" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
-				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
+				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
+				<div>oder</div>
+				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
+				<div>oder</div>
+				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 		</div>
 	 </div>

@@ -80,7 +80,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                 break;
             case Crowdsourcing.Question.Selector.WHOLE_PAGE:
             case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                if(this.annotations.length == 0) {                    
+                if(this.annotations.length == 0 && !this.item.isReviewMode()) {                    
                     this.createEmptyAnnotation();
                 }
         }
