@@ -3,11 +3,11 @@
 <nav class="numeric-paginator">
 
 	<ul>
-<!-- 		<li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"> -->
-<!-- 			<span index="{getCurrentIndex()-1}"  onclick="{this.loadFromEvent}"> -->
-<!-- 				<i class="fa fa-angle-left" aria-hidden="true"></i> -->
-<!-- 			</span> -->
-<!-- 		</li> -->
+		<li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev">
+			<span  onclick="{this.loadPrevious}">
+				<i class="fa fa-angle-left" aria-hidden="true"></i>
+			</span>
+		</li>
 		<li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
 			<span  index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
 		</li>
@@ -19,11 +19,11 @@
 		<li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}" >
 			<span index="{this.getIndex(canvas)}"  onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span>
 		</li>
-<%-- 		<li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"> --%>
-<!-- 			<span index="{getCurrentIndex()+1}"  onclick="{this.loadFromEvent}"> -->
-<!-- 				<i class="fa fa-angle-right" aria-hidden="true"></i> -->
-<!-- 			</span> -->
-<!-- 		</li> -->
+		<li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next">
+			<span  onclick="{this.loadNext}">
+				<i class="fa fa-angle-right" aria-hidden="true"></i>
+			</span>
+		</li>
 	</ul>
 
 </nav>
@@ -48,13 +48,21 @@ loadFromEvent(e) {
 }
     
 load(index) {
-    console.log("Loading image ",index+1);
     if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {        
 		this.opts.item.loadImage(index);
 		this.update();
     }
 }
 
+loadPrevious() {
+    let index = this.getCurrentIndex()-1;
+	this.load(index);
+}
+
+loadNext() {
+    let index = this.getCurrentIndex()+1;
+	this.load(index);
+}
 
 
 getCurrentIndex() {

@@ -62,15 +62,15 @@
 	    }
 
 	});
+
 	
-	this.on("updated", function() {
-		if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
+	focusCurrentAnnotation() {
+	    if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
 		    let id = "question_" + this.opts.index + "_annotation_" + this.question.currentAnnotationIndex;
 		    let inputSelector = "#" + id + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 		}
-	
-	}.bind(this));
+	}
 	
 	showAnnotationImages() {
 	    return this.question.targetSelector === Crowdsourcing.Question.Selector.RECTANGLE;
@@ -108,10 +108,12 @@
     
     addAnnotation() {
         this.question.createEmptyAnnotation();
+        this.focusCurrentAnnotation();
     }
     
     handleFinishedDrawing(result) {
         this.question.addAnnotation(result.id, result.region, result.color);
+        this.focusCurrentAnnotation();
         this.update();
     }
     

@@ -293,7 +293,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 });
-riot.tag2('canvaspaginator', '<nav class="numeric-paginator"><ul><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li> <%-- <li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"> --%></ul></nav>', '', '', function(opts) {
+riot.tag2('canvaspaginator', '<nav class="numeric-paginator"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
 
 this.on( "mount", function() {
 
@@ -313,11 +313,20 @@ this.loadFromEvent = function(e) {
 }.bind(this)
 
 this.load = function(index) {
-    console.log("Loading image ",index+1);
     if(index != this.getCurrentIndex() && index >= 0 && index < this.getTotalImageCount()) {
 		this.opts.item.loadImage(index);
 		this.update();
     }
+}.bind(this)
+
+this.loadPrevious = function() {
+    let index = this.getCurrentIndex()-1;
+	this.load(index);
+}.bind(this)
+
+this.loadNext = function() {
+    let index = this.getCurrentIndex()+1;
+	this.load(index);
 }.bind(this)
 
 this.getCurrentIndex = function() {
@@ -966,14 +975,13 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 
 	});
 
-	this.on("updated", function() {
-		if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
+	this.focusCurrentAnnotation = function() {
+	    if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
 		    let id = "question_" + this.opts.index + "_annotation_" + this.question.currentAnnotationIndex;
 		    let inputSelector = "#" + id + " textarea";
 		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
 		}
-
-	}.bind(this));
+	}.bind(this)
 
 	this.showAnnotationImages = function() {
 	    return this.question.targetSelector === Crowdsourcing.Question.Selector.RECTANGLE;
@@ -1011,10 +1019,12 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 
     this.addAnnotation = function() {
         this.question.createEmptyAnnotation();
+        this.focusCurrentAnnotation();
     }.bind(this)
 
     this.handleFinishedDrawing = function(result) {
         this.question.addAnnotation(result.id, result.region, result.color);
+        this.focusCurrentAnnotation();
         this.update();
     }.bind(this)
 
