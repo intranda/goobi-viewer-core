@@ -27,16 +27,16 @@
 			</div>
 			<div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate">
 				<button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate("button__save")}</button>
-				<div>oder</div>
+				<div>{Crowdsourcing.translate("label__or")</div>
 				<button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate("action__submit_for_review")}</button>
-				<div>oder</div>
+				<div>{Crowdsourcing.translate("label__or")</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 			<div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review">
 				<button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate("action__accept_review")}</button>
-				<div>oder</div>
+				<div>{Crowdsourcing.translate("label__or")</div>
 				<button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate("action__reject_review")}</button>
-				<div>oder</div>
+				<div>{Crowdsourcing.translate("label__or")</div>
 				<button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate("action__skip_item")}</button>
 			</div>
 		</div>
