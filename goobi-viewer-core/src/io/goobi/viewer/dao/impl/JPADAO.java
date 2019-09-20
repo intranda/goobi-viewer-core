@@ -4026,6 +4026,26 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
+    
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotations(int, int, java.lang.String, boolean, java.util.Map)
+     */
+    @Override
+    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.dao.IDAO#getAnnotationCount(java.util.Map)
+     */
+    @Override
+    public long getAnnotationCount(Map<String, String> filters) throws DAOException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
     /**
      * @return false if the annotation already exists, true if it was persisted

@@ -25,17 +25,16 @@
             <div id="crowdCampaigns">
                     <h:form id="csCampaignsForm" prependId="false">
                     <h2 class="admin__content-inner-title">#{msg.admin__crowdsourcing_annotations}</h2>
-                                                
 
                         <div class="admin__content-inner-content">
-                            <div id="csCampaignsWrapper" class="sortable-table-wrapper">
+                            <div id="csAnnotationsWrapper" class="sortable-table-wrapper">
                             
                             	<div class="admin__content-inner-content__above">									
 	                                <!-- paginator -->
-	                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelCampaigns}" />
+	                                <viewerComponent:dataTablePaginator tableValues="#{crowdsourcingBean.lazyModelAnnotations}" />
 								</div>
 
-                                <table id="csCampaignsTable" class="table table-striped table-bordered admin-table">
+                                <table id="csAnnotationsTable" class="table table-striped table-bordered admin-table">
                                     <thead>
                                         <tr>
                                             <th class="column_date">
@@ -51,39 +50,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <ui:repeat var="campaign" value="#{crowdsourcingBean.lazyModelCampaigns.paginatorList}">
+                                        <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
                                             <tr>
                                                 <td class="column_title">
-                                                    <span class="column_title__main_title">#{campaign.getTitle(navigationHelper.locale, true)}</span>
-                                                    <br />
-                                                    <!-- Edit link -->
-                                                    <div class="cms-module__actions">
-                                                    <h:commandLink styleClass="btn btn--clean" action="#{crowdsourcingBean.editCampaignAction(campaign)}" title="#{msg.edit}" alt="#{msg.edit}">
-                                                        #{msg.edit}
-                                                        <f:setPropertyActionListener value="#{true}" target="#{crowdsourcingBean.editMode}" />
-                                                    </h:commandLink>
-                                                    <!-- Delete link -->
-                                                    <h:commandLink styleClass="btn btn--clean delete"
-                                                        onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };" 
-                                                        action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                        #{msg.delete}
-                                                    </h:commandLink>
-                                                    </div>
                                                 </td>
                                                 <td class="column_visibility">
-                                                    <h:outputText value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
                                                 </td>
                                                 <td class="column_duration">
-                                                    <h:outputText rendered="#{campaign.dateStart != null}" value="#{campaign.dateStart}">
-                                                        #{msg.admin__crowdsourcing_campaign_duration_from}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                                    </h:outputText>
-                                                    <br />
-                                                    <h:outputText rendered="#{campaign.dateEnd != null}" value="#{campaign.dateEnd}">
-                                                        #{msg.admin__crowdsourcing_campaign_duration_until}: <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
-                                                    </h:outputText>
+                                                    
                                                 </td>
-                                                <td class="column_statistics">
-                                                   <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"/>
+                                                <td class="column_actions">
                                                 </td>
                                             </tr>
                                         </ui:repeat>

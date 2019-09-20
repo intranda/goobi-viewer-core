@@ -55,6 +55,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -77,6 +78,8 @@ public class CrowdsourcingBean implements Serializable {
     private UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
+    private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
+
     /**
      * The campaign selected in backend
      */
@@ -130,6 +133,52 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            //            lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
+            //            lazyModelCampaigns.addFilter("classifications", "classification");
+        }
+
+        if (lazyModelAnnotations == null) {
+            // TODO
+            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
+
+                private Optional<Long> numCreatedPages = Optional.empty();
+
+                @Override
+                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                        Map<String, String> filters) {
+                    try {
+                        if (StringUtils.isBlank(sortField)) {
+                            sortField = "id";
+                        }
+
+                        List<PersistentAnnotation> ret =
+                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        return ret;
+                    } catch (DAOException e) {
+                        logger.error("Could not initialize lazy model: {}", e.getMessage());
+                    }
+
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    if (!numCreatedPages.isPresent()) {
+                        try {
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
+                        } catch (DAOException e) {
+                            logger.error("Unable to retrieve total number of campaigns", e);
+                        }
+                    }
+                    return numCreatedPages.orElse(0l);
+                }
+
+                @Override
+                public void resetTotalNumberOfRecords() {
+                    numCreatedPages = Optional.empty();
+                }
+            });
+            lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
             //            lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
             //            lazyModelCampaigns.addFilter("classifications", "classification");
         }
@@ -279,11 +328,10 @@ public class CrowdsourcingBean implements Serializable {
 
         return ret;
     }
-    
+
     /**
-     * Check if the given user is allowed access to the given campaign from a rights management standpoint alone.
-     * If the user is null, access is granted for public campaigns only, otherwise access is granted if the user
-     * has the appropriate rights
+     * Check if the given user is allowed access to the given campaign from a rights management standpoint alone. If the user is null, access is
+     * granted for public campaigns only, otherwise access is granted if the user has the appropriate rights
      * 
      * @param user
      * @param campaign
@@ -293,7 +341,7 @@ public class CrowdsourcingBean implements Serializable {
     public boolean isAllowed(User user, Campaign campaign) throws DAOException {
         if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
             return true;
-        } else if(user != null) {
+        } else if (user != null) {
             return !user.getAllowedCrowdsourcingCampaigns(Collections.singletonList(campaign)).isEmpty();
         } else {
             return false;
@@ -361,6 +409,13 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * @return the lazyModelAnnotations
+     */
+    public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
+        return lazyModelAnnotations;
+    }
+
+    /**
      * @return the selectedCampaign
      */
     public Campaign getSelectedCampaign() {
@@ -413,7 +468,7 @@ public class CrowdsourcingBean implements Serializable {
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
-        if(this.targetCampaign != targetCampaign) {            
+        if (this.targetCampaign != targetCampaign) {
             resetTarget();
         }
         this.targetCampaign = targetCampaign;
@@ -456,7 +511,7 @@ public class CrowdsourcingBean implements Serializable {
 
         }
     }
-    
+
     /**
      * removes the target identifier (pi) from the bean, so that pi can be targeted again by random target resolution
      */
@@ -532,19 +587,19 @@ public class CrowdsourcingBean implements Serializable {
         }
         return null;
     }
-    
+
     public String handleInvalidTarget() {
-        if(StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
+        if (StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
             return "pretty:crowdCampaigns";
-        } else if(getTargetCampaign() == null) {
+        } else if (getTargetCampaign() == null) {
             return "pretty:crowdCampaigns";
-        } else if(CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
+        } else if (CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
             return "pretty:crowdCampaigns";
-        } else if(getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
+        } else if (getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
             return "pretty:crowdCampaigns";
         } else
             try {
-                if(userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
+                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
                     return "pretty:crowdCampaigns";
                 } else {
                     return "";
