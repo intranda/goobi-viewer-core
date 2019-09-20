@@ -30,15 +30,22 @@
             
                 <!-- PAGE HEADER TOP BRAND -->            
                 <div class="page-header__top-brand">
-                    <a href="https://www.intranda.com/" target="_blank" rel="noopener">intranda GmbH</a>
+                    <a href="https://www.intranda.com/" target="_blank" rel="noopener">Goobi viewer Crowdsourcing</a>
                 </div>
 
                 <!-- PAGE HEADER TOP ACTIONS -->            
                 <div class="page-header__top-actions">
                     <!-- CHANGE LOCAL -->
                     <div id="changeLocalWrapper" class="page-header__top-actions-language">
+                    	<button type="button" class="btn btn--clean" data-toggle="local" aria-label="#{msg.aria_label__switch_language}">
+                    		#{msg['changeLocal_' += navigationHelper.localeString]}
+                    	</button>
                         <viewerComponent:changeLocal toggleLanguage="false" showFlags="false" />
                     </div>
+                    <!-- WATCHLIST/BOOKSHELVES -->
+<!--                     <div class="page-header__top-actions-watchlist"> -->
+<!--                         <viewerComponent:bookshelfNavigation /> -->
+<!--                     </div> -->
                     <!-- LOGIN NAVIGATION -->
                     <div class="page-header__top-actions-login">
                         <viewerComponent:loginNavigation />

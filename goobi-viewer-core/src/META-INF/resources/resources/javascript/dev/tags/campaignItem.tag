@@ -54,7 +54,7 @@
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => fetch(this.annotationSource))
+	    .then( () => this.fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
 		.catch( error => {
@@ -127,6 +127,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(pages)
 	    })
@@ -174,11 +175,22 @@
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(body)
 	    })
 	}
 
+	fetch(url) {
+	    return fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: "no-cache",
+            mode: 'cors', // no-cors, cors, *same-origin
+	    })
+	}
 
 
 </script>

@@ -168,7 +168,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => fetch(this.annotationSource))
+	    .then( () => this.fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
 		.catch( error => {
@@ -240,6 +240,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
@@ -287,8 +288,20 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors',
             body: JSON.stringify(body)
+	    })
+	}.bind(this)
+
+	this.fetch = function(url) {
+	    return fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: "no-cache",
+            mode: 'cors',
 	    })
 	}.bind(this)
 
