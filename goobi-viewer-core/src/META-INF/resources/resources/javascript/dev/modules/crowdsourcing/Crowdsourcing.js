@@ -77,7 +77,6 @@ var Crowdsourcing = ( function() {
      * Requires the method Crowdsourcing.initTranslations() to be called first 
      */
     crowdsourcing.translate = function(key, language) {
-        console.log("translator", crowdsourcing.translator);
        if(!crowdsourcing.translator) {
            return key;
        } else {
