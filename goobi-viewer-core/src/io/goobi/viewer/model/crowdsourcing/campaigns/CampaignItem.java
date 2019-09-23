@@ -29,7 +29,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- *  An item containing a campaign and a source to be annotated
+ *  An item containing a campaign and a source to be annotated. 
  *  Used to set up a frontend annotation view in javascript as well as process status changes created by that view
  *
  * @author florian
