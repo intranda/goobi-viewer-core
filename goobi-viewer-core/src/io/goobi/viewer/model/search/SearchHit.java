@@ -697,6 +697,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
+    @Deprecated
     List<SolrDocument> getUgcDocsForPage(String pi, int order) throws PresentationException, IndexUnreachableException {
         String ugcQuery = new StringBuilder().append(SolrConstants.DOCTYPE)
                 .append(':')
