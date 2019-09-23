@@ -39,6 +39,8 @@
 	<teiFolder>tei</teiFolder>
 	<!-- cmdiFolder: contains CMDI metadata/fulltext files -->
 	<cmdiFolder>cmdi</cmdiFolder>
+    <!-- annotationFolder: contains JSON files of annotations for indexing -->
+    <annotationFolder>annotations</annotationFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
 	<hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>

@@ -44,10 +44,13 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -424,6 +427,20 @@ public class CrowdsourcingBean implements Serializable {
     public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
         if (annotation != null) {
             if (DataManager.getInstance().getDao().deleteAnnotation(annotation)) {
+                try {
+                    if (annotation.deleteExportedTextFiles() > 0) {
+                        try {
+                            Helper.reIndexRecord(annotation.getTargetPI());
+                            logger.debug("Re-indexing record: {}", annotation.getTargetPI());
+                        } catch (RecordNotFoundException e) {
+                            logger.error(e.getMessage());
+                        }
+                    }
+                } catch (ViewerConfigurationException e) {
+                    logger.error(e.getMessage());
+                    Messages.error(e.getMessage());
+                }
+
                 Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
                 lazyModelCampaigns.update();
             }

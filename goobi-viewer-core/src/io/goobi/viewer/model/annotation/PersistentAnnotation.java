@@ -17,7 +17,15 @@ package io.goobi.viewer.model.annotation;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +59,15 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
@@ -471,6 +487,65 @@ public class PersistentAnnotation {
         annotation.setMotivation(this.getMotivation());
 
         return annotation;
+    }
+
+    /**
+     * Deletes exported JSON annotations from a related record's data folder. Should be called when deleting this annotation.
+     * 
+     * @return Number of deleted files
+     * @throws ViewerConfigurationException
+     */
+    public int deleteExportedTextFiles() throws ViewerConfigurationException {
+        if (DataManager.getInstance().getConfiguration().getAnnotationFolder() == null) {
+            throw new ViewerConfigurationException("annotationFolder is not configured");
+        }
+
+        int count = 0;
+        try {
+            Set<Path> filesToDelete = new HashSet<>();
+            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(targetPI);
+            Path annotationFolder = Paths
+                    .get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getAnnotationFolder(), targetPI);
+            logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
+            if (!Files.isDirectory(annotationFolder)) {
+                logger.trace("Annotation folder not found - nothing to delete");
+                return 0;
+            }
+
+            {
+                Path file = Paths.get(annotationFolder.toAbsolutePath().toString(), targetPI + "_" + id + ".json");
+                if (Files.isRegularFile(file)) {
+                    filesToDelete.add(file);
+                }
+            }
+            if (!filesToDelete.isEmpty()) {
+                for (Path file : filesToDelete) {
+                    try {
+                        Files.delete(file);
+                        count++;
+                        logger.info("Annotation file deleted: {}", file.getFileName().toString());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+
+            // Delete folder if empty
+            try {
+                if (FileTools.isFolderEmpty(annotationFolder)) {
+                    Files.delete(annotationFolder);
+                    logger.info("Empty annotation folder deleted: {}", annotationFolder.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return count;
     }
 
     /**

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,9 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -1729,6 +1727,16 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getCmdiFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("cmdi", DataManager.getInstance().getConfiguration().getCmdiFolder());
+    }
+    
+
+    /**
+     * @see Configuration#getAnnotationFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getAnnotationFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("annotations", DataManager.getInstance().getConfiguration().getAnnotationFolder());
     }
 
     /**
