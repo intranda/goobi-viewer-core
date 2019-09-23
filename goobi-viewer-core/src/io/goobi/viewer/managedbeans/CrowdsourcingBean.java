@@ -115,6 +115,7 @@ public class CrowdsourcingBean implements Serializable {
                     try {
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
+                            sortOrder = SortOrder.DESCENDING;
                         }
 
                         List<Campaign> ret =
@@ -160,6 +161,7 @@ public class CrowdsourcingBean implements Serializable {
                     try {
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
+                            sortOrder = SortOrder.DESCENDING;
                         }
 
                         List<PersistentAnnotation> ret =
