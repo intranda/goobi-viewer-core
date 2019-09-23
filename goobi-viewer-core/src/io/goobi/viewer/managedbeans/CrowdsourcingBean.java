@@ -146,8 +146,6 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            //            lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            //            lazyModelCampaigns.addFilter("classifications", "classification");
         }
 
         if (lazyModelAnnotations == null) {
@@ -192,15 +190,14 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            //            lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            //            lazyModelCampaigns.addFilter("classifications", "classification");
+            lazyModelAnnotations.setFilters("targetPI", "body", "dateCreated");
         }
     }
 
     /**
      * 
      * @param visibility
-     * @return  The total number of campaigns of a certain {@link CampaignVisibility}
+     * @return The total number of campaigns of a certain {@link CampaignVisibility}
      * @throws DAOException
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
@@ -224,7 +221,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @return  A list of all locales supported by this viewer application
+     * @return A list of all locales supported by this viewer application
      */
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
@@ -243,6 +240,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * Sets a new {@link Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for creating a new campaign
+     * 
      * @return
      */
     public String createNewCampaignAction() {
@@ -252,6 +250,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * Sets the given {@link Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for editing this campaign
+     * 
      * @return
      */
     public String editCampaignAction(Campaign campaign) {
@@ -320,7 +319,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @return  All campaigns from the database
+     * @return All campaigns from the database
      * @throws DAOException
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
@@ -331,7 +330,7 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * 
      * @param visibility
-     * @return  All camapaigns of the given {@link CampaignVisibility} from the database
+     * @return All camapaigns of the given {@link CampaignVisibility} from the database
      * @throws DAOException
      */
     public List<Campaign> getAllCampaigns(CampaignVisibility visibility) throws DAOException {
@@ -522,7 +521,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * 
-     * @return  The id of the {@link CrowdsourcingBean#selectedCampaign} as String
+     * @return The id of the {@link CrowdsourcingBean#selectedCampaign} as String
      */
     public String getSelectedCampaignId() {
         Long id = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getId).orElse(null);
@@ -530,7 +529,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     *  Set the  {@link CrowdsourcingBean#selectedCampaign} by a String containing the campaign id
+     * Set the {@link CrowdsourcingBean#selectedCampaign} by a String containing the campaign id
      * 
      * @param id
      * @throws DAOException
@@ -598,7 +597,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * Sets the {@link #targetIdentifier} to a  random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
+     * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
      * 
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -685,7 +684,7 @@ public class CrowdsourcingBean implements Serializable {
      * 
      * @param campaign
      * @param pi
-     * @return  a pretty url to annotate the work with the given pi with the given {@link Campaign}
+     * @return a pretty url to annotate the work with the given pi with the given {@link Campaign}
      */
     public String forwardToCrowdsourcingAnnotation(Campaign campaign, String pi) {
         setTargetCampaign(campaign);
@@ -697,7 +696,7 @@ public class CrowdsourcingBean implements Serializable {
      * 
      * @param campaign
      * @param pi
-     * @return  a pretty url to review the work with the given pi with the given {@link Campaign}
+     * @return a pretty url to review the work with the given pi with the given {@link Campaign}
      */
     public String forwardToCrowdsourcingReview(Campaign campaign, String pi) {
         setTargetCampaign(campaign);
@@ -706,9 +705,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @param campaign  The campaign with which to annotate/review
-     * @param status    if {@link CampaignRecordStatus#REVIEW}, return a url for reviewing, otherwise for annotating
-     * @return  The pretty url to either review or annotate a random work with the given {@link Campaign}
+     * @param campaign The campaign with which to annotate/review
+     * @param status if {@link CampaignRecordStatus#REVIEW}, return a url for reviewing, otherwise for annotating
+     * @return The pretty url to either review or annotate a random work with the given {@link Campaign}
      */
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
@@ -730,7 +729,8 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * 
-     * @return the pretty URL to the crowdsourcing campaigns page if {@link UserBean#getUser()} is not eligible for viewing the {@link #targetCampaign}
+     * @return the pretty URL to the crowdsourcing campaigns page if {@link UserBean#getUser()} is not eligible for viewing the
+     *         {@link #targetCampaign}
      */
     public String handleInvalidTarget() {
         if (StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
