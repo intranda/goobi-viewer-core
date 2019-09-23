@@ -83,15 +83,39 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
+/**
+ * 
+ * A Campaign is a template to create annotations of specific types for a limited set of target resources and optionally by
+ * limited user group within a limited time frame.
+ * The types of annotations created are determined by the {@link Question Questions} contained in this Campaign
+ * 
+ * @author florian
+ *
+ */
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
 public class Campaign implements CMSMediaHolder {
 
+    /**
+     *  The visibility of the campaign to other users 
+     */
     public enum CampaignVisibility {
+        /**
+         * Hidden for all users except in the admin backend
+         */
         PRIVATE,
+        /**
+         * Hidden to all except users having the appropritate rights
+         */
         RESTRICTED,
+        /**
+         * Visible by all users
+         */
         PUBLIC,
+        /**
+         * Visible to all, but no creation of annotations possible
+         */
         FINISHED;
 
         public static CampaignVisibility getByName(String name) {

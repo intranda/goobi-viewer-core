@@ -54,6 +54,13 @@ import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
+ * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the campaign status
+ * 
+ * The following api points are defined: 
+ * <ul>
+ * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/> GET a {@link CampaignItem} for the given campaignId and pi, or PUT the status for that combination</li>
+ * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/annotations/ <br/> GET a list of annotations for the given campaignId and pi, sorted by target, or PUT the annotations for this combination</li>
+ *
  * @author florian
  *
  */
@@ -74,6 +81,18 @@ public class CampaignItemResource {
         this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
+    /**
+     * Get the {@link CampaignItem} for a campaign and work, containing the URL of the targeted resource (iiif manifest)
+     * and all information to create a GUI for the campaign's questions
+     * 
+     * 
+     * @param campaignId
+     * @param pi
+     * @return  a {@link CampaignItem}
+     * @throws URISyntaxException
+     * @throws DAOException
+     * @throws ContentNotFoundException
+     */
     @GET
     @Path("/{campaignId}/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -94,6 +113,14 @@ public class CampaignItemResource {
         }
     }
 
+    /**
+     * Sets the {@link CampaignRecordStatus} for the given campaign and work and records the {@link User} who made the change
+     * 
+     * @param item
+     * @param campaignId
+     * @param pi
+     * @throws DAOException
+     */
     @PUT
     @Path("/{campaignId}/{pi}/")
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -118,6 +145,7 @@ public class CampaignItemResource {
     }
 
     /**
+     * Get all annotations for the given campaign and work, sorted by target
      * 
      * @param campaignId
      * @param pi
@@ -207,6 +235,12 @@ public class CampaignItemResource {
         }
     }
 
+    /**
+     * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas)
+     * 
+     * @author florian
+     *
+     */
     public static class AnnotationPage {
         private String id;
         private List<WebAnnotation> annotations;

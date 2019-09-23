@@ -1388,6 +1388,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
         this.bcrypt = bcrypt;
     }
 
+    /**
+     * Get the {@link User#id} of a user from a URI 
+     * 
+     * @param idAsURI
+     * @return
+     */
     public static Long getId(URI idAsURI) {
         if(idAsURI == null) {
             return null;
