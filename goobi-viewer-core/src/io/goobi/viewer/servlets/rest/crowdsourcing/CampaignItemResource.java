@@ -81,7 +81,7 @@ public class CampaignItemResource {
     public CampaignItem getItemForManifest(@PathParam("campaignId") Long campaignId, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         URI servletURI = URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
-        URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi, BuildMode.IIIF_SIMPLE);
+        URI manifestURI = new ManifestBuilder(servletURI, requestURI).getManifestURI(pi);
 
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign != null) {

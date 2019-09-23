@@ -55,7 +55,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.AreaSelector.prototype.createDrawer = function (imageView) {
-        this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle("red"), (e) => e.shiftKey);
+        this.drawer = new ImageView.Draw(imageView.viewer, this.getStyle("red"), function(e) {
+            return e.shiftKey && this.allowDrawing();
+        }.bind(this));
         this.drawer.finishedDrawing().subscribe(function(rect) {
             if(this.rect && !this.multiRect) {
                 this.removeOverlay(this.rect)
@@ -71,6 +73,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		this.rects.push(this.rect);
     	}.bind(this))
     	this.drawer.finishedDrawing().map((rect) => _getResultObject(rect, imageView)).subscribe(this.finishedDrawing);
+    }
+    
+    crowdsourcing.AreaSelector.prototype.allowDrawing = function() {
+        return true;
     }
     
     crowdsourcing.AreaSelector.prototype.reset = function() {
@@ -165,13 +171,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     function _getResultObject(rect, image) {
-        console.log("rect ", rect);
         let region = rect.rect.rotate(-image.getRotation());
-        console.log("region ", region);
         let scaledRegion = ImageView.CoordinateConversion.scaleToImage(region, image.viewer, image.viewer.world.getItemAt(0).source);
         scaledRegion.x = Math.max(0, scaledRegion.x);
         scaledRegion.y = Math.max(0, scaledRegion.y);
-        console.log("scaledRegion ", scaledRegion);
         let result = {
                 id: rect.id,
                 color: rect.style.borderColor,

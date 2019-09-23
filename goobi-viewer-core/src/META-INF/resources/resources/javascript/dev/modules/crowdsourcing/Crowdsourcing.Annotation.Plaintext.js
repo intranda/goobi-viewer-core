@@ -34,7 +34,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     value: "",
             }
         }
-        this.dummy = false; //if dummy is true, the annotation is not saved but exists only as placeholder to create a new annotation
  
     }
     crowdsourcing.Annotation.Plaintext.prototype = Object.create(crowdsourcing.Annotation.prototype);
@@ -45,8 +44,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
         
     crowdsourcing.Annotation.Plaintext.prototype.setText = function(text) {
+        if(this.body.valuie != text) {                
+            this.setModified(new Date());
+        }
         this.body.value = text;
-        this.dummy = false;
     }
 
 

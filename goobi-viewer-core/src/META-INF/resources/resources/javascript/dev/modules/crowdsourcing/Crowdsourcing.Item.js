@@ -50,6 +50,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageOpenEvents = new Rx.Subject();
         this.imageRotationEvents = new Rx.Subject();
 
+        let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
+        if(firstAreaQuestion) {
+            firstAreaQuestion.active = true;
+        }
     };
 
     /**
@@ -71,13 +75,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageOpenEvents.subscribe(eventHandler, errorHandler, completedHandler);
     }
     
-    crowdsourcing.Item.prototype.initViewer = function() {
-        return fetch(this.imageSource)
-        .then( (response) => response.json())
-        .then( function(json) {
-            this.canvases = _getCanvasList(json);
-            this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length-1));
-        }.bind(this) )
+    crowdsourcing.Item.prototype.initViewer = function(imageSource) {
+        this.canvases = _getCanvasList(imageSource);
+        this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length-1));
     }
     
     crowdsourcing.Item.prototype.loadImage = function(index) {
