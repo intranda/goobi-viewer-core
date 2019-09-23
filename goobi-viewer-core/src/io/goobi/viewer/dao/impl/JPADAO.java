@@ -3042,8 +3042,6 @@ public class JPADAO implements IDAO {
      */
     @Override
     public long getCampaignCount(Map<String, String> filters) throws DAOException {
-        if (filters != null)
-            logger.trace("getCampaignCount: {}", filters.get("visibility"));
         return getRowCount("Campaign", null, filters);
     }
 
@@ -3080,8 +3078,7 @@ public class JPADAO implements IDAO {
                 q.setFlushMode(FlushModeType.COMMIT);
                 // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-                List<Campaign> list = q.getResultList();
-                return list;
+                return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
                 return Collections.emptyList();
@@ -4026,25 +4023,55 @@ public class JPADAO implements IDAO {
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
     }
-    
 
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotations(int, int, java.lang.String, boolean, java.util.Map)
+     * @should return correct rows
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
+        synchronized (crowdsourcingRequestLock) {
+            preQuery();
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM PersistentAnnotation a");
+            StringBuilder order = new StringBuilder();
+            try {
+                Map<String, String> params = new HashMap<>();
+
+                String filterString = createFilterQuery(null, filters, params);
+                if (StringUtils.isNotEmpty(sortField)) {
+                    order.append(" ORDER BY a.").append(sortField);
+                    if (descending) {
+                        order.append(" DESC");
+                    }
+                }
+                sbQuery.append(filterString).append(order);
+
+                logger.trace(sbQuery.toString());
+                Query q = em.createQuery(sbQuery.toString());
+                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+                //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
+                q.setFirstResult(first);
+                q.setMaxResults(pageSize);
+                q.setFlushMode(FlushModeType.COMMIT);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
+                return Collections.emptyList();
+            }
+        }
     }
 
-    /* (non-Javadoc)
+    /**
      * @see io.goobi.viewer.dao.IDAO#getAnnotationCount(java.util.Map)
+     * @should return correct count
      */
     @Override
     public long getAnnotationCount(Map<String, String> filters) throws DAOException {
-        // TODO Auto-generated method stub
-        return 0;
+        return getRowCount("PersistentAnnotation", null, filters);
     }
 
     /**
