@@ -15,49 +15,33 @@
             <!-- METADATA ITEM STATUS -->
             <h:panelGroup id="metadata-status">
                 <div class="page-metadata-item page-metadata-item-status">
-                    <h3>#{msg.admin__crowdsourcing_campaign_settings}</h3>
+                	<div>
+	                    <h3>#{msg.admin__crowdsourcing_campaign_visibility}</h3>
+	                   	<div class="custom-control custom-control--select">
+	                        <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}">
+	                            <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
+	                                var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
+	                        </h:selectOneMenu>
+	                   	</div>
+                   	</div>
 
-                    <dl class="dl-horizontal">
-                        <!-- VISIBILITY -->
-                        <dt>
-                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_visibility}:" />
-                        </dt>
-                        <dd>
-                        	<div class="custom-control custom-control--select">
-	                            <h:selectOneMenu value="#{crowdsourcingBean.selectedCampaign.visibility}">
-	                                <f:selectItems itemLabel="#{msg['admin__crowdsourcing_campaign_visibility_' += val]}"
-	                                    var="val" value="#{crowdsourcingBean.selectedCampaign.campaignVisibilityValues}"/> 
-	                            </h:selectOneMenu>
-                        	</div>
-                        </dd>
-                        <!-- DURATION -->
-                        <dt>
-                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration}:" />
-                        </dt>
-                        <dd>
-                            <label></label>
-                        </dd>
-                        <dt class="minor-label">
-                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_from}:" />
-                        </dt>
-                        <dd>
-	                    	<input class="form-control" type="date" jsf:id="campaignDateStart" jsf:value="#{crowdsourcingBean.selectedCampaign.dateStartString}" />
-                        </dd>
-                        <dt class="minor-label">
-                            <h:outputText  value="#{msg.admin__crowdsourcing_campaign_duration_until}:" />
-                        </dt>
-                        <dd>
-                            <input  class="form-control" type="date" jsf:id="campaignDateEnd" jsf:value="#{crowdsourcingBean.selectedCampaign.dateEndString}" />
-                        </dd>
-                        <dd>
-                        	<div class="cms-module__actions">
+					<div class="page-metadata-item-date-selector">
+	               		<h3>#{msg.admin__crowdsourcing_campaign_duration}:</h3>
+	                        <div class="custom-control">
+	                            <h:outputText value="#{msg.admin__crowdsourcing_campaign_duration_from}:" />
+	                        </div>
+		                    <input class="form-control" type="date" jsf:id="campaignDateStart" jsf:value="#{crowdsourcingBean.selectedCampaign.dateStartString}" />
+	                        <div class="custom-control">
+	                            <h:outputText  value="#{msg.admin__crowdsourcing_campaign_duration_until}:" />
+	                        </div>
+	                        <input  class="form-control" type="date" jsf:id="campaignDateEnd" jsf:value="#{crowdsourcingBean.selectedCampaign.dateEndString}" />
+	                       	<div class="cms-module__actions">
 	                           <h:commandLink styleClass="btn btn--clean delete" action="#{crowdsourcingBean.resetDurationAction}" value="#{msg.remove}">
 	                           	<f:ajax render="metadata-status"></f:ajax>
 	                           </h:commandLink>
-                        	</div>
-                        </dd>
-                    </dl>
-                </div>
+	                       	</div>
+	                </div>
+				</div>
             </h:panelGroup>
 
             <!-- metadata item action -->
