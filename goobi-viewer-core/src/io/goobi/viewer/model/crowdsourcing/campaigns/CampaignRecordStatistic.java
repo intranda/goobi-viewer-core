@@ -50,9 +50,26 @@ import io.goobi.viewer.model.security.user.User;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordStatistic implements Serializable {
 
+    /**
+     * The status of a specific resource (iiif manifest or similar) within a campaign
+     * 
+     * @author florian
+     *
+     */
     public enum CampaignRecordStatus {
+        /**
+         * Annotations may be made to this resource
+         */
         ANNOTATE,
+        /**
+         * Annotations are ready to be reviewed
+         */
         REVIEW,
+        /**
+         * All annotations for this resource are accepted by the review process. 
+         * The resource is not available for further annotating within this campaign; 
+         * all annotations for this resource and campaign may be visible in iiif manifests and the viewer
+         */
         FINISHED;
 
         public String getName() {

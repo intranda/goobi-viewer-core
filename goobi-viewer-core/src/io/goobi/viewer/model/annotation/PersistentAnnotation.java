@@ -94,6 +94,9 @@ public class PersistentAnnotation {
     @Column(name = "creator_id")
     private Long creatorId;
 
+    /**
+     * This is the id of the {@link User} who reviewed the annotation. May be null if this annotation wasn't reviewed (yet)
+     */
     @Column(name = "reviewer_id")
     private Long reviewerId;
 
@@ -104,9 +107,15 @@ public class PersistentAnnotation {
     @Column(name = "generator_id")
     private Long generatorId;
 
+    /**
+     * JSON representation of the annotation body as String 
+     */
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
-
+    
+    /**
+     * JSON representation of the annotation target as String 
+     */
     @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
 
@@ -116,9 +125,17 @@ public class PersistentAnnotation {
     @Column(name = "target_page")
     private Integer targetPageOrder;
 
+    /**
+     * empty constructor
+     */
     public PersistentAnnotation() {
     }
 
+    /**
+     * creates a new PersistentAnnotation from a WebAnnotation
+     * 
+     * @param source
+     */
     public PersistentAnnotation(WebAnnotation source) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
@@ -163,6 +180,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * Get the PI of the annotation target from its URI id
+     * 
      * @param id2
      * @return
      */
@@ -326,6 +345,7 @@ public class PersistentAnnotation {
     }
 
     /**
+     * 
      * @return the body
      */
     public String getBody() {
@@ -353,6 +373,14 @@ public class PersistentAnnotation {
         this.motivation = motivation;
     }
 
+    /**
+     * Get the
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.body != null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -415,6 +443,14 @@ public class PersistentAnnotation {
         this.target = target;
     }
 
+    /**
+     * Get the annotation target as an WebAnnotation {@link IResource} java object
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.target != null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -431,6 +467,14 @@ public class PersistentAnnotation {
         return null;
     }
 
+    /**
+     * Get the annotation target as an OpenAnnotation {@link IResource} java object
+     *
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource();
         if (resource != null) {
@@ -446,6 +490,15 @@ public class PersistentAnnotation {
 
     }
 
+    /**
+     * Get the annotation as an {@link WebAnnotation} java object
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws DAOException
+     */
     public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
@@ -463,6 +516,14 @@ public class PersistentAnnotation {
         return annotation;
     }
 
+    /**
+     * Get the annotation as an {@link OpenAnnotation} java object
+     *
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
         annotation.setBody(this.getBodyAsOAResource());

@@ -50,6 +50,9 @@ import io.goobi.viewer.model.misc.Translation;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
+ * An annotation generator to create a specific type of annotation for a specific question. 
+ * One or more of these may be contained within a {@link Campaign}
+ * 
  * @author florian
  *
  */
@@ -96,6 +99,7 @@ public class Question {
     }
 
     /**
+     * constructor setting the owning campaign
      * 
      * @param owner
      */
@@ -104,6 +108,8 @@ public class Question {
     }
 
     /**
+     * 
+     * constructor setting the owning campaign as well ass the type of annotation to be generated
      * 
      * @param questionType
      * @param targetSelector
@@ -237,6 +243,12 @@ public class Question {
         this.targetFrequency = targetFrequency;
     }
 
+    /**
+     * get the {@link #id} of a question from an URI identifier
+     * 
+     * @param idAsURI
+     * @return
+     */
     public static Long getQuestionId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -246,7 +258,13 @@ public class Question {
 
         return null;
     }
-
+    
+    /**
+     * get the {@link Campaign#id} of the owning campaign from an URI identifier of a question
+     * 
+     * @param idAsURI
+     * @return
+     */
     public static Long getCampaignId(URI idAsURI) {
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
         if (matcher.find()) {
@@ -257,6 +275,9 @@ public class Question {
         return null;
     }
 
+    /**
+     * @return  The URI identifier for this question from the question and campaign id
+     */
     @JsonProperty("id")
     public URI getIdAsURI() {
         return URI
