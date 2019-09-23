@@ -46,20 +46,34 @@
                                             <th class="column_annotation">
                                                 #{msg.admin__crowdsourcing_annotation}
                                             </th>
-                                            <th class="column_actions">#{msg.actions}</th>
+                                            <th class="column_actions">#{msg.admin__crowdsourcing_annotations_action}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <ui:repeat var="annotation" value="#{crowdsourcingBean.lazyModelAnnotations.paginatorList}">
                                             <tr>
                                                 <td class="column_title">
+                                                    <h:outputText value="#{annotation.dateCreated}">
+                                                        <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                                                    </h:outputText>
                                                 </td>
                                                 <td class="column_visibility">
+                                                    #{annotation.targetPI}<h:outputText rendered="#{annotation.targetPageOrder != null}" value=", #{msg.page} #{annotation.targetPageOrder}" />
                                                 </td>
-                                                <td class="column_duration">
-                                                    
+                                                <td class="column_annotation">
+                                                    <h:outputText value="#{annotation.contentString}" />
                                                 </td>
                                                 <td class="column_actions">
+                                                    <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.objectUrl}#{annotation.targetLink}"
+                                                        target="_blank" title="#{msg.view}" alt="#{msg.view}">
+                                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                                    </h:outputLink>
+                                                    <!-- Delete link -->
+                                                    <h:commandLink styleClass="btn btn--icon"
+                                                        onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };" 
+                                                        action="#{crowdsourcingBean.deleteAnnotationAction(annotation)}" title="#{msg.delete}" alt="#{msg.delete}">
+                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                    </h:commandLink>
                                                 </td>
                                             </tr>
                                         </ui:repeat>

@@ -335,6 +335,14 @@ public class Bookshelf implements Serializable {
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
+    
+    /**
+     * 
+     * @return Number of items
+     */
+    public int getNumItems() {
+        return items.size();
+    }
 
     /**
      * @return the items

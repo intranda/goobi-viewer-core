@@ -147,7 +147,6 @@ public class CrowdsourcingBean implements Serializable {
         }
 
         if (lazyModelAnnotations == null) {
-            // TODO
             lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
@@ -454,6 +453,24 @@ public class CrowdsourcingBean implements Serializable {
      */
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
+    }
+
+    /**
+     * Deletes given annotation.
+     * 
+     * @param annotation
+     * @return empty string
+     * @throws DAOException
+     */
+    public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
+        if (annotation != null) {
+            if (DataManager.getInstance().getDao().deleteAnnotation(annotation)) {
+                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
+                lazyModelCampaigns.update();
+            }
+        }
+
+        return "";
     }
 
     /**

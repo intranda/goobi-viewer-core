@@ -54,6 +54,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * An Annotation class to store annotation in a database
@@ -533,4 +534,36 @@ public class PersistentAnnotation {
         return annotation;
     }
 
+    /**
+     * 
+     * @return Just the string value of the body document
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws DAOException
+     */
+    public String getContentString() throws JsonParseException, JsonMappingException, IOException, DAOException {
+        // Value
+        WebAnnotation wa = getAsAnnotation();
+        if (wa.getBody() instanceof TextualResource) {
+            return ((TextualResource) wa.getBody()).getText();
+        }
+
+        return body;
+    }
+
+    /**
+     * 
+     * @return URL string to the record view
+     */
+    public String getTargetLink() {
+        String ret = "/" + targetPI + "/";
+        if (targetPageOrder != null) {
+            ret += targetPageOrder + "/";
+        } else {
+            ret += "1/";
+        }
+
+        return ret;
+    }
 }

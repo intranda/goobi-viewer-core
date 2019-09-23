@@ -2266,4 +2266,25 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(Long.valueOf(3), annotations.get(1).getId());
         }
     }
+
+    /**
+     * @see JPADAO#getAnnotationCount(Map)
+     * @verifies return correct count
+     */
+    @Test
+    public void getAnnotationCount_shouldReturnCorrectCount() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAnnotationCount(null));
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getAnnotationCount(Collections.singletonMap("targetPI", "PI 1")));
+    }
+
+    /**
+     * @see JPADAO#getAnnotations(int,int,String,boolean,Map)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getAnnotations_shouldReturnCorrectRows() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, null).size());
+        Assert.assertEquals(2,
+                DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI 2")).size());
+    }
 }
