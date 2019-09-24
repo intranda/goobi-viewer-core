@@ -327,7 +327,7 @@ public class DisplayUserGeneratedContent {
             throw new IllegalArgumentException("se may not be null");
         }
 
-        String text = StringTools.escapeHtml(se.getMetadataValue("MD_TEXT"));
+        String text = StringTools.escapeHtmlChars(se.getMetadataValue("MD_TEXT"));
         if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
             switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
                 case "PERSON": {

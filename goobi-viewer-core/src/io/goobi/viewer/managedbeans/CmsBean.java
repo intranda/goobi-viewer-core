@@ -189,7 +189,8 @@ public class CmsBean implements Serializable {
                 private void initialize() throws DAOException {
                     if (!initialized) {
                         try {
-                            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())  &&  !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+                            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                                    && !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
                                 allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
                             }
                             if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
@@ -896,13 +897,18 @@ public class CmsBean implements Serializable {
             logger.info("Deleting CMS page: {}", selectedPage);
             if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
-                if (page.deleteExportedTextFiles() > 0) {
-                    try {
-                        Helper.reIndexRecord(page.getRelatedPI());
-                        logger.debug("Re-indexing record: {}", page.getRelatedPI());
-                    } catch (RecordNotFoundException e) {
-                        logger.error(e.getMessage());
+                try {
+                    if (page.deleteExportedTextFiles() > 0) {
+                        try {
+                            Helper.reIndexRecord(page.getRelatedPI());
+                            logger.debug("Re-indexing record: {}", page.getRelatedPI());
+                        } catch (RecordNotFoundException e) {
+                            logger.error(e.getMessage());
+                        }
                     }
+                } catch (ViewerConfigurationException e) {
+                    logger.error(e.getMessage());
+                    Messages.error(e.getMessage());
                 }
                 lazyModelPages.update();
                 Messages.info("cms_deletePage_success");

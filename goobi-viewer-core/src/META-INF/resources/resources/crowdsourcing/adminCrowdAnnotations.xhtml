@@ -39,12 +39,43 @@
                                         <tr>
                                             <th class="column_date">
                                                 #{msg.date}
+                                                <!-- SORTING -->
+                                                <div class="sorting-wrapper">
+                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'ASCENDING')}">
+                                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                        <f:ajax execute="@form" render="@form" />
+                                                    </h:commandLink>
+                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('dateCreated', 'DESCENDING')}">
+                                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                                        <f:ajax execute="@form" render="@form" />
+                                                    </h:commandLink>
+                                                </div>
                                             </th>
                                             <th class="column_target">
                                                 #{msg.admin__crowdsourcing_annotation_target}
+                                                <!-- SORTING -->
+                                                <div class="sorting-wrapper">
+                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'ASCENDING')}">
+                                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                        <f:ajax execute="@form" render="@form" />
+                                                    </h:commandLink>
+                                                    <h:commandLink styleClass="sort" action="#{crowdsourcingBean.lazyModelAnnotations.sortBy('targetPI', 'DESCENDING')}">
+                                                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                                        <f:ajax execute="@form" render="@form" />
+                                                    </h:commandLink>
+                                                </div>
+                                        
+                                                <div class="clearfix"></div>
+    
+                                                <!-- FILTER -->
+                                                <viewerComponent:dataTableColumnFilter
+                                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('targetPI')}"/>    
                                             </th>
                                             <th class="column_annotation">
                                                 #{msg.admin__crowdsourcing_annotation}
+                                                <!-- FILTER -->
+                                                <viewerComponent:dataTableColumnFilter
+                                                    filter="#{crowdsourcingBean.lazyModelAnnotations.getFilter('body')}"/>    
                                             </th>
                                             <th class="column_actions">#{msg.admin__crowdsourcing_annotations_action}</th>
                                         </tr>

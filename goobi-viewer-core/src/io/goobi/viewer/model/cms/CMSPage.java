@@ -1373,11 +1373,16 @@ public class CMSPage implements Comparable<CMSPage> {
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      * 
      * @return Number of deleted files
+     * @throws ViewerConfigurationException
      */
-    public int deleteExportedTextFiles() {
+    public int deleteExportedTextFiles() throws ViewerConfigurationException {
         if (StringUtils.isEmpty(relatedPI)) {
             logger.trace("No related PI - nothing to delete");
             return 0;
+        }
+
+        if (DataManager.getInstance().getConfiguration().getCmsTextFolder() == null) {
+            throw new ViewerConfigurationException("cmsTextFolder is not configured");
         }
 
         int count = 0;
