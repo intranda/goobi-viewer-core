@@ -254,6 +254,10 @@ public class PersistentAnnotation {
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
+    
+    public static URI getIdAsURI(String id) {
+        return URI.create(URI_ID_TEMPLATE.replace("{id}",id));
+    }
 
     /**
      * @return the dateCreated

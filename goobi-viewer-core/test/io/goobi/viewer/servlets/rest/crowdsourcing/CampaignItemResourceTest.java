@@ -41,7 +41,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -68,15 +67,6 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         resource = new CampaignItemResource(request, response);
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Test

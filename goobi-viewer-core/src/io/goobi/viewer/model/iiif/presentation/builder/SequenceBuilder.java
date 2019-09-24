@@ -156,12 +156,15 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
+        addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi()), annotationMap);
+        
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
         }
 
         return annotationMap;
     }
+
 
     /**
      * @param canvas
@@ -435,6 +438,23 @@ public class SequenceBuilder extends AbstractBuilder {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
 
+//        addCrowdsourcingAnnotations(page, populate, annotationMap);
+
+        for (AnnotationType type : annotationMap.keySet()) {
+            canvas.addOtherContent(annotationMap.get(type));
+        }
+        return annotationMap;
+    }
+
+    /**
+     * Adds crowdsourcing annotations from the dao to the annotationmap.
+     * 
+     * @param page
+     * @param populate
+     * @param annotationMap
+     * @deprecated  annotations are now retrieved from SOLR
+     */
+    private void addCrowdsourcingAnnotations(PhysicalElement page, boolean populate, Map<AnnotationType, AnnotationList> annotationMap) {
         try {
             long numCrowdAnnotations = DataManager.getInstance().getDao().getAnnotationCountForTarget(page.getPi(), page.getOrder());
             if (numCrowdAnnotations > 0) {
@@ -461,11 +481,6 @@ public class SequenceBuilder extends AbstractBuilder {
         } catch (DAOException | IOException e) {
             logger.error("Error creating crowdsourcing annotations ", e);
         }
-
-        for (AnnotationType type : annotationMap.keySet()) {
-            canvas.addOtherContent(annotationMap.get(type));
-        }
-        return annotationMap;
     }
 
     /**
