@@ -53,8 +53,14 @@ initMap() {
             marker.on("dragend", function(event) {
                 var position = marker.getLatLng();
                 geoJsonPoint.geometry.coordinates = [position.lng, position.lat];
-                geoJsonPoint.view.zoom = this.
+                geoJsonPoint.view.zoom = this.map.getZoom();
+                geoJsonPoint.view.center = this.map.getCenter();
             }.bind(this));
+            
+            marker.on("click", function(event) {
+                this.removeFeature(geoJsonPoint, marker);
+            }.bind(this));
+            
             return marker;
         }.bind(this)
     }).addTo(this.map);
@@ -80,13 +86,19 @@ addFeature(location) {
         		"type": "Point",
         		"coordinates": [location.lng, location.lat]
         	},
-        	"view" {
+        	"view": {
         	    "zoom": this.map.getZoom(),
         		"center": this.map.getCenter()
         	}
         };
     this.locations.addData(geojsonFeature);
     this.features.push(geojsonFeature);
+}
+
+removeFeature(geoJsonPoint, marker) {
+    marker.remove();
+    let index = this.features.indexOf(geoJsonPoint);
+    this.features.splice(index, 1);
 }
 
 showInstructions() {
