@@ -19,12 +19,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,16 +52,17 @@ import io.goobi.viewer.servlets.rest.crowdsourcing.CampaignItemResource.Annotati
  * @author florian
  *
  */
-public class CampaignItemResourceTest  {
+public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private CampaignItemResource resource;
+
     
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-//        super.setUp();
+        super.setUp();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -79,24 +80,33 @@ public class CampaignItemResourceTest  {
         Assert.assertEquals(manifestUrl, item.getSource());
     }
     
-//    @Test
+    /**
+     * Note: setting a user for the status update breaks h2 database
+     * 
+     * @throws ContentNotFoundException
+     * @throws URISyntaxException
+     * @throws DAOException
+     */
+    @Test
     public void testSetItemForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
+        
         
         String pi = "PPN1234";
         CampaignItem item = resource.getItemForManifest(1l, pi);
         
-        User user = DataManager.getInstance().getDao().getUser(1l);
-        item.setCreatorURI(user.getIdAsURI());
+//        User user = DataManager.getInstance().getDao().getUser(1l);
+//        item.setCreatorURI(user.getIdAsURI());
         item.setRecordStatus(CampaignRecordStatus.REVIEW);
-        Assert.assertEquals(user.getIdAsURI(), item.getCreatorURI());
-
+//        Assert.assertEquals(user.getIdAsURI(), item.getCreatorURI());
+        
         
         resource.setItemForManifest(item, 1l, pi);
         
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);    
         
         Assert.assertEquals(CampaignRecordStatus.REVIEW, campaign.getRecordStatus(pi));
-        Assert.assertTrue(campaign.getStatistics().get(pi).getAnnotators().contains(user));
+//        Assert.assertTrue(campaign.getStatistics().get(pi).getAnnotators().contains(user));
+
     }
     
 //    @Test

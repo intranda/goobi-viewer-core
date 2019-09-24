@@ -141,6 +141,7 @@ public class CampaignItemResource {
     @CORSBinding
     public void setItemForManifest(CampaignItem item, @PathParam("campaignId") Long campaignId, @PathParam("pi") String pi) throws DAOException {
         CampaignRecordStatus status = item.getRecordStatus();
+
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
 
         User user = null;
