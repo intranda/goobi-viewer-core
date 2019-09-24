@@ -94,10 +94,10 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         String pi = "PPN1234";
         CampaignItem item = resource.getItemForManifest(1l, pi);
         
-//        User user = DataManager.getInstance().getDao().getUser(1l);
-//        item.setCreatorURI(user.getIdAsURI());
+        User user = DataManager.getInstance().getDao().getUser(1l);
+        item.setCreatorURI(user.getIdAsURI());
         item.setRecordStatus(CampaignRecordStatus.REVIEW);
-//        Assert.assertEquals(user.getIdAsURI(), item.getCreatorURI());
+        Assert.assertEquals(user.getIdAsURI(), item.getCreatorURI());
         
         
         resource.setItemForManifest(item, 1l, pi);
@@ -105,7 +105,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);    
         
         Assert.assertEquals(CampaignRecordStatus.REVIEW, campaign.getRecordStatus(pi));
-//        Assert.assertTrue(campaign.getStatistics().get(pi).getAnnotators().contains(user));
+        Assert.assertTrue(campaign.getStatistics().get(pi).getAnnotators().contains(user));
 
     }
     
