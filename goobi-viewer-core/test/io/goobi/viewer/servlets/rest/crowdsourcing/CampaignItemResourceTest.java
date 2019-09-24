@@ -69,7 +69,7 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
         resource = new CampaignItemResource(request, response);
     }
 
-//    @Test
+    @Test
     public void testGetItemForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1l);
         CampaignItem item = resource.getItemForManifest(1l, "PPN1234");
@@ -109,14 +109,14 @@ public class CampaignItemResourceTest extends AbstractDatabaseAndSolrEnabledTest
 
     }
     
-//    @Test
+    @Test
     public void testGetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException {
         String pi = "PI 1";
         List<WebAnnotation> annotationList = resource.getAnnotationsForManifest(1l, pi);
         Assert.assertEquals(2, annotationList.size());
     }
     
-//    @Test
+    @Test
     public void testSetAnnotationsForManifest() throws ContentNotFoundException, URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
         String pi = "PI_10";
         URI manifestUrl = new ManifestBuilder(URI.create(""), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())).getManifestURI(pi);
