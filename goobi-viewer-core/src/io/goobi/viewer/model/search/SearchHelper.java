@@ -1504,6 +1504,8 @@ public final class SearchHelper {
                     field = SolrConstants.DEFAULT;
                 } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
                     field = SolrConstants.FULLTEXT;
+                } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
+                    field = SolrConstants.UGCTERMS;
                 } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
                     field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
                 }
@@ -1537,6 +1539,8 @@ public final class SearchHelper {
                         currentField = SolrConstants.DEFAULT;
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
                         currentField = SolrConstants.FULLTEXT;
+                    } else if (SolrConstants.SUPERUGCTERMS.equals(currentField)) {
+                        currentField = SolrConstants.UGCTERMS;
                     }
                     if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
                         currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
@@ -1785,78 +1789,80 @@ public final class SearchHelper {
      */
     public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
         logger.trace("generateAdvancedExpandQuery");
+        if (groups == null || groups.isEmpty()) {
+            return "";
+        }
         StringBuilder sbOuter = new StringBuilder();
 
-        if (groups != null && !groups.isEmpty()) {
-            for (SearchQueryGroup group : groups) {
-                StringBuilder sbGroup = new StringBuilder();
+        for (SearchQueryGroup group : groups) {
+            StringBuilder sbGroup = new StringBuilder();
 
-                // Identify any fields that only exist in page docs and enable the page search mode
-                boolean searchInFulltext = false;
-                for (SearchQueryItem item : group.getQueryItems()) {
-                    if (item.getField() == null) {
+            // Identify any fields that only exist in page or UGC docs and enable the page search mode
+            boolean orMode = false;
+            for (SearchQueryItem item : group.getQueryItems()) {
+                if (item.getField() == null) {
+                    continue;
+                }
+                switch (item.getField()) {
+                    case SolrConstants.FULLTEXT:
+                    case SolrConstants.UGCTERMS:
+                    case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
+                        orMode = true;
+                        break;
+                }
+            }
+
+            for (SearchQueryItem item : group.getQueryItems()) {
+                if (item.getField() == null) {
+                    continue;
+                }
+                logger.trace("item field: " + item.getField());
+                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
+                // return every single doc
+                switch (item.getField()) {
+                    case SolrConstants.PI_TOPSTRUCT:
+                    case SolrConstants.PI_ANCHOR:
+                    case SolrConstants.DC:
+                    case SolrConstants.DOCSTRCT:
+                    case SolrConstants.BOOKSHELF:
                         continue;
+                    default:
+                        if (item.getField().startsWith(SolrConstants.GROUPID_)) {
+                            continue;
+                        }
+                }
+                String itemQuery = item.generateQuery(new HashSet<String>(), false);
+                if (StringUtils.isNotEmpty(itemQuery)) {
+                    if (sbGroup.length() > 0) {
+                        if (orMode) {
+                            // When also searching in page document fields, the operator must be 'OR'
+                            sbGroup.append(" OR ");
+                        } else {
+                            sbGroup.append(' ').append(group.getOperator().name()).append(' ');
+                        }
                     }
-                    switch (item.getField()) {
-                        case SolrConstants.FULLTEXT:
-                        case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
-                            searchInFulltext = true;
+                    sbGroup.append(itemQuery);
+                }
+            }
+            if (sbGroup.length() > 0) {
+                if (sbOuter.length() > 0) {
+                    switch (advancedSearchGroupOperator) {
+                        case 0:
+                            sbOuter.append(" AND ");
+                            break;
+                        case 1:
+                            sbOuter.append(" OR ");
+                            break;
+                        default:
+                            sbOuter.append(" OR ");
                             break;
                     }
                 }
-
-                for (SearchQueryItem item : group.getQueryItems()) {
-                    if (item.getField() == null) {
-                        continue;
-                    }
-                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
-                    // return every single doc
-                    switch (item.getField()) {
-                        case SolrConstants.PI_TOPSTRUCT:
-                        case SolrConstants.PI_ANCHOR:
-                        case SolrConstants.DC:
-                        case SolrConstants.DOCSTRCT:
-                        case SolrConstants.BOOKSHELF:
-                            continue;
-                        default:
-                            if (item.getField().startsWith(SolrConstants.GROUPID_)) {
-                                continue;
-                            }
-                    }
-                    String itemQuery = item.generateQuery(new HashSet<String>(), false);
-                    if (StringUtils.isNotEmpty(itemQuery)) {
-                        if (sbGroup.length() > 0) {
-                            if (searchInFulltext) {
-                                // When also searching in page document fields, the operator must be 'OR'
-                                sbGroup.append(" OR ");
-                            } else {
-                                sbGroup.append(' ').append(group.getOperator().name()).append(' ');
-                            }
-                        }
-                        sbGroup.append(itemQuery);
-                    }
-                }
-                if (sbGroup.length() > 0) {
-                    if (sbOuter.length() > 0) {
-                        switch (advancedSearchGroupOperator) {
-                            case 0:
-                                sbOuter.append(" AND ");
-                                break;
-                            case 1:
-                                sbOuter.append(" OR ");
-                                break;
-                            default:
-                                sbOuter.append(" OR ");
-                                break;
-                        }
-                    }
-                    sbOuter.append('(').append(sbGroup).append(')');
-                }
+                sbOuter.append('(').append(sbGroup).append(')');
             }
         }
         if (sbOuter.length() > 0) {
             return " +(" + sbOuter.toString() + ')';
-            //            return sbOuter.toString();
         }
 
         return "";
@@ -1899,6 +1905,9 @@ public final class SearchHelper {
                             } else if (SolrConstants.FULLTEXT.equals(item.getField())
                                     || SolrConstants.SUPERFULLTEXT.equals(item.getField()) && !ret.contains(SolrConstants.FULLTEXT)) {
                                 ret.add(SolrConstants.FULLTEXT);
+                            } else if (SolrConstants.UGCTERMS.equals(item.getField())
+                                    || SolrConstants.SUPERUGCTERMS.equals(item.getField()) && !ret.contains(SolrConstants.UGCTERMS)) {
+                                ret.add(SolrConstants.UGCTERMS);
                             } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
                                 ret.add(SolrConstants.CMS_TEXT_ALL);
                             } else if (!ret.contains(item.getField())) {

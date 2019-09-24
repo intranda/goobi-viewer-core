@@ -258,6 +258,7 @@ public class SearchQueryItem implements Serializable {
                 // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
                 fields.add(SolrConstants.SUPERDEFAULT);
                 fields.add(SolrConstants.SUPERFULLTEXT);
+                fields.add(SolrConstants.SUPERUGCTERMS);
             }
             fields.add(SolrConstants.DEFAULT);
             fields.add(SolrConstants.FULLTEXT);
@@ -274,6 +275,11 @@ public class SearchQueryItem implements Serializable {
                 fields.add(SolrConstants.SUPERFULLTEXT);
             }
             fields.add(SolrConstants.FULLTEXT);
+        } else if (SolrConstants.SUPERUGCTERMS.equals(field) || SolrConstants.UGCTERMS.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERUGCTERMS);
+            }
+            fields.add(SolrConstants.UGCTERMS);
         } else {
             fields.add(field);
         }
@@ -377,6 +383,7 @@ public class SearchQueryItem implements Serializable {
                                 case SolrConstants.FULLTEXT:
                                 case SolrConstants.SUPERFULLTEXT:
                                 case SolrConstants.NORMDATATERMS:
+                                case SolrConstants.SUPERUGCTERMS:
                                 case SolrConstants.UGCTERMS:
                                 case SolrConstants.CMS_TEXT_ALL:
                                     value = value.toLowerCase();
