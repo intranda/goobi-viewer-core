@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.iiif.presentation.builder;
 
+import java.awt.Rectangle;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
@@ -447,8 +449,24 @@ public abstract class AbstractBuilder {
 
                 OpenAnnotation anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
                 anno.setBody(new TextualResource(text));
-                FragmentSelector selector = new FragmentSelector(coordString);
-                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                try {                    
+                    FragmentSelector selector = new FragmentSelector(coordString);
+                    anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                } catch(IllegalArgumentException e) {
+                    //old UGC coords format
+                    String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
+                    Matcher matcher = Pattern.compile(regex).matcher(coordString);
+                    if(matcher.find()) {
+                        int x1 = Math.round(Float.parseFloat(matcher.group(1)));
+                        int y1 = Math.round(Float.parseFloat(matcher.group(2)));
+                        int x2 = Math.round(Float.parseFloat(matcher.group(3)));
+                        int y2 = Math.round(Float.parseFloat(matcher.group(4)));
+                        FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2-x1, y2-y1));
+                        anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                    } else {
+                        anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
+                    }
+                }
                 anno.setMotivation(Motivation.COMMENTING);
                 
                 List<OpenAnnotation> annoList = annoMap.get(pageOrder);
