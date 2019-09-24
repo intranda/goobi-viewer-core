@@ -737,6 +737,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 });
 riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label></div><div id="geoMap" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
+this.features = [];
 this.question = this.opts.question;
 this.question.createAnnotation = function(anno) {
     let annotation = new Crowdsourcing.Annotation.GeoJson(anno);
@@ -765,12 +766,26 @@ this.initMap = function() {
                 "color": "#ff7800",
             	"weight": 5,
             	"opacity": 0.65
-        }
+        },
+        pointToLayer: function(geoJsonPoint, latlng) {
+            let marker = L.marker(latlng, {
+                draggable: true
+            });
+
+            marker.on("dragend", function(event) {
+                var position = marker.getLatLng();
+                geoJsonPoint.geometry.coordinates = [position.lng, position.lat];
+                geoJsonPoint.view.zoom = this.
+            }.bind(this));
+            return marker;
+        }.bind(this)
     }).addTo(this.map);
 
     this.map.on("click", function(e) {
-        var location= e.latlng;
-        this.addFeature(location);
+        if(this.question.targetFrequency == 0 || this.features.length < this.question.targetFrequency) {
+	        var location= e.latlng;
+	        this.addFeature(location);
+        }
     }.bind(this))
 
 }.bind(this)
@@ -780,17 +795,19 @@ this.addFeature = function(location) {
     var geojsonFeature = {
         	"type": "Feature",
         	"properties": {
-        		"name": "Coors Field",
-        		"amenity": "Baseball Stadium",
-        		"popupContent": "This is where the Rockies play!"
+        		"name": "",
         	},
         	"geometry": {
         		"type": "Point",
         		"coordinates": [location.lng, location.lat]
+        	},
+        	"view" {
+        	    "zoom": this.map.getZoom(),
+        		"center": this.map.getCenter()
         	}
         };
-    console.log("add feature ", geojsonFeature ),
     this.locations.addData(geojsonFeature);
+    this.features.push(geojsonFeature);
 }.bind(this)
 
 this.showInstructions = function() {
