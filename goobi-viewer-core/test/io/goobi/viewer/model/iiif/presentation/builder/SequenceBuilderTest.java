@@ -19,15 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
 import org.junit.Test;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -37,10 +36,9 @@ import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,7 +50,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian
  *
  */
-public class SequenceBuilderTest extends AbstractSolrEnabledTest {
+public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     public static final String PI = "PPN517154005";
     public static final int ORDER = 1;

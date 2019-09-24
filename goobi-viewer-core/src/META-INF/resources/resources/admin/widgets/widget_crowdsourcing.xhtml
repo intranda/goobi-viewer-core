@@ -14,10 +14,16 @@
                     <h3>#{msg.admin__crowdsourcing}</h3>
 
                     <ul>
-                        <li class="#{navigationHelper.currentPage == 'adminCrowdCampaigns' ? 'active' : ''}">
-                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdCampaigns')}/">
-                                <i class="fa fa-user" aria-hidden="true"></i>
+                        <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingCampaigns' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdsourcingCampaigns')}/">
+                                <i class="fa fa-rocket" aria-hidden="true"></i>
                                 <span>#{msg.admin__crowdsourcing_campaigns}</span>
+                            </h:outputLink>
+                        </li>
+                        <li class="#{navigationHelper.currentPage == 'adminCrowdsourcingAnnotations' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminCrowdsourcingAnnotations')}/">
+                                <i class="fa fa-sticky-note" aria-hidden="true"></i>
+                                <span>#{msg.admin__crowdsourcing_annotations}</span>
                             </h:outputLink>
                         </li>
                         <c:forEach var="module" items="#{configurationBean.modules}">

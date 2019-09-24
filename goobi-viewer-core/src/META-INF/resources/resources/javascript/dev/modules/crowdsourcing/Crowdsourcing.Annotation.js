@@ -26,8 +26,37 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
 
     crowdsourcing.Annotation = function(anno) {
-        let temp = crowdsourcing.deepCopy(anno);
+        let temp = crowdsourcing.deepCopy(anno ? anno : {});            
         Object.assign(this, temp);
+        if(!anno) {
+            this.setCreated(new Date());
+        }
+    }
+    
+    crowdsourcing.Annotation.prototype.setCreated = function(date) {
+        
+        //convert to UTC timezone
+        var utc_timestamp = Date.UTC(date.getUTCFullYear(),date.getUTCMonth(), date.getUTCDate() , 
+                date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
+        date = new Date(utc_timestamp);
+        this.created = date.toISOString().replace(/\.\d{3}Z/, "Z"); //remove milliseconds to conform to format accepted by java
+    }
+    
+    crowdsourcing.Annotation.prototype.setModified = function(date) {
+        
+        //convert to UTC timezone
+        var utc_timestamp = Date.UTC(date.getUTCFullYear(),date.getUTCMonth(), date.getUTCDate() , 
+                date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
+        date = new Date(utc_timestamp);
+        this.modified = date.toISOString().replace(/\.\d{3}Z/, "Z"); //remove milliseconds to conform to format accepted by java
+    }
+    
+    crowdsourcing.Annotation.prototype.getCreated = function() {
+        return this.created ? Date.parse(this.created) : undefined;  
+    }
+
+    crowdsourcing.Annotation.prototype.getModified = function() {
+        return this.modified ? Date.parse(this.modified) : undefined;  
     }
 
     crowdsourcing.Annotation.prototype.setRegion = function(rect) {
@@ -43,7 +72,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     value : "xywh=" + Math.round(rect.x) + "," + Math.round(rect.y) + "," + Math.round(rect.width) + "," + Math.round(rect.height)         
                 }
             }
-            this.target = newTarget;
+            if(this.target != newTarget) {                
+                this.target = newTarget;
+                this.setModified(new Date());
+            }
         }
     }
     
@@ -65,6 +97,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Annotation.prototype.setTarget = function(target) {
+        if(this.target != target) {                
+            this.setModified(new Date());
+        }
         if(crowdsourcing.isString(target)) {
             this.target = target;
         } else if(target.source) {

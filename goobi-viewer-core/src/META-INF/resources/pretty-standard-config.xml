@@ -842,6 +842,11 @@
         <view-id value="/resources/crowdsourcing/adminCrowdAddCampaign.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="adminCrowdAnnotations">
+        <pattern value="/admin/crowdsourcing/annotations/" />
+        <view-id value="/resources/crowdsourcing/adminCrowdAnnotations.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
     
     <!-- CROWDSOURCING -->
      <url-mapping id="crowdCampaigns">

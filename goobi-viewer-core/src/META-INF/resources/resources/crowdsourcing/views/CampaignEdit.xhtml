@@ -43,15 +43,15 @@
         </f:view>
         
         <script>
-	    	const messageKeys = ["label__or", "action__add_annotation", "action__reject_review", "action__accept_review", "action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
-	        const user = {
+	    	var messageKeys = ["crowdsourcing__help__make_active", "label__or", "action__add_annotation", "action__reject_review", "action__accept_review", "action__skip_item", "action__new_crowdsourcing_item", "button__save", "action__restart", "action__submit_for_review", "action__delete_annotation", "title__question", "title__questions", "option__no_action_required", "crowdsourcing__help__create_rect_on_image"];
+	        var user = {
 	                id : "#{userBean.user.idAsURI}",
 	                name : "#{userBean.user.displayName}"
 	        }
 	        Crowdsourcing.user = user;
-	        Crowdsourcing.language = "#{navigationHelper.locale}";
-	        Crowdsourcing.fallbackLanguage = "#{navigationHelper.defaultLocale}"
-	    	Crowdsourcing.initTranslations(messageKeys, "#{configurationBean.restApiUrl}")
+	        Crowdsourcing.setFrameColors(["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]);
+	        Crowdsourcing.translator = new viewerJS.Translator(messageKeys, "#{configurationBean.restApiUrl}", "#{navigationHelper.locale}");
+	    	Crowdsourcing.translator.init()
 	    	.then(() => riot.mount("campaignItem"));
         	
         </script>

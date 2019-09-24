@@ -2,6 +2,9 @@
 	<div if="{this.showInstructions()}" class="annotation_instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
+	<div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive">
+		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
+	</div>
 	<div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}">
 		<div class="annotation_area" >
 			<div if="{this.showAnnotationImages()}" class="annotation_area__image" style="border-color: {anno.getColor()}">
@@ -77,7 +80,12 @@
 	}
 	
 	showInstructions() {
-	    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+	}
+	
+	showInactiveInstructions() {
+	    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+ 
 	}
 	
 	showAddAnnotationButton() {

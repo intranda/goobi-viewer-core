@@ -371,6 +371,7 @@ public class ManifestResource extends AbstractResource {
             if (canvas != null) {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi), null);
                 return canvas;
             }
         }
@@ -409,6 +410,14 @@ public class ManifestResource extends AbstractResource {
                 List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
                 if (!comments.isEmpty()) {
                     annotations.put(AnnotationType.COMMENT, comments.get(0));
+                }
+            } else if(AnnotationType.CROWDSOURCING.equals(type)) {
+                annotations = new HashMap<>();
+                Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi), annoTempMap );
+                AnnotationList annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                if(annoList != null) {
+                    annotations.put(AnnotationType.CROWDSOURCING, annoList);
                 }
             } else {
                 annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), true);

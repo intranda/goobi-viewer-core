@@ -44,10 +44,13 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -55,6 +58,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CampaignRecordStatus;
@@ -74,9 +78,11 @@ public class CrowdsourcingBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
-    private UserBean userBean;
+    protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
+    private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
+
     /**
      * The campaign selected in backend
      */
@@ -85,9 +91,18 @@ public class CrowdsourcingBean implements Serializable {
      * The campaign being annotated/reviewed
      */
     private Campaign targetCampaign = null;
+    /**
+     * The identifier (PI) of the work currently targeted by this campaign
+     */
     private String targetIdentifier;
+    /**
+     * true if the campaign is an existing campaign currently edited in the viewer-backend; false otherwise
+     */
     private boolean editMode = false;
 
+    /**
+     * Initialize all campaigns as lazily loaded list
+     */
     @PostConstruct
     public void init() {
         if (lazyModelCampaigns == null) {
@@ -100,6 +115,7 @@ public class CrowdsourcingBean implements Serializable {
                     try {
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
+                            sortOrder = SortOrder.DESCENDING;
                         }
 
                         List<Campaign> ret =
@@ -130,15 +146,58 @@ public class CrowdsourcingBean implements Serializable {
                 }
             });
             lazyModelCampaigns.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            //            lazyModelCampaigns.addFilter("CMSPageLanguageVersion", "title_menuTitle");
-            //            lazyModelCampaigns.addFilter("classifications", "classification");
+        }
+
+        if (lazyModelAnnotations == null) {
+            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
+
+                private Optional<Long> numCreatedPages = Optional.empty();
+
+                @Override
+                public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                        Map<String, String> filters) {
+                    try {
+                        if (StringUtils.isBlank(sortField)) {
+                            sortField = "id";
+                            sortOrder = SortOrder.DESCENDING;
+                        }
+
+                        List<PersistentAnnotation> ret =
+                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        return ret;
+                    } catch (DAOException e) {
+                        logger.error("Could not initialize lazy model: {}", e.getMessage());
+                    }
+
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    if (!numCreatedPages.isPresent()) {
+                        try {
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getAnnotationCount(filters));
+                        } catch (DAOException e) {
+                            logger.error("Unable to retrieve total number of campaigns", e);
+                        }
+                    }
+                    return numCreatedPages.orElse(0l);
+                }
+
+                @Override
+                public void resetTotalNumberOfRecords() {
+                    numCreatedPages = Optional.empty();
+                }
+            });
+            lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelAnnotations.setFilters("targetPI", "body", "dateCreated");
         }
     }
 
     /**
      * 
      * @param visibility
-     * @return
+     * @return The total number of campaigns of a certain {@link CampaignVisibility}
      * @throws DAOException
      */
     public long getCampaignCount(CampaignVisibility visibility) throws DAOException {
@@ -147,6 +206,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * Filter the loaded campaigns by {@link CampaignVisibility}
      * 
      * @param visibility
      * @return
@@ -161,7 +221,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @return
+     * @return A list of all locales supported by this viewer application
      */
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
@@ -178,16 +238,33 @@ public class CrowdsourcingBean implements Serializable {
         return list;
     }
 
+    /**
+     * Sets a new {@link Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for creating a new campaign
+     * 
+     * @return
+     */
     public String createNewCampaignAction() {
         selectedCampaign = new Campaign(ViewerResourceBundle.getDefaultLocale());
         return "pretty:adminCrowdAddCampaign";
     }
 
+    /**
+     * Sets the given {@link Campaign} as the {@link #selectedCampaign} and returns a pretty url to the view for editing this campaign
+     * 
+     * @return
+     */
     public String editCampaignAction(Campaign campaign) {
         selectedCampaign = campaign;
         return "pretty:adminCrowdEditCampaign";
     }
 
+    /**
+     * Delete the given {@link Campaign} from the database and the loaded list of campaigns
+     * 
+     * @param campaign
+     * @return
+     * @throws DAOException
+     */
     public String deleteCampaignAction(Campaign campaign) throws DAOException {
         if (campaign != null) {
             if (DataManager.getInstance().getDao().deleteCampaign(campaign)) {
@@ -199,6 +276,11 @@ public class CrowdsourcingBean implements Serializable {
         return "";
     }
 
+    /**
+     * Add a new {@link Question} to the selected campaign
+     * 
+     * @return
+     */
     public String addNewQuestionAction() {
         if (selectedCampaign != null) {
             selectedCampaign.getQuestions().add(new Question(selectedCampaign));
@@ -208,6 +290,11 @@ public class CrowdsourcingBean implements Serializable {
         return "";
     }
 
+    /**
+     * Remove the given {@link Question} from the selected campaign
+     * 
+     * @return
+     */
     public String removeQuestionAction(Question question) {
         if (selectedCampaign != null && question != null) {
             selectedCampaign.getQuestions().remove(question);
@@ -232,7 +319,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @return
+     * @return All campaigns from the database
      * @throws DAOException
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
@@ -240,6 +327,12 @@ public class CrowdsourcingBean implements Serializable {
         return pages;
     }
 
+    /**
+     * 
+     * @param visibility
+     * @return All camapaigns of the given {@link CampaignVisibility} from the database
+     * @throws DAOException
+     */
     public List<Campaign> getAllCampaigns(CampaignVisibility visibility) throws DAOException {
         List<Campaign> pages = DataManager.getInstance()
                 .getDao()
@@ -279,11 +372,10 @@ public class CrowdsourcingBean implements Serializable {
 
         return ret;
     }
-    
+
     /**
-     * Check if the given user is allowed access to the given campaign from a rights management standpoint alone.
-     * If the user is null, access is granted for public campaigns only, otherwise access is granted if the user
-     * has the appropriate rights
+     * Check if the given user is allowed access to the given campaign from a rights management standpoint alone. If the user is null, access is
+     * granted for public campaigns only, otherwise access is granted if the user has the appropriate rights
      * 
      * @param user
      * @param campaign
@@ -293,7 +385,7 @@ public class CrowdsourcingBean implements Serializable {
     public boolean isAllowed(User user, Campaign campaign) throws DAOException {
         if (CampaignVisibility.PUBLIC.equals(campaign.getVisibility())) {
             return true;
-        } else if(user != null) {
+        } else if (user != null) {
             return !user.getAllowedCrowdsourcingCampaigns(Collections.singletonList(campaign)).isEmpty();
         } else {
             return false;
@@ -361,6 +453,45 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * @return the lazyModelAnnotations
+     */
+    public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
+        return lazyModelAnnotations;
+    }
+
+    /**
+     * Deletes given annotation.
+     * 
+     * @param annotation
+     * @return empty string
+     * @throws DAOException
+     */
+    public String deleteAnnotationAction(PersistentAnnotation annotation) throws DAOException {
+        if (annotation != null) {
+            if (DataManager.getInstance().getDao().deleteAnnotation(annotation)) {
+                try {
+                    if (annotation.deleteExportedTextFiles() > 0) {
+                        try {
+                            Helper.reIndexRecord(annotation.getTargetPI());
+                            logger.debug("Re-indexing record: {}", annotation.getTargetPI());
+                        } catch (RecordNotFoundException e) {
+                            logger.error(e.getMessage());
+                        }
+                    }
+                } catch (ViewerConfigurationException e) {
+                    logger.error(e.getMessage());
+                    Messages.error(e.getMessage());
+                }
+
+                Messages.info("admin__crowdsoucing_annotation_deleteSuccess");
+                lazyModelCampaigns.update();
+            }
+        }
+
+        return "";
+    }
+
+    /**
      * @return the selectedCampaign
      */
     public Campaign getSelectedCampaign() {
@@ -388,11 +519,21 @@ public class CrowdsourcingBean implements Serializable {
         this.editMode = editMode;
     }
 
+    /**
+     * 
+     * @return The id of the {@link CrowdsourcingBean#selectedCampaign} as String
+     */
     public String getSelectedCampaignId() {
         Long id = Optional.ofNullable(getSelectedCampaign()).map(Campaign::getId).orElse(null);
         return id == null ? null : id.toString();
     }
 
+    /**
+     * Set the {@link CrowdsourcingBean#selectedCampaign} by a String containing the campaign id
+     * 
+     * @param id
+     * @throws DAOException
+     */
     public void setSelectedCampaignId(String id) throws DAOException {
         if (id != null) {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(Long.parseLong(id));
@@ -403,7 +544,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * @return the targetCampaign
+     * @return the {@link #targetCampaign}
      */
     public Campaign getTargetCampaign() {
         return targetCampaign;
@@ -413,14 +554,14 @@ public class CrowdsourcingBean implements Serializable {
      * @param targetCampaign the targetCampaign to set
      */
     public void setTargetCampaign(Campaign targetCampaign) {
-        if(this.targetCampaign != targetCampaign) {            
+        if (this.targetCampaign != targetCampaign) {
             resetTarget();
         }
         this.targetCampaign = targetCampaign;
     }
 
     /**
-     * @return the targetCampaign
+     * @return the identifier of the {@link #targetCampaign}
      */
     public String getTargetCampaignId() {
         Long id = Optional.ofNullable(getTargetCampaign()).map(Campaign::getId).orElse(null);
@@ -441,6 +582,12 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for annotating
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE, getTargetIdentifier());
@@ -449,6 +596,12 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.REVIEW, getTargetIdentifier());
@@ -456,7 +609,7 @@ public class CrowdsourcingBean implements Serializable {
 
         }
     }
-    
+
     /**
      * removes the target identifier (pi) from the bean, so that pi can be targeted again by random target resolution
      */
@@ -464,10 +617,20 @@ public class CrowdsourcingBean implements Serializable {
         setTargetIdentifier(null);
     }
 
+    /**
+     * 
+     * @return the pretty url to annotatate the {@link #targetIdentifier} by the {@link #targetCampaign}
+     * 
+     */
     public String forwardToAnnotationTarget() {
         return "pretty:crowdCampaignAnnotate2";
     }
 
+    /**
+     * 
+     * @return the pretty url to review the {@link #targetIdentifier} for the {@link #targetCampaign}
+     * 
+     */
     public String forwardToReviewTarget() {
         return "pretty:crowdCampaignReview2";
     }
@@ -497,28 +660,55 @@ public class CrowdsourcingBean implements Serializable {
         this.targetIdentifier = targetIdentifier;
     }
 
+    /**
+     * 
+     * @param campaign
+     * @return a pretty url to annotate a random work with the given {@link Campaign}
+     */
     public String forwardToCrowdsourcingAnnotation(Campaign campaign) {
         setTargetCampaign(campaign);
         return "pretty:crowdCampaignAnnotate1";
     }
 
+    /**
+     * 
+     * @param campaign
+     * @return a pretty url to review a random work with the given {@link Campaign}
+     */
     public String forwardToCrowdsourcingReview(Campaign campaign) {
         setTargetCampaign(campaign);
         return "pretty:crowdCampaignReview1";
     }
 
+    /**
+     * 
+     * @param campaign
+     * @param pi
+     * @return a pretty url to annotate the work with the given pi with the given {@link Campaign}
+     */
     public String forwardToCrowdsourcingAnnotation(Campaign campaign, String pi) {
         setTargetCampaign(campaign);
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignAnnotate2";
     }
 
+    /**
+     * 
+     * @param campaign
+     * @param pi
+     * @return a pretty url to review the work with the given pi with the given {@link Campaign}
+     */
     public String forwardToCrowdsourcingReview(Campaign campaign, String pi) {
         setTargetCampaign(campaign);
         setTargetIdentifier(pi);
         return "pretty:crowdCampaignReview2";
     }
 
+    /**
+     * @param campaign The campaign with which to annotate/review
+     * @param status if {@link CampaignRecordStatus#REVIEW}, return a url for reviewing, otherwise for annotating
+     * @return The pretty url to either review or annotate a random work with the given {@link Campaign}
+     */
     public String getRandomItemUrl(Campaign campaign, CampaignRecordStatus status) {
         String mappingId = CampaignRecordStatus.REVIEW.equals(status) ? "crowdCampaignReview1" : "crowdCampaignAnnotate1";
         URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(mappingId).getPatternParser().getMappedURL(campaign.getId());
@@ -526,25 +716,34 @@ public class CrowdsourcingBean implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
+    /**
+     * 
+     * @return the {@link CampaignRecordStatus} of the {@link #targetCampaign} for the {@link #targetIdentifier}
+     */
     public CampaignRecordStatus getTargetRecordStatus() {
         if (getTargetCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
             return getTargetCampaign().getRecordStatus(getTargetIdentifier());
         }
         return null;
     }
-    
+
+    /**
+     * 
+     * @return the pretty URL to the crowdsourcing campaigns page if {@link UserBean#getUser()} is not eligible for viewing the
+     *         {@link #targetCampaign}
+     */
     public String handleInvalidTarget() {
-        if(StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
+        if (StringUtils.isBlank(getTargetIdentifier()) || "-".equals(getTargetIdentifier())) {
             return "pretty:crowdCampaigns";
-        } else if(getTargetCampaign() == null) {
+        } else if (getTargetCampaign() == null) {
             return "pretty:crowdCampaigns";
-        } else if(CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
+        } else if (CampaignRecordStatus.FINISHED.equals(getTargetRecordStatus())) {
             return "pretty:crowdCampaigns";
-        } else if(getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
+        } else if (getTargetCampaign().isHasEnded() || !getTargetCampaign().isHasStarted()) {
             return "pretty:crowdCampaigns";
         } else
             try {
-                if(userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
+                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
                     return "pretty:crowdCampaigns";
                 } else {
                     return "";

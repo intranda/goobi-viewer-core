@@ -18,8 +18,10 @@
 		</div>
 		<div if="{this.item}" class="content_right">
 			<h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1>
-			<div class="questions_wrapper"  >
-				<div class="question_wrapper" each="{question, index in this.item.questions}">
+			<div class="questions_wrapper" >
+				<div each="{question, index in this.item.questions}" 
+					onclick="{setActive}"
+					class="question_wrapper {question.isRegionTarget() ? 'area-selector-question' : ''} {question.active ? 'active' : ''}" >
 					<div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion>
 					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
@@ -54,7 +56,7 @@
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => fetch(this.annotationSource))
+	    .then( () => this.fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
 		.catch( error => {
@@ -68,10 +70,10 @@
 	    
 	    this.item = new Crowdsourcing.Item(itemConfig, 0);
 	    this.item.setReviewMode(this.opts.itemstatus && this.opts.itemstatus.toUpperCase() == "REVIEW");
-		fetch(this.item.imageSource)
+		fetch(this.item.imageSource + "simple/")
 		.then( response => response.json() )
-		.then((imageSource) => this.initImageView())
-		.then( () => {this.loading = false;})
+		.then( imageSource => this.initImageView(imageSource))
+		.then( () => {this.loading = false; this.update()})
 		.catch( error => {
 		    this.loading = false;
 		    console.error("ERROR ", error);  
@@ -80,11 +82,9 @@
 		this.item.onImageRotated( () => this.update());
 	}
 	
-	initImageView() {
-	    this.item.initViewer()
-	    .then( function() {	
-	    	this.update();
-	    }.bind(this) )
+	initImageView(imageSource) {
+	    this.item.initViewer(imageSource)
+	    this.update();
 	}
 
 	
@@ -118,6 +118,13 @@
 	    })
 	}
 	
+	setActive(event) {
+	    if(event.item.question.isRegionTarget()) {	        
+		    this.item.questions.forEach(q => q.active = false);
+		    event.item.question.active = true;
+	    }
+	}
+ 	
 	saveToServer() {
 	    let pages = this.item.loadAnnotationPages();
 	    this.loading = true;
@@ -127,6 +134,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(pages)
 	    })
@@ -174,11 +182,22 @@
             headers: {
                 'Content-Type': 'application/json',
             },
+            cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(body)
 	    })
 	}
 
+	fetch(url) {
+	    return fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: "no-cache",
+            mode: 'cors', // no-cors, cors, *same-origin
+	    })
+	}
 
 
 </script>

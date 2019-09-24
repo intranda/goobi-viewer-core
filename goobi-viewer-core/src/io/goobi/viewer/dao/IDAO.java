@@ -448,6 +448,11 @@ public interface IDAO {
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
 
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
+    
+    public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+    
+    public long getAnnotationCount(Map<String, String> filters) throws DAOException;
 
     long getAnnotationCountForTarget(String pi, Integer page) throws DAOException;
 

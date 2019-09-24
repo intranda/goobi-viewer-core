@@ -74,7 +74,8 @@ public enum PageType {
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
-    adminCrowdCampaigns("admin/crowdsourcing/campaigns"),
+    adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
+    adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
     //crowdsourcing/annotation
     crowsourcingCampaigns("campaigns", PageTypeHandling.cms),
@@ -330,6 +331,8 @@ public enum PageType {
             case adminCmsOverview:
             case adminCmsSelectTemplate:
             case adminCmsStaticPages:
+            case adminCrowdsourcingAnnotations:
+            case adminCrowdsourcingCampaigns:
             case adminIpRange:
             case adminIpRanges:
             case adminLicenseType:

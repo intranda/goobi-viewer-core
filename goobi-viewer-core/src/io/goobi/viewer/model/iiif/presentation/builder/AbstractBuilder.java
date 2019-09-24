@@ -18,6 +18,7 @@ package io.goobi.viewer.model.iiif.presentation.builder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,16 +27,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.oa.FragmentSelector;
+import de.intranda.api.annotation.oa.Motivation;
+import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.TextualResource;
+import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.AnnotationList;
+import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
@@ -48,6 +59,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -68,6 +80,9 @@ public abstract class AbstractBuilder {
 			SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT,
 			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
+	
+	private static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS};
+
 
 	private final URI servletURI;
 	private final URI requestURI;
@@ -401,6 +416,83 @@ public abstract class AbstractBuilder {
 		}
 		return null;
 	}
+	
+	/**
+	 * Get all annotations for the given PI from the SOLR index, sorted by page number.
+	 * The annotations are stored as DOCTYPE:UGC in the SOLR and are converted to OpenAnnotations here
+	 * 
+	 * @param pi   The persistent identifier of the work to query
+	 * @return     A map of page numbers (1-based) mapped to a list of associated annotations
+	 * @throws PresentationException
+	 * @throws IndexUnreachableException
+	 */
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi) throws PresentationException, IndexUnreachableException {
+        String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
+        List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
+        SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
+        Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
+        if (ugcDocs != null && !ugcDocs.isEmpty()) {
+            for (SolrDocument doc : ugcDocs) {
+                
+                String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
+                String text = "";
+                Object textObject = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_TEXT)).orElse("");
+                if(textObject != null && textObject instanceof Collection) {
+                    text = (String) ((Collection)textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
+                } else {
+                    text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
+                }
+                String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
+                Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
+
+                OpenAnnotation anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
+                anno.setBody(new TextualResource(text));
+                FragmentSelector selector = new FragmentSelector(coordString);
+                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                anno.setMotivation(Motivation.COMMENTING);
+                
+                List<OpenAnnotation> annoList = annoMap.get(pageOrder);
+                if(annoList == null) {
+                    annoList = new ArrayList<>();
+                    annoMap.put(pageOrder, annoList);
+                }
+                annoList.add(anno);
+            }
+        }
+        return annoMap;
+    }
+    
+
+    /**
+     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap 
+     * 
+     * @param canvases  The list of canvases which should receive the annotations as otherContent
+     * @param crowdsourcingAnnotations  A map of annotations by page number 
+     * @param annotationMap     A global annotation map for a whole manifest; may be null if not needed
+     */
+    public void addCrowdourcingAnnotations(List<Canvas> canvases, Map<Integer, List<OpenAnnotation>> crowdsourcingAnnotations, Map<AnnotationType, List<AnnotationList>> annotationMap) {
+
+        for (Canvas canvas : canvases) {
+            Integer order = this.getPageOrderFromCanvasURI(canvas.getId());
+            String pi = this.getPIFromCanvasURI(canvas.getId());
+            if(crowdsourcingAnnotations.containsKey(order)) {
+                AnnotationList crowdList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.CROWDSOURCING));
+                crowdList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.CROWDSOURCING.name()));
+                List<OpenAnnotation> annos = crowdsourcingAnnotations.get(order);
+                annos.forEach(anno -> crowdList.addResource(anno));
+                canvas.addOtherContent(crowdList);
+                if(annotationMap != null) { 
+                    List<AnnotationList> crowdAnnos = annotationMap.get(AnnotationType.CROWDSOURCING);
+                    if(crowdAnnos == null) {
+                        crowdAnnos = new ArrayList<>();
+                        annotationMap.put(AnnotationType.CROWDSOURCING, crowdAnnos);                        
+                    }
+                    crowdAnnos.add(crowdList);
+                }
+            }
+        }
+        
+    }
 
 	/**
 	 * @return
@@ -499,6 +591,39 @@ public abstract class AbstractBuilder {
 				.append("/canvas/").append(pageNo).append("/");;
 		return URI.create(sb.toString());
 	}
+	
+	/**
+	 * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/'
+	 * If the URI doesn't match a canvas URI, null is returned
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	public Integer getPageOrderFromCanvasURI(URI uri) {
+	    String regex = "/canvas/(\\d+)/$";
+	    Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
+	    if(matcher.find()) {
+	        return Integer.parseInt(matcher.group(1));
+	    } else {
+	        return null;
+	    }
+	}
+	
+	/**
+	 * Get the persistent identifier from a canvas URI. This is the URI path param between '/iiif/manifests/' and '/canvas/'
+	 * 
+	 * @param uri
+	 * @return The pi, or null if the URI doesn't match a iiif canvas URI
+	 */
+    public String getPIFromCanvasURI(URI uri) {
+        String regex = "/iiif/manifests/([\\w\\-\\s]+)/canvas/(\\d+)/$";
+        Matcher matcher = Pattern.compile(regex).matcher(uri.toString());
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
 
 	public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) {
 		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)

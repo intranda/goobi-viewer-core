@@ -38,6 +38,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
         this.annotations = [];
         this.currentAnnotationIndex = -1;
+        this.colors = Crowdsourcing.frameColors ? Crowdsourcing.frameColors : COLORS;
     }
     
     crowdsourcing.Question.prototype.createAnnotation = function(anno) {
@@ -87,7 +88,10 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.initAreaSelector = function() {
-        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true, COLORS);
+        this.areaSelector = new Crowdsourcing.AreaSelector(this.item, true, this.colors);
+        this.areaSelector.allowDrawing = function() {
+            return this.active === true
+        }.bind(this);
         this.areaSelector.init();
 
     }
@@ -117,7 +121,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
-        let annotation = this.createAnnotation({});
+        let annotation = this.createAnnotation();
         annotation.overlayId = id;
         annotation.setTarget(this.getTarget());
         annotation.setRegion(region);
@@ -164,7 +168,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
     
     crowdsourcing.Question.prototype.createEmptyAnnotation = function() {
-        let anno = this.createAnnotation({});
+        let anno = this.createAnnotation();
         anno.setTarget(this.getTarget());
         this.annotations.push(anno);    
         this.currentAnnotationIndex = this.annotations.length - 1;
@@ -176,6 +180,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
             id: String(this.id),
             type: "Software"
         }
+    }
+    
+    crowdsourcing.Question.prototype.setColors = function(colors) {
+        this.colors = colors;
+    }
+
+    crowdsourcing.Question.prototype.isRegionTarget = function() {
+        return this.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE;
     }
     
     crowdsourcing.Question.prototype.deleteFromLocalStorage = function() {

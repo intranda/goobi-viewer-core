@@ -330,6 +330,13 @@ var viewerJS = (function () {
             var filter = new viewerJS.listFilter(filterConfig);
         });
     }
+    
+    /**
+     * Check if a variable is a string
+     */
+    viewer.isString = function(variable) {
+        return typeof variable === 'string' || variable instanceof String
+    }
 
     // global object for tinymce config
     viewer.tinyConfig = {};

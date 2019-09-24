@@ -17,7 +17,15 @@ package io.goobi.viewer.model.annotation;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,9 +59,18 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * An Annotation class to store annotation in a database
@@ -94,6 +111,9 @@ public class PersistentAnnotation {
     @Column(name = "creator_id")
     private Long creatorId;
 
+    /**
+     * This is the id of the {@link User} who reviewed the annotation. May be null if this annotation wasn't reviewed (yet)
+     */
     @Column(name = "reviewer_id")
     private Long reviewerId;
 
@@ -104,9 +124,15 @@ public class PersistentAnnotation {
     @Column(name = "generator_id")
     private Long generatorId;
 
+    /**
+     * JSON representation of the annotation body as String 
+     */
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
-
+    
+    /**
+     * JSON representation of the annotation target as String 
+     */
     @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
 
@@ -116,9 +142,17 @@ public class PersistentAnnotation {
     @Column(name = "target_page")
     private Integer targetPageOrder;
 
+    /**
+     * empty constructor
+     */
     public PersistentAnnotation() {
     }
 
+    /**
+     * creates a new PersistentAnnotation from a WebAnnotation
+     * 
+     * @param source
+     */
     public PersistentAnnotation(WebAnnotation source) {
         this.dateCreated = source.getCreated();
         this.dateModified = source.getModified();
@@ -163,6 +197,8 @@ public class PersistentAnnotation {
     }
 
     /**
+     * Get the PI of the annotation target from its URI id
+     * 
      * @param id2
      * @return
      */
@@ -217,6 +253,10 @@ public class PersistentAnnotation {
 
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
+    }
+    
+    public static URI getIdAsURI(String id) {
+        return URI.create(URI_ID_TEMPLATE.replace("{id}",id));
     }
 
     /**
@@ -326,6 +366,7 @@ public class PersistentAnnotation {
     }
 
     /**
+     * 
      * @return the body
      */
     public String getBody() {
@@ -353,6 +394,14 @@ public class PersistentAnnotation {
         this.motivation = motivation;
     }
 
+    /**
+     * Get the
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getBodyAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.body != null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -415,6 +464,14 @@ public class PersistentAnnotation {
         this.target = target;
     }
 
+    /**
+     * Get the annotation target as an WebAnnotation {@link IResource} java object
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getTargetAsResource() throws JsonParseException, JsonMappingException, IOException {
         if (this.target != null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -431,6 +488,14 @@ public class PersistentAnnotation {
         return null;
     }
 
+    /**
+     * Get the annotation target as an OpenAnnotation {@link IResource} java object
+     *
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public IResource getTargetAsOAResource() throws JsonParseException, JsonMappingException, IOException {
         IResource resource = getTargetAsResource();
         if (resource != null) {
@@ -446,6 +511,15 @@ public class PersistentAnnotation {
 
     }
 
+    /**
+     * Get the annotation as an {@link WebAnnotation} java object
+     * 
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws DAOException
+     */
     public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
@@ -463,6 +537,14 @@ public class PersistentAnnotation {
         return annotation;
     }
 
+    /**
+     * Get the annotation as an {@link OpenAnnotation} java object
+     *
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
     public OpenAnnotation getAsOpenAnnotation() throws JsonParseException, JsonMappingException, IOException {
         OpenAnnotation annotation = new OpenAnnotation(getIdAsURI());
         annotation.setBody(this.getBodyAsOAResource());
@@ -472,4 +554,95 @@ public class PersistentAnnotation {
         return annotation;
     }
 
+    /**
+     * Deletes exported JSON annotations from a related record's data folder. Should be called when deleting this annotation.
+     * 
+     * @return Number of deleted files
+     * @throws ViewerConfigurationException
+     */
+    public int deleteExportedTextFiles() throws ViewerConfigurationException {
+        if (DataManager.getInstance().getConfiguration().getAnnotationFolder() == null) {
+            throw new ViewerConfigurationException("annotationFolder is not configured");
+        }
+
+        int count = 0;
+        try {
+            Set<Path> filesToDelete = new HashSet<>();
+            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(targetPI);
+            Path annotationFolder = Paths
+                    .get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getAnnotationFolder(), targetPI);
+            logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
+            if (!Files.isDirectory(annotationFolder)) {
+                logger.trace("Annotation folder not found - nothing to delete");
+                return 0;
+            }
+
+            {
+                Path file = Paths.get(annotationFolder.toAbsolutePath().toString(), targetPI + "_" + id + ".json");
+                if (Files.isRegularFile(file)) {
+                    filesToDelete.add(file);
+                }
+            }
+            if (!filesToDelete.isEmpty()) {
+                for (Path file : filesToDelete) {
+                    try {
+                        Files.delete(file);
+                        count++;
+                        logger.info("Annotation file deleted: {}", file.getFileName().toString());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            }
+
+            // Delete folder if empty
+            try {
+                if (FileTools.isFolderEmpty(annotationFolder)) {
+                    Files.delete(annotationFolder);
+                    logger.info("Empty annotation folder deleted: {}", annotationFolder.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        } catch (PresentationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return count;
+    }
+
+    /**
+     * 
+     * @return Just the string value of the body document
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     * @throws DAOException
+     */
+    public String getContentString() throws JsonParseException, JsonMappingException, IOException, DAOException {
+        // Value
+        WebAnnotation wa = getAsAnnotation();
+        if (wa.getBody() instanceof TextualResource) {
+            return ((TextualResource) wa.getBody()).getText();
+        }
+
+        return body;
+    }
+
+    /**
+     * 
+     * @return URL string to the record view
+     */
+    public String getTargetLink() {
+        String ret = "/" + targetPI + "/";
+        if (targetPageOrder != null) {
+            ret += targetPageOrder + "/";
+        } else {
+            ret += "1/";
+        }
+
+        return ret;
+    }
 }

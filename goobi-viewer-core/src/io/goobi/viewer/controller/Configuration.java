@@ -966,7 +966,7 @@ public final class Configuration extends AbstractConfiguration {
      * @throws ViewerConfigurationException
      * @should return correct value
      */
-    public String getContentRestApiUrl()  {
+    public String getContentRestApiUrl() {
         return getRestApiUrl() + "content/";
 
     }
@@ -1338,6 +1338,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public String getAnnotationFolder() {
+        return getLocalString("annotationFolder");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public String getHotfolder() {
         return getLocalString("hotfolder");
     }
@@ -1546,7 +1555,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayTimeMatrix() {
         return this.getLocalBoolean("webGuiDisplay.displayTimeMatrix", false);
     }
-    
+
     /**
      * @return
      * @should return correct value

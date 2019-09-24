@@ -16,6 +16,9 @@
 package io.goobi.viewer.model.crowdsourcing.questions;
 
 /**
+ * The QuestionType determines GUI element to use to create annotations for a {@link Question}, which also determines the 
+ * type of body the generated annotations have
+ * 
  * @author florian
  *
  */

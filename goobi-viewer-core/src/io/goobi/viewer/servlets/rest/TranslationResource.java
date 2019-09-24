@@ -24,11 +24,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.misc.Translation;
+import io.goobi.viewer.servlets.rest.bookshelves.BookshelfResource;
 import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
@@ -38,11 +42,14 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 @Path("/messages")
 @ViewerRestServiceBinding
 public class TranslationResource {
+    
+    private static final Logger logger = LoggerFactory.getLogger(TranslationResource.class);
 
     @GET
     @Path("/translate/{keys}")
     @Produces({ MediaType.APPLICATION_JSON })
     public TranslationList getTranslations(@PathParam("keys") String keys) {
+        logger.trace("getTranslations: {}", keys);
 
         String[] keyArray = keys.split("\\$");
         List<Translation> translations = new ArrayList<>();

@@ -194,4 +194,7 @@ public class SolrConstants {
     public static final String MDNUM_FILESIZE = "MDNUM_FILESIZE";
 
     public static final String FACET_DC = "FACET_DC";
+    
+    public static final String MD_TEXT = "MD_TEXT"; //content of UGC docs
+
 }

@@ -13,11 +13,14 @@
 	.page-header {
 		/* TOP */
 		&__top-wrapper {
-			height: 40px;
+			height: 30px;
 			position: sticky;
 			top: 0;
-			background-color: black;
+			background-color:  #444;
 			z-index: 2020;		
+			.container {
+				width: auto;	
+			}
 		}
 		&__top {
 			display: flex;
@@ -32,6 +35,13 @@
 				&:focus {
 					color: white;
 					text-decoration: none;
+				}
+			}
+			.bookshelf-navigation {
+				&__dropdown-list {
+					a {
+						color: black;
+					}
 				}
 			}
 		}
@@ -63,6 +73,50 @@
 			[data-toggle="local"] {
 				text-transform: uppercase;			
 			}
+			.change-local {
+				display: none;
+				position: absolute;
+				top: 3.2rem;
+				left: 50%;
+				margin-left: -2.35rem;
+				padding-top: .1rem;
+				background-color: #444;
+				box-shadow: 0px 6px 10px rgba(0,0,0,.25);
+				z-index: 2000;
+				&:before {
+					content: "";
+					position: absolute;
+					display: block;
+					width: 0;
+					height: 0;
+					top: -1.2rem;
+					left: 50%;
+					margin-left: -.6rem;
+					border-width: .6rem;
+					border-style: solid;
+					border-color: transparent transparent @blue transparent;
+				}
+				ul {}
+				li {
+					display: list-item;
+					float: none;
+					margin: 0;
+					margin-bottom: .1rem;
+				}
+				a {
+					padding: .3rem 1.4rem;
+					&:hover,
+					&:active,
+					&:focus {
+						background-color: @hoverblue;			
+					}
+					&.activeLang {
+						background-color: @hoverblue;
+					}
+				}
+				img {}
+			}
+			
 		}
 		&__top-actions-watchlist {}
 		&__top-actions-login {}
@@ -123,8 +177,8 @@
 	&__content {
 		
 		background-color: #f2f3f4;
-		padding: 10px 0 0 10px;
-		height: calc(~"100vh - 40px");
+		padding: 15px 0 0 15px;
+		height: calc(~"100vh - 30px");
 		width: 100vw;
 		.breadcrumbs-wrapper {
 			height:30px;
@@ -201,7 +255,7 @@
 			}
 			.content_right {
 				margin-left: 20px;
-				padding-right:10px;
+				padding-right:15px;
 				width: 50%;
 				overflow: auto;
 				.content_right__title {
@@ -214,6 +268,11 @@
 						padding: 5px;
 						margin-bottom: 5px;
 						border: 1px solid #d5d5d5;
+						&.area-selector-question {
+							&.active {
+								border-width: 2px;
+							}
+						}
 						&__description {
 							margin: 10px 0 30px 10px;
 						}
@@ -228,6 +287,12 @@
 							justify-content: center;
 							height: 100px;
 							color: @middlegray;
+							&.annotation_instruction_inactive {
+								height: auto;
+							}
+							label {
+								margin: 5px 0;
+							}
 						}
 						.annotation_wrapper {
 							margin-bottom: 40px;

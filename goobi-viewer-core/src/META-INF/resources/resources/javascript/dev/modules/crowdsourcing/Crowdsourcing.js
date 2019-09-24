@@ -16,10 +16,9 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * @description Base-Module which initialize the global admin object. * 
- * @version 3.4.0
+ * @description Base-Module for all crowdsourcing annotate and review views
+ * @version 3.7.0
  * @module Crowdsourcing.js
- * @requires jQuery
  */
 var Crowdsourcing = ( function() {
     'use strict';
@@ -31,14 +30,23 @@ var Crowdsourcing = ( function() {
     crowdsourcing.language = "de";
     crowdsourcing.fallbackLanguage = "en";
     
+    /**
+     * Check if a variable is a string
+     */
     crowdsourcing.isString = function(variable) {
         return typeof variable === 'string' || variable instanceof String
     }
     
+    /**
+     * @return a deep copy of the given object 
+     */
     crowdsourcing.deepCopy = function(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
     
+    /**
+     * @return the identifier url for any json+ld object. Returns the original object if it was a string
+     */
     crowdsourcing.getResourceId = function(resource) {
         if(crowdsourcing.isString(resource)) {
             return resource;
@@ -53,43 +61,27 @@ var Crowdsourcing = ( function() {
         }
     }
     
-    crowdsourcing.initTranslations = function(keys, restApiUrl) {
-        if(crowdsourcing.isString(keys)) {
-            keys = [keys];
-        }
-        let keyList = keys.join("$");
-        let url = restApiUrl + "messages/translate/" + keyList;
-        return fetch(url)
-        .then( response => response.json() )
-        .then( function(json) {
-            crowdsourcing.translations = json;
-        })
+    /**
+     * Set the colors to use for drawing frames on the image. All questions use the same color palette.
+     * This may either be a list of color codes or an object returning a color on calling its next() method
+     */
+    crowdsourcing.setFrameColors = function(colors) {
+        this.frameColors = colors;
     }
+
     
+    /**
+     * Returns a translation for the given message key in the given language. 
+     * If language is undefined, the language property of Crowdsourcing is used
+     * if no translation was found, the key itself is returned
+     * Requires the method Crowdsourcing.initTranslations() to be called first 
+     */
     crowdsourcing.translate = function(key, language) {
-        if(!language) {
-            language = crowdsourcing.language;
-        }
-        if(crowdsourcing.isString(key)) {            
-            if(!crowdsourcing.translations) {
-                throw "Must call 'initTranslations' before translating"
-            }
-            if(!crowdsourcing.translations[key]) {
-                return key;
-//            throw "message key " + key + " not initialized";
-            }
-            let translation = viewerJS.getMetadataValue(crowdsourcing.translations[key], language);
-            if(!translation) {
-                translation = viewerJS.getMetadataValue(crowdsourcing.translations[key], crowdsourcing.fallbackLanguage);
-            }
-            return translation;
-        } else {
-            let translation = viewerJS.getMetadataValue(key, language);
-            if(!translation) {
-                translation = viewerJS.getMetadataValue(key, crowdsourcing.fallbackLanguage);
-            }
-            return translation;
-        }
+       if(!crowdsourcing.translator) {
+           return key;
+       } else {
+           return crowdsourcing.translator.translate(key, language);
+       }
 
     }
 

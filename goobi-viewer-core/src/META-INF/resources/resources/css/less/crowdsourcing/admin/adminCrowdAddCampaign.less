@@ -37,10 +37,23 @@
 		}
 		
 		.page-metadata-item-status {
-			dd,
-			dt {
-				padding: 3px 0;
-				line-height: 2em;
+			
+			>div {
+				margin-top: 2em;
+				&:nth-of-type(1) {
+					margin-top: 0;
+				}
+			}
+			.page-metadata-item-date-selector {
+				display: grid;
+				grid-template-columns: 25% auto;
+				h3 {
+					grid-column: span 2;
+				}
+				.cms-module__actions {
+					grid-column-start: 2;
+					justify-self: end;
+				}
 			}
 			.cms-module__actions {
 				float: right;
@@ -49,13 +62,10 @@
 	   			line-height: 21px;
 	   			text-align: left;
 			}
-			.minor-label {
-				padding-top: 10px;
-				font-weight: normal;
-			}
 		}
 	
 		.campaign-statistics {
+			margin-top: 10px;
 			border: 1px solid #ccc;
 			background-color: #fff;
 			flex-wrap: wrap;

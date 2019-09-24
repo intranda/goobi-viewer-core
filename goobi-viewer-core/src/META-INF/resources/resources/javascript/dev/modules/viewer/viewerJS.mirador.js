@@ -45,6 +45,8 @@ var viewerJS = ( function( viewer ) {
         viewType: "ImageView"                            
     }
     
+    var messageKeys = ["viewMirador", "viewMiradorComparison"];
+
     viewer.mirador = {
         /**
          * Method to initialize the mirador viewer.
@@ -67,20 +69,40 @@ var viewerJS = ( function( viewer ) {
             
             var manifests = _getManifestsFromUrlQuery(_defaults);
             
-            if(manifests.length > 0) {
+            var translator = new viewerJS.Translator(
+                    messageKeys, _defaults.restEndpoint, 
+                    "#{navigationHelper.localeString}");
+            
+            if (manifests.length > 0) {
+            	// URL identifiers
                 console.log("manifests", manifests);
                 var miradorConfig = _getMiradorConfigForManifestUrls(manifests, _defaults);
                 console.log("miradorConfig", miradorConfig);
                 Mirador( miradorConfig );
+                // Override window title if more than one record
+                translator.init()
+                .then(function() {
+                	if (miradorConfig.data.length > 1) {
+                		document.title = translator.translate('viewMiradorComparison');
+                	}
+                });
             } else 
-            // ckeck login status
+            // check login status
             // logged in
             if ( _defaults.userLoggedIn ) {
+            	// User bookshelf
                 _sessionBookshelf = sessionStorage.getItem( 'bookshelfId' );
                 _getMiradorObjects( _defaults.root, _sessionBookshelf ).then( function( elements ) {                    
                     $( function() {
                         console.log("elements ", elements)
                         Mirador( elements );
+                        // Override window title if more than one record
+                        translator.init()
+                        .then(function() {
+                        	if (elements.data.length > 1) {
+                        		document.title = translator.translate('viewMiradorComparison');
+                        	}
+                        });
                     });
                 }).fail(function(error) {
                     console.error('ERROR - _getMiradorObjects: ', error.responseText);
@@ -88,9 +110,18 @@ var viewerJS = ( function( viewer ) {
             }
             // not logged in
             else {
+            	// Session bookshelf
                 _getMiradorSessionObjects( _defaults.root ).then( function( elements ) {                    
                     $( function() {
+                    	 console.log("elements ", elements)
                         Mirador( elements );
+                    	// Override window title if more than one record
+                        translator.init()
+                        .then(function() {
+                        	if (elements.data.length > 1) {
+                        		document.title = translator.translate('viewMiradorComparison');
+                        	}
+                        });
                     });
                 }).fail(function(error) {
                     console.error('ERROR - _getMiradorSessionObjects: ', error.responseText);
