@@ -75,7 +75,7 @@ public class CrowdsourcingBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
-    private UserBean userBean;
+    protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;

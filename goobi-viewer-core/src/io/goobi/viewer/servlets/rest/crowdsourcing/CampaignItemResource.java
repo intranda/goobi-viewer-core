@@ -15,8 +15,10 @@
  */
 package io.goobi.viewer.servlets.rest.crowdsourcing;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +80,18 @@ public class CampaignItemResource {
     private final URI requestURI;
 
     public CampaignItemResource() {
+        this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
+    }
+
+    /**
+     * For testing
+     * 
+     * @param request
+     * @param response
+     */
+    public CampaignItemResource(HttpServletRequest request, HttpServletResponse response) {
+        this.servletRequest = request;
+        this.servletResponse = response;
         this.requestURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
@@ -163,13 +177,15 @@ public class CampaignItemResource {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         List<PersistentAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
 
-        List webAnnotations = annotations.stream()
-                .map(Try.lift(PersistentAnnotation::getAsAnnotation))
-                .filter(Try::isSuccess)
-                .map(Try::getValue)
-                .map(o -> o.get())
-                .collect(Collectors.toList());
-        webAnnotations.forEach(o -> o.toString());
+        List<WebAnnotation> webAnnotations = new ArrayList<>();
+        for (PersistentAnnotation anno : annotations) {
+            try {
+                WebAnnotation webAnno = anno.getAsAnnotation();
+                webAnnotations.add(webAnno);
+            } catch (IOException e) {
+               logger.error(e.toString(), e);
+            }
+        }
 
         return webAnnotations;
     }
@@ -212,6 +228,7 @@ public class CampaignItemResource {
             }
 
             //add entirely new annotations
+                        
             persistenceExceptions = newAnnotations.stream()
                     .filter(anno -> anno.getId() == null)
                     .map(Try.lift(dao::addAnnotation))
