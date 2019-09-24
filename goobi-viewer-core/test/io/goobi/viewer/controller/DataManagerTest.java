@@ -104,6 +104,14 @@ public class DataManagerTest {
             }
 
             /* (non-Javadoc)
+             * @see io.goobi.viewer.modules.IModule#getLoginNavigationContributions()
+             */
+            @Override
+            public List<String> getLoginNavigationContributions() {
+                return null;
+            }
+
+            /* (non-Javadoc)
              * @see io.goobi.viewer.modules.IModule#getWidgets(java.lang.String)
              */
             @Override
