@@ -862,6 +862,7 @@ public class SearchBean implements SearchInterface, Serializable {
                                 // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
+                                sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                             }
                             sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
@@ -886,6 +887,10 @@ public class SearchBean implements SearchInterface, Serializable {
                                     case SolrConstants.FULLTEXT:
                                         sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                                         sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\")");
+                                        break;
+                                    case SolrConstants.UGCTERMS:
+                                        sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
+                                        sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\")");
                                         break;
                                     default:
                                         sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
@@ -954,6 +959,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
+                            sbOuter.append(") OR ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ");
                         }
                         sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
@@ -972,6 +978,10 @@ public class SearchBean implements SearchInterface, Serializable {
                                 case SolrConstants.FULLTEXT:
                                     sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(") OR ");
                                     sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                case SolrConstants.UGCTERMS:
+                                    sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(sbInner.toString()).append(") OR ");
+                                    sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString()).append(')');
                                     break;
                                 default:
                                     sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');

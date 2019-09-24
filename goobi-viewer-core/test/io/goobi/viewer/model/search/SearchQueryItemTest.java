@@ -79,7 +79,7 @@ public class SearchQueryItemTest {
             item.setValue("foo bar");
             Set<String> searchTerms = new HashSet<>(2);
             Assert.assertEquals(
-                    "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar)",
+                    "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar)",
                     item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.contains("foo"));
             Assert.assertTrue(searchTerms.contains("bar"));
@@ -152,7 +152,7 @@ public class SearchQueryItemTest {
         item.setValue("foo bar");
         Set<String> searchTerms = new HashSet<>(2);
         Assert.assertEquals(
-                "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar)",
+                "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar)",
                 item.generateQuery(searchTerms, true));
     }
 
