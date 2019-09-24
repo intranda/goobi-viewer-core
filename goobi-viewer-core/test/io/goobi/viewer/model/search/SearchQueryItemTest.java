@@ -168,7 +168,7 @@ public class SearchQueryItemTest {
         item.setValue("*foo*");
         Set<String> searchTerms = new HashSet<>(2);
         Assert.assertEquals(
-                "SUPERDEFAULT:*foo* OR SUPERFULLTEXT:*foo* OR DEFAULT:*foo* OR FULLTEXT:*foo* OR NORMDATATERMS:*foo* OR UGCTERMS:*foo* OR CMS_TEXT_ALL:*foo*",
+                "SUPERDEFAULT:*foo* OR SUPERFULLTEXT:*foo* OR SUPERUGCTERMS:*foo* OR DEFAULT:*foo* OR FULLTEXT:*foo* OR NORMDATATERMS:*foo* OR UGCTERMS:*foo* OR CMS_TEXT_ALL:*foo*",
                 item.generateQuery(searchTerms, true));
     }
 
