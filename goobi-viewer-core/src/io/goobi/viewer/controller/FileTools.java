@@ -249,9 +249,9 @@ public class FileTools {
 
     /**
      *
-     * @param files
-     * @param zipFile
-     * @param level
+     * @param files Source files
+     * @param zipFile Target file
+     * @param level Compression level 0-9
      * @throws FileNotFoundException
      * @throws IOException
      * @should throw FileNotFoundException if file not found

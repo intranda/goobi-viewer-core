@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.servlets;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,6 +23,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
@@ -44,6 +47,7 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.download.DownloadJob;
 import io.goobi.viewer.model.download.DownloadJob.JobStatus;
 import io.goobi.viewer.model.misc.Harvestable;
@@ -163,9 +167,10 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Get a JSON list of all identifiers  and timestamps of records that have an overview page update in the given time frame
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
-                        long count = DataManager.getInstance().getDao().getOverviewPageCount(fromDate, toDate);
-                        List<OverviewPage> overviewPages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, fromDate, toDate);
-                        JSONArray jsonArray = convertToJSON(count, overviewPages);
+                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate);
+                        List<CMSPage> cmsPages =
+                                DataManager.getInstance().getDao().getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
+                        JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());
                     } catch (DAOException e) {
@@ -174,10 +179,10 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     }
                     return;
                 case "snoop_overviewpage":
-                    // Checks whether there are overview page updates with in the given time frame (returns 200 or 404, respectively)
+                    // Checks whether there are cms page updates with in the given time frame (returns 200 or 404, respectively)
                     try {
                         // ?action=snoop_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        if (!DataManager.getInstance().getDao().isOverviewPageHasUpdates(identifier, fromDate, toDate)) {
+                        if (!DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates(identifier, null, fromDate, toDate)) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND);
                         }
                     } catch (DAOException e) {
@@ -192,44 +197,53 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                 "Temp folder could not be created: " + DataManager.getInstance().getConfiguration().getTempFolder());
                         return;
                     }
-                    Path tempFile = null;
+                    // Thread ID as the temp folder path so that it doesn't collide with other users' calls
+                    Path localTempFolder =
+                            Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(), String.valueOf(Thread.currentThread().getId()));
                     try {
                         // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(identifier, fromDate, toDate);
-                        if (overviewPage == null) {
-                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Overview page not found");
+                        List<CMSPage> pages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPagesForRecord(identifier,null);
+                        if (pages.isEmpty()) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
                             return;
                         }
-                        String now = DateTools.formatterFilename.print(System.currentTimeMillis());
-                        String fileNamePrefix = String.valueOf(Thread.currentThread().getId()) + "_"; // Thread ID as prefix so that it doesn't collide with other users' calls
-                        String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
-                                + (toDate != null ? toDate.getTime() : "-") + ".xml";
-                        tempFile = FileTools
-                                .getFileFromString(overviewPage.getExportFormat(),
-                                        DataManager.getInstance().getConfiguration().getTempFolder() + fileNamePrefix + fileName, "UTF-8", false)
-                                .toPath();
-                        if (Files.isRegularFile(tempFile)) {
-                            response.setContentType("application/xml");
-                            response.setHeader("Content-Disposition",
-                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
-                            response.setHeader("Content-Length", String.valueOf(Files.size(tempFile)));
-                            response.flushBuffer();
-                            OutputStream os = response.getOutputStream();
-                            try (FileInputStream fis = new FileInputStream(tempFile.toFile())) {
-                                byte[] buffer = new byte[1024];
-                                int bytesRead = 0;
-                                while ((bytesRead = fis.read(buffer)) != -1) {
-                                    os.write(buffer, 0, bytesRead);
+                        Files.createDirectory(localTempFolder);
+                        String fileName = identifier + "_cmspage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
+                                + (toDate != null ? toDate.getTime() : "-");
+                        Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName + ".zip");
+                        List<File> tempFiles = new ArrayList<>(pages.size() * 2);
+                        for (CMSPage page : pages) {
+                            tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
+                        }
+
+                        // Compress to a ZIP
+                        if (!tempFiles.isEmpty()) {
+                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                            if (Files.isRegularFile(zipFile)) {
+                                String now = DateTools.formatterFilename.print(System.currentTimeMillis());
+                                response.setContentType("application/zip");
+                                response.setHeader("Content-Disposition",
+                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                                response.flushBuffer();
+                                OutputStream os = response.getOutputStream();
+                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                    byte[] buffer = new byte[1024];
+                                    int bytesRead = 0;
+                                    while ((bytesRead = fis.read(buffer)) != -1) {
+                                        os.write(buffer, 0, bytesRead);
+                                    }
                                 }
                             }
-                            // os.flush();
                         }
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
                     } finally {
-                        if (tempFile != null && Files.isRegularFile(tempFile)) {
-                            Files.delete(tempFile);
+                        if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
+                            FileUtils.deleteDirectory(localTempFolder.toFile());
                         }
                     }
                 }

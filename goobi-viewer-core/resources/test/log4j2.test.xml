@@ -53,7 +53,7 @@
         <Logger name="org.docx4j" level="ERROR" additivity="true" />
 		<Logger name="org.jboss.weld" level="WARN" additivity="true" />
 		<Logger name="ugh" level="ERROR" additivity="true" />
-		<Root level="info">
+		<Root level="ERROR">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="rolling" />
 		</Root>

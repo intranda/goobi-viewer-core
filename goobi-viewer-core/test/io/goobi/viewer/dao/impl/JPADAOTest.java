@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -1517,6 +1518,55 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getCMSPagesWithRelatedPi(int,int,Date,Date)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getCMSPagesWithRelatedPi_shouldReturnCorrectRows() throws Exception {
+        Assert.assertEquals(1,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate())
+                        .size());
+        Assert.assertEquals(0,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPagesWithRelatedPi(0, 100, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate())
+                        .size());
+    }
+
+    /**
+     * @see JPADAO#isCMSPagesForRecordHaveUpdates(String,CMSCategory,Date,Date)
+     * @verifies return correct value
+     */
+    @Test
+    public void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance()
+                .getDao()
+                .isCMSPagesForRecordHaveUpdates("PI 1", null, new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
+        Assert.assertFalse(DataManager.getInstance()
+                .getDao()
+                .isCMSPagesForRecordHaveUpdates("PI 1", null, new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
+        Assert.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI 2", null, null, null));
+    }
+
+    /**
+     * @see JPADAO#getCMSPageWithRelatedPiCount(Date,Date)
+     * @verifies return correct count
+     */
+    @Test
+    public void getCMSPageWithRelatedPiCount_shouldReturnCorrectCount() throws Exception {
+        Assert.assertEquals(1,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPageWithRelatedPiCount(new DateTime(2015, 1, 1, 0, 0).toDate(), new DateTime(2015, 12, 31, 0, 0).toDate()));
+        Assert.assertEquals(0,
+                DataManager.getInstance()
+                        .getDao()
+                        .getCMSPageWithRelatedPiCount(new DateTime(2016, 1, 1, 0, 0).toDate(), new DateTime(2016, 12, 31, 0, 0).toDate()));
+    }
+
+    /**
      * @see JPADAO#getCMSPage(long)
      * @verifies return correct page
      */
@@ -2287,4 +2337,5 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI 2")).size());
     }
+
 }

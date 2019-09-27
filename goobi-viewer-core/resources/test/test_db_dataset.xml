@@ -142,11 +142,11 @@
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
 		
-	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000"
+	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
 	    published="true" use_default_sidebar="false"/>
-	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000"
+	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
         published="false" use_default_sidebar="true"/>
-    <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000"
+    <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
         published="true" use_default_sidebar="true" related_pi="PI 1"/>
         
     <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  

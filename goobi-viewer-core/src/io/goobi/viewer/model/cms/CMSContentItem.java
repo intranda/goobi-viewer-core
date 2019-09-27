@@ -1179,24 +1179,26 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * their content type is one of the supported text document formats.
      * 
      * @param pageId ID of the owning CMS page
-     * @param hotfolder
+     * @param outputFolderPath
      * @param namingScheme
+     * @return Exported Files
      * @throws IOException
      * @throws ViewerConfigurationException
      * @should write files correctly
      */
-    public void exportHtmlFragment(long pageId, String hotfolderPath, String namingScheme) throws IOException {
-        if (StringUtils.isEmpty(hotfolderPath)) {
+    public List<File> exportHtmlFragment(long pageId, String outputFolderPath, String namingScheme) throws IOException {
+        if (StringUtils.isEmpty(outputFolderPath)) {
             throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
         }
         if (StringUtils.isEmpty(namingScheme)) {
             throw new IllegalArgumentException("namingScheme may not be null or empty");
         }
         if (StringUtils.isEmpty(htmlFragment) && mediaItem == null) {
-            return;
+            return Collections.emptyList();
         }
 
-        Path cmsDataDir = Paths.get(hotfolderPath, namingScheme + Helper.SUFFIX_CMS);
+        List<File> ret = new ArrayList<>(2);
+        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + Helper.SUFFIX_CMS);
         if (!Files.isDirectory(cmsDataDir)) {
             Files.createDirectory(cmsDataDir);
             logger.trace("Created overview page subdirectory: {}", cmsDataDir.toAbsolutePath().toString());
@@ -1207,6 +1209,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             try {
                 FileUtils.writeStringToFile(file, htmlFragment, Helper.DEFAULT_ENCODING);
                 logger.debug("Wrote HTML fragment: {}", file.getName());
+                ret.add(file);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -1223,8 +1226,11 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                 File file = new File(cmsDataDir.toFile(), pageId + "-" + itemId + ".html");
                 FileUtils.writeStringToFile(file, html, Helper.DEFAULT_ENCODING);
                 logger.debug("Wrote media content: {}", file.getName());
+                ret.add(file);
             }
         }
+        
+        return ret;
     }
 
     /* (non-Javadoc)

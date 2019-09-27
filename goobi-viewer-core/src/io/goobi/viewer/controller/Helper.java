@@ -681,12 +681,6 @@ public class Helper {
         return true;
     }
 
-    @Deprecated
-    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
-            throws DAOException, PresentationException, IndexUnreachableException, IOException {
-        return reIndexPage(pi, page);
-    }
-
     /**
      *
      * @param url Destination URL. Must contain all required GET parameters.
