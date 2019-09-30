@@ -21,7 +21,7 @@
 
 this.question = this.opts.question;
 this.markerIdCounter = 1;
-this.addMarkerActive = !this.question.isRegionTarget();
+this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.isReviewMode();
 this.annotationToMark = null;
 this.markers = [];
 
@@ -31,8 +31,17 @@ this.on("mount", function() {
     this.opts.item.onImageOpen(function() {
         this.markerIdCounter = 1;
         this.setFeatures(this.question.annotations);
+        if(this.markers.length > 0) {            
+       	 this.setView(this.markers[0].view);
+        }
     }.bind(this));
 });
+
+setView(view) {
+    console.log("set view ", view);
+    this.map.setView(view.center, view.zoom);
+}
+
 
 setFeatures(annotations) {
     this.markers.forEach((marker) => {
@@ -84,12 +93,12 @@ showInstructions() {
  * check if instructions to acivate this question should be shown, in order to be able to create annotations for this question
  */
 showInactiveInstructions() {
-    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.isRegionTarget() && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
 
 }
 
 showAddMarkerInstructions() {
-    return !this.question.isRegionTarget() || (this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget()) ;
+    return this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget() ;
 
 }
 
@@ -128,7 +137,7 @@ initMap() {
     this.locations = L.geoJSON([], {
         pointToLayer: function(geoJsonPoint, latlng) {
             let marker = L.marker(latlng, {
-                draggable: true
+                draggable: !this.opts.item.isReviewMode()
             });
                          
             marker.id = geoJsonPoint.id;
@@ -154,13 +163,13 @@ initMap() {
     }).addTo(this.map);
         
     this.map.on("click", function(e) {
-        if(this.addMarkerActive && this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
+        if(this.addMarkerActive && (this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency)) {
 	        var location= e.latlng;
 	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
-        }
-        this.addMarkerActive = !this.question.isRegionTarget();
-        if(this.question.areaSelector) {
-            this.question.areaSelector.enableDrawer();
+	        this.addMarkerActive = !this.question.isRegionTarget();
+	        if(this.question.areaSelector) {
+	            this.question.areaSelector.enableDrawer();
+	        }
         }
     }.bind(this))
 
@@ -181,7 +190,7 @@ createGeoJson(location, zoom, center) {
         	},
         	"view": {
         	    "zoom": zoom,
-        		"center": [center.lng, center.lat]
+        		"center": [center.lat, center.lng]
         	}
         };
     this.locations.addData(geojsonFeature);
@@ -237,7 +246,7 @@ moveFeature(marker, location) {
     console.log("move marker ", marker, " to ", location);
     if(annotation) {
         annotation.setGeometry(marker.toGeoJSON().geometry);
-        annotation.setView({zoom: this.map.getZoom(), center: [this.map.getCenter().lng, this.map.getCenter().lat]});
+        annotation.setView({zoom: this.map.getZoom(), center: [this.map.getCenter().lat, this.map.getCenter().lng]});
     }
     console.log("annotations ", this.question.annotations);
     this.question.saveToLocalStorage();

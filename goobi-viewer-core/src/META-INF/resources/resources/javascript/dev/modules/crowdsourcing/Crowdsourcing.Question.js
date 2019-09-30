@@ -67,6 +67,18 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.initializeView = function(createNewAnnotation, onAddAnnotation, onUpdateAnnotation, focus) {
+        
+        if(createNewAnnotation) {
+            this.createAnnotation = function(anno) {
+                let annotation = createNewAnnotation(anno);
+                annotation.generator = this.getGenerator();
+                annotation.creator = this.item.getCreator();
+                return annotation;
+            }
+        } else {
+            throw "Must pass method to create new annotation";
+        }
+        
         switch(this.targetSelector) {
             //if target is whole source, load annotations just once
             case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
@@ -98,17 +110,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
                 this.setRegion(result.region, anno);
                 onUpdateAnnotation(anno);
             });
-        }
-        
-        if(createNewAnnotation) {
-            this.createAnnotation = function(anno) {
-                let annotation = createNewAnnotation(anno);
-                annotation.generator = this.getGenerator();
-                annotation.creator = this.item.getCreator();
-                return annotation;
-            }
-        } else {
-            throw "Must pass method to create new annotation";
         }
         
         if(focus)  {
@@ -220,7 +221,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
-        console.log("addAnnotation", id, region, color)
+
         let annotation = this.createAnnotation();
         annotation.setTarget(this.getTarget());
         if(id !== undefined) {            
@@ -232,7 +233,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
         if(color) {            
             annotation.setColor(color);
         }
-        console.log("CREATED ANNOTATION ", annotation);
         this.annotations.push(annotation);
         this.currentAnnotationIndex = this.annotations.length - 1;
 
