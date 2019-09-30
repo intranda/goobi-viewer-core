@@ -735,20 +735,76 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		this.update();
     	}.bind( this ) );
 });
-riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>Halten sie die Shift-Taste gedr&#x00FCckt und ziehen Sie im Bild einen Bereich mit der Maus auf.</label></div><div id="geoMap" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
+riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div id="geoMap" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
-this.features = [];
+
 this.question = this.opts.question;
-this.question.createAnnotation = function(anno) {
-    let annotation = new Crowdsourcing.Annotation.GeoJson(anno);
-    annotation.generator = this.question.getGenerator();
-    annotation.creator = this.opts.item.getCreator();
-    return annotation;
-}.bind(this);
+this.markers = [];
 
 this.on("mount", function() {
+    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);
     this.initMap();
-})
+    this.opts.item.onImageOpen(function() {
+        console.log("image open 1");
+        this.update()
+    }.bind(this));
+    this.opts.item.onImageOpen(function() {
+        console.log("image open");
+        this.setFeatures(this.question.annotations);
+        this.update()
+    }.bind(this));
+});
+
+this.setFeatures = function(annotations) {
+    console.log("Set features for ", annotations);
+    this.markers.forEach((marker) => {
+        marker.remove();
+    })
+    this.markers = [];
+    annotations.forEach((anno) => {
+        this.addGeoJson(anno.body);
+    });
+}.bind(this)
+
+this.addAnnotation = function(anno) {
+    this.addGeoJson(anno.body);
+}.bind(this)
+
+this.updateAnnotation = function(anno) {
+
+}.bind(this)
+
+this.focusAnnotation = function(index) {
+    let anno = this.question.getByIndex(index);
+    if(anno) {
+        let marker = this.getMarker(anno);
+        console.log("focus ", anno, marker);
+        marker.style.color = "#ff0000";
+    }
+}.bind(this)
+
+this.showInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+}.bind(this)
+
+this.showInactiveInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+}.bind(this)
+
+this.showAddAnnotationButton = function() {
+    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+}.bind(this)
+
+this.setNameFromEvent = function(event) {
+    event.preventUpdate = true;
+    if(event.item.anno) {
+        anno.setName(event.target.value);
+        this.question.saveToLocalStorage();
+    } else {
+        throw "No annotation to set"
+    }
+}.bind(this)
 
 this.initMap = function() {
     this.map = new L.Map('geoMap');
@@ -772,31 +828,35 @@ this.initMap = function() {
                 draggable: true
             });
 
+            marker.getId = function() {
+                return this._leaflet_id;
+            }
+
             marker.on("dragend", function(event) {
                 var position = marker.getLatLng();
-                geoJsonPoint.geometry.coordinates = [position.lng, position.lat];
-                geoJsonPoint.view.zoom = this.map.getZoom();
-                geoJsonPoint.view.center = this.map.getCenter();
+                moveFeature(marker, position);
             }.bind(this));
 
             marker.on("click", function(event) {
-                this.removeFeature(geoJsonPoint, marker);
+                this.removeFeature(marker);
             }.bind(this));
+
+            this.addFeature(marker);
 
             return marker;
         }.bind(this)
     }).addTo(this.map);
 
     this.map.on("click", function(e) {
-        if(this.question.targetFrequency == 0 || this.features.length < this.question.targetFrequency) {
+        if(this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
 	        var location= e.latlng;
-	        this.addFeature(location);
+	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
         }
     }.bind(this))
 
 }.bind(this)
 
-this.addFeature = function(location) {
+this.createGeoJson = function(location, zoom, center) {
 
     var geojsonFeature = {
         	"type": "Feature",
@@ -808,22 +868,52 @@ this.addFeature = function(location) {
         		"coordinates": [location.lng, location.lat]
         	},
         	"view": {
-        	    "zoom": this.map.getZoom(),
-        		"center": this.map.getCenter()
+        	    "zoom": zoom,
+        		"center": center
         	}
         };
     this.locations.addData(geojsonFeature);
-    this.features.push(geojsonFeature);
 }.bind(this)
 
-this.removeFeature = function(geoJsonPoint, marker) {
+this.getAnnotation = function(marker) {
+    return this.question.annotations.find(anno => anno.overlayId == marker.getId());
+}.bind(this)
+
+this.getMarker = function(annotation) {
+    return this.markers.find(marker => marker.feature == annotation.body);
+}.bind(this)
+
+this.addGeoJson = function(geoJson) {
+    this.locations.addData(geojson);
+}.bind(this)
+
+this.addFeature = function(marker) {
+    console.log("add feature ", marker,  this.getAnnotation(marker), this);
+    this.markers.push(marker);
+    if(!this.getAnnotation(marker)) {
+	    this.question.addAnnotation(marker.getId());
+	    let annotation = this.getAnnotation(marker);
+	    annotation.setBody(marker.feature);
+	    this.question.saveToLocalStorage();
+    }
+}.bind(this)
+
+this.moveFeature = function(marker, location) {
+    marker.feature.geometry.coordinates = [location.lng, location.lat];
+    marker.feature.view.zoom = this.map.getZoom();
+    marker.feature.view.center = this.map.getCenter();
+    this.question.saveToLocalStorage();
+}.bind(this)
+
+this.removeFeature = function(marker) {
     marker.remove();
-    let index = this.features.indexOf(geoJsonPoint);
-    this.features.splice(index, 1);
-}.bind(this)
-
-this.showInstructions = function() {
-    return !this.opts.item.isReviewMode() && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+    let index = this.markers.indexOf(marker);
+    this.markers.splice(index, 1);
+    let annotation = this.getAnnotation(marker);
+    if(annotation) {
+	    this.question.deleteAnnotation(annotation);
+	    this.question.saveToLocalStorage();
+    }
 }.bind(this)
 
 });
@@ -1045,54 +1135,24 @@ riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="p
 riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area"><div if="{this.showAnnotationImages()}" class="annotation_area__image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="annotation_area__text_input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
-	this.question.createAnnotation = function(anno) {
-	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
-	    annotation.generator = this.question.getGenerator();
-	    annotation.creator = this.opts.item.getCreator();
-	    return annotation;
-	}.bind(this);
 
 	this.on("mount", function() {
-	    switch(this.question.targetSelector) {
-
-            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                this.question.loadAnnotationsFromLocalStorage();
-                this.opts.item.onImageOpen(function() {
-	    		    this.question.initAnnotations();
-	    			this.update();
-	    		}.bind(this));
-	        	break;
-
-            case Crowdsourcing.Question.Selector.RECTANGLE:
-                    this.question.initAreaSelector();
-
-            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-            default:
-	    		this.opts.item.onImageOpen(function() {
-	    		    this.question.loadAnnotationsFromLocalStorage();
-	    		    this.question.initAnnotations();
-	    			this.update();
-	    		}.bind(this));
-
-	    }
-
-	    if(this.question.areaSelector) {
-	        this.question.areaSelector.finishedDrawing.subscribe(this.handleFinishedDrawing);
-	        this.question.areaSelector.finishedTransforming.subscribe(this.handleFinishedTransforming);
-	    }
-
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);
+	    this.opts.item.onImageOpen(function() {
+	        this.update()
+	    }.bind(this));
 	});
 
-	this.focusCurrentAnnotation = function() {
-	    if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
-		    let id = "question_" + this.opts.index + "_annotation_" + this.question.currentAnnotationIndex;
-		    let inputSelector = "#" + id + " textarea";
-		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
-		}
+	this.focusAnnotation = function(index) {
+	    console.log("focus annotation ", index, this);
+	    let id = "question_" + this.opts.index + "_annotation_" + index;
+	    let inputSelector = "#" + id + " textarea";
+	    console.log("inputSelector", inputSelector);
+	    this.root.querySelector(inputSelector).focus();
 	}.bind(this)
 
 	this.showAnnotationImages = function() {
-	    return this.question.targetSelector === Crowdsourcing.Question.Selector.RECTANGLE;
+	    return this.question.isRegionTarget();
 	}.bind(this)
 
 	this.showInstructions = function() {
@@ -1105,14 +1165,7 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 	}.bind(this)
 
 	this.showAddAnnotationButton = function() {
-	    if(!this.opts.item.isReviewMode()) {
-		    switch(this.question.targetSelector) {
-		        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-		        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-					return this.question.targetFrequency == 0 || this.question.targetFrequency > this.question.annotations.length;
-		    }
-	    }
-	    return false;
+	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
 	}.bind(this)
 
     this.setTextFromEvent = function(event) {
@@ -1133,19 +1186,8 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
     }.bind(this)
 
     this.addAnnotation = function() {
-        this.question.createEmptyAnnotation();
-        this.focusCurrentAnnotation();
-    }.bind(this)
-
-    this.handleFinishedDrawing = function(result) {
-        this.question.addAnnotation(result.id, result.region, result.color);
-        this.focusCurrentAnnotation();
-        this.update();
-    }.bind(this)
-
-    this.handleFinishedTransforming = function(result) {
-        this.question.setRegion(result.region, this.question.getAnnotationByOverlayId(result.id));
-        this.update();
+        this.question.addAnnotation();
+        this.question.focusCurrentAnnotation();
     }.bind(this)
 
 });
@@ -1170,3 +1212,58 @@ riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="go
 	}.bind(this)
 
 });
+riot.tag2('questiontemplate', '<div if="{showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="annotation_wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="annotation_area"></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+
+this.question = this.opts.question;
+
+this.on("mount", function() {
+    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Implementation(anno), this.update, this.update, this.focusAnnotation);
+    this.opts.item.onImageOpen(function() {
+        this.update()
+    }.bind(this));
+});
+
+this.focusAnnotation = function(index) {
+    let id = "question_" + this.opts.index + "_annotation_" + index;
+    let inputSelector = "#" + id + " textarea";
+    this.root.querySelector(inputSelector).focus();
+}.bind(this)
+
+this.showInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+}.bind(this)
+
+this.showInactiveInstructions = function() {
+    return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+}.bind(this)
+
+this.showAddAnnotationButton = function() {
+    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
+}.bind(this)
+
+this.setBodyFromEvent = function(event) {
+    event.preventUpdate = true;
+    if(event.item.anno) {
+
+        this.question.saveToLocalStorage();
+    } else {
+        throw "No annotation to set"
+    }
+}.bind(this)
+
+this.deleteAnnotationFromEvent = function(event) {
+    if(event.item.anno) {
+        this.question.deleteAnnotation(event.item.anno);
+        this.update();
+    }
+}.bind(this)
+
+this.addAnnotation = function() {
+    this.question.addAnnotation();
+    this.question.focusCurrentAnnotation();
+}.bind(this)
+
+});
+
+

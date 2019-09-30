@@ -96,6 +96,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
     }
     
+    crowdsourcing.Annotation.prototype.setBody = function(body) {
+        this.body = body;
+    }
+
+    
     crowdsourcing.Annotation.prototype.setTarget = function(target) {
         if(this.target != target) {                
             this.setModified(new Date());

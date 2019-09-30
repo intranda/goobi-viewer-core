@@ -64,6 +64,67 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
         }
     }
+    
+    crowdsourcing.Question.prototype.initializeView = function(createNewAnnotation, onAddAnnotation, onUpdateAnnotation, focus) {
+        switch(this.targetSelector) {
+            //if target is whole source, load annotations just once
+            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+                this.loadAnnotationsFromLocalStorage();
+                this.item.onImageOpen(function() {
+                    this.initAnnotations();
+                }.bind(this));
+                break;
+            //if target is a rectangle region on page, initialize drawing on canvas
+            case Crowdsourcing.Question.Selector.RECTANGLE:
+                    this.initAreaSelector();
+            //if target is page or region on page, load matching annotations on each image change
+            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+            default:
+                this.item.onImageOpen(function() {
+                    this.loadAnnotationsFromLocalStorage();
+                    this.initAnnotations();
+                }.bind(this));    
+        }
+        
+        if(this.areaSelector) {            
+            this.areaSelector.finishedDrawing.subscribe( (result) => {
+                let anno = this.addAnnotation(result.id, result.region, result.color);
+                this.focusCurrentAnnotation();
+                onAddAnnotation(anno);
+            });
+            this.areaSelector.finishedTransforming.subscribe( (result) => {
+                let anno = this.getAnnotationByOverlayId(result.id);
+                this.setRegion(result.region, anno);
+                onUpateAnnotation(anno);
+            });
+        }
+        
+        if(createNewAnnotation) {
+            this.createAnnotation = function(anno) {
+                let annotation = createNewAnnotation(anno);
+                annotation.generator = this.getGenerator();
+                annotation.creator = this.item.getCreator();
+                return annotation;
+            }
+        } else {
+            throw "Must pass method to create new annotation";
+        }
+        
+        if(focus)  {
+            this.focusCurrentAnnotation = function() {
+                if(this.currentAnnotationIndex > -1 && this.annotations && this.annotations.length > this.currentAnnotationIndex) {
+                    window.setTimeout(() => focus(this.currentAnnotationIndex),1);
+                }
+            }
+        }
+    }
+    
+    /**
+     * May be overwritten in initializeView to focus an element based on the annotationIndex
+     */
+    crowdsourcing.Question.prototype.focusCurrentAnnotation = function() {
+        //noop
+    }
 
     /**
      * Initializes the annotations for the current page
@@ -82,7 +143,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             case Crowdsourcing.Question.Selector.WHOLE_PAGE:
             case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
                 if(this.annotations.length == 0 && !this.item.isReviewMode()) {                    
-                    this.createEmptyAnnotation();
+                    this.addAnnotation();
                 }
         }
     }
@@ -107,6 +168,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Question.prototype.getIndex = function(anno) {
         return this.annotations.indexOf(anno);
     }
+    
+    crowdsourcing.Question.prototype.getByIndex = function(index) {
+        if(index > -1 && index < this.annotations.length) {            
+            return this.annotations[index];
+        } else {
+            return undefined;
+        }
+    }
 
     crowdsourcing.Question.prototype.getImage = function(annotation) {
         return this.getImageUrl(annotation.getRegion(), this.item.getImageId(this.item.getCurrentCanvas()));
@@ -119,19 +188,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             this.saveToLocalStorage();
         }
     }
-    
-    crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
-        let annotation = this.createAnnotation();
-        annotation.overlayId = id;
-        annotation.setTarget(this.getTarget());
-        annotation.setRegion(region);
-        annotation.setColor(color);
-        this.annotations.push(annotation);
-        this.currentAnnotationIndex = this.annotations.length - 1;
-        this.saveToLocalStorage();
-        this.setDrawingPermission();
-    }
-    
+
     crowdsourcing.Question.prototype.getImageUrl = function(rect, imageId) {
         let rotation = this.item.image ? this.item.image.getRotation() : 0;
         let url = imageId + "/" + rect.x + "," + rect.y + "," + rect.width + "," + rect.height + "/full/" + rotation + "/default.jpg";
@@ -165,15 +222,25 @@ var Crowdsourcing = ( function(crowdsourcing) {
         }
         this.setDrawingPermission();
     }
-
     
-    crowdsourcing.Question.prototype.createEmptyAnnotation = function() {
-        let anno = this.createAnnotation();
-        anno.setTarget(this.getTarget());
-        this.annotations.push(anno);    
+    crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
+        let annotation = this.createAnnotation();
+        annotation.setTarget(this.getTarget());
+        if(id !== undefined) {            
+            annotation.overlayId = id;
+        }
+        if(region) {            
+            annotation.setRegion(region);
+        }
+        if(color) {            
+            annotation.setColor(color);
+        }
+        this.annotations.push(annotation);
         this.currentAnnotationIndex = this.annotations.length - 1;
+        this.saveToLocalStorage();
+        this.setDrawingPermission();
+        return annotation;
     }
-
 
     crowdsourcing.Question.prototype.getGenerator = function() {
         return  {
@@ -209,6 +276,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
         annotations = annotations.map(anno => this.createAnnotation(anno));
 
         return annotations;
+    }
+    
+    crowdsourcing.Question.prototype.mayAddAnnotation = function() {
+        return this.targetFrequency == 0 || this.targetFrequency > this.annotations.length;
+    }
+    
+    crowdsourcing.Question.prototype.isReviewMode = function() {
+        return this.item.isReviewMode();
     }
     
     

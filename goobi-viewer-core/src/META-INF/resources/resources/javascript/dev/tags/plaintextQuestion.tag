@@ -26,57 +26,25 @@
 <script>
 
 	this.question = this.opts.question;
-	this.question.createAnnotation = function(anno) {
-	    let annotation = new Crowdsourcing.Annotation.Plaintext(anno);
-	    annotation.generator = this.question.getGenerator();
-	    annotation.creator = this.opts.item.getCreator();
-	    return annotation;
-	}.bind(this);
 
-	
 	this.on("mount", function() {
-	    switch(this.question.targetSelector) {
-	        //if target is whole source, load annotations just once
-            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                this.question.loadAnnotationsFromLocalStorage();
-                this.opts.item.onImageOpen(function() {
-	    		    this.question.initAnnotations();
-	    			this.update();
-	    		}.bind(this));
-	        	break;
-		    //if target is a rectangle region on page, initialize drawing on canvas
-            case Crowdsourcing.Question.Selector.RECTANGLE:
-                    this.question.initAreaSelector();
-            //if target is page or region on page, load matching annotations on each image change
-            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-            default:
-	    		this.opts.item.onImageOpen(function() {
-	    		    this.question.loadAnnotationsFromLocalStorage();
-	    		    this.question.initAnnotations();
-	    			this.update();
-	    		}.bind(this));
-                
-                
-	    }
-	    
-	    if(this.question.areaSelector) {	        
-	        this.question.areaSelector.finishedDrawing.subscribe(this.handleFinishedDrawing);
-	        this.question.areaSelector.finishedTransforming.subscribe(this.handleFinishedTransforming);
-	    }
-
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);	    
+	    this.opts.item.onImageOpen(function() {
+	        this.update()
+	    }.bind(this));
 	});
 
 	
-	focusCurrentAnnotation() {
-	    if(this.question.currentAnnotationIndex > -1 && this.question.annotations && this.question.annotations.length > this.question.currentAnnotationIndex) {
-		    let id = "question_" + this.opts.index + "_annotation_" + this.question.currentAnnotationIndex;
-		    let inputSelector = "#" + id + " textarea";
-		    window.setTimeout(function(){this.root.querySelector(inputSelector).focus();}.bind(this),1);
-		}
+	focusAnnotation(index) {
+	    console.log("focus annotation ", index, this);
+	    let id = "question_" + this.opts.index + "_annotation_" + index;
+	    let inputSelector = "#" + id + " textarea";
+	    console.log("inputSelector", inputSelector);
+	    this.root.querySelector(inputSelector).focus();
 	}
 	
 	showAnnotationImages() {
-	    return this.question.targetSelector === Crowdsourcing.Question.Selector.RECTANGLE;
+	    return this.question.isRegionTarget();
 	}
 	
 	showInstructions() {
@@ -89,14 +57,7 @@
 	}
 	
 	showAddAnnotationButton() {
-	    if(!this.opts.item.isReviewMode()) {	        
-		    switch(this.question.targetSelector) {
-		        case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-		        case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-					return this.question.targetFrequency == 0 || this.question.targetFrequency > this.question.annotations.length;
-		    }
-	    }
-	    return false;
+	    return !this.question.isReviewMode() && !this.question.isRegionTarget() && this.question.mayAddAnnotation();
 	}
 	
     setTextFromEvent(event) {
@@ -117,20 +78,10 @@
     }
     
     addAnnotation() {
-        this.question.createEmptyAnnotation();
-        this.focusCurrentAnnotation();
+        this.question.addAnnotation();
+        this.question.focusCurrentAnnotation();
     }
-    
-    handleFinishedDrawing(result) {
-        this.question.addAnnotation(result.id, result.region, result.color);
-        this.focusCurrentAnnotation();
-        this.update();
-    }
-    
-    handleFinishedTransforming(result) {
-        this.question.setRegion(result.region, this.question.getAnnotationByOverlayId(result.id));
-        this.update();
-    }
+
 
 
 </script>

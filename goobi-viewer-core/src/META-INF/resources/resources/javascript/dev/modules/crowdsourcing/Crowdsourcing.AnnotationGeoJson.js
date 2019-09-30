@@ -35,11 +35,51 @@ var Crowdsourcing = ( function(crowdsourcing) {
         return this.body;
      
     }
-        
-    crowdsourcing.Annotation.Plaintext.prototype.setLocation = function(geoJson) {
+    
+    crowdsourcing.Annotation.Plaintext.prototype.setBody = function(geoJson) {
         this.body = geoJson;
     }
+        
+    crowdsourcing.Annotation.Plaintext.prototype.setGeometry = function(geometry) {
+        if(!this.body) {            
+            this.body = {
+                    geometry : geometry
+            }
+        } else {
+            this.body.geometry = geoJson.geometry;
+        }
+    }
+    
+    crowdsourcing.Annotation.Plaintext.prototype.setView = function(view) {
+        if(!this.body) {            
+            this.body = {
+                    view : view
+            }
+        } else {
+            this.body.view = geoJson.view;
+        }
+    }
+    
+    crowdsourcing.Annotation.Plaintext.prototype.setName = function(name) {
+        if(!this.body) {            
+            this.body = {
+                    geometry : {},
+                    view : {},
+                    properties : {
+                        name : name
+                    }
+            }
+        } else if(!this.body.properties){
+            this.body.properties = {
+                    name : name
+            }
+        } else {
+            this.body.properties.name = name;
+        }
+    }
 
+    
+    
     return crowdsourcing;
     
 } )( Crowdsourcing );
