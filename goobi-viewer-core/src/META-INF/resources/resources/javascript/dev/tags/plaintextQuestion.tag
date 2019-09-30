@@ -30,16 +30,21 @@
 	this.on("mount", function() {
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);	    
 	    this.opts.item.onImageOpen(function() {
+	        switch(this.question.targetSelector) {
+	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {                    
+	                    this.question.addAnnotation();
+	                }
+	        }
 	        this.update()
 	    }.bind(this));
 	});
 
 	
 	focusAnnotation(index) {
-	    console.log("focus annotation ", index, this);
 	    let id = "question_" + this.opts.index + "_annotation_" + index;
 	    let inputSelector = "#" + id + " textarea";
-	    console.log("inputSelector", inputSelector);
 	    this.root.querySelector(inputSelector).focus();
 	}
 	

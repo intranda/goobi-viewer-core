@@ -31,36 +31,36 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     crowdsourcing.Annotation.GeoJson.prototype = Object.create(crowdsourcing.Annotation.prototype);
     
-    crowdsourcing.Annotation.Plaintext.prototype.getLocation = function() {
+    crowdsourcing.Annotation.GeoJson.prototype.getLocation = function() {
         return this.body;
      
     }
     
-    crowdsourcing.Annotation.Plaintext.prototype.setBody = function(geoJson) {
+    crowdsourcing.Annotation.GeoJson.prototype.setBody = function(geoJson) {
         this.body = geoJson;
     }
         
-    crowdsourcing.Annotation.Plaintext.prototype.setGeometry = function(geometry) {
+    crowdsourcing.Annotation.GeoJson.prototype.setGeometry = function(geometry) {
         if(!this.body) {            
             this.body = {
                     geometry : geometry
             }
         } else {
-            this.body.geometry = geoJson.geometry;
+            this.body.geometry = geometry;
         }
     }
     
-    crowdsourcing.Annotation.Plaintext.prototype.setView = function(view) {
+    crowdsourcing.Annotation.GeoJson.prototype.setView = function(view) {
         if(!this.body) {            
             this.body = {
                     view : view
             }
         } else {
-            this.body.view = geoJson.view;
+            this.body.view = view;
         }
     }
     
-    crowdsourcing.Annotation.Plaintext.prototype.setName = function(name) {
+    crowdsourcing.Annotation.GeoJson.prototype.setName = function(name) {
         if(!this.body) {            
             this.body = {
                     geometry : {},

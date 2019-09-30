@@ -48,6 +48,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Question.prototype.loadAnnotationsFromLocalStorage = function() {
         this.annotations = this.getAnnotationsFromLocalStorage();
+        console.log("loaded annotations ", this.annotations);
     }
     
     crowdsourcing.Question.prototype.setDrawingPermission = function() {
@@ -140,11 +141,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     this.areaSelector.setDrawingStyle(this.areaSelector.getStyle());
                 }
                 break;
-            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-                if(this.annotations.length == 0 && !this.item.isReviewMode()) {                    
-                    this.addAnnotation();
-                }
+//            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+//            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+//                if(this.annotations.length == 0 && !this.item.isReviewMode()) {                    
+//                    this.addAnnotation();
+//                }
         }
     }
     
@@ -235,9 +236,12 @@ var Crowdsourcing = ( function(crowdsourcing) {
         if(color) {            
             annotation.setColor(color);
         }
+
         this.annotations.push(annotation);
         this.currentAnnotationIndex = this.annotations.length - 1;
+
         this.saveToLocalStorage();
+
         this.setDrawingPermission();
         return annotation;
     }
@@ -265,7 +269,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         let annotationsToSave = this.annotations;
         if(this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_PAGE ||
             this.targetSelector == Crowdsourcing.Question.Selector.WHOLE_SOURCE) {
-            annotationsToSave = annotationsToSave.filter(anno => anno.getText() && anno.getText().length > 0);
+            annotationsToSave = annotationsToSave.filter(anno => !anno.isEmpty());
         }
         this.item.saveAnnotations(this.getTargetId(), this.id, annotationsToSave);
     }

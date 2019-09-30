@@ -58,6 +58,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
     crowdsourcing.Annotation.prototype.getModified = function() {
         return this.modified ? Date.parse(this.modified) : undefined;  
     }
+    
+    /**
+     * Default implementation: empty if no body is present
+     */
+    crowdsourcing.Annotation.prototype.isEmpty = function() {
+        return this.body == undefined;
+    }
+
 
     crowdsourcing.Annotation.prototype.setRegion = function(rect) {
         if(!this.target) {

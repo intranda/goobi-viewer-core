@@ -217,7 +217,9 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Item.prototype.getFromLocalStorage = function() {
-        return JSON.parse(localStorage.getItem(LOCAL_STORAGE_ITEM));
+        let jsonString = localStorage.getItem(LOCAL_STORAGE_ITEM);
+        let json = JSON.parse(jsonString);
+        return json;
     }
     
     crowdsourcing.Item.prototype.setReviewMode = function(review) {

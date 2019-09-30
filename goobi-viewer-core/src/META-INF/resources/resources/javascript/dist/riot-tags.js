@@ -739,35 +739,31 @@ riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="ann
 
 
 this.question = this.opts.question;
+this.markerIdCounter = 1;
 this.markers = [];
 
 this.on("mount", function() {
     this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);
     this.initMap();
     this.opts.item.onImageOpen(function() {
-        console.log("image open 1");
-        this.update()
-    }.bind(this));
-    this.opts.item.onImageOpen(function() {
-        console.log("image open");
+        this.markerIdCounter = 1;
         this.setFeatures(this.question.annotations);
-        this.update()
     }.bind(this));
 });
 
 this.setFeatures = function(annotations) {
-    console.log("Set features for ", annotations);
     this.markers.forEach((marker) => {
         marker.remove();
     })
     this.markers = [];
-    annotations.forEach((anno) => {
-        this.addGeoJson(anno.body);
+    annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
+        let overlayId = this.addGeoJson(anno.body);
+        anno.overlayId = overlayId;
     });
 }.bind(this)
 
 this.addAnnotation = function(anno) {
-    this.addGeoJson(anno.body);
+
 }.bind(this)
 
 this.updateAnnotation = function(anno) {
@@ -777,7 +773,7 @@ this.updateAnnotation = function(anno) {
 this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.getMarker(anno);
+        let marker = this.getMarker(anno.overlayId);
         console.log("focus ", anno, marker);
         marker.style.color = "#ff0000";
     }
@@ -828,20 +824,23 @@ this.initMap = function() {
                 draggable: true
             });
 
+            marker.id = geoJsonPoint.id;
+            marker.view = geoJsonPoint.view;
+
             marker.getId = function() {
-                return this._leaflet_id;
+                return this.id;
             }
 
             marker.on("dragend", function(event) {
                 var position = marker.getLatLng();
-                moveFeature(marker, position);
+                this.moveFeature(marker, position);
             }.bind(this));
 
             marker.on("click", function(event) {
                 this.removeFeature(marker);
             }.bind(this));
 
-            this.addFeature(marker);
+            this.markers.push(marker);
 
             return marker;
         }.bind(this)
@@ -857,9 +856,10 @@ this.initMap = function() {
 }.bind(this)
 
 this.createGeoJson = function(location, zoom, center) {
-
+	let id = this.markerIdCounter++;
     var geojsonFeature = {
         	"type": "Feature",
+        	"id": id,
         	"properties": {
         		"name": "",
         	},
@@ -869,39 +869,46 @@ this.createGeoJson = function(location, zoom, center) {
         	},
         	"view": {
         	    "zoom": zoom,
-        		"center": center
+        		"center": [center.lng, center.lat]
         	}
         };
     this.locations.addData(geojsonFeature);
+    this.addFeature(id);
 }.bind(this)
 
-this.getAnnotation = function(marker) {
-    return this.question.annotations.find(anno => anno.overlayId == marker.getId());
+this.getAnnotation = function(id) {
+    return this.question.annotations.find(anno => anno.overlayId == id);
 }.bind(this)
 
-this.getMarker = function(annotation) {
-    return this.markers.find(marker => marker.feature == annotation.body);
+this.getMarker = function(id) {
+    return this.markers.find(marker => marker.getId() == id);
 }.bind(this)
 
 this.addGeoJson = function(geoJson) {
-    this.locations.addData(geojson);
+    let id = this.markerIdCounter++;
+    geoJson.id = id;
+    this.locations.addData(geoJson);
+    return id;
 }.bind(this)
 
-this.addFeature = function(marker) {
-    console.log("add feature ", marker,  this.getAnnotation(marker), this);
-    this.markers.push(marker);
-    if(!this.getAnnotation(marker)) {
-	    this.question.addAnnotation(marker.getId());
-	    let annotation = this.getAnnotation(marker);
-	    annotation.setBody(marker.feature);
-	    this.question.saveToLocalStorage();
-    }
+this.addFeature = function(id) {
+    this.question.addAnnotation(id);
+    let annotation = this.getAnnotation(id);
+    let marker = this.getMarker(annotation.overlayId);
+    annotation.setBody(marker.toGeoJSON());
+    annotation.setView(marker.view);
+    this.question.saveToLocalStorage();
 }.bind(this)
 
 this.moveFeature = function(marker, location) {
-    marker.feature.geometry.coordinates = [location.lng, location.lat];
-    marker.feature.view.zoom = this.map.getZoom();
-    marker.feature.view.center = this.map.getCenter();
+    let annotation = this.getAnnotation(marker.getId());
+    marker.setLatLng(location);
+    console.log("move marker ", marker, " to ", location);
+    if(annotation) {
+        annotation.setGeometry(marker.toGeoJSON().geometry);
+        annotation.setView({zoom: this.map.getZoom(), center: [this.map.getCenter().lng, this.map.getCenter().lat]});
+    }
+    console.log("annotations ", this.question.annotations);
     this.question.saveToLocalStorage();
 }.bind(this)
 
@@ -909,7 +916,8 @@ this.removeFeature = function(marker) {
     marker.remove();
     let index = this.markers.indexOf(marker);
     this.markers.splice(index, 1);
-    let annotation = this.getAnnotation(marker);
+    let annotation = this.getAnnotation(marker.getId());
+    console.log("delete annotation ", annotation);
     if(annotation) {
 	    this.question.deleteAnnotation(annotation);
 	    this.question.saveToLocalStorage();
@@ -1139,15 +1147,20 @@ riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="annot
 	this.on("mount", function() {
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Plaintext(anno), this.update, this.update, this.focusAnnotation);
 	    this.opts.item.onImageOpen(function() {
+	        switch(this.question.targetSelector) {
+	            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
+	            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
+	                if(this.question.annotations.length == 0 && !this.question.item.isReviewMode()) {
+	                    this.question.addAnnotation();
+	                }
+	        }
 	        this.update()
 	    }.bind(this));
 	});
 
 	this.focusAnnotation = function(index) {
-	    console.log("focus annotation ", index, this);
 	    let id = "question_" + this.opts.index + "_annotation_" + index;
 	    let inputSelector = "#" + id + " textarea";
-	    console.log("inputSelector", inputSelector);
 	    this.root.querySelector(inputSelector).focus();
 	}.bind(this)
 

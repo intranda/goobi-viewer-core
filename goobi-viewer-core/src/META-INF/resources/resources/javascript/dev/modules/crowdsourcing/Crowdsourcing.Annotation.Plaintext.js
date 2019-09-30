@@ -50,7 +50,13 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.body.value = text;
     }
 
-
+    crowdsourcing.Annotation.Plaintext.prototype.isEmpty = function(text) {
+        if(this.getText() && this.getText().length > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     
     
     return crowdsourcing;
