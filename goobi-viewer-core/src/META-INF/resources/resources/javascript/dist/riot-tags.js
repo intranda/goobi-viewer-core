@@ -735,11 +735,13 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     		this.update();
     	}.bind( this ) );
 });
-riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div id="geoMap" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
+riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div id="geoMap" class="geo-map"></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
 
 this.question = this.opts.question;
 this.markerIdCounter = 1;
+this.addMarkerActive = !this.question.isRegionTarget();
+this.annotationToMark = null;
 this.markers = [];
 
 this.on("mount", function() {
@@ -756,35 +758,48 @@ this.setFeatures = function(annotations) {
         marker.remove();
     })
     this.markers = [];
+    console.log("add markers for ", annotations);
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
-        let overlayId = this.addGeoJson(anno.body);
-        anno.overlayId = overlayId;
+        let markerId = this.addGeoJson(anno.body);
+        anno.markerId = markerId;
     });
 }.bind(this)
 
 this.addAnnotation = function(anno) {
-
+   this.addMarkerActive = true;
+   this.annotationToMark = anno;
+   if(this.question.areaSelector) {
+       this.question.areaSelector.disableDrawer();
+   }
+   this.update();
 }.bind(this)
 
 this.updateAnnotation = function(anno) {
-
+    this.focusAnnotation(this.question.getIndex(anno));
 }.bind(this)
 
 this.focusAnnotation = function(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.getMarker(anno.overlayId);
-        console.log("focus ", anno, marker);
-        marker.style.color = "#ff0000";
+        let marker = this.getMarker(anno.markerId);
+        if(marker) {
+	        console.log("focus ", anno, marker);
+
+        }
     }
 }.bind(this)
 
 this.showInstructions = function() {
-    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+    return !this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget();
 }.bind(this)
 
 this.showInactiveInstructions = function() {
     return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+}.bind(this)
+
+this.showAddMarkerInstructions = function() {
+    return !this.question.isRegionTarget() || (this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget()) ;
 
 }.bind(this)
 
@@ -814,11 +829,6 @@ this.initMap = function() {
     this.map.addLayer(osm);
 
     this.locations = L.geoJSON([], {
-        style : {
-                "color": "#ff7800",
-            	"weight": 5,
-            	"opacity": 0.65
-        },
         pointToLayer: function(geoJsonPoint, latlng) {
             let marker = L.marker(latlng, {
                 draggable: true
@@ -847,9 +857,13 @@ this.initMap = function() {
     }).addTo(this.map);
 
     this.map.on("click", function(e) {
-        if(this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
+        if(this.addMarkerActive && this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
 	        var location= e.latlng;
 	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
+        }
+        this.addMarkerActive = !this.question.isRegionTarget();
+        if(this.question.areaSelector) {
+            this.question.areaSelector.enableDrawer();
         }
     }.bind(this))
 
@@ -873,11 +887,16 @@ this.createGeoJson = function(location, zoom, center) {
         	}
         };
     this.locations.addData(geojsonFeature);
-    this.addFeature(id);
+    if(this.annotationToMark) {
+        this.annotationToMark.markerId = id;
+        this.updateFeature(id);
+    } else {
+    	this.addFeature(id);
+    }
 }.bind(this)
 
 this.getAnnotation = function(id) {
-    return this.question.annotations.find(anno => anno.overlayId == id);
+    return this.question.annotations.find(anno => anno.markerId == id);
 }.bind(this)
 
 this.getMarker = function(id) {
@@ -891,10 +910,18 @@ this.addGeoJson = function(geoJson) {
     return id;
 }.bind(this)
 
-this.addFeature = function(id) {
-    this.question.addAnnotation(id);
+this.updateFeature = function(id) {
     let annotation = this.getAnnotation(id);
-    let marker = this.getMarker(annotation.overlayId);
+    let marker = this.getMarker(annotation.markerId);
+    annotation.setBody(marker.toGeoJSON());
+    annotation.setView(marker.view);
+    this.question.saveToLocalStorage();
+}.bind(this)
+
+this.addFeature = function(id) {
+    let annotation = this.question.addAnnotation();
+    annotation.markerId = id;
+    let marker = this.getMarker(id);
     annotation.setBody(marker.toGeoJSON());
     annotation.setView(marker.view);
     this.question.saveToLocalStorage();

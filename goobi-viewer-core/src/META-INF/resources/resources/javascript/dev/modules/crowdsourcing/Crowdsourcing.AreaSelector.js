@@ -107,19 +107,21 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.AreaSelector.prototype.addOverlay = function(annotation, viewer) {
-        let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source)
-        rect = rect.rotate(-viewer.viewport.getRotation());
-        let overlay = new ImageView.Overlay(rect, viewer, this.getStyle());
-        annotation.setColor(overlay.style.borderColor);
-        overlay.id = ++this.lastRectangleId;
-        annotation.overlayId = overlay.id;
-        this.lastRectangleId = overlay.id;
-        overlay.draw();
-        if(this.transformer) {     
-            this.transformer.addOverlay(overlay);
+        if(annotation.getRegion()) {            
+            let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(annotation.getRegion(), viewer, viewer.world.getItemAt(0).source)
+            rect = rect.rotate(-viewer.viewport.getRotation());
+            let overlay = new ImageView.Overlay(rect, viewer, this.getStyle());
+            annotation.setColor(overlay.style.borderColor);
+            overlay.id = ++this.lastRectangleId;
+            annotation.overlayId = overlay.id;
+            this.lastRectangleId = overlay.id;
+            overlay.draw();
+            if(this.transformer) {     
+                this.transformer.addOverlay(overlay);
+            }
+            //console.log("%c add overlay " + annotation.getText(), "background: " + annotation.getColor());
+            this.rects.push(overlay);
         }
-        //console.log("%c add overlay " + annotation.getText(), "background: " + annotation.getColor());
-        this.rects.push(overlay);
     }
 
     crowdsourcing.AreaSelector.prototype.removeOverlay = function(object) {

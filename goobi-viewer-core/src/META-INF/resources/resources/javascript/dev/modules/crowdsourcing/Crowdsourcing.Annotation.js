@@ -127,18 +127,11 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Annotation.prototype.getColor = function() {
-        if(this.body) {
-            return this.body.color;
-        } else {
-            return undefined;
-        }
+        return this.color;
     }
 
     crowdsourcing.Annotation.prototype.setColor = function(color) {
-        if(!this.body) {
-            this.body = {}
-        }
-        this.body.color = color;
+        this.color = color;
     }
     
     return crowdsourcing;

@@ -96,7 +96,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             this.areaSelector.finishedTransforming.subscribe( (result) => {
                 let anno = this.getAnnotationByOverlayId(result.id);
                 this.setRegion(result.region, anno);
-                onUpateAnnotation(anno);
+                onUpdateAnnotation(anno);
             });
         }
         
@@ -141,11 +141,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     this.areaSelector.setDrawingStyle(this.areaSelector.getStyle());
                 }
                 break;
-//            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
-//            case Crowdsourcing.Question.Selector.WHOLE_SOURCE:
-//                if(this.annotations.length == 0 && !this.item.isReviewMode()) {                    
-//                    this.addAnnotation();
-//                }
         }
     }
     
@@ -225,6 +220,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
     
     crowdsourcing.Question.prototype.addAnnotation = function(id, region, color) {
+        console.log("addAnnotation", id, region, color)
         let annotation = this.createAnnotation();
         annotation.setTarget(this.getTarget());
         if(id !== undefined) {            
@@ -236,7 +232,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         if(color) {            
             annotation.setColor(color);
         }
-
+        console.log("CREATED ANNOTATION ", annotation);
         this.annotations.push(annotation);
         this.currentAnnotationIndex = this.annotations.length - 1;
 

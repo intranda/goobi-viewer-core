@@ -3,6 +3,9 @@
 	<div if="{this.showInstructions()}" class="annotation_instruction">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__create_rect_on_image")}</label>
 	</div>
+	<div if="{this.showAddMarkerInstructions()}" class="annotation_instruction">
+		<label>{Crowdsourcing.translate("crowdsourcing__help__add_marker_to_image")}</label>
+	</div>
 	<div if="{this.showInactiveInstructions()}" class="annotation_instruction annotation_instruction_inactive">
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
@@ -18,6 +21,8 @@
 
 this.question = this.opts.question;
 this.markerIdCounter = 1;
+this.addMarkerActive = !this.question.isRegionTarget();
+this.annotationToMark = null;
 this.markers = [];
 
 this.on("mount", function() {
@@ -34,18 +39,24 @@ setFeatures(annotations) {
         marker.remove();
     })
     this.markers = [];
+    console.log("add markers for ", annotations);
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
-        let overlayId = this.addGeoJson(anno.body);
-        anno.overlayId = overlayId;
+        let markerId = this.addGeoJson(anno.body);
+        anno.markerId = markerId;
     });
 }
 
 addAnnotation(anno) {
-    
+   this.addMarkerActive = true; 
+   this.annotationToMark = anno;
+   if(this.question.areaSelector) {
+       this.question.areaSelector.disableDrawer();
+   }
+   this.update();
 }
 
 updateAnnotation(anno) {
-    //update something on map if annotation is updated on image?
+    this.focusAnnotation(this.question.getIndex(anno));
 }
 
 /**
@@ -54,9 +65,11 @@ updateAnnotation(anno) {
 focusAnnotation(index) {
     let anno = this.question.getByIndex(index);
     if(anno) {
-        let marker = this.getMarker(anno.overlayId);
-        console.log("focus ", anno, marker);
-        marker.style.color = "#ff0000";
+        let marker = this.getMarker(anno.markerId);
+        if(marker) {            
+	        console.log("focus ", anno, marker);
+	        
+        }
     }
 }
 
@@ -64,7 +77,7 @@ focusAnnotation(index) {
  * check if instructions on how to create a new annotation should be shown
  */
 showInstructions() {
-    return !this.opts.item.isReviewMode() &&  this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.question.annotations.length == 0;
+    return !this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget();
 }
 
 /**
@@ -72,6 +85,11 @@ showInstructions() {
  */
 showInactiveInstructions() {
     return !this.opts.item.isReviewMode() &&  !this.question.active && this.question.targetSelector == Crowdsourcing.Question.Selector.RECTANGLE && this.opts.item.questions.filter(q => q.isRegionTarget()).length > 1;
+
+}
+
+showAddMarkerInstructions() {
+    return !this.question.isRegionTarget() || (this.addMarkerActive && !this.opts.item.isReviewMode() &&  this.question.active && this.question.isRegionTarget()) ;
 
 }
 
@@ -108,11 +126,6 @@ initMap() {
     this.map.addLayer(osm);
     
     this.locations = L.geoJSON([], {
-        style : {
-                "color": "#ff7800",
-            	"weight": 5,
-            	"opacity": 0.65  
-        },
         pointToLayer: function(geoJsonPoint, latlng) {
             let marker = L.marker(latlng, {
                 draggable: true
@@ -141,9 +154,13 @@ initMap() {
     }).addTo(this.map);
         
     this.map.on("click", function(e) {
-        if(this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
+        if(this.addMarkerActive && this.question.targetFrequency == 0 || this.markers.length < this.question.targetFrequency) {
 	        var location= e.latlng;
 	        this.createGeoJson(location, this.map.getZoom(), this.map.getCenter());
+        }
+        this.addMarkerActive = !this.question.isRegionTarget();
+        if(this.question.areaSelector) {
+            this.question.areaSelector.enableDrawer();
         }
     }.bind(this))
 
@@ -168,11 +185,16 @@ createGeoJson(location, zoom, center) {
         	}
         };
     this.locations.addData(geojsonFeature);
-    this.addFeature(id);
+    if(this.annotationToMark) {
+        this.annotationToMark.markerId = id;
+        this.updateFeature(id);
+    } else {        
+    	this.addFeature(id);
+    }
 }
 
 getAnnotation(id) {
-    return this.question.annotations.find(anno => anno.overlayId == id);
+    return this.question.annotations.find(anno => anno.markerId == id);
 }
 
 getMarker(id) {
@@ -186,13 +208,21 @@ addGeoJson(geoJson) {
     return id;
 }
 
+updateFeature(id) {
+    let annotation = this.getAnnotation(id);
+    let marker = this.getMarker(annotation.markerId);
+    annotation.setBody(marker.toGeoJSON());
+    annotation.setView(marker.view);
+    this.question.saveToLocalStorage();
+}
+
 /**
  * Add a new marker. If the marker doesn't exist as an annotation, it is added as well
  */
 addFeature(id) {
-    this.question.addAnnotation(id);
-    let annotation = this.getAnnotation(id);
-    let marker = this.getMarker(annotation.overlayId);
+    let annotation = this.question.addAnnotation();
+    annotation.markerId = id;
+    let marker = this.getMarker(id);
     annotation.setBody(marker.toGeoJSON());
     annotation.setView(marker.view);
     this.question.saveToLocalStorage();
