@@ -592,7 +592,6 @@ public class CrowdsourcingBean implements Serializable {
         if (getTargetCampaign() != null) {
             String pi = getTargetCampaign().getRandomizedTarget(CampaignRecordStatus.ANNOTATE, getTargetIdentifier());
             setTargetIdentifier(pi);
-
         }
     }
 

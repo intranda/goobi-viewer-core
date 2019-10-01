@@ -880,11 +880,14 @@ public class Campaign implements CMSMediaHolder {
      */
     public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
         SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
+        User user = BeanUtils.getUserBean().getUser();
+        
         List<String> pis = results.stream()
                 .filter(doc -> doc.getFieldValue(SolrConstants.PI) != null)
                 .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
+//                .filter(result -> filterByUser(result, status, user))
                 .collect(Collectors.toList());
         if (pis.isEmpty()) {
             return "";
@@ -892,6 +895,31 @@ public class Campaign implements CMSMediaHolder {
         String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
         return pi;
     }
+
+    /**
+     * return false if 
+     * <ul>
+     * <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is contained in the annotaters list</li>
+     * or
+     * <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is contained in the reviewers list</li>
+     * or 
+     * <li>The user is admin</li>
+     * @param result
+     * @param status
+     * @param user
+     * @return
+     */
+//    private boolean filterByUser(CampaignRecordStatus status, User user) {
+//        if(user != null) {
+//            if(user.isSuperuser()) {
+//                return true;
+//            } else if(status.equals(CampaignRecordStatus.ANNOTATE)) {
+//                return !
+//            }
+//        } else {
+//            return false;
+//        }
+//    }
 
     /**
      * @param result
