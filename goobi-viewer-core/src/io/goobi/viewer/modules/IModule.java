@@ -63,6 +63,13 @@ public interface IModule {
     public List<String> getAdminContributions();
 
     /**
+     * URLs to widgets containing navigation menu links.
+     * 
+     * @return
+     */
+    public List<String> getLoginNavigationContributions();
+
+    /**
      * Generic widget URLs than can be used from virtually anywhere. The URLs are configured in the config file.
      * 
      * @param type
@@ -90,9 +97,8 @@ public interface IModule {
      * @param namingScheme
      * @return true if successful; false otherwise
      */
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
-            throws Exception;
-    
+    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception;
+
     /**
      * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
      * 
@@ -114,7 +120,7 @@ public interface IModule {
      * @return true if successful; false otherwise
      */
     public boolean augmentResetRecord();
-    
+
     /**
      * 
      * @return the {@link IURLBuilder} for this module, if any. If this module should not alter url building, an empty optional should be returned
