@@ -892,7 +892,7 @@ public class Campaign implements CMSMediaHolder {
         List<String> pis = getSolrQueryResults().stream()
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
-                .filter(result -> filterByUser(result, status, user))
+                .filter(result -> isEligibleToEdit(result, status, user))
                 .collect(Collectors.toList());
         if (pis.isEmpty()) {
             return "";
@@ -917,19 +917,22 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
-     * return false if 
-     * <ul>
-     * <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is contained in the annotaters list</li>
-     * or
-     * <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is contained in the reviewers list</li>
-     * or 
-     * <li>The user is admin</li>
+     * Check if the given user may annotate/review (depending on status) a specific pi within this campaign 
+     * 
      * @param result
      * @param status
-     * @param user  The user to filter by. If null, true is returned 
-     * @return
+     * @param user
+     * @return  true if 
+     * <ul>
+     * <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li>
+     * or
+     * <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li>
+     * or 
+     * <li>The user is admin</li>
+     * or 
+     * <li>The user is null</li>
      */
-    private boolean filterByUser(String pi, CampaignRecordStatus status, User user) {
+    public boolean isEligibleToEdit(String pi, CampaignRecordStatus status, User user) {
         if(user != null) {
             if(user.isSuperuser()) {
                 return true;
@@ -947,16 +950,33 @@ public class Campaign implements CMSMediaHolder {
         }
     }
     
+    /**
+     * 
+     * 
+     * @param user
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
         .filter(result -> isRecordStatus(result, CampaignRecordStatus.REVIEW))
-        .filter(result -> filterByUser(result, CampaignRecordStatus.REVIEW, user)).count() > 0;
+        .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.REVIEW, user)).count() > 0;
     }
     
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
         .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
-        .filter(result -> filterByUser(result, CampaignRecordStatus.ANNOTATE, user)).count() > 0;
+        .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.ANNOTATE, user)).count() > 0;
+    }
+    
+    public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
+        return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
+    }
+    
+    public boolean mayReview(User user, String pi) throws PresentationException, IndexUnreachableException {
+        return isRecordStatus(pi, CampaignRecordStatus.REVIEW) && isEligibleToEdit(pi, CampaignRecordStatus.REVIEW, user);
+
     }
 
     /**

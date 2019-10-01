@@ -742,7 +742,7 @@ public class CrowdsourcingBean implements Serializable {
             return "pretty:crowdCampaigns";
         } else
             try {
-                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())) {
+                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign()) || !getTargetCampaign().isEligibleToEdit(getTargetIdentifier(), getTargetRecordStatus(), userBean.getUser())) {
                     return "pretty:crowdCampaigns";
                 } else {
                     return "";

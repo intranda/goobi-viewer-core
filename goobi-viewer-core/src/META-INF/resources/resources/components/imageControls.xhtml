@@ -306,16 +306,19 @@
                         <!-- CROWDSOURCING CAMPAIGN -->
                         <ui:fragment>
                             <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
-                                <li class="image-controls__option">
-                                    <h:commandLink target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
-                                        styleClass="btn btn--icon">
-                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                    	<f:passThroughAttribute name="data-placement" value="bottom" />
-                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
-                                        
-                                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
-                                    </h:commandLink>
-                                </li>
+<!--                                 <ui:fragment rendered="#{campaign.mayAnnotate(userBean.user, activeDocumentBean.viewManager.pi) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"> -->
+                                	<li class="image-controls__option">
+	                                    <h:commandLink
+	                                		target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
+	                                        styleClass="btn btn--icon">
+	                                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                    	<f:passThroughAttribute name="data-placement" value="bottom" />
+	                                        <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
+	                                        
+	                                        <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+	                                    </h:commandLink>
+                                    </li>
+<!--                                 </ui:fragment> -->
                             </ui:repeat>
                         </ui:fragment>
                     
