@@ -520,18 +520,27 @@ public class PersistentAnnotation {
      * @throws IOException
      * @throws DAOException
      */
-    public WebAnnotation getAsAnnotation() throws JsonParseException, JsonMappingException, IOException, DAOException {
+    public WebAnnotation getAsAnnotation(){
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
         annotation.setModified(this.dateModified);
-        if (getCreator() != null) {
-            annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
+        try {               
+            if (getCreator() != null) {
+                annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
+            }
+            if (getGenerator() != null) {
+                annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
+            }
+        } catch(DAOException e) {
+            logger.error("unable to set creator and generator for annotation", e);
         }
-        if (getGenerator() != null) {
-            annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
+        try {            
+            annotation.setBody(this.getBodyAsResource());
+            annotation.setTarget(this.getTargetAsResource());
+        } catch(IOException e) {
+            logger.error("unable to parse body or target for annotation", e);
+
         }
-        annotation.setBody(this.getBodyAsResource());
-        annotation.setTarget(this.getTargetAsResource());
         annotation.setMotivation(this.getMotivation());
 
         return annotation;

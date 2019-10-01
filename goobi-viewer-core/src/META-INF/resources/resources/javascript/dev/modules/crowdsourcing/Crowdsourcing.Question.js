@@ -48,7 +48,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Question.prototype.loadAnnotationsFromLocalStorage = function() {
         this.annotations = this.getAnnotationsFromLocalStorage();
-        console.log("loaded annotations ", this.annotations);
     }
     
     crowdsourcing.Question.prototype.setDrawingPermission = function() {

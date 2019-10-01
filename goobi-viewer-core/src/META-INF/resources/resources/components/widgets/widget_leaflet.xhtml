@@ -1,0 +1,70 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface>
+        <composite:attribute name="widget" type="io.goobi.viewer.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <!-- WIDGET GEO LOCATIONS -->
+        <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetLeaflet' or cc.attrs.widget == null}">
+            <!-- LEAFLET RESOURCES -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+			   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+			   crossorigin=""/>
+			    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+			   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+			   crossorigin=""></script>
+
+            <!-- STANDARD -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
+                <div id="widgetLeaflet" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                    <h3>
+                        #{msg.widgetGeoLocations}
+                        </h3>
+
+                    <!-- MAP -->
+                    <div id="widgetLeafletMap" class="widget-geo-locations__map"></div>
+                </div>
+            </h:panelGroup>
+
+            <!-- FOLDOUT -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+                <div id="widgetLeaflet" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+                    <h3>
+                        #{msg.widgetGeoLocations}
+                        <a href="#widgetLeafletCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetLeafletCollapse">
+                            <h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                        </a>
+                    </h3>
+
+                    <div id="widgetLeafletCollapse" class="collapse">
+                        <!-- MAP -->
+                        <div id="widgetLeafletMap" class="widget-geo-locations__map"></div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <script type="text/javascript">	        
+	        	widgetLeafletConfig = {
+	        	        //TODO: get annotation list from manifest
+        			pageLocations: "#{configurationBean.restApiUrl}annotations/collection/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}/",
+        			workLocations: "#{configurationBean.restApiUrl}annotations/collection/#{activeDocumentBean.viewManager.pi}/-/",
+        			widgetSelector: "#widgetLeaflet",
+        			mapId: "widgetLeafletMap",
+        			msg: {
+        			    propertiesLink: "#{msg.widgetGeoLoacations_popupLinkText}"
+        			}
+				};
+	        	
+	        	let leaflet = new viewerJS.Leaflet( widgetLeafletConfig );
+	        </script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

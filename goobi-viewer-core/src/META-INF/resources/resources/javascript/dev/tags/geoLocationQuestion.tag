@@ -10,7 +10,7 @@
 		<label>{Crowdsourcing.translate("crowdsourcing__help__make_active")}</label>
 	</div>
 	
-	<div id="geoMap" class="geo-map"></div>
+	<div id="geoMap_{opts.index}" class="geo-map"></div>
 	
 	<div id="annotation_{index}" each="{anno, index in this.annotations}">
 		
@@ -28,27 +28,27 @@ this.markers = [];
 this.on("mount", function() {
     this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);	    
     this.initMap();
-    this.opts.item.onImageOpen(function() {
-        this.markerIdCounter = 1;
-        this.setFeatures(this.question.annotations);
-        if(this.markers.length > 0) {            
-       	 this.setView(this.markers[0].view);
-        }
-    }.bind(this));
+    this.opts.item.onImageOpen(() => this.resetFeatures());
+    this.opts.item.onAnnotationsReload(() => this.resetFeatures());
 });
 
 setView(view) {
-    console.log("set view ", view);
     this.map.setView(view.center, view.zoom);
 }
 
+resetFeatures() {
+    this.markerIdCounter = 1;
+    this.setFeatures(this.question.annotations);
+    if(this.markers.length > 0) {            
+   		this.setView(this.markers[0].view);
+    }
+}
 
 setFeatures(annotations) {
     this.markers.forEach((marker) => {
         marker.remove();
     })
     this.markers = [];
-    console.log("add markers for ", annotations);
     annotations.filter(anno => !anno.isEmpty()).forEach((anno) => {
         let markerId = this.addGeoJson(anno.body);
         anno.markerId = markerId;
@@ -123,7 +123,7 @@ setNameFromEvent(event) {
 }
 
 initMap() {
-    this.map = new L.Map('geoMap');
+    this.map = new L.Map('geoMap_' + this.opts.index);
     var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       minZoom: 0,
       maxZoom: 20,
@@ -190,7 +190,7 @@ createGeoJson(location, zoom, center) {
         	},
         	"view": {
         	    "zoom": zoom,
-        		"center": [center.lat, center.lng]
+        		"center": [location.lat, location.lng]
         	}
         };
     this.locations.addData(geojsonFeature);
@@ -241,14 +241,12 @@ addFeature(id) {
  * Change the location of a feature
  */
 moveFeature(marker, location) {
-    let annotation = this.getAnnotation(marker.getId());
     marker.setLatLng(location);
-    console.log("move marker ", marker, " to ", location);
+    let annotation = this.getAnnotation(marker.getId());
     if(annotation) {
         annotation.setGeometry(marker.toGeoJSON().geometry);
-        annotation.setView({zoom: this.map.getZoom(), center: [this.map.getCenter().lat, this.map.getCenter().lng]});
+        annotation.setView({zoom: this.map.getZoom(), center: [marker.getLatLng().lat, marker.getLatLng().lng]});
     }
-    console.log("annotations ", this.question.annotations);
     this.question.saveToLocalStorage();
 }
 
@@ -260,7 +258,6 @@ removeFeature(marker) {
     let index = this.markers.indexOf(marker);
     this.markers.splice(index, 1);
     let annotation = this.getAnnotation(marker.getId());
-    console.log("delete annotation ", annotation);
     if(annotation) {      
 	    this.question.deleteAnnotation(annotation);
 	    this.question.saveToLocalStorage();

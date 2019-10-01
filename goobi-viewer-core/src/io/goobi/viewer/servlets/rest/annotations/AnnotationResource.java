@@ -16,7 +16,10 @@
 package io.goobi.viewer.servlets.rest.annotations;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,10 +31,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -83,6 +91,23 @@ public class AnnotationResource {
         }
         
         return anno;
+    }
+    
+    
+    @GET
+    @Path("/collection/{pi}/{page}/")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @CORSBinding
+    public AnnotationPage getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") String pageString) throws URISyntaxException, DAOException, JsonParseException, JsonMappingException, IOException {
+    
+        Integer page = StringUtils.isBlank(pageString.replace("-", "")) ? null : Integer.parseInt(pageString);
+        
+        List<PersistentAnnotation> data = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        
+        AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(URI.create(servletRequest.getRequestURL().toString()), data.size());
+        AnnotationPage annoPage = builder.buildPage(data.stream().map(PersistentAnnotation::getAsAnnotation).collect(Collectors.toList()), 1);
+        
+        return annoPage;
     }
 
 }

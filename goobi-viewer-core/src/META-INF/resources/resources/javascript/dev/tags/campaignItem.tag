@@ -107,6 +107,7 @@
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
 	    .then( () => this.resetQuestions())
+	    .then( () => this.item.notifyAnnotationsReload())
 	    .then( () => this.update())
 		.catch( error => console.error("ERROR ", error));  
 	}

@@ -49,6 +49,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
         this.imageSource = item.source;
         this.imageOpenEvents = new Rx.Subject();
         this.imageRotationEvents = new Rx.Subject();
+        this.annotationRelaodEvents = new Rx.Subject();
 
         let firstAreaQuestion = this.questions.find(q => q.isRegionTarget());
         if(firstAreaQuestion) {
@@ -73,6 +74,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.Item.prototype.onImageOpen = function(eventHandler, errorHandler, completedHandler) {
         this.imageOpenEvents.subscribe(eventHandler, errorHandler, completedHandler);
+    }
+    
+    crowdsourcing.Item.prototype.notifyAnnotationsReload = function() {
+        this.annotationRelaodEvents.onNext();
+    }
+    
+    crowdsourcing.Item.prototype.onAnnotationsReload = function(eventHandler, errorHandler, completedHandler) {
+        this.annotationRelaodEvents.subscribe(eventHandler, errorHandler, completedHandler);
     }
     
     crowdsourcing.Item.prototype.initViewer = function(imageSource) {

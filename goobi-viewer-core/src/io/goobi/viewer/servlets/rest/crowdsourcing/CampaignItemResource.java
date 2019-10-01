@@ -180,12 +180,8 @@ public class CampaignItemResource {
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (PersistentAnnotation anno : annotations) {
-            try {
-                WebAnnotation webAnno = anno.getAsAnnotation();
-                webAnnotations.add(webAnno);
-            } catch (IOException e) {
-               logger.error(e.toString(), e);
-            }
+            WebAnnotation webAnno = anno.getAsAnnotation();
+            webAnnotations.add(webAnno);
         }
 
         return webAnnotations;
