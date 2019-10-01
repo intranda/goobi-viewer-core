@@ -2008,38 +2008,6 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#isOverviewPageHasUpdates(java.lang.String, java.util.Date, java.util.Date)
-     * @should return status correctly
-     */
-    @Override
-    public boolean isOverviewPageHasUpdates(String pi, Date fromDate, Date toDate) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM OverviewPage o WHERE o.pi = :pi");
-        if (fromDate != null) {
-            sbQuery.append(" AND o.dateUpdated >= :fromDate");
-        }
-        if (toDate != null) {
-            sbQuery.append(" AND o.dateUpdated <= :toDate");
-        }
-        Query q = em.createQuery(sbQuery.toString());
-        q.setParameter("pi", pi);
-        if (fromDate != null) {
-            q.setParameter("fromDate", fromDate);
-        }
-        if (toDate != null) {
-            q.setParameter("toDate", toDate);
-        }
-        q.setMaxResults(1);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-
-        return (long) q.getSingleResult() != 0;
-    }
-
-    /**
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#getOverviewPageUpdate(long)
      * @should load object correctly
@@ -2353,7 +2321,7 @@ public class JPADAO implements IDAO {
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
      */
-    public String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+    private static String createFilterQuery(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder join = new StringBuilder();
 
         List<String> filterKeys = new ArrayList<>();
@@ -2432,6 +2400,100 @@ public class JPADAO implements IDAO {
         }
         String filterString = join.append(where).toString();
         return filterString;
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getOverviewPagesWithRelatedPi(int, int, java.util.Date, java.util.Date)
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        if (fromDate != null) {
+            sbQuery.append(" AND o.dateUpdated >= :fromDate");
+        }
+        if (toDate != null) {
+            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+        }
+        sbQuery.append(" ORDER BY o.dateUpdated DESC");
+        Query q = em.createQuery(sbQuery.toString());
+        if (fromDate != null) {
+            q.setParameter("fromDate", fromDate);
+        }
+        if (toDate != null) {
+            q.setParameter("toDate", toDate);
+        }
+        q.setFirstResult(first);
+        q.setMaxResults(pageSize);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        return q.getResultList();
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#isCMSPagesForRecordHaveUpdates(java.lang.String, io.goobi.viewer.model.cms.CMSCategory, java.util.Date,
+     *      java.util.Date)
+     * @should return correct value
+     */
+    @Override
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, Date fromDate, Date toDate) throws DAOException {
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI = :pi");
+        if (fromDate != null) {
+            sbQuery.append(" AND o.dateUpdated >= :fromDate");
+        }
+        if (toDate != null) {
+            sbQuery.append(" AND o.dateUpdated <= :toDate");
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        q.setParameter("pi", pi);
+        if (fromDate != null) {
+            q.setParameter("fromDate", fromDate);
+        }
+        if (toDate != null) {
+            q.setParameter("toDate", toDate);
+        }
+        q.setMaxResults(1);
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        return (long) q.getSingleResult() != 0;
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getCMSPageWithRelatedPiCount(java.util.Date, java.util.Date)
+     * @should return correct count
+     */
+    @Override
+    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder("SELECT COUNT(o) FROM CMSPage o WHERE o.relatedPI IS NOT NULL");
+        if (fromDate != null) {
+            sbQuery.append(" AND o.dateUpdated >= :fromDate");
+        }
+        if (toDate != null) {
+            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        if (fromDate != null) {
+            q.setParameter("fromDate", fromDate);
+        }
+        if (toDate != null) {
+            q.setParameter("toDate", toDate);
+        }
+
+        Object o = q.getResultList().get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList().get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList().get(0);
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -77,13 +78,14 @@ import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.viewer.CollectionView;
 import io.goobi.viewer.servlets.rest.cms.CMSContentResource;
 import io.goobi.viewer.servlets.rest.dao.TileGridResource;
 
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage> {
+public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
@@ -387,6 +389,7 @@ public class CMSPage implements Comparable<CMSPage> {
     /**
      * @return the dateUpdated
      */
+    @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -1285,8 +1288,8 @@ public class CMSPage implements Comparable<CMSPage> {
             if (StringUtils.isBlank(title)) {
                 return "ID: " + this.getId() + " (no title)";
 
-            } else
-                return title;
+            }
+            return title;
         } catch (CmsElementNotFoundException e) {
             return "ID: " + this.getId() + " (no title)";
         }
@@ -1454,17 +1457,18 @@ public class CMSPage implements Comparable<CMSPage> {
     /**
      * Exports text/html fragments from this page's content items for indexing.
      * 
-     * @param hotfolderPath
+     * @param outputFolderPath
      * @param namingScheme
      * @throws IOException
      */
-    public void exportTexts(String hotfolderPath, String namingScheme) throws IOException {
+    public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
+        List<File> ret = new ArrayList<>();
         try {
             // Default language items
             CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
             if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
                 for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
-                    exportItemText(item, hotfolderPath, namingScheme);
+                    ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
                 }
             }
 
@@ -1475,9 +1479,11 @@ public class CMSPage implements Comparable<CMSPage> {
         List<CMSContentItem> globalContentItems = getGlobalContentItems();
         if (!globalContentItems.isEmpty()) {
             for (CMSContentItem item : globalContentItems) {
-                exportItemText(item, hotfolderPath, namingScheme);
+                ret.addAll(exportItemText(item, outputFolderPath, namingScheme));
             }
         }
+
+        return ret;
     }
 
     /**
@@ -1485,23 +1491,24 @@ public class CMSPage implements Comparable<CMSPage> {
      * currently be exported.
      * 
      * @param item Content item to export
-     * @param hotfolderPath Export path
+     * @param outputFolderPath Export path
      * @param namingScheme Naming scheme for export files and folders
+     * @return exported Files
      * @throws IOException
      */
-    private void exportItemText(CMSContentItem item, String hotfolderPath, String namingScheme) throws IOException {
+    private List<File> exportItemText(CMSContentItem item, String outputFolderPath, String namingScheme) throws IOException {
         if (item.getType() == null) {
-            return;
+            return Collections.emptyList();
         }
         switch (item.getType()) {
             case MEDIA:
             case HTML:
             case TEXT:
-                item.exportHtmlFragment(id, hotfolderPath, namingScheme);
-                break;
+                return item.exportHtmlFragment(id, outputFolderPath, namingScheme);
             default:
-                break;
+                return Collections.emptyList();
         }
+
     }
 
     /**
@@ -1536,10 +1543,17 @@ public class CMSPage implements Comparable<CMSPage> {
         if (selectableCategories == null) {
             List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
             selectableCategories = allowedCategories.stream()
-                    .map(cat -> new Selectable<CMSCategory>(cat, this.categories.contains(cat)))
+                    .map(cat -> new Selectable<>(cat, this.categories.contains(cat)))
                     .collect(Collectors.toList());
         }
         return selectableCategories;
     }
 
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.misc.Harvestable#getPi()
+     */
+    @Override
+    public String getPi() {
+        return getRelatedPI();
+    }
 }

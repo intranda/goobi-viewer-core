@@ -53,7 +53,7 @@ import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 
 public interface IDAO {
-    
+
     boolean tableExists(String tableName) throws SQLException;
 
     boolean columnsExists(String tableName, String columnName) throws SQLException;
@@ -269,9 +269,6 @@ public interface IDAO {
     public List<OverviewPageUpdate> getOverviewPageUpdatesForRecord(String pi) throws DAOException;
 
     @Deprecated
-    public boolean isOverviewPageHasUpdates(String pi, Date fromDate, Date toDate) throws DAOException;
-
-    @Deprecated
     public OverviewPageUpdate getOverviewPageUpdate(long id) throws DAOException;
 
     @Deprecated
@@ -311,6 +308,12 @@ public interface IDAO {
     public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException;
 
     public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException;
+
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, Date fromDate, Date toDate) throws DAOException;
+
+    public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, Date fromDate, Date toDate) throws DAOException;
+
+    public long getCMSPageWithRelatedPiCount(Date fromDate, Date toDate) throws DAOException;
 
     public CMSPage getCMSPage(long id) throws DAOException;
 
@@ -448,10 +451,10 @@ public interface IDAO {
     public List<PersistentAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
 
     public List<PersistentAnnotation> getAnnotationsForTarget(String pi, Integer page) throws DAOException;
-    
+
     public List<PersistentAnnotation> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-    
+
     public long getAnnotationCount(Map<String, String> filters) throws DAOException;
 
     long getAnnotationCountForTarget(String pi, Integer page) throws DAOException;
