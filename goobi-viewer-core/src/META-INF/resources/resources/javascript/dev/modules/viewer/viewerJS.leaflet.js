@@ -51,7 +51,7 @@ var viewerJS = ( function( viewer ) {
             console.log("locations ", this.locations);
             if(this.locations.length > 0) {                
                 this.map = _initMap(this.config);
-                this.markers = _addMarkers(this.map, this.locations);
+                this.markers = _addMarkers(this.map, this.locations, this.config.msg.propertiesLink);
                 _setView(this.map, this.locations[0].body.view);
             } else {
                 $(config.widgetSelector).hide();
@@ -78,11 +78,18 @@ var viewerJS = ( function( viewer ) {
         return map;
     }
     
-    function _addMarkers(map, annotations) {
+    function _addMarkers(map, annotations, popupText) {
         let markers = new Map();
         annotations.forEach( anno => {
             let geoJson = anno.body;
             var marker = L.geoJSON(geoJson).addTo(map);
+            marker.bindPopup(popupText);
+            marker.on("mouseover", function() {
+                this.openPopup();
+            })
+            marker.on("mouseout", function() {
+                this.closePopup();
+            })
             markers.set(anno, marker);
 
         })
