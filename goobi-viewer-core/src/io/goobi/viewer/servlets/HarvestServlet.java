@@ -211,8 +211,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         }
                         Files.createDirectory(localTempFolder);
                         String fileName = identifier + "_cmspage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
-                                + (toDate != null ? toDate.getTime() : "-");
-                        Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName + ".zip");
+                                + (toDate != null ? toDate.getTime() : "-") + ".zip";
+                        Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
                         for (CMSPage page : pages) {
                             tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
