@@ -951,10 +951,10 @@ public class Campaign implements CMSMediaHolder {
     }
     
     /**
+     * check if the given user is eligible to review any records
      * 
-     * 
-     * @param user
-     * @return
+     * @param user 
+     * @return  true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -964,16 +964,42 @@ public class Campaign implements CMSMediaHolder {
         .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.REVIEW, user)).count() > 0;
     }
     
+    /**
+     * check if the given user is eligible to annotate any records
+     * 
+     * @param user 
+     * @return  true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
         .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
         .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.ANNOTATE, user)).count() > 0;
     }
     
+    /**
+     * check if the user is allowed to annotate the given pi for this campaign
+     * 
+     * @param user
+     * @param pi
+     * @return  true if the pi is ready for annotation and the user hasn't reviewed it or is a superuser
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
     }
     
+    /**
+     * check if the user is allowed to review the given pi for this campaign
+     * 
+     * @param user
+     * @param pi
+     * @return  true if the pi is ready for review and the user hasn't annotated it or is a superuser
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public boolean mayReview(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.REVIEW) && isEligibleToEdit(pi, CampaignRecordStatus.REVIEW, user);
 
