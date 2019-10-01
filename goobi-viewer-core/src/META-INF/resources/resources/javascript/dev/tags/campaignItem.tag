@@ -139,16 +139,16 @@
             mode: 'cors', // no-cors, cors, *same-origin
             body: JSON.stringify(pages)
 	    })
-	    .then(() => this.resetItems())
-	    .then(() => {
-	        this.loading = false;
-		    this.update();
-	    })
 	}
 	
 	saveAnnotations() {
 	    this.saveToServer()
-	    .then(() => this.setStatus("ANNOTATE"));
+	    .then(() => this.resetItems())
+	    .then(() => this.setStatus("ANNOTATE"))
+	    .then(() => {
+	        this.loading = false;
+		    this.update();
+	    });
 	}
 	
 	submitForReview() {

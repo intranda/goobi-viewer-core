@@ -250,16 +250,16 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
             mode: 'cors',
             body: JSON.stringify(pages)
 	    })
-	    .then(() => this.resetItems())
-	    .then(() => {
-	        this.loading = false;
-		    this.update();
-	    })
 	}.bind(this)
 
 	this.saveAnnotations = function() {
 	    this.saveToServer()
-	    .then(() => this.setStatus("ANNOTATE"));
+	    .then(() => this.resetItems())
+	    .then(() => this.setStatus("ANNOTATE"))
+	    .then(() => {
+	        this.loading = false;
+		    this.update();
+	    });
 	}.bind(this)
 
 	this.submitForReview = function() {

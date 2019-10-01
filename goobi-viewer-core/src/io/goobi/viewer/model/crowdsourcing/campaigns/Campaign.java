@@ -211,6 +211,14 @@ public class Campaign implements CMSMediaHolder {
     @Transient
     @JsonIgnore
     private CMSContentItem contentItem = new CMSContentItem();
+    
+    /**
+     * temporary storage for results from {@link #solrQuery}, reduced to PIs. Will be initialized if required by  {@link #getSolrQueryResults()}
+     * and reset to null by {@link #setSolrQuery(String)}
+     */
+    @Transient
+    @JsonIgnore
+    private List<String> solrQueryResults = null;
 
     /**
      * Empty constructor.
@@ -276,7 +284,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public long getNumRecords() throws IndexUnreachableException {
         try {
-            return DataManager.getInstance().getSearchIndex().getHitCount("+(" + solrQuery + ") +" + SolrConstants.ISWORK + ":true");
+            return getSolrQueryResults().size();
         } catch (PresentationException e) {
             logger.warn("Error getting number of records for campaign:" + e.toString());
             return 0;
@@ -769,6 +777,7 @@ public class Campaign implements CMSMediaHolder {
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
+        this.solrQueryResults = null;
     }
 
     /**
@@ -879,21 +888,32 @@ public class Campaign implements CMSMediaHolder {
      * @throws PresentationException
      */
     public String getRandomizedTarget(CampaignRecordStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
-        SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(getSolrQuery(), Collections.singletonList(SolrConstants.PI));
         User user = BeanUtils.getUserBean().getUser();
-        
-        List<String> pis = results.stream()
-                .filter(doc -> doc.getFieldValue(SolrConstants.PI) != null)
-                .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+        List<String> pis = getSolrQueryResults().stream()
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
-//                .filter(result -> filterByUser(result, status, user))
+                .filter(result -> filterByUser(result, status, user))
                 .collect(Collectors.toList());
         if (pis.isEmpty()) {
             return "";
         }
         String pi = pis.get(new Random(System.nanoTime()).nextInt(pis.size()));
         return pi;
+    }
+
+    /**
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
+        if(this.solrQueryResults == null) {            
+            String query = "+(" + getSolrQuery() + ") +" + SolrConstants.ISWORK + ":true";
+            this.solrQueryResults =  DataManager.getInstance().getSearchIndex().search(query, Collections.singletonList(SolrConstants.PI))
+                    .stream().map(doc -> doc.getFieldValue(SolrConstants.PI).toString()).collect(Collectors.toList());
+
+        }
+        return this.solrQueryResults;
     }
 
     /**
@@ -906,20 +926,38 @@ public class Campaign implements CMSMediaHolder {
      * <li>The user is admin</li>
      * @param result
      * @param status
-     * @param user
+     * @param user  The user to filter by. If null, true is returned 
      * @return
      */
-//    private boolean filterByUser(CampaignRecordStatus status, User user) {
-//        if(user != null) {
-//            if(user.isSuperuser()) {
-//                return true;
-//            } else if(status.equals(CampaignRecordStatus.ANNOTATE)) {
-//                return !
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
+    private boolean filterByUser(String pi, CampaignRecordStatus status, User user) {
+        if(user != null) {
+            if(user.isSuperuser()) {
+                return true;
+            } else {
+                if(status.equals(CampaignRecordStatus.ANNOTATE)) {
+                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
+                } else if(status.equals(CampaignRecordStatus.REVIEW)) {
+                    return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
+                } else {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
+    
+    public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
+        return getSolrQueryResults().stream()
+        .filter(result -> isRecordStatus(result, CampaignRecordStatus.REVIEW))
+        .filter(result -> filterByUser(result, CampaignRecordStatus.REVIEW, user)).count() > 0;
+    }
+    
+    public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
+        return getSolrQueryResults().stream()
+        .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
+        .filter(result -> filterByUser(result, CampaignRecordStatus.ANNOTATE, user)).count() > 0;
+    }
 
     /**
      * @param result

@@ -26,10 +26,10 @@
 					<div class="crowdsourcing-campaigns-overview__campaign__actions">
 					    <!-- Current campaigns only -->
 					    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
-						    <h:commandLink rendered="#{campaign.getNumRecordsToAnnotate() > 0 and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
+						    <h:commandLink rendered="#{campaign.hasRecordsToAnnotate(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_participate}</h:commandLink>
-						    <h:commandLink rendered="#{campaign.getNumRecordsForStatus('REVIEW') > 0 and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
+						    <h:commandLink rendered="#{campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
 						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
 						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
 						</ui:fragment>
