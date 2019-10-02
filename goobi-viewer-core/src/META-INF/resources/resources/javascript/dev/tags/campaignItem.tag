@@ -46,19 +46,21 @@
 
 <script>
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
-	this.annotationSource = this.itemSource + "/annotations";
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
+	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
 		
 	this.on("mount", function() {
+	    console.log("mount campaignItem");
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
 	    .then( () => this.fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.item.notifyItemInitialized())
 		.catch( error => {
 		    console.error("ERROR ", error);
 	    	this.error = error;
@@ -98,6 +100,7 @@
 	}
 	
 	initAnnotations(annotations) {
+	    console.log("init campaign annotations");
 	    let save = this.item.createAnnotationMap(annotations);
 	    this.item.saveToLocalStorage(save);
 	}
@@ -130,21 +133,28 @@
 	    let pages = this.item.loadAnnotationPages();
 	    this.loading = true;
 	    this.update();
+	    console.log("save ", JSON.stringify(pages) );
 	    return fetch(this.annotationSource, {
             method: "PUT",
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             cache: "no-cache",
-            mode: 'cors', // no-cors, cors, *same-origin
+            mode: 'cors',
             body: JSON.stringify(pages)
 	    })
 	}
 	
 	saveAnnotations() {
 	    this.saveToServer()
+	    .then(() => {
+	        console.log("saveToServer done ");
+	    })
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
+	    .catch((error) => {
+	        console.error(error);
+	    })
 	    .then(() => {
 	        this.loading = false;
 		    this.update();
@@ -192,9 +202,6 @@
 	fetch(url) {
 	    return fetch(url, {
             method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
             cache: "no-cache",
             mode: 'cors', // no-cors, cors, *same-origin
 	    })

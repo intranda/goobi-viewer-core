@@ -158,19 +158,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload {isDragover ?
 });
 riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="content"><span if="{this.loading}" class="loader_wrapper"><img riot-src="{this.opts.loaderimageurl}"></span><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span></span><div class="content_left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView><canvaspaginator if="{this.item}" item="{this.item}"></canvasPaginator></div><div if="{this.item}" class="content_right"><h1 class="content_right__title">{Crowdsourcing.translate(this.item.translations.title)}</h1><div class="questions_wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="question_wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="question_wrapper__description">{Crowdsourcing.translate(question.translations.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion></div></div><div if="{!item.isReviewMode()}" class="options-wrapper options-wrapper-annotate"><button onclick="{saveAnnotations}" class="options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.isReviewMode()}" class="options-wrapper options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--danger" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
-	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi;
-	this.annotationSource = this.itemSource + "/annotations";
+	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
+	this.annotationSource = this.itemSource + "annotations/";
 	this.loading = true;
 	console.log("item url ", this.itemSource);
 	console.log("annotations url ", this.annotationSource);
 
 	this.on("mount", function() {
+	    console.log("mount campaignItem");
 	    fetch(this.itemSource)
 	    .then( response => response.json() )
 	    .then( itemConfig => this.loadItem(itemConfig))
 	    .then( () => this.fetch(this.annotationSource))
 	    .then( response => response.json() )
 	    .then( annotations => this.initAnnotations(annotations))
+	    .then( () => this.item.notifyItemInitialized())
 		.catch( error => {
 		    console.error("ERROR ", error);
 	    	this.error = error;
@@ -209,6 +211,7 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	}.bind(this)
 
 	this.initAnnotations = function(annotations) {
+	    console.log("init campaign annotations");
 	    let save = this.item.createAnnotationMap(annotations);
 	    this.item.saveToLocalStorage(save);
 	}.bind(this)
@@ -241,10 +244,11 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	    let pages = this.item.loadAnnotationPages();
 	    this.loading = true;
 	    this.update();
+	    console.log("save ", JSON.stringify(pages) );
 	    return fetch(this.annotationSource, {
             method: "PUT",
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             cache: "no-cache",
             mode: 'cors',
@@ -254,8 +258,14 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 
 	this.saveAnnotations = function() {
 	    this.saveToServer()
+	    .then(() => {
+	        console.log("saveToServer done ");
+	    })
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
+	    .catch((error) => {
+	        console.error(error);
+	    })
 	    .then(() => {
 	        this.loading = false;
 		    this.update();
@@ -303,9 +313,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	this.fetch = function(url) {
 	    return fetch(url, {
             method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-            },
             cache: "no-cache",
             mode: 'cors',
 	    })
@@ -746,10 +753,12 @@ this.annotationToMark = null;
 this.markers = [];
 
 this.on("mount", function() {
-    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);
-    this.initMap();
-    this.opts.item.onImageOpen(() => this.resetFeatures());
-    this.opts.item.onAnnotationsReload(() => this.resetFeatures());
+	this.opts.item.onItemInitialized( () => {
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);
+	    this.initMap();
+	    this.opts.item.onImageOpen(() => this.resetFeatures());
+	    this.opts.item.onAnnotationsReload(() => this.resetFeatures());
+	})
 });
 
 this.setView = function(view) {

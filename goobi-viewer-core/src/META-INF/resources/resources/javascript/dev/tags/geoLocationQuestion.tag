@@ -26,10 +26,12 @@ this.annotationToMark = null;
 this.markers = [];
 
 this.on("mount", function() {
-    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);	    
-    this.initMap();
-    this.opts.item.onImageOpen(() => this.resetFeatures());
-    this.opts.item.onAnnotationsReload(() => this.resetFeatures());
+	this.opts.item.onItemInitialized( () => {	    
+	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);	    
+	    this.initMap();
+	    this.opts.item.onImageOpen(() => this.resetFeatures());
+	    this.opts.item.onAnnotationsReload(() => this.resetFeatures());
+	})
 });
 
 setView(view) {
