@@ -133,7 +133,6 @@
 	    let pages = this.item.loadAnnotationPages();
 	    this.loading = true;
 	    this.update();
-	    console.log("save ", JSON.stringify(pages) );
 	    return fetch(this.annotationSource, {
             method: "PUT",
             headers: {
@@ -147,9 +146,6 @@
 	
 	saveAnnotations() {
 	    this.saveToServer()
-	    .then(() => {
-	        console.log("saveToServer done ");
-	    })
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
 	    .catch((error) => {

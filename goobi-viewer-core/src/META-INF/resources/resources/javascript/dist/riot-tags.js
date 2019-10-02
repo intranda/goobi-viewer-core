@@ -244,7 +244,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 	    let pages = this.item.loadAnnotationPages();
 	    this.loading = true;
 	    this.update();
-	    console.log("save ", JSON.stringify(pages) );
 	    return fetch(this.annotationSource, {
             method: "PUT",
             headers: {
@@ -258,9 +257,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="content"> {Crowdsourcing.
 
 	this.saveAnnotations = function() {
 	    this.saveToServer()
-	    .then(() => {
-	        console.log("saveToServer done ");
-	    })
 	    .then(() => this.resetItems())
 	    .then(() => this.setStatus("ANNOTATE"))
 	    .catch((error) => {
