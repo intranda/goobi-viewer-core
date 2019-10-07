@@ -305,8 +305,7 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                toc = new TOC();
-                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc = createTOC();
             }
 
             // If LOGID is set, update the current element
@@ -420,6 +419,10 @@ public class ActiveDocumentBean implements Serializable {
         TOC toc = new TOC();
         if (viewManager != null) {
             toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+            // The TOC object will correct values that are too high, so update the local value, if necessary
+            if (getToc().getCurrentPage() != this.tocCurrentPage) {
+                this.tocCurrentPage = getToc().getCurrentPage();
+            }
         }
         return toc;
     }
@@ -981,13 +984,10 @@ public class ActiveDocumentBean implements Serializable {
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
             }
-            if (getToc() != null) {
+            // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
+            if (toc != null) {
                 int currentCurrentPage = getToc().getCurrentPage();
                 getToc().setCurrentPage(this.tocCurrentPage);
-                // The TOC object will correct values that are too high, so update the local value, if necessary
-                if (getToc().getCurrentPage() != this.tocCurrentPage) {
-                    this.tocCurrentPage = getToc().getCurrentPage();
-                }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {

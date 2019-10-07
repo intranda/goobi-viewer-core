@@ -448,7 +448,7 @@ public class TOC implements Serializable {
             this.currentPage = 1;
             return;
         }
-        
+
         int numPages = getNumPages();
         if (currentPage > numPages) {
             this.currentPage = numPages;
