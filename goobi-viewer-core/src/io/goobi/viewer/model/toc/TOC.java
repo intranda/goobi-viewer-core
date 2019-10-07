@@ -440,9 +440,21 @@ public class TOC implements Serializable {
 
     /**
      * @param currentPage the currentPage to set
+     * @should set value to 1 if given value too low
+     * @should set value to last page number if given value too high
      */
     public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+        if (currentPage < 1) {
+            this.currentPage = 1;
+            return;
+        }
+        
+        int numPages = getNumPages();
+        if (currentPage > numPages) {
+            this.currentPage = numPages;
+        } else {
+            this.currentPage = currentPage;
+        }
     }
 
     /**

@@ -485,9 +485,8 @@ public class ActiveDocumentBean implements Serializable {
                             }
                         }
                         PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
-                        String anchorUrl = navigationHelper.getApplicationUrl() + "/" + DataManager.getInstance()
-                        .getUrlBuilder()
-                        .buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
+                        String anchorUrl = navigationHelper.getApplicationUrl() + "/"
+                                + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
                         navigationHelper.updateBreadcrumbs(
                                 new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
                     }
@@ -973,6 +972,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
+     * @should set toc page to last page if value too high
      */
     public void setTocCurrentPage(int tocCurrentPage)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -984,6 +984,10 @@ public class ActiveDocumentBean implements Serializable {
             if (getToc() != null) {
                 int currentCurrentPage = getToc().getCurrentPage();
                 getToc().setCurrentPage(this.tocCurrentPage);
+                // The TOC object will correct values that are too high, so update the local value, if necessary
+                if (getToc().getCurrentPage() != this.tocCurrentPage) {
+                    this.tocCurrentPage = getToc().getCurrentPage();
+                }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {

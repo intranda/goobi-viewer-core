@@ -58,14 +58,48 @@ public class TOCTest {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
         toc.getTocElementMap().put(TOC.DEFAULT_GROUP, new ArrayList<>(3));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("one"), "0", null, "1", "LOG_0000", 0, "PPN_anchor",
-                null, false, true, false, null, "periodical", null));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("two"), "1", null, "2", "LOG_0001", 1, "PPN_volume",
-                null, false, false, true, null, "periodical_volume", null));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2,
-                "PPN_volume", null, false, false, true, null, "article", null));
+        toc.getTocElementMap()
+                .get(TOC.DEFAULT_GROUP)
+                .add(new TOCElement(new SimpleMetadataValue("one"), "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, false, null,
+                        "periodical", null));
+        toc.getTocElementMap()
+                .get(TOC.DEFAULT_GROUP)
+                .add(new TOCElement(new SimpleMetadataValue("two"), "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, false, true, null,
+                        "periodical_volume", null));
+        toc.getTocElementMap()
+                .get(TOC.DEFAULT_GROUP)
+                .add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, false, true, null,
+                        "article", null));
 
         Assert.assertEquals("one", toc.getLabel("PPN_anchor"));
         Assert.assertEquals("two", toc.getLabel("PPN_volume"));
+    }
+
+    /**
+     * @see TOC#setCurrentPage(int)
+     * @verifies set value to 1 if given value too low
+     */
+    @Test
+    public void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
+        TOC toc = new TOC();
+        toc.setCurrentPage(0);
+        Assert.assertEquals(1, toc.getCurrentPage());
+    }
+
+    /**
+     * @see TOC#setCurrentPage(int)
+     * @verifies set value to last page number if given value too high
+     */
+    @Test
+    public void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
+        TOC toc = new TOC();
+        toc.setTotalTocSize(70);
+        Assert.assertEquals(7, toc.getNumPages());
+        // Valid value
+        toc.setCurrentPage(4);
+        Assert.assertEquals(4, toc.getCurrentPage());
+        // Invalid value
+        toc.setCurrentPage(40);
+        Assert.assertEquals(7, toc.getCurrentPage());
     }
 }
