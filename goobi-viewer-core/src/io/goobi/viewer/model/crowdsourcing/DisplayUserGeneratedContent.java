@@ -273,7 +273,7 @@ public class DisplayUserGeneratedContent {
     }
 
     public boolean isEmpty() {
-        return StringUtils.isNotEmpty(getLabel()) || !getType().equals(ContentType.COMMENT);
+        return StringUtils.isEmpty(getLabel());
     }
 
     public String getTypeAsString() {

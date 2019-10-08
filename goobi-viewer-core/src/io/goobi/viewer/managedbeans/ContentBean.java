@@ -96,13 +96,13 @@ public class ContentBean implements Serializable {
         pi = page.getPi();
         currentPage = page.getOrder();
         userGeneratedContentsForDisplay = new ArrayList<>();
-        for (DisplayUserGeneratedContent ugcContent : DataManager.getInstance()
-                .getSearchIndex()
-                .getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder())) {
+        List<DisplayUserGeneratedContent> allContent = DataManager.getInstance()
+            .getSearchIndex()
+            .getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder());
+        for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
             if (!ugcContent.isEmpty()) {
                 userGeneratedContentsForDisplay.add(ugcContent);
-                // getPageUserGeneratedContent(page).generateDisplayCoordinates(ugcContent);
             }
         }
         logger.trace("Loaded {} user generated contents for page {}", userGeneratedContentsForDisplay.size(), currentPage);
