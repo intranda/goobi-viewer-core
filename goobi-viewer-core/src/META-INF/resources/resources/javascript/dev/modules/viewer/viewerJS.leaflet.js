@@ -33,7 +33,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    const _debug = true;
+    const _debug = false;
 
     /**
      * Create a new Leaflet object using new viewerJS.Leaflet(config)
@@ -69,7 +69,7 @@ var viewerJS = ( function( viewer ) {
         .then( annoPage => _getItems(annoPage))
         .then( locations => {
             locations = locations.filter( loc => _getBody(loc).type === "Feature");
-            console.log("Loaded GeoJson locations ", locations);
+            if(_debug) console.log("Loaded GeoJson locations ", locations);
             if(locations.length > 0) {
                 if(!this.map) {                    
                     this.map = _initMap(this.config);
@@ -77,9 +77,14 @@ var viewerJS = ( function( viewer ) {
                 }
                 this.markers = _addMarkers(this.map, locations, this.config.msg ? this.config.msg.propertiesLink : undefined);
             } 
-            if(!this.map && this.config.widgetSelector) {
-                console.log("hide view");
-                $(this.config.widgetSelector).hide();
+            if(this.config.widgetSelector) {                
+                if(!this.map) {
+                    if(_debug) console.log("hide map");
+                    $(this.config.widgetSelector).hide();
+                } else {
+                    if(_debug) console.log("show map");
+                    $(this.config.widgetSelector).show();
+                }
             }
         })
     }
