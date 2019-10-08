@@ -100,7 +100,7 @@ public class ContentBean implements Serializable {
                 .getSearchIndex()
                 .getDisplayUserGeneratedContentsForPage(page.getPi(), page.getOrder())) {
             // Do not add empty comments
-            if (ugcContent.isEmpty()) {
+            if (!ugcContent.isEmpty()) {
                 userGeneratedContentsForDisplay.add(ugcContent);
                 // getPageUserGeneratedContent(page).generateDisplayCoordinates(ugcContent);
             }
