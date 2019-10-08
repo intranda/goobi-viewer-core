@@ -203,9 +203,17 @@
         
     <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
     
-    <cs_questions question_id="1" owner_id="1" question_type="GEOLOCATION_AREA" target_selector="RECTANGLE"  />
+    <cs_questions question_id="1" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    <cs_questions question_id="2" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
+    <cs_questions question_id="3" owner_id="2" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     
     <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
+
+    <annotations annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;aa&quot;" target_pi="PI 1" target_page="1" />
+    <annotations annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="1" target="&quot;bb&quot;" target_pi="PI 2" target_page="6" />
+    <annotations annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI 1" />
+    <annotations annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI 1" />
+    <annotations annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI 2" />
     
 </dataset>
 
