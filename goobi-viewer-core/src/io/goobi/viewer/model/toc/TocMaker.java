@@ -179,6 +179,7 @@ public class TocMaker {
             // MultiVolume
             int numVolumes = buildAnchorToc(ret, doc, sourceFormatPdfAllowed, mimeType, tocCurrentPage, hitsPerPage);
             toc.setTotalTocSize(numVolumes);
+            toc.setCurrentPage(tocCurrentPage);
         } else {
             // Standalone or volume
             ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));

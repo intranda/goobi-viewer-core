@@ -305,8 +305,7 @@ public class ActiveDocumentBean implements Serializable {
                             topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
-                toc = new TOC();
-                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc = createTOC();
             }
 
             // If LOGID is set, update the current element
@@ -418,8 +417,14 @@ public class ActiveDocumentBean implements Serializable {
      */
     private TOC createTOC() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TOC toc = new TOC();
-        if (viewManager != null) {
-            toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+        synchronized (toc) {
+            if (viewManager != null) {
+                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                // The TOC object will correct values that are too high, so update the local value, if necessary
+                if (toc.getCurrentPage() != this.tocCurrentPage) {
+                    this.tocCurrentPage = toc.getCurrentPage();
+                }
+            }
         }
         return toc;
     }
@@ -485,9 +490,8 @@ public class ActiveDocumentBean implements Serializable {
                             }
                         }
                         PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
-                        String anchorUrl = navigationHelper.getApplicationUrl() + "/" + DataManager.getInstance()
-                        .getUrlBuilder()
-                        .buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
+                        String anchorUrl = navigationHelper.getApplicationUrl() + "/"
+                                + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
                         navigationHelper.updateBreadcrumbs(
                                 new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
                     }
@@ -973,6 +977,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
+     * @should set toc page to last page if value too high
      */
     public void setTocCurrentPage(int tocCurrentPage)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -981,13 +986,18 @@ public class ActiveDocumentBean implements Serializable {
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
             }
-            if (getToc() != null) {
-                int currentCurrentPage = getToc().getCurrentPage();
-                getToc().setCurrentPage(this.tocCurrentPage);
+            // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
+            if (toc != null) {
+                int currentCurrentPage = toc.getCurrentPage();
+                toc.setCurrentPage(this.tocCurrentPage);
+                // The TOC object will correct values that are too high, so update the local value, if necessary
+                if (toc.getCurrentPage() != this.tocCurrentPage) {
+                    this.tocCurrentPage = toc.getCurrentPage();
+                }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
-                    getToc().generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                    toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
                             this.tocCurrentPage);
                 }
             }
