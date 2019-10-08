@@ -18,6 +18,7 @@ package io.goobi.viewer.servlets.rest.iiif.presentation;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.oa.Motivation;
+import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.Collection;
@@ -49,8 +51,6 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
-import de.intranda.monitoring.timer.Timer;
-import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -463,6 +463,15 @@ public class ManifestResource extends AbstractResource {
         } else if (AnnotationType.CMDI.equals(type)) {
             layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
+        } if(AnnotationType.CROWDSOURCING.equals(type)) {
+            List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi).get(null);
+            if(workAnnotations == null) {
+                workAnnotations = new ArrayList<>();
+            }
+            AnnotationList annoList = new AnnotationList(getLayerBuilder().getAnnotationListURI(pi, type));
+            workAnnotations.forEach(annoList::addResource);
+            layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
+            layer.addOtherContent(annoList);
         } else {
             throw new IllegalRequestException("No global annotations for type: " + typeName);
         }
@@ -474,6 +483,7 @@ public class ManifestResource extends AbstractResource {
         }
         throw new ContentNotFoundException("No annotations found for " + pi + "/" + type);
     }
+    
 
     /**
      * Creates a layer containing all annnotations of the given {@link AnnotationType type} for the work with the given pi. The annotations are groupd

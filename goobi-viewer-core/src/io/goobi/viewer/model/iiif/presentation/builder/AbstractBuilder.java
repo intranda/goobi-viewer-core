@@ -32,14 +32,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.api.annotation.IResource;
+import de.intranda.api.annotation.JSONResource;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
@@ -83,7 +89,7 @@ public abstract class AbstractBuilder {
 			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 	
-	private static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS};
+	private static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY};
 
 
 	private final URI servletURI;
@@ -437,18 +443,25 @@ public abstract class AbstractBuilder {
             for (SolrDocument doc : ugcDocs) {
                 
                 String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
-                String text = "";
-                Object textObject = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_TEXT)).orElse("");
-                if(textObject != null && textObject instanceof Collection) {
-                    text = (String) ((Collection)textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
-                } else {
-                    text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
-                }
                 String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
                 Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
-
                 OpenAnnotation anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
-                anno.setBody(new TextualResource(text));
+                
+                IResource body = null;
+                if(doc.containsKey(SolrConstants.MD_BODY)) {
+                    String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
+                    try {
+                        JSONObject json = new JSONObject(bodyString);
+                        body = new JSONResource(json);
+                    } catch (JSONException e) {
+                        logger.error("Error building annotation body from '" + bodyString + "'");
+                    }
+                } else if(doc.containsKey(SolrConstants.MD_TEXT)) {
+                    String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
+                    body = new TextualResource(text);
+                }
+                anno.setBody(body);
+                
                 try {                    
                     FragmentSelector selector = new FragmentSelector(coordString);
                     anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
@@ -478,6 +491,21 @@ public abstract class AbstractBuilder {
             }
         }
         return annoMap;
+    }
+
+    /**
+     * @param doc
+     * @return
+     */
+    private String readSolrField(SolrDocument doc, Object fieldValue) {
+        String text;
+        Object textObject = Optional.ofNullable(fieldValue).orElse("");
+        if(textObject != null && textObject instanceof Collection) {
+            text = (String) ((Collection)textObject).stream().map(Object::toString).collect(Collectors.joining(", "));
+        } else {
+            text = Optional.ofNullable(textObject).map(Object::toString).orElse("");
+        }
+        return text;
     }
     
 

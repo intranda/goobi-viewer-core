@@ -16,20 +16,34 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module to render popovers including normdata.
+ * Module to render GeoJson data on a leaflet map
+ * The GeoJson may be loaded multiple times using the leaflet.load(url) method. 
+ * The url should return a json object containing a list property items or resources consisting of OpenAnnotation/WebAnnotation objects which 
+ * contain the GeoJson in their resource/body property
+ * 
+ * If the GeoJson objects contain an additional object 'view' with properties 'zoom' and 'center', the view property of the first
+ * loaded GeoJson object is used to zoom/center the map.
  * 
  * @version 3.2.0
  * @module viewerJS.normdata
  * @requires jQuery
- * @requires Bootstrap
+ * @requires leaflet
  * 
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    const _debug = false;
+    const _debug = true;
 
-    
+    /**
+     * Create a new Leaflet object using new viewerJS.Leaflet(config)
+     * @params config   object which should contain the following properties:
+     * <ul>
+     * <li> msg.propertiesLink - message to display on popover when hovering a location marker. If this doesn't exist, no popover is rendered</li>
+     * <li> widgetSelector - dom selector for the map element. If this is given and no annotations are loaded, the element found under this selector is hidden on the first call to #load(url)</li>
+     * <li> mapId - The id of the container element for the leaflet map. must be given to initialize the map. </li>
+     * </ul>
+     */
     viewer.Leaflet = function(config) {
         if ( _debug ) {
             console.log( '##############################' );
@@ -39,26 +53,36 @@ var viewerJS = ( function( viewer ) {
         }
         
         this.config = config;
-        this.locations = [];
-        
-        fetch(config.pageLocations)
-        .then( response => response.json() )
-        .then( annoPage => {if(annoPage && _getItems(annoPage)){this.locations = this.locations.concat(_getItems(annoPage))}})
-        .then( () => fetch(config.workLocations) )
-        .then( response => response.json() )
-        .then( annoPage => {if(annoPage && _getItems(annoPage)){this.locations = this.locations.concat(_getItems(annoPage))}})
-        .then( () => {
-            console.log("locations ", this.locations);
-            if(this.locations.length > 0) {                
-                this.map = _initMap(this.config);
-                this.markers = _addMarkers(this.map, this.locations, this.config.msg.propertiesLink);
-                _setView(this.map, _getBody(this.locations[0]).view);
-            } else {
-                $(config.widgetSelector).hide();
-            }
-        });
+        this.map = null;
             
     };
+    
+    /**
+     * Load GeoJson data from the given url. The url must return a json object with a list property items or resources containing objects which
+     * in turn contain the GeoJson in their body or resource property.
+     * 
+     * @param url   The url to load the GeoJson data from. Typically an IIIF AnnotationList or a WebAnnotation AnnotationPge
+     */
+    viewer.Leaflet.prototype.load = function(url) {
+        fetch(url)
+        .then( response => response.json() )
+        .then( annoPage => _getItems(annoPage))
+        .then( locations => {
+            locations = locations.filter( loc => _getBody(loc).type === "Feature");
+            console.log("Loaded GeoJson locations ", locations);
+            if(locations.length > 0) {
+                if(!this.map) {                    
+                    this.map = _initMap(this.config);
+                    _setView(this.map, _getBody(locations[0]).view);
+                }
+                this.markers = _addMarkers(this.map, locations, this.config.msg ? this.config.msg.propertiesLink : undefined);
+            } 
+            if(!this.map && this.config.widgetSelector) {
+                console.log("hide view");
+                $(this.config.widgetSelector).hide();
+            }
+        })
+    }
     
     function _getBody(anno) {
         if(anno.body) {
@@ -75,6 +99,8 @@ var viewerJS = ( function( viewer ) {
             return annoPage.items
         } else if(annoPage.resources) {
             return annoPage.resources;
+        } else {
+            return [];
         }
     }
     

@@ -32,14 +32,12 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.oa.ImageResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
@@ -93,6 +91,7 @@ public class SequenceBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
 
+    
     /**
      * @param request
      * @throws URISyntaxException

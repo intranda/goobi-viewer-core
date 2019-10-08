@@ -55,8 +55,8 @@
             <script type="text/javascript">	        
 	        	widgetLeafletConfig = {
 	        	        //TODO: get annotation list from manifest
-        			pageLocations: "#{configurationBean.restApiUrl}annotations/collection/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageNo}/",
-        			workLocations: "#{configurationBean.restApiUrl}annotations/collection/#{activeDocumentBean.viewManager.pi}/-/",
+	        	    pageLocations: "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/#{activeDocumentBean.viewManager.currentImageNo}/CROWDSOURCING/",
+        			workLocations: "#{configurationBean.restApiUrl}iiif/manifests/#{activeDocumentBean.viewManager.pi}/list/CROWDSOURCING/",
         			widgetSelector: "#widgetLeaflet",
         			mapId: "widgetLeafletMap",
         			msg: {
@@ -65,6 +65,8 @@
 				};
 	        	
 	        	let leaflet = new viewerJS.Leaflet( widgetLeafletConfig );
+	        	leaflet.load(widgetLeafletConfig.pageLocations);
+	        	leaflet.load(widgetLeafletConfig.workLocations);
 	        </script>
         </h:panelGroup>
     </composite:implementation>
