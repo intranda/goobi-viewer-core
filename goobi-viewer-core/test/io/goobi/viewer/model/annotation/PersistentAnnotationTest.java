@@ -47,6 +47,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
+import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -58,21 +61,27 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     private WebAnnotation annotation;
     private PersistentAnnotation daoAnno;
     private User creator;
-    private Campaign generator;
+    private Question generator;
     private IResource body;
     private IResource target;
     
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         
         creator = DataManager.getInstance().getDao().getUser(2);
 
-        generator = new Campaign();
+        Campaign campaign = new Campaign();
+        campaign.setId(5l);
+        generator = new Question(campaign);
         generator.setId(4l);
+        generator.setQuestionType(QuestionType.PLAINTEXT);
+        generator.setTargetFrequency(0);
+        generator.setTargetSelector(TargetSelector.WHOLE_PAGE);
 
         annotation = new WebAnnotation(URI.create("http://www.example.com/anno/1"));
         annotation.setCreated(new Date(2019, 01, 22, 12, 54));
@@ -98,21 +107,6 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
     public void tearDown() throws Exception {
     }
 
-    @Test
-    public void testIdConversion() throws JsonParseException, JsonMappingException, IOException {
-       
-        URI webAnnoURI = URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl() + "annotations/562");
-        
-        PersistentAnnotation persAnno = new PersistentAnnotation();
-        persAnno.setId(PersistentAnnotation.getId(webAnnoURI));
-        
-        Assert.assertEquals(persAnno.getId(), 562l, 0l);
-        
-        WebAnnotation webAnno = persAnno.getAsAnnotation();
-        
-        Assert.assertEquals(webAnno.getId(), webAnnoURI);
-        
-    }
     
     @Test
     public void testSerialize() throws DAOException, JsonParseException, JsonMappingException, IOException {
@@ -140,6 +134,9 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
     
         EntityManager em = dao.getFactory().createEntityManager();
+        
+        long existingAnnotations = getAnnotations(em).size();
+        
         try {
             em.getTransaction().begin();
             em.persist(this.daoAnno);
@@ -150,18 +147,27 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         
         em = dao.getFactory().createEntityManager();
         try {
-        Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
-        q.setFlushMode(FlushModeType.COMMIT);
-        List<PersistentAnnotation> list = q.getResultList();
-        Assert.assertEquals(1, list.size());
+            List<PersistentAnnotation>list = getAnnotations(em);
+            Assert.assertEquals(existingAnnotations+1, list.size());
         
-        PersistentAnnotation retrieved = list.get(0);
+            PersistentAnnotation retrieved = list.get(list.size()-1);
         Assert.assertEquals(body, retrieved.getBodyAsResource());
         Assert.assertEquals(target, retrieved.getTargetAsResource());
 
         } finally {
             em.close();
         }
+    }
+    
+    /**
+     * @param em
+     * @return
+     */
+    private List<PersistentAnnotation> getAnnotations(EntityManager em) {
+        Query q = em.createQuery("SELECT c FROM PersistentAnnotation c");
+        q.setFlushMode(FlushModeType.COMMIT);
+        List<PersistentAnnotation> list = q.getResultList();
+        return list;
     }
     
     @Test

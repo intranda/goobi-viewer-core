@@ -119,7 +119,7 @@ public class PersistentAnnotation{
         this.id = source.getId() != null ? getId(source.getId()) : null;
         try {
             this.creator = DataManager.getInstance().getDao().getUser(User.getId(source.getCreator().getId()));
-        } catch (NumberFormatException | DAOException e) {
+        } catch (NumberFormatException | DAOException | NullPointerException e) {
             logger.error("Error getting creator of " + source, e);
         }
         try {
