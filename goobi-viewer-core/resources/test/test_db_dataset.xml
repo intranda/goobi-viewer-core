@@ -208,7 +208,7 @@
     <cs_questions question_id="3" owner_id="2" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     
     <cs_question_translations translation_id="1" owner_id="1" language="en" tag="text" value="English text" />
-    
+
     <cs_campaign_record_statistics campaign_record_statistic_id="1" owner_id="1" pi="PI 1" status="FINISHED" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="2" owner_id="1" pi="PI 2" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
     <cs_campaign_record_statistics campaign_record_statistic_id="3" owner_id="2" pi="PI 3" status="REVIEW" date_created="2019-08-30 00:00:00.000000000" />
