@@ -81,13 +81,13 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.setSelectedCampaignId("1");
         Assert.assertNotNull(bean.getSelectedCampaign());
         
-        Date updated = new Date();
-        bean.getSelectedCampaign().setDateUpdated(updated);
-        Assert.assertEquals("Date updated does not match after setting", updated, bean.getSelectedCampaign().getDateUpdated());
+        Date created = new Date();
+        bean.getSelectedCampaign().setDateCreated(created);
+        Assert.assertEquals("Date created does not match after setting", created, bean.getSelectedCampaign().getDateCreated());
         bean.saveSelectedCampaign();
         
         bean.setSelectedCampaignId("1");
-        Assert.assertEquals("Date updated does not match in database", updated, bean.getSelectedCampaign().getDateUpdated());
+        Assert.assertEquals("Date created does not match in database", created, bean.getSelectedCampaign().getDateCreated());
     }
 
 }
