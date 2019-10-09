@@ -9,6 +9,6 @@
     </options>
     <content>
         <item order="1" id="text01" label="cms__template_08__content__label" type="HTML"/>
-        <item order="2" id="collection01" label="cms__template_08__collection__label" type="COLLECTION" mandatory="true"/>
+        <item order="2" id="collection01" label="cms_itemCollectionField" type="COLLECTION" mandatory="true"/>
     </content>
 </cms_page_template>

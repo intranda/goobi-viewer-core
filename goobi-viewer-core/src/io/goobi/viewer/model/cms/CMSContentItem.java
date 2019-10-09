@@ -655,6 +655,17 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         return nestedPages;
     }
 
+    /**
+     * 
+     * @return nestedPages in a random order
+     * @throws DAOException
+     */
+    public List<CMSPage> getNestedPagesShuffled() throws DAOException {
+        List<CMSPage> ret = new ArrayList<>(getNestedPages());
+        Collections.shuffle(ret);
+        return ret;
+    }
+
     public List<CMSPage> getNestedPages(CMSCategory category) throws DAOException {
         if (nestedPages == null) {
             return loadNestedPages();
@@ -1229,7 +1240,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
                 ret.add(file);
             }
         }
-        
+
         return ret;
     }
 

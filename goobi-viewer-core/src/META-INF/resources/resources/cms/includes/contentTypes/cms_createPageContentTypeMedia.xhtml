@@ -10,7 +10,7 @@
     <!-- AREA FOR AJAX REFRESH -->
     <h:panelGroup id="contentMediaGroup" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'MEDIA'}" layout="block">
         <div class="cms-module__option-label">
-            <label for="">#{msg.admin__cms_media_file}:</label>
+            <label for="">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
         </div>
         <div class="cms-module__option-control">
             <!-- MEDIA FILE -->
