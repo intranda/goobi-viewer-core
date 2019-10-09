@@ -6,6 +6,6 @@
     <html>cms_template_14_RSSFeed.xhtml</html>
     <content>
  	    <item id="text" label="cms__template_14__text__label" type="HTML" order="1"/>
- 	    <item id="rss" label="cms__template_14__rss_feed__label" type="RSS" order="2"/>
+ 	    <item id="rss" label="cms_itemRssCount" type="RSS" order="2"/>
     </content>
 </cms_page_template>
