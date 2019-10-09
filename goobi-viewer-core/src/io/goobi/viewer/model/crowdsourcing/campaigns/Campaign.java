@@ -85,9 +85,8 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 
 /**
  * 
- * A Campaign is a template to create annotations of specific types for a limited set of target resources and optionally by
- * limited user group within a limited time frame.
- * The types of annotations created are determined by the {@link Question Questions} contained in this Campaign
+ * A Campaign is a template to create annotations of specific types for a limited set of target resources and optionally by limited user group within
+ * a limited time frame. The types of annotations created are determined by the {@link Question Questions} contained in this Campaign
  * 
  * @author florian
  *
@@ -98,7 +97,7 @@ import io.goobi.viewer.servlets.rest.serialization.TranslationListSerializer;
 public class Campaign implements CMSMediaHolder {
 
     /**
-     *  The visibility of the campaign to other users 
+     * The visibility of the campaign to other users
      */
     public enum CampaignVisibility {
         /**
@@ -211,10 +210,10 @@ public class Campaign implements CMSMediaHolder {
     @Transient
     @JsonIgnore
     private CMSContentItem contentItem = new CMSContentItem();
-    
+
     /**
-     * temporary storage for results from {@link #solrQuery}, reduced to PIs. Will be initialized if required by  {@link #getSolrQueryResults()}
-     * and reset to null by {@link #setSolrQuery(String)}
+     * temporary storage for results from {@link #solrQuery}, reduced to PIs. Will be initialized if required by {@link #getSolrQueryResults()} and
+     * reset to null by {@link #setSolrQuery(String)}
      */
     @Transient
     @JsonIgnore
@@ -479,6 +478,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Returns the title value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only, since
+     * the language will not be in sync with the selected locale!
      * 
      * @return
      * @should return correct value
@@ -497,6 +498,8 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Returns the menu title value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only,
+     * since the language will not be in sync with the selected locale!
      * 
      * @return
      * @should return correct value
@@ -525,7 +528,7 @@ public class Campaign implements CMSMediaHolder {
         }
         return title;
     }
-    
+
     /**
      * 
      * @param title
@@ -536,8 +539,10 @@ public class Campaign implements CMSMediaHolder {
     }
 
     /**
+     * Returns the description value in the current language of the campaign object (current tab). This is meant to be used for campaign editing only,
+     * since the language will not be in sync with the selected locale!
      * 
-     * @return
+     * @return Description value in the current language in the campaign object
      * @should return correct value
      */
     public String getDescription() {
@@ -882,7 +887,7 @@ public class Campaign implements CMSMediaHolder {
      * Get the targetIdentifier to a random PI from the Solr query result list.
      * 
      * @param status
-     * @param  
+     * @param
      * 
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -907,39 +912,40 @@ public class Campaign implements CMSMediaHolder {
      * @throws IndexUnreachableException
      */
     private List<String> getSolrQueryResults() throws PresentationException, IndexUnreachableException {
-        if(this.solrQueryResults == null) {            
+        if (this.solrQueryResults == null) {
             String query = "+(" + getSolrQuery() + ") +" + SolrConstants.ISWORK + ":true";
-            this.solrQueryResults =  DataManager.getInstance().getSearchIndex().search(query, Collections.singletonList(SolrConstants.PI))
-                    .stream().map(doc -> doc.getFieldValue(SolrConstants.PI).toString()).collect(Collectors.toList());
+            this.solrQueryResults = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, Collections.singletonList(SolrConstants.PI))
+                    .stream()
+                    .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                    .collect(Collectors.toList());
 
         }
         return this.solrQueryResults;
     }
 
     /**
-     * Check if the given user may annotate/review (depending on status) a specific pi within this campaign 
+     * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
      * 
      * @param result
      * @param status
      * @param user
-     * @return  true if 
-     * <ul>
-     * <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li>
-     * or
-     * <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li>
-     * or 
-     * <li>The user is admin</li>
-     * or 
-     * <li>The user is null</li>
+     * @return true if
+     *         <ul>
+     *         <li>the status is {@link CampaignRecordStatus#REVIEW REVIEW} and the user is not contained in the annotaters list</li> or
+     *         <li>the status is {@link CampaignRecordStatus#ANNOTATE ANNOTATE} and the user is not contained in the reviewers list</li> or
+     *         <li>The user is admin</li> or
+     *         <li>The user is null</li>
      */
     public boolean isEligibleToEdit(String pi, CampaignRecordStatus status, User user) {
-        if(user != null) {
-            if(user.isSuperuser()) {
+        if (user != null) {
+            if (user.isSuperuser()) {
                 return true;
             } else {
-                if(status.equals(CampaignRecordStatus.ANNOTATE)) {
+                if (status.equals(CampaignRecordStatus.ANNOTATE)) {
                     return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getReviewers()).orElse(Collections.emptyList()).contains(user);
-                } else if(status.equals(CampaignRecordStatus.REVIEW)) {
+                } else if (status.equals(CampaignRecordStatus.REVIEW)) {
                     return !Optional.ofNullable(this.statistics.get(pi)).map(s -> s.getAnnotators()).orElse(Collections.emptyList()).contains(user);
                 } else {
                     return true;
@@ -949,54 +955,56 @@ public class Campaign implements CMSMediaHolder {
             return true;
         }
     }
-    
+
     /**
      * check if the given user is eligible to review any records
      * 
-     * @param user 
-     * @return  true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
+     * @param user
+     * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public boolean hasRecordsToReview(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
-        .filter(result -> isRecordStatus(result, CampaignRecordStatus.REVIEW))
-        .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.REVIEW, user)).count() > 0;
+                .filter(result -> isRecordStatus(result, CampaignRecordStatus.REVIEW))
+                .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.REVIEW, user))
+                .count() > 0;
     }
-    
+
     /**
      * check if the given user is eligible to annotate any records
      * 
-     * @param user 
-     * @return  true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
+     * @param user
+     * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CampaignRecordStatus, User)} returns true
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public boolean hasRecordsToAnnotate(User user) throws PresentationException, IndexUnreachableException {
         return getSolrQueryResults().stream()
-        .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
-        .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.ANNOTATE, user)).count() > 0;
+                .filter(result -> isRecordStatus(result, CampaignRecordStatus.ANNOTATE))
+                .filter(result -> isEligibleToEdit(result, CampaignRecordStatus.ANNOTATE, user))
+                .count() > 0;
     }
-    
+
     /**
      * check if the user is allowed to annotate the given pi for this campaign
      * 
      * @param user
      * @param pi
-     * @return  true if the pi is ready for annotation and the user hasn't reviewed it or is a superuser
+     * @return true if the pi is ready for annotation and the user hasn't reviewed it or is a superuser
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public boolean mayAnnotate(User user, String pi) throws PresentationException, IndexUnreachableException {
         return isRecordStatus(pi, CampaignRecordStatus.ANNOTATE) && isEligibleToEdit(pi, CampaignRecordStatus.ANNOTATE, user);
     }
-    
+
     /**
      * check if the user is allowed to review the given pi for this campaign
      * 
      * @param user
      * @param pi
-     * @return  true if the pi is ready for review and the user hasn't annotated it or is a superuser
+     * @return true if the pi is ready for review and the user hasn't annotated it or is a superuser
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -1036,10 +1044,10 @@ public class Campaign implements CMSMediaHolder {
             statistic.setDateCreated(new Date());
             statistic.setStatus(CampaignRecordStatus.ANNOTATE);
         }
-        if(CampaignRecordStatus.ANNOTATE.equals(statistic.getStatus())) {
-            user.ifPresent(statistic::addAnnotater);            
+        if (CampaignRecordStatus.ANNOTATE.equals(statistic.getStatus())) {
+            user.ifPresent(statistic::addAnnotater);
         } else {
-            user.ifPresent(statistic::addReviewer);            
+            user.ifPresent(statistic::addReviewer);
         }
         statistic.setPi(pi);
         statistic.setStatus(status);
@@ -1093,7 +1101,5 @@ public class Campaign implements CMSMediaHolder {
 
         return null;
     }
-
-
 
 }
