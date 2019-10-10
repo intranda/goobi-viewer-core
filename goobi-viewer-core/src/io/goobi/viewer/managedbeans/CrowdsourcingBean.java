@@ -214,7 +214,7 @@ public class CrowdsourcingBean implements Serializable {
     public String filterCampaignsAction(CampaignVisibility visibility) {
         lazyModelCampaigns.resetFilters();
         if (visibility != null) {
-            lazyModelCampaigns.addFilter(new TableDataFilter("visibility", visibility.name()));
+            lazyModelCampaigns.addFilter(new TableDataFilter("visibility", visibility.name(), lazyModelCampaigns));
         }
 
         return "";
