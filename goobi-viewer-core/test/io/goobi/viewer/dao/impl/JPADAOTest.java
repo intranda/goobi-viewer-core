@@ -1100,6 +1100,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("bookshelf 1 desc", bookshelf.getDescription());
         Assert.assertEquals(2, bookshelf.getItems().size());
     }
+    
+
+    /**
+     * @see JPADAO#getBookshelfByShareKey(String)
+     * @verifies return correct row
+     */
+    @Test
+    public void getBookshelfByShareKey_shouldReturnCorrectRow() throws Exception {
+        Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelfByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
+        Assert.assertNotNull(bookshelf);
+        Assert.assertEquals(Long.valueOf(1), bookshelf.getId());
+    }
 
     @Test
     public void addBookshelfTest() throws DAOException {
@@ -2337,5 +2349,4 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(2,
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI 2")).size());
     }
-
 }

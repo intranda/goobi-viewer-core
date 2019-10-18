@@ -28,7 +28,7 @@
         <div
             id="viewBookshelf"
             class="view-bookshelf">
-            <h:panelGroup rendered="#{userBean.loggedIn}">
+            <h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelf.isMayView(userBean.user)}">
                 <div class="row">
                     <div class="col-xs-10">
                         <h2>#{bookshelfBean.currentBookshelf.name}</h2>
@@ -40,7 +40,7 @@
                                 id="viewBookshelfActionForm"
                                 prependId="false">
                                 <!-- EDIT -->
-                                <h:commandLink
+                                <h:commandLink rendered="#{bookshelfBean.currentBookshelf.isMayEdit(userBean.user)}"
                                     title="#{msg.edit}"
                                     action="#{bookshelfBean.editBookshelfAction(bookshelfBean.currentBookshelf)}">
                                     <i
@@ -54,7 +54,7 @@
                                         value="top" />
                                 </h:commandLink>
                                 <!-- DELETE -->
-                                <h:commandLink
+                                <h:commandLink rendered="#{bookshelfBean.currentBookshelf.isMayEdit(userBean.user)}"
                                     title="#{msg.bookshelf_delete}"
                                     action="#{bookshelfBean.deleteCurrentBookshelfAction}"
                                     onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">

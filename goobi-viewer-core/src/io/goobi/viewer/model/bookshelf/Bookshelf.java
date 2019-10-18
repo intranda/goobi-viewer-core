@@ -46,6 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrConstants.DocType;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -244,6 +245,27 @@ public class Bookshelf implements Serializable {
         }
 
         return sb.toString();
+    }
+
+    public boolean isMayView(User user) {
+        return true; // TODO
+    }
+
+    public boolean isMayEdit(User user) throws DAOException {
+        if (user == null) {
+            return false;
+        }
+        if (owner != null && owner.equals(user)) {
+            return true;
+        }
+
+        for (UserGroup ug : groupShares) {
+            if (ug.getOwner().equals(user) || ug.getMembers().contains(user)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /*********************************** Getter and Setter ***************************************/

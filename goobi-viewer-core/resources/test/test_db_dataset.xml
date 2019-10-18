@@ -74,14 +74,15 @@
 	<license_privileges license_id="3" privilege_name="LIST" />
 
 	<bookshelves bookshelf_id="1" owner_id="1" name="bookshelf 1 name"
-		description="bookshelf 1 desc" public="false" />
+		description="bookshelf 1 desc" public="false"
+        share_key="c548e2ea6915acbfa17c3dc6f453f5b1" />
 	<bookshelves bookshelf_id="2" owner_id="2" name="bookshelf 2 name"
 		description="bookshelf 2 desc" public="true" />
 		
     <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
         name="bookshelf 1 item 1 name" description="bookshelf 1 item 1 desc"
         pi="PPN123456789" logid="LOG_0000" urn="urn:nbn:bookshelf1item1"
-        main_title="bookshelf 1 item 1 main title"/>
+        main_title="bookshelf 1 item 1 main title" />
     <bookshelf_items bookshelf_item_id="2" bookshelf_id="1"
         name="bookshelf 1 item 2 name" description="bookshelf 1 item 2 desc"
         pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookshelf1item2"
