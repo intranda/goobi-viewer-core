@@ -672,6 +672,30 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+    
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getBookshelfByShareKey(java.lang.String)
+     * @should return correct row
+     */
+    @Override
+    public Bookshelf getBookshelfByShareKey(String shareKey) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT bs FROM Bookshelf bs WHERE bs.shareKey = :shareKey");
+        q.setParameter("shareKey", shareKey);
+        try {
+            Bookshelf o = (Bookshelf) q.getSingleResult();
+            if (o != null) {
+                em.refresh(o);
+            }
+            return o;
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
 
     /*
      * (non-Javadoc)

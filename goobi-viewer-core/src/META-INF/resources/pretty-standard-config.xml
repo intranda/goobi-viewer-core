@@ -609,6 +609,11 @@
 		<view-id value="/userBackendEditBookshelf.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="userMenuViewSharedBookshelf">
+        <pattern value="/bookshelf/key/#{shareKey:bookshelfBean.shareKey}/" />
+        <view-id value="/userBackendViewBookshelf.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 	<url-mapping id="userBookshelfSendList">
 		<pattern value="/userBookshelfSendList/" />
 		<view-id value="/userBookshelfSendList.xhtml" />

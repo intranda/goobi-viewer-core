@@ -64,6 +64,8 @@ public class BookshelfBean implements Serializable {
 
     @Inject
     private UserBean userBean;
+    @Inject
+    private NavigationHelper navigationHelper;
 
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
@@ -116,51 +118,65 @@ public class BookshelfBean implements Serializable {
      * @throws DAOException
      */
     public String saveCurrentBookshelfAction() {
-        logger.debug("currentBookshelf: " + currentBookshelf.getName() + " ID: " + currentBookshelf.getId());
-        UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && StringUtils.isNotEmpty(currentBookshelfName)) {
-            if (isNewBookshelf()) {
-                // New bookshelf
-                syncInputFieldsToCurrentBookshelf();
-                if (currentBookshelf.getOwner() == null) {
-                    logger.trace("Owner not yet set");
-                    currentBookshelf.setOwner(userBean.getUser());
-                }
-
-                try {
-                    if (DataManager.getInstance().getDao().addBookshelf(currentBookshelf)) {
-                        String msg = Helper.getTranslation("bookshelf_createBookshelfSuccess", null);
-                        Messages.info(msg.replace("{0}", currentBookshelf.getName()));
-                        logger.debug("Bookshelf '" + currentBookshelf.getName() + "' for user " + userBean.getUser().getId() + " added.");
-                        resetCurrentBookshelfAction();
-                        return "pretty:userMenuMyBookshelves";
-                    }
-                } catch (DAOException e) {
-                    logger.error("Could not save bookshelf: {}", e.getMessage());
-                }
-                String msg = Helper.getTranslation("bookshelf_createBookshelfFailure", null);
-                Messages.error(msg.replace("{0}", currentBookshelf.getName()));
-            } else {
-                // Update bookshelf in the DB
-                syncInputFieldsToCurrentBookshelf();
-                try {
-                    if (DataManager.getInstance().getDao().updateBookshelf(currentBookshelf)) {
-                        logger.debug("Bookshelf '" + currentBookshelf.getName() + "' for user '" + userBean.getUser().getId() + "' updated.");
-                        String msg = Helper.getTranslation("bookshelf_updateBookshelfSuccess", null);
-                        Messages.info(msg.replace("{0}", currentBookshelf.getName()));
-                        resetCurrentBookshelfAction();
-                        return "pretty:userMenuMyBookshelves";
-                    }
-                } catch (DAOException e) {
-                    logger.error("Could not update bookshelf: {}", e.getMessage());
-                }
-                String msg = Helper.getTranslation("bookshelf_updateBookshelfFailure", null);
-                Messages.error(msg.replace("{0}", currentBookshelf.getName()));
-            }
+        syncInputFieldsToCurrentBookshelf();
+        if (saveBookshelfAction(currentBookshelf)) {
+            resetCurrentBookshelfAction();
+            return "pretty:userMenuMyBookshelves";
         }
 
         return "pretty:userMenuSingleBookshelf";
+    }
 
+    /**
+     * Updates the given Bookshelf if it already in the user's bookshelf list, adds it to the list otherwise. Saves DataManager in both cases.
+     * 
+     * @param bookshelf
+     * @return
+     */
+    static boolean saveBookshelfAction(Bookshelf bookshelf) {
+        UserBean userBean = BeanUtils.getUserBean();
+        if (bookshelf == null || userBean == null || userBean.getUser() == null || StringUtils.isEmpty(bookshelf.getName())) {
+            return false;
+        }
+
+        logger.debug("saveBookshelfAction: {}, ID: {}", bookshelf.getName(), bookshelf.getId());
+
+        if (bookshelf.getId() == null) {
+            // New bookshelf
+            if (bookshelf.getOwner() == null) {
+                logger.trace("Owner not yet set");
+                bookshelf.setOwner(userBean.getUser());
+            }
+
+            try {
+                if (DataManager.getInstance().getDao().addBookshelf(bookshelf)) {
+                    String msg = Helper.getTranslation("bookshelf_createBookshelfSuccess", null);
+                    Messages.info(msg.replace("{0}", bookshelf.getName()));
+                    logger.debug("Bookshelf '{}' for user {} added.", bookshelf.getName(), userBean.getUser().getId());
+                    return true;
+                }
+            } catch (DAOException e) {
+                logger.error("Could not save bookshelf: {}", e.getMessage());
+            }
+            String msg = Helper.getTranslation("bookshelf_createBookshelfFailure", null);
+            Messages.error(msg.replace("{0}", bookshelf.getName()));
+        } else {
+            // Update bookshelf in the DB
+            try {
+                if (DataManager.getInstance().getDao().updateBookshelf(bookshelf)) {
+                    logger.debug("Bookshelf '{}' for user {} updated.", bookshelf.getName(), userBean.getUser().getId());
+                    String msg = Helper.getTranslation("bookshelf_updateBookshelfSuccess", null);
+                    Messages.info(msg.replace("{0}", bookshelf.getName()));
+                    return true;
+                }
+            } catch (DAOException e) {
+                logger.error("Could not update bookshelf: {}", e.getMessage());
+            }
+            String msg = Helper.getTranslation("bookshelf_updateBookshelfFailure", null);
+            Messages.error(msg.replace("{0}", bookshelf.getName()));
+        }
+
+        return false;
     }
 
     /**
@@ -540,9 +556,8 @@ public class BookshelfBean implements Serializable {
     public String getCurrentBookshelfId() {
         if (getCurrentBookshelf() != null) {
             return getCurrentBookshelf().getId().toString();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -646,6 +661,41 @@ public class BookshelfBean implements Serializable {
      */
     public String getSessionBookshelfEmail() {
         return sessionBookshelfEmail;
+    }
+
+    /**
+     * 
+     * @param bookshelf
+     * @return
+     */
+    public String getShareLink(Bookshelf bookshelf) {
+        if (bookshelf == null) {
+            return "";
+        }
+        logger.trace("getShareLink: {}", bookshelf.getId());
+
+        if (bookshelf.getShareKey() == null) {
+            bookshelf.generateShareKey();
+            saveBookshelfAction(bookshelf);
+        }
+
+        return navigationHelper.getApplicationUrl() + "bookshelf/key/" + bookshelf.getShareKey() + "/";
+    }
+
+    public String getShareKey() {
+        if (currentBookshelf != null) {
+            return currentBookshelf.getShareKey();
+        }
+
+        return "-";
+    }
+
+    public void setShareKey(String key) throws DAOException {
+        if (key == null) {
+            return;
+        }
+
+        currentBookshelf = DataManager.getInstance().getDao().getBookshelfByShareKey(key);
     }
 
     public void sendSessionBookshelfAsMail() {

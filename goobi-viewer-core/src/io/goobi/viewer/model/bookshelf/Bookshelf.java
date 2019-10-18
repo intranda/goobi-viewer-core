@@ -27,9 +27,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -78,13 +79,17 @@ public class Bookshelf implements Serializable {
     @Column(name = "public")
     private boolean isPublic = false;
 
+    @Column(name = "share_key")
+    public String shareKey;
+
     @OneToMany(mappedBy = "bookshelf", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @PrivateOwned
     private List<BookshelfItem> items = new ArrayList<>();
 
     /** UserGroups that may access this bookshelf. */
-    // TODO
-    @Transient
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "bookshelf_group_shares", joinColumns = @JoinColumn(name = "bookshelf_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_group_id"))
     @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
 
@@ -335,7 +340,28 @@ public class Bookshelf implements Serializable {
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
-    
+
+    /**
+     * @return the shareKey
+     */
+    public String getShareKey() {
+        return shareKey;
+    }
+
+    /**
+     * @param shareKey the shareKey to set
+     */
+    public void setShareKey(String shareKey) {
+        this.shareKey = shareKey;
+    }
+
+    /**
+     * 
+     */
+    public void generateShareKey() {
+        setShareKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
+    }
+
     /**
      * 
      * @return Number of items
