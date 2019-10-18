@@ -79,7 +79,7 @@ public class Bookshelf implements Serializable {
     @Column(name = "public")
     private boolean isPublic = false;
 
-    @Column(name = "share_key")
+    @Column(name = "share_key", unique = true)
     public String shareKey;
 
     @OneToMany(mappedBy = "bookshelf", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
