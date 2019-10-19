@@ -107,15 +107,18 @@
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
 												
-                                                <h:commandLink title="#{msg.bookshelf_share}" onclick="PF('shareLinkPopup_#{status.index}').show();">
+                                                <h:commandLink title="#{msg.bookshelf_shareLink}" onclick="PF('shareLinkPopup_#{status.index}').show();">
                                                     <i class="fa fa-share-alt" aria-hidden="true"></i>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <f:ajax ></f:ajax>
+                                                    <f:ajax />
                                                 </h:commandLink>
                                                 
-                                                <p:dialog header="#{msg.bookshelf_share}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
+                                                <p:dialog header="#{msg.bookshelf_shareLink}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
                                                     <h:outputText disabled="true" value="#{bookshelfBean.getShareLink(bookshelf)}" />
+                                                    <h:commandButton type="button"  value="#{msg.bookshelf_shareLink_copy}"
+                                                        onclick="copyLink('#{bookshelfBean.getShareLink(bookshelf)}', 'shareLinkPopup_#{status.index}')">
+                                                    </h:commandButton>
                                                 </p:dialog>
 											</div>
 										</div>
@@ -138,10 +141,14 @@
         </div>
         
         <script type="text/javascript">
-         function showShareLinkPopup() {
-                    window.open('includes/user/bookshelfShareLink.xhtml','mywindow', 'resizable=no,toolbar=no,scrollbars=no,height=450,width=530,top=145,left=235');
-                    return true;
-                }
+            function copyLink(link, dialogId) {
+            	 navigator.clipboard.writeText(link).then(function() {
+                        PF(dialogId).hide();
+            		    alert('#{msg.bookshelf_shareLink_copy_success}');
+            		  }, function(err) {
+            		    console.error('Async: Could not copy text: ', err);
+            		  });
+            }
         </script>
         
 	</ui:define>
