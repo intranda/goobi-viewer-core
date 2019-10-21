@@ -74,7 +74,7 @@ module.exports = function (grunt) {
 				stripBanners: true,
 				sourceMap: false
 			},
-			dist: {
+			viewer: {
 				src: [
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.js',
 					'<%=src.jsDevFolderModules %>viewer/viewerJS.*.js',
@@ -86,7 +86,13 @@ module.exports = function (grunt) {
 					'<%=src.jsDevFolderModules %>crowdsourcing/Crowdsourcing.*.js'
 				],
 				dest: '<%=src.jsDistFolder%>viewer.min.js'
-			}
+			},
+			browser: {
+                src: [
+                    '<%=src.jsDevFolderModules %>browsersupport/browsersupport.js',
+                ],
+                dest: '<%=src.jsDistFolder%>browsersupport.min.js'
+            } 
 		},
 		sync: {
 			resources: {

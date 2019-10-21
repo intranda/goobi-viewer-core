@@ -183,32 +183,33 @@ public class CmsBean implements Serializable {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
                     }
-                    return numCreatedPages.orElse(0l);
+                    return numCreatedPages.orElse(0L);
                 }
 
                 private void initialize() throws DAOException {
-                    if (!initialized) {
-                        try {
-                            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
-                                    && !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
-                                allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
-                            }
-                            if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
-                                allowedTemplates =
-                                        getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
-                            }
-                            if (!userBean.getUser().hasPrivilegeForAllCategories()) {
-                                allowedCategories = getAllowedCategories(userBean.getUser()).stream()
-                                        .map(CMSCategory::getId)
-                                        .map(l -> l.toString())
-                                        .collect(Collectors.toList());
-                            }
-                            initialized = true;
-                        } catch (PresentationException | IndexUnreachableException e) {
-                            throw new DAOException("Error getting user rights from dao: " + e.toString());
-                        } catch (NullPointerException e) {
-                            throw new DAOException("No user or userBean available to determine user rights");
+                    if (initialized) {
+                        return;
+                    }
+                    try {
+                        if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                                && !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+                            allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
                         }
+                        if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
+                            allowedTemplates =
+                                    getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+                        }
+                        if (!userBean.getUser().hasPrivilegeForAllCategories()) {
+                            allowedCategories = getAllowedCategories(userBean.getUser()).stream()
+                                    .map(CMSCategory::getId)
+                                    .map(l -> l.toString())
+                                    .collect(Collectors.toList());
+                        }
+                        initialized = true;
+                    } catch (PresentationException | IndexUnreachableException e) {
+                        throw new DAOException("Error getting user rights from dao: " + e.toString());
+                    } catch (NullPointerException e) {
+                        throw new DAOException("No user or userBean available to determine user rights");
                     }
                 }
 

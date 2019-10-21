@@ -18,45 +18,56 @@ package io.goobi.viewer.managedbeans.tabledata;
 import java.util.Optional;
 
 public class TableDataFilter {
-    
+
     private String joinTable = null;
     private String column;
     private String value;
-    
-    public TableDataFilter(String column, String value) {
+    private final TableDataProvider<?> owner;
+
+    public TableDataFilter(String column, String value, TableDataProvider<?> owner) {
         super();
         this.column = column;
         this.value = value;
+        this.owner = owner;
     }
-    public TableDataFilter(String joinTable, String column, String value) {
+
+    public TableDataFilter(String joinTable, String column, String value, TableDataProvider<?> owner) {
         super();
         this.joinTable = joinTable;
         this.column = column;
         this.value = value;
+        this.owner = owner;
     }
+
     public String getColumn() {
         return column;
     }
+
     public void setColumn(String column) {
         this.column = column;
     }
+
     public String getValue() {
         return value;
     }
+
     public void setValue(String value) {
         this.value = value;
+        // Reset number of records as soon as the value has changed so that the paginator etc. can be updated on time
+        owner.resetTotalNumberOfRecords();
     }
+
     /**
      * @param joinTable the joinTable to set
      */
     public void setJoinTable(String joinTable) {
         this.joinTable = joinTable;
     }
+
     /**
      * @return the joinTable
      */
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);
     }
-
 }

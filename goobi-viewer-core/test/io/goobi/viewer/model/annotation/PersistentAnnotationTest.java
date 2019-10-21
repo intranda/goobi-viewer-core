@@ -121,6 +121,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(webAnno.getId(), webAnnoURI);
         
     }
+
     
     @Test
     public void testSerialize() throws JsonParseException, JsonMappingException, IOException {
@@ -183,6 +184,7 @@ public class PersistentAnnotationTest  extends AbstractDatabaseEnabledTest {
         List<PersistentAnnotation> list = q.getResultList();
         return list;
     }
+
     
     @Test
     public void testPersistAnnotation() throws DAOException, JsonParseException, JsonMappingException, IOException {
