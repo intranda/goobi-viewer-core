@@ -52,6 +52,13 @@
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>org.zeroturnaround.eclipse.jrebelNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>config_viewer.xml</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/digiverso/viewer/config/config_viewer.xml</locationURI>
+		</link>
+	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1550063420904</id>

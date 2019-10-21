@@ -81,7 +81,7 @@ public final class Configuration extends AbstractConfiguration {
             //            config.setDelimiterParsingDisabled(true);
             config.load(configFilePath);
             if (config.getFile() == null || !config.getFile().exists()) {
-                logger.error("Default configuration file not found: {}", configFilePath);
+                logger.error("Default configuration file not found: {}", Paths.get(configFilePath).toAbsolutePath());
                 throw new ConfigurationException();
             }
             logger.info("Default configuration file '{}' loaded.", config.getFile().getAbsolutePath());
