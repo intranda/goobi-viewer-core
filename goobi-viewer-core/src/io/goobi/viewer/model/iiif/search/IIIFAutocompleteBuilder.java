@@ -15,64 +15,39 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
+import java.net.URI;
 
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.SolrConstants;
-import io.goobi.viewer.controller.SolrSearchIndex;
+import de.intranda.api.iiif.search.SearchResult;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder.AnnotationResultList;
-import io.goobi.viewer.model.viewer.StringPair;
 
 /**
  * @author florian
  *
  */
-public class IIIFAutocompleteBuilder {
+public class IIIFAutocompleteBuilder extends IIIFSearchBuilder{
     
+    /**
+     * @param requestURI
+     * @param query
+     * @param pi
+     */
+    public IIIFAutocompleteBuilder(URI requestURI, String query, String pi) {
+        super(requestURI, query, pi);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(IIIFAutocompleteBuilder.class);
 
-    private String query;
-    private String motivation;
-    
-    
-    private Map<Integer, Integer> countFulltextOccurances(String query, String pi)
-            throws PresentationException, IndexUnreachableException {
-
-        //replace search wildcards with word character regex and replace whitespaces with '|' to facilitate OR search
-        String queryRegex = getQueryRegex(query);
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
-        queryBuilder.append(" +DOCTYPE:PAGE");
-        queryBuilder.append(" +FULLTEXTAVAILABLE:true");
-        queryBuilder.append(" +FULLTEXT:").append(query);
-
-        AnnotationResultList results = new AnnotationResultList();
-
-        StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
-        //        QueryResponse response = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString(), (page-1)*getHitsPerPage(), getHitsPerPage(), Collections.singletonList(sortField), null, FULLTEXTFIELDLIST);
-        SolrDocumentList docList = DataManager.getInstance()
-                .getSearchIndex()
-                .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(sortField), FULLTEXTFIELDLIST);
-        for (SolrDocument doc : docList) {
-            Path altoFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
-            Path fulltextFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
-            Integer pageNo = SolrSearchIndex.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
-            if (altoFile != null && Files.exists(altoFile)) {
-                results.add(getAnnotationsFromAlto(altoFile, pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));
-            } else if (fulltextFile != null && Files.exists(fulltextFile)) {
-                results.add(getAnnotationsFromFulltext(fulltextFile, "utf-8", pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));
-            }
-        }
-        return results;
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.iiif.search.IIIFSearchBuilder#build()
+     */
+    @Override
+    public SearchResult build() throws PresentationException, IndexUnreachableException {
+        SearchResult searchResult = super.build();
+        
     }
+
 }
