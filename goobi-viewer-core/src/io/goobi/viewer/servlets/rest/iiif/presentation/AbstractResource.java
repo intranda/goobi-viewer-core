@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.servlets.rest.iiif.presentation;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
@@ -22,12 +24,15 @@ import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.servlets.utils.ServletUtils;
+
 /**
  * @author Florian Alpers
  *
  */
 public abstract class AbstractResource {
 
+    
     /**
      * Default constructor
      */
@@ -45,6 +50,21 @@ public abstract class AbstractResource {
         this.servletResponse = response;
     }
     private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
+    
+    /**
+     * @return the servletURI
+     */
+    public URI getServletURI() {
+        return  URI.create(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest));
+    }
+    
+    /**
+     * @return the requestURI
+     */
+    public URI getRequestURI() {
+        return URI.create(
+                ServletUtils.getServletPathWithoutHostAsUrlFromRequest(servletRequest) + servletRequest.getRequestURI() + "?" + servletRequest.getQueryString());
+    }
     
     @Context
     protected HttpServletRequest servletRequest;

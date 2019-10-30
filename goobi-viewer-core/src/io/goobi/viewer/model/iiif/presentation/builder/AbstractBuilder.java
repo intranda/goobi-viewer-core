@@ -81,7 +81,7 @@ public abstract class AbstractBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
 
-	private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE,
+	public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE,
 			SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT,
 			SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM,
 			SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK,
@@ -89,7 +89,7 @@ public abstract class AbstractBuilder {
 			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 	
-	private static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY};
+	public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY};
 
 
 	private final URI servletURI;
@@ -162,6 +162,13 @@ public abstract class AbstractBuilder {
 		}
 
 	}
+	
+	/**
+     * @return the requestURI
+     */
+    public URI getRequestURI() {
+        return requestURI;
+    }
 
 	/**
 	 * @return METS resolver link for the DFG Viewer
@@ -441,56 +448,66 @@ public abstract class AbstractBuilder {
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
-                
-                String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
-                String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
-                Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
-                OpenAnnotation anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
-                
-                IResource body = null;
-                if(doc.containsKey(SolrConstants.MD_BODY)) {
-                    String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
-                    try {
-                        JSONObject json = new JSONObject(bodyString);
-                        body = new JSONResource(json);
-                    } catch (JSONException e) {
-                        logger.error("Error building annotation body from '" + bodyString + "'");
-                    }
-                } else if(doc.containsKey(SolrConstants.MD_TEXT)) {
-                    String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
-                    body = new TextualResource(text);
-                }
-                anno.setBody(body);
-                
-                try {                    
-                    FragmentSelector selector = new FragmentSelector(coordString);
-                    anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
-                } catch(IllegalArgumentException e) {
-                    //old UGC coords format
-                    String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
-                    Matcher matcher = Pattern.compile(regex).matcher(coordString);
-                    if(matcher.find()) {
-                        int x1 = Math.round(Float.parseFloat(matcher.group(1)));
-                        int y1 = Math.round(Float.parseFloat(matcher.group(2)));
-                        int x2 = Math.round(Float.parseFloat(matcher.group(3)));
-                        int y2 = Math.round(Float.parseFloat(matcher.group(4)));
-                        FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2-x1, y2-y1));
-                        anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
-                    } else {
-                        anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
-                    }
-                }
-                anno.setMotivation(Motivation.COMMENTING);
-                
-                List<OpenAnnotation> annoList = annoMap.get(pageOrder);
+                OpenAnnotation anno = createOpenAnnotation(pi, doc);
+                Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
+                List<OpenAnnotation> annoList = annoMap.get(page);
                 if(annoList == null) {
                     annoList = new ArrayList<>();
-                    annoMap.put(pageOrder, annoList);
+                    annoMap.put(page, annoList);
                 }
                 annoList.add(anno);
             }
         }
         return annoMap;
+    }
+
+    /**
+     * @param pi
+     * @param doc
+     * @return
+     */
+    public OpenAnnotation createOpenAnnotation(String pi, SolrDocument doc) {
+        OpenAnnotation anno;
+        String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
+        String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
+        Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
+        anno = new OpenAnnotation(PersistentAnnotation.getIdAsURI(iddoc));
+        
+        IResource body = null;
+        if(doc.containsKey(SolrConstants.MD_BODY)) {
+            String bodyString = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_BODY));
+            try {
+                JSONObject json = new JSONObject(bodyString);
+                body = new JSONResource(json);
+            } catch (JSONException e) {
+                logger.error("Error building annotation body from '" + bodyString + "'");
+            }
+        } else if(doc.containsKey(SolrConstants.MD_TEXT)) {
+            String text = readSolrField(doc, doc.getFieldValue(SolrConstants.MD_TEXT));
+            body = new TextualResource(text);
+        }
+        anno.setBody(body);
+        
+        try {                    
+            FragmentSelector selector = new FragmentSelector(coordString);
+            anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+        } catch(IllegalArgumentException e) {
+            //old UGC coords format
+            String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
+            Matcher matcher = Pattern.compile(regex).matcher(coordString);
+            if(matcher.find()) {
+                int x1 = Math.round(Float.parseFloat(matcher.group(1)));
+                int y1 = Math.round(Float.parseFloat(matcher.group(2)));
+                int x2 = Math.round(Float.parseFloat(matcher.group(3)));
+                int y2 = Math.round(Float.parseFloat(matcher.group(4)));
+                FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2-x1, y2-y1));
+                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+            } else {
+                anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
+            }
+        }
+        anno.setMotivation(Motivation.DESCRIBING);
+        return anno;
     }
 
     /**
@@ -731,5 +748,13 @@ public abstract class AbstractBuilder {
 				.append(type.name()).append("/").append(annoNum).append("/");
 		return URI.create(sb.toString());
 	}
+	
+    public URI getSearchServiceURI(URI target) {
+        String baseURI = target.toString();
+        if(!baseURI.endsWith("/")) {
+            baseURI += "/";
+        }
+        return URI.create(baseURI + "search");
+    }
 
 }

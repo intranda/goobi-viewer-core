@@ -41,6 +41,7 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.search.SearchService;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.monitoring.timer.Timer;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -103,6 +104,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.setViewingHint(ViewingHint.multipart);
         } else {
             manifest = new Manifest(getManifestURI(ele.getPi()));
+            manifest.addService(new SearchService(getSearchServiceURI(manifest.getId())));
         }
 
         populate(ele, manifest);

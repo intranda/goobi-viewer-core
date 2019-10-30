@@ -31,6 +31,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,6 +52,7 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -65,6 +67,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -149,6 +152,16 @@ public class ManifestResource extends AbstractResource {
         return createManifest(pi, BuildMode.IIIF);
     }
     
+    @GET
+    @Path("/{pi}/manifest/search")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws PresentationException, IndexUnreachableException {
+        if(StringUtils.isBlank(query)) {
+            throw new PresentationException("Must include query parameter 'q'");
+        }
+        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+    }
+    
     /**
      * Returns the entire IIIF manifest for the given pi, excluding all "seeAlso" references and annotation lists other than the images themselves. If the given pi points to an anchor, a IIIF collection is returned instead
      * 
@@ -195,7 +208,6 @@ public class ManifestResource extends AbstractResource {
         IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
 
         return manifest;
-
     }
 
 
@@ -415,7 +427,10 @@ public class ManifestResource extends AbstractResource {
                 annotations = new HashMap<>();
                 Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
                 getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi), annoTempMap );
-                AnnotationList annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                AnnotationList annoList = null;
+                if(annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {                    
+                    annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
+                }
                 if(annoList != null) {
                     annotations.put(AnnotationType.CROWDSOURCING, annoList);
                 }

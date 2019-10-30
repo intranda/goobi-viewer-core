@@ -70,6 +70,12 @@ public class AltoAnnotationBuilder {
         return annoList;
     }
     
+    public List<IAnnotation> createAnnotations(List<GeometricData> elements, Canvas canvas, String baseUrl) {
+        List<IAnnotation> annoList = elements.stream().map(element -> createAnnotation(element, canvas, baseUrl)).collect(Collectors.toList());
+        return annoList;
+    }
+
+    
     private IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
         AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
