@@ -92,7 +92,9 @@ public class IIIFSearchBuilder {
      */
     public IIIFSearchBuilder(URI requestURI, String query, String pi) {
         this.requestURI = requestURI.toString().replaceAll("&page=\\d+", "");
-        query = query.replace("+", " ");
+        if(query != null) {            
+            query = query.replace("+", " ");
+        }
         this.query = query;
         this.pi = pi;
         this.presentationBuilder =
@@ -209,21 +211,23 @@ public class IIIFSearchBuilder {
         AnnotationResultList resultList = new AnnotationResultList();
 
         long mostHits = 0;
-        if (motivation.isEmpty() || motivation.contains("painting")) {
-            AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
-            resultList.add(fulltextAnnotations);
-            mostHits = Math.max(mostHits, fulltextAnnotations.numHits);
-        }
-        if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
-            AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
-            resultList.add(annotations);
-            mostHits = Math.max(mostHits, annotations.numHits);
-
-        }
-        if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
-            AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
-            resultList.add(annotations);
-            mostHits = Math.max(mostHits, annotations.numHits);
+        if(StringUtils.isNotBlank(query)) {
+            if (motivation.isEmpty() || motivation.contains("painting")) {
+                AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
+                resultList.add(fulltextAnnotations);
+                mostHits = Math.max(mostHits, fulltextAnnotations.numHits);
+            }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+                AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
+                resultList.add(annotations);
+                mostHits = Math.max(mostHits, annotations.numHits);
+    
+            }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+                AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
+                resultList.add(annotations);
+                mostHits = Math.max(mostHits, annotations.numHits);
+            }
         }
         
         int lastPageNo = 1 + (int) mostHits / getHitsPerPage();

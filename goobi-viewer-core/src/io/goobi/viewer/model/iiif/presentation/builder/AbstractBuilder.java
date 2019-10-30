@@ -756,5 +756,18 @@ public abstract class AbstractBuilder {
         }
         return URI.create(baseURI + "search");
     }
+    
+    /**
+     * @param id
+     * @return
+     */
+    public URI getAutoCompleteServiceURI(URI target) {
+        String baseURI = target.toString();
+        if(!baseURI.endsWith("/")) {
+            baseURI += "/";
+        }
+        return URI.create(baseURI + "autocomplete");
+    }
+
 
 }

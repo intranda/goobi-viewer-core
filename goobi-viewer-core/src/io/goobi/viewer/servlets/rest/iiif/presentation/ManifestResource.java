@@ -173,16 +173,13 @@ public class ManifestResource extends AbstractResource {
      * @param user  not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
      * @param page  the page number for paged result sets. if this is empty, page=1 is assumed
      * @return  a {@link SearchResult} containing all annotations matching the query in the 'resources' property
-     * @throws BadRequestException          If the query parameter 'q' is missing from the request 
      * @throws IndexUnreachableException    If the index cannot be reached
+     * @throws PresentationException        if an error occured in the search
      */
     @GET
     @Path("/{pi}/manifest/search")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws PresentationException, IndexUnreachableException {
-        if(StringUtils.isBlank(query)) {
-            throw new BadRequestException("Must include query parameter 'q'");
-        }
+    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
     

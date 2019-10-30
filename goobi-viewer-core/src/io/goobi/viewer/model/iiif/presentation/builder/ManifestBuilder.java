@@ -41,7 +41,9 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.search.AutoCompleteService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.monitoring.timer.Timer;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -56,6 +58,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -104,13 +107,18 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.setViewingHint(ViewingHint.multipart);
         } else {
             manifest = new Manifest(getManifestURI(ele.getPi()));
-            manifest.addService(new SearchService(getSearchServiceURI(manifest.getId())));
+            SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
+            search.setLabel(ViewerResourceBundle.getTranslations("label__iiif_api_search"));
+//            AutoCompleteService autoComplete = new AutoCompleteService(getAutoCompleteServiceURI(manifest.getId()));
+//            search.addService(autoComplete);
+            manifest.addService(search);
         }
 
         populate(ele, manifest);
 
         return manifest;
     }
+
 
     /**
      * @param ele
