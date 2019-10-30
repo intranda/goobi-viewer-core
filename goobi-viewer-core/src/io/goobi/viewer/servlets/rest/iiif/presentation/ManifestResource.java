@@ -188,7 +188,8 @@ public class ManifestResource extends AbstractResource {
     @Path("/{pi}/manifest/autocomplete")
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFAutocompleteBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+//        return new IIIFAutocompleteBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+        return null;
     }
     
     /**
