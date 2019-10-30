@@ -234,6 +234,7 @@ public class IIIFSearchBuilder {
 
         SearchResult searchResult = new SearchResult(getURI(getPage()));
         searchResult.setResources(resultList.hits);
+        searchResult.setStartIndex(getFirstHitIndex(getPage()));
         
         if(getPage() > 1) {
             searchResult.setPrev(getURI(getPage()-1));
