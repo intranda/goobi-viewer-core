@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -152,12 +153,35 @@ public class ManifestResource extends AbstractResource {
         return createManifest(pi, BuildMode.IIIF);
     }
     
+    /**
+     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting),
+     * user comments (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
+     * 
+     * 
+     * @param pi        The pi of the manifest to search
+     * @param query     The search query; a list of space separated terms. 
+     *                  The search is for all complete words which match any of the query terms. 
+     *                  Terms may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
+     * @param motivation    a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
+     *                  <ul>
+     *                     <li>painting: fulltext resources</li>
+     *                     <li>non-painting: all supported resources except fulltext</li>
+     *                     <li>commenting: user comments</li>
+     *                     <li>describing: Crowdsourced or other general annotations</li>
+     *                  </ul>
+     * @param date  not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param user  not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param page  the page number for paged result sets. if this is empty, page=1 is assumed
+     * @return  a {@link SearchResult} containing all annotations matching the query in the 'resources' property
+     * @throws BadRequestException          If the query parameter 'q' is missing from the request 
+     * @throws IndexUnreachableException    If the index cannot be reached
+     */
     @GET
     @Path("/{pi}/manifest/search")
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws PresentationException, IndexUnreachableException {
         if(StringUtils.isBlank(query)) {
-            throw new PresentationException("Must include query parameter 'q'");
+            throw new BadRequestException("Must include query parameter 'q'");
         }
         return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }

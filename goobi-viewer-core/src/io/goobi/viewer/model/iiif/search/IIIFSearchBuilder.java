@@ -60,7 +60,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
- * 
+ * Creates a IIIF Search API v1.0 response as {@link SearchResult}
  * 
  * @author florian
  *
@@ -84,7 +84,11 @@ public class IIIFSearchBuilder {
     private final String requestURI;
 
     /**
-     * @param requestURI
+     * Initializes the builder with all required parameters
+     * 
+     * @param requestURI    The request url, including all query parameters
+     * @param query the query string
+     * @param pi    the pi of the manifest to search
      */
     public IIIFSearchBuilder(URI requestURI, String query, String pi) {
         this.requestURI = requestURI.toString().replaceAll("&page=\\d+", "");
@@ -102,6 +106,13 @@ public class IIIFSearchBuilder {
      */
     public String getQuery() {
         return query;
+    }
+    
+    /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
     }
 
     /**
@@ -184,6 +195,15 @@ public class IIIFSearchBuilder {
         return this;
     }
 
+    /**
+     * Creates a {@link SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}.
+     * The answer may contain more than {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than
+     * {@link #getHitsPerPage()} hits per motivation.
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public SearchResult build() throws PresentationException, IndexUnreachableException {
 
         AnnotationResultList resultList = new AnnotationResultList();
@@ -528,6 +548,12 @@ public class IIIFSearchBuilder {
         return URI.create(requestURI + "&page=" + page);
     }
 
+    /**
+     * Utility class 
+     * 
+     * @author florian
+     *
+     */
     private static class AnnotationResultList {
         public long numHits;
         public final List<IAnnotation> hits;
