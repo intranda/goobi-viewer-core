@@ -68,6 +68,7 @@ import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
+import io.goobi.viewer.model.iiif.search.IIIFAutocompleteBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -181,6 +182,13 @@ public class ManifestResource extends AbstractResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+    }
+    
+    @GET
+    @Path("/{pi}/manifest/autocomplete")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SearchResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+        return new IIIFAutocompleteBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
     
     /**
