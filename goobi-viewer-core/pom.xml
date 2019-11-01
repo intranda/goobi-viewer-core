@@ -102,7 +102,7 @@
 		<rs-api.version>2.0.1</rs-api.version>
 		<saxon.version>9.0</saxon.version>
 		<slf4j.version>1.7.26</slf4j.version>
-		<solr.version>4.10.4</solr.version>
+		<solr.version>8.2.0</solr.version>
 		<stax-api.version>1.0.1</stax-api.version>
 		<!-- Using a tika.version >1.18 will result in a POI version incompatibility -->
 		<tika.version>[1.20,)</tika.version>
