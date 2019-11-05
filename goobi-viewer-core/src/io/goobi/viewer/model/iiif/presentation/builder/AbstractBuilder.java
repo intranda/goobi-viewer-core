@@ -560,7 +560,7 @@ public abstract class AbstractBuilder {
 	/**
 	 * @return
 	 */
-	protected List<String> getSolrFieldList() {
+	public List<String> getSolrFieldList() {
 		List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
 		for (String string : REQUIRED_SOLR_FIELDS) {
 			if (!fields.contains(string)) {
@@ -571,7 +571,7 @@ public abstract class AbstractBuilder {
 		if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
 			fields.add(navDateField);
 		}
-		fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
+		fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
 		return fields;
 	}
 
@@ -742,12 +742,12 @@ public abstract class AbstractBuilder {
 				.append("/canvas/").append(order).append("/").append(type.name()).append("/").append(annoNum).append("/");
 		return URI.create(sb.toString());
 	}
-
-	public URI getAnnotationURI(String pi, AnnotationType type, int annoNum) {
-		StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi)
-				.append(type.name()).append("/").append(annoNum).append("/");
-		return URI.create(sb.toString());
-	}
+	
+	public URI getAnnotationURI(String pi, AnnotationType type, String id) {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/")
+                .append(type.name()).append("/").append(id).append("/");
+        return URI.create(sb.toString());
+    }
 	
     public URI getSearchServiceURI(URI target) {
         String baseURI = target.toString();
