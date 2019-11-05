@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,7 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.AbstractAnnotation;
+import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.TextualResource;
@@ -50,6 +53,9 @@ import de.intranda.api.iiif.search.SearchTerm;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.Metadata;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -57,6 +63,7 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
@@ -225,6 +232,12 @@ public class IIIFSearchBuilder {
                 mostHits = Math.max(mostHits, annotations.numHits);
 
             }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+                AnnotationResultList metadata = searchMetadata(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
+                resultList.add(metadata);
+                mostHits = Math.max(mostHits, metadata.numHits);
+
+            }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
                 AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(annotations);
@@ -256,19 +269,21 @@ public class IIIFSearchBuilder {
     public AutoSuggestResult buildAutoSuggest() throws PresentationException, IndexUnreachableException {
 
         SearchTermList terms = new SearchTermList();
-        if(StringUtils.isNotBlank(query)) {
+        if (StringUtils.isNotBlank(query)) {
             if (motivation.isEmpty() || motivation.contains("painting")) {
                 //add terms from fulltext?
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
                 terms.addAll(autoSuggestAnnotations(query, getPi()));
-    
+            }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+                terms.addAll(autoSuggestMetadata(query, getPi()));
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
                 terms.addAll(autoSuggestComments(query, getPi()));
             }
         }
-        
+
         AutoSuggestResult result = new AutoSuggestResult(presentationBuilder.getAutoSuggestURI(getPi(), getQuery(), getMotivation()));
         result.setIgnored(getIgnoredParameterList());
         result.setTerms(terms);
@@ -322,7 +337,7 @@ public class IIIFSearchBuilder {
         }
         return results;
     }
-    
+
     private SearchTermList autoSuggestComments(String query, String pi) {
 
         SearchTermList terms = new SearchTermList();
@@ -331,13 +346,188 @@ public class IIIFSearchBuilder {
         try {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
             comments = comments.stream().filter(c -> c.getText().matches(getContainedWordRegex(queryRegex))).collect(Collectors.toList());
-                for (Comment comment : comments) {
-                    terms.addAll(getSearchTerms(queryRegex, comment.getText()));
-                }
+            for (Comment comment : comments) {
+                terms.addAll(getSearchTerms(queryRegex, comment.getText()));
+            }
         } catch (DAOException e) {
             logger.error(e.toString(), e);
         }
         return terms;
+    }
+
+    private AnnotationResultList searchMetadata(String query, String pi, int firstHitIndex, int hitsPerPage) {
+
+        AnnotationResultList results = new AnnotationResultList();
+        List<String> searchFields = getSearchFields();
+        List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+
+        if (searchFields.isEmpty()) {
+            return results;
+        }
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
+        queryBuilder.append(" +DOCTYPE:DOCSTRCT");
+        queryBuilder.append(" +( ");
+        for (String field : searchFields) {
+            queryBuilder.append(field).append(":").append(query).append(" ");
+        }
+        queryBuilder.append(")");
+
+        try {
+            SolrDocumentList docList = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), presentationBuilder.getSolrFieldList());
+            for (SolrDocument doc : docList) {
+                Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
+                for (String fieldName : fieldNames.keySet()) {
+                    if (fieldNameMatches(fieldName, displayFields)) {
+                        String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
+                        if (fieldValue.matches(getContainedWordRegex(getQueryRegex(query)))) {
+                            results.numHits += 1;
+                            if (firstHitIndex < results.numHits && firstHitIndex + hitsPerPage >= results.numHits) {
+                                OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
+                                results.hits.add(anno);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.toString(), e);
+        }
+        return results;
+    }
+    
+    private SearchTermList autoSuggestMetadata(String query, String pi) {
+
+        SearchTermList terms = new SearchTermList();
+        List<String> searchFields = getSearchFields();
+        List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+
+        if (searchFields.isEmpty()) {
+            return terms;
+        }
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
+        queryBuilder.append(" +DOCTYPE:DOCSTRCT");
+        queryBuilder.append(" +( ");
+        for (String field : searchFields) {
+            queryBuilder.append(field).append(":").append(query).append("* ");
+        }
+        queryBuilder.append(")");
+
+        try {
+            SolrDocumentList docList = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), presentationBuilder.getSolrFieldList());
+            for (SolrDocument doc : docList) {
+                Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
+                for (String fieldName : fieldNames.keySet()) {
+                    if (fieldNameMatches(fieldName, displayFields)) {
+                        String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
+                        if (fieldValue.matches(getContainedWordRegex(getAutoSuggestRegex(query)))) {
+                            terms.addAll(getSearchTerms(getAutoSuggestRegex(query), fieldValue));
+                        }
+                    }
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.toString(), e);
+        }
+        return terms;
+    }
+
+    private List<StringPair> getFieldList(SolrDocument doc) {
+        List<StringPair> list = new ArrayList<>();
+        Map<String, List<String>> fields = SolrSearchIndex.getFieldValueMap(doc);
+        for (String fieldName : fields.keySet()) {
+            String fieldValue = SolrSearchIndex.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining(" "));
+            StringPair pair = new StringPair(fieldName, fieldValue);
+            list.add(pair);
+        }
+        return list;
+    }
+
+    /**
+     * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames
+     * 
+     * @param fieldName
+     * @param iiifDescriptionFields
+     * @return
+     */
+    private boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
+        for (String configuredField : configuredFields) {
+            if (configuredField.contains("*")) {
+                String fieldRegex = getQueryRegex(configuredField);
+                if (fieldName.matches(fieldRegex)) {
+                    return true;
+                }
+            } else if (fieldName.equalsIgnoreCase(configuredField)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param doc
+     * @return
+     */
+    private OpenAnnotation createMetadataAnnotation(String metadataField, SolrDocument doc) {
+        String iddoc = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
+        Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
+        OpenAnnotation anno = new OpenAnnotation(presentationBuilder.getAnnotationURI(pi, AnnotationType.METADATA, iddoc));
+        anno.setMotivation(Motivation.DESCRIBING);
+        if (Boolean.TRUE.equals(isWork)) {
+            anno.setTarget(new SimpleResource(presentationBuilder.getManifestURI(pi)));
+        } else {
+            anno.setTarget(new SimpleResource(presentationBuilder.getRangeURI(pi, logId)));
+        }
+        IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
+        IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
+                .orElse(new SimpleMetadataValue(SolrSearchIndex.getSingleFieldStringValue(doc, metadataField)));
+        Metadata md = new Metadata(label, value);
+        anno.setBody(new FieldListResource(Collections.singletonList(md)));
+
+        return anno;
+    }
+
+    /**
+     * @return
+     */
+    public List<StringPair> getPageSortFields() {
+        StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
+        return Collections.singletonList(sortField);
+    }
+
+    /**
+     * @return
+     */
+    public List<StringPair> getDocStructSortFields() {
+        StringPair sortField1 = new StringPair(SolrConstants.THUMBPAGENO, "asc");
+        StringPair sortField2 = new StringPair(SolrConstants.ISANCHOR, "asc");
+        StringPair sortField3 = new StringPair(SolrConstants.ISWORK, "asc");
+        List<StringPair> pairs = new ArrayList<>();
+        pairs.add(sortField1);
+        pairs.add(sortField2);
+        pairs.add(sortField3);
+        return pairs;
+    }
+
+    /**
+     * @return
+     */
+    public List<String> getSearchFields() {
+        List<String> configuredFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        if (configuredFields.stream().anyMatch(field -> field.contains("*"))) {
+            configuredFields = configuredFields.stream().filter(field -> !field.contains("*")).collect(Collectors.toList());
+            configuredFields.add(SolrConstants.DEFAULT);
+        }
+        return configuredFields;
     }
 
     /**
@@ -356,11 +546,9 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
         try {
-            StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
             SolrDocumentList docList = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(sortField),
-                            Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
             results.numHits = docList.size();
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
@@ -376,7 +564,7 @@ public class IIIFSearchBuilder {
     }
 
     private SearchTermList autoSuggestAnnotations(String query, String pi) {
-        
+
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
         queryBuilder.append(" +DOCTYPE:UGC");
@@ -384,14 +572,12 @@ public class IIIFSearchBuilder {
 
         SearchTermList terms = new SearchTermList();
         try {
-            StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
             SolrDocumentList docList = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(sortField),
-                            Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
-                for (SolrDocument doc : docList) {
-                    terms.addAll(getSearchTerms(getAutoSuggestRegex(query), doc, Collections.singletonList(SolrConstants.UGCTERMS)));
-                }
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
+            for (SolrDocument doc : docList) {
+                terms.addAll(getSearchTerms(getAutoSuggestRegex(query), doc, Collections.singletonList(SolrConstants.UGCTERMS)));
+            }
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.toString(), e);
         }
@@ -461,11 +647,10 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
 
-        StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
         //        QueryResponse response = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString(), (page-1)*getHitsPerPage(), getHitsPerPage(), Collections.singletonList(sortField), null, FULLTEXTFIELDLIST);
         SolrDocumentList docList = DataManager.getInstance()
                 .getSearchIndex()
-                .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(sortField), FULLTEXTFIELDLIST);
+                .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);
         for (SolrDocument doc : docList) {
             Path altoFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
             Path fulltextFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
@@ -477,15 +662,6 @@ public class IIIFSearchBuilder {
             }
         }
         return results;
-    }
-
-    /**
-     * @param query2
-     * @return
-     */
-    private List<String> getQueryTerms(String query) {
-        String[] tokens = StringUtils.split(query, " ");
-        return Arrays.asList(tokens);
     }
 
     /**
@@ -574,11 +750,11 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Create a regular expression matching all anything starting with the given query followed by an arbitrary
-     * number of word characters and ignoring case
+     * Create a regular expression matching all anything starting with the given query followed by an arbitrary number of word characters and ignoring
+     * case
      * 
      * @param query
-     * @return  the regular expression {@code (?i){query}[\w\d-]*}
+     * @return the regular expression {@code (?i){query}[\w\d-]*}
      */
     private String getAutoSuggestRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
@@ -688,10 +864,11 @@ public class IIIFSearchBuilder {
         }
 
         /**
-         * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. 
-         * Otherwise add the {@link SearchTerm#getCount()} of the given term to the existing term
+         * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. Otherwise add the
+         * {@link SearchTerm#getCount()} of the given term to the existing term
+         * 
          * @param term
-         * @return  true, even if the term already exists and its count is added to an existing term
+         * @return true, even if the term already exists and its count is added to an existing term
          */
         @Override
         public boolean add(SearchTerm term) {
@@ -703,7 +880,7 @@ public class IIIFSearchBuilder {
                 return super.add(term);
             }
         }
-        
+
         /* (non-Javadoc)
          * @see java.util.ArrayList#addAll(java.util.Collection)
          */
