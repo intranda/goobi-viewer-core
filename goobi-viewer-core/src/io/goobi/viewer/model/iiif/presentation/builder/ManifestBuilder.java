@@ -41,6 +41,7 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.iiif.presentation.enums.ViewingHint;
+import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -106,7 +107,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
             search.setLabel(ViewerResourceBundle.getTranslations("label__iiif_api_search"));
-            AutoCompleteService autoComplete = new AutoCompleteService(getAutoSuggestServiceURI(manifest.getId()));
+            AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
             search.addService(autoComplete);
             manifest.addService(search);
         }
