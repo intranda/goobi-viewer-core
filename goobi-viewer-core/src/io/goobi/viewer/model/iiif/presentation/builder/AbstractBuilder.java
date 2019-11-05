@@ -89,7 +89,7 @@ public abstract class AbstractBuilder {
 			SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.NUMPAGES,
 			SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT };
 	
-	public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY};
+	public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE, SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS};
 
 
 	private final URI servletURI;
@@ -761,12 +761,36 @@ public abstract class AbstractBuilder {
      * @param id
      * @return
      */
-    public URI getAutoCompleteServiceURI(URI target) {
+    public URI getAutoSuggestServiceURI(URI target) {
         String baseURI = target.toString();
         if(!baseURI.endsWith("/")) {
             baseURI += "/";
         }
         return URI.create(baseURI + "autocomplete");
+    }
+
+    /**
+     * @param pi
+     * @param query
+     * @param motivation
+     * @return
+     */
+    public URI getSearchURI(String pi, String query, List<String> motivation) {
+        String uri = getSearchServiceURI(getManifestURI(pi)).toString();
+        uri += ("?query="+query);
+        if(!motivation.isEmpty()) {
+            uri += ("&motivation="+StringUtils.join(motivation, "+"));
+        }
+        return URI.create(uri);
+    }
+    
+    public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
+        String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
+        uri += ("?query="+query);
+        if(!motivation.isEmpty()) {
+            uri += ("&motivation="+StringUtils.join(motivation, "+"));
+        }
+        return URI.create(uri);
     }
 
 
