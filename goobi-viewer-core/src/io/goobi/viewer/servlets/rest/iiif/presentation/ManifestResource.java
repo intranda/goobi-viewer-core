@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,6 +52,7 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.intranda.api.iiif.presentation.Sequence;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -68,7 +68,6 @@ import io.goobi.viewer.model.iiif.presentation.builder.LayerBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.builder.StructureBuilder;
-import io.goobi.viewer.model.iiif.search.IIIFAutocompleteBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -187,9 +186,8 @@ public class ManifestResource extends AbstractResource {
     @GET
     @Path("/{pi}/manifest/autocomplete")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-//        return new IIIFAutocompleteBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
-        return null;
+    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).buildAutoSuggest();
     }
     
     /**

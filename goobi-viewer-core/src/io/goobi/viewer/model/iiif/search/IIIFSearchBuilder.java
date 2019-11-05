@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,8 +43,10 @@ import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
+import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
+import de.intranda.api.iiif.search.SearchTerm;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
@@ -86,13 +89,13 @@ public class IIIFSearchBuilder {
     /**
      * Initializes the builder with all required parameters
      * 
-     * @param requestURI    The request url, including all query parameters
+     * @param requestURI The request url, including all query parameters
      * @param query the query string
-     * @param pi    the pi of the manifest to search
+     * @param pi the pi of the manifest to search
      */
     public IIIFSearchBuilder(URI requestURI, String query, String pi) {
         this.requestURI = requestURI.toString().replaceAll("&page=\\d+", "");
-        if(query != null) {            
+        if (query != null) {
             query = query.replace("+", " ");
         }
         this.query = query;
@@ -109,7 +112,7 @@ public class IIIFSearchBuilder {
     public String getQuery() {
         return query;
     }
-    
+
     /**
      * @return the pi
      */
@@ -198,9 +201,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Creates a {@link SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}.
-     * The answer may contain more than {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than
-     * {@link #getHitsPerPage()} hits per motivation.
+     * Creates a {@link SearchResult} containing annotations matching {@link #getQuery()} within {@link #getPi()}. The answer may contain more than
+     * {@link #getHitsPerPage()} hits if more than one motivation is searched, but no more than {@link #getHitsPerPage()} hits per motivation.
      * 
      * @return
      * @throws PresentationException
@@ -211,7 +213,7 @@ public class IIIFSearchBuilder {
         AnnotationResultList resultList = new AnnotationResultList();
 
         long mostHits = 0;
-        if(StringUtils.isNotBlank(query)) {
+        if (StringUtils.isNotBlank(query)) {
             if (motivation.isEmpty() || motivation.contains("painting")) {
                 AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(fulltextAnnotations);
@@ -221,7 +223,7 @@ public class IIIFSearchBuilder {
                 AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.numHits);
-    
+
             }
             if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
                 AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
@@ -229,17 +231,17 @@ public class IIIFSearchBuilder {
                 mostHits = Math.max(mostHits, annotations.numHits);
             }
         }
-        
+
         int lastPageNo = 1 + (int) mostHits / getHitsPerPage();
 
         SearchResult searchResult = new SearchResult(getURI(getPage()));
         searchResult.setResources(resultList.hits);
-        
-        if(getPage() > 1) {
-            searchResult.setPrev(getURI(getPage()-1));
+
+        if (getPage() > 1) {
+            searchResult.setPrev(getURI(getPage() - 1));
         }
-        if(getPage() < lastPageNo) {
-            searchResult.setNext(getURI(getPage()+1));
+        if (getPage() < lastPageNo) {
+            searchResult.setNext(getURI(getPage() + 1));
         }
         SearchResultLayer layer = new SearchResultLayer();
         layer.setTotal(resultList.numHits);
@@ -249,6 +251,28 @@ public class IIIFSearchBuilder {
         searchResult.setWithin(layer);
 
         return searchResult;
+    }
+
+    public AutoSuggestResult buildAutoSuggest() throws PresentationException, IndexUnreachableException {
+
+        SearchTermList terms = new SearchTermList();
+        if(StringUtils.isNotBlank(query)) {
+            if (motivation.isEmpty() || motivation.contains("painting")) {
+                //add terms from fulltext?
+            }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+                terms.addAll(autoSuggestAnnotations(query, getPi()));
+    
+            }
+            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+                terms.addAll(autoSuggestComments(query, getPi()));
+            }
+        }
+        
+        AutoSuggestResult result = new AutoSuggestResult(presentationBuilder.getAutoSuggestURI(getPi(), getQuery(), getMotivation()));
+        result.setIgnored(getIgnoredParameterList());
+        result.setTerms(terms);
+        return result;
     }
 
     /**
@@ -263,14 +287,6 @@ public class IIIFSearchBuilder {
             ignored.add("date");
         }
         return ignored;
-    }
-
-    /**
-     * @return
-     */
-    private String getQueryRegex(String query) {
-        String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "|");
-        return "(?i)" + queryRegex;
     }
 
     /**
@@ -306,6 +322,23 @@ public class IIIFSearchBuilder {
         }
         return results;
     }
+    
+    private SearchTermList autoSuggestComments(String query, String pi) {
+
+        SearchTermList terms = new SearchTermList();
+        String queryRegex = getAutoSuggestRegex(query);
+
+        try {
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
+            comments = comments.stream().filter(c -> c.getText().matches(getContainedWordRegex(queryRegex))).collect(Collectors.toList());
+                for (Comment comment : comments) {
+                    terms.addAll(getSearchTerms(queryRegex, comment.getText()));
+                }
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+        }
+        return terms;
+    }
 
     /**
      * @param queryRegex
@@ -340,6 +373,63 @@ public class IIIFSearchBuilder {
             logger.error(e.toString(), e);
         }
         return results;
+    }
+
+    private SearchTermList autoSuggestAnnotations(String query, String pi) {
+        
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(" +PI_TOPSTRUCT:").append(pi);
+        queryBuilder.append(" +DOCTYPE:UGC");
+        queryBuilder.append(" +UGCTERMS:").append(query).append("*");
+
+        SearchTermList terms = new SearchTermList();
+        try {
+            StringPair sortField = new StringPair(SolrConstants.ORDER, "asc");
+            SolrDocumentList docList = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(sortField),
+                            Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
+                for (SolrDocument doc : docList) {
+                    terms.addAll(getSearchTerms(getAutoSuggestRegex(query), doc, Collections.singletonList(SolrConstants.UGCTERMS)));
+                }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.toString(), e);
+        }
+        return terms;
+    }
+
+    /**
+     * @param autoSuggestRegex
+     * @param doc
+     * @param fieldsToSearch
+     * @return
+     */
+    private SearchTermList getSearchTerms(String regex, SolrDocument doc, List<String> fieldsToSearch) {
+        SearchTermList terms = new SearchTermList();
+        for (String field : fieldsToSearch) {
+            String value = SolrSearchIndex.getSingleFieldStringValue(doc, field);
+            terms.addAll(getSearchTerms(regex, value));
+        }
+        return terms;
+    }
+
+    /**
+     * @param regex
+     * @param terms
+     * @param value
+     */
+    public SearchTermList getSearchTerms(String regex, String value) {
+        SearchTermList terms = new SearchTermList();
+        String wordRegex = getSingleWordRegex(regex);
+        if (StringUtils.isNotBlank(value)) {
+            Matcher matcher = Pattern.compile(wordRegex).matcher(value);
+            while (matcher.find()) {
+                String match = matcher.group(1);
+                SearchTerm term = new SearchTerm(presentationBuilder.getSearchURI(getPi(), match, getMotivation()), match, 1);
+                terms.add(term);
+            }
+        }
+        return terms;
     }
 
     /**
@@ -448,7 +538,7 @@ public class IIIFSearchBuilder {
             words = altoDoc.getFirstPage()
                     .getAllLinesAsList()
                     .stream()
-                    .filter(l -> l.getContent().matches(getSingleWordRegex(query)))
+                    .filter(l -> l.getContent().matches(getContainedWordRegex(query)))
                     .map(w -> (GeometricData) w)
                     .collect(Collectors.toList());
         }
@@ -457,10 +547,11 @@ public class IIIFSearchBuilder {
 
     /**
      * @param query
-     * @return a regex matching a single word matching the given query regex
+     * @return a regex matching a single word matching the given query regex (ignoring case)
      */
     private String getSingleWordRegex(String query) {
-        return "(^|.*\\s)(" + query + ")($|\\s.*|[.:,;])";
+        query = query.replace("(?i)", ""); //remove any possible ignore case flags
+        return "(?i)(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?=$|\\s+|[.:,;!?\\(\\)])";
     }
 
     /**
@@ -469,7 +560,30 @@ public class IIIFSearchBuilder {
      * @return a regex matching any text containing the given query regex as single word
      */
     private String getContainedWordRegex(String query) {
-        return "(?i)([\\w\\W]*)(^|.*\\s)(" + query + ")($|\\s.*|[.:,;])([\\w\\W]*)";
+        query = query.replace("(?i)", ""); //remove any possible ignore case flags
+        return "(?i)([\\w\\W]*)(^|.*\\s|[.:,;!?\\(\\)])(" + query + ")($|\\s.*|[.:,;!?\\(\\)])([\\w\\W]*)";
+    }
+
+    /**
+     * @return a regex matching any word of the given query with '*' matching any number of word characters and ignoring case
+     */
+    private String getQueryRegex(String query) {
+        query = query.replace("(?i)", ""); //remove any possible ignore case flags
+        String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "|");
+        return "(?i)" + queryRegex;
+    }
+
+    /**
+     * Create a regular expression matching all anything starting with the given query followed by an arbitrary
+     * number of word characters and ignoring case
+     * 
+     * @param query
+     * @return  the regular expression {@code (?i){query}[\w\d-]*}
+     */
+    private String getAutoSuggestRegex(String query) {
+        query = query.replace("(?i)", ""); //remove any possible ignore case flags
+        String queryRegex = query + "[\\w\\d-]*";
+        return "(?i)" + queryRegex;
     }
 
     private AnnotationResultList getAnnotationsFromFulltext(Path textFile, String textFileEncoding, String pi, Integer pageNo, String query,
@@ -510,20 +624,6 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @param query2
-     * @param text
-     * @return
-     */
-    private List<String> getMatchingWords(String query, String text) {
-        Matcher matcher = Pattern.compile(getSingleWordRegex(query)).matcher(text);
-        List<String> results = new ArrayList<>();
-        while (matcher.find()) {
-            results.add(matcher.group().trim());
-        }
-        return results;
-    }
-
-    /**
      * @param w
      * @return
      */
@@ -553,7 +653,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Utility class 
+     * Utility class
      * 
      * @author florian
      *
@@ -579,7 +679,40 @@ public class IIIFSearchBuilder {
             this.numHits = numHits;
             this.hits = hits;
         }
-
     }
 
+    private static class SearchTermList extends ArrayList<SearchTerm> {
+
+        public SearchTermList() {
+            super();
+        }
+
+        /**
+         * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. 
+         * Otherwise add the {@link SearchTerm#getCount()} of the given term to the existing term
+         * @param term
+         * @return  true, even if the term already exists and its count is added to an existing term
+         */
+        @Override
+        public boolean add(SearchTerm term) {
+            int index = this.indexOf(term);
+            if (index > -1) {
+                this.get(index).incrementCount(term.getCount());
+                return true;
+            } else {
+                return super.add(term);
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see java.util.ArrayList#addAll(java.util.Collection)
+         */
+        @Override
+        public boolean addAll(Collection<? extends SearchTerm> c) {
+            for (SearchTerm searchTerm : c) {
+                this.add(searchTerm);
+            }
+            return true;
+        }
+    }
 }

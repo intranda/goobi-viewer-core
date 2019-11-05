@@ -109,7 +109,7 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest = new Manifest(getManifestURI(ele.getPi()));
             SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
             search.setLabel(ViewerResourceBundle.getTranslations("label__iiif_api_search"));
-            AutoCompleteService autoComplete = new AutoCompleteService(getAutoCompleteServiceURI(manifest.getId()));
+            AutoCompleteService autoComplete = new AutoCompleteService(getAutoSuggestServiceURI(manifest.getId()));
             search.addService(autoComplete);
             manifest.addService(search);
         }
