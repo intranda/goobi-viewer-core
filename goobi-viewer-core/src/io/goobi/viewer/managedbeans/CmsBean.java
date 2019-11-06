@@ -43,6 +43,11 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
+import de.intranda.monitoring.timer.TimeAnalysisItem;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
@@ -132,6 +137,7 @@ public class CmsBean implements Serializable {
     private String currentWorkPi = "";
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
+    private List<String> solrSortFields = null;
 
     @PostConstruct
     public void init() {
@@ -1754,9 +1760,10 @@ public class CmsBean implements Serializable {
     }
 
     public List<String> getPossibleSortFields() throws SolrServerException, IOException {
-        List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
-        //        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
-        return sortFields;
+        if(this.solrSortFields == null) {            
+            this.solrSortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+        }
+        return this.solrSortFields;
     }
 
     /**
