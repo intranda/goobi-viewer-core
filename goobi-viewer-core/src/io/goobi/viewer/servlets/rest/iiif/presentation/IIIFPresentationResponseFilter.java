@@ -23,6 +23,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 
 /**
@@ -54,6 +55,11 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             SearchResult element = (SearchResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT);
+            //TODO: if the "hits" property of element exists, also include CONTEXT_SEARCH
+        } else if (responseObject != null && responseObject instanceof AutoSuggestResult) {
+            AutoSuggestResult element = (AutoSuggestResult) responseObject;
+            setResponseCharset(response, "UTF-8");
+            element.addContext(CONTEXT_SEARCH);
             //TODO: if the "hits" property of element exists, also include CONTEXT_SEARCH
         }
         

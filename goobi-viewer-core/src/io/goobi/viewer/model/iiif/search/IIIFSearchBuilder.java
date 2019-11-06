@@ -88,6 +88,7 @@ public class IIIFSearchBuilder {
     private List<String> motivation = new ArrayList<>();
     private String user = null;
     private String date = null;
+    private String min = null;
     private int page = 1;
     private int hitsPerPage = 20;
 
@@ -173,6 +174,21 @@ public class IIIFSearchBuilder {
      */
     public String getDate() {
         return date;
+    }
+    
+    /**
+     * @return the min
+     */
+    public String getMin() {
+        return min;
+    }
+    
+    /**
+     * @param min the min to set
+     */
+    public IIIFSearchBuilder setMin(String min) {
+        this.min = min;
+        return this;
     }
 
     /**
@@ -300,6 +316,9 @@ public class IIIFSearchBuilder {
         }
         if (StringUtils.isNotBlank(getDate())) {
             ignored.add("date");
+        }
+        if (StringUtils.isNotBlank(getMin())) {
+            ignored.add("min");
         }
         return ignored;
     }

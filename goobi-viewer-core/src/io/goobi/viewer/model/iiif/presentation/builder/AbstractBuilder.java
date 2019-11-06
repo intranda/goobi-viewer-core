@@ -786,9 +786,11 @@ public abstract class AbstractBuilder {
     
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
         String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
-        uri += ("?query="+query);
-        if(!motivation.isEmpty()) {
-            uri += ("&motivation="+StringUtils.join(motivation, "+"));
+        if(StringUtils.isNotBlank(query)) {            
+            uri += ("?query="+query);
+            if(!motivation.isEmpty()) {
+                uri += ("&motivation="+StringUtils.join(motivation, "+"));
+            }
         }
         return URI.create(uri);
     }
