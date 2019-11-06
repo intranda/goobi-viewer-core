@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,6 +38,8 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.xml.bind.v2.runtime.reflect.ListIterator;
+
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
@@ -47,6 +50,7 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.search.AutoSuggestResult;
+import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
 import de.intranda.api.iiif.search.SearchTerm;
@@ -264,7 +268,7 @@ public class IIIFSearchBuilder {
         int lastPageNo = 1 + (int) mostHits / getHitsPerPage();
 
         SearchResult searchResult = new SearchResult(getURI(getPage()));
-        searchResult.setResources(resultList.hits);
+        searchResult.setResources(resultList.annotations);
 
         if (getPage() > 1) {
             searchResult.setPrev(getURI(getPage() - 1));
@@ -348,7 +352,7 @@ public class IIIFSearchBuilder {
                     anno.setTarget(canvas);
                     TextualResource body = new TextualResource(comment.getText());
                     anno.setBody(body);
-                    results.hits.add(anno);
+                    results.annotations.add(anno);
                 }
             }
         } catch (DAOException e) {
@@ -406,7 +410,7 @@ public class IIIFSearchBuilder {
                             results.numHits += 1;
                             if (firstHitIndex < results.numHits && firstHitIndex + hitsPerPage >= results.numHits) {
                                 OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
-                                results.hits.add(anno);
+                                results.annotations.add(anno);
                             }
                         }
                     }
@@ -573,7 +577,7 @@ public class IIIFSearchBuilder {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
                     OpenAnnotation anno = presentationBuilder.createOpenAnnotation(pi, doc);
-                    results.hits.add(anno);
+                    results.annotations.add(anno);
                 }
             }
         } catch (PresentationException | IndexUnreachableException e) {
@@ -695,22 +699,44 @@ public class IIIFSearchBuilder {
     private AnnotationResultList getAnnotationsFromAlto(Path altoFile, String pi, Integer pageNo, String query, long previousHitCount, int firstIndex,
             int numHits) {
         AnnotationResultList results = new AnnotationResultList();
+        Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
+        URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
         try {
             List<GeometricData> words = getMatchingAltoElements(query, altoFile);
+            
+            List<SearchHit> hits = getHits(words, query);
+            
+            
             long firstPageHitIndex = previousHitCount;
             long lastPageHitIndex = firstPageHitIndex + words.size() - 1;
             results.numHits = words.size();
             if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
+                
+                
+                
                 words = words.stream().skip(Math.max(0, firstIndex - firstPageHitIndex)).limit(numHits).collect(Collectors.toList());
-                Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
-                URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
+
                 List<IAnnotation> pageAnnotations = new AltoAnnotationBuilder().createAnnotations(words, canvas, baseURI.toString());
-                results.hits.addAll(pageAnnotations);
+                results.annotations.addAll(pageAnnotations);
             }
         } catch (JDOMException | IOException e) {
             logger.error(e.toString(), e);
         }
         return results;
+    }
+
+    /**
+     * @param words
+     * @param query2
+     * @return
+     */
+    private List<SearchHit> getHits(List<GeometricData> words, String wordRegex) {
+        String containsWordRegex = getContainedWordRegex(wordRegex);
+        ListIterator<GeometricData> wordIterator = words.listIterator();
+        while(wordIterator.hasNext()) {
+            GeometricData word = wordIterator.next();
+            
+        }
     }
 
     /**
@@ -793,7 +819,7 @@ public class IIIFSearchBuilder {
                 Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
                 URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
                 IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
-                results.hits.add(pageAnnotation);
+                results.annotations.add(pageAnnotation);
             }
         } catch (IOException e) {
             logger.error(e.toString(), e);
@@ -855,9 +881,11 @@ public class IIIFSearchBuilder {
      */
     private static class AnnotationResultList {
         public long numHits;
-        public final List<IAnnotation> hits;
+        public final List<IAnnotation> annotations;
+        public final List<SearchHit> hits;
 
         public AnnotationResultList() {
+            this.annotations = new ArrayList<>();
             this.hits = new ArrayList<>();
         }
 
@@ -866,17 +894,14 @@ public class IIIFSearchBuilder {
          */
         public void add(AnnotationResultList partialResults) {
             numHits += partialResults.numHits;
+            annotations.addAll(partialResults.annotations);
             hits.addAll(partialResults.hits);
-
-        }
-
-        public AnnotationResultList(long numHits, List<IAnnotation> hits) {
-            this.numHits = numHits;
-            this.hits = hits;
         }
     }
 
     private static class SearchTermList extends ArrayList<SearchTerm> {
+
+        private static final long serialVersionUID = -8451140510669249168L;
 
         public SearchTermList() {
             super();
