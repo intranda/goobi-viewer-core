@@ -33,7 +33,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    const _debug = true;
+    const _debug = false;
 
     /**
      * Create a new Leaflet object using new viewerJS.Leaflet(config)
