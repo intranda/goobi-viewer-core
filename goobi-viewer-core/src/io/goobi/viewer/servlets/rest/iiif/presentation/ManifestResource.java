@@ -411,7 +411,7 @@ public class ManifestResource extends AbstractResource {
             if (canvas != null) {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
                 getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
-                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi), null);
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
                 return canvas;
             }
         }
@@ -454,7 +454,7 @@ public class ManifestResource extends AbstractResource {
             } else if(AnnotationType.CROWDSOURCING.equals(type)) {
                 annotations = new HashMap<>();
                 Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
-                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi), annoTempMap );
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap );
                 AnnotationList annoList = null;
                 if(annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {                    
                     annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
@@ -507,7 +507,7 @@ public class ManifestResource extends AbstractResource {
             layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
         } if(AnnotationType.CROWDSOURCING.equals(type)) {
-            List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi).get(null);
+            List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi, false).get(null);
             if(workAnnotations == null) {
                 workAnnotations = new ArrayList<>();
             }

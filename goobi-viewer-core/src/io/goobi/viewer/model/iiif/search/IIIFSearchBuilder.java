@@ -572,7 +572,7 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
-                    OpenAnnotation anno = presentationBuilder.createOpenAnnotation(pi, doc);
+                    OpenAnnotation anno = presentationBuilder.createOpenAnnotation(pi, doc, true);
                     results.hits.add(anno);
                 }
             }

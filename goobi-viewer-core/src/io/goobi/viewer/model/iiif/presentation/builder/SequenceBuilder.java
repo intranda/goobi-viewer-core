@@ -155,7 +155,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi()), annotationMap);
+        addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
         
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
