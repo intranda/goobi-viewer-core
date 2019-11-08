@@ -54,7 +54,7 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseF
  * @author Florian
  *
  */
-public class ManifestBuilderTest extends AbstractSolrEnabledTest{
+public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     public static final String PI = "PPN517154005";
     
