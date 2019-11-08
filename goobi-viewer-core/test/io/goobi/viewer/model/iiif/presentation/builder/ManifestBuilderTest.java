@@ -21,13 +21,18 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
@@ -36,17 +41,19 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
+import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseFilter;
 
 /**
  * @author Florian
  *
  */
-public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
+public class ManifestBuilderTest {
 
     public static final String PI = "PPN517154005";
     
@@ -59,6 +66,11 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
         StructureBuilder structureBuilder = new StructureBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
 
+        SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
+        for (SolrDocument solrDocument : allDocs) {
+            String pi = SolrSearchIndex.getSingleFieldStringValue(solrDocument, "PI");
+            System.out.println("PI " + pi);
+        }
         
         List<StructElement> docs = builder.getDocumentWithChildren(PI);
         if (docs.isEmpty()) {
@@ -66,7 +78,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         StructElement mainDoc = docs.get(0);
         IPresentationModelElement manifest = builder.generateManifest(mainDoc);
-
+        ((Manifest)manifest).setContext(IIIFPresentationResponseFilter.CONTEXT);
         sequenceBuilder.addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
@@ -86,6 +98,20 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 //            File jsonFile = new File("C:\\opt\\digiverso\\viewer\\manifest.json");
 //            FileUtils.write(jsonFile, json);
             
+    }
+    
+    @Test
+    public void testDeserializeCanvas() throws URISyntaxException, JsonProcessingException {
+        Range range = new Range("http://viewer/manifest/1/ranges/1");
+        Canvas canvas = new Canvas("http://viewer/manifest/1/canvas/1");
+        range.addCanvas(canvas);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        ObjectWriter writer = mapper.writer().forType(Range.class);
+        String json = writer.writeValueAsString(range);
+        Assert.assertTrue(StringUtils.isNotBlank(json));
+        System.out.println(json);
     }
 
 }
