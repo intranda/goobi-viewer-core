@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -24,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -42,8 +46,10 @@ import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.SimpleResource;
+import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
@@ -82,11 +88,15 @@ public class IIIFSearchBuilder {
 
     private static final List<String> FULLTEXTFIELDLIST =
             Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER });
+    
+    private static final List<String> PAGEFIELDLIST =
+            Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
 
     private final String query;
     private final String pi;
     private final AbstractBuilder presentationBuilder;
     private List<String> motivation = new ArrayList<>();
+    private Map<Integer, Dimension> pageSizes = new HashMap<Integer, Dimension>();
     private String user = null;
     private String date = null;
     private String min = null;
@@ -345,7 +355,7 @@ public class IIIFSearchBuilder {
                 for (Comment comment : comments) {
                     OpenAnnotation anno = new OpenAnnotation(presentationBuilder.getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
                     anno.setMotivation(Motivation.COMMENTING);
-                    IResource canvas = new SimpleResource(presentationBuilder.getCanvasURI(pi, comment.getPage()));
+                    IResource canvas = createSimpleResource(pi, comment);
                     anno.setTarget(canvas);
                     TextualResource body = new TextualResource(comment.getText());
                     anno.setBody(body);
@@ -356,6 +366,48 @@ public class IIIFSearchBuilder {
             logger.error(e.toString(), e);
         }
         return results;
+    }
+
+    /**
+     * Create a URI-only resource. EIther as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page the given
+     * comment is on has a width and height
+     * 
+     * @param pi
+     * @param comment
+     * @return
+     */
+    private IResource createSimpleResource(String pi, Comment comment) {
+        Dimension pageSize = getPageSize(pi, comment.getPage());
+        if(pageSize.getWidth()*pageSize.getHeight() == 0) {            
+            return new SimpleResource(presentationBuilder.getCanvasURI(pi, comment.getPage()));
+        } else {
+            FragmentSelector selector = new FragmentSelector(new Rectangle(0,0, pageSize.width, pageSize.height));
+            return new SpecificResourceURI(presentationBuilder.getCanvasURI(pi, comment.getPage()), selector);
+        }
+    }
+
+    /**
+     * @param pi2
+     * @param page2
+     * @return
+     */
+    private Dimension getPageSize(String pi, Integer pageNo) {
+        if(!pageSizes.containsKey(pageNo)) {
+            
+            String query = "+PI_TOPSTRUCT:" + pi + " ";
+            query += "+DOCTYPE:PAGE ";
+            query += "+ORDER:" + pageNo;
+            try {
+                SolrDocument pageDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, PAGEFIELDLIST);
+                Integer width = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
+                Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
+                pageSizes.put(pageNo, new Dimension(width, height));
+            } catch (PresentationException | IndexUnreachableException e) {
+               logger.error(e.toString(), e);
+               return new Dimension(0, 0);
+            }
+        } 
+        return pageSizes.get(pageNo);
     }
 
     private SearchTermList autoSuggestComments(String query, String pi) {
