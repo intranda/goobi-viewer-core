@@ -420,7 +420,7 @@ public class IIIFSearchBuilder {
                 words = words.stream().skip(Math.max(0, firstIndex - firstPageHitIndex)).limit(numHits).collect(Collectors.toList());
                 Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
                 URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
-                List<IAnnotation> pageAnnotations = new AltoAnnotationBuilder().createAnnotations(words, canvas, baseURI.toString());
+                List<IAnnotation> pageAnnotations = new AltoAnnotationBuilder().createAnnotations(words, canvas, baseURI.toString(), true);
                 results.hits.addAll(pageAnnotations);
             }
         } catch (JDOMException | IOException e) {
