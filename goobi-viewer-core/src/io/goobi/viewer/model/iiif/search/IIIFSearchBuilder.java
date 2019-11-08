@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
@@ -344,7 +345,7 @@ public class IIIFSearchBuilder {
                 for (Comment comment : comments) {
                     OpenAnnotation anno = new OpenAnnotation(presentationBuilder.getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
                     anno.setMotivation(Motivation.COMMENTING);
-                    Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, comment.getPage()));
+                    IResource canvas = new SimpleResource(presentationBuilder.getCanvasURI(pi, comment.getPage()));
                     anno.setTarget(canvas);
                     TextualResource body = new TextualResource(comment.getText());
                     anno.setBody(body);
