@@ -400,7 +400,7 @@ public class IIIFSearchBuilder {
             try {
                 SolrDocument pageDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, PAGEFIELDLIST);
                 Integer width = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
-                Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.WIDTH))).orElse(0);
+                Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
                 pageSizes.put(pageNo, new Dimension(width, height));
             } catch (PresentationException | IndexUnreachableException e) {
                logger.error(e.toString(), e);
