@@ -26,19 +26,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.xml.bind.v2.runtime.reflect.ListIterator;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
@@ -54,6 +54,7 @@ import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
 import de.intranda.api.iiif.search.SearchTerm;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
@@ -71,6 +72,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -88,7 +90,7 @@ public class IIIFSearchBuilder {
 
     private final String query;
     private final String pi;
-    private final AbstractBuilder presentationBuilder;
+    private SearchResultConverter converter;
     private List<String> motivation = new ArrayList<>();
     private String user = null;
     private String date = null;
@@ -112,10 +114,7 @@ public class IIIFSearchBuilder {
         }
         this.query = query;
         this.pi = pi;
-        this.presentationBuilder =
-                new AbstractBuilder(URI.create(this.requestURI), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
-
-                };
+        this.converter = new SearchResultConverter(URI.create(this.requestURI), URI.create(DataManager.getInstance().getConfiguration().getRestApiUrl()), pi, 0);
     }
 
     /**
@@ -269,6 +268,7 @@ public class IIIFSearchBuilder {
 
         SearchResult searchResult = new SearchResult(getURI(getPage()));
         searchResult.setResources(resultList.annotations);
+        searchResult.setHits(resultList.hits);
 
         if (getPage() > 1) {
             searchResult.setPrev(getURI(getPage() - 1));
@@ -277,7 +277,7 @@ public class IIIFSearchBuilder {
             searchResult.setNext(getURI(getPage() + 1));
         }
         SearchResultLayer layer = new SearchResultLayer();
-        layer.setTotal(resultList.numHits);
+        layer.setTotal(mostHits);
         layer.setIgnored(getIgnoredParameterList());
         layer.setFirst(getURI(1));
         layer.setLast(getURI(lastPageNo));
@@ -304,7 +304,7 @@ public class IIIFSearchBuilder {
             }
         }
 
-        AutoSuggestResult result = new AutoSuggestResult(presentationBuilder.getAutoSuggestURI(getPi(), getQuery(), getMotivation()));
+        AutoSuggestResult result = new AutoSuggestResult(converter.getPresentationBuilder().getAutoSuggestURI(getPi(), getQuery(), getMotivation()));
         result.setIgnored(getIgnoredParameterList());
         result.setTerms(terms);
         return result;
@@ -346,9 +346,9 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
                 for (Comment comment : comments) {
-                    OpenAnnotation anno = new OpenAnnotation(presentationBuilder.getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
+                    OpenAnnotation anno = new OpenAnnotation(converter.getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
                     anno.setMotivation(Motivation.COMMENTING);
-                    Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, comment.getPage()));
+                    Canvas canvas = new Canvas(converter.getPresentationBuilder().getCanvasURI(pi, comment.getPage()));
                     anno.setTarget(canvas);
                     TextualResource body = new TextualResource(comment.getText());
                     anno.setBody(body);
@@ -400,7 +400,7 @@ public class IIIFSearchBuilder {
         try {
             SolrDocumentList docList = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), presentationBuilder.getSolrFieldList());
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), converter.getPresentationBuilder().getSolrFieldList());
             for (SolrDocument doc : docList) {
                 Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
@@ -444,7 +444,7 @@ public class IIIFSearchBuilder {
         try {
             SolrDocumentList docList = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), presentationBuilder.getSolrFieldList());
+                    .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getDocStructSortFields(), converter.getPresentationBuilder().getSolrFieldList());
             for (SolrDocument doc : docList) {
                 Map<String, List<String>> fieldNames = SolrSearchIndex.getFieldValueMap(doc);
                 for (String fieldName : fieldNames.keySet()) {
@@ -503,12 +503,12 @@ public class IIIFSearchBuilder {
         String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
         Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
-        OpenAnnotation anno = new OpenAnnotation(presentationBuilder.getAnnotationURI(pi, AnnotationType.METADATA, iddoc));
+        OpenAnnotation anno = new OpenAnnotation(converter.getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, iddoc));
         anno.setMotivation(Motivation.DESCRIBING);
         if (Boolean.TRUE.equals(isWork)) {
-            anno.setTarget(new SimpleResource(presentationBuilder.getManifestURI(pi)));
+            anno.setTarget(new SimpleResource(converter.getPresentationBuilder().getManifestURI(pi)));
         } else {
-            anno.setTarget(new SimpleResource(presentationBuilder.getRangeURI(pi, logId)));
+            anno.setTarget(new SimpleResource(converter.getPresentationBuilder().getRangeURI(pi, logId)));
         }
         IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
         IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
@@ -576,7 +576,7 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
-                    OpenAnnotation anno = presentationBuilder.createOpenAnnotation(pi, doc);
+                    OpenAnnotation anno = converter.getPresentationBuilder().createOpenAnnotation(pi, doc);
                     results.annotations.add(anno);
                 }
             }
@@ -634,7 +634,7 @@ public class IIIFSearchBuilder {
             Matcher matcher = Pattern.compile(wordRegex).matcher(value);
             while (matcher.find()) {
                 String match = matcher.group(1);
-                SearchTerm term = new SearchTerm(presentationBuilder.getSearchURI(getPi(), match, getMotivation()), match, 1);
+                SearchTerm term = new SearchTerm(converter.getPresentationBuilder().getSearchURI(getPi(), match, getMotivation()), match, 1);
                 terms.add(term);
             }
         }
@@ -678,6 +678,7 @@ public class IIIFSearchBuilder {
             Path altoFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
             Path fulltextFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
             Integer pageNo = SolrSearchIndex.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
+            converter.setPageNo(pageNo);
             if (altoFile != null && Files.exists(altoFile)) {
                 results.add(getAnnotationsFromAlto(altoFile, pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));
             } else if (fulltextFile != null && Files.exists(fulltextFile)) {
@@ -691,7 +692,7 @@ public class IIIFSearchBuilder {
      * @param altoFile
      * @param pi
      * @param pageNo
-     * @param query
+     * @param query     A regex matching the search term or phrase
      * @param firstIndex
      * @param numHits
      * @param results
@@ -699,25 +700,26 @@ public class IIIFSearchBuilder {
     private AnnotationResultList getAnnotationsFromAlto(Path altoFile, String pi, Integer pageNo, String query, long previousHitCount, int firstIndex,
             int numHits) {
         AnnotationResultList results = new AnnotationResultList();
-        Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
-        URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
         try {
-            List<GeometricData> words = getMatchingAltoElements(query, altoFile);
-            
-            List<SearchHit> hits = getHits(words, query);
-            
-            
-            long firstPageHitIndex = previousHitCount;
-            long lastPageHitIndex = firstPageHitIndex + words.size() - 1;
-            results.numHits = words.size();
-            if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
-                
-                
-                
-                words = words.stream().skip(Math.max(0, firstIndex - firstPageHitIndex)).limit(numHits).collect(Collectors.toList());
-
-                List<IAnnotation> pageAnnotations = new AltoAnnotationBuilder().createAnnotations(words, canvas, baseURI.toString());
-                results.annotations.addAll(pageAnnotations);
+            AltoDocument doc = AltoDocument.getDocumentFromFile(altoFile.toFile());
+            AltoSearchParser parser = new AltoSearchParser();
+            List<Word> words = parser.getWords(doc);
+            if(!words.isEmpty()) {
+                List<List<Word>> matches = parser.findWordMatches(words, query);
+                for (List<Word> wordsHit : matches) {
+                    SearchHit hit = converter.convertToHit(wordsHit);
+                    results.add(hit);
+                }
+            } else {
+                List<Line> lines = parser.getLines(doc);
+                if(!lines.isEmpty()) {
+                    Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
+                    for (Range<Integer> position : hits.keySet()) {
+                        List<Line> containingLines = hits.get(position);
+                        SearchHit hit = converter.convertToHit(lines, position, containingLines);
+                        results.add(hit);
+                    }
+                }
             }
         } catch (JDOMException | IOException e) {
             logger.error(e.toString(), e);
@@ -730,13 +732,27 @@ public class IIIFSearchBuilder {
      * @param query2
      * @return
      */
-    private List<SearchHit> getHits(List<GeometricData> words, String wordRegex) {
-        String containsWordRegex = getContainedWordRegex(wordRegex);
-        ListIterator<GeometricData> wordIterator = words.listIterator();
-        while(wordIterator.hasNext()) {
-            GeometricData word = wordIterator.next();
-            
+    private List<List<Word>> findWordMatches(List<Word> words, String regex) {
+        String singleWordRegex = getSingleWordRegex(regex);
+        ListIterator<Word> iterator = words.listIterator();
+        List<List<Word>> results = new ArrayList<>();
+        while(iterator.hasNext()) {
+            Word word = iterator.next();
+            if(Pattern.matches(singleWordRegex, word.getSubsContent())) {
+                List<Word> phrase = new ArrayList<>();
+                phrase.add(word);
+                while(iterator.hasNext()) {
+                    Word nextWord = iterator.next();
+                    if(Pattern.matches(singleWordRegex, nextWord.getSubsContent())) {
+                        phrase.add(nextWord);
+                    } else {
+                        break;
+                    }
+                }
+                results.add(phrase);
+            }
         }
+        return results;
     }
 
     /**
@@ -780,9 +796,9 @@ public class IIIFSearchBuilder {
      * @param query
      * @return a regex matching any text containing the given query regex as single word
      */
-    private String getContainedWordRegex(String query) {
+    public String getContainedWordRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        return "(?i)([\\w\\W]*)(^|.*\\s|[.:,;!?\\(\\)])(" + query + ")($|\\s.*|[.:,;!?\\(\\)])([\\w\\W]*)";
+        return "(?i)(?:([\\w\\W]*)(^|\\s+|[.:,;!?\\(\\)]))(" + query + ")(?=($|\\s+|[.:,;!?\\(\\)])([\\w\\W]*))";
     }
 
     /**
@@ -816,8 +832,8 @@ public class IIIFSearchBuilder {
             long lastPageHitIndex = firstPageHitIndex;
             results.numHits = 1;
             if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
-                Canvas canvas = new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
-                URI baseURI = presentationBuilder.getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
+                Canvas canvas = new Canvas(converter.getPresentationBuilder().getCanvasURI(pi, pageNo));
+                URI baseURI = converter.getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
                 IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
                 results.annotations.add(pageAnnotation);
             }
@@ -887,6 +903,19 @@ public class IIIFSearchBuilder {
         public AnnotationResultList() {
             this.annotations = new ArrayList<>();
             this.hits = new ArrayList<>();
+        }
+
+        /**
+         * @param hit
+         */
+        public void add(SearchHit hit) {
+            numHits++;
+            this.hits.add(hit);
+            for (IAnnotation annotation : hit.getAnnotations()) {
+                if(!annotations.contains(annotation)) {
+                    annotations.add(annotation);
+                }
+            } 
         }
 
         /**

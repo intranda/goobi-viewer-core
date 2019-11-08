@@ -76,7 +76,7 @@ public class AltoAnnotationBuilder {
     }
 
     
-    private IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
+    public IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
         AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(createSpecificResource(canvas, element.getBounds()));
