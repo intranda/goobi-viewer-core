@@ -38,6 +38,7 @@ import de.intranda.api.iiif.presentation.Manifest;
 import de.intranda.api.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -53,7 +54,7 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseF
  * @author Florian
  *
  */
-public class ManifestBuilderTest {
+public class ManifestBuilderTest extends AbstractSolrEnabledTest{
 
     public static final String PI = "PPN517154005";
     
@@ -111,7 +112,6 @@ public class ManifestBuilderTest {
         ObjectWriter writer = mapper.writer().forType(Range.class);
         String json = writer.writeValueAsString(range);
         Assert.assertTrue(StringUtils.isNotBlank(json));
-        System.out.println(json);
     }
 
 }
