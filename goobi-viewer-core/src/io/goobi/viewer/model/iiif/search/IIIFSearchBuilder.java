@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -43,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
@@ -69,7 +69,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
@@ -347,15 +346,16 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
                 for (Comment comment : comments) {
+                    SearchHit hit = new SearchHit();//TODO build hit
                     OpenAnnotation anno = new OpenAnnotation(converter.getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
                     anno.setMotivation(Motivation.COMMENTING);
-                    Canvas canvas = new Canvas(converter.getPresentationBuilder().getCanvasURI(pi, comment.getPage()));
+                    IResource canvas = new SimpleResource(converter.getPresentationBuilder().getCanvasURI(pi, comment.getPage()));
                     anno.setTarget(canvas);
                     TextualResource body = new TextualResource(comment.getText());
                     anno.setBody(body);
                     results.annotations.add(anno);
                 }
-            }
+            } 
         } catch (DAOException e) {
             logger.error(e.toString(), e);
         }
