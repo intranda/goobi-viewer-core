@@ -777,7 +777,7 @@ public abstract class AbstractBuilder {
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
         String uri = getSearchServiceURI(getManifestURI(pi)).toString();
-        uri += ("?query="+query);
+        uri += ("?q="+query);
         if(!motivation.isEmpty()) {
             uri += ("&motivation="+StringUtils.join(motivation, "+"));
         }
@@ -787,7 +787,7 @@ public abstract class AbstractBuilder {
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
         String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
         if(StringUtils.isNotBlank(query)) {            
-            uri += ("?query="+query);
+            uri += ("?q="+query);
             if(!motivation.isEmpty()) {
                 uri += ("&motivation="+StringUtils.join(motivation, "+"));
             }

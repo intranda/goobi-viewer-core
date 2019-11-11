@@ -353,7 +353,7 @@ public class SequenceBuilder extends AbstractBuilder {
                         AltoDocument alto = AltoDocument.getDocumentFromString(altoText);
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
                             List<IAnnotation> annos = new AltoAnnotationBuilder().createAnnotations(alto.getFirstPage(), canvas,
-                                    AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString());
+                                    AltoAnnotationBuilder.Granularity.LINE, annoList.getId().toString(), false);
                             for (IAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }

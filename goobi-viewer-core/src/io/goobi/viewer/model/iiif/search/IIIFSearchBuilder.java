@@ -269,6 +269,7 @@ public class IIIFSearchBuilder {
         SearchResult searchResult = new SearchResult(getURI(getPage()));
         searchResult.setResources(resultList.annotations);
         searchResult.setHits(resultList.hits);
+        searchResult.setStartIndex(getFirstHitIndex(getPage()));
 
         if (getPage() > 1) {
             searchResult.setPrev(getURI(getPage() - 1));
@@ -421,7 +422,7 @@ public class IIIFSearchBuilder {
         }
         return results;
     }
-    
+
     private SearchTermList autoSuggestMetadata(String query, String pi) {
 
         SearchTermList terms = new SearchTermList();
@@ -925,6 +926,15 @@ public class IIIFSearchBuilder {
             numHits += partialResults.numHits;
             annotations.addAll(partialResults.annotations);
             hits.addAll(partialResults.hits);
+        }
+
+        public AnnotationResultList(long numHits, List<SearchHit> hits) {
+            this.annotations = new ArrayList<>();
+            this.hits = new ArrayList<>();
+            this.numHits = numHits;
+            for (SearchHit searchHit : hits) {
+                add(searchHit);
+            }
         }
     }
 

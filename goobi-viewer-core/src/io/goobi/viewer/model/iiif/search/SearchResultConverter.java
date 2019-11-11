@@ -76,7 +76,7 @@ public class SearchResultConverter {
     
     public IAnnotation convertToAnnotation(GeometricData altoElement) {
         return altoBuilder.createAnnotation(altoElement, 
-                getCanvas(getPi(), getPageNo()), getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString());
+                getCanvas(getPi(), getPageNo()), getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString(), true);
     }
     
     public SearchHit convertToHit(List<Word> altoElements) {

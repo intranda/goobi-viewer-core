@@ -27,6 +27,7 @@ import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
+import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.FragmentSelector;
 
@@ -45,7 +46,7 @@ import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 public class AltoAnnotationBuilder {
 
     
-    public List<IAnnotation> createAnnotations(Page alto, Canvas canvas, Granularity granularity, String baseUrl) {
+    public List<IAnnotation> createAnnotations(Page alto, Canvas canvas, Granularity granularity, String baseUrl, boolean urlOnlyTarget) {
         
         List<GeometricData> elementsToInclude = new ArrayList<>();
         switch(granularity) {
@@ -66,20 +67,20 @@ public class AltoAnnotationBuilder {
                 break;
         }
         
-        List<IAnnotation> annoList = elementsToInclude.stream().map(element -> createAnnotation(element, canvas, baseUrl)).collect(Collectors.toList());
+        List<IAnnotation> annoList = elementsToInclude.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
     
-    public List<IAnnotation> createAnnotations(List<GeometricData> elements, Canvas canvas, String baseUrl) {
-        List<IAnnotation> annoList = elements.stream().map(element -> createAnnotation(element, canvas, baseUrl)).collect(Collectors.toList());
+    public List<IAnnotation> createAnnotations(List<GeometricData> elements, Canvas canvas, String baseUrl, boolean urlOnlyTarget) {
+        List<IAnnotation> annoList = elements.stream().map(element -> createAnnotation(element, canvas, baseUrl, urlOnlyTarget)).collect(Collectors.toList());
         return annoList;
     }
 
     
-    public IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl) {
+    public IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl, boolean urlOnlyTarget) {
         AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
-        anno.setTarget(createSpecificResource(canvas, element.getBounds()));
+        anno.setTarget(createSpecificResource(canvas, element.getBounds(), urlOnlyTarget));
         TextualResource body = new TextualResource(element.getContent());
         anno.setBody(body);
         return anno;
@@ -93,8 +94,13 @@ public class AltoAnnotationBuilder {
      * @param height
      * @return
      */
-        private IResource createSpecificResource(Canvas canvas, Rectangle area) {
-            SpecificResource part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
+        private IResource createSpecificResource(Canvas canvas, Rectangle area, boolean urlOnly) {
+            SpecificResource part;
+            if(urlOnly) {
+                part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));
+            } else {                
+                part = new SpecificResource(canvas.getId(), new FragmentSelector(area));
+            }
             return part;
         }
 
