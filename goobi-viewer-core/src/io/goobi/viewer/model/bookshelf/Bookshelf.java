@@ -248,6 +248,10 @@ public class Bookshelf implements Serializable {
     }
 
     public boolean isMayView(User user) {
+        if (isPublic) {
+            return true;
+        }
+
         return true; // TODO
     }
 

@@ -144,7 +144,8 @@
             function copyLink(link, dialogId) {
             	 navigator.clipboard.writeText(link).then(function() {
                         PF(dialogId).hide();
-            		    alert('#{msg.bookshelf_shareLink_copy_success}');
+            		    // alert('#{msg.bookshelf_shareLink_copy_success}');
+            		    $(".messages").text('#{msg.bookshelf_shareLink_copy_success}');
             		  }, function(err) {
             		    console.error('Async: Could not copy text: ', err);
             		  });

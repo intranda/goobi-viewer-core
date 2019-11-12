@@ -631,7 +631,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchString);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
-        String currentQuery = SearchHelper.prepareQuery(searchString);
+//        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (StringUtils.isEmpty(sortString)) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());

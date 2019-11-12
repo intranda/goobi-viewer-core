@@ -1410,4 +1410,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
+    
+    public static void main(String[] args) {
+        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
+    }
 }
