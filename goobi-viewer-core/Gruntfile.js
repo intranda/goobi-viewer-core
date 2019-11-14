@@ -1,3 +1,17 @@
+const fs = require("fs")
+const XML = require('pixl-xml');
+
+function getTomcatDir() {
+	let homedir = require("os").homedir();
+	let rawdata = fs.readFileSync(homedir + '/.config/grunt_userconfig.json');
+	let config = JSON.parse(rawdata);
+
+	let xml_string = fs.readFileSync("/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
+	let viewer_config = XML.parse(xml_string);
+
+	return config.tomcat_dir + "/goobi-viewer-theme-" + viewer_config.viewer.theme.mainTheme;
+}
+
 module.exports = function (grunt) {
 	// ---------- VARIABLES ----------
 	var banner = '/*!\n'
@@ -95,18 +109,11 @@ module.exports = function (grunt) {
             } 
 		},
 		sync: {
-			resources: {
-				files: [{
-					cwd: 'src/META-INF/resources/resources',
-					src: ['**'],
-					dest: '/Applications/apache-tomcat-8.5.14/webapps/viewer/resources/',
-				}],
-			},
-			xhtml: {
+			all: {
 				files: [{
 					cwd: 'src/META-INF/resources',
 					src: ['**'],
-					dest: '/Applications/apache-tomcat-8.5.14/webapps/viewer/',
+					dest: getTomcatDir()
 				}],
 			},
 		},

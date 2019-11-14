@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -40,10 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.AbstractAnnotation;
-import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
-import de.intranda.api.annotation.IResource;
-import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.TextualResource;
@@ -58,9 +57,6 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
-import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.Metadata;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -68,7 +64,6 @@ import io.goobi.viewer.controller.SolrSearchIndex;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
@@ -86,6 +81,7 @@ public class IIIFSearchBuilder {
 
     private static final List<String> FULLTEXTFIELDLIST =
             Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER });
+
 
     private final String query;
     private final String pi;
@@ -346,14 +342,7 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
                 for (Comment comment : comments) {
-                    SearchHit hit = new SearchHit();//TODO build hit
-                    OpenAnnotation anno = new OpenAnnotation(converter.getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
-                    anno.setMotivation(Motivation.COMMENTING);
-                    IResource canvas = new SimpleResource(converter.getPresentationBuilder().getCanvasURI(pi, comment.getPage()));
-                    anno.setTarget(canvas);
-                    TextualResource body = new TextualResource(comment.getText());
-                    anno.setBody(body);
-                    results.annotations.add(anno);
+                    results.add(converter.convertToHit(queryRegex, pi, comment));
                 }
             } 
         } catch (DAOException e) {
@@ -361,6 +350,7 @@ public class IIIFSearchBuilder {
         }
         return results;
     }
+
 
     private SearchTermList autoSuggestComments(String query, String pi) {
 
@@ -407,11 +397,13 @@ public class IIIFSearchBuilder {
                 for (String fieldName : fieldNames.keySet()) {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
-                        if (fieldValue.matches(getContainedWordRegex(getQueryRegex(query)))) {
+                        String containesWordRegex = getContainedWordRegex(getQueryRegex(query));
+                        if (fieldValue.matches(containesWordRegex)) {
                             results.numHits += 1;
                             if (firstHitIndex < results.numHits && firstHitIndex + hitsPerPage >= results.numHits) {
-                                OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
-                                results.annotations.add(anno);
+                                SearchHit hit = converter.convertToHit(getQueryRegex(query), fieldName, doc);
+                                results.hits.add(hit);
+                                results.annotations.addAll(hit.getAnnotations());
                             }
                         }
                     }
@@ -495,30 +487,7 @@ public class IIIFSearchBuilder {
         return false;
     }
 
-    /**
-     * @param doc
-     * @return
-     */
-    private OpenAnnotation createMetadataAnnotation(String metadataField, SolrDocument doc) {
-        String iddoc = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-        String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
-        String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
-        Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
-        OpenAnnotation anno = new OpenAnnotation(converter.getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, iddoc));
-        anno.setMotivation(Motivation.DESCRIBING);
-        if (Boolean.TRUE.equals(isWork)) {
-            anno.setTarget(new SimpleResource(converter.getPresentationBuilder().getManifestURI(pi)));
-        } else {
-            anno.setTarget(new SimpleResource(converter.getPresentationBuilder().getRangeURI(pi, logId)));
-        }
-        IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
-        IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
-                .orElse(new SimpleMetadataValue(SolrSearchIndex.getSingleFieldStringValue(doc, metadataField)));
-        Metadata md = new Metadata(label, value);
-        anno.setBody(new FieldListResource(Collections.singletonList(md)));
 
-        return anno;
-    }
 
     /**
      * @return
@@ -577,7 +546,7 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
-                    OpenAnnotation anno = converter.getPresentationBuilder().createOpenAnnotation(pi, doc);
+                    OpenAnnotation anno = converter.getPresentationBuilder().createOpenAnnotation(pi, doc, true);
                     results.annotations.add(anno);
                 }
             }
@@ -799,7 +768,7 @@ public class IIIFSearchBuilder {
      */
     public String getContainedWordRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        return "(?i)(?:([\\w\\W]*)(^|\\s+|[.:,;!?\\(\\)]))(" + query + ")(?=($|\\s+|[.:,;!?\\(\\)])([\\w\\W]*))";
+        return "(?i)(?:([\\w\\W]*)(^|\\s+|[.:,;!?\\(\\)]))(" + query + ")(?:($|\\s+|[.:,;!?\\(\\)])([\\w\\W]*))";
     }
 
     /**

@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class AbstractSearchParser {
 
-    public String getPrecedingText(String text, int hitStartIndex, int maxLength) {
+    public static String getPrecedingText(String text, int hitStartIndex, int maxLength) {
         String before = "";
         int index = hitStartIndex-1;
         while(index > -1 && before.length() < maxLength) {
@@ -39,7 +39,7 @@ public abstract class AbstractSearchParser {
         return before;
     }
     
-    public String getSucceedingText(String text, int hitEndIndex, int maxLength) {
+    public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
         String after = "";
         int index = hitEndIndex+1;
         while(index < text.length() && after.length() < maxLength) {
@@ -60,9 +60,9 @@ public abstract class AbstractSearchParser {
      * @param query
      * @return a regex matching a single word matching the given query regex (ignoring case)
      */
-    public String getSingleWordRegex(String query) {
+    public static String getSingleWordRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        return "(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?=$|\\s+|[.:,;!?\\(\\)])";
+        return "(?i)(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?=$|\\s+|[.:,;!?\\(\\)])";
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class AbstractSearchParser {
      * @param query
      * @return a regex matching any text containing the given query regex as single word
      */
-    public String getContainedWordRegex(String query) {
+    public static String getContainedWordRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         return "(?i)[\\w\\W]*(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?:$|\\s+|[.:,;!?\\(\\)])[\\w\\W]*";
     }
@@ -78,7 +78,7 @@ public abstract class AbstractSearchParser {
     /**
      * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      */
-    public String getQueryRegex(String query) {
+    public static String getQueryRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
         return "(?i)" + "((?:" + queryRegex + ")+)";
@@ -91,7 +91,7 @@ public abstract class AbstractSearchParser {
      * @param query
      * @return the regular expression {@code (?i){query}[\w\d-]*}
      */
-    public String getAutoSuggestRegex(String query) {
+    public static String getAutoSuggestRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         String queryRegex = query + "[\\w\\d-]*";
         return "(?i)" + queryRegex;

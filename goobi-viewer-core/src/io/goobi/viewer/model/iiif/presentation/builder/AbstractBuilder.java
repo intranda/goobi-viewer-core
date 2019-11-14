@@ -50,6 +50,7 @@ import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.api.annotation.oa.OpenAnnotation;
+import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
@@ -441,14 +442,14 @@ public abstract class AbstractBuilder {
 	 * @throws PresentationException
 	 * @throws IndexUnreachableException
 	 */
-    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi) throws PresentationException, IndexUnreachableException {
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget) throws PresentationException, IndexUnreachableException {
         String query = "DOCTYPE:UGC AND PI_TOPSTRUCT:" + pi;
         List<String> displayFields = addLanguageFields(Arrays.asList(UGC_SOLR_FIELDS), ViewerResourceBundle.getAllLocales());
         SolrDocumentList ugcDocs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
         if (ugcDocs != null && !ugcDocs.isEmpty()) {
             for (SolrDocument doc : ugcDocs) {
-                OpenAnnotation anno = createOpenAnnotation(pi, doc);
+                OpenAnnotation anno = createOpenAnnotation(pi, doc, urlOnlyTarget);
                 Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer)o).orElse(null);
                 List<OpenAnnotation> annoList = annoMap.get(page);
                 if(annoList == null) {
@@ -466,7 +467,7 @@ public abstract class AbstractBuilder {
      * @param doc
      * @return
      */
-    public OpenAnnotation createOpenAnnotation(String pi, SolrDocument doc) {
+    public OpenAnnotation createOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
         OpenAnnotation anno;
         String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse("");
         String coordString = Optional.ofNullable(doc.getFieldValue(SolrConstants.UGCCOORDS)).map(Object::toString).orElse("");
@@ -490,7 +491,11 @@ public abstract class AbstractBuilder {
         
         try {                    
             FragmentSelector selector = new FragmentSelector(coordString);
-            anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+            if(urlOnlyTarget) {
+                anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
+            } else {                
+                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+            }
         } catch(IllegalArgumentException e) {
             //old UGC coords format
             String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
