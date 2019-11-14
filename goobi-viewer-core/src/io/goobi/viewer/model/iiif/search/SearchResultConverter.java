@@ -17,7 +17,11 @@ package io.goobi.viewer.model.iiif.search;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +34,7 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
@@ -201,7 +206,7 @@ public class SearchResultConverter {
                 Math.min(lastLineEndIndex - position.getMaximum(), MAX_TEXT_LENGTH));
         String match = wholeText.substring(position.getMinimum(), position.getMaximum() + 1);
 
-        hit.setMatch(wholeText.substring(position.getMinimum(), position.getMaximum() + 1));
+        hit.setMatch(match);
         TextQuoteSelector selector = new TextQuoteSelector();
         selector.setFragment(match);
         if (StringUtils.isNotBlank(before)) {
@@ -214,7 +219,69 @@ public class SearchResultConverter {
         hit.setAnnotations(containingLines.stream().map(this::convertToAnnotation).collect(Collectors.toList()));
         return hit;
     }
+    
+    
+    /**
+     * @param pi
+     * @param pageNo
+     * @param results
+     * @param text
+     * @throws IOException 
+     * @throws UnsupportedEncodingException 
+     */
+    public SearchHit convertToHit(String queryRegex, Path textFile, String pi, Integer pageNo, String encoding) throws UnsupportedEncodingException, IOException {
+        
+        String text = new String(Files.readAllBytes(textFile), encoding);
+        SearchHit hit = new SearchHit();
 
+        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
+        while (m.find()) {
+        
+            String match = m.group(1);
+            int indexStart = m.start(1);
+            int indexEnd = m.end(1);
+            
+            String before = AbstractSearchParser.getPrecedingText(text, indexStart, MAX_TEXT_LENGTH);
+            String after = AbstractSearchParser.getSucceedingText(text, indexEnd, MAX_TEXT_LENGTH);
+    
+            hit.setMatch(match);
+            TextQuoteSelector selector = new TextQuoteSelector();
+            selector.setFragment(match);
+            if (StringUtils.isNotBlank(before)) {
+                selector.setPrefix(before);
+            }
+            if (StringUtils.isNotBlank(after)) {
+                selector.setSuffix(after);
+            }
+            hit.setSelectors(Collections.singletonList(selector));
+        }
+        
+        IResource canvas = createSimpleResource(pi, pageNo);
+        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
+        IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
+        hit.addAnnotation(pageAnnotation);
+        
+        return hit;
+    }
+
+
+    private IAnnotation createAnnotation(String text, IResource canvas, String baseUrl) {
+        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, "plaintext"));
+        anno.setMotivation(Motivation.PAINTING);
+        anno.setTarget(canvas);
+        TextualResource body = new TextualResource(text);
+        anno.setBody(body);
+        return anno;
+    }
+
+    private URI createAnnotationId(String baseUrl, String id) {
+        if (baseUrl.endsWith("/")) {
+            return URI.create(baseUrl + id);
+        } else {
+            return URI.create(baseUrl + "/" + id);
+        }
+    }
+    
     /**
      * @param doc
      * @return
@@ -241,34 +308,84 @@ public class SearchResultConverter {
         return anno;
     }
 
+    /**
+     * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
+     * 
+     * @param queryRegex
+     * @param fieldName
+     * @param doc
+     * @return A search hit for a Solr field search
+     */
     public SearchHit convertToHit(String queryRegex, String fieldName, SolrDocument doc) {
         SearchHit hit = new SearchHit();
         String mdText = SolrSearchIndex.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining("; "));
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
-        while(m.find()) {
+        while (m.find()) {
             String match = m.group(1);
             int indexStart = m.start(1);
             int indexEnd = m.end(1);
-            
+
             String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
             String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
-            if(!StringUtils.isAllBlank(before, after)) {
+            if (!StringUtils.isAllBlank(before, after)) {
                 TextQuoteSelector textSelector = new TextQuoteSelector();
                 textSelector.setFragment(match);
-                if(StringUtils.isNotBlank(before)) {
+                if (StringUtils.isNotBlank(before)) {
                     textSelector.setPrefix(before);
                 }
-                if(StringUtils.isNotBlank(after)) {
+                if (StringUtils.isNotBlank(after)) {
                     textSelector.setSuffix(after);
                 }
                 hit.addSelector(textSelector);
             }
-            OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
+        }
+        OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
+        hit.addAnnotation(anno);
+        return hit;
+    }
+
+    /**
+     * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata
+     * 
+     * @param queryRegex
+     * @param doc
+     * @return
+     */
+    public SearchHit convertToHit(String queryRegex, SolrDocument ugc) {
+
+        SearchHit hit = new SearchHit();
+        String mdText = SolrSearchIndex.getMetadataValues(ugc, SolrConstants.UGCTERMS).stream().collect(Collectors.joining("; "));
+        String type = SolrSearchIndex.getSingleFieldStringValue(ugc, SolrConstants.UGCTYPE);
+        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
+        while (m.find()) {
+            String match = m.group(1);
+            int indexStart = m.start(1);
+            int indexEnd = m.end(1);
+            if (!match.equals(type)) {
+                String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
+                before = before.replace(type, "");
+                String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
+                after = after.replace(type, "");
+                if (!StringUtils.isAllBlank(before, after)) {
+                    TextQuoteSelector textSelector = new TextQuoteSelector();
+                    textSelector.setFragment(match);
+                    if (StringUtils.isNotBlank(before)) {
+                        textSelector.setPrefix(before);
+                    }
+                    if (StringUtils.isNotBlank(after)) {
+                        textSelector.setSuffix(after);
+                    }
+                    hit.addSelector(textSelector);
+                }
+            } else {
+                hit.setMatch(match);
+            }
+            OpenAnnotation anno = getPresentationBuilder().createOpenAnnotation(ugc, true);
             hit.addAnnotation(anno);
         }
         return hit;
     }
-    
+
     /**
      * @param pi
      * @param results
@@ -276,23 +393,23 @@ public class SearchResultConverter {
      */
     public SearchHit convertToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();//TODO build hit
-        
-        String text =comment.getDisplayText();
+
+        String text = comment.getDisplayText();
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
-        while(m.find()) {
+        while (m.find()) {
             String match = m.group(1);
             int indexStart = m.start(1);
             int indexEnd = m.end(1);
-            
+
             String before = AbstractSearchParser.getPrecedingText(text, indexStart, Integer.MAX_VALUE);
             String after = AbstractSearchParser.getSucceedingText(text, indexEnd, Integer.MAX_VALUE);
-            if(!StringUtils.isAllBlank(before, after)) {
+            if (!StringUtils.isAllBlank(before, after)) {
                 TextQuoteSelector textSelector = new TextQuoteSelector();
                 textSelector.setFragment(match);
-                if(StringUtils.isNotBlank(before)) {
+                if (StringUtils.isNotBlank(before)) {
                     textSelector.setPrefix(before);
                 }
-                if(StringUtils.isNotBlank(after)) {
+                if (StringUtils.isNotBlank(after)) {
                     textSelector.setSuffix(after);
                 }
                 hit.addSelector(textSelector);
@@ -300,10 +417,11 @@ public class SearchResultConverter {
             IAnnotation anno = createAnnotation(pi, comment);
             hit.addAnnotation(anno);
         }
-        
-        
+
         return hit;
     }
+
+
 
     /**
      * @param pi
@@ -312,31 +430,29 @@ public class SearchResultConverter {
     public IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
         anno.setMotivation(Motivation.COMMENTING);
-        IResource canvas = createSimpleResource(pi, comment);
+        IResource canvas = createSimpleResource(pi, comment.getPage());
         anno.setTarget(canvas);
         TextualResource body = new TextualResource(comment.getText());
         anno.setBody(body);
         return anno;
     }
-    
+
     /**
-     * Create a URI-only resource. EIther as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page the given
-     * comment is on has a width and height
+     * Create a URI-only resource. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width
+     * and height
      * 
-     * @param pi
-     * @param comment
-     * @return
+     * @param pi        PI of the work containing the page
+     * @param pageNo    page number (ORDER) of the page
+     * @return      A URI resource
      */
-    private IResource createSimpleResource(String pi, Comment comment) {
-        Dimension pageSize = solrParser.getPageSize(pi, comment.getPage());
-        if(pageSize.getWidth()*pageSize.getHeight() == 0) {            
-            return new SimpleResource(getPresentationBuilder().getCanvasURI(pi, comment.getPage()));
+    private IResource createSimpleResource(String pi, int pageNo) {
+        Dimension pageSize = solrParser.getPageSize(pi, pageNo);
+        if (pageSize.getWidth() * pageSize.getHeight() == 0) {
+            return new SimpleResource(getPresentationBuilder().getCanvasURI(pi, pageNo));
         } else {
-            FragmentSelector selector = new FragmentSelector(new Rectangle(0,0, pageSize.width, pageSize.height));
-            return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, comment.getPage()), selector);
+            FragmentSelector selector = new FragmentSelector(new Rectangle(0, 0, pageSize.width, pageSize.height));
+            return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, pageNo), selector);
         }
     }
-    
 
-    
 }

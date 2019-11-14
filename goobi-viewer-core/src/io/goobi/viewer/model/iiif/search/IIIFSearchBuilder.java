@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.iiif.search;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -66,6 +64,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
 import io.goobi.viewer.model.viewer.StringPair;
 
@@ -338,7 +337,6 @@ public class IIIFSearchBuilder {
         try {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi, false);
             comments = comments.stream().filter(c -> c.getText().matches(getContainedWordRegex(queryRegex))).collect(Collectors.toList());
-            results.numHits = comments.size();
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
                 for (Comment comment : comments) {
@@ -542,12 +540,11 @@ public class IIIFSearchBuilder {
             SolrDocumentList docList = DataManager.getInstance()
                     .getSearchIndex()
                     .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), Arrays.asList(AbstractBuilder.UGC_SOLR_FIELDS));
-            results.numHits = docList.size();
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
-                    OpenAnnotation anno = converter.getPresentationBuilder().createOpenAnnotation(pi, doc, true);
-                    results.annotations.add(anno);
+                    results.add(converter.convertToHit(AbstractSearchParser.getQueryRegex(query), doc));
+
                 }
             }
         } catch (PresentationException | IndexUnreachableException e) {
@@ -797,15 +794,10 @@ public class IIIFSearchBuilder {
             long previousHitCount, int firstIndex, int numHits) {
         AnnotationResultList results = new AnnotationResultList();
         try {
-            String text = new String(Files.readAllBytes(textFile), textFileEncoding);
             long firstPageHitIndex = previousHitCount;
             long lastPageHitIndex = firstPageHitIndex;
-            results.numHits = 1;
             if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
-                Canvas canvas = new Canvas(converter.getPresentationBuilder().getCanvasURI(pi, pageNo));
-                URI baseURI = converter.getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.ALTO);
-                IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
-                results.annotations.add(pageAnnotation);
+                results.add(converter.convertToHit(query, textFile, pi, pageNo, textFileEncoding));
             }
         } catch (IOException e) {
             logger.error(e.toString(), e);
@@ -813,22 +805,7 @@ public class IIIFSearchBuilder {
         return results;
     }
 
-    private IAnnotation createAnnotation(String text, Canvas canvas, String baseUrl) {
-        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, "plaintext"));
-        anno.setMotivation(Motivation.PAINTING);
-        anno.setTarget(canvas);
-        TextualResource body = new TextualResource(text);
-        anno.setBody(body);
-        return anno;
-    }
 
-    private URI createAnnotationId(String baseUrl, String id) {
-        if (baseUrl.endsWith("/")) {
-            return URI.create(baseUrl + id);
-        } else {
-            return URI.create(baseUrl + "/" + id);
-        }
-    }
 
     /**
      * @param w

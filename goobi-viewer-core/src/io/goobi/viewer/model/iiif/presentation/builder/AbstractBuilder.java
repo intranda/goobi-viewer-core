@@ -462,6 +462,12 @@ public abstract class AbstractBuilder {
         return annoMap;
     }
 
+    public OpenAnnotation createOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
+        String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
+        return createOpenAnnotation(pi, doc, urlOnlyTarget);
+
+    }
+    
     /**
      * @param pi
      * @param doc
