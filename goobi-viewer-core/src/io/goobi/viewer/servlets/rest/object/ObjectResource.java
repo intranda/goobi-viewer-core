@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +34,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -43,11 +43,14 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
 
@@ -56,24 +59,23 @@ import io.goobi.viewer.model.viewer.object.ObjectInfo;
  *
  */
 
-@Path("/view/object")
+@javax.ws.rs.Path("/view/object")
 public class ObjectResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectResource.class);
 
     @GET
-    @Path("/{pi}/{filename}/info.json")
+    @javax.ws.rs.Path("/{pi}/{filename}/info.json")
     @Produces({ MediaType.APPLICATION_JSON })
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("filename") String filename) throws PresentationException {
+            @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
 
         String objectURI = request.getRequestURL().toString().replace("/info.json", "");
         String baseURI = objectURI.replace(filename, "");
         String baseFilename = FilenameUtils.getBaseName(filename);
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        Path mediaDirectory = Helper.getMediaFolder(pi);
 
         try {
             List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, baseURI);
@@ -121,13 +123,12 @@ public class ObjectResource {
     }
 
     @GET
-    @Path("/{pi}/{filename}")
+    @javax.ws.rs.Path("/{pi}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("filename") final String filename) throws IOException {
+            @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        Path mediaDirectory = Helper.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(filename);
         if (!objectPath.toFile().isFile()) {
             //try subfolders
@@ -156,13 +157,12 @@ public class ObjectResource {
     }
 
     @GET
-    @Path("/{pi}/{subfolder}/{filename}")
+    @javax.ws.rs.Path("/{pi}/{subfolder}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException {
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        Path mediaDirectory = Helper.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
@@ -172,22 +172,21 @@ public class ObjectResource {
     }
 
     @GET
-    @Path("/{pi}/{subfolder}//{filename}")
+    @javax.ws.rs.Path("/{pi}/{subfolder}//{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
-            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException {
+            @PathParam("subfolder") String subfolder, @PathParam("filename") final String filename) throws IOException, PresentationException, IndexUnreachableException {
         return getObjectResource(request, response, pi, subfolder, filename);
     }
 
     @GET
-    @Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
+    @javax.ws.rs.Path("/{pi}/{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
-            throws IOException {
+            throws IOException, PresentationException, IndexUnreachableException {
 
-        java.nio.file.Path mediaDirectory = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                DataManager.getInstance().getConfiguration().getMediaFolder(), pi);
+        Path mediaDirectory = Helper.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder1).resolve(subfolder2).resolve(filename);
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
@@ -197,11 +196,11 @@ public class ObjectResource {
     }
 
     @GET
-    @Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
+    @javax.ws.rs.Path("/{pi}//{subfolder1}/{subfolder2}/{filename}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder1") String subfolder1, @PathParam("subfolder2") String subfolder2, @PathParam("filename") String filename)
-            throws IOException {
+            throws IOException, PresentationException, IndexUnreachableException {
         return getObjectResource(request, response, pi, subfolder1, subfolder2, filename);
     }
 

@@ -902,6 +902,56 @@ public class Helper {
 
         return sb.toString();
     }
+    
+
+    /**
+     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
+     * 
+     * @param pi    The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
+     * @return  A Path to the media folder for the given PI
+     * @throws IndexUnreachableException    If the repository could not be requested from the solr
+     * @throws PresentationException        If an error occured resolving folders
+     */
+    public static Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
+        
+        Path repository;
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        if(StringUtils.isBlank(dataRepository)) {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        } else if(Paths.get(dataRepository).isAbsolute()){
+            repository = Paths.get(dataRepository);
+        } else {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
+        }
+        Path folder = repository.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
+        return folder;
+    }
+    
+    /**
+     * Constructs the folder path for data of the given pi, either directly in viewer-home or within a data repository
+     * 
+     * @param pi    The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
+     * @param dataType  the data folder  withing the repsitory; e.g 'media' or 'alto' 
+     * @return  A Path to the data folder for the given PI
+     * @throws IndexUnreachableException    If the repository could not be requested from the solr
+     * @throws PresentationException        If an error occured resolving folders
+     */
+    public static Path getDataFolder(String pi, String dataType) throws PresentationException, IndexUnreachableException {
+        
+        Path repository;
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        dataRepository = null;
+        if(StringUtils.isBlank(dataRepository)) {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        } else if(Paths.get(dataRepository).isAbsolute()){
+            repository = Paths.get(dataRepository);
+        } else {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
+        }
+        Path folder = repository.resolve(dataType).resolve(pi);
+        return folder;
+    }
+
 
     /**
      *
