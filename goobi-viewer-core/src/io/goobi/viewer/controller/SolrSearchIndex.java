@@ -672,7 +672,7 @@ public final class SolrSearchIndex {
         Object val = getSingleFieldValue(doc, field);
         return val != null ? String.valueOf(val) : null;
     }
-    
+
     /**
      * @param doc
      * @param iswork
@@ -680,12 +680,12 @@ public final class SolrSearchIndex {
      */
     public static Boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
         Object val = getSingleFieldValue(doc, field);
-        if(val == null) {
+        if (val == null) {
             return null;
-        } else if(val instanceof Boolean) {
-            return (Boolean)val;
-        } else if(val instanceof String) {
-            return Boolean.valueOf((String)val);
+        } else if (val instanceof Boolean) {
+            return (Boolean) val;
+        } else if (val instanceof String) {
+            return Boolean.valueOf((String) val);
         } else {
             return null;
         }
@@ -843,13 +843,15 @@ public final class SolrSearchIndex {
     }
 
     /**
-     *
+     * Retrieves the repository name for the record with the given PI. This method is package private to discourage clients from constructing data
+     * file paths manually instead of using Helper methods.
+     * 
      * @param pi
-     * @return
+     * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
+    String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("findDataRepository: {}", pi);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
@@ -1194,7 +1196,8 @@ public final class SolrSearchIndex {
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
         Map<String, List<String>> map = new HashMap<>();
         if (doc != null) {
-            List<String> fieldNames = doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+            List<String> fieldNames =
+                    doc.getFieldNames().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.startsWith(key + "_LANG_")) {
@@ -1221,7 +1224,11 @@ public final class SolrSearchIndex {
     public static Map<String, List<String>> getMetadataValuesForLanguage(StructElement doc, String key) {
         Map<String, List<String>> map = new HashMap<>();
         if (doc != null) {
-            List<String> fieldNames = doc.getMetadataFields().keySet().stream().filter(field -> field.equals(key) || field.startsWith(key + "_LANG_")).collect(Collectors.toList());
+            List<String> fieldNames = doc.getMetadataFields()
+                    .keySet()
+                    .stream()
+                    .filter(field -> field.equals(key) || field.startsWith(key + "_LANG_"))
+                    .collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {
@@ -1311,7 +1318,6 @@ public final class SolrSearchIndex {
         return Optional.ofNullable((String) (hits.get(0).getFirstValue(SolrConstants.FILENAME)));
     }
 
-
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
@@ -1322,7 +1328,7 @@ public final class SolrSearchIndex {
             return Optional.empty();
         }
     }
-    
+
     public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc, BinaryOperator<String> combiner) {
         Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
         if (translations.size() > 1) {
@@ -1333,7 +1339,6 @@ public final class SolrSearchIndex {
             return Optional.empty();
         }
     }
-    
 
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
 
@@ -1341,13 +1346,11 @@ public final class SolrSearchIndex {
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
-            return Optional.ofNullable(
-                    ViewerResourceBundle.getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
+            return Optional.ofNullable(ViewerResourceBundle
+                    .getTranslations(translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("")));
         } else {
             return Optional.empty();
         }
     }
-
-
 
 }

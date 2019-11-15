@@ -38,6 +38,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -111,10 +112,10 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             }
             dataRepository = repositoriesHome + dataRepository;
 
-            addRepositoryParameter("param:imageSource", dataRepository, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
-            addRepositoryParameter("param:pdfSource", dataRepository, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
-            addRepositoryParameter("param:altoSource", dataRepository, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
-            addRepositoryParameter("param:metsSource", dataRepository, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
+            addRepositoryParameter("param:imageSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString(), request);
+            addRepositoryParameter("param:pdfSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getPdfFolder()).toAbsolutePath().toString(), request);
+            addRepositoryParameter("param:altoSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder()).toAbsolutePath().toString(), request);
+            addRepositoryParameter("param:metsSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toAbsolutePath().toString(), request);
 
         }
 
@@ -122,15 +123,12 @@ public class ImageParameterFilter implements ContainerRequestFilter {
 
     /**
      * @param request
-     * @param dataRepository
-     * @param repositoryFolder
+     * @param dataFolderPath
      * @param requestParameter
      */
-    private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder,
-            ContainerRequestContext request) {
-        StringBuilder sb = new StringBuilder(dataRepository).append("/").append(repositoryFolder);
+    private static void addRepositoryParameter(String requestParameter, String dataFolderPath, ContainerRequestContext request) {
         URI imageRepositoryPath;
-        imageRepositoryPath = Paths.get(sb.toString()).toUri();
+        imageRepositoryPath = Paths.get(dataFolderPath).toUri();
         request.setProperty(requestParameter, imageRepositoryPath.toString());
     }
 

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,9 +87,8 @@ public class IIIFSearchBuilder {
 
     private static final List<String> FULLTEXTFIELDLIST =
             Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.ORDER });
-    
-    private static final List<String> PAGEFIELDLIST =
-            Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
+
+    private static final List<String> PAGEFIELDLIST = Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
 
     private final String query;
     private final String pi;
@@ -186,14 +184,14 @@ public class IIIFSearchBuilder {
     public String getDate() {
         return date;
     }
-    
+
     /**
      * @return the min
      */
     public String getMin() {
         return min;
     }
-    
+
     /**
      * @param min the min to set
      */
@@ -277,8 +275,8 @@ public class IIIFSearchBuilder {
         SearchResult searchResult = new SearchResult(getURI(getPage()));
         searchResult.setResources(resultList.hits);
         searchResult.setStartIndex(getFirstHitIndex(getPage()));
-        if(getPage() > 1) {
-            searchResult.setPrev(getURI(getPage()-1));
+        if (getPage() > 1) {
+            searchResult.setPrev(getURI(getPage() - 1));
         }
         if (getPage() < lastPageNo) {
             searchResult.setNext(getURI(getPage() + 1));
@@ -369,8 +367,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * Create a URI-only resource. EIther as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page the given
-     * comment is on has a width and height
+     * Create a URI-only resource. EIther as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page the given comment is on has a width
+     * and height
      * 
      * @param pi
      * @param comment
@@ -378,10 +376,10 @@ public class IIIFSearchBuilder {
      */
     private IResource createSimpleResource(String pi, Comment comment) {
         Dimension pageSize = getPageSize(pi, comment.getPage());
-        if(pageSize.getWidth()*pageSize.getHeight() == 0) {            
+        if (pageSize.getWidth() * pageSize.getHeight() == 0) {
             return new SimpleResource(presentationBuilder.getCanvasURI(pi, comment.getPage()));
         } else {
-            FragmentSelector selector = new FragmentSelector(new Rectangle(0,0, pageSize.width, pageSize.height));
+            FragmentSelector selector = new FragmentSelector(new Rectangle(0, 0, pageSize.width, pageSize.height));
             return new SpecificResourceURI(presentationBuilder.getCanvasURI(pi, comment.getPage()), selector);
         }
     }
@@ -392,8 +390,8 @@ public class IIIFSearchBuilder {
      * @return
      */
     private Dimension getPageSize(String pi, Integer pageNo) {
-        if(!pageSizes.containsKey(pageNo)) {
-            
+        if (!pageSizes.containsKey(pageNo)) {
+
             String query = "+PI_TOPSTRUCT:" + pi + " ";
             query += "+DOCTYPE:PAGE ";
             query += "+ORDER:" + pageNo;
@@ -403,10 +401,10 @@ public class IIIFSearchBuilder {
                 Integer height = Optional.ofNullable(SolrSearchIndex.getAsInt(pageDoc.getFieldValue(SolrConstants.HEIGHT))).orElse(0);
                 pageSizes.put(pageNo, new Dimension(width, height));
             } catch (PresentationException | IndexUnreachableException e) {
-               logger.error(e.toString(), e);
-               return new Dimension(0, 0);
+                logger.error(e.toString(), e);
+                return new Dimension(0, 0);
             }
-        } 
+        }
         return pageSizes.get(pageNo);
     }
 
@@ -470,7 +468,7 @@ public class IIIFSearchBuilder {
         }
         return results;
     }
-    
+
     private SearchTermList autoSuggestMetadata(String query, String pi) {
 
         SearchTermList terms = new SearchTermList();
@@ -724,8 +722,8 @@ public class IIIFSearchBuilder {
                 .getSearchIndex()
                 .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);
         for (SolrDocument doc : docList) {
-            Path altoFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
-            Path fulltextFile = getPath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
+            Path altoFile = Helper.getTextFilePath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_ALTO));
+            Path fulltextFile = Helper.getTextFilePath(pi, SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.FILENAME_FULLTEXT));
             Integer pageNo = SolrSearchIndex.getAsInt(doc.getFieldValue(SolrConstants.ORDER));
             if (altoFile != null && Files.exists(altoFile)) {
                 results.add(getAnnotationsFromAlto(altoFile, pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));
@@ -881,16 +879,6 @@ public class IIIFSearchBuilder {
         } else {
             return w.getContent();
         }
-    }
-
-    public Path getPath(String pi, String filename) throws PresentationException, IndexUnreachableException {
-        if (StringUtils.isBlank(filename)) {
-            return null;
-        }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        Path filePath = Paths.get(Helper.getRepositoryPath(dataRepository), filename);
-
-        return filePath;
     }
 
     /**

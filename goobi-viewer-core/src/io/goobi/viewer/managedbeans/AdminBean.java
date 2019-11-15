@@ -48,8 +48,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1082,29 +1082,10 @@ public class AdminBean implements Serializable {
         if (StringUtils.isNotEmpty(pi)) {
             Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
             try {
-                StringBuilder sbFilePath = new StringBuilder();
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
-                    }
-                    sbFilePath.append(dataRepository)
-                            .append(File.separator)
-                            .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())
-                            .append(File.separator)
-                            .append(pi)
-                            .append(".xml");
-                } else {
-                    // Backwards compatibility with old indexes
-                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                            .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())
-                            .append(File.separator)
-                            .append(pi)
-                            .append(".xml");
-                }
-                Document doc = XmlTools.readXmlFile(sbFilePath.toString());
+                String metsFilePath = Helper.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
+                Document doc = XmlTools.readXmlFile(metsFilePath);
                 if (doc == null || doc.getRootElement() == null) {
-                    logger.error("Invalid METS file: {}", sbFilePath.toString());
+                    logger.error("Invalid METS file: {}", metsFilePath);
                     return;
                 }
 

@@ -2612,7 +2612,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getDataRepositoriesHome() {
+    String getDataRepositoriesHome() {
         return getLocalString("dataRepositoriesHome", "");
     }
 

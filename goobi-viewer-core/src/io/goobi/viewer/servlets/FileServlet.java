@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.servlets;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,7 +22,6 @@ import java.io.Serializable;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Set;
 
@@ -33,11 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -175,23 +173,27 @@ public class FileServlet extends HttpServlet implements Serializable {
      * @throws IndexUnreachableException
      */
     public Path getFile(String pi, String fileName, String page) throws PresentationException, IndexUnreachableException {
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        StringBuilder sbFilePath = new StringBuilder();
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
-                    File.separator);
-        } else {
-            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
-        }
-        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
-        sbFilePath.append(File.separator).append(pi).append(File.separator);
-
-        if (page != null) {
-            sbFilePath.append(page).append(File.separator);
-        }
-        sbFilePath.append(fileName);
-        Path path = Paths.get(sbFilePath.toString());
-        return path;
+//        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+//        StringBuilder sbFilePath = new StringBuilder();
+//        if (StringUtils.isNotEmpty(dataRepository)) {
+//            sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
+//                    File.separator);
+//        } else {
+//            sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
+//        }
+//        sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
+//        sbFilePath.append(File.separator).append(pi).append(File.separator);
+//
+//        if (page != null) {
+//            sbFilePath.append(page).append(File.separator);
+//        }
+//        sbFilePath.append(fileName);
+//        
+//        Path path = Paths.get(sbFilePath.toString());
+//        
+//        return path;
+        
+        return  Helper.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, fileName);
     }
 
     /**

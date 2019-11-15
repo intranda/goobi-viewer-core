@@ -32,9 +32,6 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -131,8 +128,6 @@ public class SequenceBuilder extends AbstractBuilder {
 
         IPageLoader pageLoader = new EagerPageLoader(doc);
 
-        String dataRepository = ContentResource.getDataRepository(doc.getPi());
-
         Map<Integer, Canvas> canvasMap = new HashMap<>();
         for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
             PhysicalElement page = pageLoader.getPage(i);
@@ -140,7 +135,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = generateCanvas(doc, page);
             if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                 addSeeAlsos(canvas, doc, page);
-                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
+                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
 
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
@@ -337,7 +332,7 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
-    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, String dataRepository,
+    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas,
             boolean populate) throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();

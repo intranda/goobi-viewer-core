@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -489,7 +490,7 @@ public class Helper {
             return false;
         }
 
-        String filePath = getDataFilePath(pi + ".xml", dataRepository, recordType);
+        String filePath = getSourceFilePath(pi + ".xml", dataRepository, recordType);
         File recordXmlFile = new File(filePath);
         if (!recordXmlFile.isFile()) {
             logger.error("Cannot re-index '{}': record not found.", recordXmlFile.getAbsolutePath());
@@ -889,72 +890,113 @@ public class Helper {
     /**
      * Returns the absolute path to the data repository with the given name (including a slash at the end).
      *
-     * @param dataRepository
+     * @param dataRepository Data repository name or absolute path
      * @return
+     * @should return correct path for empty data repository
+     * @should return correct path for absolute data repository path
+     * @should return correct path for data repository name
      */
-    public static String getRepositoryPath(String dataRepository) {
-        StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            sb.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/');
+    static Path getRepositoryFolder(String dataRepository) {
+        if (StringUtils.isBlank(dataRepository)) {
+            return Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        } else if (Paths.get(dataRepository).isAbsolute()) {
+            return Paths.get(dataRepository);
         } else {
-            sb.append(DataManager.getInstance().getConfiguration().getViewerHome());
+            return Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
         }
-
-        return sb.toString();
     }
-    
 
     /**
      * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
      * 
-     * @param pi    The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
-     * @return  A Path to the media folder for the given PI
-     * @throws IndexUnreachableException    If the repository could not be requested from the solr
-     * @throws PresentationException        If an error occured resolving folders
+     * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
+     * @return A Path to the media folder for the given PI
+     * @throws IndexUnreachableException If the repository could not be requested from the solr
+     * @throws PresentationException If an error occured resolving folders
      */
     public static Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
-        
-        Path repository;
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        if(StringUtils.isBlank(dataRepository)) {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
-        } else if(Paths.get(dataRepository).isAbsolute()){
-            repository = Paths.get(dataRepository);
-        } else {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
-        }
-        Path folder = repository.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
-        return folder;
+        return getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
     }
-    
+
     /**
      * Constructs the folder path for data of the given pi, either directly in viewer-home or within a data repository
      * 
-     * @param pi    The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
-     * @param dataType  the data folder  withing the repsitory; e.g 'media' or 'alto' 
-     * @return  A Path to the data folder for the given PI
-     * @throws IndexUnreachableException    If the repository could not be requested from the solr
-     * @throws PresentationException        If an error occured resolving folders
+     * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
+     * @param dataType the data folder within the repository; e.g 'media' or 'alto'
+     * @return A Path to the data folder for the given PI
+     * @throws IndexUnreachableException If the repository could not be requested from the solr
+     * @throws PresentationException If an error occurred resolving folders
      */
     public static Path getDataFolder(String pi, String dataType) throws PresentationException, IndexUnreachableException {
-        
-        Path repository;
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        dataRepository = null;
-        if(StringUtils.isBlank(dataRepository)) {
+        return getDataFolder(pi, dataType, dataRepository);
+    }
+    
+    /**
+     * Constructs the folder path for data of the given pi, either directly in viewer-home or within thegiven data repository
+     * @param pi
+     * @param dataType
+     * @param dataRepository
+     * @return
+     */
+    public static Path getDataFolder(String pi, String dataType, String dataRepository) {
+        Path repository;
+        if (StringUtils.isBlank(dataRepository)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
-        } else if(Paths.get(dataRepository).isAbsolute()){
+        } else if (Paths.get(dataRepository).isAbsolute()) {
             repository = Paths.get(dataRepository);
         } else {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
         }
+        
         Path folder = repository.resolve(dataType).resolve(pi);
-        return folder;
+        
+        return folder; 
     }
 
+    /**
+     * 
+     * @param pi Record identifier
+     * @param dataFolderName Name of the data folder (e.g. 'alto') - first choice
+     * @param altDataFolderName Name of the data folder - second choice
+     * @param fileName Name of the content file
+     * @return Path to the requested file
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
+            throws PresentationException, IndexUnreachableException {
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+
+        java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
+        if (StringUtils.isNotBlank(fileName)) {
+            dataFolderPath = dataFolderPath.resolve(fileName);
+        }
+        if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
+            return getDataFilePath(pi, altDataFolderName, null, fileName);
+        }
+
+        return dataFolderPath;
+    }
 
     /**
-     *
+     * Returns the absolute path to the source (METS/LIDO) file with the given file name.
+     * 
+     * @param fileName
+     * @param format
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
+        String pi = FilenameUtils.getBaseName(fileName);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        return getSourceFilePath(fileName, dataRepository, format);
+    }
+
+    /**
+     * Returns the absolute path to the source (METS/LIDO) file with the given file name.
+     * 
      * @param fileName
      * @param dataRepository
      * @param format
@@ -964,7 +1006,7 @@ public class Helper {
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
      */
-    public static String getDataFilePath(String fileName, String dataRepository, String format) {
+    public static String getSourceFilePath(String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
@@ -972,7 +1014,8 @@ public class Helper {
             throw new IllegalArgumentException("format must be METS or LIDO");
         }
 
-        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        StringBuilder sb = new StringBuilder(getRepositoryFolder(dataRepository).toAbsolutePath().toString());
+        sb.append('/');
         switch (format) {
             case SolrConstants._METS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
@@ -990,31 +1033,53 @@ public class Helper {
      * 
      * @param pi
      * @param fileName
-     * @param dataRepository
      * @param format
      * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      * @should return correct path
      */
-    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
+    public static String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
+        if (StringUtils.isEmpty(format)) {
+            throw new IllegalArgumentException("format may not be null or empty");
+        }
 
-        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        String dataFolderName = null;
         switch (format) {
             case SolrConstants.FILENAME_ALTO:
-                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+                dataFolderName = DataManager.getInstance().getConfiguration().getAltoFolder();
                 break;
             case SolrConstants.FILENAME_FULLTEXT:
-                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
+                dataFolderName = DataManager.getInstance().getConfiguration().getFulltextFolder();
                 break;
             case SolrConstants.FILENAME_TEI:
-                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
+                dataFolderName = DataManager.getInstance().getConfiguration().getTeiFolder();
                 break;
         }
-        sb.append('/').append(pi).append('/').append(fileName);
 
-        return sb.toString();
+        return getDataFilePath(pi, dataFolderName, null, fileName).toAbsolutePath().toString();
+    }
+    
+    /**
+     * 
+     * @param pi
+     * @param relativeFilePath ALTO/text file path relative to the data folder
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static Path getTextFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(relativeFilePath)) {
+            return null;
+        }
+        
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        Path filePath = Paths.get(getRepositoryFolder(dataRepository).toAbsolutePath().toString(), relativeFilePath);
+
+        return filePath;
     }
 
     /**

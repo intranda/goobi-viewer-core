@@ -21,7 +21,6 @@ import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1391,9 +1390,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(relatedPI);
-            Path cmsTextFolder =
-                    Paths.get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getCmsTextFolder(), relatedPI);
+            Path cmsTextFolder = Helper.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
             logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(cmsTextFolder)) {
                 logger.trace("CMS text folder not found - nothing to delete");
@@ -1542,9 +1539,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
         if (selectableCategories == null) {
             List<CMSCategory> allowedCategories = BeanUtils.getCmsBean().getAllowedCategories(BeanUtils.getUserBean().getUser());
-            selectableCategories = allowedCategories.stream()
-                    .map(cat -> new Selectable<>(cat, this.categories.contains(cat)))
-                    .collect(Collectors.toList());
+            selectableCategories =
+                    allowedCategories.stream().map(cat -> new Selectable<>(cat, this.categories.contains(cat))).collect(Collectors.toList());
         }
         return selectableCategories;
     }

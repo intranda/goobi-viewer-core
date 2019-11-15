@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -177,13 +179,8 @@ public class EPUBDownloadJob extends DownloadJob {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static void triggerCreation(String pi, String downloadIdentifier, String targetFolderPath) throws PresentationException,
-            IndexUnreachableException, DownloadException {
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        File mediaRepository = new File(DataManager.getInstance().getConfiguration().getViewerHome());
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
-        }
+    public static void triggerCreation(String pi, String downloadIdentifier, String targetFolderPath)
+            throws PresentationException, IndexUnreachableException, DownloadException {
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
@@ -193,10 +190,10 @@ public class EPUBDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        File metsFile = new File(mediaRepository + "/indexed_mets", pi + ".xml");
-        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), CmsBean.getCurrentLocale()
-                .getLanguage(), "", priority, "", title, mediaRepository.getAbsolutePath(), "VIEWEREPUB", downloadIdentifier,
-                "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
+        File metsFile = new File(Helper.getSourceFilePath(pi + ".xml", SolrConstants._METS));
+        HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(),
+                CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository.getAbsolutePath(), "VIEWEREPUB",
+                downloadIdentifier, "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
         try {
             JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
@@ -204,8 +201,8 @@ public class EPUBDownloadJob extends DownloadJob {
                 if (response.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {
-                    throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": TaskManager returned error " + response.get(
-                            "ERRORMESSAGE"));
+                    throw new DownloadException(
+                            "Failed to start pdf creation for PI=" + pi + ": TaskManager returned error " + response.get("ERRORMESSAGE"));
                     //                    logger.error("Failed to start pdf creation for PI={} and LOGID={}: TaskManager returned error", pi, logId);
                     //                    return false;
                 }

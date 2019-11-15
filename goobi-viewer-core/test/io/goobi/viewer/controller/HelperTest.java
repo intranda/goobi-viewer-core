@@ -52,37 +52,37 @@ public class HelperTest {
     @Test
     public void getDataFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/1/indexed_mets/PPN123.xml",
-                Helper.getDataFilePath("PPN123.xml", "1", SolrConstants._METS));
-        Assert.assertEquals("resources/test/data/viewer/indexed_mets/PPN123.xml", Helper.getDataFilePath("PPN123.xml", null, SolrConstants._METS));
+                Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._METS));
+        Assert.assertEquals("resources/test/data/viewer/indexed_mets/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
     }
 
     /**
-     * @see Helper#getDataFilePath(String,String,String)
+     * @see Helper#getSourceFilePath(String,String,String)
      * @verifies construct LIDO file path correctly
      */
     @Test
     public void getDataFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/1/indexed_lido/PPN123.xml",
-                Helper.getDataFilePath("PPN123.xml", "1", SolrConstants._LIDO));
-        Assert.assertEquals("resources/test/data/viewer/indexed_lido/PPN123.xml", Helper.getDataFilePath("PPN123.xml", null, SolrConstants._LIDO));
+                Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._LIDO));
+        Assert.assertEquals("resources/test/data/viewer/indexed_lido/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
     }
 
     /**
-     * @see Helper#getDataFilePath(String,String,String)
+     * @see Helper#getSourceFilePath(String,String,String)
      * @verifies throw IllegalArgumentException if format is unknown
      */
     @Test(expected = IllegalArgumentException.class)
     public void getDataFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() throws Exception {
-        Helper.getDataFilePath("1.xml", null, "bla");
+        Helper.getSourceFilePath("1.xml", null, "bla");
     }
 
     /**
-     * @see Helper#getDataFilePath(String,String,String)
+     * @see Helper#getSourceFilePath(String,String,String)
      * @verifies throw IllegalArgumentException if fileName is null
      */
     @Test(expected = IllegalArgumentException.class)
     public void getDataFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
-        Helper.getDataFilePath(null, null, SolrConstants._METS);
+        Helper.getSourceFilePath(null, null, SolrConstants._METS);
     }
 
     /**
