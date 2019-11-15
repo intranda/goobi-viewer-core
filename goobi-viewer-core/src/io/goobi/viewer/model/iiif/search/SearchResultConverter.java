@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
@@ -48,31 +51,37 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.Canvas;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.search.SearchHit;
+import de.intranda.api.iiif.search.SearchTerm;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.Comment;
 import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
+import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
+import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
 import io.goobi.viewer.model.iiif.search.parser.SolrSearchParser;
 
 /**
+ * Converts resources found in a search to IIIF Search objects
+ * 
  * @author florian
  *
  */
 public class SearchResultConverter {
 
+    private static final Logger logger = LoggerFactory.getLogger(IIIFSearchBuilder.class);
+
+    
     private static final int MAX_TEXT_LENGTH = 20;
 
     private final AltoAnnotationBuilder altoBuilder = new AltoAnnotationBuilder();
@@ -83,6 +92,14 @@ public class SearchResultConverter {
     private String pi;
     private Integer pageNo;
 
+    /**
+     * Create a new converter; parameters are used to construct urls or result resources
+     * 
+     * @param requestURI    The URI of the search request
+     * @param restApiURI    The URI of the viewer rest api
+     * @param pi            The PI of the manifest to search
+     * @param pageNo        The page number of generated resources
+     */
     public SearchResultConverter(URI requestURI, URI restApiURI, String pi, Integer pageNo) {
         this.presentationBuilder = new AbstractBuilder(requestURI, restApiURI) {
         };
@@ -106,232 +123,30 @@ public class SearchResultConverter {
         return pageNo;
     }
 
-    public IAnnotation convertToAnnotation(GeometricData altoElement) {
-        return altoBuilder.createAnnotation(altoElement, getCanvas(getPi(), getPageNo()),
-                getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString(), true);
-    }
-
-    public SearchHit convertToHit(List<Word> altoElements) {
-        SearchHit hit = new SearchHit();
-        hit.setAnnotations(altoElements.stream().map(this::convertToAnnotation).collect(Collectors.toList()));
-        hit.setMatch(altoElements.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
-
-        if (!altoElements.isEmpty()) {
-            String before = altoParser.getPrecedingText(altoElements.get(0), MAX_TEXT_LENGTH);
-            String after = new AltoSearchParser().getSucceedingText(altoElements.get(altoElements.size() - 1), MAX_TEXT_LENGTH);
-            if (StringUtils.isNotBlank(before)) {
-                hit.setBefore(before);
-            }
-            if (StringUtils.isNotBlank(after)) {
-                hit.setAfter(after);
-            }
-        }
-        return hit;
-    }
-
-    public List<SearchHit> convertToHits(List<Line> altoElements, String matchQuery) {
-        List<SearchHit> hits = new ArrayList<>();
-        String wholeText = altoElements.stream().map(Line::getContent).collect(Collectors.joining(" "));
-        Matcher m = Pattern.compile(matchQuery).matcher(wholeText);
-        while (m.find()) {
-            SearchHit hit = new SearchHit();
-            String match = m.group(1);
-            int indexStart = m.start(1);
-            int indexEnd = m.end(1);
-
-            hit.setMatch(match);
-            String before = AbstractSearchParser.getPrecedingText(wholeText, indexStart, MAX_TEXT_LENGTH);
-            String after = AbstractSearchParser.getSucceedingText(wholeText, indexEnd, MAX_TEXT_LENGTH);
-            if (StringUtils.isNotBlank(before)) {
-                hit.setBefore(before);
-            }
-            if (StringUtils.isNotBlank(after)) {
-                hit.setAfter(after);
-            }
-            hit.setAnnotations(altoParser.getContainingLines(altoElements, indexStart, indexEnd)
-                    .stream()
-                    .map(this::convertToAnnotation)
-                    .collect(Collectors.toList()));
-            hits.add(hit);
-        }
-        return hits;
-    }
-
-    /**
-     * @return the presentationBuilder
-     */
     public AbstractBuilder getPresentationBuilder() {
         return presentationBuilder;
     };
-
-    /**
-     * @param pi2
-     * @param pageNo2
-     * @return
-     */
-    private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {
-        if (pageNo != null) {
-            return presentationBuilder.getAnnotationListURI(pi, pageNo, type);
-        } else {
-            return presentationBuilder.getAnnotationListURI(pi, type);
-        }
-    }
-
-    /**
-     * @param pi2
-     * @param pageNo2
-     * @return
-     */
-    private Canvas getCanvas(String pi, Integer pageNo) {
-        if (StringUtils.isBlank(pi) || pageNo == null) {
-            return null;
-        }
-        return new Canvas(presentationBuilder.getCanvasURI(pi, pageNo));
-    }
-
-    /**
-     * @param lines
-     * @param position
-     * @param containingLines
-     */
-    public SearchHit convertToHit(List<Line> lines, Range<Integer> position, List<Line> containingLines) {
-        SearchHit hit = new SearchHit();
-        String wholeText = altoParser.getText(containingLines);
-        int firstLineStartIndex = altoParser.getLineStartIndex(lines, containingLines.get(0));
-        int lastLineEndIndex = altoParser.getLineEndIndex(lines, containingLines.get(containingLines.size() - 1));
-
-        String before = AbstractSearchParser.getPrecedingText(wholeText, position.getMinimum(),
-                Math.min(position.getMinimum() - firstLineStartIndex, MAX_TEXT_LENGTH));
-        String after = AbstractSearchParser.getSucceedingText(wholeText, position.getMaximum(),
-                Math.min(lastLineEndIndex - position.getMaximum(), MAX_TEXT_LENGTH));
-        String match = wholeText.substring(position.getMinimum(), position.getMaximum() + 1);
-
-        hit.setMatch(match);
-        TextQuoteSelector selector = new TextQuoteSelector();
-        selector.setFragment(match);
-        if (StringUtils.isNotBlank(before)) {
-            selector.setPrefix(before);
-        }
-        if (StringUtils.isNotBlank(after)) {
-            selector.setSuffix(after);
-        }
-        hit.setSelectors(Collections.singletonList(selector));
-        hit.setAnnotations(containingLines.stream().map(this::convertToAnnotation).collect(Collectors.toList()));
-        return hit;
-    }
-    
     
     /**
-     * @param pi
-     * @param pageNo
-     * @param results
-     * @param text
-     * @throws IOException 
-     * @throws UnsupportedEncodingException 
+     * Generates a search hit from a {@link Comment}
+     * 
+     * @param pi            The PI of the work containing the comment
+     * @param queryRegex    The regex matching the search terms
+     * @param comment       The comment containing the search terms
+     * @return a {@link SearchHit}
      */
-    public SearchHit convertToHit(String queryRegex, Path textFile, String pi, Integer pageNo, String encoding) throws UnsupportedEncodingException, IOException {
-        
-        String text = new String(Files.readAllBytes(textFile), encoding);
+    public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
 
+        String text = comment.getDisplayText();
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
         while (m.find()) {
-        
-            String match = m.group(1);
-            int indexStart = m.start(1);
-            int indexEnd = m.end(1);
-            
-            String before = AbstractSearchParser.getPrecedingText(text, indexStart, MAX_TEXT_LENGTH);
-            String after = AbstractSearchParser.getSucceedingText(text, indexEnd, MAX_TEXT_LENGTH);
-    
-            hit.setMatch(match);
-            TextQuoteSelector selector = new TextQuoteSelector();
-            selector.setFragment(match);
-            if (StringUtils.isNotBlank(before)) {
-                selector.setPrefix(before);
-            }
-            if (StringUtils.isNotBlank(after)) {
-                selector.setSuffix(after);
-            }
-            hit.setSelectors(Collections.singletonList(selector));
-        }
-        
-        IResource canvas = createSimpleCanvasResource(pi, pageNo);
-        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
-        IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
-        hit.addAnnotation(pageAnnotation);
-        
-        return hit;
-    }
-
-
-    private IAnnotation createAnnotation(String text, IResource canvas, String baseUrl) {
-        AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, "plaintext"));
-        anno.setMotivation(Motivation.PAINTING);
-        anno.setTarget(canvas);
-        TextualResource body = new TextualResource(text);
-        anno.setBody(body);
-        return anno;
-    }
-
-    private URI createAnnotationId(String baseUrl, String id) {
-        if (baseUrl.endsWith("/")) {
-            return URI.create(baseUrl + id);
-        } else {
-            return URI.create(baseUrl + "/" + id);
-        }
-    }
-    
-    /**
-     * @param doc
-     * @return
-     */
-    public OpenAnnotation createMetadataAnnotation(String metadataField, SolrDocument doc) {
-        String iddoc = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-        String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
-        String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
-        Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
-        Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
-        String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
-        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, id));
-        anno.setMotivation(Motivation.DESCRIBING);
-        if(thumbPageNo != null) {
-            anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
-        } else {            
-            if (Boolean.TRUE.equals(isWork)) {
-                anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
-            } else {
-                anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(pi, logId)));
-            }
-        }
-        IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
-        IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
-                .orElse(new SimpleMetadataValue(SolrSearchIndex.getSingleFieldStringValue(doc, metadataField)));
-        Metadata md = new Metadata(label, value);
-        anno.setBody(new FieldListResource(Collections.singletonList(md)));
-
-        return anno;
-    }
-
-    /**
-     * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
-     * 
-     * @param queryRegex
-     * @param fieldName
-     * @param doc
-     * @return A search hit for a Solr field search
-     */
-    public SearchHit convertToHit(String queryRegex, String fieldName, SolrDocument doc) {
-        SearchHit hit = new SearchHit();
-        String mdText = SolrSearchIndex.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining("; "));
-        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
-        while (m.find()) {
             String match = m.group(1);
             int indexStart = m.start(1);
             int indexEnd = m.end(1);
 
-            String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
-            String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
+            String before = AbstractSearchParser.getPrecedingText(text, indexStart, Integer.MAX_VALUE);
+            String after = AbstractSearchParser.getSucceedingText(text, indexEnd, Integer.MAX_VALUE);
             if (!StringUtils.isAllBlank(before, after)) {
                 TextQuoteSelector textSelector = new TextQuoteSelector();
                 textSelector.setFragment(match);
@@ -343,21 +158,21 @@ public class SearchResultConverter {
                 }
                 hit.addSelector(textSelector);
             }
-            hit.setMatch(match);
+            IAnnotation anno = createAnnotation(pi, comment);
+            hit.addAnnotation(anno);
         }
-        OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
-        hit.addAnnotation(anno);
+
         return hit;
     }
-
+    
     /**
-     * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata
+     * Create a IIIF Search hit from a UGC solr document (usually a crowdsouring created comment/metadata)
      * 
      * @param queryRegex
      * @param doc
-     * @return
+     * @return  A search hit matching the queryRegex within the given UGC SolrDocument
      */
-    public SearchHit convertToHit(String queryRegex, SolrDocument ugc) {
+    public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
 
         SearchHit hit = new SearchHit();
         String mdText = SolrSearchIndex.getMetadataValues(ugc, SolrConstants.UGCTERMS).stream().collect(Collectors.joining("; "));
@@ -391,23 +206,26 @@ public class SearchResultConverter {
         return hit;
     }
 
+    
     /**
-     * @param pi
-     * @param results
-     * @param comment
+     * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
+     * 
+     * @param queryRegex
+     * @param fieldName
+     * @param doc
+     * @return A search hit for a Solr field search
      */
-    public SearchHit convertToHit(String queryRegex, String pi, Comment comment) {
+    public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
         SearchHit hit = new SearchHit();
-
-        String text = comment.getDisplayText();
-        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
+        String mdText = SolrSearchIndex.getMetadataValues(doc, fieldName).stream().collect(Collectors.joining("; "));
+        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(mdText);
         while (m.find()) {
             String match = m.group(1);
             int indexStart = m.start(1);
             int indexEnd = m.end(1);
 
-            String before = AbstractSearchParser.getPrecedingText(text, indexStart, Integer.MAX_VALUE);
-            String after = AbstractSearchParser.getSucceedingText(text, indexEnd, Integer.MAX_VALUE);
+            String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
+            String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
             if (!StringUtils.isAllBlank(before, after)) {
                 TextQuoteSelector textSelector = new TextQuoteSelector();
                 textSelector.setFragment(match);
@@ -419,20 +237,270 @@ public class SearchResultConverter {
                 }
                 hit.addSelector(textSelector);
             }
-            IAnnotation anno = createAnnotation(pi, comment);
-            hit.addAnnotation(anno);
+            hit.setMatch(match);
         }
+        OpenAnnotation anno = createAnnotation(fieldName, doc);
+        hit.addAnnotation(anno);
+        return hit;
+    }
+    
 
+    /**
+     *  Create annotations for all matches of the given query within the given alto file
+     * 
+     * @param doc  The {@link AltoDocument}
+     * @param query a regex; each match of the query within the alto document creates a {@link SearchHit} with one or more annotations referencing alto word or line elements
+     * @return  A result list containing hits for each mach of the query and annotations containing the hits 
+     */
+    public AnnotationResultList getAnnotationsFromAlto(AltoDocument doc, String query) {
+        AnnotationResultList results = new AnnotationResultList();
+            AltoSearchParser parser = new AltoSearchParser();
+            List<Word> words = parser.getWords(doc);
+            if(!words.isEmpty()) {
+                List<List<Word>> matches = parser.findWordMatches(words, query);
+                for (List<Word> wordsHit : matches) {
+                    SearchHit hit = convertAltoToHit(wordsHit);
+                    results.add(hit);
+                }
+            } else {
+                List<Line> lines = parser.getLines(doc);
+                if(!lines.isEmpty()) {
+                    Map<Range<Integer>, List<Line>> hits = parser.findLineMatches(lines, query);
+                    for (Range<Integer> position : hits.keySet()) {
+                        List<Line> containingLines = hits.get(position);
+                        SearchHit hit = createAltoHit(lines, position, containingLines);
+                        results.add(hit);
+                    }
+                }
+            }
+        return results;
+    }
+
+    /**
+     *  Create annotations for all matches of the given query within the given text file
+     *  Returns only a partial result if the firstIndex is larger than 0 and numHits is smaller than the total number of hits
+     * 
+     * @param text              the text to search
+     * @param pi                the PI of the work containing the annotations
+     * @param pageNo            The page number of the canvas containing the annotations
+     * @param query             The regex matching all hits in the text file
+     * @param previousHitCount  The number of hits already found in previous pages
+     * @param firstIndex        The index of the first overal hit to be returned in the result itself. Larger than 0 only for later pages within a paged annotation collection
+     * @param numHits           The maximal number of hits to be returned in the result itself. This is the maximal size of the hit list within a single result page of a paged annotation collection
+     * @return  A result list containing all matching hits within the range set by previousHitCount, firstIndex and numHits
+     */
+    public AnnotationResultList getAnnotationsFromFulltext(String text, String pi, Integer pageNo, String query,
+            long previousHitCount, int firstIndex, int numHits) {
+        AnnotationResultList results = new AnnotationResultList();
+            long firstPageHitIndex = previousHitCount;
+            long lastPageHitIndex = firstPageHitIndex;
+            if (firstIndex <= lastPageHitIndex && firstIndex + numHits - 1 >= firstPageHitIndex) {
+                results.add(createFulltextHit(query, text, pi, pageNo));
+            }
+        return results;
+    }
+    
+
+    /**
+     * Get all matches to the given regex in the fieldsToSearch of the given doc as {@link SearchTerm SearchTerms}
+     * 
+     * @param regex A regex matching all text wich should be returned as a searchTerm
+     * @param doc   The document within to search
+     * @param fieldsToSearch    The fields to search for the regex
+     * @param searchMotivation  The motivation to be set for the search url of the searchTerms
+     * @return  A list of search terms 
+     */
+    public SearchTermList getSearchTerms(String regex, SolrDocument doc, List<String> fieldsToSearch, List<String> searchMotivation) {
+        SearchTermList terms = new SearchTermList();
+        for (String field : fieldsToSearch) {
+            String value = SolrSearchIndex.getSingleFieldStringValue(doc, field);
+            terms.addAll(getSearchTerms(regex, value, searchMotivation));
+        }
+        return terms;
+    }
+
+    /**
+     * Get all matches to the given regex in the given value as {@link SearchTerm SearchTerms}
+     * 
+     * @param regex A regex matching all text wich should be returned as a searchTerm
+     * @param value The text to be searched with the regex
+     * @param searchMotivation  The motivation to be set for the search url of the searchTerms
+     * @return  A list of search terms 
+     */
+    public SearchTermList getSearchTerms(String regex, String value, List<String> searchMotivation) {
+        SearchTermList terms = new SearchTermList();
+        String wordRegex = AbstractSearchParser.getSingleWordRegex(regex);
+        if (StringUtils.isNotBlank(value)) {
+            Matcher matcher = Pattern.compile(wordRegex).matcher(value);
+            while (matcher.find()) {
+                String match = matcher.group(1);
+                SearchTerm term = new SearchTerm(getPresentationBuilder().getSearchURI(getPi(), match, searchMotivation), match, 1);
+                terms.add(term);
+            }
+        }
+        return terms;
+    }
+
+    /**
+     * Convert a list of also word elements to a search hit, containing an annotation for each word in the list
+     * 
+     * @param altoElements  A list of ALTO word elements
+     * @return  A hit of the combined words
+     */
+    public SearchHit convertAltoToHit(List<Word> altoElements) {
+        SearchHit hit = new SearchHit();
+        hit.setAnnotations(altoElements.stream().map(this::createAnnotation).collect(Collectors.toList()));
+        hit.setMatch(altoElements.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
+
+        if (!altoElements.isEmpty()) {
+            String before = altoParser.getPrecedingText(altoElements.get(0), MAX_TEXT_LENGTH);
+            String after = new AltoSearchParser().getSucceedingText(altoElements.get(altoElements.size() - 1), MAX_TEXT_LENGTH);
+            if (StringUtils.isNotBlank(before)) {
+                hit.setBefore(before);
+            }
+            if (StringUtils.isNotBlank(after)) {
+                hit.setAfter(after);
+            }
+        }
         return hit;
     }
 
+    /**
+     * Creates a {@link SearchHit} of the text within the given position within the given lines. 
+     * 
+     * @param lines             The lines containing the hit
+     * @param position          A range covering character positions of the matched text. the position is relative to the entire text of the given lines
+     * @param containingLines   The lines to be included as annotations in the hit
+     * @return  A search hit containing the match at the given position
+     */
+    public SearchHit createAltoHit(List<Line> lines, Range<Integer> position, List<Line> containingLines) {
+        SearchHit hit = new SearchHit();
+        String wholeText = altoParser.getText(containingLines);
+        int firstLineStartIndex = altoParser.getLineStartIndex(lines, containingLines.get(0));
+        int lastLineEndIndex = altoParser.getLineEndIndex(lines, containingLines.get(containingLines.size() - 1));
 
+        String before = AbstractSearchParser.getPrecedingText(wholeText, position.getMinimum(),
+                Math.min(position.getMinimum() - firstLineStartIndex, MAX_TEXT_LENGTH));
+        String after = AbstractSearchParser.getSucceedingText(wholeText, position.getMaximum(),
+                Math.min(lastLineEndIndex - position.getMaximum(), MAX_TEXT_LENGTH));
+        String match = wholeText.substring(position.getMinimum(), position.getMaximum() + 1);
+
+        hit.setMatch(match);
+        TextQuoteSelector selector = new TextQuoteSelector();
+        selector.setFragment(match);
+        if (StringUtils.isNotBlank(before)) {
+            selector.setPrefix(before);
+        }
+        if (StringUtils.isNotBlank(after)) {
+            selector.setSuffix(after);
+        }
+        hit.setSelectors(Collections.singletonList(selector));
+        hit.setAnnotations(containingLines.stream().map(this::createAnnotation).collect(Collectors.toList()));
+        return hit;
+    }
 
     /**
-     * @param pi
-     * @param comment
+     * Create a SearchHit for the given text. Each match of the given queryRegex in the text is included as a TextQuoteSelector in the hit
+     * 
+     * @param queryRegex        The regex matching the hit  
+     * @param text              The text to search
+     * @param pi                The PI of the manifest containing the annotations
+     * @param pageNo            The order of the canvas containing the annotations
+     * @return  A search hit containing a TextQuoteSelector for each match of the regex and a single annotations covering the entire text
+     * @throws UnsupportedEncodingException
+     * @throws IOException
      */
-    public IAnnotation createAnnotation(String pi, Comment comment) {
+    public SearchHit createFulltextHit(String queryRegex, String text, String pi, Integer pageNo) {
+
+        SearchHit hit = new SearchHit();
+
+        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
+        while (m.find()) {
+        
+            String match = m.group(1);
+            int indexStart = m.start(1);
+            int indexEnd = m.end(1);
+            
+            String before = AbstractSearchParser.getPrecedingText(text, indexStart, MAX_TEXT_LENGTH);
+            String after = AbstractSearchParser.getSucceedingText(text, indexEnd, MAX_TEXT_LENGTH);
+    
+            hit.setMatch(match);
+            TextQuoteSelector selector = new TextQuoteSelector();
+            selector.setFragment(match);
+            if (StringUtils.isNotBlank(before)) {
+                selector.setPrefix(before);
+            }
+            if (StringUtils.isNotBlank(after)) {
+                selector.setSuffix(after);
+            }
+            hit.setSelectors(Collections.singletonList(selector));
+        }
+        
+        IResource canvas = createSimpleCanvasResource(pi, pageNo);
+        URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
+        URI uri = getAnnotationId(baseURI.toString(), "plaintext");
+        IAnnotation pageAnnotation = createAnnotation(text, canvas, uri);
+        hit.addAnnotation(pageAnnotation);
+        
+        return hit;
+    }
+
+    /**
+     * Create an annotation for the given metadata field in the given doc
+     * 
+     * @param metadataField
+     * @param doc
+     * @return
+     */
+    private OpenAnnotation createAnnotation(String metadataField, SolrDocument doc) {
+        String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
+        Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
+        Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
+        String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
+        OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, id));
+        anno.setMotivation(Motivation.DESCRIBING);
+        if(thumbPageNo != null) {
+            anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
+        } else {            
+            if (Boolean.TRUE.equals(isWork)) {
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
+            } else {
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(pi, logId)));
+            }
+        }
+        IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
+        IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
+                .orElse(new SimpleMetadataValue(SolrSearchIndex.getSingleFieldStringValue(doc, metadataField)));
+        Metadata md = new Metadata(label, value);
+        anno.setBody(new FieldListResource(Collections.singletonList(md)));
+
+        return anno;
+    }
+    
+    /**
+     * Create an annotation from an ALTO element
+     * 
+     * @param altoElement   The alto xml element
+     * @return  An annotation representing the element
+     */
+    private IAnnotation createAnnotation(GeometricData altoElement) {
+        return altoBuilder.createAnnotation(altoElement, createSimpleCanvasResource(getPi(), getPageNo()),
+                getAnnotationListURI(getPi(), getPageNo(), AnnotationType.ALTO).toString(), true);
+    }
+    /**
+     * create a text annotation with the given text in the given canvas
+     */
+    private IAnnotation createAnnotation(String text, IResource canvas, URI uri) {
+        AbstractAnnotation anno = new OpenAnnotation();
+        anno.setMotivation(Motivation.PAINTING);
+        anno.setTarget(canvas);
+        TextualResource body = new TextualResource(text);
+        anno.setBody(body);
+        return anno;
+    }
+    
+    private IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
         anno.setMotivation(Motivation.COMMENTING);
         IResource canvas = createSimpleCanvasResource(pi, comment.getPage());
@@ -442,6 +510,7 @@ public class SearchResultConverter {
         return anno;
     }
 
+    
     /**
      * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width
      * and height
@@ -457,6 +526,25 @@ public class SearchResultConverter {
         } else {
             FragmentSelector selector = new FragmentSelector(new Rectangle(0, 0, pageSize.width, pageSize.height));
             return new SpecificResourceURI(getPresentationBuilder().getCanvasURI(pi, pageNo), selector);
+        }
+    }
+    
+    /**
+     * Return a URI to an annotation list for the given pi and pageNo
+     */
+    private URI getAnnotationListURI(String pi, Integer pageNo, AnnotationType type) {
+        if (pageNo != null) {
+            return presentationBuilder.getAnnotationListURI(pi, pageNo, type);
+        } else {
+            return presentationBuilder.getAnnotationListURI(pi, type);
+        }
+    }
+
+    private URI getAnnotationId(String annotationListURI, String id) {
+        if (annotationListURI.endsWith("/")) {
+            return URI.create(annotationListURI + id);
+        } else {
+            return URI.create(annotationListURI + "/" + id);
         }
     }
 
