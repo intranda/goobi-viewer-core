@@ -256,7 +256,7 @@ public class SearchResultConverter {
             hit.setSelectors(Collections.singletonList(selector));
         }
         
-        IResource canvas = createSimpleResource(pi, pageNo);
+        IResource canvas = createSimpleCanvasResource(pi, pageNo);
         URI baseURI = getPresentationBuilder().getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT);
         IAnnotation pageAnnotation = createAnnotation(text, canvas, baseURI.toString());
         hit.addAnnotation(pageAnnotation);
@@ -291,13 +291,18 @@ public class SearchResultConverter {
         String pi = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         String logId = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.LOGID);
         Boolean isWork = SolrSearchIndex.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
+        Integer thumbPageNo = SolrSearchIndex.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
         String id = pi + "/" + (StringUtils.isNotBlank(logId) ? (logId + "/") : "") + metadataField;
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getAnnotationURI(pi, AnnotationType.METADATA, id));
         anno.setMotivation(Motivation.DESCRIBING);
-        if (Boolean.TRUE.equals(isWork)) {
-            anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
-        } else {
-            anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(pi, logId)));
+        if(thumbPageNo != null) {
+            anno.setTarget(createSimpleCanvasResource(pi, thumbPageNo));
+        } else {            
+            if (Boolean.TRUE.equals(isWork)) {
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getManifestURI(pi)));
+            } else {
+                anno.setTarget(new SimpleResource(getPresentationBuilder().getRangeURI(pi, logId)));
+            }
         }
         IMetadataValue label = ViewerResourceBundle.getTranslations(metadataField);
         IMetadataValue value = SolrSearchIndex.getTranslations(metadataField, doc, (a, b) -> a + "; " + b)
@@ -338,6 +343,7 @@ public class SearchResultConverter {
                 }
                 hit.addSelector(textSelector);
             }
+            hit.setMatch(match);
         }
         OpenAnnotation anno = createMetadataAnnotation(fieldName, doc);
         hit.addAnnotation(anno);
@@ -363,9 +369,9 @@ public class SearchResultConverter {
             int indexEnd = m.end(1);
             if (!match.equals(type)) {
                 String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
-                before = before.replace(type, "");
+                before = before.replace(type, "").trim();
                 String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
-                after = after.replace(type, "");
+                after = after.replace(type, "").trim();
                 if (!StringUtils.isAllBlank(before, after)) {
                     TextQuoteSelector textSelector = new TextQuoteSelector();
                     textSelector.setFragment(match);
@@ -377,9 +383,8 @@ public class SearchResultConverter {
                     }
                     hit.addSelector(textSelector);
                 }
-            } else {
-                hit.setMatch(match);
             }
+            hit.setMatch(match);
             OpenAnnotation anno = getPresentationBuilder().createOpenAnnotation(ugc, true);
             hit.addAnnotation(anno);
         }
@@ -392,7 +397,7 @@ public class SearchResultConverter {
      * @param comment
      */
     public SearchHit convertToHit(String queryRegex, String pi, Comment comment) {
-        SearchHit hit = new SearchHit();//TODO build hit
+        SearchHit hit = new SearchHit();
 
         String text = comment.getDisplayText();
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
@@ -430,7 +435,7 @@ public class SearchResultConverter {
     public IAnnotation createAnnotation(String pi, Comment comment) {
         OpenAnnotation anno = new OpenAnnotation(getPresentationBuilder().getCommentAnnotationURI(pi, comment.getPage(), comment.getId()));
         anno.setMotivation(Motivation.COMMENTING);
-        IResource canvas = createSimpleResource(pi, comment.getPage());
+        IResource canvas = createSimpleCanvasResource(pi, comment.getPage());
         anno.setTarget(canvas);
         TextualResource body = new TextualResource(comment.getText());
         anno.setBody(body);
@@ -438,14 +443,14 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create a URI-only resource. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width
+     * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width
      * and height
      * 
      * @param pi        PI of the work containing the page
      * @param pageNo    page number (ORDER) of the page
-     * @return      A URI resource
+     * @return      A URI to a canvas resource
      */
-    private IResource createSimpleResource(String pi, int pageNo) {
+    private IResource createSimpleCanvasResource(String pi, int pageNo) {
         Dimension pageSize = solrParser.getPageSize(pi, pageNo);
         if (pageSize.getWidth() * pageSize.getHeight() == 0) {
             return new SimpleResource(getPresentationBuilder().getCanvasURI(pi, pageNo));
