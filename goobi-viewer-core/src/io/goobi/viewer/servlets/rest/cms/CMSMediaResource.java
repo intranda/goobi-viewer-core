@@ -259,6 +259,9 @@ public class CMSMediaResource {
                     return Response.status(Status.ACCEPTED).entity(jsonItem).build();
                 } else {
                     String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+                    if(Files.exists(mediaFile)) {
+                        Files.delete(mediaFile);
+                    }
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
                     
                 }
