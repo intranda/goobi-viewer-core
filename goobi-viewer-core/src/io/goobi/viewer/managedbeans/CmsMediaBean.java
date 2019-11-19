@@ -266,8 +266,8 @@ public class CmsMediaBean implements Serializable {
 		IDAO dao = DataManager.getInstance().getDao();
 		if (dao != null) {
 			try {
-				dao.deleteCMSMediaItem(item);		
-				if (item.getFileName() != null) {
+				boolean deleted = dao.deleteCMSMediaItem(item);		
+				if (deleted && item.getFileName() != null) {
 					try {
 						Path mediaFile = item.getFilePath();
 						Files.delete(mediaFile);
