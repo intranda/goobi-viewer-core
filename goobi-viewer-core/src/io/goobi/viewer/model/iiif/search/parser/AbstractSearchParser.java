@@ -41,7 +41,7 @@ public abstract class AbstractSearchParser {
     
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
         String after = "";
-        int index = hitEndIndex+1;
+        int index = hitEndIndex;
         while(index < text.length() && after.length() < maxLength) {
             String c = Character.toString(text.charAt(index));
             after = after + c;
@@ -81,7 +81,7 @@ public abstract class AbstractSearchParser {
     public static String getQueryRegex(String query) {
         query = query.replace("(?i)", ""); //remove any possible ignore case flags
         String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
-        return "(?i)" + "((?:" + queryRegex + ")+)";
+        return "(?i)" + "(?:[.:,;!?\\(\\)]?)((?:" + queryRegex + ")+)(?:[.:,;!?\\(\\)]?)";
     }
 
     /**

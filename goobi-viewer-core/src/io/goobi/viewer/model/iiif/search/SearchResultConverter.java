@@ -158,6 +158,7 @@ public class SearchResultConverter {
                 }
                 hit.addSelector(textSelector);
             }
+            hit.setMatch(match);
             IAnnotation anno = createAnnotation(pi, comment);
             hit.addAnnotation(anno);
         }
@@ -184,9 +185,9 @@ public class SearchResultConverter {
             int indexEnd = m.end(1);
             if (!match.equals(type)) {
                 String before = AbstractSearchParser.getPrecedingText(mdText, indexStart, Integer.MAX_VALUE);
-                before = before.replace(type, "").trim();
+                before = before.replace(type, "");
                 String after = AbstractSearchParser.getSucceedingText(mdText, indexEnd, Integer.MAX_VALUE);
-                after = after.replace(type, "").trim();
+                after = after.replace(type, "");
                 if (!StringUtils.isAllBlank(before, after)) {
                     TextQuoteSelector textSelector = new TextQuoteSelector();
                     textSelector.setFragment(match);
@@ -414,7 +415,9 @@ public class SearchResultConverter {
 
         SearchHit hit = new SearchHit();
 
-        Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
+        String regex = AbstractSearchParser.getSingleWordRegex(queryRegex);
+        
+        Matcher m = Pattern.compile(regex).matcher(text);
         while (m.find()) {
         
             String match = m.group(1);
@@ -433,7 +436,7 @@ public class SearchResultConverter {
             if (StringUtils.isNotBlank(after)) {
                 selector.setSuffix(after);
             }
-            hit.setSelectors(Collections.singletonList(selector));
+            hit.addSelector(selector);
         }
         
         IResource canvas = createSimpleCanvasResource(pi, pageNo);
