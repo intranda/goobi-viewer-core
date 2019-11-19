@@ -203,6 +203,8 @@
                 <!-- ACTIONS EDIT -->
                 <div class="admin-cms-media__file-actions-edit cms-module__actions">
                     <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
+                    <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
+                    </h:commandLink>
                     <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).prev().click()" value="#{msg.button__save}" styleClass="btn btn--clean">
                         <f:ajax execute="edit-fields" render="display-fields edit-fields language-select :messages" />
                     </h:commandLink>
