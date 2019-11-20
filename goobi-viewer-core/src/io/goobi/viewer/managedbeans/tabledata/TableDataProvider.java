@@ -23,7 +23,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TableDataProvider<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(TableDataProvider.class);
 
     private int currentPage = 0;
     private int entriesPerPage;
@@ -234,7 +239,7 @@ public class TableDataProvider<T> {
 
     public boolean addFilter(String joinTable, String column) {
         if (!getFilterAsOptional(joinTable, column).isPresent()) {
-            addFilter(new TableDataFilter(joinTable, column, ""));
+            addFilter(new TableDataFilter(joinTable, column, "", this));
             return true;
         }
 
@@ -243,7 +248,7 @@ public class TableDataProvider<T> {
 
     public boolean addFilter(String column) {
         if (!getFilterAsOptional(column).isPresent()) {
-            addFilter(new TableDataFilter(column, ""));
+            addFilter(new TableDataFilter(column, "", this));
             return true;
         }
 
@@ -278,7 +283,7 @@ public class TableDataProvider<T> {
 
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
-        resetCurrentList();
+        update();
     }
 
     public void removeFilter(String column) {
@@ -301,6 +306,13 @@ public class TableDataProvider<T> {
     }
 
     /**
+     * Method for filter objects being able to reset the number of records as soon as the filter value has changed.
+     */
+    void resetTotalNumberOfRecords() {
+        source.resetTotalNumberOfRecords();
+    }
+
+    /**
      * 
      */
     public void resetAll() {
@@ -309,7 +321,7 @@ public class TableDataProvider<T> {
         sortOrder = SortOrder.ASCENDING;
         filters.forEach(filter -> filter.setValue(""));
         resetCurrentList();
-        source.resetTotalNumberOfRecords();
+        resetTotalNumberOfRecords();
 
     }
 
@@ -318,7 +330,7 @@ public class TableDataProvider<T> {
      */
     public void update() {
         resetCurrentList();
-        source.resetTotalNumberOfRecords();
+        resetTotalNumberOfRecords();
     }
 
 }

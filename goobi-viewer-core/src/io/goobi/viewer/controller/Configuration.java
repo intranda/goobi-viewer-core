@@ -81,7 +81,7 @@ public final class Configuration extends AbstractConfiguration {
             //            config.setDelimiterParsingDisabled(true);
             config.load(configFilePath);
             if (config.getFile() == null || !config.getFile().exists()) {
-                logger.error("Default configuration file not found: {}", configFilePath);
+                logger.error("Default configuration file not found: {}", Paths.get(configFilePath).toAbsolutePath());
                 throw new ConfigurationException();
             }
             logger.info("Default configuration file '{}' loaded.", config.getFile().getAbsolutePath());
@@ -928,7 +928,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getSolrUrl() {
-        String value = getLocalString("urls.solr", "http://localhost:80889/solr");
+        String value = getLocalString("urls.solr", "http://localhost:8089/solr");
         if (value.charAt(value.length() - 1) == '/') {
             value = value.substring(0, value.length() - 1);
         }

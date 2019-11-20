@@ -672,6 +672,29 @@ public final class SolrSearchIndex {
         Object val = getSingleFieldValue(doc, field);
         return val != null ? String.valueOf(val) : null;
     }
+    
+    public static Integer getSingleFieldIntegerValue(SolrDocument doc, String field) {
+        Object val = getSingleFieldValue(doc, field);
+        return getAsInt(val);
+    }
+    
+    /**
+     * @param doc
+     * @param iswork
+     * @return
+     */
+    public static Boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
+        Object val = getSingleFieldValue(doc, field);
+        if(val == null) {
+            return null;
+        } else if(val instanceof Boolean) {
+            return (Boolean)val;
+        } else if(val instanceof String) {
+            return Boolean.valueOf((String)val);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Returns a list with all (string) values for the given field name in the given SolrDocument.
@@ -1117,6 +1140,7 @@ public final class SolrSearchIndex {
         }
     }
 
+    
     /**
      *
      * @param e
@@ -1305,6 +1329,17 @@ public final class SolrSearchIndex {
         }
     }
     
+    public static Optional<IMetadataValue> getTranslations(String fieldName, SolrDocument doc, BinaryOperator<String> combiner) {
+        Map<String, List<String>> translations = SolrSearchIndex.getMetadataValuesForLanguage(doc, fieldName);
+        if (translations.size() > 1) {
+            return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
+        } else if (translations.size() == 1) {
+            return Optional.of(ViewerResourceBundle.getTranslations(translations.values().iterator().next().stream().findFirst().orElse("")));
+        } else {
+            return Optional.empty();
+        }
+    }
+    
 
     public static Optional<IMetadataValue> getTranslations(String fieldName, StructElement doc, BinaryOperator<String> combiner) {
 
@@ -1318,6 +1353,7 @@ public final class SolrSearchIndex {
             return Optional.empty();
         }
     }
+
 
 
 }

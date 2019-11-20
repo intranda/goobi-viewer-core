@@ -19,10 +19,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 
 /**
  * @author Florian Alpers
@@ -31,6 +34,8 @@ import io.goobi.viewer.model.search.SearchHelper;
 public class CompoundLabeledLink extends LabeledLink {
 
     private static final long serialVersionUID = 2336154265426936610L;
+
+    private static final Logger logger = LoggerFactory.getLogger(CompoundLabeledLink.class);
 
     protected final String field;
     protected final List<String> hierarchy;
@@ -65,6 +70,7 @@ public class CompoundLabeledLink extends LabeledLink {
      * @return List of labeled links, one for each hierarchy level
      */
     public List<LabeledLink> getSubLinks() {
+        logger.trace("getSubLinks");
         List<LabeledLink> links = new ArrayList<>(hierarchy.size());
         List<HierarchicalBrowseDcElement> collectionElements = new ArrayList<>(hierarchy.size());
         try {
@@ -72,6 +78,8 @@ public class CompoundLabeledLink extends LabeledLink {
                 String sortField = DataManager.getInstance().getConfiguration().getCollectionDefaultSortField(field, col);
                 HierarchicalBrowseDcElement collectionElement = new HierarchicalBrowseDcElement(col, 1, field, sortField);
                 collectionElement.setInfo(new SimpleBrowseElementInfo(col, null, null));
+                // Actual collection size is expensive to determine at this point, so instead pretend it's larger than one so that no redirection to the first volume takes place for all collections
+                collectionElement.addToNumber(1);
                 collectionElements.add(collectionElement);
             }
             CollectionView.associateWithCMSCollections(collectionElements, field);

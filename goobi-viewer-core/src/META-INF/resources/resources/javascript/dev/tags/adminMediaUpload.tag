@@ -114,7 +114,8 @@
                      	this.fileUploaded(value);
                      } 
                      else {
-                         var responseText = result.reason.responseText;
+                         console.log("result ", result);
+                         var responseText = result.reason.responseText ? result.reason.responseText : result.reason;
                          errorMsg += (responseText + "</br>");
                      }
                  }.bind(this));
@@ -153,7 +154,6 @@
         uploadFile(i) {
             if (this.files.length <= i) {
                 new Modal(this.refs.doneModal).show();
-    
                 return;
             }
     
@@ -164,20 +164,36 @@
                     this.update();
                 }
             };
-            var data = new FormData();
-    
-            data.append('file', this.files[i])
-            data.append("filename", this.files[i].name)
-    
-            return $.ajax({
-                url: this.opts.postUrl,
-                type: 'POST',
-                data: data,
-                dataType: 'json',
-                cache: false,
-                contentType: false,
-                processData: false
-            });
+            
+            return fetch(this.opts.postUrl + this.files[i].name, {
+                method: "GET",
+            })
+            .then(r => r.json())
+            .then( json => { 
+                console.log("json response ", json);
+                return json.image != undefined
+            })
+            .then(exists => {
+                if(exists) {                    
+	                let overwrite = confirm(this.opts.msg.overwriteFileConfirm.replace("{0}",  this.files[i].name));
+	                if(!overwrite) {
+	                    throw this.opts.msg.overwriteFileRefused.replace("{0}",  this.files[i].name);
+	                }
+                }
+            })
+            .then(overwrite => {
+	            var data = new FormData();   
+	            data.append("filename", this.files[i].name);
+	            data.append('file', this.files[i]);
+				return data;
+            })
+            .then( data => fetch(this.opts.postUrl, {
+                method: "POST",
+                body: data,
+       		}));
+    	
+            
         }
     </script> 
 </adminMediaUpload>
+

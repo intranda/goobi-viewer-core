@@ -18,9 +18,9 @@
 						</div>
 					</ui:fragment>
 					<div class="crowdsourcing-campaigns-overview__campaign__text">
-						<h3 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.getTitle(navigationHelper.locale, true)}</h3>
+						<h3 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.getTitle(navigationHelper.localeString, true)}</h3>
 						<div class="crowdsourcing-campaigns-overview__campaign__text__description">
-							#{campaign.description}
+							#{campaign.getDescription(navigationHelper.localeString, true)}
 						</div>
 					</div>
 					<div class="crowdsourcing-campaigns-overview__campaign__actions">

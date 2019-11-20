@@ -164,10 +164,13 @@ public class CmsMediaBean implements Serializable {
 								
 									if(StringUtils.isNotBlank(generalFilter)) {								
 										stream = stream.filter(
-												item -> item.getMetadata().stream().anyMatch(md -> md.getName() != null && md.getName().toLowerCase().contains(generalFilter.toLowerCase())) 
+												item -> item.getMetadata().stream().anyMatch(md -> md.getName() != null && md.getName().toLowerCase().contains(generalFilter.toLowerCase()))
 												|| 
-												item.getCategories().stream().anyMatch(cat -> cat.getName().toLowerCase().contains(generalFilter.toLowerCase())));
-									}
+												item.getCategories().stream().anyMatch(cat -> cat.getName().toLowerCase().contains(generalFilter.toLowerCase()))
+												||
+												item.getFileName().toLowerCase().contains( generalFilter.toLowerCase() ));
+
+									} 
 									
 									if(StringUtils.isNotBlank(filenameFilter)) {								
 										stream = stream.filter(item -> item.getFileName().matches(filenameFilter));
@@ -263,8 +266,8 @@ public class CmsMediaBean implements Serializable {
 		IDAO dao = DataManager.getInstance().getDao();
 		if (dao != null) {
 			try {
-				dao.deleteCMSMediaItem(item);		
-				if (item.getFileName() != null) {
+				boolean deleted = dao.deleteCMSMediaItem(item);		
+				if (deleted && item.getFileName() != null) {
 					try {
 						Path mediaFile = item.getFilePath();
 						Files.delete(mediaFile);

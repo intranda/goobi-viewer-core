@@ -43,6 +43,11 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
+import de.intranda.monitoring.timer.TimeAnalysis;
+import de.intranda.monitoring.timer.TimeAnalysisItem;
+import de.intranda.monitoring.timer.Timer;
+import de.intranda.monitoring.timer.TimerOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
@@ -56,18 +61,20 @@ import io.goobi.viewer.exceptions.RecordDeletedException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSSidebarElement;
 import io.goobi.viewer.model.cms.CMSSidebarManager;
@@ -77,8 +84,6 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.PageValidityStatus;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
@@ -132,6 +137,7 @@ public class CmsBean implements Serializable {
     private String currentWorkPi = "";
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
     private HashMap<Long, Boolean> editablePages = new HashMap<>();
+    private List<String> solrSortFields = null;
 
     @PostConstruct
     public void init() {
@@ -183,32 +189,33 @@ public class CmsBean implements Serializable {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
                     }
-                    return numCreatedPages.orElse(0l);
+                    return numCreatedPages.orElse(0L);
                 }
 
                 private void initialize() throws DAOException {
-                    if (!initialized) {
-                        try {
-                            if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
-                                    && !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
-                                allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
-                            }
-                            if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
-                                allowedTemplates =
-                                        getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
-                            }
-                            if (!userBean.getUser().hasPrivilegeForAllCategories()) {
-                                allowedCategories = getAllowedCategories(userBean.getUser()).stream()
-                                        .map(CMSCategory::getId)
-                                        .map(l -> l.toString())
-                                        .collect(Collectors.toList());
-                            }
-                            initialized = true;
-                        } catch (PresentationException | IndexUnreachableException e) {
-                            throw new DAOException("Error getting user rights from dao: " + e.toString());
-                        } catch (NullPointerException e) {
-                            throw new DAOException("No user or userBean available to determine user rights");
+                    if (initialized) {
+                        return;
+                    }
+                    try {
+                        if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                                && !userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+                            allowedSubthemes = getAllowedSubthemeDiscriminatorValues(userBean.getUser());
                         }
+                        if (!userBean.getUser().hasPriviledgeForAllTemplates()) {
+                            allowedTemplates =
+                                    getAllowedTemplates(userBean.getUser()).stream().map(CMSPageTemplate::getId).collect(Collectors.toList());
+                        }
+                        if (!userBean.getUser().hasPrivilegeForAllCategories()) {
+                            allowedCategories = getAllowedCategories(userBean.getUser()).stream()
+                                    .map(CMSCategory::getId)
+                                    .map(l -> l.toString())
+                                    .collect(Collectors.toList());
+                        }
+                        initialized = true;
+                    } catch (PresentationException | IndexUnreachableException e) {
+                        throw new DAOException("Error getting user rights from dao: " + e.toString());
+                    } catch (NullPointerException e) {
+                        throw new DAOException("No user or userBean available to determine user rights");
                     }
                 }
 
@@ -1753,9 +1760,10 @@ public class CmsBean implements Serializable {
     }
 
     public List<String> getPossibleSortFields() throws SolrServerException, IOException {
-        List<String> sortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
-        //        sortFields = sortFields.stream().flatMap(field -> Arrays.asList(field + " asc", field + " desc").stream()).collect(Collectors.toList());
-        return sortFields;
+        if(this.solrSortFields == null) {            
+            this.solrSortFields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+        }
+        return this.solrSortFields;
     }
 
     /**

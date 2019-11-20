@@ -23,6 +23,8 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
 import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.api.iiif.search.AutoSuggestResult;
+import de.intranda.api.iiif.search.SearchResult;
 
 /**
  * @author Florian Alpers
@@ -35,6 +37,8 @@ import de.intranda.api.iiif.presentation.AbstractPresentationModelElement;
 public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
 
     public static final String CONTEXT = "http://iiif.io/api/presentation/2/context.json";
+    public static final String CONTEXT_SEARCH = "http://iiif.io/api/search/1/context.json";
+
     
     /* (non-Javadoc)
      * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, javax.ws.rs.container.ContainerResponseContext)
@@ -47,6 +51,17 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             AbstractPresentationModelElement element = (AbstractPresentationModelElement) responseObject;
             setResponseCharset(response, "UTF-8");
             element.setContext(CONTEXT);
+        } else if (responseObject != null && responseObject instanceof SearchResult) {
+            SearchResult element = (SearchResult) responseObject;
+            setResponseCharset(response, "UTF-8");
+            element.addContext(CONTEXT);
+            if(!element.getHits().isEmpty()) {
+                element.addContext(CONTEXT_SEARCH);
+            }
+        } else if (responseObject != null && responseObject instanceof AutoSuggestResult) {
+            AutoSuggestResult element = (AutoSuggestResult) responseObject;
+            setResponseCharset(response, "UTF-8");
+            element.addContext(CONTEXT_SEARCH);
         }
         
     }

@@ -136,7 +136,7 @@ public class IpRange implements ILicensee {
             }
             return subnet.isInRange(inIp);
         } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage());
         }
 
         return false;

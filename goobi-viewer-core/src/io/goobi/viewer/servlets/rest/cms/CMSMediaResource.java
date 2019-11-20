@@ -20,10 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -34,7 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -72,8 +76,10 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.ViewerRestServiceBinding;
 
@@ -208,7 +214,22 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("Resource not found");
     }
-    
+
+    @GET
+    @javax.ws.rs.Path("/upload/{filename}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
+        
+        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(filename);
+        if(item != null) {            
+            MediaItem jsonItem = new MediaItem(item);
+            return Response.status(Status.OK).entity(jsonItem).build();
+        } else {
+            return Response.status(Status.OK).entity("{}").build();
+
+        }
+    }
+
     /**
      * May receive a file from a multipart form and saves the file in the cms media folder
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does not have rights to upload media,
@@ -226,9 +247,7 @@ public class CMSMediaResource {
         
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
-        }
-        
-        
+        }        
         Optional<User> user = getUser();
         if(!user.isPresent()) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
@@ -245,20 +264,35 @@ public class CMSMediaResource {
                 if(!Files.exists(cmsMediaFolder)) {
                     Files.createDirectory(cmsMediaFolder);
                 }
-                Files.copy(uploadedInputStream, mediaFile);
+                
+                CMSMediaItem item = null;
+                if(Files.exists(mediaFile)) {
+                    //re-uploading existing file. Replace file in existing MediaItem
+                    item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(mediaFile.getFileName().toString());
+                    if(item != null) {
+                        logger.error("Found existing media file without mediaItem entry in database. Deleting file");
+                    }
+                }
+                Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
                 
                 if(Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                     logger.debug("Successfully downloaded file {}", mediaFile);
                     //upload successful. TODO: check file integrity?
-                    CMSMediaItem item = createMediaItem(mediaFile);
-                    requiredCategory.ifPresent(cat -> item.addCategory(cat));                   
-                    
-                    
-                    DataManager.getInstance().getDao().addCMSMediaItem(item);
+                    if(item == null) {
+                        item = createMediaItem(mediaFile);
+                        requiredCategory.ifPresent(item::addCategory);                   
+                        DataManager.getInstance().getDao().addCMSMediaItem(item);                        
+                    } else {
+                        item.setFileName(mediaFile.getFileName().toString());
+                        DataManager.getInstance().getDao().updateCMSMediaItem(item);
+                    }
                     MediaItem jsonItem = new MediaItem(item);
-                    return Response.status(Status.ACCEPTED).entity(jsonItem).build();
+                    return Response.status(Status.OK).entity(jsonItem).build();
                 } else {
                     String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+                    if(Files.exists(mediaFile)) {
+                        Files.delete(mediaFile);
+                    }
                     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
                     
                 }

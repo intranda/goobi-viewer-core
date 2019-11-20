@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -460,7 +461,8 @@ public class ImageDeliveryBean implements Serializable {
             Path path = PathConverter.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
-                return path.startsWith(getCmsMediaPath());
+                Path cmsMediaPath = Paths.get(getCmsMediaPath());
+                return path.startsWith(cmsMediaPath);
             }
         } catch (URISyntaxException e) {
             logger.trace(e.toString());

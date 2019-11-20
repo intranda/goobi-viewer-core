@@ -755,7 +755,9 @@ public class ThumbnailHandler {
             if (imagePath.toLowerCase().endsWith(".png")) {
                 format = "png";
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
+            url += "?updated=" + item.getLastModifiedTime();
+            return url;
         }).orElse("");
     }
 
@@ -786,7 +788,9 @@ public class ThumbnailHandler {
             if (imagePath.toLowerCase().endsWith(".png")) {
                 format = "png";
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format);
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format);
+            url += "?updated=" + item.getLastModifiedTime();
+            return url;
         }).orElse("");
     }
 

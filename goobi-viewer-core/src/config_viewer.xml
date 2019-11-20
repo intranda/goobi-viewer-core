@@ -345,7 +345,7 @@
 		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference"
+		<theme subTheme="false" mainTheme="haab2"
 			discriminatorField="DOCSTRCT" autoSwitch="false" addFilterQuery="false"
 			filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading 

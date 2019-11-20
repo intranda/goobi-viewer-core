@@ -454,7 +454,7 @@ public class ActiveDocumentBean implements Serializable {
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
                 for (String language : name.getLanguages()) {
-                    String translation = name.getValue(language).orElse("");
+                    String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
                                 new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
@@ -462,6 +462,10 @@ public class ActiveDocumentBean implements Serializable {
                                         .toString();
                         name.setValue(translation, language);
                     }
+                }
+                // Fallback using the identifier as the label
+                if (name.isEmpty()) {
+                    name.setValue(getPersistentIdentifier());
                 }
                 if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
 
