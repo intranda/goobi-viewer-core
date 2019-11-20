@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>4.0.6-SNAPSHOT</version>
+	<version>4.1.0</version>
 
 	<packaging>jar</packaging>
 
@@ -16,6 +16,7 @@
 
 
 	<properties>
+		<publicVersion>19.11</publicVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<skipTests>true</skipTests>
@@ -900,6 +901,7 @@
 							<version>${project.version}</version>
 							<Implementation-Version>${buildNumber}</Implementation-Version>
 							<Implementation-Build-Date>${buildDate}</Implementation-Build-Date>
+							<Public-Version>${publicVersion}</Public-Version>
 						</manifestEntries>
 					</archive>
 				</configuration>
