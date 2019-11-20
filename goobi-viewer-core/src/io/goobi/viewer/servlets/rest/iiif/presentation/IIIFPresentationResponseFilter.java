@@ -55,12 +55,13 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
             SearchResult element = (SearchResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT);
-            //TODO: if the "hits" property of element exists, also include CONTEXT_SEARCH
+            if(!element.getHits().isEmpty()) {
+                element.addContext(CONTEXT_SEARCH);
+            }
         } else if (responseObject != null && responseObject instanceof AutoSuggestResult) {
             AutoSuggestResult element = (AutoSuggestResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT_SEARCH);
-            //TODO: if the "hits" property of element exists, also include CONTEXT_SEARCH
         }
         
     }

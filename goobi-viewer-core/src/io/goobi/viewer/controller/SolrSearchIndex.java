@@ -673,6 +673,11 @@ public final class SolrSearchIndex {
         return val != null ? String.valueOf(val) : null;
     }
     
+    public static Integer getSingleFieldIntegerValue(SolrDocument doc, String field) {
+        Object val = getSingleFieldValue(doc, field);
+        return getAsInt(val);
+    }
+    
     /**
      * @param doc
      * @param iswork
@@ -1135,6 +1140,7 @@ public final class SolrSearchIndex {
         }
     }
 
+    
     /**
      *
      * @param e
