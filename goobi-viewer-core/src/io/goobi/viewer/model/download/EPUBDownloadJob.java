@@ -21,7 +21,6 @@ import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -191,9 +190,10 @@ public class EPUBDownloadJob extends DownloadJob {
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         File metsFile = new File(Helper.getSourceFilePath(pi + ".xml", SolrConstants._METS));
+        String mediaRepository = Helper.getDataRepositoriesRootForRecord(pi);
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(),
-                CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository.getAbsolutePath(), "VIEWEREPUB",
-                downloadIdentifier, "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
+                CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository, "VIEWEREPUB", downloadIdentifier,
+                "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
         try {
             JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());

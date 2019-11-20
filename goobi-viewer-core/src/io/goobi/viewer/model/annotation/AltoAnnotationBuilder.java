@@ -77,7 +77,7 @@ public class AltoAnnotationBuilder {
     }
 
     
-    private IAnnotation createAnnotation(GeometricData element, Canvas canvas,String baseUrl, boolean urlOnlyTarget) {
+    public IAnnotation createAnnotation(GeometricData element, IResource canvas, String baseUrl, boolean urlOnlyTarget) {
         AbstractAnnotation anno = new OpenAnnotation(createAnnotationId(baseUrl, element.getId()));
         anno.setMotivation(Motivation.PAINTING);
         anno.setTarget(createSpecificResource(canvas, element.getBounds(), urlOnlyTarget));
@@ -94,7 +94,7 @@ public class AltoAnnotationBuilder {
      * @param height
      * @return
      */
-        private IResource createSpecificResource(Canvas canvas, Rectangle area, boolean urlOnly) {
+        private IResource createSpecificResource(IResource canvas, Rectangle area, boolean urlOnly) {
             SpecificResource part;
             if(urlOnly) {
                 part = new SpecificResourceURI(canvas.getId(), new FragmentSelector(area));

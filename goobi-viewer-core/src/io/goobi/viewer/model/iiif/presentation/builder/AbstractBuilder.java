@@ -462,6 +462,12 @@ public abstract class AbstractBuilder {
         return annoMap;
     }
 
+    public OpenAnnotation createOpenAnnotation(SolrDocument doc, boolean urlOnlyTarget) {
+        String pi = Optional.ofNullable(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).map(Object::toString).orElse("");
+        return createOpenAnnotation(pi, doc, urlOnlyTarget);
+
+    }
+    
     /**
      * @param pi
      * @param doc
@@ -506,7 +512,11 @@ public abstract class AbstractBuilder {
                 int x2 = Math.round(Float.parseFloat(matcher.group(3)));
                 int y2 = Math.round(Float.parseFloat(matcher.group(4)));
                 FragmentSelector selector = new FragmentSelector(new Rectangle(x1, y1, x2-x1, y2-y1));
-                anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                if(urlOnlyTarget) {
+                    anno.setTarget(new SpecificResourceURI(this.getCanvasURI(pi, pageOrder), selector));
+                } else {                
+                    anno.setTarget(new SpecificResource(this.getCanvasURI(pi, pageOrder), selector));
+                }
             } else {
                 anno.setTarget(new SimpleResource(getCanvasURI(pi, pageOrder)));
             }

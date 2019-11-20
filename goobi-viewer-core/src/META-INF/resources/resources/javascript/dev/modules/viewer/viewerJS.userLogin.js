@@ -23,7 +23,7 @@
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
-    
+     
     var _debug = false;
     var _userComments = {};
         

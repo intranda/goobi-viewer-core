@@ -17,10 +17,10 @@ package io.goobi.viewer.servlets.rest.iiif.image;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -93,9 +92,26 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      * @throws PresentationException
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
-        String dataRepository = null;
         try {
-            dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+            Map<String, Path> dataFolders = Helper.getDataFolders(pi, DataManager.getInstance().getConfiguration().getMediaFolder(),
+                    DataManager.getInstance().getConfiguration().getPdfFolder(), DataManager.getInstance().getConfiguration().getAltoFolder(),
+                    DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getMediaFolder())) {
+                addRepositoryParameter("param:imageSource",
+                        dataFolders.get(DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString(), request);
+            }
+            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getPdfFolder())) {
+                addRepositoryParameter("param:pdfSource",
+                        dataFolders.get(DataManager.getInstance().getConfiguration().getPdfFolder()).toAbsolutePath().toString(), request);
+            }
+            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getAltoFolder())) {
+                addRepositoryParameter("param:altoSource",
+                        dataFolders.get(DataManager.getInstance().getConfiguration().getAltoFolder()).toAbsolutePath().toString(), request);
+            }
+            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())) {
+                addRepositoryParameter("param:metsSource",
+                        dataFolders.get(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toAbsolutePath().toString(), request);
+            }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             throw e;
@@ -103,22 +119,6 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             throw new PresentationException(e.getMessage());
         }
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            String repositoriesHome;
-            if (Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
-                repositoriesHome = "";
-            } else {
-                repositoriesHome = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).toUri().toString();
-            }
-            dataRepository = repositoriesHome + dataRepository;
-
-            addRepositoryParameter("param:imageSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString(), request);
-            addRepositoryParameter("param:pdfSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getPdfFolder()).toAbsolutePath().toString(), request);
-            addRepositoryParameter("param:altoSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder()).toAbsolutePath().toString(), request);
-            addRepositoryParameter("param:metsSource", Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toAbsolutePath().toString(), request);
-
-        }
-
     }
 
     /**

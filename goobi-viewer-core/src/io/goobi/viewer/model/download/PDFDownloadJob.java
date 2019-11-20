@@ -21,7 +21,6 @@ import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -35,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -125,13 +125,8 @@ public class PDFDownloadJob extends DownloadJob {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static void triggerCreation(String pi, String logId, String downloadIdentifier) throws PresentationException, IndexUnreachableException,
-            DownloadException {
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        File mediaRepository = new File(DataManager.getInstance().getConfiguration().getViewerHome());
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
-        }
+    public static void triggerCreation(String pi, String logId, String downloadIdentifier)
+            throws PresentationException, IndexUnreachableException, DownloadException {
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             //            logger.error("Cannot create download folder: {}", targetFolder);
@@ -143,10 +138,11 @@ public class PDFDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
+        String mediaRepository = Helper.getDataRepositoriesRootForRecord(pi);
         logger.debug("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/" + DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pi + ".xml");
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
-                title, mediaRepository.getAbsolutePath(), "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);
+                title, mediaRepository, "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);
         try {
             JSONObject response = TaskClient.getJsonResponse(client, post);
             logger.trace(response.toString());
