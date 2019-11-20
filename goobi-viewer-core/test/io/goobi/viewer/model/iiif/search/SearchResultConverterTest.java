@@ -28,6 +28,7 @@ import org.junit.Test;
 import de.intranda.api.annotation.oa.TextQuoteSelector;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -39,7 +40,7 @@ import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
  * @author florian
  *
  */
-public class SearchResultConverterTest {
+public class SearchResultConverterTest extends AbstractSolrEnabledTest{
 
     String text = "A bird in the hand is worth\ntwo in the bush.";
     SearchResultConverter converter;

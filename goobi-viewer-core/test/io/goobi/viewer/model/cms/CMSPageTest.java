@@ -219,7 +219,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         filePath = BeanUtils.escapeCriticalUrlChracters(filePath, false);
 
         String imageUrl = contentServerUrl + "image/-/" + filePath + "/full/max/0/default.jpg";
-        Assert.assertEquals(imageUrl, page.getContent(imageId));
+        Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));
 
     }
