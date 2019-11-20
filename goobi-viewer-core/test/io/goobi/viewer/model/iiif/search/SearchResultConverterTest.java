@@ -56,6 +56,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(URI.create(restUrl + "iiif/search"), URI.create(restUrl), pi, pageNo);
@@ -68,6 +69,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest{
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     /**
