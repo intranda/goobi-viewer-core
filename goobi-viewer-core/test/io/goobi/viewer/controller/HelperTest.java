@@ -50,7 +50,7 @@ public class HelperTest {
      * @verifies construct METS file path correctly
      */
     @Test
-    public void getDataFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
+    public void getSourceFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/1/indexed_mets/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._METS));
         Assert.assertEquals("resources/test/data/viewer/indexed_mets/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
@@ -61,7 +61,7 @@ public class HelperTest {
      * @verifies construct LIDO file path correctly
      */
     @Test
-    public void getDataFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
+    public void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/1/indexed_lido/PPN123.xml",
                 Helper.getSourceFilePath("PPN123.xml", "1", SolrConstants._LIDO));
         Assert.assertEquals("resources/test/data/viewer/indexed_lido/PPN123.xml", Helper.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
@@ -72,7 +72,7 @@ public class HelperTest {
      * @verifies throw IllegalArgumentException if format is unknown
      */
     @Test(expected = IllegalArgumentException.class)
-    public void getDataFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() throws Exception {
+    public void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() throws Exception {
         Helper.getSourceFilePath("1.xml", null, "bla");
     }
 
@@ -81,7 +81,7 @@ public class HelperTest {
      * @verifies throw IllegalArgumentException if fileName is null
      */
     @Test(expected = IllegalArgumentException.class)
-    public void getDataFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
+    public void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
         Helper.getSourceFilePath(null, null, SolrConstants._METS);
     }
 
@@ -150,5 +150,43 @@ public class HelperTest {
                 Files.delete(hotfolder);
             }
         }
+    }
+
+    /**
+     * @see Helper#getDataFolder(String,String,String)
+     * @verifies return correct folder if no data repository used
+     */
+    @Test
+    public void getDataFolder_shouldReturnCorrectFolderIfNoDataRepositoryUsed() throws Exception {
+        Path folder = Helper.getDataFolder("PPN123", "media", null);
+        Assert.assertEquals(Paths.get("resources/test/data/viewer/media/PPN123"), folder);
+    }
+
+    /**
+     * @see Helper#getDataFolder(String,String,String)
+     * @verifies return correct folder if data repository used
+     */
+    @Test
+    public void getDataFolder_shouldReturnCorrectFolderIfDataRepositoryUsed() throws Exception {
+        Path folder = Helper.getDataFolder("PPN123", "media", "1");
+        Assert.assertEquals(Paths.get("resources/test/data/viewer/data/1/media/PPN123"), folder);
+    }
+
+    /**
+     * @see Helper#getRepositoryPath(String)
+     * @verifies return correct path for empty data repository
+     */
+    @Test
+    public void getRepositoryPath_shouldReturnCorrectPathForEmptyDataRepository() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getViewerHome(), Helper.getRepositoryPath(null));
+    }
+
+    /**
+     * @see Helper#getRepositoryPath(String)
+     * @verifies return correct path for data repository name
+     */
+    @Test
+    public void getRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/", Helper.getRepositoryPath("1"));
     }
 }

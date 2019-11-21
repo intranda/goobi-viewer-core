@@ -914,17 +914,14 @@ public class Helper {
      * @param dataRepository Data repository name or absolute path
      * @return
      * @should return correct path for empty data repository
-     * @should return correct path for absolute data repository path
      * @should return correct path for data repository name
      */
-    static Path getRepositoryFolder(String dataRepository) {
+    static String getRepositoryPath(String dataRepository) {
         if (StringUtils.isBlank(dataRepository)) {
-            return Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
-        } else if (Paths.get(dataRepository).isAbsolute()) {
-            return Paths.get(dataRepository);
-        } else {
-            return Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
+            return DataManager.getInstance().getConfiguration().getViewerHome();
         }
+
+        return DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepository + '/';
     }
 
     /**
@@ -991,6 +988,8 @@ public class Helper {
      * @param dataFolderName
      * @param dataRepositoryName
      * @return
+     * @should return correct folder if no data repository used
+     * @should return correct folder if data repository used
      */
     public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryName) {
         Path repository;
@@ -1044,13 +1043,9 @@ public class Helper {
         }
 
         String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepositoryPath = getRepositoryPath(dataRepositoryName);
 
-        Path dataRepository = getRepositoryFolder(dataRepositoryName);
-        if (dataRepository == null) {
-            return null;
-        }
-
-        return Paths.get(dataRepository.toAbsolutePath().toString(), relativeFilePath);
+        return Paths.get(dataRepositoryPath, relativeFilePath);
     }
 
     /**
@@ -1088,8 +1083,7 @@ public class Helper {
             throw new IllegalArgumentException("format must be METS or LIDO");
         }
 
-        StringBuilder sb = new StringBuilder(getRepositoryFolder(dataRepository).toAbsolutePath().toString());
-        sb.append('/');
+        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants._METS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
@@ -1151,7 +1145,7 @@ public class Helper {
         }
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        Path filePath = Paths.get(getRepositoryFolder(dataRepository).toAbsolutePath().toString(), relativeFilePath);
+        Path filePath = Paths.get(getRepositoryPath(dataRepository), relativeFilePath);
 
         return filePath;
     }
