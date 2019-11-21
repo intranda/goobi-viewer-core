@@ -86,20 +86,6 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#getTextFilePath(String,String,String,String)
-     * @verifies return correct path
-     */
-    @Test
-    public void getTextFilePath_shouldReturnCorrectPath() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/alto/PPN123/1.xml",
-                Helper.getTextFilePath("PPN123", "1.xml", "1", SolrConstants.FILENAME_ALTO));
-        Assert.assertEquals("resources/test/data/viewer/data/1/fulltext/PPN123/1.txt",
-                Helper.getTextFilePath("PPN123", "1.txt", "1", SolrConstants.FILENAME_FULLTEXT));
-        Assert.assertEquals("resources/test/data/viewer/data/1/tei/PPN123/1.xml",
-                Helper.getTextFilePath("PPN123", "1.xml", "1", SolrConstants.FILENAME_TEI));
-    }
-
-    /**
      * @see Helper#parseMultipleIpAddresses(String)
      * @verifies filter multiple addresses correctly
      */

@@ -777,23 +777,32 @@ public class ContentResource {
     //        return filePath;
     //    }
 
-    public static List<java.nio.file.Path> getTEIFiles(String pi, String dataRepository) {
-        java.nio.file.Path teiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder(), dataRepository);
-        List<java.nio.file.Path> filePaths = new ArrayList<>();
-        if (Files.exists(teiPath)) {
-            // This will return the file with the requested language or alternatively the first file in the TEI folder
-            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
-            } catch (IOException e) {
-                logger.error(e.toString(), e);
+    public static List<java.nio.file.Path> getTEIFiles(String pi) {
+        try {
+            java.nio.file.Path teiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getTeiFolder());
+            List<java.nio.file.Path> filePaths = new ArrayList<>();
+            if (Files.exists(teiPath)) {
+                // This will return the file with the requested language or alternatively the first file in the TEI folder
+                try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
+                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+                } catch (IOException e) {
+                    logger.error(e.toString(), e);
+                }
             }
+
+            return filePaths;
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
         }
-        return filePaths;
+
+        return Collections.emptyList();
     }
 
-    public static java.nio.file.Path getCMDIFile(String pi, String langCode, String dataRepository) throws IOException {
+    public static java.nio.file.Path getCMDIFile(String pi, String langCode) throws IOException, PresentationException, IndexUnreachableException {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path cmdiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder(), dataRepository);
+        java.nio.file.Path cmdiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = null;
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
@@ -806,18 +815,27 @@ public class ContentResource {
         return filePath;
     }
 
-    public static List<java.nio.file.Path> getCMDIFiles(String pi, String dataRepository) {
-        java.nio.file.Path cdmiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder(), dataRepository);
-        List<java.nio.file.Path> filePaths = new ArrayList<>();
-        if (Files.exists(cdmiPath)) {
-            // This will return the file with the requested language or alternatively the first file in the TEI folder
-            try (Stream<java.nio.file.Path> teiFiles = Files.list(cdmiPath)) {
-                filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
-            } catch (IOException e) {
-                logger.error(e.toString(), e);
+    public static List<java.nio.file.Path> getCMDIFiles(String pi) {
+    
+        try {
+            java.nio.file.Path cdmiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
+            List<java.nio.file.Path> filePaths = new ArrayList<>();
+            if (Files.exists(cdmiPath)) {
+                // This will return the file with the requested language or alternatively the first file in the CMDI folder
+                try (Stream<java.nio.file.Path> teiFiles = Files.list(cdmiPath)) {
+                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+                } catch (IOException e) {
+                    logger.error(e.toString(), e);
+                }
             }
+            return filePaths;
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+        } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
         }
-        return filePaths;
+        
+        return Collections.emptyList();
     }
 
     /**

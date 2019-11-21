@@ -636,7 +636,7 @@ public class Helper {
             throw new IllegalArgumentException("Illegal page number: " + page);
         }
 
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
 
         String query = new StringBuilder().append('+')
                 .append(SolrConstants.PI_TOPSTRUCT)
@@ -897,7 +897,7 @@ public class Helper {
      * @throws PresentationException
      */
     public static String getDataRepositoriesRootForRecord(String pi) throws PresentationException, IndexUnreachableException {
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
         File mediaRepository;
         if (StringUtils.isNotEmpty(dataRepositoryName)) {
             mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryName);
@@ -956,7 +956,7 @@ public class Helper {
             throw new IllegalArgumentException("dataFolderNames may not be null");
         }
 
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
 
         Map<String, Path> ret = new HashMap<>(dataFolderNames.length);
         for (String dataFolderName : dataFolderNames) {
@@ -980,7 +980,7 @@ public class Helper {
             throw new IllegalArgumentException("pi may not be null");
         }
 
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
         return getDataFolder(pi, dataFolderName, dataRepository);
     }
 
@@ -1043,7 +1043,7 @@ public class Helper {
             throw new IllegalArgumentException("pi may not be null");
         }
 
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
 
         Path dataRepository = getRepositoryFolder(dataRepositoryName);
         if (dataRepository == null) {
@@ -1064,7 +1064,7 @@ public class Helper {
      */
     public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
         return getSourceFilePath(fileName, dataRepository, format);
     }
 
@@ -1150,7 +1150,7 @@ public class Helper {
             return null;
         }
 
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
         Path filePath = Paths.get(getRepositoryFolder(dataRepository).toAbsolutePath().toString(), relativeFilePath);
 
         return filePath;

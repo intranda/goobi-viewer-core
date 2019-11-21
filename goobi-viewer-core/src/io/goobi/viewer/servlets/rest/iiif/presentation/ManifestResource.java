@@ -507,10 +507,10 @@ public class ManifestResource extends AbstractResource {
         AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
         Layer layer;
         if (AnnotationType.TEI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo),
+            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
                     (id, lang) -> ContentResource.getTEIURI(id, lang));
         } else if (AnnotationType.CMDI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
+            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
         }
         if (AnnotationType.CROWDSOURCING.equals(type)) {
@@ -563,10 +563,10 @@ public class ManifestResource extends AbstractResource {
         if (doc == null) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " found");
         } else if (AnnotationType.TEI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
                     (id, lang) -> ContentResource.getTEIURI(id, lang));
         } else if (AnnotationType.CMDI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {

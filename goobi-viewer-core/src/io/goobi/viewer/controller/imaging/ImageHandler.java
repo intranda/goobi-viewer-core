@@ -111,10 +111,11 @@ public class ImageHandler {
      * @throws IllegalPathSyntaxException
      * @throws ContentLibException
      * @throws URISyntaxException
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+    public ImageInformation getImageInformation(PhysicalElement page)
+            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         String path = page.getFilepath();
         String url = null;
         if (isExternalUrl(path)) {

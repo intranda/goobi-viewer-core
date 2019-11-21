@@ -81,6 +81,9 @@ public final class SolrSearchIndex {
 
     public boolean initialized = false;
 
+    /** Application-scoped map containing already looked up data repository names of records. */
+    private static Map<String, String> dataRepositoryNames = new HashMap<>();
+
     private SolrServer server;
 
     public SolrSearchIndex(SolrServer server) {
@@ -677,7 +680,7 @@ public final class SolrSearchIndex {
         Object val = getSingleFieldValue(doc, field);
         return getAsInt(val);
     }
-    
+
     /**
      * @param doc
      * @param iswork
@@ -848,15 +851,32 @@ public final class SolrSearchIndex {
     }
 
     /**
-     * Retrieves the repository name for the record with the given PI. This method is package private to discourage clients from constructing data
-     * file paths manually instead of using Helper methods.
+     * Retrieves the repository name for the record with the given PI and persists it in a map. This method is package private to discourage clients
+     * from constructing data file paths manually instead of using Helper methods.
      * 
      * @param pi
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
+    String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
+        if (!dataRepositoryNames.containsKey(pi)) {
+            String dataRepositoryName = findDataRepository(pi);
+            dataRepositoryNames.put(pi, dataRepositoryName);
+        }
+
+        return dataRepositoryNames.get(pi);
+    }
+
+    /**
+     * Retrieves the repository name for the record with the given PI from the index.
+     * 
+     * @param pi
+     * @return Data repository name for the record with the given identifier; null if not in a repository
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("findDataRepository: {}", pi);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
