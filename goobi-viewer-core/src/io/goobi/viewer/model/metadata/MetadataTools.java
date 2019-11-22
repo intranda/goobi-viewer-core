@@ -501,6 +501,9 @@ public class MetadataTools {
         if (gndspec.length() == 3) {
             String ret = null;
             switch (gndspec.substring(0, 2)) {
+                case "gi":
+                    ret = MetadataGroupType.LOCATION.name();
+                    break;
                 case "ki":
                     ret = MetadataGroupType.CORPORATION.name();
                     break;
