@@ -101,7 +101,7 @@ public class HelperTest {
     @Test
     public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/",
-                Helper.buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
+                Helper.buildFullTextUrl("alto/PPN123/00000001.xml"));
     }
 
     /**
@@ -168,8 +168,16 @@ public class HelperTest {
      */
     @Test
     public void getDataFolder_shouldReturnCorrectFolderIfDataRepositoryUsed() throws Exception {
-        Path folder = Helper.getDataFolder("PPN123", "media", "1");
-        Assert.assertEquals(Paths.get("resources/test/data/viewer/data/1/media/PPN123"), folder);
+        {
+            // Just the folder name
+            Path folder = Helper.getDataFolder("PPN123", "media", "1");
+            Assert.assertEquals(Paths.get("resources/test/data/viewer/data/1/media/PPN123"), folder);
+        }
+        {
+            // Absolute path
+            Path folder = Helper.getDataFolder("PPN123", "media", "/opt/digiverso/data/1/");
+            Assert.assertEquals(Paths.get("/opt/digiverso/data/1/media/PPN123"), folder);
+        }
     }
 
     /**
@@ -188,5 +196,15 @@ public class HelperTest {
     @Test
     public void getRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/", Helper.getRepositoryPath("1"));
+    }
+
+    /**
+     * @see Helper#getDataFolders(String,String[])
+     * @verifies return all requested data folders
+     */
+    @Test
+    public void getDataFolders_shouldReturnAllRequestedDataFolders() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
     }
 }

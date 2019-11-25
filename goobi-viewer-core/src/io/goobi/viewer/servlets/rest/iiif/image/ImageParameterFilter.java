@@ -99,6 +99,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getMediaFolder())) {
                 addRepositoryParameter("param:imageSource",
                         dataFolders.get(DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString(), request);
+                logger.trace(dataFolders.get(DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString());
             }
             if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getPdfFolder())) {
                 addRepositoryParameter("param:pdfSource",

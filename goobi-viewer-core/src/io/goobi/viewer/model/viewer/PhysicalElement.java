@@ -603,22 +603,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     String loadFullText()
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (fullText == null && fulltextFileName != null) {
-            logger.trace("Loading full-text for page {}", fulltextFileName);
-            String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
-            try {
-                return Helper.getWebContentGET(url);
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
-                if (e.getCode() == 403) {
-                    logger.debug("Access denied for full-text file {}", fulltextFileName);
-                    throw new AccessDeniedException("fulltextAccessDenied");
-                }
-            }
+        if (fulltextFileName == null) {
+            return null;
         }
 
-        return null;
+        logger.trace("Loading full-text for page {}", fulltextFileName);
+        String url = Helper.buildFullTextUrl(fulltextFileName);
+        try {
+            return Helper.getWebContentGET(url);
+        } catch (HTTPException e) {
+            logger.error("Could not retrieve file from {}", url);
+            logger.error(e.getMessage());
+            if (e.getCode() == 403) {
+                logger.debug("Access denied for full-text file {}", fulltextFileName);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+            return null;
+        }
     }
 
     public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
@@ -682,7 +683,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 logger.debug("Access denied for ALTO file {}", altoFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
             }
-            String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
+            String url = Helper.buildFullTextUrl(altoFileName);
             logger.trace("URL: {}", url);
             try {
                 altoText = Helper.getWebContentGET(url);
@@ -906,8 +907,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return false;
     }
-    
-    
+
     /**
      * Checks if the media type is displayable as an image and access is granted for viewing an image
      * 
@@ -934,7 +934,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return false;
     }
-    
+
     /**
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
@@ -1191,14 +1191,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if PDF download is allowed for this page; false otherwise
      */
     public boolean isAccessPermissionPdf() {
-        if(!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
+        if (!DataManager.getInstance().getConfiguration().isPagePdfEnabled()) {
             return false;
         }
         // Prevent access if mime type incompatible
         if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
-        
 
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {

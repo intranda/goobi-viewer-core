@@ -816,7 +816,7 @@ public class ContentResource {
     }
 
     public static List<java.nio.file.Path> getCMDIFiles(String pi) {
-    
+
         try {
             java.nio.file.Path cdmiPath = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
             List<java.nio.file.Path> filePaths = new ArrayList<>();
@@ -834,7 +834,7 @@ public class ContentResource {
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
         }
-        
+
         return Collections.emptyList();
     }
 

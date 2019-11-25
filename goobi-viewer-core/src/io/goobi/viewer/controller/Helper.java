@@ -778,15 +778,14 @@ public class Helper {
     /**
      * Builds full-text document REST URL.
      * 
-     * @param dataRepository
      * @param filePath
      * @return Full REST URL
      * @throws ViewerConfigurationException
      * @should build url correctly
      */
-    public static String buildFullTextUrl(String dataRepository, String filePath) throws ViewerConfigurationException {
+    public static String buildFullTextUrl(String filePath) throws ViewerConfigurationException {
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
-                .append(StringUtils.isEmpty(dataRepository) ? '-' : dataRepository)
+                .append('-')
                 .append('/')
                 .append(filePath)
                 .append('/')
@@ -944,6 +943,7 @@ public class Helper {
      * @return HashMap<dataFolderName,Path>
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should return all requested data folders
      */
     public static Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -986,19 +986,19 @@ public class Helper {
      * 
      * @param pi
      * @param dataFolderName
-     * @param dataRepositoryName
+     * @param dataRepositoryFolder Absolute path to the data repository folder or just the folder name
      * @return
      * @should return correct folder if no data repository used
      * @should return correct folder if data repository used
      */
-    public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryName) {
+    public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
-        if (StringUtils.isBlank(dataRepositoryName)) {
+        if (StringUtils.isBlank(dataRepositoryFolder)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
-        } else if (Paths.get(dataRepositoryName).isAbsolute()) {
-            repository = Paths.get(dataRepositoryName);
+        } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {
+            repository = Paths.get(dataRepositoryFolder);
         } else {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryName);
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
         Path folder = repository.resolve(dataFolderName).resolve(pi);
@@ -1190,7 +1190,7 @@ public class Helper {
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (altoFilePath != null) {
             // ALTO file
-            String alto = loadFulltext(dataRepository, altoFilePath, request);
+            String alto = loadFulltext(altoFilePath, request);
             if (alto != null) {
                 return ALTOTools.getFullText(alto, mergeLineBreakWords, request);
 
@@ -1198,7 +1198,7 @@ public class Helper {
         }
         if (fulltextFilePath != null) {
             // Plain full-text file
-            String fulltext = loadFulltext(dataRepository, fulltextFilePath, request);
+            String fulltext = loadFulltext(fulltextFilePath, request);
             if (fulltext != null) {
                 return fulltext;
             }
@@ -1211,7 +1211,6 @@ public class Helper {
      * Loads given text file path as a string, if the client has full-text access permission.
      * 
      * @param pi
-     * @param dataRepository
      * @param filePath File path consisting of three party (datafolder/pi/filename); There must be two separators in the path!
      * @param request
      * @return
@@ -1223,13 +1222,13 @@ public class Helper {
      * @throws ViewerConfigurationException
      * @should return file content correctly
      */
-    public static String loadFulltext(String dataRepository, String filePath, HttpServletRequest request)
+    public static String loadFulltext(String filePath, HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (filePath == null) {
             return null;
         }
 
-        String url = Helper.buildFullTextUrl(dataRepository, filePath);
+        String url = Helper.buildFullTextUrl(filePath);
         try {
             return Helper.getWebContentGET(url);
         } catch (HTTPException e) {
