@@ -899,7 +899,11 @@ public class Helper {
         String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
         File mediaRepository;
         if (StringUtils.isNotEmpty(dataRepositoryName)) {
-            mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryName);
+            if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryName)).isAbsolute()) {
+                mediaRepository = new File(dataRepositoryName);
+            } else {
+                mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryName);
+            }
         } else {
             mediaRepository = new File(DataManager.getInstance().getConfiguration().getViewerHome());
         }
