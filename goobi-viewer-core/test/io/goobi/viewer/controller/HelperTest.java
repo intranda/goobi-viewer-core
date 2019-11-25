@@ -197,14 +197,4 @@ public class HelperTest {
     public void getRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/", Helper.getRepositoryPath("1"));
     }
-
-    /**
-     * @see Helper#getDataFolders(String,String[])
-     * @verifies return all requested data folders
-     */
-    @Test
-    public void getDataFolders_shouldReturnAllRequestedDataFolders() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
-    }
 }
