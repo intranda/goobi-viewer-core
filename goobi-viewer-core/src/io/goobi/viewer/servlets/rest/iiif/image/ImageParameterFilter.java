@@ -93,26 +93,11 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
         try {
-            Map<String, Path> dataFolders = Helper.getDataFolders(pi, DataManager.getInstance().getConfiguration().getMediaFolder(),
-                    DataManager.getInstance().getConfiguration().getPdfFolder(), DataManager.getInstance().getConfiguration().getAltoFolder(),
-                    DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
-            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getMediaFolder())) {
-                addRepositoryParameter("param:imageSource",
-                        dataFolders.get(DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString(), request);
-                logger.trace(dataFolders.get(DataManager.getInstance().getConfiguration().getMediaFolder()).toAbsolutePath().toString());
-            }
-            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getPdfFolder())) {
-                addRepositoryParameter("param:pdfSource",
-                        dataFolders.get(DataManager.getInstance().getConfiguration().getPdfFolder()).toAbsolutePath().toString(), request);
-            }
-            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getAltoFolder())) {
-                addRepositoryParameter("param:altoSource",
-                        dataFolders.get(DataManager.getInstance().getConfiguration().getAltoFolder()).toAbsolutePath().toString(), request);
-            }
-            if (dataFolders.containsKey(DataManager.getInstance().getConfiguration().getIndexedMetsFolder())) {
-                addRepositoryParameter("param:metsSource",
-                        dataFolders.get(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toAbsolutePath().toString(), request);
-            }
+            String repositoryRoot = Helper.getDataRepositoriesRootForRecord(pi);
+            addRepositoryParameter("param:imageSource", repositoryRoot, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
+            addRepositoryParameter("param:pdfSource", repositoryRoot, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
+            addRepositoryParameter("param:altoSource", repositoryRoot, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
+            addRepositoryParameter("param:metsSource", repositoryRoot, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             throw e;
@@ -121,16 +106,17 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             throw new PresentationException(e.getMessage());
         }
     }
-
     /**
      * @param request
-     * @param dataFolderPath
+     * @param dataRepository
+     * @param repositoryFolder
      * @param requestParameter
      */
-    private static void addRepositoryParameter(String requestParameter, String dataFolderPath, ContainerRequestContext request) {
+    private static void addRepositoryParameter(String requestParameter, String dataRepository, String repositoryFolder,
+            ContainerRequestContext request) {
+        StringBuilder sb = new StringBuilder(dataRepository).append("/").append(repositoryFolder);
         URI imageRepositoryPath;
-        imageRepositoryPath = Paths.get(dataFolderPath).toUri();
+        imageRepositoryPath = Paths.get(sb.toString()).toUri();
         request.setProperty(requestParameter, imageRepositoryPath.toString());
     }
-
 }
