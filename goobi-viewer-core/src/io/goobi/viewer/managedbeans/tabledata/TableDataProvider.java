@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.managedbeans.tabledata;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TableDataProvider<T> {
+public class TableDataProvider<T> implements Serializable {
+
+    private static final long serialVersionUID = 6109453168491579420L;
 
     private static final Logger logger = LoggerFactory.getLogger(TableDataProvider.class);
 
