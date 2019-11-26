@@ -93,7 +93,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
         try {
-            String repositoryRoot = Helper.getDataRepositoriesRootForRecord(pi);
+            String repositoryRoot = Helper.getDataRepositoryPathForRecord(pi);
             addRepositoryParameter("param:imageSource", repositoryRoot, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
             addRepositoryParameter("param:pdfSource", repositoryRoot, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
             addRepositoryParameter("param:altoSource", repositoryRoot, DataManager.getInstance().getConfiguration().getAltoFolder(), request);

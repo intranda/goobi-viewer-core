@@ -895,36 +895,31 @@ public class Helper {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static String getDataRepositoriesRootForRecord(String pi) throws PresentationException, IndexUnreachableException {
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        File mediaRepository;
-        if (StringUtils.isNotEmpty(dataRepositoryName)) {
-            if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryName)).isAbsolute()) {
-                mediaRepository = new File(dataRepositoryName);
-            } else {
-                mediaRepository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryName);
-            }
-        } else {
-            mediaRepository = new File(DataManager.getInstance().getConfiguration().getViewerHome());
-        }
-
-        return mediaRepository.getAbsolutePath();
+    public static String getDataRepositoryPathForRecord(String pi) throws PresentationException, IndexUnreachableException {
+        String dataRepositoryPath = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        return getDataRepositoryPath(dataRepositoryPath);
     }
 
     /**
-     * Returns the absolute path to the data repository with the given name (including a slash at the end).
+     * Returns the absolute path to the data repository with the given name (including a slash at the end). Package private to discourage direct usage
+     * by clients.
      *
-     * @param dataRepository Data repository name or absolute path
+     * @param dataRepositoryPath Data repository name or absolute path
      * @return
      * @should return correct path for empty data repository
      * @should return correct path for data repository name
+     * @should return correct path for absolute data repository path
      */
-    static String getRepositoryPath(String dataRepository) {
-        if (StringUtils.isBlank(dataRepository)) {
+    static String getDataRepositoryPath(String dataRepositoryPath) {
+        if (StringUtils.isBlank(dataRepositoryPath)) {
             return DataManager.getInstance().getConfiguration().getViewerHome();
         }
 
-        return DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepository + '/';
+        if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryPath)).isAbsolute()) {
+            return dataRepositoryPath + '/';
+        }
+
+        return DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepositoryPath + '/';
     }
 
     /**
@@ -1047,7 +1042,7 @@ public class Helper {
         }
 
         String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        String dataRepositoryPath = getRepositoryPath(dataRepositoryName);
+        String dataRepositoryPath = getDataRepositoryPath(dataRepositoryName);
 
         return Paths.get(dataRepositoryPath, relativeFilePath);
     }
@@ -1087,7 +1082,7 @@ public class Helper {
             throw new IllegalArgumentException("format must be METS or LIDO");
         }
 
-        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants._METS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
@@ -1149,7 +1144,7 @@ public class Helper {
         }
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        Path filePath = Paths.get(getRepositoryPath(dataRepository), relativeFilePath);
+        Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
 
         return filePath;
     }

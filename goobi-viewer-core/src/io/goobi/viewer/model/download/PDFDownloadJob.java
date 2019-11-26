@@ -138,7 +138,7 @@ public class PDFDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        String mediaRepository = Helper.getDataRepositoriesRootForRecord(pi);
+        String mediaRepository = Helper.getDataRepositoryPathForRecord(pi);
         logger.debug("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/" + DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), pi + ".xml");
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,

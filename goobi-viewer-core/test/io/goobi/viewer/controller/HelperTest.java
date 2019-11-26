@@ -181,20 +181,29 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#getRepositoryPath(String)
+     * @see Helper#getDataRepositoryPath(String)
      * @verifies return correct path for empty data repository
      */
     @Test
-    public void getRepositoryPath_shouldReturnCorrectPathForEmptyDataRepository() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getViewerHome(), Helper.getRepositoryPath(null));
+    public void getDataRepositoryPath_shouldReturnCorrectPathForEmptyDataRepository() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getViewerHome(), Helper.getDataRepositoryPath(null));
     }
 
     /**
-     * @see Helper#getRepositoryPath(String)
+     * @see Helper#getDataRepositoryPath(String)
      * @verifies return correct path for data repository name
      */
     @Test
-    public void getRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/", Helper.getRepositoryPath("1"));
+    public void getDataRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/", Helper.getDataRepositoryPath("1"));
+    }
+
+    /**
+     * @see Helper#getDataRepositoryPath(String)
+     * @verifies return correct path for absolute data repository path
+     */
+    @Test
+    public void getDataRepositoryPath_shouldReturnCorrectPathForAbsoluteDataRepositoryPath() throws Exception {
+        Assert.assertEquals("/opt/digiverso/viewer/1/", Helper.getDataRepositoryPath("/opt/digiverso/viewer/1"));
     }
 }

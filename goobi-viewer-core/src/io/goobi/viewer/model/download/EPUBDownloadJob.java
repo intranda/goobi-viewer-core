@@ -190,7 +190,7 @@ public class EPUBDownloadJob extends DownloadJob {
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         File metsFile = new File(Helper.getSourceFilePath(pi + ".xml", SolrConstants._METS));
-        String mediaRepository = Helper.getDataRepositoriesRootForRecord(pi);
+        String mediaRepository = Helper.getDataRepositoryPathForRecord(pi);
         HttpPost post = TaskClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(),
                 CmsBean.getCurrentLocale().getLanguage(), "", priority, "", title, mediaRepository, "VIEWEREPUB", downloadIdentifier,
                 "noServerTypeInTaskClient", "", "", "", CmsBean.getCurrentLocale().getLanguage(), false);
