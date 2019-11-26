@@ -18,7 +18,6 @@ package io.goobi.viewer.controller.imaging;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
@@ -34,7 +33,9 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -110,26 +111,19 @@ public class ImageHandler {
      * @throws IllegalPathSyntaxException
      * @throws ContentLibException
      * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+    public ImageInformation getImageInformation(PhysicalElement page)
+            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         String path = page.getFilepath();
         String url = null;
         if (isExternalUrl(path)) {
             url = path;
         } else {
-            StringBuilder sbUrl = new StringBuilder();
-            if (page.getDataRepository() != null) {
-                if (!Paths.get(page.getDataRepository()).isAbsolute()) {
-                    sbUrl.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
-                }
-                sbUrl.append(page.getDataRepository()).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
-            } else {
-                sbUrl.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                        .append(DataManager.getInstance().getConfiguration().getMediaFolder())
-                        .append("/");
-            }
-            sbUrl.append(page.getPi()).append('/').append(page.getFilepath());
-            url = Paths.get(sbUrl.toString()).toUri().toString();
+            url = Helper.getDataFilePath(page.getPi(), DataManager.getInstance().getConfiguration().getMediaFolder(), null, page.getFilepath())
+                    .toUri()
+                    .toString();
         }
 
         logger.trace(url);

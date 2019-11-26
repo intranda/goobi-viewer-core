@@ -17,10 +17,10 @@ package io.goobi.viewer.servlets.rest.iiif.image;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -92,9 +92,12 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      * @throws PresentationException
      */
     public static void addRepositoryPathIfRequired(ContainerRequestContext request, String pi) throws PresentationException {
-        String dataRepository = null;
         try {
-            dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+            String repositoryRoot = Helper.getDataRepositoryPathForRecord(pi);
+            addRepositoryParameter("param:imageSource", repositoryRoot, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
+            addRepositoryParameter("param:pdfSource", repositoryRoot, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
+            addRepositoryParameter("param:altoSource", repositoryRoot, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
+            addRepositoryParameter("param:metsSource", repositoryRoot, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             throw e;
@@ -102,24 +105,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             throw new PresentationException(e.getMessage());
         }
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            String repositoriesHome;
-            if (Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
-                repositoriesHome = "";
-            } else {
-                repositoriesHome = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).toUri().toString();
-            }
-            dataRepository = repositoriesHome + dataRepository;
-
-            addRepositoryParameter("param:imageSource", dataRepository, DataManager.getInstance().getConfiguration().getMediaFolder(), request);
-            addRepositoryParameter("param:pdfSource", dataRepository, DataManager.getInstance().getConfiguration().getPdfFolder(), request);
-            addRepositoryParameter("param:altoSource", dataRepository, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
-            addRepositoryParameter("param:metsSource", dataRepository, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
-
-        }
-
     }
-
     /**
      * @param request
      * @param dataRepository
@@ -133,5 +119,4 @@ public class ImageParameterFilter implements ContainerRequestFilter {
         imageRepositoryPath = Paths.get(sb.toString()).toUri();
         request.setProperty(requestParameter, imageRepositoryPath.toString());
     }
-
 }

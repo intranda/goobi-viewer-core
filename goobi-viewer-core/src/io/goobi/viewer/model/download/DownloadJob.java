@@ -84,7 +84,6 @@ public abstract class DownloadJob implements Serializable {
     protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
 
-    
     private static final Logger logger = LoggerFactory.getLogger(DownloadJob.class);
 
     private static final long serialVersionUID = -491389510147134159L;
@@ -111,7 +110,7 @@ public abstract class DownloadJob implements Serializable {
                     case "INITIALIZED":
                         return JobStatus.INITIALIZED;
                     case "DELETED":
-                    return JobStatus.DELETED;
+                        return JobStatus.DELETED;
                 }
             }
 
@@ -248,10 +247,9 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.getObservers().add(useEmail);
             }
 
-            
-            if(downloadJob.status.equals(JobStatus.WAITING)) {
+            if (downloadJob.status.equals(JobStatus.WAITING)) {
                 //keep waiting
-            } else if(downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
+            } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
                 //not waiting and file exists -> file has been created
                 downloadJob.setStatus(JobStatus.READY);
             } else {
@@ -285,18 +283,17 @@ public abstract class DownloadJob implements Serializable {
      */
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException, DownloadException;
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-
-        File repository = new File(DataManager.getInstance().getConfiguration().getViewerHome());
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            repository = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
-        }
-        File abbyyRepository = new File(repository, DataManager.getInstance().getConfiguration().getAbbyyFolder());
-        File altoRepsoitory = new File(repository, DataManager.getInstance().getConfiguration().getAltoFolder());
-        File abbyyFolder = new File(abbyyRepository, pi);
-        File altoFolder = new File(altoRepsoitory, pi);
-        return abbyyFolder.isDirectory() || altoFolder.isDirectory();
+        Path abbyyFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
+        Path altoFolder = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
+        return Files.isDirectory(abbyyFolder) || Files.isDirectory(altoFolder);
     }
 
     /**
@@ -400,8 +397,8 @@ public abstract class DownloadJob implements Serializable {
      * @throws AuthenticationFailedException
      * @throws UnsupportedEncodingException
      */
-    public boolean notifyObservers(JobStatus status, String message) throws UnsupportedEncodingException, AuthenticationFailedException,
-            MessagingException {
+    public boolean notifyObservers(JobStatus status, String message)
+            throws UnsupportedEncodingException, AuthenticationFailedException, MessagingException {
         if (observers == null || observers.isEmpty()) {
             return false;
         }
@@ -564,14 +561,10 @@ public abstract class DownloadJob implements Serializable {
     public long getTtl() {
         return ttl;
     }
-    
+
     public String getTimeToLive() {
         Duration d = Duration.ofMillis(ttl);
-        return String.format("%dd %d:%02d:%02d", 
-                d.toDays(),
-                d.toHours()%24,
-                d.toMinutes()%60, 
-                d.getSeconds()%60);
+        return String.format("%dd %d:%02d:%02d", d.toDays(), d.toHours() % 24, d.toMinutes() % 60, d.getSeconds() % 60);
     }
 
     /**
@@ -626,10 +619,9 @@ public abstract class DownloadJob implements Serializable {
     public void setObservers(List<String> observers) {
         this.observers = observers;
     }
-    
+
     /**
-     * Empties the complete observer list.
-     *  Should be used after observers have been notified to avoid repeat notifications
+     * Empties the complete observer list. Should be used after observers have been notified to avoid repeat notifications
      */
     public void resetObservers() {
         this.observers = new ArrayList<String>();
@@ -689,7 +681,7 @@ public abstract class DownloadJob implements Serializable {
         }
 
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

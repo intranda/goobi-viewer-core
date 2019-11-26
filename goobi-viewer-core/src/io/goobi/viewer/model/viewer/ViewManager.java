@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -327,7 +328,7 @@ public class ViewManager implements Serializable {
     public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
         return getCurrentMasterImageUrl(Scale.MAX);
     }
-        
+
     public String getCurrentMasterImageUrl(Scale scale) throws IndexUnreachableException, DAOException {
 
         PageType pageType = BeanUtils.getNavigationHelper().getCurrentPagerType();
@@ -367,36 +368,36 @@ public class ViewManager implements Serializable {
         }
         return sb.toString();
     }
-    
+
     public String getJpegUrlForDownload() throws IndexUnreachableException, DAOException {
-        
+
         Scale scale;
-        
+
         String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxJpegSize();
-        if(maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
-        } else if(maxSize.matches("\\d{1,9}")) {
+        } else if (maxSize.matches("\\d{1,9}")) {
             scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
         } else {
             throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
         }
-        
+
         return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), scale);
     }
-    
+
     public String getMasterImageUrlForDownload() throws IndexUnreachableException, DAOException {
-        
+
         Scale scale;
-        
+
         String maxSize = DataManager.getInstance().getConfiguration().getWidgetUsageMaxMasterImageSize();
-        if(maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
+        if (maxSize.equalsIgnoreCase(Scale.MAX_SIZE) || maxSize.equalsIgnoreCase(Scale.FULL_SIZE)) {
             scale = Scale.MAX;
-        } else if(maxSize.matches("\\d{1,9}")) {
+        } else if (maxSize.matches("\\d{1,9}")) {
             scale = new Scale.ScaleToBox(Integer.parseInt(maxSize), Integer.parseInt(maxSize));
         } else {
             throw new IllegalArgumentException("Not a valid size paramter in config: " + maxSize);
         }
-        
+
         return getCurrentMasterImageUrl(scale);
 
     }
@@ -1175,7 +1176,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws ViewerConfigurationException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public String getPdfStructDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException, PresentationException {
         StructElement currentStruct = getCurrentDocument();
@@ -1183,7 +1184,6 @@ public class ViewManager implements Serializable {
 
     }
 
-    
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
      * 
@@ -1707,32 +1707,12 @@ public class ViewManager implements Serializable {
         }
 
         try {
-            File sourceFileDir;
-            if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-                String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                StringBuilder sbFilePath = new StringBuilder();
-                if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                    sbFilePath.append(dataRepositoriesHome).append(File.separator);
-                }
-                sbFilePath.append(topDocument.getDataRepository())
-                        .append(File.separator)
-                        .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                        .append(File.separator)
-                        .append(getPi());
-                sourceFileDir = new File(sbFilePath.toString());
-            } else {
-                sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance().getConfiguration().getViewerHome())
-                        .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                        .append(File.separator)
-                        .append(getPi())
-                        .toString());
-            }
-
-            if (!sourceFileDir.isDirectory()) {
+            Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+            if (!Files.isDirectory(sourceFileDir)) {
                 return false;
             }
 
-            List<Path> files = Arrays.asList(sourceFileDir.listFiles()).stream().map(File::toPath).collect(Collectors.toList());
+            List<Path> files = Arrays.asList(sourceFileDir.toFile().listFiles()).stream().map(File::toPath).collect(Collectors.toList());
             if (!files.isEmpty()) {
                 return AccessConditionUtils
                         .checkContentFileAccessPermission(pi,
@@ -1743,6 +1723,8 @@ public class ViewManager implements Serializable {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
         return false;
@@ -1754,54 +1736,36 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws PresentationException
      */
-    public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException {
-        List<LabeledLink> ret = new ArrayList<>();
-
-        File sourceFileDir;
-        if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            StringBuilder sbFilePath = new StringBuilder();
-            if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                sbFilePath.append(dataRepositoriesHome).append(File.separator);
-            }
-            sbFilePath.append(topDocument.getDataRepository())
-                    .append(File.separator)
-                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                    .append(File.separator)
-                    .append(getPi());
-            sourceFileDir = new File(sbFilePath.toString());
-        } else {
-            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome())
-                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                    .append(File.separator)
-                    .append(getPi())
-                    .toString());
-
+    public List<LabeledLink> getContentDownloadLinksForWork() throws IndexUnreachableException, DAOException, PresentationException {
+        Path sourceFileDir = Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        if (!Files.isDirectory(sourceFileDir)) {
+            return Collections.emptyList();
         }
-        if (sourceFileDir.isDirectory()) {
-            try {
-                File[] sourcesArray = sourceFileDir.listFiles();
-                if (sourcesArray != null && sourcesArray.length > 0) {
-                    List<File> sourcesList = Arrays.asList(sourcesArray);
-                    Collections.sort(sourcesList, filenameComparator);
-                    Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                            sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
-                    for (File file : sourcesList) {
-                        if (file.isFile()) {
-                            Boolean access = fileAccess.get(file.toPath().toString());
-                            if (access != null && access) {
-                                String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
-                                        + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
-                                ret.add(new LabeledLink(file.getName(), url, 0));
-                            }
-                            ;
+
+        List<LabeledLink> ret = new ArrayList<>();
+        try {
+            File[] sourcesArray = sourceFileDir.toFile().listFiles();
+            if (sourcesArray != null && sourcesArray.length > 0) {
+                List<File> sourcesList = Arrays.asList(sourcesArray);
+                Collections.sort(sourcesList, filenameComparator);
+                Map<String, Boolean> fileAccess = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
+                        sourcesList.stream().map(file -> file.toPath()).collect(Collectors.toList()));
+                for (File file : sourcesList) {
+                    if (file.isFile()) {
+                        Boolean access = fileAccess.get(file.toPath().toString());
+                        if (access != null && access) {
+                            String url = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/file?pi=" + getPi() + "&file="
+                                    + URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING);
+                            ret.add(new LabeledLink(file.getName(), url, 0));
                         }
+                        ;
                     }
                 }
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage(), e);
             }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
         }
 
         return ret;
@@ -1824,59 +1788,39 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws PresentationException 
      */
-    public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException {
+    public List<LabeledLink> getContentDownloadLinksForPage() throws IndexUnreachableException, DAOException, PresentationException {
         List<LabeledLink> ret = new ArrayList<>();
 
         String page = String.valueOf(currentImageOrder);
-        File sourceFileDir;
-        if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            StringBuilder sbFilePath = new StringBuilder();
-            if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                sbFilePath.append(dataRepositoriesHome).append(File.separator);
-            }
-            sbFilePath.append(topDocument.getDataRepository())
-                    .append(File.separator)
-                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                    .append(File.separator)
-                    .append(getPi())
-                    .append(File.separator)
-                    .append(page);
-            sourceFileDir = new File(sbFilePath.toString());
-        } else {
-            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome())
-                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
-                    .append(File.separator)
-                    .append(getPi())
-                    .append(File.separator)
-                    .append(page)
-                    .toString());
-
+        Path sourceFileDir = Paths
+                .get(Helper.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder()).toAbsolutePath().toString(), page);
+        if (!Files.isDirectory(sourceFileDir)) {
+            return Collections.emptyList();
         }
-        if (sourceFileDir.isDirectory()) {
-            try {
-                List<File> files = Arrays.asList(sourceFileDir.listFiles());
-                Map<String, Boolean> fileAccessMap = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
-                        files.stream().map(File::toPath).collect(Collectors.toList()));
-                for (File file : files) {
-                    if (file.isFile()) {
-                        Boolean access = fileAccessMap.get(file.toPath().toString());
-                        if (access != null && access) {
-                            String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/file?pi=")
-                                    .append(getPi())
-                                    .append("&page=")
-                                    .append(page)
-                                    .append("&file=")
-                                    .append(URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING))
-                                    .toString();
-                            ret.add(new LabeledLink(file.getName(), url, 0));
-                        }
+
+        try {
+            List<File> files = Arrays.asList(sourceFileDir.toFile().listFiles());
+            Map<String, Boolean> fileAccessMap = AccessConditionUtils.checkContentFileAccessPermission(getPi(), BeanUtils.getRequest(),
+                    files.stream().map(File::toPath).collect(Collectors.toList()));
+            for (File file : files) {
+                if (file.isFile()) {
+                    Boolean access = fileAccessMap.get(file.toPath().toString());
+                    if (access != null && access) {
+                        String url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/file?pi=")
+                                .append(getPi())
+                                .append("&page=")
+                                .append(page)
+                                .append("&file=")
+                                .append(URLEncoder.encode(file.getName(), Helper.DEFAULT_ENCODING))
+                                .toString();
+                        ret.add(new LabeledLink(file.getName(), url, 0));
                     }
                 }
-            } catch (UnsupportedEncodingException e) {
-                logger.error(e.getMessage(), e);
             }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
         }
 
         return ret;
@@ -2524,7 +2468,5 @@ public class ViewManager implements Serializable {
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
         return getCurrentPage() != null;
     }
-    
-    
 
 }

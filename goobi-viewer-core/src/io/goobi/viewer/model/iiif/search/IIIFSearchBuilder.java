@@ -19,17 +19,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -41,10 +37,7 @@ import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
 import de.intranda.api.iiif.search.SearchResultLayer;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
-import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
@@ -57,7 +50,6 @@ import io.goobi.viewer.model.iiif.presentation.builder.AbstractBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
-import io.goobi.viewer.model.iiif.search.parser.AltoSearchParser;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
@@ -593,14 +585,20 @@ public class IIIFSearchBuilder {
         return (pageNo - 1) * getHitsPerPage();
     }
 
-    private Path getPath(String pi, String filename) throws PresentationException, IndexUnreachableException {
-        if (StringUtils.isBlank(filename)) {
+    /**
+     * 
+     * @param pi Record identifier
+     * @param relativeFilePath File path relative to the data repositories root
+     * @return Absolute path to the file
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static Path getPath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(relativeFilePath)) {
             return null;
         }
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        Path filePath = Paths.get(Helper.getRepositoryPath(dataRepository), filename);
 
-        return filePath;
+        return Helper.getDataFilePath(pi, relativeFilePath);
     }
 
     /**

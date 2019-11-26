@@ -59,7 +59,7 @@
                             sCode += '</a>';
                             sCode += '</dt>';
                             sCode += '<dd class="rss-elem-info">';
-                            sCode += '<small>' + lastImportsMsg + '</small><br />';
+                            sCode += '<small>' + lastImportsMsg + '</small> ';
                             sCode += '<small>' + sDate + '</small>';
                             sCode += '</dd>';
                             sCode += '</div>';
