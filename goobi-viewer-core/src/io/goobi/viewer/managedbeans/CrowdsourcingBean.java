@@ -813,13 +813,10 @@ public class CrowdsourcingBean implements Serializable {
         }
 
         for (Campaign campaign : allCampaigns) {
-            // Skip inactive campaigns
             //            if (!CampaignVisibility.PUBLIC.equals(campaign.getVisibility()) && !CampaignVisibility.RESTRICTED.equals(campaign.getVisibility())) {
             //                continue;
             //            }
-            if (!campaign.isHasStarted() || campaign.isHasEnded()) {
-                continue;
-            }
+
             QueryResponse qr = DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(campaign.getSolrQuery(), Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);
