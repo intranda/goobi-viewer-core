@@ -42,9 +42,9 @@
                             }
                             var time = oDate.toLocaleTimeString();
                             
-                            sDate = weekDayNames[ oDate.getDay() ];
-                            sDate += ", ";
-                            sDate += oDate.getDate();
+//                            sDate = weekDayNames[ oDate.getDay() ];
+//                            sDate += ", ";
+                            sDate = oDate.getDate();
                             sDate += ". ";
                             sDate += monthNames[ oDate.getMonth() ];
                             sDate += " ";
