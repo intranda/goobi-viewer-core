@@ -72,6 +72,7 @@
 			  alwaysCompressToJPEG="true" 
 			  metsFileGroup="PRESENTATION" 
 			  writeAsPdfA="true"
+			  metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
 			  pagesize="original" />
 
 
