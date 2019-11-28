@@ -757,6 +757,9 @@ public class ViewManager implements Serializable {
             // Reset LOGID so that the same TOC element doesn't stay highlighted when flipping pages
             logId = null;
         }
+        if(currentDocument == null || currentDocument.getLuceneId() != currentDocumentIddoc) {
+            setCurrentDocument(new StructElement(currentDocumentIddoc));
+        }
     }
 
     /**
