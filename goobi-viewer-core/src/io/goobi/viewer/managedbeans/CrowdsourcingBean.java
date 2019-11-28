@@ -742,7 +742,8 @@ public class CrowdsourcingBean implements Serializable {
             return "pretty:crowdCampaigns";
         } else
             try {
-                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign()) || !getTargetCampaign().isEligibleToEdit(getTargetIdentifier(), getTargetRecordStatus(), userBean.getUser())) {
+                if (userBean == null || !isAllowed(userBean.getUser(), getTargetCampaign())
+                        || !getTargetCampaign().isEligibleToEdit(getTargetIdentifier(), getTargetRecordStatus(), userBean.getUser())) {
                     return "pretty:crowdCampaigns";
                 } else {
                     return "";
@@ -812,10 +813,10 @@ public class CrowdsourcingBean implements Serializable {
         }
 
         for (Campaign campaign : allCampaigns) {
-            // Skip inactive campaigns
-            if (!CampaignVisibility.PUBLIC.equals(campaign.getVisibility()) && !CampaignVisibility.RESTRICTED.equals(campaign.getVisibility())) {
-                continue;
-            }
+            //            if (!CampaignVisibility.PUBLIC.equals(campaign.getVisibility()) && !CampaignVisibility.RESTRICTED.equals(campaign.getVisibility())) {
+            //                continue;
+            //            }
+
             QueryResponse qr = DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(campaign.getSolrQuery(), Collections.singletonList(SolrConstants.PI_TOPSTRUCT), 1, false);

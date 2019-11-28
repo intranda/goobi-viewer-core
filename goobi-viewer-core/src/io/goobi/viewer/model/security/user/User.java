@@ -986,6 +986,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
         List<Campaign> ret = new ArrayList<>(allCampaigns.size());
         for (Campaign campaign : allCampaigns) {
             logger.trace("campaign: {}", campaign.getTitle());
+            // Skip inactive campaigns
+            if (!campaign.isHasStarted() || campaign.isHasEnded()) {
+                continue;
+            }
             switch (campaign.getVisibility()) {
                 case PUBLIC:
                     ret.add(campaign);
@@ -1389,13 +1393,13 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
-     * Get the {@link User#id} of a user from a URI 
+     * Get the {@link User#id} of a user from a URI
      * 
      * @param idAsURI
      * @return
      */
     public static Long getId(URI idAsURI) {
-        if(idAsURI == null) {
+        if (idAsURI == null) {
             return null;
         }
         Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());

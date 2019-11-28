@@ -113,7 +113,7 @@
                     </h:panelGroup>
                     <!-- USER NAVIGATION WITH DROPDOWN -->
                     <h:panelGroup rendered="#{cc.attrs.displayDropdown == true}">
-                        <h:panelGroup rendered="#{configurationBean.displayUserNavigation}">
+                        <h:panelGroup rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn}">
                             <li>
                                 <h:outputLink
                                     value="#{navigationHelper.applicationUrl}user/"
