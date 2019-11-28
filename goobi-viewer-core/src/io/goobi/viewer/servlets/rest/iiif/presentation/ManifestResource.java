@@ -152,46 +152,54 @@ public class ManifestResource extends AbstractResource {
 
         return createManifest(pi, BuildMode.IIIF);
     }
-    
+
     /**
-     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting),
-     * user comments (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
+     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
+     * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
      * 
      * 
-     * @param pi        The pi of the manifest to search
-     * @param query     The search query; a list of space separated terms. 
-     *                  The search is for all complete words which match any of the query terms. 
-     *                  Terms may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
-     * @param motivation    a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
-     *                  <ul>
-     *                     <li>painting: fulltext resources</li>
-     *                     <li>non-painting: all supported resources except fulltext</li>
-     *                     <li>commenting: user comments</li>
-     *                     <li>describing: Crowdsourced or other general annotations</li>
-     *                  </ul>
-     * @param date  not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param user  not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param page  the page number for paged result sets. if this is empty, page=1 is assumed
-     * @return  a {@link SearchResult} containing all annotations matching the query in the 'resources' property
-     * @throws IndexUnreachableException    If the index cannot be reached
-     * @throws PresentationException        if an error occured in the search
+     * @param pi The pi of the manifest to search
+     * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
+     *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
+     * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
+     *            <ul>
+     *            <li>painting: fulltext resources</li>
+     *            <li>non-painting: all supported resources except fulltext</li>
+     *            <li>commenting: user comments</li>
+     *            <li>describing: Crowdsourced or other general annotations</li>
+     *            </ul>
+     * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param page the page number for paged result sets. if this is empty, page=1 is assumed
+     * @return a {@link SearchResult} containing all annotations matching the query in the 'resources' property
+     * @throws IndexUnreachableException If the index cannot be reached
+     * @throws PresentationException if an error occured in the search
      */
     @GET
     @Path("/{pi}/manifest/search")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
+            @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
+            throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
-    
+
     @GET
     @Path("/{pi}/manifest/autocomplete")
     @Produces({ MediaType.APPLICATION_JSON })
-    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
-        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation).setDate(date).setUser(user).setPage(page).buildAutoSuggest();
+    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
+            @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
+            @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+        return new IIIFSearchBuilder(getRequestURI(), query, pi).setMotivation(motivation)
+                .setDate(date)
+                .setUser(user)
+                .setPage(page)
+                .buildAutoSuggest();
     }
-    
+
     /**
-     * Returns the entire IIIF manifest for the given pi, excluding all "seeAlso" references and annotation lists other than the images themselves. If the given pi points to an anchor, a IIIF collection is returned instead
+     * Returns the entire IIIF manifest for the given pi, excluding all "seeAlso" references and annotation lists other than the images themselves. If
+     * the given pi points to an anchor, a IIIF collection is returned instead
      * 
      * @param pi
      * @return The manifest or collection
@@ -210,9 +218,10 @@ public class ManifestResource extends AbstractResource {
 
         return createManifest(pi, BuildMode.IIIF_SIMPLE);
     }
-    
+
     /**
-     * Returns the entire IIIF manifest for the given pi without the sequence and structure lists. If the given pi points to an anchor, a IIIF collection is returned instead
+     * Returns the entire IIIF manifest for the given pi without the sequence and structure lists. If the given pi points to an anchor, a IIIF
+     * collection is returned instead
      * 
      * @param pi
      * @return The manifest or collection
@@ -238,7 +247,6 @@ public class ManifestResource extends AbstractResource {
         return manifest;
     }
 
-
     /**
      * @param pi
      * @return
@@ -249,8 +257,8 @@ public class ManifestResource extends AbstractResource {
      * @throws ViewerConfigurationException
      * @throws DAOException
      */
-    private IPresentationModelElement createManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException, ContentNotFoundException,
-            URISyntaxException, ViewerConfigurationException, DAOException {
+    private IPresentationModelElement createManifest(String pi, BuildMode mode) throws PresentationException, IndexUnreachableException,
+            ContentNotFoundException, URISyntaxException, ViewerConfigurationException, DAOException {
         getManifestBuilder().setBuildMode(mode);
         getSequenceBuilder().setBuildMode(mode);
         List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
@@ -264,9 +272,9 @@ public class ManifestResource extends AbstractResource {
             getManifestBuilder().addVolumes((Collection) manifest, docs.subList(1, docs.size()));
         } else if (manifest instanceof Manifest) {
             getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
-            
+
             getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
-            
+
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
                 List<Range> ranges = getStructureBuilder().generateStructure(docs, pi, false);
@@ -278,10 +286,6 @@ public class ManifestResource extends AbstractResource {
 
         return manifest;
     }
-    
-    
-
-
 
     /**
      * Creates A IIIF sequence containing all pages belonging to the given pi
@@ -410,8 +414,9 @@ public class ManifestResource extends AbstractResource {
             Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
             if (canvas != null) {
                 getSequenceBuilder().addSeeAlsos(canvas, doc, page);
-                getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
-                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
+                getSequenceBuilder().addOtherContent(doc, page, canvas, false);
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
+                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), null);
                 return canvas;
             }
         }
@@ -451,19 +456,20 @@ public class ManifestResource extends AbstractResource {
                 if (!comments.isEmpty()) {
                     annotations.put(AnnotationType.COMMENT, comments.get(0));
                 }
-            } else if(AnnotationType.CROWDSOURCING.equals(type)) {
+            } else if (AnnotationType.CROWDSOURCING.equals(type)) {
                 annotations = new HashMap<>();
                 Map<AnnotationType, List<AnnotationList>> annoTempMap = new HashMap<>();
-                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas), getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap );
+                getSequenceBuilder().addCrowdourcingAnnotations(Collections.singletonList(canvas),
+                        getSequenceBuilder().getCrowdsourcingAnnotations(pi, false), annoTempMap);
                 AnnotationList annoList = null;
-                if(annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {                    
+                if (annoTempMap.get(AnnotationType.CROWDSOURCING) != null) {
                     annoList = annoTempMap.get(AnnotationType.CROWDSOURCING).stream().findFirst().orElse(null);
                 }
-                if(annoList != null) {
+                if (annoList != null) {
                     annotations.put(AnnotationType.CROWDSOURCING, annoList);
                 }
             } else {
-                annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), true);
+                annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, true);
             }
             if (annotations.get(type) != null) {
                 AnnotationList al = annotations.get(type);
@@ -501,14 +507,15 @@ public class ManifestResource extends AbstractResource {
         AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
         Layer layer;
         if (AnnotationType.TEI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo),
+            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
                     (id, lang) -> ContentResource.getTEIURI(id, lang));
         } else if (AnnotationType.CMDI.equals(type)) {
-            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
+            layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
-        } if(AnnotationType.CROWDSOURCING.equals(type)) {
+        }
+        if (AnnotationType.CROWDSOURCING.equals(type)) {
             List<OpenAnnotation> workAnnotations = getSequenceBuilder().getCrowdsourcingAnnotations(pi, false).get(null);
-            if(workAnnotations == null) {
+            if (workAnnotations == null) {
                 workAnnotations = new ArrayList<>();
             }
             AnnotationList annoList = new AnnotationList(getLayerBuilder().getAnnotationListURI(pi, type));
@@ -526,7 +533,6 @@ public class ManifestResource extends AbstractResource {
         }
         throw new ContentNotFoundException("No annotations found for " + pi + "/" + type);
     }
-    
 
     /**
      * Creates a layer containing all annnotations of the given {@link AnnotationType type} for the work with the given pi. The annotations are groupd
@@ -557,10 +563,10 @@ public class ManifestResource extends AbstractResource {
         if (doc == null) {
             throw new ContentNotFoundException("Not document with PI = " + pi + " found");
         } else if (AnnotationType.TEI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id),
                     (id, lang) -> ContentResource.getTEIURI(id, lang));
         } else if (AnnotationType.CMDI.equals(type)) {
-            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo),
+            return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id),
                     (id, lang) -> ContentResource.getCMDIURI(id, lang));
 
         } else {

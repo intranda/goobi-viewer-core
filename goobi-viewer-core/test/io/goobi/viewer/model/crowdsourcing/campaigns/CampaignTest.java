@@ -1,5 +1,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.junit.Assert;
@@ -147,6 +149,17 @@ public class CampaignTest extends AbstractTest {
         Assert.assertTrue(campaign.isHasStarted());
     }
 
+
+    /**
+     * @see Campaign#isHasStarted()
+     * @verifies return true if dateStart equals now
+     */
+    @Test
+    public void isHasStarted_shouldReturnTrueIfDateStartEqualsNow() throws Exception {
+        Campaign campaign = new Campaign();
+        campaign.setDateStart(new Date());
+        Assert.assertTrue(campaign.isHasStarted());
+    }
 
     /**
      * @see Campaign#isHasStarted()

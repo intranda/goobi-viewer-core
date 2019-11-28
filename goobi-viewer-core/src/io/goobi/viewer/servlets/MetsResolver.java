@@ -20,8 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -29,13 +27,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -77,99 +75,51 @@ public class MetsResolver extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         String urn = request.getParameter("urn");
-        if (id != null || urn != null) {
-            if (id != null && !PIValidator.validatePi(id)) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+        if (id == null && urn == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            return;
+        }
+        if (id != null && !PIValidator.validatePi(id)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            return;
+        }
+
+        try {
+            String query = null;
+            if (id != null) {
+                query = SolrConstants.PI + ":\"" + id + '"';
+            } else if (urn != null) {
+                query = SolrConstants.URN + ":\"" + urn + '"';
+            }
+            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
+            if (hits == null || hits.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
             }
-            StringBuilder sbPath = new StringBuilder();
-            try {
-                String query = null;
-                if (id != null) {
-                    query = SolrConstants.PI + ":\"" + id + '"';
-                } else if (urn != null) {
-                    query = SolrConstants.URN + ":\"" + urn + '"';
-                }
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
-                if (hits == null || hits.isEmpty()) {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-                    return;
-                }
-                if (hits.getNumFound() > 1) {
-                    // show multiple match, that indicates corrupted index
-                    response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
-                    return;
-                }
-
-                // If the user has no listing privilege for this record, act as if it does not exist
-                SolrDocument doc = hits.get(0);
-                id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
-                if (!access) {
-                    logger.debug("User may not list {}", id);
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-                    return;
-                }
-
-                String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    dataRepository = dataRepository.replace("file://", ""); //turn url to path if necessary
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    if (StringUtils.isNotEmpty(dataRepositoriesHome) && !Paths.get(dataRepository).isAbsolute()) {
-                        sbPath.append(dataRepositoriesHome).append('/');
-                    }
-                    if (format != null) {
-                        switch (format.toUpperCase()) {
-                            case SolrConstants._METS:
-                                sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
-                                break;
-                            case SolrConstants._LIDO:
-                                sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
-                                break;
-                        }
-                    } else {
-                        sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
-                    }
-                } else {
-                    // Backwards compatibility for old indexes
-                    if (format != null) {
-                        switch (format.toUpperCase()) {
-                            case SolrConstants._METS:
-                                sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                                        .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
-                                break;
-                            case SolrConstants._LIDO:
-                                sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                                        .append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
-                                break;
-                            default: // nothing
-                        }
-                    } else {
-                        sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
-                                .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
-                    }
-                }
-                if (sbPath.charAt(sbPath.length() - 1) != '/') {
-                    sbPath.append('/');
-                }
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
-            } catch (DAOException e) {
-                logger.debug("DAOException thrown here: {}", e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            if (hits.getNumFound() > 1) {
+                // show multiple match, that indicates corrupted index
+                response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
                 return;
             }
 
-            sbPath.append(id).append(".xml");
+            SolrDocument doc = hits.get(0);
+            id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
+
+            // If the user has no listing privilege for this record, act as if it does not exist
+            if (!access) {
+                logger.debug("User may not list {}", id);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                return;
+            }
+
+            String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+            String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+
+            String filePath = Helper.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+
             response.setContentType("text/xml");
-            File file = new File(sbPath.toString());
+            File file = new File(filePath);
             response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
             try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
                 int bytesRead = 0;
@@ -182,7 +132,20 @@ public class MetsResolver extends HttpServlet {
                 logger.error(e.getMessage());
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getAbsolutePath());
             }
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (IndexUnreachableException e) {
+            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (DAOException e) {
+            logger.debug("DAOException thrown here: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
         }
+
     }
 
     /**

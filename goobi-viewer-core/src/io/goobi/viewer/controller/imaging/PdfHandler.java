@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -28,10 +27,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
+import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -44,7 +43,7 @@ public class PdfHandler {
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;
 
-    public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) throws ViewerConfigurationException {
+    public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
         this.iiifUrl = configuration.getRestApiUrl();
     }
@@ -68,7 +67,6 @@ public class PdfHandler {
      * @return
      */
     public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
-
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("image")
@@ -86,16 +84,11 @@ public class PdfHandler {
         }
         sb.append(".pdf");
 
-        String dataRepository = pages[0].getDataRepository();
-        Path mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            mediaRepository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
-        }
-        
-        Path indexedMetsPath = mediaRepository.resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pages[0].getPi() + ".xml");;
-        if (Files.exists(indexedMetsPath)) {
-            sb.append(paramSep.getChar()).append("metsFile=").append(indexedMetsPath.toUri());
-        
+        Path indexedSourceFile = Paths.get(Helper.getSourceFilePath(pages[0].getPi() + ".xml", pages[0].getDataRepository(),
+                doc != null ? doc.getSourceDocFormat() : SolrConstants._METS));
+        if (Files.exists(indexedSourceFile)) {
+            sb.append(paramSep.getChar()).append("metsFile=").append(indexedSourceFile.toUri());
+
             if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
                 sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
             }
@@ -143,9 +136,9 @@ public class PdfHandler {
      */
     public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
         String pi = doc.getTopStruct().getPi();
-    	return getPdfUrl(doc, pi, label);
+        return getPdfUrl(doc, pi, label);
     }
-    
+
     /**
      * Gets the url to the pdf for the given pi and divId
      * 

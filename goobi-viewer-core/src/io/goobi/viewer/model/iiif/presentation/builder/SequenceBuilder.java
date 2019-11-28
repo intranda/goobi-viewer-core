@@ -32,9 +32,6 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.FragmentSelector;
@@ -91,7 +88,6 @@ public class SequenceBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
 
-    
     /**
      * @param request
      * @throws URISyntaxException
@@ -131,8 +127,6 @@ public class SequenceBuilder extends AbstractBuilder {
 
         IPageLoader pageLoader = new EagerPageLoader(doc);
 
-        String dataRepository = ContentResource.getDataRepository(doc.getPi());
-
         Map<Integer, Canvas> canvasMap = new HashMap<>();
         for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
             PhysicalElement page = pageLoader.getPage(i);
@@ -140,7 +134,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = generateCanvas(doc, page);
             if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                 addSeeAlsos(canvas, doc, page);
-                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
+                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
 
                 merge(annotationMap, content);
                 canvasMap.put(i, canvas);
@@ -156,14 +150,13 @@ public class SequenceBuilder extends AbstractBuilder {
         }
 
         addCrowdourcingAnnotations(sequence.getCanvases(), this.getCrowdsourcingAnnotations(doc.getPi(), false), annotationMap);
-        
+
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
         }
 
         return annotationMap;
     }
-
 
     /**
      * @param canvas
@@ -277,9 +270,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public Canvas generateCanvas(StructElement doc, PhysicalElement page)
-            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException {
+            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         if (doc == null || page == null) {
             return null;
         }
@@ -337,8 +331,8 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
-    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, String dataRepository,
-            boolean populate) throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
+    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, boolean populate)
+            throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
 
@@ -437,7 +431,7 @@ public class SequenceBuilder extends AbstractBuilder {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
 
-//        addCrowdsourcingAnnotations(page, populate, annotationMap);
+        //        addCrowdsourcingAnnotations(page, populate, annotationMap);
 
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));
@@ -451,8 +445,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param page
      * @param populate
      * @param annotationMap
-     * @deprecated  annotations are now retrieved from SOLR
+     * @deprecated annotations are now retrieved from SOLR
      */
+    @Deprecated
     private void addCrowdsourcingAnnotations(PhysicalElement page, boolean populate, Map<AnnotationType, AnnotationList> annotationMap) {
         try {
             long numCrowdAnnotations = DataManager.getInstance().getDao().getAnnotationCountForTarget(page.getPi(), page.getOrder());
@@ -465,8 +460,8 @@ public class SequenceBuilder extends AbstractBuilder {
                             DataManager.getInstance().getDao().getAnnotationsForTarget(page.getPi(), page.getOrder());
                     for (PersistentAnnotation annotation : crowdAnnotations) {
                         Question generator = annotation.getGenerator();
-                        if(generator != null) {
-                            if(!CampaignRecordStatus.FINISHED.equals(generator.getOwner().getRecordStatus(page.getPi()))) {
+                        if (generator != null) {
+                            if (!CampaignRecordStatus.FINISHED.equals(generator.getOwner().getRecordStatus(page.getPi()))) {
                                 //ignore the annotation if the campaign record is not marked as finished
                                 continue;
                             }
@@ -486,8 +481,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param page
      * @return
      * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    private Dimension getSize(PhysicalElement page) throws ViewerConfigurationException {
+    private Dimension getSize(PhysicalElement page) throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
         Dimension size = new Dimension(0, 0);
         if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());

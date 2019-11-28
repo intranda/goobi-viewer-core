@@ -16,7 +16,6 @@
 package io.goobi.viewer.controller.imaging;
 
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
  * Resolves urls audio or video files
@@ -25,22 +24,22 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  *
  */
 public class Object3DHandler {
-    
+
     private static final String URL_TEMPLATE = "view/object/{identifier}/{filename}/info.json";
 
     private final String restApiUrl;
-    
-    public Object3DHandler(Configuration config) throws ViewerConfigurationException {
+
+    public Object3DHandler(Configuration config) {
         this.restApiUrl = config.getRestApiUrl();
     }
-    
+
     /**
      * Returns the url to the media object for the given pi and filename
      * 
-     * @param mimeType  The mime type to use
-     * @param pi        The pi of the requested work
-     * @param filename  The media filename
-     * @return  the url to the media file of the given pi and filename
+     * @param mimeType The mime type to use
+     * @param pi The pi of the requested work
+     * @param filename The media filename
+     * @return the url to the media file of the given pi and filename
      */
     public String getObjectUrl(String pi, String filename) {
         return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);

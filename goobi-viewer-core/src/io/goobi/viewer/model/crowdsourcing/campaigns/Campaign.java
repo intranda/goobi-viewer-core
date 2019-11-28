@@ -50,7 +50,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -417,6 +416,7 @@ public class Campaign implements CMSMediaHolder {
      * 
      * @return true if dateStart lies after now; false otherwise
      * @should return true if dateStart null
+     * @should return true if dateStart equals now
      * @should return true if dateStart before now
      * @should return false if dateStart after now
      */
@@ -428,7 +428,7 @@ public class Campaign implements CMSMediaHolder {
         LocalDate now = new DateTime().toLocalDate();
         LocalDate start = new DateTime(dateStart).toLocalDate();
 
-        return now.isAfter(start);
+        return now.isEqual(start) || now.isAfter(start);
     }
 
     /**

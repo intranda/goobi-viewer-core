@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +27,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 /**
  * Search query group for the advanced search.
  */
-public class SearchQueryGroup {
+public class SearchQueryGroup implements Serializable {
+
+    private static final long serialVersionUID = 609291421340747521L;
 
     public enum SearchQueryGroupOperator {
         AND,

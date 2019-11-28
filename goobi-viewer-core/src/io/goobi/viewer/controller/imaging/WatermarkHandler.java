@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,9 @@ import io.goobi.viewer.model.viewer.StructElement;
  * @author Florian Alpers
  *
  */
-public class WatermarkHandler {
+public class WatermarkHandler implements Serializable {
+
+    private static final long serialVersionUID = 3341191578406800851L;
 
     private static final Logger logger = LoggerFactory.getLogger(WatermarkHandler.class);
 
@@ -135,9 +138,10 @@ public class WatermarkHandler {
                 if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
-                        SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(page.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
-                                Collections.singletonList(field));
+                        SolrDocumentList res = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(new StringBuilder(SolrConstants.PI).append(":").append(page.getPi()).toString(), SolrSearchIndex.MAX_HITS,
+                                        null, Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
                             urlBuilder.append((String) res.get(0).getFirstValue(field));
@@ -195,9 +199,10 @@ public class WatermarkHandler {
                     if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
                         String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                         try {
-                            SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                    new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
-                                    Collections.singletonList(field));
+                            SolrDocumentList res = DataManager.getInstance()
+                                    .getSearchIndex()
+                                    .search(new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(), SolrSearchIndex.MAX_HITS,
+                                            null, Collections.singletonList(field));
                             if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                                 // logger.debug(field + ":" + res.get(0).getFirstValue(field));
                                 urlBuilder.append((String) res.get(0).getFirstValue(field));
@@ -260,7 +265,7 @@ public class WatermarkHandler {
         if (!watermarkIdFields.isEmpty() && topDocument != null) {
             for (String watermarkIdField : watermarkIdFields) {
                 footerId = topDocument.getMetadataValue(watermarkIdField);
-                if(StringUtils.isNotBlank(footerId)) {
+                if (StringUtils.isNotBlank(footerId)) {
                     break;
                 }
             }

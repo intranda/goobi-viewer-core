@@ -53,15 +53,14 @@ import io.goobi.viewer.servlets.rest.content.ContentResource;
 public class LayerBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(LayerBuilder.class);
-    
+
     /**
      * @param request
      * @throws URISyntaxException
      */
-    public LayerBuilder(HttpServletRequest request)  {
+    public LayerBuilder(HttpServletRequest request) {
         super(request);
     }
-
 
     /**
      * @param servletUri
@@ -71,28 +70,30 @@ public class LayerBuilder extends AbstractBuilder {
         super(servletUri, requestURI);
     }
 
-
     /**
      * @param pi
      * @param type
+     * @param motivation
+     * @param fileGetter
+     * @param linkGetter
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
      * @throws URISyntaxException
      */
-    public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter, BiFunction<String, String, URI> linkGetter)
-            throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
-//        List<Path> files = ContentResource.getTEIFiles(pi, ContentResource.getDataRepository(pi));
-        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
+    public Layer createAnnotationLayer(String pi, AnnotationType type, String motivation, BiFunction<String, String, List<Path>> fileGetter,
+            BiFunction<String, String, URI> linkGetter) throws PresentationException, IndexUnreachableException, IOException, URISyntaxException {
+                List<Path> files = ContentResource.getTEIFiles(pi);
+//        List<Path> files = fileGetter.apply(pi, ContentResource.getDataRepository(pi));
         List<IAnnotation> annotations = new ArrayList<>();
         for (Path path : files) {
             Optional<String> language = ContentResource.getLanguage(path.getFileName().toString());
-            language.ifPresent(lang -> {      
-                    URI link = linkGetter.apply(pi, lang);
-                    URI annotationURI = getAnnotationListURI(pi, type);
-                    OpenAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
-                    annotations.add(anno);
+            language.ifPresent(lang -> {
+                URI link = linkGetter.apply(pi, lang);
+                URI annotationURI = getAnnotationListURI(pi, type);
+                OpenAnnotation anno = createAnnotation(annotationURI, link, type.getFormat(), type.getDcType(), type, motivation);
+                annotations.add(anno);
             });
         }
         URI annoListURI = getAnnotationListURI(pi, type);
@@ -100,21 +101,20 @@ public class LayerBuilder extends AbstractBuilder {
         Layer layer = generateLayer(pi, Collections.singletonMap(type, Collections.singletonList(annoList)), type);
         return layer;
     }
-    
-    
+
     public OpenAnnotation createAnnotation(URI annotationId, URI linkURI, Format format, DcType dcType, AnnotationType annoType, String motivation) {
         LinkingContent link = new LinkingContent(linkURI);
-        if(format != null) {            
+        if (format != null) {
             link.setFormat(format);
         }
-        if(dcType != null) {            
+        if (dcType != null) {
             link.setType(dcType);
         }
-        if(annoType != null) {            
+        if (annoType != null) {
             link.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
         }
         OpenAnnotation annotation = new OpenAnnotation(annotationId);
-        if(motivation != null) {
+        if (motivation != null) {
             annotation.setMotivation(motivation);
         } else {
             annotation.setMotivation(Motivation.PAINTING);
@@ -122,17 +122,15 @@ public class LayerBuilder extends AbstractBuilder {
         annotation.setBody(link);
         return annotation;
     }
-    
+
     public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
         AnnotationList annoList = new AnnotationList(id);
         annoList.setLabel(ViewerResourceBundle.getTranslations(type.name()));
-        for (IAnnotation annotation : annotations) {            
+        for (IAnnotation annotation : annotations) {
             annoList.addResource(annotation);
         }
         return annoList;
     }
-    
-    
 
     /**
      * @param pi
@@ -142,41 +140,40 @@ public class LayerBuilder extends AbstractBuilder {
      * @return
      * @throws URISyntaxException
      */
-    public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId)
-            throws URISyntaxException {
+    public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId) throws URISyntaxException {
         Layer layer = new Layer(getLayerURI(pi, logId));
         for (AnnotationType annoType : annoLists.keySet()) {
             AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
             content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
-            annoLists.get(annoType).stream()
-            .filter(al -> al.getResources() != null)
-            .flatMap(al -> al.getResources().stream())
-            .forEach(annotation -> content.addResource(annotation));
+            annoLists.get(annoType)
+                    .stream()
+                    .filter(al -> al.getResources() != null)
+                    .flatMap(al -> al.getResources().stream())
+                    .forEach(annotation -> content.addResource(annotation));
             layer.addOtherContent(content);
         }
         return layer;
     }
-    
-    public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType)
-            throws URISyntaxException {
+
+    public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType) throws URISyntaxException {
         Layer layer = new Layer(getLayerURI(pi, annoType));
-        if(annoLists.get(annoType) != null) {
-            annoLists.get(annoType).stream()
-            .forEach(al -> layer.addOtherContent(al));
+        if (annoLists.get(annoType) != null) {
+            annoLists.get(annoType).stream().forEach(al -> layer.addOtherContent(al));
         }
         return layer;
     }
-    
+
     public Map<AnnotationType, AnnotationList> mergeAnnotationLists(String pi, Map<AnnotationType, List<AnnotationList>> annoLists)
             throws URISyntaxException {
         Map<AnnotationType, AnnotationList> map = new HashMap<>();
         for (AnnotationType annoType : annoLists.keySet()) {
             AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
             content.setLabel(ViewerResourceBundle.getTranslations(annoType.name()));
-            annoLists.get(annoType).stream()
-            .filter(al -> al.getResources() != null)
-            .flatMap(al -> al.getResources().stream())
-            .forEach(annotation -> content.addResource(annotation));
+            annoLists.get(annoType)
+                    .stream()
+                    .filter(al -> al.getResources() != null)
+                    .flatMap(al -> al.getResources().stream())
+                    .forEach(annotation -> content.addResource(annotation));
             map.put(annoType, content);
         }
         return map;

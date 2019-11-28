@@ -28,6 +28,7 @@ import org.junit.Test;
 import de.intranda.api.annotation.oa.TextQuoteSelector;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
@@ -39,7 +40,7 @@ import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
  * @author florian
  *
  */
-public class SearchResultConverterTest {
+public class SearchResultConverterTest extends AbstractSolrEnabledTest{
 
     String text = "A bird in the hand is worth\ntwo in the bush.";
     SearchResultConverter converter;
@@ -55,6 +56,7 @@ public class SearchResultConverterTest {
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(URI.create(restUrl + "iiif/search"), URI.create(restUrl), pi, pageNo);
@@ -67,6 +69,7 @@ public class SearchResultConverterTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     /**

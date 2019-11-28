@@ -189,10 +189,7 @@ public final class Configuration extends AbstractConfiguration {
         if (!configLocalPath.endsWith("/")) {
             configLocalPath += "/";
         }
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.indexOf("win") >= 0 && configLocalPath.startsWith("/opt/")) {
-            configLocalPath = configLocalPath.replace("/opt", "C:");
-        }
+        configLocalPath = FileTools.adaptPathForWindows(configLocalPath);
         return configLocalPath;
     }
 
@@ -2612,7 +2609,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getDataRepositoriesHome() {
+    String getDataRepositoriesHome() {
         return getLocalString("dataRepositoriesHome", "");
     }
 

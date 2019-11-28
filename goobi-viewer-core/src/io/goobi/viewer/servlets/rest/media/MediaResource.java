@@ -15,9 +15,8 @@
  */
 package io.goobi.viewer.servlets.rest.media;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Files;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,11 +25,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.Helper;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -56,36 +55,21 @@ public class MediaResource {
     @GET
     @Path("/{type}/{format}/{identifier}/{filename}")
     public String serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier,
-            @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, IOException, AccessDeniedException {
-
+            @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, AccessDeniedException {
         String mimeType = type + "/" + format;
-        String mediaFilePath = identifier + "/" + filename;
-        String dataRepository = getDataRepository(identifier);
 
         checkAccess(type, identifier, filename);
 
-        File file;
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            java.nio.file.Path dataRepositoryPath =
-                    Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).resolve(dataRepository.replace("file://", ""));
-            file = dataRepositoryPath.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(mediaFilePath).toFile();
-            //            file = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + mediaFilePath);
-        } else {
-            // Backwards compatibility with old indexes
-            file = new File(DataManager.getInstance().getConfiguration().getViewerHome()
-                    + DataManager.getInstance().getConfiguration().getMediaFolder() + '/' + mediaFilePath + '/');
-        }
-        if (file.isFile()) {
-            logger.debug("Video file: {} ({} bytes)", file.getAbsolutePath(), file.length());
-
+        java.nio.file.Path file = Helper.getDataFilePath(identifier, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        if (Files.isRegularFile(file)) {
+            logger.debug("Video file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
             try {
-                new MediaDeliveryService().processRequest(request, response, file.getAbsolutePath(), mimeType);
+                new MediaDeliveryService().processRequest(request, response, file.toAbsolutePath().toString(), mimeType);
             } catch (IOException e) {
                 throw new PresentationException("Error accessing media resource", e);
             }
-
         } else {
-            logger.error("File '{}' not found.", file.getAbsolutePath());
+            logger.error("File '{}' not found.", file.toAbsolutePath());
         }
         return "";
     }
@@ -108,12 +92,4 @@ public class MediaResource {
         }
     }
 
-    /**
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    private String getDataRepository(String pi) throws PresentationException, IndexUnreachableException {
-        return DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-    }
 }

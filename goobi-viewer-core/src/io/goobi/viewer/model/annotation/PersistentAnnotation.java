@@ -17,14 +17,11 @@ package io.goobi.viewer.model.annotation;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,12 +62,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * An Annotation class to store annotation in a database
@@ -125,13 +118,13 @@ public class PersistentAnnotation {
     private Long generatorId;
 
     /**
-     * JSON representation of the annotation body as String 
+     * JSON representation of the annotation body as String
      */
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
-    
+
     /**
-     * JSON representation of the annotation target as String 
+     * JSON representation of the annotation target as String
      */
     @Column(name = "target", columnDefinition = "LONGTEXT")
     private String target;
@@ -254,9 +247,9 @@ public class PersistentAnnotation {
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
-    
+
     public static URI getIdAsURI(String id) {
-        return URI.create(URI_ID_TEMPLATE.replace("{id}",id));
+        return URI.create(URI_ID_TEMPLATE.replace("{id}", id));
     }
 
     /**
@@ -520,24 +513,24 @@ public class PersistentAnnotation {
      * @throws IOException
      * @throws DAOException
      */
-    public WebAnnotation getAsAnnotation(){
+    public WebAnnotation getAsAnnotation() {
         WebAnnotation annotation = new WebAnnotation(getIdAsURI());
         annotation.setCreated(this.dateCreated);
         annotation.setModified(this.dateModified);
-        try {               
+        try {
             if (getCreator() != null) {
                 annotation.setCreator(new Agent(getCreator().getIdAsURI(), AgentType.PERSON, getCreator().getDisplayName()));
             }
             if (getGenerator() != null) {
                 annotation.setGenerator(new Agent(getGenerator().getIdAsURI(), AgentType.SOFTWARE, getGenerator().getOwner().getTitle()));
             }
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error("unable to set creator and generator for annotation", e);
         }
-        try {            
+        try {
             annotation.setBody(this.getBodyAsResource());
             annotation.setTarget(this.getTargetAsResource());
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.error("unable to parse body or target for annotation", e);
 
         }
@@ -577,9 +570,7 @@ public class PersistentAnnotation {
         int count = 0;
         try {
             Set<Path> filesToDelete = new HashSet<>();
-            String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(targetPI);
-            Path annotationFolder = Paths
-                    .get(Helper.getRepositoryPath(dataRepository) + DataManager.getInstance().getConfiguration().getAnnotationFolder(), targetPI);
+            Path annotationFolder = Helper.getDataFolder(targetPI, DataManager.getInstance().getConfiguration().getAnnotationFolder());
             logger.trace("Annotation folder path: {}", annotationFolder.toAbsolutePath().toString());
             if (!Files.isDirectory(annotationFolder)) {
                 logger.trace("Annotation folder not found - nothing to delete");
