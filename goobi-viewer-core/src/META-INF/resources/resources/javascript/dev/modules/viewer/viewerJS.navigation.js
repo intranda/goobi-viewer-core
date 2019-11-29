@@ -59,14 +59,16 @@ var viewerJS = ( function( viewer ) {
             // TRIGGER STANDARD MENU
             $( _defaults.subMenuSelector ).on( 'click', function() {
                 var currTrigger = $( this );
-                
-                if ( $( this ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
+                console.log("click trigger ", this, $(this).next( '.navigation__submenu' ).hasClass( 'in' ));
+                if( $(this).next( '.navigation__submenu' ).hasClass( 'in' ) ) {
+                    //child menu is open
+                    $(this).next( '.navigation__submenu' ).removeClass( 'in' )
+                }else if ( $( this ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
                     _resetSubMenus();
                     currTrigger.parent().addClass( 'active' );
                     currTrigger.next( '.navigation__submenu' ).addClass( 'in' );
                     _calcSubMenuPosition( currTrigger.next( '.navigation__submenu' ) );
-                }
-                else {
+                } else {
                     _resetMenus();
                     currTrigger.parent().addClass( 'active' );
                     currTrigger.next( '.navigation__submenu' ).addClass( 'in' );
