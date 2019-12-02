@@ -57,6 +57,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -113,6 +114,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile, Compar
 
 	@Transient
 	private FileTime lastModifiedTime = null;
+
 
 	/**
 	 * default constructor

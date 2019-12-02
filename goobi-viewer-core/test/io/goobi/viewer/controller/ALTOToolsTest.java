@@ -116,9 +116,6 @@ public class ALTOToolsTest {
         terms = new LinkedHashSet<>();
         terms.add("Santa Monica.");
         coords = ALTOTools.getWordCoords(altoString, terms, rotation, imageFooterHeight);
-        for (String string : coords) {
-            System.out.println(string);
-        }
         Assert.assertTrue(coords.size() == 2);
         Assert.assertEquals("1032,2248,1136,2280", coords.get(0));
 
@@ -155,7 +152,6 @@ public class ALTOToolsTest {
         Assert.assertNotNull(alto);
         String text = ALTOTools.getFullText(alto, true, null);
         Assert.assertNotNull(text);
-        System.out.println(text);
         Assert.assertTrue(text.length() > 100);
     }
 

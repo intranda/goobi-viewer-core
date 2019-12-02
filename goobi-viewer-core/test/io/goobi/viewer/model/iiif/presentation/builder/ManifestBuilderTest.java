@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,10 +44,15 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SolrConstants;
 import io.goobi.viewer.controller.SolrSearchIndex;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ImageHandler;
+import io.goobi.viewer.controller.imaging.PdfHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseFilter;
 
@@ -56,6 +62,29 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseF
  */
 public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
+    private ThumbnailHandler thumbs;
+    private ImageHandler images;
+    private PdfHandler pdf;
+    private ImageDeliveryBean imageDelivery;
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        Configuration configuration = DataManager.getInstance().getConfiguration();
+        thumbs = new ThumbnailHandler(new IIIFUrlHandler(), configuration, STATIC_IMAGES_PATH);
+        images = new ImageHandler();
+        pdf = new PdfHandler(null, DataManager.getInstance().getConfiguration());
+        imageDelivery = new ImageDeliveryBean();
+        imageDelivery.setThumbs(thumbs);
+        imageDelivery.setImages(images);
+        imageDelivery.setPdf(pdf);
+    }
+    
+    
     public static final String PI = "PPN517154005";
     
     @Test
@@ -64,13 +93,15 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         
         
         ManifestBuilder builder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
+        builder.imageDelivery = this.imageDelivery;
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
+        sequenceBuilder.imageDelivery = this.imageDelivery;
         StructureBuilder structureBuilder = new StructureBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-
+        structureBuilder.imageDelivery = this.imageDelivery;
+        
         SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
         for (SolrDocument solrDocument : allDocs) {
             String pi = SolrSearchIndex.getSingleFieldStringValue(solrDocument, "PI");
-            System.out.println("PI " + pi);
         }
         
         List<StructElement> docs = builder.getDocumentWithChildren(PI);
