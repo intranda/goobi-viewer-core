@@ -92,26 +92,12 @@ var viewerJS = (function(viewer) {
 					_confirmCounter = parseInt(sessionStorage.getItem('confirmCounter'));
 
 					if (!isSet) {
-						if (_confirmCounter == 0) {
-							if (confirm(_defaults.msg.saveItemToSession)) {
-								currBtn.addClass('added');
-								sessionStorage.setItem('confirmCounter', 1);
-								_setSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
-									_setSessionElementCount();
-									_renderDropdownList();
-									_renderMiradorLink();
-								});
-							} else {
-								return false;
-							}
-						} else {
-							currBtn.addClass('added');
-							_setSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
-								_setSessionElementCount();
-								_renderDropdownList();
-								_renderMiradorLink();
-							});
-						}
+						currBtn.addClass('added');
+						_setSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
+							_setSessionElementCount();
+							_renderDropdownList();
+							_renderMiradorLink();
+						});
 					} else {
 						currBtn.removeClass('added');
 						_deleteSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
