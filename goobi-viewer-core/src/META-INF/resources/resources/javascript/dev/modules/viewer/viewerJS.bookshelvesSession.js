@@ -114,7 +114,7 @@ var viewerJS = (function(viewer) {
 						}
 					} else {
 						currBtn.removeClass('added');
-						_deleteSessionElement(_defaults.root, currPi).then(function() {
+						_deleteSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
 							_setSessionElementCount();
 							_renderDropdownList();
 							_renderMiradorLink();
@@ -224,12 +224,12 @@ var viewerJS = (function(viewer) {
 			console.log('---------- _setSessionElement() ----------');
 			console.log('_setSessionElement: root - ', root);
 			console.log('_setSessionElement: pi - ', pi);
-			console.log('_setSessionElement: logid - ', logid);
+			// console.log('_setSessionElement: logid - ', logid);
 			console.log('_setSessionElement: page - ', page);
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/add/' + pi + '/' + page + '/' + logid + '/',
+			url : root + '/rest/bookshelves/session/add/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -254,7 +254,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/delete/' + pi + '/' + page + '/' + logid + '/',
+			url : root + '/rest/bookshelves/session/delete/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
