@@ -34,10 +34,6 @@
             <widgetComponent:widget_browsing />
         </h:panelGroup>
         
-        <widgetComponent:widget_bookshelfList />
-        
-        <widgetComponent:widget_mySearches />
-        
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
