@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -112,12 +113,17 @@ public class ImageDeliveryBean implements Serializable {
             init(config, servletPath);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
-        } catch (ViewerConfigurationException e) {
-            logger.error("Failed to initialize ImageDeliveryBean: " + e.getMessage());
         }
     }
 
-    private void init(Configuration config, String servletPath) throws ViewerConfigurationException {
+    /**
+     * Initialize for testing
+     * 
+     * @param config
+     * @param servletPath
+     * @throws ViewerConfigurationException
+     */
+    public void init(Configuration config, String servletPath) {
         this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
@@ -460,7 +466,8 @@ public class ImageDeliveryBean implements Serializable {
             Path path = PathConverter.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
-                return path.startsWith(getCmsMediaPath());
+                Path cmsMediaPath = Paths.get(getCmsMediaPath());
+                return path.startsWith(cmsMediaPath);
             }
         } catch (URISyntaxException e) {
             logger.trace(e.toString());
@@ -510,6 +517,27 @@ public class ImageDeliveryBean implements Serializable {
      */
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
+    }
+    
+    /**
+     * @param thumbs the thumbs to set
+     */
+    public void setThumbs(ThumbnailHandler thumbs) {
+        this.thumbs = thumbs;
+    }
+    
+    /**
+     * @param images the images to set
+     */
+    public void setImages(ImageHandler images) {
+        this.images = images;
+    }
+    
+    /**
+     * @param pdf the pdf to set
+     */
+    public void setPdf(PdfHandler pdf) {
+        this.pdf = pdf;
     }
 
 

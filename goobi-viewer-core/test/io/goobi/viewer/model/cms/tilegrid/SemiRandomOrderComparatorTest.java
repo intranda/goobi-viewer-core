@@ -76,8 +76,6 @@ public class SemiRandomOrderComparatorTest {
             List<SortTestObject> sortedList = Arrays.stream(testArray)
                     .sorted(new SemiRandomOrderComparator<>(o -> o.number))
                     .collect(Collectors.toList());
-            sortedList.forEach(System.out::print);
-            System.out.println();
             resultList.add(sortedList);
         }
         for (List<SortTestObject> list : resultList) {            

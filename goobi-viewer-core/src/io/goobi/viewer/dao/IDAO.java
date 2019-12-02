@@ -332,6 +332,8 @@ public interface IDAO {
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException;
 
     public CMSMediaItem getCMSMediaItem(long id) throws DAOException;
+    
+    CMSMediaItem getCMSMediaItemByFilename(String string) throws DAOException;
 
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException;
 
@@ -474,4 +476,5 @@ public interface IDAO {
 
     /** Update the given collection from the database */
     void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
 }

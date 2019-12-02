@@ -13,7 +13,7 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displayUserNavigation}">
+        <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
             <ul class="login-navigation">
                 <!-- USER NOT LOGGED IN -->
                 <ui:fragment rendered="#{!userBean.loggedIn}">

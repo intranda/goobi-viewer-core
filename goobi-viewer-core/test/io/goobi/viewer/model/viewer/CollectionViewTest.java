@@ -73,7 +73,6 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-        System.out.println(topElements);
         assertTrue(topElements.size() == 4);
         assertTrue(topElements.get(0).getName() == "a");
         assertTrue(topElements.get(1).getName() == "c");
@@ -82,9 +81,6 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
 
         collection.showAll();
         List<HierarchicalBrowseDcElement> allElements = collection.getVisibleDcElements();
-        for (HierarchicalBrowseDcElement element : allElements) {
-            System.out.println(element.getName());
-        }
         assertTrue(allElements.size() == 18);
         assertTrue(allElements.get(3).getName() == "a.b.d");
         assertTrue(allElements.get(14).getName() == "b");
@@ -100,7 +96,6 @@ public class CollectionViewTest extends AbstractDatabaseEnabledTest {
         collection.setBaseElementName("c.c");
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-        System.out.println(topElements);
     }
 
     /**

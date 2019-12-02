@@ -359,4 +359,16 @@ public class FileTools {
         }
     }
 
+    /**
+     * 
+     * @param path Absolute ath to adapt
+     * @return Windows-compatible path on Windows; unchanged path elsewhere
+     */
+    public static String adaptPathForWindows(String path) {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.indexOf("win") >= 0 && path.startsWith("/opt/")) {
+            path = path.replace("/opt", "C:");
+        }
+        return path;
+    }
 }

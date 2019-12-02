@@ -35,7 +35,7 @@ public class IIIFPresentationAPIHandler {
 
     private final AbstractBuilder builder;
 
-    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException, ViewerConfigurationException {
+    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
         this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
         };
     }

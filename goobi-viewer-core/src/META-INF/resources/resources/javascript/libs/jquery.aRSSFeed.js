@@ -42,15 +42,15 @@
                             }
                             var time = oDate.toLocaleTimeString();
                             
-                            sDate = weekDayNames[ oDate.getDay() ];
-                            sDate += ", ";
-                            sDate += oDate.getDate();
+//                            sDate = weekDayNames[ oDate.getDay() ];
+//                            sDate += ", ";
+                            sDate = oDate.getDate();
                             sDate += ". ";
                             sDate += monthNames[ oDate.getMonth() ];
                             sDate += " ";
                             sDate += oDate.getFullYear();
-                            sDate += " ";
-                            sDate += time.substring(0, time.length - 3);
+//                            sDate += " ";
+//                            sDate += time.substring(0, time.length - 3);
                             sCode += '<div class="rss-elem">';
                             sCode += '<dl>';
                             sCode += '<dt class="rss-elem-title">';
@@ -59,7 +59,7 @@
                             sCode += '</a>';
                             sCode += '</dt>';
                             sCode += '<dd class="rss-elem-info">';
-                            sCode += '<small>' + lastImportsMsg + '</small><br />';
+                            sCode += '<small>' + lastImportsMsg + '</small> ';
                             sCode += '<small>' + sDate + '</small>';
                             sCode += '</dd>';
                             sCode += '</div>';

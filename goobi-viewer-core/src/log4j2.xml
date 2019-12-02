@@ -15,7 +15,6 @@
 	
 	<Loggers>
 		<Logger name="io.goobi" level="TRACE" additivity="true" />
-		<Logger name="org.goobi.viewer" level="DEBUG" additivity="true" />
 		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
 		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
 		<Logger name="de.intranda" level="DEBUG" additivity="true" />

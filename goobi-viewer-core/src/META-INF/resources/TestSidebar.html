@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scrollable Sidebar Test</title>
+</head>
+<body>
+
+<style>
+
+body {
+	display: flex;
+    justify-content: space-between;
+  }
+
+#sidebar {
+	width: 15vw;
+	background-color: blue;
+	padding: 15px 0;
+}
+
+.sidebar {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  height: 150vh;
+}
+
+
+#sidebar .element {
+	background-color: white;
+	margin: 15px;
+	height: 80px;
+}
+
+#content {
+	margin-left: 10px;
+	width: calc( 100vw - 15vw - 10px );
+	background-color: yellow;
+	padding: 15px 0;
+    height: 230vh;
+	
+	
+}
+
+#content .element {
+	background-color: white;
+	margin: 15px;
+	height: 80px;
+}
+
+
+</style>
+
+
+<aside id="sidebar" class="sidebar">
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	
+</aside>
+
+<main id="content">
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>
+	<div class="element"></div>	
+</main>
+
+</body>
+</html>
+

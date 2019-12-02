@@ -92,7 +92,9 @@ public class CMSNavigationManager {
     public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
-            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus()) && StringUtils.isNotBlank(cmsPage.getMenuTitle())) {
+            // Valid pages with a menu title and no relation to a particular record
+            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus()) && StringUtils.isNotBlank(cmsPage.getMenuTitle())
+                    && StringUtils.isEmpty(cmsPage.getRelatedPI())) {
                 SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
                 addAvailableItem(item);
             }
@@ -127,8 +129,10 @@ public class CMSNavigationManager {
      * sets {@link SelectableNavigationItem#isSelected()} to fals for all {@link #availableItems}
      */
     public void addSelectedItemsToMenu() {
-        getAvailableItems().stream().filter(SelectableNavigationItem::isSelected).map(selectedItem -> new CMSNavigationItem(selectedItem)).forEach(
-                visibleItem -> addVisibleItem(visibleItem));
+        getAvailableItems().stream()
+                .filter(SelectableNavigationItem::isSelected)
+                .map(selectedItem -> new CMSNavigationItem(selectedItem))
+                .forEach(visibleItem -> addVisibleItem(visibleItem));
         getAvailableItems().forEach(item -> item.setSelected(false));
     }
 
@@ -152,9 +156,9 @@ public class CMSNavigationManager {
         for (CMSNavigationItem item : items) {
             CMSNavigationItem clone = new CMSNavigationItem(item);
             clones.add(clone);
-            if(item.getChildItems() != null) {                
-                    List<CMSNavigationItem> childClones = cloneItemHierarchy(item.getChildItems());
-                    childClones.forEach(cc -> cc.setParentItem(clone));
+            if (item.getChildItems() != null) {
+                List<CMSNavigationItem> childClones = cloneItemHierarchy(item.getChildItems());
+                childClones.forEach(cc -> cc.setParentItem(clone));
             }
         }
         return clones;
@@ -170,7 +174,8 @@ public class CMSNavigationManager {
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
-                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme())) || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
+                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme()))
+                        || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
                 .collect(Collectors.toList());
         return daoList;
     }
@@ -242,10 +247,10 @@ public class CMSNavigationManager {
                 throw e;
             }
         }
-        if(oldItem.getId() != null) {     
-            try {                
+        if (oldItem.getId() != null) {
+            try {
                 DataManager.getInstance().getDao().deleteCMSNavigationItem(oldItem);
-            } catch(EntityNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 //no need to delete
             }
         }

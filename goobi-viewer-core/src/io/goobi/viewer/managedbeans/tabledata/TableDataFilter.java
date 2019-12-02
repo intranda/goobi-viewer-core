@@ -15,10 +15,13 @@
  */
 package io.goobi.viewer.managedbeans.tabledata;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public class TableDataFilter {
+public class TableDataFilter implements Serializable {
 
+    private static final long serialVersionUID = 9120268561536080056L;
+    
     private String joinTable = null;
     private String column;
     private String value;

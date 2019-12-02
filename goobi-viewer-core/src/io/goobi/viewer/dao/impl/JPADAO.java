@@ -2743,6 +2743,26 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @Override
+    public CMSMediaItem getCMSMediaItemByFilename(String filename) throws DAOException {
+        synchronized (cmsRequestLock) {
+            try {
+                preQuery();
+                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
+                q.setFlushMode(FlushModeType.COMMIT);
+                q.setParameter("fileName", filename);
+                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                return (CMSMediaItem) q.getSingleResult();
+            } catch (NoResultException e) {
+                    //nothing found; no biggie
+                    return null;
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms media item with filename '" + filename + "'");
+                return null;
+            }
+        }
+    }
+
     /**
      * @throws DAOException
      * @see io.goobi.viewer.dao.IDAO#getCMSMediaItem(long)
@@ -4218,4 +4238,5 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+
 }

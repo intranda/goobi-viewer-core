@@ -27,7 +27,11 @@ import org.junit.Test;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile;
@@ -37,7 +41,12 @@ import io.goobi.viewer.model.cms.tilegrid.TileGridBuilder;
 import io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile.Priority;
 
 public class TileGridBuilderTest {
+    
+    private static final String SERVLET_PATH = "http://localhost:8080/viewer/";
 
+    private ThumbnailHandler thumbs;
+
+    
     /**
      * @throws java.lang.Exception
      */

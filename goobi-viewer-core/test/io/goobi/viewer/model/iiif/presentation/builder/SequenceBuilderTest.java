@@ -75,7 +75,7 @@ public class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Canvas canvas = sequenceBuilder.generateCanvas(mainDoc, page);
 
-        Map<AnnotationType, AnnotationList> annoMap = sequenceBuilder.addOtherContent(mainDoc, page, canvas, null, true);
+        Map<AnnotationType, AnnotationList> annoMap = sequenceBuilder.addOtherContent(mainDoc, page, canvas, true);
         AnnotationList fulltext = annoMap.get(AnnotationType.FULLTEXT);
 
         ObjectMapper mapper = new ObjectMapper();

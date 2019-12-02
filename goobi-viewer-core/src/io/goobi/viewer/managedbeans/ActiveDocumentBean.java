@@ -454,7 +454,7 @@ public class ActiveDocumentBean implements Serializable {
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
 
                 for (String language : name.getLanguages()) {
-                    String translation = name.getValue(language).orElse("");
+                    String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
                                 new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
@@ -463,6 +463,11 @@ public class ActiveDocumentBean implements Serializable {
                         name.setValue(translation, language);
                     }
                 }
+                // Fallback using the identifier as the label
+                if (name.isEmpty()) {
+                    name.setValue(getPersistentIdentifier());
+                }
+                logger.trace("topdocument label: {} ", name.getValue());
                 if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
 
                     // Add collection hierarchy to breadcrumbs, if the record only belongs to one collection
@@ -475,11 +480,12 @@ public class ActiveDocumentBean implements Serializable {
                         }
                     }
                     int weight = NavigationHelper.WEIGHT_OPEN_DOCUMENT;
+                    IMetadataValue anchorName = null;
                     if (isVolume() && viewManager.getAnchorPi() != null) {
-                        logger.trace("volume");
+                        logger.trace("anchor breadcrumb");
                         // Anchor breadcrumb
                         StructElement anchorDocument = viewManager.getTopDocument().getParent();
-                        IMetadataValue anchorName = anchorDocument.getMultiLanguageDisplayLabel();
+                        anchorName = anchorDocument.getMultiLanguageDisplayLabel();
                         for (String language : anchorName.getLanguages()) {
                             String translation = anchorName.getValue(language).orElse("");
                             if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
@@ -490,10 +496,21 @@ public class ActiveDocumentBean implements Serializable {
                             }
                         }
                         PageType pageType = PageType.determinePageType(anchorDocument.getDocStructType(), null, true, false, false);
-                        String anchorUrl = navigationHelper.getApplicationUrl() + "/"
-                                + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
+                        String anchorUrl = '/' + DataManager.getInstance().getUrlBuilder().buildPageUrl(anchorDocument.getPi(), 1, null, pageType);
                         navigationHelper.updateBreadcrumbs(
                                 new LabeledLink(anchorName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + anchorUrl, weight++));
+                    }
+                    // If volume name is the same as anchor name, add the volume number, otherwise the volume breadcrumb will be rejected as a duplicate
+                    if (anchorName != null && anchorName.getValue().equals(name.getValue())) {
+                        StringBuilder sb = new StringBuilder(name.getValue().get());
+                        sb.append(" (");
+                        if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO) != null) {
+                            sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNO));
+                        } else if (viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT) != null) {
+                            sb.append(viewManager.getTopDocument().getMetadataValue(SolrConstants.CURRENTNOSORT));
+                        }
+                        sb.append(')');
+                        name.setValue(sb.toString());
                     }
                     // Volume/monograph breadcrumb
                     navigationHelper

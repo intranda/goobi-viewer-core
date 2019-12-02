@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
+import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.Helper;
@@ -451,9 +452,6 @@ public class NavigationHelper implements Serializable {
     public void reload() {
     }
 
-    public String getVersion() {
-        return Helper.getVersion();
-    }
 
     public String getApplicationUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
@@ -1424,4 +1422,29 @@ public class NavigationHelper implements Serializable {
                 || DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()
                         && StringUtils.isNotBlank(getSubThemeDiscriminatorValue().replace("-", ""));
     }
+    
+    public String getVersion() {
+        return Version.VERSION;
+    }
+    
+    public String getPublicVersion() {
+        return Version.PUBLIC_VERSION;
+    }
+    
+    public String getBuildDate() {
+        return Version.BUILDDATE;
+    }
+    
+    public String getBuildVersion() {
+        return Version.BUILDVERSION;
+    }
+    
+    public String getApplicationName() {
+        return Version.APPLICATION_NAME;
+    }
+    
+    public String getBuildDate(String pattern) {
+        return Version.getBuildDate(pattern);
+    }
+
 }

@@ -67,8 +67,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldSortResultsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10,
-                Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
+        QueryResponse response = DataManager.getInstance()
+                .getSearchIndex()
+                .search(SolrConstants.PI + ":*", 0, 10, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
         Assert.assertEquals(10, response.getResults().size());
         long previous = -1;
         for (SolrDocument doc : response.getResults()) {
@@ -87,8 +88,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldFacetResultsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null,
-                Collections.singletonList(SolrConstants.DC), null);
+        QueryResponse response = DataManager.getInstance()
+                .getSearchIndex()
+                .search(SolrConstants.PI + ":*", 0, 10, null, Collections.singletonList(SolrConstants.DC), null);
         Assert.assertEquals(10, response.getResults().size());
         Assert.assertNotNull(response.getFacetField(SolrConstants.DC));
         Assert.assertNotNull(response.getFacetField(SolrConstants.DC).getValues());
@@ -100,8 +102,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldFilterFieldsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null, null,
-                Collections.singletonList(SolrConstants.PI));
+        QueryResponse response = DataManager.getInstance()
+                .getSearchIndex()
+                .search(SolrConstants.PI + ":*", 0, 10, null, null, Collections.singletonList(SolrConstants.PI));
         Assert.assertEquals(10, response.getResults().size());
         for (SolrDocument doc : response.getResults()) {
             Assert.assertEquals(1, doc.getFieldNames().size());
@@ -141,8 +144,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR, SolrConstants._CALENDAR_MONTH };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
-                Arrays.asList(facetFields), 0, false);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(facetFields), 0, false);
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_YEAR));
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_MONTH));
     }
@@ -154,8 +158,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
-                Arrays.asList(facetFields), 0, true);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(facetFields), 0, true);
         Assert.assertNotNull(resp.getFieldStatsInfo());
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Assert.assertNotNull(info);
@@ -167,8 +172,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
-                Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
         Assert.assertTrue(resp.getResults().isEmpty());
     }
 
@@ -245,9 +251,12 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFirstDoc_shouldReturnCorrectDoc() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":PPN517154005 AND ").append(SolrConstants.DOCTYPE).append(":PAGE").toString(),
-                Collections.singletonList(SolrConstants.ORDER));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":PPN517154005 AND ")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .toString(), Collections.singletonList(SolrConstants.ORDER));
         Assert.assertNotNull(doc);
         Assert.assertEquals(1, doc.getFieldValue(SolrConstants.ORDER));
     }
@@ -355,4 +364,13 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertNull(SolrSearchIndex.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
     }
 
+    /**
+     * @see SolrSearchIndex#findDataRepositoryName(String)
+     * @verifies return value from map if available
+     */
+    @Test
+    public void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
+        DataManager.getInstance().getSearchIndex().dataRepositoryNames.put("PPN123", "superrepo");
+        Assert.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
+    }
 }

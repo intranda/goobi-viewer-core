@@ -64,7 +64,6 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
         StructElement element = new StructElement(1387459019070L);
         StructElementStub stub = element.createStub();
         Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
-        System.out.println(stub.getDocStructType());
         Assert.assertEquals(
                 "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.title=Universit%C3%A4t+und+Technische+Hochschule&rft.au=Klein%2C+Felix&rft.tpages=16",
                 stub.generateContextObject(null, element.getTopStruct().createStub()));

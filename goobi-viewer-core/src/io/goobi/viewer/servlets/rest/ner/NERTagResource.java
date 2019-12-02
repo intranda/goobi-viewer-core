@@ -271,17 +271,9 @@ public class NERTagResource {
         NERTag.Type type = NERTag.Type.getType(typeString);
 
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
-            String dataRepository = null;
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrSearchIndex.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
-
-                // Determine data repository name
-                SolrDocument topSolrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ':' + topStructPi,
-                        Collections.singletonList(SolrConstants.DATAREPOSITORY));
-                if (topSolrDoc != null && topSolrDoc.containsKey(SolrConstants.DATAREPOSITORY)) {
-                    dataRepository = (String) topSolrDoc.get(SolrConstants.DATAREPOSITORY);
-                }
             }
             DocumentReference doc = new DocumentReference(topStructPi);
 
@@ -297,7 +289,7 @@ public class NERTagResource {
                     }
                     //TODO: Load directly from file if on same server?
                     // Load ALTO via the REST service
-                    String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
+                    String url = Helper.buildFullTextUrl(altoFileName);
                     try {
                         String altoString = Helper.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);

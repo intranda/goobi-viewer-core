@@ -187,17 +187,21 @@ public class MetadataElement {
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
-
+        
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (!metadata.populate(se, sessionLocale)) {
-                continue;
-            }
-            if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
-                if (se.isWork() || se.isAnchor()) {
+            try {                
+                if (!metadata.populate(se, sessionLocale)) {
+                    continue;
+                }
+                if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
+                    if (se.isWork() || se.isAnchor()) {
+                        metadataList.add(metadata);
+                    }
+                } else {
                     metadataList.add(metadata);
                 }
-            } else {
-                metadataList.add(metadata);
+            } catch(Throwable e) {
+                logger.error("Error populating " + metadata.getLabel(), e);
             }
         }
 

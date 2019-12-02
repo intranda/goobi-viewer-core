@@ -69,7 +69,6 @@ public class ThumbnailHandlerTest {
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
@@ -79,7 +78,6 @@ public class ThumbnailHandlerTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        System.out.println(url);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/native.jpg";
         Assert.assertEquals(refrenceUrl, url);
     }
@@ -90,7 +88,6 @@ public class ThumbnailHandlerTest {
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
-        System.out.println(url);
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
         Assert.assertEquals(refrenceUrl, url);
     }
@@ -102,15 +99,12 @@ public class ThumbnailHandlerTest {
 
         String urlMax = handler.getFullImageUrl(page, Scale.MAX);
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.tif", urlMax);
-        System.out.println("Max image = " + urlMax);
         
         String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.tif", urlBox);
-        System.out.println("Box image = " + urlBox);
         
         String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/pct:50/0/default.tif", urlFraction);
-        System.out.println("Fraction image = " + urlFraction);
     }
     
     @Test 
@@ -120,11 +114,9 @@ public class ThumbnailHandlerTest {
 
         String urlMax = handler.getThumbnailUrl(page, 0,0);
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/max/0/default.jpg", urlMax);
-        System.out.println("Max image = " + urlMax);
         
         String urlBox = handler.getThumbnailUrl(page, 1500,1500);
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/1234/00000001.tif/full/!1500,1500/0/default.jpg", urlBox);
-        System.out.println("Box image = " + urlBox);
 
     }
 
@@ -143,7 +135,6 @@ public class ThumbnailHandlerTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
     }
     
@@ -175,7 +166,6 @@ public class ThumbnailHandlerTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234_1/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 
@@ -193,7 +183,6 @@ public class ThumbnailHandlerTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        System.out.println(url);
         Assert.assertEquals(
                 "http://localhost:8080/viewer/rest/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
                 url);
@@ -213,7 +202,6 @@ public class ThumbnailHandlerTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        System.out.println(url);
         Assert.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
     }
 

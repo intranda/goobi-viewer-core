@@ -252,12 +252,25 @@
                                                     <div class="cms-module__option-label">
                                                        <label for="adminCrowdAddCampaignQueryType">#{msg.type}:</label>
                                                     </div>
-                                                    <div class="cms-module__option-control custom-control custom-control--select">
+                                                    <div class="cms-module__option-message">
+                                                        <h:messages for="adminCrowdAddCampaignQuestionText_#{status.count}" 
+                                                            infoClass="cms-module__option-message-status success" 
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="cms-module__option-message-mark">
+                                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                       <div class="cms-module__option-control">
+                                                    	<div class="custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.questionType}">
                                                             <f:selectItems var="type" value="#{question.availableQuestionTypes}"
                                                                 itemLabel="#{msg['admin__crowdsourcing_question_type_' += type]}" />
                                                         </h:selectOneMenu>
                                                         <span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_type}</span>
+                                                    	</div> 
                                                     </div>
                                                     <div class="cms-module__option-help">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -271,12 +284,25 @@
                                                     <div class="cms-module__option-label">
                                                         <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetSelector}*:</label>
                                                     </div>
-                                                    <div class="cms-module__option-control custom-control custom-control--select">
+                                                    <div class="cms-module__option-message">
+                                                        <h:messages for="adminCrowdAddCampaignQuestionText_#{status.count}" 
+                                                            infoClass="cms-module__option-message-status success" 
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="cms-module__option-message-mark">
+                                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="cms-module__option-control">
+                                                    	<div class="custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.targetSelector}">
                                                             <f:selectItems var="selector" value="#{question.availableTargetSelectors}"
                                                                 itemLabel="#{msg['admin__crowdsourcing_question_targetSelector_' += selector]}" />
                                                         </h:selectOneMenu>
                                                         <span class="cms-module__option-control-helptext">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
+                                                    	</div> 
                                                     </div>
                                                     <div class="cms-module__option-help">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext">
@@ -289,6 +315,17 @@
                                                 <div class="cms-module__option-group">
                                                     <div class="cms-module__option-label">
                                                         <label for="adminCrowdAddCampaignQuestionTargetSelector">#{msg.admin__crowdsourcing_question_targetFrequency}*:</label>
+                                                    </div>
+                                                    <div class="cms-module__option-message">
+                                                        <h:messages for="adminCrowdAddCampaignQuestionText_#{status.count}" 
+                                                            infoClass="cms-module__option-message-status success" 
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="cms-module__option-message-mark">
+                                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                        </div>
                                                     </div>
                                                     <div class="cms-module__option-control  custom-control custom-control--select">
                                                         <h:selectOneMenu value="#{question.targetFrequency}">

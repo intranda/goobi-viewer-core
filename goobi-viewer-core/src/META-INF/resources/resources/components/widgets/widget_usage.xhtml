@@ -228,7 +228,7 @@
 	                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.pdfStructDownloadLink}" 
-	                                    id="pdfWork" 
+	                                    id="pdfStruct" 
 	                                    class="label label-default widget-usage__struct-download-pdf" 
 	                                    title="#{msg.metadata_dl_pdf}" 
 	                                    target="_blank" rel="nofollow">
@@ -237,11 +237,11 @@
 	                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
 	                                <a 
 	                                    href="#" 
-	                                    id="pdfWork" 
+	                                    id="pdfStruct" 
 	                                    class="label label-default widget-usage__struct-download-pdf download-modal-widget" 
 	                                    data-type="pdf" 
 	                                    data-title="#{activeDocumentBean.titleBarLabel}" 
-	                                    data-id="#{activeDocumentBean.viewManager.logId}"
+	                                    data-id="#{activeDocumentBean.viewManager.currentDocument.logid}"
 	                                    data-pi="#{activeDocumentBean.viewManager.pi}" 
 	                                    title="#{msg.pdfDownload}">
 	                                    #{msg.pdfDownload}

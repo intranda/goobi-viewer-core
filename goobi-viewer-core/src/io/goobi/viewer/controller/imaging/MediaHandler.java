@@ -30,7 +30,7 @@ public class MediaHandler {
 
     private final String mediaRestApiUrl;
     
-    public MediaHandler(Configuration config) throws ViewerConfigurationException {
+    public MediaHandler(Configuration config) {
         this.mediaRestApiUrl = config.getRestApiUrl();
     }
     

@@ -3,7 +3,7 @@
    global style declarations for crowdsourcing_layout.xhtml
    ==============================================================*/
 /* ADMIN LAYOUT */
-.crowdsourcing-campaigns-overview { 
+.crowdsourcing-campaigns-overview {   
 	display: flex;
 	flex-direction: column;
 	
@@ -83,6 +83,7 @@
 			
 			&__bar {
 				progressBar {
+				
 				}
 				.goobi-progress-bar-wrapper {					
 					.goobi-progress-bar {
@@ -95,3 +96,49 @@
 	}
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+	.crowdsourcing-campaigns-overview__campaign__image {
+		width: 100%;
+	}
+	.crowdsourcing-campaigns-overview__campaign__image img {
+		width: 100%;
+		max-width: 100%;
+	}
+	
+	.campaign-statistics__bar .goobi-progress-bar-wrapper .goobi-progress-bar {
+		display: flex;
+		overflow: hidden;
+	}
+}
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+.crowdsourcing-campaigns-overview__campaign__text h3 {
+		width: 100%;
+	}
+	.crowdsourcing-campaigns-overview__campaign__image {
+		width: 100%;
+	}
+	.crowdsourcing-campaigns-overview__campaign__image img {
+		width: 100%;
+		max-width: 100%;
+		float: left;
+	}
+	.crowdsourcing-campaigns-overview__campaign__actions {
+	width: 100%;
+	}
+	.crowdsourcing-campaigns-overview__campaign__text {
+	width: 100%;
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.crowdsourcing-campaigns-overview__campaign .campaign-statistics__text dl {
+	grid-template-columns: 80% 20%;
+	}
+
+}
