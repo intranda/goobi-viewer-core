@@ -62,26 +62,13 @@ import io.goobi.viewer.servlets.rest.iiif.presentation.IIIFPresentationResponseF
  */
 public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
-    private ThumbnailHandler thumbs;
-    private ImageHandler images;
-    private PdfHandler pdf;
-    private ImageDeliveryBean imageDelivery;
-
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        Configuration configuration = DataManager.getInstance().getConfiguration();
-        thumbs = new ThumbnailHandler(new IIIFUrlHandler(), configuration, STATIC_IMAGES_PATH);
-        images = new ImageHandler();
-        pdf = new PdfHandler(null, DataManager.getInstance().getConfiguration());
-        imageDelivery = new ImageDeliveryBean();
-        imageDelivery.setThumbs(thumbs);
-        imageDelivery.setImages(images);
-        imageDelivery.setPdf(pdf);
     }
     
     
@@ -93,11 +80,8 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         
         
         ManifestBuilder builder = new ManifestBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        builder.imageDelivery = this.imageDelivery;
         SequenceBuilder sequenceBuilder = new SequenceBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        sequenceBuilder.imageDelivery = this.imageDelivery;
         StructureBuilder structureBuilder = new StructureBuilder(URI.create("https://viewer.goobi.io"), URI.create("https://viewer.goobi.io/rest/"));
-        structureBuilder.imageDelivery = this.imageDelivery;
         
         SolrDocumentList allDocs = DataManager.getInstance().getSearchIndex().search("PI:*");
         for (SolrDocument solrDocument : allDocs) {
