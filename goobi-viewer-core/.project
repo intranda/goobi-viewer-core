@@ -50,7 +50,7 @@
 		<link>
 			<name>config_viewer.xml</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/digiverso/viewer/config/config_viewer.xml</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/opt/digiverso/viewer/config/config_viewer.xml</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

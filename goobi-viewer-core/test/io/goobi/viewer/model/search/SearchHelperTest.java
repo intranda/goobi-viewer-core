@@ -231,7 +231,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String[] terms = { "ipsum", "tempor", "labore" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true);
         Assert.assertFalse(truncated.isEmpty());
-        System.out.println(truncated.get(0));
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
         Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">labore</span>"));

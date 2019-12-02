@@ -64,13 +64,13 @@ public class AltoSearchParserTest {
         List<Word> words = doc.getFirstPage().getAllWordsAsList().stream().filter(l -> l instanceof Word).map(l -> (Word)l).collect(Collectors.toList());
         List<List<Word>> hits = parser.findWordMatches(words, regex);
         
-        for (List<Word> hit : hits) {
-            System.out.println("Found hit");
-            System.out.println("\tmatch = " + hit.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
-            for (Word hitWord : hit) {
-                System.out.println("\tWord " + hitWord.getId() + ": " + hitWord.getContent());
-            }
-        }
+//        for (List<Word> hit : hits) {
+//            System.out.println("Found hit");
+//            System.out.println("\tmatch = " + hit.stream().map(Word::getSubsContent).collect(Collectors.joining(" ")));
+//            for (Word hitWord : hit) {
+//                System.out.println("\tWord " + hitWord.getId() + ": " + hitWord.getContent());
+//            }
+//        }
         
         Assert.assertEquals(6, hits.size());
         Assert.assertEquals(1, hits.get(0).size());
@@ -87,11 +87,11 @@ public class AltoSearchParserTest {
         for (Range<Integer> position : hits.keySet()) {
             List<Line> containingLines = hits.get(position);
             String match = text.substring(position.getMinimum(), position.getMaximum()+1);
-            System.out.println("Found hit");
-            System.out.println("\tmatch = " + match);
-            for (Line line : containingLines) {
-                System.out.println("\tLine " + line.getId() + ": " + line.getContent());
-            }
+//            System.out.println("Found hit");
+//            System.out.println("\tmatch = " + match);
+//            for (Line line : containingLines) {
+//                System.out.println("\tLine " + line.getId() + ": " + line.getContent());
+//            }
         }
         
         Assert.assertEquals(6, hits.size());

@@ -84,7 +84,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(SequenceBuilder.class);
 
-    protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+    protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
     private PageType preferredView = PageType.viewObject;
 

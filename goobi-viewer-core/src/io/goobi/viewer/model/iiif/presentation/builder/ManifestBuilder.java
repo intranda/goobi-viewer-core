@@ -66,7 +66,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 public class ManifestBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
-    protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+    protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
 
     /**

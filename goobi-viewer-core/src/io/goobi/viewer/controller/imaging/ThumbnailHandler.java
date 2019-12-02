@@ -752,8 +752,9 @@ public class ThumbnailHandler {
             String imagePath = item.getImageURI();
             String size = getSize(width, height);
             String format = "jpg";
-            if (imagePath.toLowerCase().endsWith(".png")) {
-                format = "png";
+            ImageFileFormat formatType = ImageFileFormat.getImageFileFormatFromFileExtension(imagePath);
+            if(formatType != null && !formatType.getMimeType().matches("(?i)(image\\/(?!png|jpg).*)") ) { //match any image-mimetype except jpg and png
+                format = formatType.getFileExtension();
             }
             String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format);
             url += "?updated=" + item.getLastModifiedTime();
