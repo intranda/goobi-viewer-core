@@ -133,6 +133,44 @@
                             </div>
                         </div>
 
+                        
+                        
+                        <!-- EDIT DISPLAY ORDER -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaDisplayOrder">#{msg.admin__media_display_order}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:inputText  id="editMediaDisplayOrder" value="#{media.displayOrder}" styleClass="form-control">
+                                	<f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
+                                	<f:passThroughAttribute name="min" value="0"></f:passThroughAttribute>
+                                </h:inputText>
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_display_order}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- EDIT PRIORITY ("IMPORTANT" ATTRIBUTE) -->
+                        <div class="cms-module__option-group">
+                            <div class="cms-module__option-label">
+                                <label for="editMediaPriority">#{msg.admin__media_important}:</label>
+                            </div>
+                            <div class="cms-module__option-control">
+                                <h:selectBooleanCheckbox type="checkbox" value="#{media.important}" />
+                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_important}</span>
+                            </div>
+                            <div class="cms-module__option-help">
+                                <button type="button" class="btn btn--clean" data-toggle="helptext">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+
                         <!-- EDIT LINKS TO -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
@@ -205,7 +243,7 @@
                     <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
                     <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
                     </h:commandLink>
-                    <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).prev().click()" value="#{msg.button__save}" styleClass="btn btn--clean">
+                    <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).siblings('.abort').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
                         <f:ajax execute="edit-fields" render="display-fields edit-fields language-select :messages" />
                     </h:commandLink>
                 </div>
