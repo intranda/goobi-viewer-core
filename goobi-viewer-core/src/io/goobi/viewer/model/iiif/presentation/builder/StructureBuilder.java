@@ -44,6 +44,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PageType;
@@ -56,6 +57,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 public class StructureBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureBuilder.class);
+    protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
     public static final String BASE_RANGE_LABEL = "CONTENT";
 
@@ -154,7 +156,7 @@ public class StructureBuilder extends AbstractBuilder {
         addMetadata(range, ele);
 
         try {
-            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, pi);
+            String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele, pi);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl));
                 range.setThumbnail(thumb);
@@ -179,7 +181,7 @@ public class StructureBuilder extends AbstractBuilder {
 
         /*PDF*/
         try {
-            String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, pi, range.getLabel().getValue().orElse(null));
+            String pdfDownloadUrl = imageDelivery.getPdf().getPdfUrl(ele, pi, range.getLabel().getValue().orElse(null));
             LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
             pdfDownload.setFormat(Format.APPLICATION_PDF);
             pdfDownload.setLabel(new SimpleMetadataValue("PDF"));

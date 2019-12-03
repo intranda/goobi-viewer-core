@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
@@ -58,7 +59,7 @@ public class BeanUtils {
     public static final String PIPE_REPLACEMENT = "U007C";
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
     public static final String PERCENT_REPLACEMENT = "U0025";
-
+    
     /**
      * Gets the current Request from the faces context
      * 
@@ -260,11 +261,13 @@ public class BeanUtils {
         ImageDeliveryBean bean = (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
         if (bean == null) {
             bean = new ImageDeliveryBean();
+            bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
         } else {
             try {
                 bean.getThumbs();
             } catch (ContextNotActiveException e) {
                 bean = new ImageDeliveryBean();
+                bean.init(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getConfiguration().getRestApiUrl().replace("rest/", ""));
             }
         }
         return bean;

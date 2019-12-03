@@ -88,7 +88,6 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             URISyntaxException, DAOException {
         IPresentationModelElement manifest = resource.getManifest("PPN517154005");
         Assert.assertTrue(manifest instanceof Manifest);
-        System.out.println(manifest);
     }
 
     /**
@@ -107,7 +106,6 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             URISyntaxException, DAOException {
         Range range = resource.getRange("PPN517154005", "LOG_0003");
         Assert.assertTrue(range instanceof Range);
-        System.out.println(range);
     }
 
     /**
@@ -125,7 +123,6 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             URISyntaxException, DAOException {
         Canvas canvas = resource.getCanvas("PPN517154005", 1);
         Assert.assertTrue(canvas instanceof Canvas);
-        System.out.println(canvas);
     }
 
     /**
@@ -146,10 +143,8 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
         try {
             AnnotationList annoList = resource.getOtherContent("PPN517154005", 1, AnnotationType.FULLTEXT.name());
             Assert.assertTrue(annoList instanceof AnnotationList);
-            System.out.println(annoList);
         } catch (ContentNotFoundException e) {
             //may be thrown if no fulltext content exists. Do not fail test
-            System.out.println(e.getMessage());
         }
     }
 
@@ -171,7 +166,6 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
             IndexUnreachableException, URISyntaxException, DAOException, IOException {
         Layer layer = resource.getLayer("PPN517154005", AnnotationType.FULLTEXT.name());
         Assert.assertTrue(layer instanceof Layer);
-        System.out.println(layer);
     }
 
 }
