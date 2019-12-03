@@ -24,7 +24,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
      
-    var _debug = false;
+    var _debug = true;
     var _userComments = {};
         
     viewer.userLogin = {
