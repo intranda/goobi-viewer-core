@@ -19,7 +19,7 @@
 
 	<ui:define name="content">
 		<div id="userBookshelfEdit" class="user-bookshelf-edit">
-			<h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelfMine}">
+			<h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelf != null and bookshelfBean.currentBookshelfMine}">
 				<h2>#{msg.bookshelf_edit}</h2>
 
 				<div class="user-bookshelf-edit__form">
@@ -28,7 +28,8 @@
 						<div class="form-group">
 							<label for="editBookshelfName" class="col-sm-2 control-label">#{msg.name}:</label>
 							<div class="col-sm-10">
-								<h:inputText id="editBookshelfName" styleClass="form-control" value="#{bookshelfBean.currentBookshelfName}" validator="#{bookshelfBean.validateName}" required="true" requiredMessage="#{msg.bookshelf_bookshelfNameFailure}" />
+								<h:inputText id="editBookshelfName" styleClass="form-control" value="#{bookshelfBean.currentBookshelf.name}"
+								    validator="#{bookshelfBean.validateName}" required="true" requiredMessage="#{msg.bookshelf_bookshelfNameFailure}" />
 							</div>
 						</div>
 						
@@ -36,7 +37,7 @@
 						<div class="form-group">
 							<label for="editBookshelfDescription" class="col-sm-2 control-label">#{msg.description}:</label>
 							<div class="col-sm-10">
-								<h:inputTextarea id="editBookshelfDescription" styleClass="form-control" value="#{bookshelfBean.currentBookshelfDescription}" />
+								<h:inputTextarea id="editBookshelfDescription" styleClass="form-control" value="#{bookshelfBean.currentBookshelf.description}" />
 							</div>
 						</div>
 	
@@ -47,18 +48,28 @@
 								<div class="checkbox">
 									<label>
 										<h:selectBooleanCheckbox id="editBookshelfPublic"
-										value="#{bookshelfBean.currentBookshelfPublic}" />
+										value="#{bookshelfBean.currentBookshelf.isPublic}" />
 						     		</label>
 								</div>
 							</div>
 						</div>
 						
 						<!-- SHARES -->
+						<div class="form-group">
+						    <label for="editBookshelfGroupShares" class="col-sm-2 control-label">#{msg.bookshelf_groupShares}:</label>
+						    <div class="col-sm-10">
+						        <h:selectManyMenu id="editBookshelfGroupShares" styleClass="form-control" value="#{bookshelfBean.currentBookshelf.groupShares}">
+						          <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
+						        </h:selectManyMenu>
+						    </div>
+						</div>
 						
 											
 						<!-- ACTION -->
 						<div class="user-bookshelf-edit__action">
-							<a href="#{navigationHelper.applicationUrl}mybookshelves/" class="btn">#{msg.bookshelves_cancel}</a>
+                            <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.bookshelves_cancel}" action="userBackendBookshelves" immediate="true">
+                                <f:setPropertyActionListener target="#{bookshelfBean.currentBookshelf}" value="#{null}" />
+                            </h:commandLink>
 							<h:commandLink value="#{msg.save}" action="#{bookshelfBean.saveCurrentBookshelfAction}" styleClass="btn btn--success" />
 						</div>
 					</h:form>

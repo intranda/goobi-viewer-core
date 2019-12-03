@@ -341,7 +341,7 @@ public class Bookshelf implements Serializable {
     /**
      * @return the isPublic
      */
-    public boolean isPublic() {
+    public boolean isIsPublic() {
         return isPublic;
     }
 
@@ -363,7 +363,7 @@ public class Bookshelf implements Serializable {
     /**
      * @param isPublic the isPublic to set
      */
-    public void setPublic(boolean isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 

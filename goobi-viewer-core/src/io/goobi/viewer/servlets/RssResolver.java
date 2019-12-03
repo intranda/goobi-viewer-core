@@ -88,7 +88,7 @@ public class RssResolver extends HttpServlet {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
                         return;
                     }
-                    if (!bookshelf.isPublic()) {
+                    if (!bookshelf.isIsPublic()) {
                         logger.warn("Requested bookshelf not public: {}", bookshelfId);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
                         return;

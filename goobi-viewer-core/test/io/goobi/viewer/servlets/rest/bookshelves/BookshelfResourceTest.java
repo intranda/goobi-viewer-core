@@ -24,7 +24,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -33,50 +32,48 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.bookshelf.Bookshelf;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.rest.SuccessMessage;
-import io.goobi.viewer.servlets.rest.bookshelves.BookshelfResource;
 
 /**
  * @author Florian Alpers
  *
  */
-public class BookshelfResourceTest extends AbstractDatabaseEnabledTest{
+public class BookshelfResourceTest extends AbstractDatabaseEnabledTest {
 
     private static final String PI_1 = "pi1";
     private static final String PI_2 = "pi2";
     private static final String PI_3 = "pi3";
     private static final String LOGID_1 = "LOG_0004";
     private static final String PAGE_1 = "7";
-        
+
     private BookshelfResource resource;
-    
+
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         Configuration configuration = new Configuration("resources/test/config_viewer.test.xml");
-        DataManager.getInstance().injectConfiguration(configuration );
-        
-        
+        DataManager.getInstance().injectConfiguration(configuration);
+
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
         UserBean userBean = new UserBean();
         userBean.setUser(user);
-                
-        
-        HttpServletRequest request = TestUtils.mockHttpRequest();        
-        
+
+        HttpServletRequest request = TestUtils.mockHttpRequest();
+
         resource = new BookshelfResource(userBean, request);
     }
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -84,56 +81,56 @@ public class BookshelfResourceTest extends AbstractDatabaseEnabledTest{
 
     @Test
     public void testSessionBookshelf() throws DAOException, IOException, RestApiException {
-                
+
         Bookshelf bs = resource.getSessionBookshelf();
         Assert.assertNotNull(bs);
-        
+
         resource.addToSessionBookshelf(PI_1);
         Assert.assertEquals(1, resource.countSessionBookshelfItems(), 0);
         resource.addToSessionBookshelf(PI_2);
         Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
         resource.addToSessionBookshelf(PI_3, LOGID_1, PAGE_1);
         Assert.assertEquals(3, resource.countSessionBookshelfItems(), 0);
-        
+
         Assert.assertTrue(resource.isInSessionBookshelf(PI_2));
         Assert.assertTrue(resource.isInSessionBookshelf(PI_3, LOGID_1, PAGE_1));
         Assert.assertFalse(resource.isInSessionBookshelf(PI_2, LOGID_1, PAGE_1));
         Assert.assertFalse(resource.isInSessionBookshelf(PI_3));
-        
+
         resource.deleteFromSessionBookshelf(PI_2);
         Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
 
         resource.deleteFromSessionBookshelf(PI_3);
         Assert.assertEquals(2, resource.countSessionBookshelfItems(), 0);
-        
+
         resource.deleteFromSessionBookshelf(PI_3, LOGID_1, PAGE_1);
         Assert.assertEquals(1, resource.countSessionBookshelfItems(), 0);
-        
+
         resource.deleteSessionBookshelf();
         Assert.assertEquals(0, resource.countSessionBookshelfItems(), 0);
     }
-    
+
     @Test
     public void testUserBookshelves() throws DAOException, IOException, RestApiException {
 
         List<Bookshelf> bookshelves = resource.getAllUserBookshelfs();
         Assert.assertNotNull(bookshelves);
         Assert.assertEquals(1, bookshelves.size());
-                        
+
         resource.addUserBookshelf("List 1");
         resource.addUserBookshelf("Test 2");
         resource.addUserBookshelf();
-        
+
         bookshelves = resource.getAllUserBookshelfs();
         Assert.assertEquals(4, bookshelves.size());
-        
+
         Long id1 = bookshelves.get(1).getId();
         Assert.assertNotNull(id1);
         Long id2 = bookshelves.get(2).getId();
         Assert.assertNotNull(id2);
         Long id3 = bookshelves.get(3).getId();
         Assert.assertNotNull(id3);
-        
+
         Bookshelf bs1 = resource.getUserBookshelfById(id1);
         Assert.assertNotNull(bs1);
         Assert.assertEquals("List 1", bs1.getName());
@@ -145,46 +142,44 @@ public class BookshelfResourceTest extends AbstractDatabaseEnabledTest{
         Assert.assertEquals("List 2", bs3.getName());
         resource.setUserBookshelfName(id3, "TEST");
         Assert.assertEquals("TEST", resource.getUserBookshelfById(id3).getName());
-                
+
         Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id1, PI_1));
         Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id2, PI_1));
         Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id2, PI_2));
         Assert.assertEquals(new SuccessMessage(false), resource.addItemToUserBookshelf(id2, PI_2));
         Assert.assertEquals(new SuccessMessage(true), resource.addItemToUserBookshelf(id2, PI_3, LOGID_1, PAGE_1));
-        
+
         Assert.assertEquals(1, resource.countUserBookshelfItems(id1), 0);
         Assert.assertEquals(3, resource.countUserBookshelfItems(id2), 0);
-        
+
         Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs1));
         Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs2));
         Assert.assertTrue(resource.getContainingUserBookshelves(PI_3, LOGID_1, PAGE_1).contains(bs2));
-        
-        
+
         resource.deleteFromUserBookshelf(id1, PI_1);
         Assert.assertEquals(0, resource.countUserBookshelfItems(id1), 0);
         resource.deleteFromUserBookshelf(id2, PI_3, LOGID_1, PAGE_1);
         Assert.assertEquals(2, resource.countUserBookshelfItems(id2), 0);
-        
+
         resource.deleteUserBookshelf(id1);
         resource.deleteUserBookshelf(id3);
         resource.deleteUserBookshelf(id2);
         Assert.assertEquals(1, resource.getAllUserBookshelfs().size());
-        
+
         List<Bookshelf> publicBookshelves = resource.getAllPublicBookshelfs();
-        List<Bookshelf> sharedBookshelves = resource.getAllSharedBookshelfs(); 
-        Assert.assertTrue(publicBookshelves.stream().allMatch(bs -> bs.isPublic()));
-//        Assert.assertTrue(sharedBookshelves.stream()
-//                .flatMap(bs -> bs.getGroupShares().stream())
-//                .flatMap(group -> {
-//                    try {
-//                        return group.getMembers().stream();
-//                    } catch (DAOException e) {
-//                        throw new IllegalStateException();
-//                    }
-//                })
-//                .anyMatch(user -> user.equals(bs1.getOwner())));
-        
-        
+        List<Bookshelf> sharedBookshelves = resource.getAllSharedBookshelfs();
+        Assert.assertTrue(publicBookshelves.stream().allMatch(bs -> bs.isIsPublic()));
+        //        Assert.assertTrue(sharedBookshelves.stream()
+        //                .flatMap(bs -> bs.getGroupShares().stream())
+        //                .flatMap(group -> {
+        //                    try {
+        //                        return group.getMembers().stream();
+        //                    } catch (DAOException e) {
+        //                        throw new IllegalStateException();
+        //                    }
+        //                })
+        //                .anyMatch(user -> user.equals(bs1.getOwner())));
+
     }
 
 }

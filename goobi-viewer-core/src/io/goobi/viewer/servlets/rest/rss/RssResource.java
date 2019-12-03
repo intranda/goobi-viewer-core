@@ -351,7 +351,7 @@ public class RssResource {
                 if (bookshelf == null) {
                     throw new PresentationException("Requested bookshelf not found: " + bookshelfId);
                 }
-                if (!bookshelf.isPublic()) {
+                if (!bookshelf.isIsPublic()) {
                     throw new PresentationException("Requested bookshelf not public: " + bookshelfId);
                 }
                 query = bookshelf.generateSolrQueryForItems();

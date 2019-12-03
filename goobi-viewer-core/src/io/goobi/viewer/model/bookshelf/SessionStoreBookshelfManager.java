@@ -156,7 +156,7 @@ public class SessionStoreBookshelfManager {
             Optional<Bookshelf> oBookshelf = getBookshelf(request.getSession());
             if (oBookshelf.isPresent() && !oBookshelf.get().getItems().isEmpty()) {
                 oBookshelf.get().setOwner(user);
-                oBookshelf.get().setPublic(false);
+                oBookshelf.get().setIsPublic(false);
                 List<Bookshelf> userBookshelves = DataManager.getInstance().getDao().getBookshelves(user);
                 oBookshelf.get().setName(generateNewBookshelfName(userBookshelves));
                 DataManager.getInstance().getDao().addBookshelf(oBookshelf.get());

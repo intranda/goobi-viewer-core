@@ -406,6 +406,19 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     /**
+     * Returns a list of all groups with this user's involvement (either as owner or member).
+     * 
+     * @return
+     * @throws DAOException 
+     */
+    public List<UserGroup> getAllUserGroups() throws DAOException {
+        List<UserGroup> ret = getUserGroupsWithMembership();
+        ret.addAll(getUserGroupOwnerships());
+
+        return ret;
+    }
+
+    /**
      * Checks whether the user can satisfy at least one of the given access conditions with a license that contains the given privilege name. If one
      * of the conditions is OPENACCESS, true is always returned. Superusers always get access.
      *
@@ -1414,7 +1427,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
     public URI getIdAsURI() {
         return URI.create(URI_ID_TEMPLATE.replace("{id}", this.getId().toString()));
     }
-    
+
     public static void main(String[] args) {
         System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }

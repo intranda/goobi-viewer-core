@@ -390,7 +390,7 @@ public class BookshelfResource {
 
         Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(id);
 
-        if (bookshelf.isPublic()) {
+        if (bookshelf.isIsPublic()) {
             logger.trace("Serving public bookshelf " + id);
             return bookshelf;
         }
@@ -531,7 +531,7 @@ public class BookshelfResource {
                 Bookshelf bookshelf = new Bookshelf();
                 bookshelf.setName(name);
                 bookshelf.setOwner(user);
-                bookshelf.setPublic(false);
+                bookshelf.setIsPublic(false);
                 boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf);
                 return new SuccessMessage(success);
             }

@@ -69,10 +69,6 @@ public class BookshelfBean implements Serializable {
 
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
-    private String currentBookshelfName;
-    private String currentBookshelfDescription;
-    private boolean currentBookshelfPublic = false;
-
     private BookshelfItem currentBookshelfItem;
     private UserGroup currentUserGroup;
 
@@ -118,7 +114,6 @@ public class BookshelfBean implements Serializable {
      * @throws DAOException
      */
     public String saveCurrentBookshelfAction() {
-        syncInputFieldsToCurrentBookshelf();
         if (saveBookshelfAction(currentBookshelf)) {
             resetCurrentBookshelfAction();
             return "pretty:userMenuMyBookshelves";
@@ -240,9 +235,6 @@ public class BookshelfBean implements Serializable {
         if (userBean != null) {
             currentBookshelf.setOwner(userBean.getUser());
         }
-        currentBookshelfName = null;
-        currentBookshelfDescription = null;
-        currentBookshelfPublic = false;
         currentBookshelfItem = new BookshelfItem();
     }
 
@@ -415,42 +407,6 @@ public class BookshelfBean implements Serializable {
     public void bookshelfSelectAction(ValueChangeEvent event) throws DAOException {
         logger.debug("bookshelf selected: {}", event.getNewValue());
         currentBookshelf = DataManager.getInstance().getDao().getBookshelf(String.valueOf(event.getNewValue()), userBean.getUser());
-        syncCurrentBookshelfToInputFields();
-    }
-
-    /**
-     * Sets currentBookshelf to the given bookshelf and sets the input parameter fields to the values of those of currentBookshelf.
-     *
-     * @should set input field values to those of the given bookshelf
-     * @should set input parameters to null if given bookshelf null
-     */
-    protected void syncCurrentBookshelfToInputFields() {
-        logger.debug("syncCurrentBookshelfToInputFields");
-        if (currentBookshelf != null) {
-            currentBookshelfName = currentBookshelf.getName();
-            currentBookshelfDescription = currentBookshelf.getDescription();
-            currentBookshelfPublic = currentBookshelf.isPublic();
-            logger.debug("current bookshelf set to: " + currentBookshelf.getName());
-        } else {
-            currentBookshelfName = null;
-            currentBookshelfDescription = null;
-            currentBookshelfPublic = false;
-        }
-    }
-
-    /**
-     * Sets the properties of the current bookshelf to the values in the input fields.
-     *
-     * @should set the properties correctly
-     * @should do nothing given null
-     */
-    protected void syncInputFieldsToCurrentBookshelf() {
-        logger.debug("syncInputFieldsToCurrentBookshelf");
-        if (currentBookshelf != null) {
-            currentBookshelf.setName(currentBookshelfName);
-            currentBookshelf.setDescription(currentBookshelfDescription);
-            currentBookshelf.setPublic(currentBookshelfPublic);
-        }
     }
 
     public boolean isNewBookshelf() {
@@ -514,15 +470,15 @@ public class BookshelfBean implements Serializable {
     public List<String> getCurrentBookshelfNames() throws DAOException {
         UserBean userBean = BeanUtils.getUserBean();
         List<Bookshelf> bookshelflist = getBookshelvesForUser(userBean.getUser());
-        if (bookshelflist != null) {
-            List<String> nameList = new ArrayList<>(bookshelflist.size());
-            for (Bookshelf bookshelf : bookshelflist) {
-                nameList.add(bookshelf.getName());
-            }
-            return nameList;
+        if (bookshelflist == null || bookshelflist.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList();
+        List<String> nameList = new ArrayList<>(bookshelflist.size());
+        for (Bookshelf bookshelf : bookshelflist) {
+            nameList.add(bookshelf.getName());
+        }
+        return nameList;
     }
 
     /**
@@ -553,58 +509,9 @@ public class BookshelfBean implements Serializable {
         }
     }
 
-    public String getCurrentBookshelfId() {
-        if (getCurrentBookshelf() != null) {
-            return getCurrentBookshelf().getId().toString();
-        }
-        return null;
-    }
-
-    /**
-     * @return the currentBookshelfName
-     */
-    public String getCurrentBookshelfName() {
-        return currentBookshelfName;
-    }
-
-    /**
-     * @param currentBookshelfName the currentBookshelfName to set
-     */
-    public void setCurrentBookshelfName(String currentBookshelfName) {
-        this.currentBookshelfName = currentBookshelfName;
-    }
-
-    /**
-     * @return the currentBookshelfDescription
-     */
-    public String getCurrentBookshelfDescription() {
-        return currentBookshelfDescription;
-    }
-
-    /**
-     * @param currentBookshelfDescription the currentBookshelfDescription to set
-     */
-    public void setCurrentBookshelfDescription(String currentBookshelfDescription) {
-        this.currentBookshelfDescription = currentBookshelfDescription;
-    }
-
-    /**
-     * @return the currentBookshelfPublic
-     */
-    public boolean isCurrentBookshelfPublic() {
-        return currentBookshelfPublic;
-    }
-
-    /**
-     * @param currentBookshelfPublic the currentBookshelfPublic to set
-     */
-    public void setCurrentBookshelfPublic(boolean currentBookshelfPublic) {
-        this.currentBookshelfPublic = currentBookshelfPublic;
-    }
-
     public String viewBookshelfAction(Bookshelf bookshelf) {
         if (bookshelf != null) {
-            logger.debug("bookshelf to open: " + bookshelf.getId() + ", belongs to: " + bookshelf.getOwner().getId());
+            logger.debug("bookshelf to open: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
             currentBookshelf = bookshelf;
         }
 
@@ -613,10 +520,9 @@ public class BookshelfBean implements Serializable {
 
     public String editBookshelfAction(Bookshelf bookshelf) {
         if (bookshelf != null) {
-            logger.debug("bookshelf to edit: " + bookshelf.getId() + ", belongs to: " + bookshelf.getOwner().getId());
+            logger.debug("bookshelf to edit: {}, belongs to: {}", bookshelf.getId(), bookshelf.getOwner().getId());
             currentBookshelf = bookshelf;
         }
-        syncCurrentBookshelfToInputFields();
 
         return "pretty:userMenuEditBookshelf";
     }
