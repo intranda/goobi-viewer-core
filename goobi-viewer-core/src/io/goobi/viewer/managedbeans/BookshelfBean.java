@@ -381,27 +381,35 @@ public class BookshelfBean implements Serializable {
      * @param user
      * @return
      * @throws DAOException
+     * @should return shared bookshelves
      */
-    public List<Bookshelf> getBookshelvesSharedWithUsers(User user) throws DAOException {
+    public List<Bookshelf> getBookshelvesSharedWithUser(User user) throws DAOException {
         if (user == null) {
             return Collections.emptyList();
         }
         List<UserGroup> userGroups = user.getAllUserGroups();
+        logger.trace("user groups: {}", userGroups.size());
         if (userGroups.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Bookshelf> allBookshelves = DataManager.getInstance().getDao().getAllBookshelves();
+        logger.trace("all bookshelves: {}", allBookshelves.size());
         if (allBookshelves.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Bookshelf> ret = new ArrayList<>();
         for (Bookshelf bs : allBookshelves) {
-            if (bs.getOwner().equals(user)) {
+            if (bs.getOwner().equals(user) || bs.getGroupShares().isEmpty()) {
                 continue;
             }
-            // TODO
+            for (UserGroup ug : userGroups) {
+                if (bs.getGroupShares().contains(ug)) {
+                    ret.add(bs);
+                    break;
+                }
+            }
         }
 
         return ret;
