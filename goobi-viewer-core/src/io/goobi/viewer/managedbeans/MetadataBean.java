@@ -24,6 +24,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class MetadataBean {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public final String loadMetadata() throws IndexUnreachableException, DAOException {
+    public String loadMetadata() throws IndexUnreachableException, DAOException {
         metadataElementList = new ArrayList<>();
         if (activeDocumentBean == null) {
             activeDocumentBean = new ActiveDocumentBean();
@@ -184,5 +185,14 @@ public class MetadataBean {
 
     public boolean displayChildStructs() {
         return true;
+    }
+
+    /**
+     * @param selectedRecordLanguage
+     */
+    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+       if(metadataElementList != null) {           
+           metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
+       }
     }
 }

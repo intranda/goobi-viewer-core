@@ -1263,6 +1263,10 @@ public class ActiveDocumentBean implements Serializable {
         } else {
             this.selectedRecordLanguage = selectedRecordLanguage;
         }
+        MetadataBean mdb = BeanUtils.getMetadataBean();
+        if(mdb != null) {
+            mdb.setSelectedRecordLanguage(this.selectedRecordLanguage);
+        }
     }
 
     public boolean isAccessPermissionEpub() {

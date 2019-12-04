@@ -35,6 +35,7 @@
 
             <!-- FILE IMAGE -->
             <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
+            
                 <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
