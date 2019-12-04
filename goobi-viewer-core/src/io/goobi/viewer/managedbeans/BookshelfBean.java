@@ -377,6 +377,37 @@ public class BookshelfBean implements Serializable {
     }
 
     /**
+     * 
+     * @param user
+     * @return
+     * @throws DAOException
+     */
+    public List<Bookshelf> getBookshelvesSharedWithUsers(User user) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        List<UserGroup> userGroups = user.getAllUserGroups();
+        if (userGroups.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Bookshelf> allBookshelves = DataManager.getInstance().getDao().getAllBookshelves();
+        if (allBookshelves.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Bookshelf> ret = new ArrayList<>();
+        for (Bookshelf bs : allBookshelves) {
+            if (bs.getOwner().equals(user)) {
+                continue;
+            }
+            // TODO
+        }
+
+        return ret;
+    }
+
+    /**
      * Returns a list of all existing bookshelves owned by current user
      *
      * @return
@@ -572,7 +603,7 @@ public class BookshelfBean implements Serializable {
     /**
      * 
      * @param bookshelf
-     * @return
+     * @return Absolute share URLto the given bookshelf
      */
     public String getShareLink(Bookshelf bookshelf) {
         if (bookshelf == null) {

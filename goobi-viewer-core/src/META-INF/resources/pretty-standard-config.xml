@@ -584,11 +584,6 @@
 		<view-id value="/userBackendBookshelves.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="userMenuOtherBookshelves">
-		<pattern value="/otherbookshelves/" />
-		<view-id value="/userBackendOtherBookshelves.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
 	<url-mapping id="userMenuViewBookshelf">
 		<pattern value="/bookshelf/" />
 		<view-id value="/userBackendViewBookshelf.xhtml" />

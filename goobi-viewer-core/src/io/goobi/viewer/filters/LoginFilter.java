@@ -136,7 +136,6 @@ public class LoginFilter implements Filter {
                 case "/myactivity/":
                 case "/mysearches/":
                 case "/mybookshelves/":
-                case "/otherbookshelves/":
                 case "/bookshelf/":
                 case "/editbookshelf/":
                     return true;
