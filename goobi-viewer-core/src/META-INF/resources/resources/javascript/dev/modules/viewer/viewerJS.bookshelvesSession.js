@@ -84,6 +84,8 @@ var viewerJS = (function(viewer) {
 			$('body').on('click', '[data-bookshelf-type="add"]', function() {
 				var currBtn = $(this);
 				var currPi = currBtn.attr('data-pi');
+				var currLogid = currBtn.attr('data-logid');
+				var currPage = currBtn.attr('data-page');
 
 				_isElementSet(_defaults.root, currPi).then(function(isSet) {
 					// set confirm counter
@@ -91,14 +93,14 @@ var viewerJS = (function(viewer) {
 
 					if (!isSet) {
 						currBtn.addClass('added');
-						_setSessionElement(_defaults.root, currPi).then(function() {
+						_setSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
 							_setSessionElementCount();
 							_renderDropdownList();
 							_renderMiradorLink();
 						});
 					} else {
 						currBtn.removeClass('added');
-						_deleteSessionElement(_defaults.root, currPi).then(function() {
+						_deleteSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
 							_setSessionElementCount();
 							_renderDropdownList();
 							_renderMiradorLink();
@@ -200,16 +202,20 @@ var viewerJS = (function(viewer) {
 	 * @method _setSessionElement
 	 * @param {String} root The application root path.
 	 * @param {String} pi The persistent identifier of the saved element.
+	 * @param {String} logid
+	 * @param {String} page
 	 */
-	function _setSessionElement(root, pi) {
+	function _setSessionElement(root, pi, logid, page) {
 		if (_debug) {
 			console.log('---------- _setSessionElement() ----------');
 			console.log('_setSessionElement: root - ', root);
 			console.log('_setSessionElement: pi - ', pi);
+			// console.log('_setSessionElement: logid - ', logid);
+			console.log('_setSessionElement: page - ', page);
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/add/' + pi + '/',
+			url : root + '/rest/bookshelves/session/add/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -226,7 +232,7 @@ var viewerJS = (function(viewer) {
 	 * @param {String} root The application root path.
 	 * @param {String} pi The persistent identifier of the saved element.
 	 */
-	function _deleteSessionElement(root, pi) {
+	function _deleteSessionElement(root, pi, logid, page) {
 		if (_debug) {
 			console.log('---------- _deleteSessionElement() ----------');
 			console.log('_deleteSessionElement: root - ', root);
@@ -234,7 +240,7 @@ var viewerJS = (function(viewer) {
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/session/delete/' + pi + '/',
+			url : root + '/rest/bookshelves/session/delete/' + pi + '/' + page + '/-/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
@@ -352,8 +358,10 @@ var viewerJS = (function(viewer) {
 			$('[data-bookshelf-type="delete"]').on('click', function() {
 				var currBtn = $(this);
 				var currPi = currBtn.attr('data-pi');
+				var logid = currBtn.attr('data-logid');
+				var page = currBtn.attr('data-page');
 
-				_deleteSessionElement(_defaults.root, currPi).then(function() {
+				_deleteSessionElement(_defaults.root, currPi, currLogid, currPage).then(function() {
 					_setSessionElementCount();
 					_setAddActiveState();
 					_renderDropdownList();
@@ -414,6 +422,8 @@ var viewerJS = (function(viewer) {
 		$('[data-bookshelf-type="add"]').each(function() {
 			var currBtn = $(this);
 			var currPi = currBtn.attr('data-pi');
+			var currLogid = currBtn.attr('data-logid');
+			var currPage = currBtn.attr('data-page');
 
 			_isElementSet(_defaults.root, currPi).then(function(isSet) {
 				if (isSet) {

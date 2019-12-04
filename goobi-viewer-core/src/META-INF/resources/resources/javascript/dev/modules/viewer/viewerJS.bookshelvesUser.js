@@ -528,7 +528,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/' + logid + '/' + page + '/',
+            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/' + page + '/' + logid + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -582,6 +582,8 @@ var viewerJS = ( function( viewer ) {
         }
         
         var pi = pi;
+        var logid = logid;
+        var page = page;
         var posTop = pos.top;
         var posLeft = pos.left;
         
@@ -609,7 +611,7 @@ var viewerJS = ( function( viewer ) {
         var bookshelfPopupFooterInput = $( '<input />' ).attr( 'type', 'text' ).attr( 'placeholder', _defaults.msg.addNewBookshelf );
         bookshelfPopupFooterColLeft.append( bookshelfPopupFooterInput );
         var bookshelfPopupFooterColright = $( '<div />' ).addClass( 'col-xs-1 no-padding' );
-        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi );
+        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page );
         bookshelfPopupFooterColright.append( bookshelfPopupFooterAddBtn );
         bookshelfPopupFooterRow.append( bookshelfPopupFooterColLeft ).append( bookshelfPopupFooterColright );
         bookshelfPopupFooter.append( bookshelfPopupFooterRow );
@@ -621,12 +623,14 @@ var viewerJS = ( function( viewer ) {
         $( 'body' ).append( bookshelfPopup );
         
         // render bookshelf list
-        _renderBookshelfPopoverList( pi );
+        _renderBookshelfPopoverList( pi, logid, page );
         
         // add new bookshelf in popover
         $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).on( 'click', function() {
             var bsName = $( '.bookshelf-popup__footer input' ).val();
             var currPi = $( this ).attr( 'data-pi' );
+            var currLogid = $( this ).attr( 'data-logid' );
+            var currPage = $( this ).attr( 'data-page' );
             
             if ( bsName != '' ) {
                 _addNamedBookshelf( _defaults.root, bsName ).then( function() {
@@ -661,10 +665,10 @@ var viewerJS = ( function( viewer ) {
      * @method _renderBookshelfPopoverList
      * @param {String} pi The current PI of the selected item.
      */
-    function _renderBookshelfPopoverList( pi ) {
+    function _renderBookshelfPopoverList( pi, logid, page ) {
         if ( _debug ) {
             console.log( '---------- _renderBookshelfPopoverList() ----------' );
-            console.log( '_renderBookshelfPopoverList: pi - ', pi );
+            console.log( '_renderBookshelfPopoverList: pi - ', pi, ', logid - ', logid, ', page = ', page);
         }
         
         _getAllBookshelves( _defaults.root ).then( function( elements ) {
@@ -688,7 +692,7 @@ var viewerJS = ( function( viewer ) {
                     } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
                     dropdownListItemAdd = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
-                            .attr( 'data-pi', pi ).text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
+                            .attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page ).text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
                     
                     // build bookshelf item
                     dropdownListItem.append( dropdownListItemAdd );
@@ -715,11 +719,13 @@ var viewerJS = ( function( viewer ) {
                 var currBtn = $( this );
                 var currId = currBtn.attr( 'data-id' );
                 var currPi = currBtn.attr( 'data-pi' );
+                var currLogid = currBtn.attr( 'data-logid' );
+                var currPage = currBtn.attr( 'data-page' );
                 var isChecked = currBtn.find( '.fa-check' );
                 
                 if ( isChecked.length > 0 ) {
                     _deleteBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
-                        _renderBookshelfPopoverList( currPi );
+                        _renderBookshelfPopoverList( currPi, currLogid, currPage );
                         _renderBookshelfNavigationList();
                         _setAddedStatus();
                     } ).fail( function( error ) {
@@ -728,7 +734,7 @@ var viewerJS = ( function( viewer ) {
                 }
                 else {
                     _addBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
-                        _renderBookshelfPopoverList( currPi );
+                        _renderBookshelfPopoverList( currPi, currLogid, currPage );
                         _renderBookshelfNavigationList();
                         _setAddedStatus();
                     } ).fail( function( error ) {
@@ -832,10 +838,12 @@ var viewerJS = ( function( viewer ) {
      * @param {Object} object An jQuery-Object of the current item.
      * @param {String} pi The current PI of the selected item.
      */
-    function _isItemInBookshelf( object, pi ) {
+    function _isItemInBookshelf( object, pi, logid, page ) {
         if ( _debug ) {
             console.log( '---------- _isItemInBookshelf() ----------' );
             console.log( '_isItemInBookshelf: pi - ', pi );
+            console.log( '_isItemInBookshelf: logid - ', logid );
+            console.log( '_isItemInBookshelf: page - ', page );
             console.log( '_isItemInBookshelf: object - ', object );
         }
         
