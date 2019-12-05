@@ -125,7 +125,7 @@
 .bookshelf-popup {
 	position: absolute;
 	width: 280px;
-	height: 300px;
+	height: 350px;
 	border: 1px solid @middlegray;
 	background-color: @white;
 	box-shadow: 0px 2px 5px rgba(0,0,0,.15);
@@ -151,6 +151,7 @@
 	/* ELEMENT */
 	&__header,
 	&__body,
+    &__radio-buttons,
 	&__footer {
 		position: absolute;
 		right: 0;
@@ -162,13 +163,19 @@
 		align-items: center;
 	}
 	&__header {
-		top: 0;
+		top: 50px;
 		height: 30px;
 		padding: 0 10px;
 		border-bottom: 1px solid @middlegray;
 	}
+    &__radio-buttons {
+        top: 0;
+        height: 50px;
+        padding: 0 10px;
+        border-bottom: 1px solid @middlegray;
+    }
 	&__body {
-		top: 30px;
+		top: 80px;
 		max-height: 229px;
 		overflow-y: auto;
 	}

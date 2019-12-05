@@ -673,6 +673,7 @@ public class BookshelfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+        logger.trace("getContainingUserBookshelves: {}/{}/{}", pi, pageString, logId);
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
         if (bookshelves == null) {
             return Collections.emptyList();

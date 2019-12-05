@@ -25,7 +25,7 @@
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         root: '',
         msg: {
@@ -33,7 +33,9 @@ var viewerJS = ( function( viewer ) {
             resetBookshelvesConfirm: '',
             noItemsAvailable: '',
             selectBookshelf: '',
-            addNewBookshelf: ''
+            addNewBookshelf: '',
+            typeRecord: '',
+            typePage: ''
         }
     };
     
@@ -76,6 +78,7 @@ var viewerJS = ( function( viewer ) {
                 var currPi = currBtn.attr( 'data-pi' );
                 var currLogid = currBtn.attr( 'data-logid' );
                 var currPage = currBtn.attr( 'data-page' );
+                var currType = currBtn.attr( 'data-type' );
                 var currPos = currBtn.offset();
                 var currSize = {
                     width: currBtn.outerWidth(),
@@ -138,35 +141,9 @@ var viewerJS = ( function( viewer ) {
     };
     /* ######## ADD (CREATE) ######## */
     /**
-     * Method to add an item to the user bookshelf by PI.
-     * 
-     * @method _addBookshelfItemByPi
-     * @param {String} root The application root path.
-     * @param {String} id The current bookshelf id.
-     * @param {String} pi The pi of the item to add.
-     * @returns {Promise} A promise that checks the existing items.
-     */
-    function _addBookshelfItemByPi( root, id, pi ) {
-        if ( _debug ) {
-            console.log( '---------- _addBookshelfItemByPi() ----------' );
-            console.log( '_addBookshelfItemByPi: root - ', root );
-            console.log( '_addBookshelfItemByPi: id - ', id );
-            console.log( '_addBookshelfItemByPi: pi - ', pi );
-        }
-        
-        var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/add/' + pi + '/',
-            type: "GET",
-            dataType: "JSON",
-            async: true
-        } ) );
-        
-        return promise;
-    }
-    /**
      * Method to add an item with PI, LOGID and PAGE to the user bookshelf.
      * 
-     * @method _addBookshelfItemByPiLogidPage
+     * @method _addBookshelfItem
      * @param {String} root The application root path.
      * @param {String} id The current bookshelf id.
      * @param {String} pi The pi of the item to add.
@@ -174,14 +151,14 @@ var viewerJS = ( function( viewer ) {
      * @param {String} page The page of the item to add.
      * @returns {Promise} A promise that checks the existing items.
      */
-    function _addBookshelfItemByPiLogidPage( root, id, pi, logid, page ) {
+    function _addBookshelfItem( root, id, pi, logid, page ) {
         if ( _debug ) {
-            console.log( '---------- _addBookshelfItemByPiLogidPage() ----------' );
-            console.log( '_addBookshelfItemByPiLogidPage: root - ', root );
-            console.log( '_addBookshelfItemByPiLogidPage: id - ', id );
-            console.log( '_addBookshelfItemByPiLogidPage: pi - ', pi );
-            console.log( '_addBookshelfItemByPiLogidPage: logid - ', logid );
-            console.log( '_addBookshelfItemByPiLogidPage: page - ', page );
+            console.log( '---------- _addBookshelfItem() ----------' );
+            console.log( '_addBookshelfItem: root - ', root );
+            console.log( '_addBookshelfItem: id - ', id );
+            console.log( '_addBookshelfItem: pi - ', pi );
+            console.log( '_addBookshelfItem: logid - ', logid );
+            console.log( '_addBookshelfItem: page - ', page );
         }
         
         var promise = Q( $.ajax( {
@@ -400,31 +377,7 @@ var viewerJS = ( function( viewer ) {
         
         return promise;
     }
-    /**
-     * Method to check if an item by PI if it's in user bookshelf. It returns the
-     * bookshelves or false if no items are in list.
-     * 
-     * @method _getContainingBookshelfItemByPi
-     * @param {String} root The application root path.
-     * @param {String} pi The pi of the current item.
-     * @returns {Promise} A promise that checks the existing items.
-     */
-    function _getContainingBookshelfItemByPi( root, pi ) {
-        if ( _debug ) {
-            console.log( '---------- _getContainingBookshelfItemByPi() ----------' );
-            console.log( '_getContainingBookshelfItemByPi: root - ', root );
-            console.log( '_getContainingBookshelfItemByPi: pi - ', pi );
-        }
-        
-        var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/contains/' + pi + '/',
-            type: "GET",
-            dataType: "JSON",
-            async: true
-        } ) );
-        
-        return promise;
-    }
+
     /**
      * Method to check if an item by PI, LOGID and PAGE if it's in user bookshelf. It
      * returns the bookshelves or false if no items are in list.
@@ -434,17 +387,17 @@ var viewerJS = ( function( viewer ) {
      * @param {String} pi The pi of the current item.
      * @returns {Promise} A promise that checks the existing items.
      */
-    function _getContainingBookshelfItemByPiLogidPage( root, pi, logid, page ) {
+    function _getContainingBookshelfItem( root, pi, logid, page ) {
         if ( _debug ) {
-            console.log( '---------- _getContainingBookshelfItemByPiLogidPage() ----------' );
-            console.log( '_getContainingBookshelfItemByPiLogidPage: root - ', root );
-            console.log( '_getContainingBookshelfItemByPiLogidPage: pi - ', pi );
-            console.log( '_getContainingBookshelfItemByPiLogidPage: logid - ', logid );
-            console.log( '_getContainingBookshelfItemByPiLogidPage: page - ', page );
+            console.log( '---------- _getContainingBookshelfItem()() ----------' );
+            console.log( '_getContainingBookshelfItem(): root - ', root );
+            console.log( '_getContainingBookshelfItem(): pi - ', pi );
+            console.log( '_getContainingBookshelfItem(): logid - ', logid );
+            console.log( '_getContainingBookshelfItem(): page - ', page );
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/contains/' + pi + '/' + logid + '/' + page + '/',
+            url: root + '/rest/bookshelves/user/contains/' + pi + '/' + page + '/-/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -481,35 +434,9 @@ var viewerJS = ( function( viewer ) {
     }
     /* ######## DELETE ######## */
     /**
-     * Method to delete an item from the user bookshelf by PI.
-     * 
-     * @method _deleteBookshelfItemByPi
-     * @param {String} root The application root path.
-     * @param {String} id The current bookshelf id.
-     * @param {String} pi The pi of the item to add.
-     * @returns {Promise} A promise that checks the existing items.
-     */
-    function _deleteBookshelfItemByPi( root, id, pi ) {
-        if ( _debug ) {
-            console.log( '---------- _deleteBookshelfItemByPi() ----------' );
-            console.log( '_deleteBookshelfItemByPi: root - ', root );
-            console.log( '_deleteBookshelfItemByPi: id - ', id );
-            console.log( '_deleteBookshelfItemByPi: pi - ', pi );
-        }
-        
-        var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/',
-            type: "GET",
-            dataType: "JSON",
-            async: true
-        } ) );
-        
-        return promise;
-    }
-    /**
      * Method to delete an item with PI, LOGID and PAGE from the user bookshelf.
      * 
-     * @method _deleteBookshelfItemByPiLogidPage
+     * @method _deleteBookshelfItem
      * @param {String} root The application root path.
      * @param {String} id The current bookshelf id.
      * @param {String} pi The pi of the item to add.
@@ -517,18 +444,18 @@ var viewerJS = ( function( viewer ) {
      * @param {String} page The page of the item to add.
      * @returns {Promise} A promise that checks the existing items.
      */
-    function _deleteBookshelfItemByPiLogidPage( root, id, pi, logid, page ) {
+    function _deleteBookshelfItem( root, id, pi, logid, page ) {
         if ( _debug ) {
-            console.log( '---------- _deleteBookshelfItemByPiLogidPage() ----------' );
-            console.log( '_deleteBookshelfItemByPiLogidPage: root - ', root );
-            console.log( '_deleteBookshelfItemByPiLogidPage: id - ', id );
-            console.log( '_deleteBookshelfItemByPiLogidPage: pi - ', pi );
-            console.log( '_deleteBookshelfItemByPiLogidPage: logid - ', logid );
-            console.log( '_deleteBookshelfItemByPiLogidPage: page - ', page );
+            console.log( '---------- _deleteBookshelfItem() ----------' );
+            console.log( '_deleteBookshelfItem: root - ', root );
+            console.log( '_deleteBookshelfItem: id - ', id );
+            console.log( '_deleteBookshelfItem: pi - ', pi );
+            console.log( '_deleteBookshelfItem: logid - ', logid );
+            console.log( '_deleteBookshelfItem: page - ', page );
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/' + page + '/' + logid + '/',
+            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/' + page + '/-/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -601,9 +528,20 @@ var viewerJS = ( function( viewer ) {
         // build popup header
         var bookshelfPopupHeader = $( '<div />' ).addClass( 'bookshelf-popup__header' ).text( _defaults.msg.selectBookshelf );
         
+        // type radio buttons
+        var bookshelfPopupRadioButtons = $( '<div />' ).addClass( 'bookshelf-popup__radio-buttons' );
+        var bookshelfPopupRadioLabel = $( '<div />' ).text( _defaults.msg.type_label );
+        var bookshelfPopupRadioDivLeft = $( '<div />' ).addClass( 'col-xs-6 no-padding' );
+        var bookshelfPopupRadioDivRight = $( '<div />' ).addClass( 'col-xs-6 no-padding' );
+        var	bookshelfPopupTypeRadioButton1 = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'radio' ).attr( 'name', 'selectedType' ).attr('value', 'record').text( _defaults.msg.typeRecord );
+        var bookshelfPopupTypeRadioButton2 = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'radio' ).attr( 'name', 'selectedType' ).attr('value', 'page').text( _defaults.msg.typePage );
+        bookshelfPopupRadioDivLeft.append(bookshelfPopupTypeRadioButton1);
+        bookshelfPopupRadioDivRight.append(bookshelfPopupTypeRadioButton2);
+        bookshelfPopupRadioButtons.append(bookshelfPopupRadioLabel).append(bookshelfPopupRadioDivLeft).append(bookshelfPopupRadioDivRight);
+        
         // build popup body
         var bookshelfPopupBody = $( '<div />' ).addClass( 'bookshelf-popup__body' );
-        
+
         // build popup footer
         var bookshelfPopupFooter = $( '<div />' ).addClass( 'bookshelf-popup__footer' );
         var bookshelfPopupFooterRow = $( '<div />' ).addClass( 'row no-margin' );
@@ -617,13 +555,15 @@ var viewerJS = ( function( viewer ) {
         bookshelfPopupFooter.append( bookshelfPopupFooterRow );
         
         // build popup
-        bookshelfPopup.append( bookshelfPopupHeader ).append( bookshelfPopupBody ).append( bookshelfPopupFooter );
+        bookshelfPopup.append( bookshelfPopupRadioButtons ).append( bookshelfPopupHeader ).append( bookshelfPopupBody ).append( bookshelfPopupFooter );
         
         // append popup
         $( 'body' ).append( bookshelfPopup );
         
+        var selectedType = $ ( '#selectedType' ).value;
+        
         // render bookshelf list
-        _renderBookshelfPopoverList( pi, logid, page );
+        _renderBookshelfPopoverList( pi, logid, page, selectedType );
         
         // add new bookshelf in popover
         $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).on( 'click', function() {
@@ -635,7 +575,7 @@ var viewerJS = ( function( viewer ) {
             if ( bsName != '' ) {
                 _addNamedBookshelf( _defaults.root, bsName ).then( function() {
                     $( '.bookshelf-popup__footer input' ).val( '' );
-                    _renderBookshelfPopoverList( currPi );
+                    _renderBookshelfPopoverList( currPi, logid, currPage, selectedType );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _addNamedBookshelf: ', error.responseText );
@@ -644,12 +584,18 @@ var viewerJS = ( function( viewer ) {
             else {
                 _addAutomaticNamedBookshelf( _defaults.root ).then( function() {
                     $( '.bookshelf-popup__footer input' ).val( '' );
-                    _renderBookshelfPopoverList( currPi );
+                    _renderBookshelfPopoverList( currPi, logid, currPage, selectedType );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error.responseText );
                 } );
             }
+        } );
+        
+        // update bookshelf list when type has been changed
+        $( '#selectedType' ).on( 'click', function() {
+        	 // render bookshelf list
+            _renderBookshelfPopoverList( pi, logid, page, selectedType );
         } );
         
         // add new bookshelf on enter in popover
@@ -665,10 +611,10 @@ var viewerJS = ( function( viewer ) {
      * @method _renderBookshelfPopoverList
      * @param {String} pi The current PI of the selected item.
      */
-    function _renderBookshelfPopoverList( pi, logid, page ) {
+    function _renderBookshelfPopoverList( pi, logid, page, type ) {
         if ( _debug ) {
             console.log( '---------- _renderBookshelfPopoverList() ----------' );
-            console.log( '_renderBookshelfPopoverList: pi - ', pi, ', logid - ', logid, ', page = ', page);
+            console.log( '_renderBookshelfPopoverList: pi - ', pi, ', logid - ', logid, ', page = ', page, ', type = ', type);
         }
         
         _getAllBookshelves( _defaults.root ).then( function( elements ) {
@@ -686,13 +632,15 @@ var viewerJS = ( function( viewer ) {
                     dropdownListItemIsInBookshelf = '';
                     // check if item is in bookshelf
                     item.items.forEach( function( object ) {
-                        if ( object.pi == pi ) {
+                        if ( object.pi == pi && object.logid == logid && object.page == page ) {
                             dropdownListItemIsInBookshelf = '<i class="fa fa-check" aria-hidden="true"></i> ';
                         }
                     } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
-                    dropdownListItemAdd = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
-                            .attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page ).text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
+                    dropdownListItemAdd = $( '<button />' ).addClass( 'btn btn--clean' ).attr( 'type', 'button' )
+                    		.attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
+                            .attr( 'data-pi', pi ).attr( 'data-logid', logid ).attr( 'data-page', page ).attr( 'data-type', type )
+                            .text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
                     
                     // build bookshelf item
                     dropdownListItem.append( dropdownListItemAdd );
@@ -721,24 +669,25 @@ var viewerJS = ( function( viewer ) {
                 var currPi = currBtn.attr( 'data-pi' );
                 var currLogid = currBtn.attr( 'data-logid' );
                 var currPage = currBtn.attr( 'data-page' );
+                var currType = currBtn.attr( 'data-type' );
                 var isChecked = currBtn.find( '.fa-check' );
                 
                 if ( isChecked.length > 0 ) {
-                    _deleteBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
-                        _renderBookshelfPopoverList( currPi, currLogid, currPage );
+                    _deleteBookshelfItem( _defaults.root, currId, currPi, currLogid, currPage ).then( function() {
+                        _renderBookshelfPopoverList( currPi, currLogid, currPage, currType );
                         _renderBookshelfNavigationList();
                         _setAddedStatus();
                     } ).fail( function( error ) {
-                        console.error( 'ERROR - _deleteBookshelfItemByPi: ', error.responseText );
+                        console.error( 'ERROR - _deleteBookshelfItem: ', error.responseText );
                     } );
                 }
                 else {
-                    _addBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
-                        _renderBookshelfPopoverList( currPi, currLogid, currPage );
+                    _addBookshelfItem( _defaults.root, currId, currPi, currLogid, currPage ).then( function() {
+                        _renderBookshelfPopoverList( currPi, currLogid, currPage, currType );
                         _renderBookshelfNavigationList();
                         _setAddedStatus();
                     } ).fail( function( error ) {
-                        console.error( 'ERROR - _addBookshelfItemByPi: ', error.responseText );
+                        console.error( 'ERROR - _addBookshelfItem: ', error.responseText );
                     } );
                 }
                 
@@ -827,8 +776,11 @@ var viewerJS = ( function( viewer ) {
         $( '[data-bookshelf-type="add"]' ).each( function() {
             var currTrigger = $( this );
             var currTriggerPi = currTrigger.attr( 'data-pi' );
+            var currTriggerLogid = currTrigger.attr( 'data-logid' );
+            var currTriggerPage = currTrigger.attr( 'data-page' );
+            var currTriggerType = currTrigger.attr( 'data-type' );
             
-            _isItemInBookshelf( currTrigger, currTriggerPi );
+            _isItemInBookshelf( currTrigger, currTriggerPi, currTriggerLogid, currTriggerPage, currTriggerType );
         } );
     }
     /**
@@ -837,8 +789,11 @@ var viewerJS = ( function( viewer ) {
      * @method _isItemInBookshelf
      * @param {Object} object An jQuery-Object of the current item.
      * @param {String} pi The current PI of the selected item.
+     * @param {String} logid
+     * @param {String} page
+     * @param {String} type
      */
-    function _isItemInBookshelf( object, pi, logid, page ) {
+    function _isItemInBookshelf( object, pi, logid, page, type ) {
         if ( _debug ) {
             console.log( '---------- _isItemInBookshelf() ----------' );
             console.log( '_isItemInBookshelf: pi - ', pi );
@@ -847,7 +802,8 @@ var viewerJS = ( function( viewer ) {
             console.log( '_isItemInBookshelf: object - ', object );
         }
         
-        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( items ) {
+        if ( type === 'page' ) {
+        _getContainingBookshelfItem( _defaults.root, pi, logid, page ).then( function( items ) {
             if ( items.length == 0 ) {
                 object.removeClass( 'added' );
                 
@@ -859,6 +815,20 @@ var viewerJS = ( function( viewer ) {
         } ).fail( function( error ) {
             console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error.responseText );
         } );
+        } else {
+            _getContainingBookshelfItem( _defaults.root, pi, null, null ).then( function( items ) {
+                if ( items.length == 0 ) {
+                    object.removeClass( 'added' );
+                    
+                    return false;
+                }
+                else {
+                    object.addClass( 'added' );
+                }
+            } ).fail( function( error ) {
+                console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error.responseText );
+            } );
+        }
     }
     
     return viewer;

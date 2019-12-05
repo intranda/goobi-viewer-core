@@ -281,6 +281,7 @@ public class BookshelfItem implements Serializable {
      */
     @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
+        logger.trace("getDocumentTitle: {}/{}", pi, logId);
         Long iddoc = null;
         if (StringUtils.isNotBlank(logId)) {
             iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(pi, logId);
