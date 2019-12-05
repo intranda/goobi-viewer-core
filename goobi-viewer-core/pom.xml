@@ -78,6 +78,7 @@
 		<javax.persistence.version>2.2.1</javax.persistence.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jersey.version>2.27</jersey.version>
+		<jersey-guava.version>2.25.1</jersey-guava.version>
 		<jersey-entity-filtering.version>2.27</jersey-entity-filtering.version>
 		<jersey-media-json-jackson.version>2.27</jersey-media-json-jackson.version>
 		<jersey-media-multipart.version>2.27</jersey-media-multipart.version>
@@ -478,7 +479,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
 			<artifactId>jersey-guava</artifactId>
-			<version>${jersey.version}</version>
+			<version>${jersey-guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
