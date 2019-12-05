@@ -154,7 +154,7 @@ public class MetadataElement {
     private final boolean topElement;
     private final boolean anchor;
     private final boolean filesOnly;
-    private final String selectedRecordLanguage;
+    private String selectedRecordLanguage;
 
     /**
      * @param se {@link StructElement}
@@ -494,5 +494,9 @@ public class MetadataElement {
             return prefix + value + suffix;
         }
         return value;
+    }
+    
+    public void setSelectedRecordLanguage(String language) {
+        this.selectedRecordLanguage = language;
     }
 }

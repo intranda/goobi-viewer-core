@@ -41,6 +41,7 @@ import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -222,6 +223,10 @@ public class BeanUtils {
 
     public static CmsCollectionsBean getCMSCollectionsBean() {
         return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
+    }
+    
+    public static MetadataBean getMetadataBean() {
+        return (MetadataBean) getBeanByName("metadataBean", MetadataBean.class);
     }
 
     /**
