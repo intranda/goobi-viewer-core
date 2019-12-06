@@ -140,16 +140,6 @@
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="overview" />
         
-        <widgetComponent:widget_searchInCurrentItem />
-        
-        <widgetComponent:widget_searchResultNavigation />
-        
-        <widgetComponent:widget_metadata />
-        
-        <widgetComponent:widget_download />
-        
-        <widgetComponent:widget_versionHistory />
-        
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
