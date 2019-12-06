@@ -109,12 +109,13 @@ module.exports = function (grunt) {
             } 
 		},
 		sync: {
-			all: {
-				files: [{
+			main: {
+        		files: [{
 					cwd: 'src/META-INF/resources',
 					src: ['**'],
 					dest: getTomcatDir()
 				}],
+				verbose: true
 			},
 		},
 		riot: {
@@ -136,7 +137,7 @@ module.exports = function (grunt) {
 			},
 			less: {
 				files: ['<%=src.lessDevFolder%>**/*.less'],
-				tasks: ['less'],
+				tasks: ['less', 'sync'],
 				options: {
 					spawn: false,
 				}
@@ -154,7 +155,7 @@ module.exports = function (grunt) {
 					'src/META-INF/resources/resources/**/*.gif',
 					'src/META-INF/resources/resources/**/*.ico',
 					'src/META-INF/resources/resources/**/*.css',
-					'src/META-INF/resources/resources/**/*.js',
+					'src/META-INF/resources/resources/**/*min.js',
 				],
 				tasks: ['sync'],
 				options: {
@@ -165,7 +166,7 @@ module.exports = function (grunt) {
 				files: [
 					'<%=src.jsDevFolderModules%>**/*.js'
 				],
-				tasks: ['concat'],
+				tasks: ['concat', 'sync'],
 				options: {
 					spawn: false,
 				}
@@ -174,7 +175,7 @@ module.exports = function (grunt) {
 				files: [
 					'<%=src.jsDevFolder %>tags/**/*.tag'
 				],
-				tasks: ['riot'],
+				tasks: ['riot', 'sync'],
 				options: {
 					spawn: false,
 				}
