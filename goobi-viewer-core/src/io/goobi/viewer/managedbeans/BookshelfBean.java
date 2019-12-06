@@ -529,6 +529,17 @@ public class BookshelfBean implements Serializable {
     }
 
     /**
+     * 
+     * @return Identifier of currentBookshelf; null if none loaded
+     */
+    public String getCurrentBookshelfId() {
+        if (getCurrentBookshelf() != null) {
+            return getCurrentBookshelf().getId().toString();
+        }
+        return null;
+    }
+
+    /**
      * @param currentBookshelf the currentBookshelf to set
      * @throws DAOException
      */
