@@ -12,6 +12,7 @@
     <ui:define name="metadata">
         <f:metadata>
 <!--             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('')}" /> -->
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.downloadHeading,1)}" />
         </f:metadata>
     </ui:define>
 
@@ -138,16 +139,6 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="overview" />
-        
-        <widgetComponent:widget_searchInCurrentItem />
-        
-        <widgetComponent:widget_searchResultNavigation />
-        
-        <widgetComponent:widget_metadata />
-        
-        <widgetComponent:widget_download />
-        
-        <widgetComponent:widget_versionHistory />
         
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
