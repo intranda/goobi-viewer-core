@@ -29,7 +29,7 @@ import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.oa.SpecificResource;
 import de.intranda.api.annotation.oa.SpecificResourceURI;
 import de.intranda.api.annotation.oa.TextualResource;
-import de.intranda.api.annotation.wa.FragmentSelector;
+import de.intranda.api.annotation.oa.FragmentSelector;
 
 import de.intranda.api.iiif.presentation.AnnotationList;
 import de.intranda.api.iiif.presentation.Canvas;
