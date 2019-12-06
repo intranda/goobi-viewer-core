@@ -33,7 +33,7 @@
         var configViewer = {
         	global: {
         		divId: "imageMap",
-        		footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
+        		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
         		adaptContainerHeight: #{activeDocumentBean.viewManager.currentPage.adaptImageViewHeight},
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
@@ -90,8 +90,22 @@
         // check for fullscreen and change container height 
         if ( $( '#fullscreen' ).length > 0 ) {
         	configViewer.global.adaptContainerHeight = false;
-        	configViewer.global.topMargin = $('#fullscreenHeader').height();
-        	
+        	configViewer.global.topMargin = () => {
+        	    var $header = $('#fullscreenHeader');
+        	    if($header.is(":visible")) {
+        	        return $header.height();
+        	    } else {
+        	        return 0;
+        	    }
+        	}
+        	configViewer.global.rightMargin = () => {
+        	    var $sidebar = $('#fullscreenViewSidebar');
+        	    if(parseInt($sidebar.css("right")) < 0) {
+        	        return 0;
+        	    } else {
+        	        return $sidebar.width();
+        	    }
+        	}
         }
                 
        	// desktop object view
