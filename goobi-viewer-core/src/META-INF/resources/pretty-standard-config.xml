@@ -585,32 +585,32 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="userMenuViewBookmarkList">
-		<pattern value="/bookmarklist/" />
-		<view-id value="/userBackendViewBookmarkList.xhtml" />
+		<pattern value="/bookmarks/show/" />
+		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userMenuViewBookmarkList1">
-        <pattern value="/bookmarks/#{identifier:bookmarkBean.currentBookshelfId}/" />
+        <pattern value="/bookmarks/show/#{identifier:bookmarkBean.currentBookshelfId}/" />
         <view-id value="/userBackendViewBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userMenuEditBookmarkList">
-		<pattern value="/editbookmarklist/" />
-		<view-id value="/userBackendEditBookmarkList.xhtml" />
+		<pattern value="/bookmarks/edit/" />
+		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 	<url-mapping id="userMenuEditBookmarkList1">
-		<pattern value="/editbookmarklist/#{identifier:bookmarkBean.currentBookmarkListId}/" />
+		<pattern value="/bookmarks/edit/#{identifier:bookmarkBean.currentBookmarkListId}/" />
 		<view-id value="/userBackendEditBookshelf.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
     <url-mapping id="userMenuViewSharedBookmarkList">
-        <pattern value="/bookmarklist/key/#{shareKey:bookmarkBean.shareKey}/" />
+        <pattern value="/bookmarks/key/#{shareKey:bookmarkBean.shareKey}/" />
         <view-id value="/userBackendViewBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userBookshelfSendList">
-		<pattern value="/userBookmarksSendList/" />
+		<pattern value="/bookmarks/send/" />
 		<view-id value="/userBookmarksSendList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
