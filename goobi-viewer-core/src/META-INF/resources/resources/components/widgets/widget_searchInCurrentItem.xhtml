@@ -8,7 +8,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{configurationBean.showSearchInItem}">
+        <h:panelGroup rendered="#{configurationBean.showSearchInItem and activeDocumentBean.recordLoaded}">
             <div id="widgetSearchInCurrentItem" class="widget widget-search-in-current-item">
                 <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
                     <div class="form-group">
