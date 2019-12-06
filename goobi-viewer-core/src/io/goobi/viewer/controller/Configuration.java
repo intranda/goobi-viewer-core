@@ -2537,8 +2537,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isBookshelvesEnabled() {
-        return getLocalBoolean("bookshelves.bookshelvesEnabled", true);
+    public boolean isBookmarksEnabled() {
+        return getLocalBoolean("bookmarks.bookmarksEnabled", true);
     }
 
     /**

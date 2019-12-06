@@ -17,7 +17,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookshelves', false, true)}" />
             <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,'mybookshelves',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookmarkLists,'mybookshelves',2)}" />
         </f:metadata>
     </ui:define>
 
@@ -27,7 +27,7 @@
 
     <ui:define name="content">    
         <div id="userBookshelves" class="user-bookshelves">
-            <h2>#{msg.bookshelf_myBookshelves}</h2>
+            <h2>#{msg.bookmarkList_myBookshelves}</h2>
 
 			<!-- MESSAGE -->
 			<h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
@@ -36,7 +36,7 @@
 				</div>
 			</h:panelGroup>
 			
-			<h3>#{msg.bookshelf_myBookshelves}</h3>
+			<h3>#{msg.bookmarkList_myBookshelves}</h3>
 
 			<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
 				<!-- ADD BOOKSHELF -->
@@ -44,7 +44,7 @@
 					<div class="col-xs-12 col-sm-4 col-sm-offset-8">
 						<div class="user-bookshelves__add-bookshelf">
 							<div class="col-xs-11 no-padding">
-								<input type="text" id="addBookshelfInput" placeholder="#{msg.bookshelf_addNewBookShelf}" />
+								<input type="text" id="addBookshelfInput" placeholder="#{msg.bookmarkList_addNewBookmarkList}" />
 							</div>
 							<div class="col-xs-1 no-padding">
 								<button type="button" id="addBookshelfBtn" class="btn btn--clean" data-bookshelf-type="add-bookshelf" data-pi="-"></button>
@@ -55,7 +55,7 @@
 			
 				<!-- WARNING IF NO BOOKSHELF EXISTS -->
 				<h:panelGroup rendered="#{bookmarkBean.getBookshelvesForUser(userBean.user).isEmpty()}">
-					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
+					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookmarkListsWarning}</div>
 				</h:panelGroup>
 				
 				<!-- USER BOOKSHELVES -->
@@ -83,7 +83,7 @@
 											<div class="user-bookshelves__panel-action text-right">
 											    <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                                 <ui:fragment rendered="#{bookshelf.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookshelf_openMirador}"
+                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
                                                         data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
@@ -99,7 +99,7 @@
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookshelf_showBookshelf}" data-toggle="tooltip" data-placement="top">
+                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                                 
@@ -109,16 +109,16 @@
 													<f:passThroughAttribute name="data-placement" value="top" />
 												</h:commandLink>
 												
-                                                <h:commandLink title="#{msg.bookshelf_shareLink}" onclick="PF('shareLinkPopup_#{status.index}').show();">
+                                                <h:commandLink title="#{msg.bookmarkList_shareLink}" onclick="PF('shareLinkPopup_#{status.index}').show();">
                                                     <i class="fa fa-share-alt" aria-hidden="true"></i>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                     <f:ajax />
                                                 </h:commandLink>
                                                 
-                                                <p:dialog header="#{msg.bookshelf_shareLink}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
+                                                <p:dialog header="#{msg.bookmarkList_shareLink}" widgetVar="shareLinkPopup_#{status.index}" minHeight="40">
                                                     <h:outputText disabled="true" value="#{bookmarkBean.getShareLink(bookshelf)}" />
-                                                    <h:commandButton type="button"  value="#{msg.bookshelf_shareLink_copy}"
+                                                    <h:commandButton type="button"  value="#{msg.bookmarkList_shareLink_copy}"
                                                         onclick="copyLink('#{bookmarkBean.getShareLink(bookshelf)}', 'shareLinkPopup_#{status.index}')">
                                                     </h:commandButton>
                                                 </p:dialog>
@@ -142,7 +142,7 @@
 				
 				<!-- BOOKSHELVES SHARED WITH THIS USER -->
                 <h:panelGroup rendered="#{!bookshelfBean.getBookshelvesSharedWithUser(userBean.user).isEmpty()}">
-                    <h3>#{msg.bookshelf_otherBookshelves}</h3>
+                    <h3>#{msg.bookmarkList_otherBookshelves}</h3>
                     <h:form id="otherBookshelvesForm" prependId="false">
                         <div class="row no-margin">
                             <ui:repeat value="#{bookmarkBean.getBookshelvesSharedWithUser(userBean.user)}" var="bookshelf" varStatus="status">
@@ -166,7 +166,7 @@
                                             <div class="user-bookshelves__panel-action text-right">
                                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                                 <ui:fragment rendered="#{bookshelf.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookshelf_openMirador}"
+                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
                                                         data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
@@ -182,7 +182,7 @@
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookshelf_showBookshelf}" data-toggle="tooltip" data-placement="top">
+                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </div>
@@ -205,7 +205,7 @@
                 
                 <!-- PUBLIC BOOKSHELVES-->
                 <h:panelGroup rendered="#{!bookshelfBean.publicBookshelves.isEmpty()}">
-                    <h3>#{msg.bookshelf_publicBookshelves}</h3>
+                    <h3>#{msg.bookmarkList_publicBookshelves}</h3>
                     <h:form id="pubicBookshelvesForm" prependId="false">
                         <div class="row no-margin">
                             <ui:repeat value="#{bookmarkBean.publicBookshelves}" var="bookshelf" varStatus="status">
@@ -229,7 +229,7 @@
                                             <div class="user-bookshelves__panel-action text-right">
                                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
                                                 <ui:fragment rendered="#{bookshelf.items.size() > 1}">
-                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookshelf_openMirador}"
+                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookmarkList_openMirador}"
                                                         data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
                                                         <i class="fa fa-th" aria-hidden="true"></i>
                                                     </a>
@@ -245,7 +245,7 @@
                                                     <f:passThroughAttribute name="data-placement" value="top" />
                                                 </h:commandLink>                                   
                                                 
-                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookshelf_showBookshelf}" data-toggle="tooltip" data-placement="top">
+                                                <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookmarkList_showBookmarkList}" data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
                                             </div>
@@ -273,8 +273,8 @@
             function copyLink(link, dialogId) {
             	 navigator.clipboard.writeText(link).then(function() {
                         PF(dialogId).hide();
-            		    // alert('#{msg.bookshelf_shareLink_copy_success}');
-            		    $(".messages").text('#{msg.bookshelf_shareLink_copy_success}');
+            		    // alert('#{msg.bookmarkList_shareLink_copy_success}');
+            		    $(".messages").text('#{msg.bookmarkList_shareLink_copy_success}');
             		  }, function(err) {
             		    console.error('Async: Could not copy text: ', err);
             		  });

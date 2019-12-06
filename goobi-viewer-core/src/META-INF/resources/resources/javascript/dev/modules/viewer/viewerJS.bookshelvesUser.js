@@ -162,7 +162,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/add/' + pi + '/' + logid + '/' + page + '/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/add/' + pi + '/' + logid + '/' + page + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -186,7 +186,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/add/' + name + '/',
+            url: root + '/rest/bookmarks/user/add/' + name + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -208,7 +208,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/add/',
+            url: root + '/rest/bookmarks/user/add/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -231,7 +231,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/addSessionBookshelf/',
+            url: root + '/rest/bookmarks/user/addSessionBookshelf/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -254,7 +254,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/addSessionBookshelf/' + name + '/',
+            url: root + '/rest/bookmarks/user/addSessionBookshelf/' + name + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -277,7 +277,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/',
+            url: root + '/rest/bookmarks/user/get/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -301,7 +301,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -325,7 +325,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/count/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/count/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -347,7 +347,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/public/get/',
+            url: root + '/rest/bookmarks/public/get/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -369,7 +369,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/shared/get/',
+            url: root + '/rest/bookmarks/shared/get/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -397,7 +397,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/contains/' + pi + '/' + page + '/-/',
+            url: root + '/rest/bookmarks/user/contains/' + pi + '/' + page + '/-/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -424,7 +424,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/set/name/' + name + '/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/set/name/' + name + '/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -455,7 +455,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/get/' + id + '/delete/' + pi + '/' + page + '/-/',
+            url: root + '/rest/bookmarks/user/get/' + id + '/delete/' + pi + '/' + page + '/-/',
             type: "GET",
             dataType: "JSON",
             async: true
@@ -479,7 +479,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/user/delete/' + id + '/',
+            url: root + '/rest/bookmarks/user/delete/' + id + '/',
             type: "GET",
             dataType: "JSON",
             async: true

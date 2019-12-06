@@ -579,39 +579,39 @@
 
 	<!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
 	<!-- BOOKSHELVES -->
-	<url-mapping id="userMenuMyBookshelves">
-		<pattern value="/mybookshelves/" />
-		<view-id value="/userBackendBookshelves.xhtml" />
+	<url-mapping id="userMenuBookmarkLists">
+		<pattern value="/bookmarks/" />
+		<view-id value="/userBackendBookmarkLists.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="userMenuViewBookshelf">
-		<pattern value="/bookshelf/" />
-		<view-id value="/userBackendViewBookshelf.xhtml" />
+	<url-mapping id="userMenuViewBookmarkList">
+		<pattern value="/bookmarklist/" />
+		<view-id value="/userBackendViewBookmarkList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="userMenuEditBookshelf">
-		<pattern value="/editbookshelf/" />
+    <url-mapping id="userMenuViewBookmarkList1">
+        <pattern value="/bookmarks/#{identifier:bookmarkBean.currentBookshelfId}/" />
+        <view-id value="/userBackendViewBookshelf.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+	<url-mapping id="userMenuEditBookmarkList">
+		<pattern value="/editbookmarklist/" />
+		<view-id value="/userBackendEditBookmarkList.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="userMenuEditBookmarkList1">
+		<pattern value="/editbookmarklist/#{identifier:bookmarkBean.currentBookmarkListId}/" />
 		<view-id value="/userBackendEditBookshelf.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="userMenuViewBookshelf1">
-		<pattern value="/bookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
-		<view-id value="/userBackendViewBookshelf.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<url-mapping id="userMenuEditBookshelf1">
-		<pattern value="/editbookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
-		<view-id value="/userBackendEditBookshelf.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-    <url-mapping id="userMenuViewSharedBookshelf">
-        <pattern value="/bookshelf/key/#{shareKey:bookshelfBean.shareKey}/" />
+    <url-mapping id="userMenuViewSharedBookmarkList">
+        <pattern value="/bookmarklist/key/#{shareKey:bookmarkBean.shareKey}/" />
         <view-id value="/userBackendViewBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="userBookshelfSendList">
-		<pattern value="/userBookshelfSendList/" />
-		<view-id value="/userBookshelfSendList.xhtml" />
+		<pattern value="/userBookmarksSendList/" />
+		<view-id value="/userBookmarksSendList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 

@@ -302,7 +302,7 @@ var viewerJS = (function(viewer) {
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
 			// DOM-Elements
-			var dropdownListReset = $('<button>').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookshelves + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
+			var dropdownListReset = $('<button>').addClass('btn btn--clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookmarkLists + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
 			var dropdownList = $('<ul />').addClass('list');
 			var dropdownListItem = null;
 			var dropdownListItemRow = null;

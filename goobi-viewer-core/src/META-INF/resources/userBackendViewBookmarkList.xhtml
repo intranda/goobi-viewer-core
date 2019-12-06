@@ -15,7 +15,7 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,'mybookshelves',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookshelves,'mybookshelves',2)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookshelfBean.currentBookshelf.name,3)}" />
 		</f:metadata>
 	</ui:define>
@@ -55,7 +55,7 @@
                                 </h:commandLink>
                                 <!-- DELETE -->
                                 <h:commandLink rendered="#{bookmarkBean.currentBookshelf.isMayEdit(userBean.user)}"
-                                    title="#{msg.bookshelf_delete}"
+                                    title="#{msg.bookmarkList_delete}"
                                     action="#{bookmarkBean.deleteCurrentBookshelfAction}"
                                     onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">
                                     <i
@@ -84,7 +84,7 @@
                 <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
                     <h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
                         <!-- warning if no entries exists -->
-                        <h:panelGroup rendered="#{bookmarkBean.currentBookshelf.items.isEmpty()}">
+                        <h:panelGroup rendered="#{bookmarkBean.currentBookmarkList.items.isEmpty()}">
                             <div
                                 class="alert alert-warning"
                                 role="alert">#{msg.bookshelves_noEntryWarning}</div>
@@ -114,8 +114,8 @@
                                                 <!--  ACTION -->
                                                 <div class="view-bookshelf__item-action">
                                                     <h:commandLink
-                                                        title="#{msg.bookshelf_itemDelete}"
-                                                        action="#{bookmarkBean.deleteCurrentItemAction(item)}"
+                                                        title="#{msg.bookmarkList_itemDelete}"
+                                                        action="#{bookmarkBean.deleteBookmarkAction(item)}"
                                                         onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };"
                                                         role="button">
                                                         <f:passThroughAttribute

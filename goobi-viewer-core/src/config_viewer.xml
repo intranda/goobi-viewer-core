@@ -1275,11 +1275,10 @@
 		<displaySearchRssLinks>true</displaySearchRssLinks>
 	</rss>
 
-	<bookshelves>
-		<!-- bookshelvesEnabled: if false, no links to bookshelf administration 
-			are displayed (default is true) -->
-		<bookshelvesEnabled>true</bookshelvesEnabled>
-	</bookshelves>
+	<bookmarks>
+		<!-- bookmarksvesEnabled: if false, no links to bookmark administration are displayed (default is true) -->
+		<bookmarksEnabled>true</bookmarksEnabled>
+	</bookmarks>
 
 	<userComments>
 		<!-- If true, the user comments functionality is enabled. Default ist true. -->

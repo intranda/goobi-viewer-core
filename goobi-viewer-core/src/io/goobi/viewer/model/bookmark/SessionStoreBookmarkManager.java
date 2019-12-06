@@ -30,7 +30,7 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * 
- * This class handles the bookshelf stored in the session store
+ * This class handles the bookmark list stored in the session store
  * 
  * @author Florian Alpers
  *
@@ -39,77 +39,77 @@ public class SessionStoreBookmarkManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionStoreBookmarkManager.class);
 
-    public static final String BOOKSHELF_ATTRIBUTE_NAME = "bookshelf";
+    public static final String BOOKMARK_LIST_ATTRIBUTE_NAME = "bookmarkList";
 
     /**
      * 
-     * @return An optional containing the stored bookshelf if one exists
+     * @return An optional containing the stored bookmark list if one exists
      * 
      * @throws NullPointerException if the session is NULL
      */
-    public Optional<BookmarkList> getBookshelf(HttpSession session) {
+    public Optional<BookmarkList> getBookmarkList(HttpSession session) {
         if (session == null) {
             return Optional.empty();
         }
         try {
-            Object object = session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME);
+            Object object = session.getAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME);
             if (object != null) {
                 return Optional.of((BookmarkList) object);
             }
             return Optional.empty();
         } catch (ClassCastException e) {
-            logger.error("Attribute stored in session under " + BOOKSHELF_ATTRIBUTE_NAME + " is not of type Bookshelf");
+            logger.error("Attribute stored in session under " + BOOKMARK_LIST_ATTRIBUTE_NAME + " is not of type BookmarkList");
             return Optional.empty();
         }
     }
 
     /**
-     * Create a new Bookshelf and store it in the session store in the attribute "bookshelf"
+     * Create a new BookmarkList and store it in the session store in the attribute "bookmarkList"
      * 
      * @param session
      * @return
      * 
-     * @throws IllegalArgumentException if a bookshelf already exists
-     * @throws IllegalStateException if the bookshelf could not be stored in the session
+     * @throws IllegalArgumentException if a bookmark list already exists
+     * @throws IllegalStateException if the bookmark list could not be stored in the session
      * @throws NullPointerException if the session is NULL
      */
-    public BookmarkList createBookshelf(HttpSession session) {
+    public BookmarkList createBookmarkList(HttpSession session) {
 
-        if (session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME) == null) {
-            BookmarkList bookshelf = new BookmarkList();
-            bookshelf.setName("session");
-            session.setAttribute(BOOKSHELF_ATTRIBUTE_NAME, bookshelf);
-            return getBookshelf(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
+        if (session.getAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME) == null) {
+            BookmarkList bookmarkList = new BookmarkList();
+            bookmarkList.setName("session");
+            session.setAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME, bookmarkList);
+            return getBookmarkList(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
         }
-        return getBookshelf(session).orElseThrow(() -> new IllegalArgumentException("Bookshelf can neither be retrieved nor created"));
+        return getBookmarkList(session).orElseThrow(() -> new IllegalArgumentException("Bookmark list can neither be retrieved nor created"));
     }
 
     /**
-     * Gets the bookshelf stored in the session. If no bookshelf exists, a new one is created, stored and returned
+     * Gets the bookmark list stored in the session. If no bookmark list exists, a new one is created, stored and returned
      * 
      * @param session
      * @return
      * @throws NullPointerException if the session is NULL
      */
-    public synchronized BookmarkList getOrCreateBookshelf(HttpSession session) {
-        return getBookshelf(session).orElseGet(() -> createBookshelf(session));
+    public synchronized BookmarkList getOrCreateBookmarkList(HttpSession session) {
+        return getBookmarkList(session).orElseGet(() -> createBookmarkList(session));
     }
 
     /**
-     * Adds the given item to the session bookshelf, creating a new bookshelf if required
+     * Adds the given item to the session bookmark list, creating a new bookmark list if required
      * 
      * @param item
      * @param session
      * @return false if the item could not be added (usually because it already exists), true otherwise
      * @throws NullPointerException if the session is NULL
      */
-    public boolean addToBookshelf(Bookmark item, HttpSession session) {
-        return getOrCreateBookshelf(session).addItem(item);
+    public boolean addToBookmarkList(Bookmark item, HttpSession session) {
+        return getOrCreateBookmarkList(session).addItem(item);
     }
 
     /**
-     * Remove the given item (or one with identical pi, logId and order) from the session bookshelf if it exists If no session bookshelf exists, it
-     * doesn't contain the item or the item could not be removed for some other reason, false is returned
+     * Remove the given item (or one with identical pi, logId and order) from the session bookmark list if it exists If no session bookmark list
+     * exists, it doesn't contain the item or the item could not be removed for some other reason, false is returned
      * 
      * @param item
      * @param session
@@ -117,7 +117,7 @@ public class SessionStoreBookmarkManager {
      * @throws NullPointerException if the session is NULL
      */
     public boolean removeFromBookself(Bookmark item, HttpSession session) {
-        Optional<BookmarkList> o = getBookshelf(session);
+        Optional<BookmarkList> o = getBookmarkList(session);
         if (o.isPresent()) {
             return o.get().removeItem(item);
         }
@@ -131,12 +131,12 @@ public class SessionStoreBookmarkManager {
      * 
      * @throws NullPointerException if the session is NULL
      */
-    public void deleteBookshelf(HttpSession session) {
-        session.removeAttribute(BOOKSHELF_ATTRIBUTE_NAME);
+    public void deleteBookmarkList(HttpSession session) {
+        session.removeAttribute(BOOKMARK_LIST_ATTRIBUTE_NAME);
     }
 
-    public boolean isInBookshelf(Bookmark item, HttpSession session) {
-        Optional<BookmarkList> o = getBookshelf(session);
+    public boolean isInBookmarkList(Bookmark item, HttpSession session) {
+        Optional<BookmarkList> o = getBookmarkList(session);
         if (o.isPresent()) {
             return o.get().getItems().contains(item);
         }
@@ -144,48 +144,49 @@ public class SessionStoreBookmarkManager {
     }
 
     /**
-     * Assigns the curent session bookshelf (if any) to the given user and saves the bookshelf to the database The bookshelf gets a newly generated
-     * name provided by {@link #generateNewBookshelfName(List)}
+     * Assigns the current session bookmark list (if any) to the given user and saves the bookmark list to the database The bookmark list gets a newly
+     * generated name provided by {@link #generateNewBookmarkListName(List)}
      * 
      * @param user
      * @param request
      * @throws DAOException
      */
-    public void addSessionBookshelfToUser(User user, HttpServletRequest request) throws DAOException {
-        if (request != null) {
-            Optional<BookmarkList> oBookshelf = getBookshelf(request.getSession());
-            if (oBookshelf.isPresent() && !oBookshelf.get().getItems().isEmpty()) {
-                oBookshelf.get().setOwner(user);
-                oBookshelf.get().setIsPublic(false);
-                List<BookmarkList> userBookshelves = DataManager.getInstance().getDao().getBookmarkLists(user);
-                oBookshelf.get().setName(generateNewBookshelfName(userBookshelves));
-                DataManager.getInstance().getDao().addBookmarkList(oBookshelf.get());
-            }
+    public void addSessionBookmarkListToUser(User user, HttpServletRequest request) throws DAOException {
+        if (request == null) {
+            return;
+        }
+
+        Optional<BookmarkList> oBookmarkList = getBookmarkList(request.getSession());
+        if (oBookmarkList.isPresent() && !oBookmarkList.get().getItems().isEmpty()) {
+            oBookmarkList.get().setOwner(user);
+            oBookmarkList.get().setIsPublic(false);
+            List<BookmarkList> userBookmarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
+            oBookmarkList.get().setName(generateNewBookmarkListName(userBookmarkLists));
+            DataManager.getInstance().getDao().addBookmarkList(oBookmarkList.get());
         }
     }
 
     /**
-     * Returns a String of the pattern "List {n}" where {n} is the lowest positive integer such that no bookshelf named "List {n}" exists in the given
-     * list
+     * Returns a String of the pattern "List {n}" where {n} is the lowest positive integer such that no bookmark list named "List {n}" exists in the
+     * given list
      * 
-     * @param allUserBookshelfs
+     * @param bookmarkLists
      * @return
      */
-    public static String generateNewBookshelfName(List<BookmarkList> bookshelves) {
+    public static String generateNewBookmarkListName(List<BookmarkList> bookmarkLists) {
+        String nameTemplate = "List {num}";
+        String namePlaceholder = "{num}";
+        String nameRegex = "List \\d+";
+        String nameBase = "List ";
 
-        String bookshelfNameTemplate = "List {num}";
-        String bookshelfNamePlaceholder = "{num}";
-        String bookshelfNameRegex = "List \\d+";
-        String bookshelfNameBase = "List ";
-
-        if (bookshelves == null || bookshelves.isEmpty()) {
-            return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, "1");
+        if (bookmarkLists == null || bookmarkLists.isEmpty()) {
+            return nameTemplate.replace(namePlaceholder, "1");
         }
 
-        Integer counter = bookshelves.stream()
+        Integer counter = bookmarkLists.stream()
                 .map(bs -> bs.getName())
-                .filter(name -> name != null && name.matches(bookshelfNameRegex))
-                .map(name -> name.replace(bookshelfNameBase, ""))
+                .filter(name -> name != null && name.matches(nameRegex))
+                .map(name -> name.replace(nameBase, ""))
                 .map(num -> Integer.parseInt(num))
                 .sorted((n1, n2) -> Integer.compare(n2, n1))
                 .findFirst()
@@ -193,22 +194,22 @@ public class SessionStoreBookmarkManager {
 
         counter++;
 
-        return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, counter.toString());
+        return nameTemplate.replace(namePlaceholder, counter.toString());
     }
 
     /**
-     * This embedds the bookshelf items within a text, to be used in autogenerated mails describing the bookshelf The parameter {@code text} contains
-     * the complete text with a placeholder {0} which is replaced by the text generated from the bookshelf items. {@code itemText} is the text for
-     * each bookshelf item with placeholder {0} which is replaced by the link to the bookmarked item, and {1} which is replaced by the title of that
-     * item. The parameter {@code bookshelf} is the bookshelf containing the items to be inserted
+     * This embedds the bookmark list items within a text, to be used in autogenerated mails describing the bookmark list The parameter {@code text}
+     * contains the complete text with a placeholder {0} which is replaced by the text generated from the bookmarks. {@code itemText} is the text for
+     * each bookmark with placeholder {0} which is replaced by the link to the bookmarked item, and {1} which is replaced by the title of that item.
+     * The parameter {@code bookmarkList} is the bookmark list containing the items to be inserted
      * 
      * @param text
      * @param itemText
      * @return
      */
-    public static String generateBookshelfInfo(String text, String itemText, String emptyListText, BookmarkList bookshelf) {
+    public static String generateBookmarkListInfo(String text, String itemText, String emptyListText, BookmarkList bookmarkList) {
         StringBuilder itemList = new StringBuilder();
-        for (Bookmark item : bookshelf.getItems()) {
+        for (Bookmark item : bookmarkList.getItems()) {
             String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
             itemList.append(currentItemText);
         }

@@ -7,9 +7,9 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('editbookshelf', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.userLoggedIn,'user',1)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,'mybookshelves',2)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_myBookshelves,'mybookshelves',2)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookshelfBean.currentBookshelf.name, navigationHelper.applicationUrl.concat('bookshelf/').concat(bookshelfBean.currentBookshelf.id),3)}" />
-			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_edit,4)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookmarkList_edit,4)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -20,7 +20,7 @@
 	<ui:define name="content">
 		<div id="userBookshelfEdit" class="user-bookshelf-edit">
 			<h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelf != null and bookshelfBean.currentBookshelfMine}">
-				<h2>#{msg.bookshelf_edit}</h2>
+				<h2>#{msg.bookmarkList_edit}</h2>
 
 				<div class="user-bookshelf-edit__form">
 					<h:form id="userBookshelfEditForm" styleClass="form-horizontal" prependId="false">
@@ -29,7 +29,7 @@
 							<label for="editBookshelfName" class="col-sm-2 control-label">#{msg.name}:</label>
 							<div class="col-sm-10">
 								<h:inputText id="editBookshelfName" styleClass="form-control" value="#{bookmarkBean.currentBookshelf.name}"
-								    validator="#{bookmarkBean.validateName}" required="true" requiredMessage="#{msg.bookshelf_bookshelfNameFailure}" />
+								    validator="#{bookmarkBean.validateName}" required="true" requiredMessage="#{msg.bookmarkList_bookshelfNameFailure}" />
 							</div>
 						</div>
 						
@@ -43,7 +43,7 @@
 	
 						<!-- PUBLIC -->	
 						<div class="form-group">
-							<label for="editBookshelfPublic" class="col-sm-2 control-label">#{msg.bookshelf_public}:</label>
+							<label for="editBookshelfPublic" class="col-sm-2 control-label">#{msg.bookmarkList_public}:</label>
 							<div class="col-sm-10">
 								<div class="checkbox">
 									<label>
@@ -56,7 +56,7 @@
 						
 						<!-- SHARES -->
 						<div class="form-group">
-						    <label for="editBookshelfGroupShares" class="col-sm-2 control-label">#{msg.bookshelf_groupShares}:</label>
+						    <label for="editBookshelfGroupShares" class="col-sm-2 control-label">#{msg.bookmarkList_groupShares}:</label>
 						    <div class="col-sm-10">
 						        <h:selectManyMenu id="editBookshelfGroupShares" styleClass="form-control" value="#{bookmarkBean.currentBookshelf.groupShares}">
 						          <f:selectItems value="#{userBean.user.allUserGroups}"></f:selectItems>
